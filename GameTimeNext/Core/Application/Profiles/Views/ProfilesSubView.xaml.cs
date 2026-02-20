@@ -4,7 +4,7 @@ using GameTimeNext.Core.Application.TableObjects;
 using System.Windows;
 using System.Windows.Controls;
 using UIX.ViewController.Engine.DataWrapper;
-using UIX.ViewController.Engine.UserControls;
+using UIX.ViewController.Engine.FrameworkElements.UserControls;
 
 namespace GameTimeNext.Core.Application.Profiles.Views
 {

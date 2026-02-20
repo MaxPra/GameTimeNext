@@ -6,7 +6,7 @@
     xmlns:local="clr-namespace:GameTimeNext.Core.Application.Profiles.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:uixprops="clr-namespace:UIX.ViewController.Engine.AttachedProperties;assembly=UIX.ViewController.Engine"
-    xmlns:uixcontrols="clr-namespace:UIX.ViewController.Engine.UserControls;assembly=UIX.ViewController.Engine"
+    xmlns:uixcontrols="clr-namespace:UIX.ViewController.Engine.FrameworkElements.UserControls;assembly=UIX.ViewController.Engine"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">

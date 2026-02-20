@@ -5,10 +5,11 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using UIX.ViewController.Engine.FrameworkElements.Windows;
 
 namespace GameTimeNext.Core.Framework.UI.Base
 {
-    public class GTNWindow : Window
+    public class GTNWindow : UIXWindowHostBase
     {
         private bool _allowClose;
 
@@ -20,6 +21,9 @@ namespace GameTimeNext.Core.Framework.UI.Base
             Loaded += OnLoaded;
             Closing += OnClosing;
         }
+
+        protected override void InitializeViewOutput(object sender, RoutedEventArgs e) { }
+
 
         public override void OnApplyTemplate()
         {
@@ -126,5 +130,7 @@ namespace GameTimeNext.Core.Framework.UI.Base
 
             BeginAnimation(OpacityProperty, fadeOut);
         }
+
+
     }
 }

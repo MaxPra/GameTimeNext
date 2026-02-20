@@ -32,7 +32,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             //GetView().TxtMegaBox.Text = _dataWrapper.GetTypedTableObject().GANA;
         }
 
-        protected override void Changed(FrameworkElement source, string eventName)
+        protected override void TriggeredEvent(FrameworkElement source, string eventName)
         {
         }
 

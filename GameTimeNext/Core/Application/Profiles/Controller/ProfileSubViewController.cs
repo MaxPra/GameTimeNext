@@ -41,7 +41,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             }
         }
 
-        protected override void Changed(FrameworkElement source, string eventName)
+        protected override void TriggeredEvent(FrameworkElement source, string eventName)
         {
 
         }

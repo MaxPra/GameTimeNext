@@ -18,7 +18,6 @@ namespace GameTimeNext
         {
             base.OnStartup(e);
 
-            // Hier kommt dein Code hin
             InitializeApp();
 
             // Test Migration GTX => GTNXT
