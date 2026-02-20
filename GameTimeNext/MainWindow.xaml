@@ -1,0 +1,73 @@
+﻿<ui:GTNWindow
+    x:Class="GameTimeNext.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:subviews="clr-namespace:GameTimeNext.Core.Application.Profiles.Views"
+    xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI.Base"
+    Title="GameTimeNXT"
+    Width="1200"
+    Height="800"
+    HorizontalAlignment="Stretch"
+    VerticalAlignment="Stretch"
+    HorizontalContentAlignment="Stretch"
+    d:DesignHeight="800"
+    d:DesignWidth="1200"
+    Style="{StaticResource GTNWindowStyle}"
+    WindowStartupLocation="CenterScreen"
+    WindowState="Maximized"
+    mc:Ignorable="d">
+
+    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <TabControl
+            Padding="0"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            HorizontalContentAlignment="Stretch"
+            VerticalContentAlignment="Stretch"
+            Background="Transparent"
+            BorderThickness="0"
+            Style="{StaticResource ModernTabControlStyle}">
+
+            <!--  Profiles  -->
+            <TabItem
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Stretch"
+                Header="Profiles">
+
+                <subviews:ProfilesSubView />
+
+            </TabItem>
+
+            <!--  Groups  -->
+            <TabItem
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                Header="Groups">
+                <Grid Margin="1" Background="Transparent">
+                    <TextBlock
+                        FontSize="22"
+                        FontWeight="SemiBold"
+                        Foreground="{DynamicResource Brush.TextPrimary}"
+                        Text="Groups" />
+                </Grid>
+            </TabItem>
+
+            <!--  Settings  -->
+            <TabItem
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                Header="Settings">
+                <Grid Margin="1" Background="Transparent">
+                    <TextBlock
+                        FontSize="22"
+                        FontWeight="SemiBold"
+                        Foreground="{DynamicResource Brush.TextPrimary}"
+                        Text="Settings" />
+                </Grid>
+            </TabItem>
+
+        </TabControl>
+    </Grid>
+</ui:GTNWindow>

@@ -1,0 +1,17 @@
+﻿using System.Windows;
+using UIX.ViewController.Engine.UserControls;
+
+namespace GameTimeNext.Core.Application.Profiles.Views
+{
+    /// <summary>
+    /// Interaktionslogik für ProfileDetailSubView.xaml
+    /// </summary>
+    public partial class ProfileDetailSubView : UIXUserControlBase
+    {
+
+        public ProfileDetailSubView()
+        {
+            InitializeComponent();
+        }
+    }
+}
