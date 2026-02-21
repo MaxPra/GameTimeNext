@@ -47,7 +47,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected override void DataWrapperSelectionChangedImpl(Selector source)
         {
-            throw new NotImplementedException();
+
         }
     }
 }

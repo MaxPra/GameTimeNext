@@ -3,11 +3,10 @@ using GameTimeNext.Core.Application.Profiles.DataWrapper;
 using GameTimeNext.Core.Application.Profiles.Viewmodel;
 using GameTimeNext.Core.Application.Profiles.Views;
 using GameTimeNext.Core.Application.TableObjects;
+using GameTimeNext.Core.Framework;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
-using UIX.ViewController.Engine.Events;
 
 namespace GameTimeNext.Core.Application.Profiles.Controller
 {
@@ -29,16 +28,12 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             profilesSubGridViewModel.Tbl_Profis = new System.Collections.ObjectModel.ObservableCollection<TBL_PROFI>(tbl_profis);
 
             if (tbl_profis.Count > 0)
-                profilesSubGridViewModel.SelectedTBLPROFI = tbl_profis[0];
-
-            View.DataContext = profilesSubGridViewModel;
+                profilesSubGridViewModel.SelectedTBLPROFI = tbl_profis.FirstOrDefault(p => p.PFID == AppEnvironment.GetCurrentProfile().PFID);
 
             dataWrapper.SetTableObject(profilesSubGridViewModel.SelectedTBLPROFI);
 
-            if (dataWrapper != null)
-            {
-                AddIdentifier("TBL_PROFI", dataWrapper.GetTypedTableObject());
-            }
+            View.DataContext = profilesSubGridViewModel;
+
         }
 
         protected override void TriggeredEvent(FrameworkElement source, string eventName)

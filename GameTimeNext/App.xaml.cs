@@ -1,4 +1,5 @@
-﻿using GameTimeNext.Core.Application.GTXMigration;
+﻿using GameTimeNext.Core.Application.DataManagers;
+using GameTimeNext.Core.Application.GTXMigration;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.DataBase;
@@ -24,6 +25,8 @@ namespace GameTimeNext
             //GTXMigrationHelper gtxMigHelper = new GTXMigrationHelper("C:\\GameTimeX");
             //gtxMigHelper.MigrateToGTNXT();
 
+            AppEnvironment.SetCurrentProfile(new TBLM_PROFI().Read(10));
+
             // Erst danach Fenster öffnen
             MainWindow window = new MainWindow();
             window.Show();
@@ -39,6 +42,7 @@ namespace GameTimeNext
 
             // Datenbank initialisieren
             AppEnvironment.GetDataBaseManager().Initialize();
+
         }
     }
 

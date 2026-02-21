@@ -32,11 +32,12 @@
 
             <!--  Profiles  -->
             <TabItem
+                x:Name="Tab_Profiles"
                 HorizontalAlignment="Stretch"
                 HorizontalContentAlignment="Stretch"
                 Header="Profiles">
 
-                <subviews:ProfilesSubView />
+                <ContentPresenter x:Name="CPProfileView"/>
 
             </TabItem>
 

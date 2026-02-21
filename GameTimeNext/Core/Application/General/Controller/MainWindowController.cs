@@ -66,6 +66,9 @@ namespace GameTimeNext.Core.Application.General.Controller
         /// <param name="e"></param>
         private void Event_TabChanged(TabControl source)
         {
+
+            if (source.SelectedItem is TabItem ti && ti.Name == "Tab_Profiles")
+                GetWindow().ProfilesSubViewController.Reopen(UIXEvents.Reopen);
         }
 
         private MainWindow GetWindow()
