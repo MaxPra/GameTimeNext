@@ -7,12 +7,12 @@
     <Style x:Key="GTNWindowStyle" TargetType="{x:Type baseViews:GTNWindow}">
         <Setter Property="WindowStyle" Value="None" />
         <Setter Property="ResizeMode" Value="CanResize" />
-        <Setter Property="Background" Value="{DynamicResource Brush.Background}" />
+        <Setter Property="Background" Value="{DynamicResource GradientBrush.ProfileDetailView.Background}" />
 
         <Setter Property="shell:WindowChrome.WindowChrome">
             <Setter.Value>
                 <shell:WindowChrome
-                    CaptionHeight="30"
+                    CaptionHeight="32"
                     CornerRadius="0"
                     GlassFrameThickness="0"
                     ResizeBorderThickness="6"
@@ -35,13 +35,12 @@
                             <ScaleTransform x:Name="ScaleTf" ScaleX="1" ScaleY="1" />
                         </Border.RenderTransform>
 
-                        <Grid x:Name="LayoutRoot">
+                        <Grid x:Name="LayoutRoot" SnapsToDevicePixels="True">
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="30" />
+                                <RowDefinition Height="32" />
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
 
-                            <!--  Custom TitleBar  -->
                             <Border
                                 Grid.Row="0"
                                 Background="{DynamicResource Brush.Surface}"
@@ -51,7 +50,7 @@
 
                                 <Grid
                                     x:Name="PART_TitleBar"
-                                    Height="30"
+                                    Height="32"
                                     HorizontalAlignment="Stretch"
                                     shell:WindowChrome.IsHitTestVisibleInChrome="True">
                                     <Grid.ColumnDefinitions>
@@ -66,48 +65,40 @@
                                         Foreground="{DynamicResource Brush.TextPrimary}"
                                         Text="{TemplateBinding Title}" />
 
-                                    <StackPanel
-                                        Grid.Column="1"
-                                        VerticalAlignment="Stretch"
-                                        Orientation="Horizontal">
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Stretch">
+                                        <Button x:Name="PART_MinButton"
+                                                Width="45"
+                                                Background="Transparent"
+                                                BorderThickness="0"
+                                                Content="&#xE921;"
+                                                FontFamily="Segoe MDL2 Assets"
+                                                FontSize="12"
+                                                Foreground="{DynamicResource Brush.TextPrimary}"
+                                                Style="{StaticResource TitleBarButtonStyle}" />
 
-                                        <Button
-                                            x:Name="PART_MinButton"
-                                            Width="45"
-                                            Background="Transparent"
-                                            BorderThickness="0"
-                                            Content="&#xE921;"
-                                            FontFamily="Segoe MDL2 Assets"
-                                            FontSize="12"
-                                            Foreground="{DynamicResource Brush.TextPrimary}"
-                                            Style="{StaticResource TitleBarButtonStyle}" />
+                                        <Button x:Name="PART_MaxButton"
+                                                Width="45"
+                                                Background="Transparent"
+                                                BorderThickness="0"
+                                                Content="&#xE922;"
+                                                FontFamily="Segoe MDL2 Assets"
+                                                FontSize="12"
+                                                Foreground="{DynamicResource Brush.TextPrimary}"
+                                                Style="{StaticResource TitleBarButtonStyle}" />
 
-                                        <Button
-                                            x:Name="PART_MaxButton"
-                                            Width="45"
-                                            Background="Transparent"
-                                            BorderThickness="0"
-                                            Content="&#xE922;"
-                                            FontFamily="Segoe MDL2 Assets"
-                                            FontSize="12"
-                                            Foreground="{DynamicResource Brush.TextPrimary}"
-                                            Style="{StaticResource TitleBarButtonStyle}" />
-
-                                        <Button
-                                            x:Name="PART_CloseButton"
-                                            Width="45"
-                                            Background="Transparent"
-                                            BorderThickness="0"
-                                            Content="&#xE8BB;"
-                                            FontFamily="Segoe MDL2 Assets"
-                                            FontSize="12"
-                                            Foreground="{DynamicResource Brush.TextPrimary}"
-                                            Style="{StaticResource TitleBarCloseButtonStyle}" />
+                                        <Button x:Name="PART_CloseButton"
+                                                Width="45"
+                                                Background="Transparent"
+                                                BorderThickness="0"
+                                                Content="&#xE8BB;"
+                                                FontFamily="Segoe MDL2 Assets"
+                                                FontSize="12"
+                                                Foreground="{DynamicResource Brush.TextPrimary}"
+                                                Style="{StaticResource TitleBarCloseButtonStyle}" />
                                     </StackPanel>
                                 </Grid>
                             </Border>
 
-                            <!--  Fenster-Inhalt  -->
                             <ContentPresenter
                                 Grid.Row="1"
                                 Margin="0"
@@ -115,16 +106,16 @@
                                 VerticalAlignment="Stretch"
                                 Content="{TemplateBinding Content}"
                                 ContentTemplate="{TemplateBinding ContentTemplate}" />
-
                         </Grid>
                     </Border>
 
                     <ControlTemplate.Triggers>
                         <Trigger Property="WindowState" Value="Maximized">
                             <Setter TargetName="RootBorder" Property="BorderThickness" Value="0" />
-                            <Setter TargetName="LayoutRoot" Property="Margin" Value="8" />
+                            <Setter TargetName="LayoutRoot" Property="Margin" Value="0" />
                         </Trigger>
                     </ControlTemplate.Triggers>
+
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

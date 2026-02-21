@@ -15,10 +15,11 @@
                 <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Controls/TabControlStyle.xaml" />
                 <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Controls/TileViewStyle.xaml" />
                 <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Controls/ScrollViewStyle.xaml" />
-                <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Views/ProfileDetailSubViewStyles.xaml" />
+                <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Controls/ToolTipStyle.xaml" />
 
 
                 <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Views/WindowStyle.xaml" />
+                <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Views/ProfileDetailSubViewStyles.xaml" />
 
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

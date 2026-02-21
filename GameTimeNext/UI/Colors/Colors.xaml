@@ -14,6 +14,10 @@
     <Color x:Key="Color.AccentHover">#1a7fcb</Color>
     <Color x:Key="Color.AccentPressed">#15629e</Color>
 
+    <!--<Color x:Key="Color.Accent">#FF4D4F</Color>
+    <Color x:Key="Color.AccentHover">#E63E40</Color>
+    <Color x:Key="Color.AccentPressed">#C53032</Color>-->
+
     <Color x:Key="Color.TitleBarButton.Accent">#60646c</Color>
 
     <Color x:Key="Color.Success">#FF2ECC71</Color>
@@ -50,5 +54,99 @@
     <!--  Hover-Glanz (ohne neue Color.* Keys)  -->
     <SolidColorBrush x:Key="Brush.TileSheenTop" Color="#1AFFFFFF" />
     <SolidColorBrush x:Key="Brush.TileSheenBottom" Color="#00FFFFFF" />
+
+
+
+
+    <!-- Gradient Brushes -->
+    <!--<LinearGradientBrush x:Key="GradientBrush.ProfileDetailView.Background"
+                         StartPoint="0,0"
+                         EndPoint="1,0">
+        <GradientStop Color="{DynamicResource Color.Background}" Offset="0" />
+        <GradientStop Color="{DynamicResource Color.Surface}" Offset="1" />
+    </LinearGradientBrush>-->
+
+    <!--<LinearGradientBrush x:Key="GradientBrush.ProfileDetailView.Background" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#0B0F14" Offset="0" />
+        <GradientStop Color="#16202D" Offset="0.35" />
+        <GradientStop Color="#1F2F3F" Offset="0.6" />
+        <GradientStop Color="#121A24" Offset="1" />
+    </LinearGradientBrush>-->
+
+    <!-- Basis -->
+    <LinearGradientBrush x:Key="GradientBrush.ProfileDetailView.Background"
+                     StartPoint="0,0"
+                     EndPoint="1,1"
+                         Opacity="0.9">
+        <GradientStop Color="{DynamicResource Color.Background}" Offset="0" />
+        <GradientStop Color="{DynamicResource Color.Surface}" Offset="0.30" />
+        <GradientStop Color="#141922" Offset="0.60" />
+        <GradientStop Color="{DynamicResource Color.Background}" Offset="1" />
+    </LinearGradientBrush>
+
+    <!-- Accent Hauptglow -->
+    <RadialGradientBrush x:Key="GradientBrush.ProfileDetailView.AccentGlowPrimary"
+                     Center="0.28,0.22"
+                     GradientOrigin="0.28,0.22"
+                     RadiusX="1.1"
+                     RadiusY="1.1"
+                     Opacity="0.30">
+        <GradientStop Color="{DynamicResource Color.Accent}" Offset="0" />
+        <GradientStop Color="Transparent" Offset="1" />
+    </RadialGradientBrush>
+
+    <!-- Accent Sekundär -->
+    <RadialGradientBrush x:Key="GradientBrush.ProfileDetailView.AccentGlowSecondary"
+                     Center="0.85,0.75"
+                     GradientOrigin="0.85,0.75"
+                     RadiusX="1.2"
+                     RadiusY="1.2"
+                     Opacity="0.18">
+        <GradientStop Color="{DynamicResource Color.AccentHover}" Offset="0" />
+        <GradientStop Color="Transparent" Offset="1" />
+    </RadialGradientBrush>
+
+    <!-- Randabdunklung -->
+    <RadialGradientBrush x:Key="GradientBrush.ProfileDetailView.Vignette"
+                     Center="0.5,0.5"
+                     RadiusX="0.9"
+                     RadiusY="0.9"
+                     Opacity="0.45">
+        <GradientStop Color="Transparent" Offset="0.55"/>
+        <GradientStop Color="#CC000000" Offset="1"/>
+    </RadialGradientBrush>
+
+    <!-- Kombination -->
+    <DrawingBrush x:Key="Brush.ProfileDetailView.Background" Stretch="Fill">
+        <DrawingBrush.Drawing>
+            <DrawingGroup>
+
+                <GeometryDrawing Brush="{DynamicResource GradientBrush.ProfileDetailView.Background}">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,1,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+
+                <GeometryDrawing Brush="{DynamicResource GradientBrush.ProfileDetailView.AccentGlowPrimary}">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,1,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+
+                <GeometryDrawing Brush="{DynamicResource GradientBrush.ProfileDetailView.AccentGlowSecondary}">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,1,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+
+                <GeometryDrawing Brush="{DynamicResource GradientBrush.ProfileDetailView.Vignette}">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,1,1"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+
+            </DrawingGroup>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
 
 </ResourceDictionary>
