@@ -11,8 +11,8 @@
 
     <!--  ===== Accent Colors =====  -->
     <Color x:Key="Color.Accent">#3498e5</Color>
-    <Color x:Key="Color.AccentHover">#2f96e4</Color>
-    <Color x:Key="Color.AccentPressed">#1d8de2</Color>
+    <Color x:Key="Color.AccentHover">#1a7fcb</Color>
+    <Color x:Key="Color.AccentPressed">#15629e</Color>
 
     <Color x:Key="Color.TitleBarButton.Accent">#60646c</Color>
 

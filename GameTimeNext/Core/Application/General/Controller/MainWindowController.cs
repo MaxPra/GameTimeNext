@@ -6,11 +6,27 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.Events;
+using UIX.ViewController.Engine.FrameworkElements.Windows;
 
 namespace GameTimeNext.Core.Application.General.Controller
 {
     internal class MainWindowController : UIXWindowControllerBase
     {
+
+        public class WindowReturn : UIXWindowReturn
+        {
+            public string Test { get; set; } = "Das steht am Anfang drin!";
+
+            public WindowReturn() { }
+
+        }
+
+        private WindowReturn _mainWindowReturn = new WindowReturn();
+
+        public override WindowReturn GetWindowReturn()
+        {
+            return _mainWindowReturn;
+        }
 
         protected override void Init()
         {
@@ -18,6 +34,9 @@ namespace GameTimeNext.Core.Application.General.Controller
 
         protected override void BuildFirst()
         {
+            GetWindowReturn().Test = "Jetzt steht das drin!";
+
+            ExitWnd(UIXExitType.Cancel);
         }
 
         protected override void Build()

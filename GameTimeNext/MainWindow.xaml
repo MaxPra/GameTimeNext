@@ -9,6 +9,8 @@
     Title="GameTimeNXT"
     Width="1200"
     Height="800"
+    MinWidth="1400"
+    MinHeight="870"
     HorizontalAlignment="Stretch"
     VerticalAlignment="Stretch"
     HorizontalContentAlignment="Stretch"

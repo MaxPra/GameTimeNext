@@ -68,4 +68,163 @@
         </Setter>
     </Style>
 
+    <Style x:Key="App.Button.Primary" TargetType="Button">
+        <Setter Property="Height" Value="38"/>
+        <Setter Property="Margin" Value="0,0,0,10"/>
+        <Setter Property="Padding" Value="14,0"/>
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Accent}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid SnapsToDevicePixels="True">
+
+                        <Border x:Name="Base"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="6"/>
+
+                        <Border x:Name="Hover"
+                            Background="{DynamicResource Brush.AccentHover}"
+                            CornerRadius="6"
+                            Opacity="0"
+                            IsHitTestVisible="False"/>
+
+                        <Border x:Name="Pressed"
+                            Background="{DynamicResource Brush.AccentPressed}"
+                            CornerRadius="6"
+                            Opacity="0"
+                            IsHitTestVisible="False"/>
+
+                        <ContentPresenter x:Name="Content"
+                                      Margin="{TemplateBinding Padding}"
+                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                      RecognizesAccessKey="True"/>
+
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Hover"
+                                                     Storyboard.TargetProperty="Opacity"
+                                                     To="1"
+                                                     Duration="0:0:0.12"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Hover"
+                                                     Storyboard.TargetProperty="Opacity"
+                                                     To="0"
+                                                     Duration="0:0:0.18"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Pressed" Property="Opacity" Value="1"/>
+                            <Setter TargetName="Hover" Property="Opacity" Value="0"/>
+                        </Trigger>
+
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Base" Property="Opacity" Value="0.55"/>
+                            <Setter TargetName="Hover" Property="Opacity" Value="0"/>
+                            <Setter TargetName="Pressed" Property="Opacity" Value="0"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="App.Button.Secondary" TargetType="Button">
+        <Setter Property="Height" Value="38"/>
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="Padding" Value="14,0"/>
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid>
+                        <Border x:Name="Base"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Border>
+
+                        <Border x:Name="HoverBorder"
+                                BorderBrush="{DynamicResource Brush.AccentHover}"
+                                BorderThickness="1"
+                                CornerRadius="6"
+                                Opacity="0"
+                                IsHitTestVisible="False"/>
+
+                        <Border x:Name="PressedBorder"
+                                BorderBrush="{DynamicResource Brush.AccentPressed}"
+                                BorderThickness="1"
+                                CornerRadius="6"
+                                Opacity="0"
+                                IsHitTestVisible="False"/>
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="HoverBorder"
+                                                         Storyboard.TargetProperty="Opacity"
+                                                         To="1"
+                                                         Duration="0:0:0.12"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="HoverBorder"
+                                                         Storyboard.TargetProperty="Opacity"
+                                                         To="0"
+                                                         Duration="0:0:0.18"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="PressedBorder" Property="Opacity" Value="1"/>
+                            <Setter TargetName="HoverBorder" Property="Opacity" Value="0"/>
+                        </Trigger>
+
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Base" Property="Opacity" Value="0.55"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
 </ResourceDictionary>

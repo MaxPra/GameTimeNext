@@ -21,9 +21,9 @@
         Background="{DynamicResource Brush.Surface}"
         Cursor="">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="2*" />
-            <ColumnDefinition Width="2" />
             <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="2" />
+            <ColumnDefinition Width="520" MinWidth="420" MaxWidth="1000" />
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>

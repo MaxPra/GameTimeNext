@@ -3,15 +3,89 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="clr-namespace:GameTimeNext.Core.Application.Profiles.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:uixprops="clr-namespace:UIX.ViewController.Engine.AttachedProperties;assembly=UIX.ViewController.Engine"
     xmlns:uixcontrols="clr-namespace:UIX.ViewController.Engine.FrameworkElements.UserControls;assembly=UIX.ViewController.Engine"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
-    <Grid>
-        <TextBox x:Name="TxtMegaBox" Margin="50"
-                 uixprops:UIXAttachedProperty.Path="TBL_PROFI.GANA"/>
+
+    <Grid Style="{StaticResource ProfileDetail.Root}">
+        <Grid Style="{StaticResource ProfileDetail.Container}">
+
+            <DockPanel Style="{StaticResource ProfileDetail.Layout}">
+
+                <Border DockPanel.Dock="Bottom" Style="{StaticResource ProfileDetail.ButtonHost}">
+                    <StackPanel Style="{StaticResource ProfileDetail.ButtonArea}">
+                        <Button Style="{StaticResource App.Button.Primary}"
+                                Content="Launch game"/>
+
+                        <Button Style="{StaticResource App.Button.Secondary}"
+                                Content="Start Monitoring"/>
+                    </StackPanel>
+                </Border>
+
+                <StackPanel DockPanel.Dock="Top" Style="{StaticResource ProfileDetail.TopArea}">
+                    <TextBlock Style="{StaticResource ProfileDetail.Title}"
+                               uixprops:UIXAttachedProperty.Path="TBL_PROFI.GANA"/>
+
+                    <Border Style="{StaticResource ProfileDetail.CoverFrame}">
+                        <Grid>
+                            <Image Style="{StaticResource ProfileDetail.CoverImage}"
+                                   uixprops:UIXAttachedProperty.Path="TBL_PROFI.COVER"/>
+                            <Border Style="{StaticResource ProfileDetail.CoverOverlay}"/>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+
+                <Border Style="{StaticResource ProfileDetail.InfoHost}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Border Grid.Column="1" Style="{StaticResource ProfileDetail.InfoBlock}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="18"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Row="0" Grid.Column="0"
+                                           Style="{StaticResource ProfileDetail.GameTimeLabel}"
+                                           Text="Game time:"/>
+                                <TextBlock Grid.Row="0" Grid.Column="2"
+                                           Style="{StaticResource ProfileDetail.GameTimeValue}"
+                                           uixprops:UIXAttachedProperty.Path="TBL_PROFI.GATI"/>
+
+                                <TextBlock Grid.Row="1" Grid.Column="0"
+                                           Style="{StaticResource ProfileDetail.InfoLabel}"
+                                           Text="First time played:"/>
+                                <TextBlock Grid.Row="1" Grid.Column="2"
+                                           Style="{StaticResource ProfileDetail.InfoValue}"
+                                           uixprops:UIXAttachedProperty.Path="TBL_PROFI.FIPL"/>
+
+                                <TextBlock Grid.Row="2" Grid.Column="0"
+                                           Style="{StaticResource ProfileDetail.InfoLabel}"
+                                           Text="Last time played:"/>
+                                <TextBlock Grid.Row="2" Grid.Column="2"
+                                           Style="{StaticResource ProfileDetail.InfoValue}"
+                                           uixprops:UIXAttachedProperty.Path="TBL_PROFI.LAPL"/>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </Border>
+
+            </DockPanel>
+
+        </Grid>
     </Grid>
 </uixcontrols:UIXUserControlBase>

@@ -1,0 +1,129 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <sys:Double x:Key="ProfileDetail.CoverWidth">260</sys:Double>
+    <sys:Double x:Key="ProfileDetail.CoverHeight">390</sys:Double>
+
+    <Style x:Key="ProfileDetail.Root" TargetType="Grid">
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+
+    <Style x:Key="ProfileDetail.Container" TargetType="Grid">
+        <Setter Property="Margin" Value="16"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+    </Style>
+
+    <Style x:Key="ProfileDetail.Layout" TargetType="DockPanel">
+        <Setter Property="LastChildFill" Value="True"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+        <Setter Property="Width" Value="520"/>
+        <Setter Property="MaxWidth" Value="760"/>
+    </Style>
+
+    <Style x:Key="ProfileDetail.TopArea" TargetType="StackPanel">
+        <Setter Property="Orientation" Value="Vertical"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="Margin" Value="0,18,0,10"/>
+    </Style>
+
+    <Style x:Key="ProfileDetail.Title" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}"/>
+        <Setter Property="FontSize" Value="26"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="TextAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="0,0,0,14"/>
+    </Style>
+
+    <Style x:Key="ProfileDetail.CoverFrame" TargetType="Border">
+        <Setter Property="Width" Value="{StaticResource ProfileDetail.CoverWidth}"/>
+        <Setter Property="Height" Value="{StaticResource ProfileDetail.CoverHeight}"/>
+        <Setter Property="CornerRadius" Value="10"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="ClipToBounds" Value="True"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Surface}"/>
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="0,0,0,6"/>
+    </Style>
+
+    <Style x:Key="ProfileDetail.CoverImage" TargetType="Image">
+        <Setter Property="Stretch" Value="UniformToFill"/>
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+    </Style>
+
+    <Style x:Key="ProfileDetail.CoverOverlay" TargetType="Border">
+        <Setter Property="VerticalAlignment" Value="Bottom"/>
+        <Setter Property="Height" Value="90"/>
+        <Setter Property="Opacity" Value="0.55"/>
+        <Setter Property="Background">
+            <Setter.Value>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="#00000000" Offset="0"/>
+                    <GradientStop Color="#FF000000" Offset="1"/>
+                </LinearGradientBrush>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="ProfileDetail.InfoHost" TargetType="Border">
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="VerticalAlignment" Value="Top"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Margin" Value="0,6,0,0"/>
+        <Setter Property="Padding" Value="0"/>
+    </Style>
+
+    <Style x:Key="ProfileDetail.InfoBlock" TargetType="Border">
+        <Setter Property="Width" Value="{StaticResource ProfileDetail.CoverWidth}"/>
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+
+    <Style x:Key="ProfileDetail.InfoLabel" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Margin" Value="0,6,0,6"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="TextAlignment" Value="Left"/>
+    </Style>
+
+    <Style x:Key="ProfileDetail.InfoValue" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Margin" Value="0,6,0,6"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="TextAlignment" Value="Left"/>
+    </Style>
+
+    <Style x:Key="ProfileDetail.GameTimeLabel" TargetType="TextBlock" BasedOn="{StaticResource ProfileDetail.InfoLabel}">
+        <Setter Property="FontSize" Value="15"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Margin" Value="0,10,0,6"/>
+    </Style>
+
+    <Style x:Key="ProfileDetail.GameTimeValue" TargetType="TextBlock" BasedOn="{StaticResource ProfileDetail.InfoValue}">
+        <Setter Property="FontSize" Value="15"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Margin" Value="0,10,0,6"/>
+    </Style>
+
+    <Style x:Key="ProfileDetail.ButtonHost" TargetType="Border">
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="Width" Value="420"/>
+        <Setter Property="MaxWidth" Value="520"/>
+        <Setter Property="Margin" Value="0,12,0,18"/>
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+
+    <Style x:Key="ProfileDetail.ButtonArea" TargetType="StackPanel">
+        <Setter Property="Orientation" Value="Vertical"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+    </Style>
+
+</ResourceDictionary>

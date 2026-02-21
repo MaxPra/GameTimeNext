@@ -1,4 +1,5 @@
 ﻿using GameTimeNext.Core.Application.DataManagers;
+using GameTimeNext.Core.Application.General.Controller;
 using GameTimeNext.Core.Application.GTXMigration;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Config;
@@ -30,6 +31,7 @@ namespace GameTimeNext
             // Erst danach Fenster öffnen
             MainWindow window = new MainWindow();
             window.Show();
+
         }
 
         private void InitializeApp()
