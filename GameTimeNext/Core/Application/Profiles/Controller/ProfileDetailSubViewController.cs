@@ -40,6 +40,18 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
         }
 
+        protected override void FillViewImpl()
+        {
+        }
+
+        protected override void FillDBOImpl()
+        {
+        }
+
+        protected override void SaveDBOImpl()
+        {
+        }
+
         private ProfileDetailSubView GetView()
         {
             return (ProfileDetailSubView)this.View;

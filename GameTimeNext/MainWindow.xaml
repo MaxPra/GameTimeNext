@@ -7,7 +7,7 @@
     xmlns:subviews="clr-namespace:GameTimeNext.Core.Application.Profiles.Views"
     xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI.Base"
     Title="GameTimeNXT"
-    Width="1300"
+    Width="1350"
     Height="950"
     MinWidth="1200"
     MinHeight="950"

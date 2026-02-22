@@ -5,34 +5,70 @@
 
     <sys:Double x:Key="TileWidth">210</sys:Double>
     <sys:Double x:Key="TileHeight">300</sys:Double>
-    <Thickness x:Key="TileGap">18</Thickness>
 
-    <CornerRadius x:Key="TileCornerRadius">6</CornerRadius>
-    <CornerRadius x:Key="TileImageCornerRadius">6,6,0,0</CornerRadius>
+    <!-- Reservierter Puffer um die Kachel -->
+    <Thickness x:Key="TileOuterPadding">30</Thickness>
 
-    <!--  Dezent für Hover  -->
-    <sys:Double x:Key="TileGlassOpacityNormal">0.10</sys:Double>
-    <sys:Double x:Key="TileGlassOpacityHover">0.26</sys:Double>
-    <sys:Double x:Key="TileSheenOpacityNormal">0</sys:Double>
-    <sys:Double x:Key="TileSheenOpacityHover">0.35</sys:Double>
+    <!-- Ziel-Gap, wie es "optisch" zwischen Kacheln wirken soll -->
+    <sys:Double x:Key="TileGapValue">12</sys:Double>
 
-    <LinearGradientBrush x:Key="Brush.TileSheen" StartPoint="0,0" EndPoint="0,1">
-        <GradientStop Offset="0" Color="#1AFFFFFF" />
+    <!-- Half-Gap -->
+    <sys:Double x:Key="TileGapHalf">6</sys:Double>
+
+    <!-- Optischer Ausgleich: unten mehr Abstand wegen Shadow/Glow -->
+    <Thickness x:Key="TileItemMargin">6,6,6,20</Thickness>
+
+    <!-- Genug Innen-Padding, damit oben nichts clippt -->
+    <Thickness x:Key="TileListPadding">26</Thickness>
+
+    <Thickness x:Key="TileListPaddingTopOnly">0,26,0,26</Thickness>
+
+    <!-- Gewünscht: kleinerer Radius -->
+    <CornerRadius x:Key="TileCornerRadius">2</CornerRadius>
+    <CornerRadius x:Key="TileImageCornerRadius">2,2,0,0</CornerRadius>
+    <CornerRadius x:Key="TileTitleCornerRadius">0,0,2,2</CornerRadius>
+
+    <sys:Double x:Key="TileGlassOpacityNormal">0.18</sys:Double>
+    <sys:Double x:Key="TileGlassOpacityHover">0.36</sys:Double>
+    <sys:Double x:Key="TileSheenOpacityNormal">0.08</sys:Double>
+    <sys:Double x:Key="TileSheenOpacityHover">0.45</sys:Double>
+    <sys:Double x:Key="TileShadowOpacityNormal">0.28</sys:Double>
+    <sys:Double x:Key="TileShadowOpacityHover">0.40</sys:Double>
+
+    <sys:Double x:Key="TileTitleAccentOpacityNormal">0.00</sys:Double>
+    <sys:Double x:Key="TileTitleAccentOpacitySelected">1.00</sys:Double>
+    <sys:Double x:Key="TileAccentStrokeOpacityNormal">0.00</sys:Double>
+    <sys:Double x:Key="TileAccentStrokeOpacitySelected">1.00</sys:Double>
+
+    <sys:Double x:Key="TileTiltAngleHover">-7.5</sys:Double>
+    <sys:Double x:Key="TileAccentGlowOpacityHover">0.95</sys:Double>
+
+    <LinearGradientBrush x:Key="Brush.TileGlassFx" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0" Color="#66FFFFFF" />
+        <GradientStop Offset="0.20" Color="#2AFFFFFF" />
+        <GradientStop Offset="0.55" Color="#0AFFFFFF" />
         <GradientStop Offset="1" Color="#00FFFFFF" />
     </LinearGradientBrush>
 
-    <LinearGradientBrush x:Key="Brush.TileGlass" StartPoint="0,0" EndPoint="1,1">
-        <GradientStop Offset="0" Color="#26FFFFFF" />
-        <GradientStop Offset="0.35" Color="#10FFFFFF" />
+    <LinearGradientBrush x:Key="Brush.TileSheenFx" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="#70FFFFFF" />
+        <GradientStop Offset="0.22" Color="#22FFFFFF" />
         <GradientStop Offset="1" Color="#00FFFFFF" />
     </LinearGradientBrush>
 
-    <!--
-        Tile als ListBoxItem (Steam-like):
-        - Hover: Glass + Sheen leicht höher, optional Schatten minimal stärker
-        - Selected: nur blauer Border (kein Lift/Scale)
-        - Schatten: immer
-    -->
+    <LinearGradientBrush x:Key="Brush.TileInnerStrokeFx" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="#2EFFFFFF" />
+        <GradientStop Offset="0.35" Color="#16FFFFFF" />
+        <GradientStop Offset="1" Color="#00FFFFFF" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="Brush.AccentGlowMask" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0.00" Color="#00FFFFFF" />
+        <GradientStop Offset="0.55" Color="#00FFFFFF" />
+        <GradientStop Offset="0.72" Color="#C0FFFFFF" />
+        <GradientStop Offset="1.00" Color="#FFFFFFFF" />
+    </LinearGradientBrush>
+
     <Style x:Key="TileListBoxItemStyle" TargetType="{x:Type ListBoxItem}">
         <Setter Property="Padding" Value="0" />
         <Setter Property="Background" Value="Transparent" />
@@ -41,188 +77,348 @@
         <Setter Property="IsTabStop" Value="False" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="VerticalContentAlignment" Value="Stretch" />
+        <Setter Property="KeyboardNavigation.DirectionalNavigation" Value="None" />
+        <Setter Property="KeyboardNavigation.TabNavigation" Value="None" />
 
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ListBoxItem}">
 
-                    <Border
-                        x:Name="HitSurface"
-                        Width="{StaticResource TileWidth}"
-                        Height="{StaticResource TileHeight}"
-                        Background="Transparent"
-                        SnapsToDevicePixels="True">
+                    <ControlTemplate.Resources>
+                        <CubicEase x:Key="EaseOut" EasingMode="EaseOut" />
+                        <CubicEase x:Key="EaseIn" EasingMode="EaseIn" />
 
-                        <Grid x:Name="Root">
+                        <Storyboard x:Key="SbHoverIn" FillBehavior="HoldEnd">
+                            <DoubleAnimation Storyboard.TargetName="Glass"
+                                             Storyboard.TargetProperty="Opacity"
+                                             To="{StaticResource TileGlassOpacityHover}"
+                                             Duration="0:0:0.18"
+                                             EasingFunction="{StaticResource EaseOut}" />
+                            <DoubleAnimation Storyboard.TargetName="Sheen"
+                                             Storyboard.TargetProperty="Opacity"
+                                             To="{StaticResource TileSheenOpacityHover}"
+                                             Duration="0:0:0.18"
+                                             EasingFunction="{StaticResource EaseOut}" />
+                            <DoubleAnimation Storyboard.TargetName="ShadowLayer"
+                                             Storyboard.TargetProperty="Opacity"
+                                             To="{StaticResource TileShadowOpacityHover}"
+                                             Duration="0:0:0.18"
+                                             EasingFunction="{StaticResource EaseOut}" />
 
-                            <!--  Schatten immer  -->
-                            <Border
-                                x:Name="ShadowLayer"
-                                CornerRadius="{StaticResource TileCornerRadius}"
-                                IsHitTestVisible="False"
-                                Opacity="0.28">
+                            <DoubleAnimation Storyboard.TargetName="AccentGlowSoft"
+                                             Storyboard.TargetProperty="Opacity"
+                                             To="{StaticResource TileAccentGlowOpacityHover}"
+                                             Duration="0:0:0.18"
+                                             EasingFunction="{StaticResource EaseOut}" />
+                            <DoubleAnimation Storyboard.TargetName="AccentGlowTight"
+                                             Storyboard.TargetProperty="Opacity"
+                                             To="{StaticResource TileAccentGlowOpacityHover}"
+                                             Duration="0:0:0.18"
+                                             EasingFunction="{StaticResource EaseOut}" />
+
+                            <DoubleAnimation Storyboard.TargetName="TiltRotation"
+                                             Storyboard.TargetProperty="Angle"
+                                             To="{StaticResource TileTiltAngleHover}"
+                                             Duration="0:0:0.18"
+                                             EasingFunction="{StaticResource EaseOut}" />
+                        </Storyboard>
+
+                        <Storyboard x:Key="SbHoverOut" FillBehavior="HoldEnd">
+                            <DoubleAnimation Storyboard.TargetName="Glass"
+                                             Storyboard.TargetProperty="Opacity"
+                                             To="{StaticResource TileGlassOpacityNormal}"
+                                             Duration="0:0:0.18"
+                                             EasingFunction="{StaticResource EaseIn}" />
+                            <DoubleAnimation Storyboard.TargetName="Sheen"
+                                             Storyboard.TargetProperty="Opacity"
+                                             To="{StaticResource TileSheenOpacityNormal}"
+                                             Duration="0:0:0.18"
+                                             EasingFunction="{StaticResource EaseIn}" />
+                            <DoubleAnimation Storyboard.TargetName="ShadowLayer"
+                                             Storyboard.TargetProperty="Opacity"
+                                             To="{StaticResource TileShadowOpacityNormal}"
+                                             Duration="0:0:0.18"
+                                             EasingFunction="{StaticResource EaseIn}" />
+
+                            <DoubleAnimation Storyboard.TargetName="AccentGlowSoft"
+                                             Storyboard.TargetProperty="Opacity"
+                                             To="0"
+                                             Duration="0:0:0.18"
+                                             EasingFunction="{StaticResource EaseIn}" />
+                            <DoubleAnimation Storyboard.TargetName="AccentGlowTight"
+                                             Storyboard.TargetProperty="Opacity"
+                                             To="0"
+                                             Duration="0:0:0.18"
+                                             EasingFunction="{StaticResource EaseIn}" />
+
+                            <DoubleAnimation Storyboard.TargetName="TiltRotation"
+                                             Storyboard.TargetProperty="Angle"
+                                             To="0"
+                                             Duration="0:0:0.18"
+                                             EasingFunction="{StaticResource EaseIn}" />
+                        </Storyboard>
+
+                        <Storyboard x:Key="SbSelectIn" FillBehavior="HoldEnd">
+                            <DoubleAnimation Storyboard.TargetName="TitleAccent"
+                                             Storyboard.TargetProperty="Opacity"
+                                             To="{StaticResource TileTitleAccentOpacitySelected}"
+                                             Duration="0:0:0.18"
+                                             EasingFunction="{StaticResource EaseOut}" />
+                            <DoubleAnimation Storyboard.TargetName="AccentStroke"
+                                             Storyboard.TargetProperty="Opacity"
+                                             To="{StaticResource TileAccentStrokeOpacitySelected}"
+                                             Duration="0:0:0.18"
+                                             EasingFunction="{StaticResource EaseOut}" />
+                        </Storyboard>
+
+                        <Storyboard x:Key="SbSelectOut" FillBehavior="HoldEnd">
+                            <DoubleAnimation Storyboard.TargetName="TitleAccent"
+                                             Storyboard.TargetProperty="Opacity"
+                                             To="{StaticResource TileTitleAccentOpacityNormal}"
+                                             Duration="0:0:0.18"
+                                             EasingFunction="{StaticResource EaseIn}" />
+                            <DoubleAnimation Storyboard.TargetName="AccentStroke"
+                                             Storyboard.TargetProperty="Opacity"
+                                             To="{StaticResource TileAccentStrokeOpacityNormal}"
+                                             Duration="0:0:0.18"
+                                             EasingFunction="{StaticResource EaseIn}" />
+                        </Storyboard>
+                    </ControlTemplate.Resources>
+
+                    <Border x:Name="HitSurface"
+                            Padding="{StaticResource TileOuterPadding}"
+                            Background="Transparent"
+                            SnapsToDevicePixels="True">
+
+                        <Grid x:Name="Root"
+                              Width="{StaticResource TileWidth}"
+                              Height="{StaticResource TileHeight}"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Center">
+
+                            <Border x:Name="ShadowLayer"
+                                    CornerRadius="{StaticResource TileCornerRadius}"
+                                    IsHitTestVisible="False"
+                                    Opacity="{StaticResource TileShadowOpacityNormal}">
                                 <Border.Effect>
-                                    <DropShadowEffect
-                                        BlurRadius="18"
-                                        Opacity="1"
-                                        ShadowDepth="8" />
+                                    <DropShadowEffect BlurRadius="24"
+                                                      Opacity="1"
+                                                      ShadowDepth="10"
+                                                      Direction="270"
+                                                      RenderingBias="Quality"
+                                                      Color="#FF000000" />
                                 </Border.Effect>
                             </Border>
 
-                            <!--  Card  -->
-                            <Border
-                                x:Name="Card"
-                                Background="{DynamicResource Brush.TileBackground}"
-                                BorderBrush="{DynamicResource Brush.TileBorder}"
-                                BorderThickness="1"
-                                CornerRadius="{StaticResource TileCornerRadius}"
-                                SnapsToDevicePixels="True">
-
-                                <Grid ClipToBounds="True">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="*" />
-                                        <RowDefinition Height="48" />
-                                    </Grid.RowDefinitions>
-
-                                    <!--  Image  -->
-                                    <Border
-                                        Grid.Row="0"
-                                        ClipToBounds="True"
-                                        CornerRadius="{StaticResource TileImageCornerRadius}">
-                                        <Image
-                                            RenderOptions.BitmapScalingMode="HighQuality"
-                                            Source="{Binding PPFN}"
-                                            Stretch="UniformToFill" />
-                                    </Border>
-
-                                    <!--  Top dark fade  -->
-                                    <Rectangle
-                                        Grid.Row="0"
-                                        IsHitTestVisible="False"
-                                        Opacity="0.85">
-                                        <Rectangle.Fill>
-                                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                                <GradientStop Offset="0" Color="#22000000" />
-                                                <GradientStop Offset="0.22" Color="#00000000" />
-                                            </LinearGradientBrush>
-                                        </Rectangle.Fill>
-                                    </Rectangle>
-
-                                    <!--  Title  -->
-                                    <Border
-                                        Grid.Row="1"
-                                        Padding="12,10"
-                                        Background="{DynamicResource Brush.TileTitleBackground}"
-                                        SnapsToDevicePixels="True">
-                                        <TextBlock
-                                            VerticalAlignment="Center"
-                                            FontSize="14"
-                                            FontWeight="SemiBold"
-                                            Foreground="{DynamicResource Brush.TileForeground}"
-                                            Text="{Binding GANA}"
-                                            TextTrimming="CharacterEllipsis" />
-                                    </Border>
-
-                                    <!--  Glass  -->
-                                    <Rectangle
-                                        x:Name="Glass"
-                                        Grid.RowSpan="2"
-                                        Fill="{StaticResource Brush.TileGlass}"
-                                        IsHitTestVisible="False"
-                                        Opacity="{StaticResource TileGlassOpacityNormal}" />
-
-                                    <!--  Sheen  -->
-                                    <Rectangle
-                                        x:Name="Sheen"
-                                        Grid.Row="0"
-                                        Fill="{DynamicResource Brush.TileSheen}"
-                                        IsHitTestVisible="False"
-                                        Opacity="{StaticResource TileSheenOpacityNormal}" />
-
-                                </Grid>
+                            <Border x:Name="AccentGlowSoft"
+                                    CornerRadius="0"
+                                    IsHitTestVisible="False"
+                                    Opacity="0"
+                                    VerticalAlignment="Bottom"
+                                    Height="26"
+                                    Margin="10,0,10,12"
+                                    Background="{DynamicResource Brush.Accent}"
+                                    OpacityMask="{StaticResource Brush.AccentGlowMask}">
+                                <Border.Effect>
+                                    <DropShadowEffect BlurRadius="90"
+                                                      ShadowDepth="30"
+                                                      Direction="270"
+                                                      Opacity="1"
+                                                      RenderingBias="Quality"
+                                                      Color="{DynamicResource Color.Accent}" />
+                                </Border.Effect>
                             </Border>
+
+                            <Border x:Name="AccentGlowTight"
+                                    CornerRadius="0"
+                                    IsHitTestVisible="False"
+                                    Opacity="0"
+                                    VerticalAlignment="Bottom"
+                                    Height="18"
+                                    Margin="22,0,22,14"
+                                    Background="{DynamicResource Brush.Accent}"
+                                    OpacityMask="{StaticResource Brush.AccentGlowMask}">
+                                <Border.Effect>
+                                    <DropShadowEffect BlurRadius="44"
+                                                      ShadowDepth="22"
+                                                      Direction="270"
+                                                      Opacity="1"
+                                                      RenderingBias="Quality"
+                                                      Color="{DynamicResource Color.Accent}" />
+                                </Border.Effect>
+                            </Border>
+
+                            <Viewport3D ClipToBounds="False" IsHitTestVisible="False">
+                                <Viewport3D.Camera>
+                                    <PerspectiveCamera Position="0,0,4.2"
+                                                       LookDirection="0,0,-4.2"
+                                                       UpDirection="0,1,0"
+                                                       FieldOfView="16" />
+                                </Viewport3D.Camera>
+
+                                <ModelVisual3D>
+                                    <ModelVisual3D.Content>
+                                        <Model3DGroup>
+                                            <AmbientLight Color="#FFFFFF" />
+                                            <DirectionalLight Color="#FFFFFF" Direction="-0.2,-0.5,-1" />
+                                        </Model3DGroup>
+                                    </ModelVisual3D.Content>
+                                </ModelVisual3D>
+
+                                <Viewport2DVisual3D>
+                                    <Viewport2DVisual3D.Geometry>
+                                        <MeshGeometry3D
+                                            Positions="-0.7,-1,0  0.7,-1,0  0.7,1,0  -0.7,1,0"
+                                            TextureCoordinates="0,1 1,1 1,0 0,0"
+                                            TriangleIndices="0 1 2  0 2 3" />
+                                    </Viewport2DVisual3D.Geometry>
+
+                                    <Viewport2DVisual3D.Material>
+                                        <DiffuseMaterial Viewport2DVisual3D.IsVisualHostMaterial="True"
+                                                         Brush="#FFFFFFFF" />
+                                    </Viewport2DVisual3D.Material>
+
+                                    <Viewport2DVisual3D.Transform>
+                                        <Transform3DGroup>
+                                            <RotateTransform3D CenterX="0" CenterY="1" CenterZ="0">
+                                                <RotateTransform3D.Rotation>
+                                                    <AxisAngleRotation3D x:Name="TiltRotation" Axis="1,0,0" Angle="0" />
+                                                </RotateTransform3D.Rotation>
+                                            </RotateTransform3D>
+                                        </Transform3DGroup>
+                                    </Viewport2DVisual3D.Transform>
+
+                                    <Viewport2DVisual3D.Visual>
+                                        <Border x:Name="Card"
+                                                Background="{DynamicResource Brush.TileBackground}"
+                                                BorderThickness="0"
+                                                CornerRadius="{StaticResource TileCornerRadius}"
+                                                SnapsToDevicePixels="True"
+                                                Width="{StaticResource TileWidth}"
+                                                Height="{StaticResource TileHeight}">
+                                            <Grid ClipToBounds="True">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="*" />
+                                                    <RowDefinition Height="52" />
+                                                </Grid.RowDefinitions>
+
+                                                <Border Grid.Row="0"
+                                                        ClipToBounds="True"
+                                                        CornerRadius="{StaticResource TileImageCornerRadius}">
+                                                    <Image RenderOptions.BitmapScalingMode="HighQuality"
+                                                           Source="{Binding PPFN}"
+                                                           Stretch="UniformToFill" />
+                                                </Border>
+
+                                                <Rectangle Grid.Row="0" IsHitTestVisible="False" Opacity="0.82">
+                                                    <Rectangle.Fill>
+                                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                                            <GradientStop Offset="0" Color="#2C000000" />
+                                                            <GradientStop Offset="0.28" Color="#00000000" />
+                                                        </LinearGradientBrush>
+                                                    </Rectangle.Fill>
+                                                </Rectangle>
+
+                                                <Border x:Name="TitleHost"
+                                                        Grid.Row="1"
+                                                        CornerRadius="{StaticResource TileTitleCornerRadius}"
+                                                        Background="{DynamicResource Brush.TileTitleBackground}"
+                                                        SnapsToDevicePixels="True">
+                                                    <Grid>
+                                                        <Border x:Name="TitleAccent"
+                                                                CornerRadius="{StaticResource TileTitleCornerRadius}"
+                                                                Background="{DynamicResource Brush.Accent}"
+                                                                Opacity="{StaticResource TileTitleAccentOpacityNormal}" />
+                                                        <Border Height="1" VerticalAlignment="Top" Background="#30FFFFFF" />
+                                                        <Grid Margin="12,10">
+                                                            <TextBlock x:Name="TitleText"
+                                                                       VerticalAlignment="Center"
+                                                                       FontSize="14"
+                                                                       FontWeight="SemiBold"
+                                                                       Foreground="{DynamicResource Brush.TileForeground}"
+                                                                       Text="{Binding GANA}"
+                                                                       TextTrimming="CharacterEllipsis" />
+                                                        </Grid>
+                                                    </Grid>
+                                                </Border>
+
+                                                <Rectangle x:Name="Glass"
+                                                           Grid.RowSpan="2"
+                                                           Fill="{StaticResource Brush.TileGlassFx}"
+                                                           IsHitTestVisible="False"
+                                                           Opacity="{StaticResource TileGlassOpacityNormal}" />
+
+                                                <Rectangle x:Name="Sheen"
+                                                           Grid.Row="0"
+                                                           Fill="{StaticResource Brush.TileSheenFx}"
+                                                           IsHitTestVisible="False"
+                                                           Opacity="{StaticResource TileSheenOpacityNormal}" />
+
+                                                <Border x:Name="InnerStroke"
+                                                        Grid.RowSpan="2"
+                                                        CornerRadius="{StaticResource TileCornerRadius}"
+                                                        BorderThickness="1"
+                                                        BorderBrush="{StaticResource Brush.TileInnerStrokeFx}"
+                                                        Background="Transparent"
+                                                        IsHitTestVisible="False"
+                                                        Opacity="0.85" />
+
+                                                <Border x:Name="AccentStroke"
+                                                        Grid.RowSpan="2"
+                                                        CornerRadius="{StaticResource TileCornerRadius}"
+                                                        BorderThickness="1"
+                                                        BorderBrush="{DynamicResource Brush.AccentHover}"
+                                                        Background="Transparent"
+                                                        IsHitTestVisible="False"
+                                                        Opacity="{StaticResource TileAccentStrokeOpacityNormal}" />
+                                            </Grid>
+                                        </Border>
+                                    </Viewport2DVisual3D.Visual>
+                                </Viewport2DVisual3D>
+
+                            </Viewport3D>
                         </Grid>
                     </Border>
 
                     <ControlTemplate.Triggers>
 
-                        <!--  SELECTED: nur blauer Rand  -->
-                        <Trigger Property="IsSelected" Value="True">
-                            <Setter TargetName="Card" Property="BorderBrush" Value="{DynamicResource Brush.AccentHover}" />
-                            <Setter TargetName="Card" Property="BorderThickness" Value="1" />
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Panel.ZIndex" Value="10" />
+                            <Trigger.EnterActions>
+                                <BeginStoryboard x:Name="BsHoverIn"
+                                                 HandoffBehavior="SnapshotAndReplace"
+                                                 Storyboard="{StaticResource SbHoverIn}" />
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard x:Name="BsHoverOut"
+                                                 HandoffBehavior="SnapshotAndReplace"
+                                                 Storyboard="{StaticResource SbHoverOut}" />
+                            </Trigger.ExitActions>
                         </Trigger>
 
-                        <!--  Normal (nicht selected): normaler Rand  -->
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="IsSelected" Value="False" />
-                                <Condition Property="IsMouseOver" Value="False" />
-                            </MultiTrigger.Conditions>
-                            <Setter TargetName="Card" Property="BorderBrush" Value="{DynamicResource Brush.TileBorder}" />
-                        </MultiTrigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Panel.ZIndex" Value="5" />
+                            <Trigger.EnterActions>
+                                <BeginStoryboard x:Name="BsSelectIn"
+                                                 HandoffBehavior="SnapshotAndReplace"
+                                                 Storyboard="{StaticResource SbSelectIn}" />
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard x:Name="BsSelectOut"
+                                                 HandoffBehavior="SnapshotAndReplace"
+                                                 Storyboard="{StaticResource SbSelectOut}" />
+                            </Trigger.ExitActions>
+                        </Trigger>
 
-                        <!--  HOVER (nur wenn NICHT selected): Glass/Sheen dezent hoch  -->
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="IsMouseOver" Value="True" />
-                                <Condition Property="IsSelected" Value="False" />
-                            </MultiTrigger.Conditions>
-
-                            <Setter TargetName="Card" Property="BorderBrush" Value="{DynamicResource Brush.TileBorder}" />
-
-                            <MultiTrigger.EnterActions>
-                                <BeginStoryboard x:Name="SbHoverIn" HandoffBehavior="SnapshotAndReplace">
-                                    <Storyboard FillBehavior="HoldEnd">
-                                        <DoubleAnimation
-                                            Storyboard.TargetName="Glass"
-                                            Storyboard.TargetProperty="Opacity"
-                                            To="{StaticResource TileGlassOpacityHover}"
-                                            Duration="0:0:0.10" />
-                                        <DoubleAnimation
-                                            Storyboard.TargetName="Sheen"
-                                            Storyboard.TargetProperty="Opacity"
-                                            To="{StaticResource TileSheenOpacityHover}"
-                                            Duration="0:0:0.10" />
-                                        <DoubleAnimation
-                                            Storyboard.TargetName="ShadowLayer"
-                                            Storyboard.TargetProperty="Opacity"
-                                            To="0.34"
-                                            Duration="0:0:0.10" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </MultiTrigger.EnterActions>
-
-                            <MultiTrigger.ExitActions>
-                                <BeginStoryboard x:Name="SbHoverOut" HandoffBehavior="SnapshotAndReplace">
-                                    <Storyboard FillBehavior="HoldEnd">
-                                        <DoubleAnimation
-                                            Storyboard.TargetName="Glass"
-                                            Storyboard.TargetProperty="Opacity"
-                                            To="{StaticResource TileGlassOpacityNormal}"
-                                            Duration="0:0:0.10" />
-                                        <DoubleAnimation
-                                            Storyboard.TargetName="Sheen"
-                                            Storyboard.TargetProperty="Opacity"
-                                            To="{StaticResource TileSheenOpacityNormal}"
-                                            Duration="0:0:0.10" />
-                                        <DoubleAnimation
-                                            Storyboard.TargetName="ShadowLayer"
-                                            Storyboard.TargetProperty="Opacity"
-                                            To="0.28"
-                                            Duration="0:0:0.10" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </MultiTrigger.ExitActions>
-                        </MultiTrigger>
-
-                        <!--  DISABLED  -->
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="Root" Property="Opacity" Value="0.55" />
                         </Trigger>
 
                     </ControlTemplate.Triggers>
+
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
+
 </ResourceDictionary>

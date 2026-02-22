@@ -26,6 +26,7 @@ namespace GameTimeNext.Core.Application.DataManagers
 
             copy.GRID = 0;
             copy.GRNA = source.GRNA;
+            copy.GTYP = source.GTYP;
 
             DateTime now = DateTime.Now;
             copy.CRAT = now;
@@ -81,7 +82,7 @@ namespace GameTimeNext.Core.Application.DataManagers
 
             using (SQLiteCommand cmd = connection.CreateCommand())
             {
-                cmd.CommandText = "SELECT GRID, GRNA, CRAT, CHAT FROM TBL_GROUP ORDER BY GRID;";
+                cmd.CommandText = "SELECT GRID, GRNA, GTYP, CRAT, CHAT FROM TBL_GROUP ORDER BY GRID;";
 
                 using (SQLiteDataReader reader = cmd.ExecuteReader())
                 {
@@ -104,7 +105,7 @@ namespace GameTimeNext.Core.Application.DataManagers
 
             using (SQLiteCommand cmd = connection.CreateCommand())
             {
-                cmd.CommandText = "SELECT GRID, GRNA, CRAT, CHAT FROM TBL_GROUP WHERE GRID = @GRID;";
+                cmd.CommandText = "SELECT GRID, GRNA, GTYP, CRAT, CHAT FROM TBL_GROUP WHERE GRID = @GRID;";
                 cmd.Parameters.AddWithValue("@GRID", grid);
 
                 using (SQLiteDataReader reader = cmd.ExecuteReader())
@@ -126,10 +127,11 @@ namespace GameTimeNext.Core.Application.DataManagers
             using (SQLiteCommand cmd = connection.CreateCommand())
             {
                 cmd.CommandText =
-                    "INSERT INTO TBL_GROUP (GRNA, CRAT, CHAT) " +
+                    "INSERT INTO TBL_GROUP (GRNA, CRAT, GTYP, CHAT) " +
                     "VALUES (@GRNA, @CRAT, @CHAT);";
 
                 cmd.Parameters.AddWithValue("@GRNA", obj.GRNA);
+                cmd.Parameters.AddWithValue("@GTYP", obj.GTYP);
                 cmd.Parameters.AddWithValue("@CRAT", ToDbDateTime(obj.CRAT));
                 cmd.Parameters.AddWithValue("@CHAT", ToDbDateTime(obj.CHAT));
 
@@ -151,6 +153,7 @@ namespace GameTimeNext.Core.Application.DataManagers
                 cmd.CommandText =
                     "UPDATE TBL_GROUP SET " +
                     "GRNA = @GRNA, " +
+                    "GTYP = @GTYP," +
                     "CRAT = @CRAT, " +
                     "CHAT = @CHAT " +
                     "WHERE GRID = @GRID;";
@@ -158,6 +161,7 @@ namespace GameTimeNext.Core.Application.DataManagers
                 cmd.Parameters.AddWithValue("@GRID", obj.GRID);
 
                 cmd.Parameters.AddWithValue("@GRNA", obj.GRNA);
+                cmd.Parameters.AddWithValue("@GTYP", obj.GTYP);
                 cmd.Parameters.AddWithValue("@CRAT", ToDbDateTime(obj.CRAT));
                 cmd.Parameters.AddWithValue("@CHAT", ToDbDateTime(obj.CHAT));
 
@@ -184,6 +188,7 @@ namespace GameTimeNext.Core.Application.DataManagers
 
             obj.GRID = Convert.ToInt64(reader.GetValue(0));
             obj.GRNA = reader.IsDBNull(1) ? string.Empty : reader.GetString(1);
+            obj.GTYP = reader.IsDBNull(1) ? string.Empty : reader.GetString(2);
 
             obj.CRAT = ParseDbDateTime(reader.IsDBNull(2) ? null : reader.GetString(2));
             obj.CHAT = ParseDbDateTime(reader.IsDBNull(3) ? null : reader.GetString(3));

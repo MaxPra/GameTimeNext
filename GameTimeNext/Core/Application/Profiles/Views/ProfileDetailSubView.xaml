@@ -20,10 +20,11 @@
                         Style="{StaticResource ProfileDetail.ButtonHost}"
                         Margin="0,26,0,6">
                     <StackPanel Style="{StaticResource ProfileDetail.ButtonArea}">
-                        <Button Style="{StaticResource App.Button.Primary}"
+                        <Button Style="{StaticResource Button.Secondary}"
+                                Margin="0, 0, 0, 14"
                                 Content="Launch game"/>
 
-                        <Button Style="{StaticResource App.Button.Secondary}"
+                        <Button Style="{StaticResource Button.Primary}"
                                 Content="Start Monitoring"/>
                     </StackPanel>
                 </Border>

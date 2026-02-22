@@ -68,15 +68,13 @@
         </Setter>
     </Style>
 
-    <Style x:Key="App.Button.Primary" TargetType="Button">
+    <Style x:Key="Button.Secondary" TargetType="Button">
         <Setter Property="Height" Value="38"/>
-        <Setter Property="Margin" Value="0,0,0,10"/>
         <Setter Property="Padding" Value="14,0"/>
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}"/>
         <Setter Property="Background" Value="{DynamicResource Brush.Accent}"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
-        <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="Template">
@@ -86,17 +84,17 @@
 
                         <Border x:Name="Base"
                             Background="{TemplateBinding Background}"
-                            CornerRadius="6"/>
+                            CornerRadius="{StaticResource DefaultCornerRadius}"/>
 
                         <Border x:Name="Hover"
                             Background="{DynamicResource Brush.AccentHover}"
-                            CornerRadius="6"
+                            CornerRadius="{StaticResource DefaultCornerRadius}"
                             Opacity="0"
                             IsHitTestVisible="False"/>
 
                         <Border x:Name="Pressed"
                             Background="{DynamicResource Brush.AccentPressed}"
-                            CornerRadius="6"
+                            CornerRadius="{StaticResource DefaultCornerRadius}"
                             Opacity="0"
                             IsHitTestVisible="False"/>
 
@@ -148,7 +146,7 @@
         </Setter>
     </Style>
 
-    <Style x:Key="App.Button.Secondary" TargetType="Button">
+    <Style x:Key="Button.Primary" TargetType="Button">
         <Setter Property="Height" Value="38"/>
         <Setter Property="Margin" Value="0"/>
         <Setter Property="Padding" Value="14,0"/>
@@ -157,7 +155,6 @@
         <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
-        <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="Template">
@@ -168,7 +165,7 @@
                                 Background="{TemplateBinding Background}"
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="6"
+                                CornerRadius="{StaticResource DefaultCornerRadius}"
                                 SnapsToDevicePixels="True">
                             <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                               VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
@@ -177,14 +174,14 @@
                         <Border x:Name="HoverBorder"
                                 BorderBrush="{DynamicResource Brush.AccentHover}"
                                 BorderThickness="1"
-                                CornerRadius="6"
+                                CornerRadius="{StaticResource DefaultCornerRadius}"
                                 Opacity="0"
                                 IsHitTestVisible="False"/>
 
                         <Border x:Name="PressedBorder"
                                 BorderBrush="{DynamicResource Brush.AccentPressed}"
                                 BorderThickness="1"
-                                CornerRadius="6"
+                                CornerRadius="{StaticResource DefaultCornerRadius}"
                                 Opacity="0"
                                 IsHitTestVisible="False"/>
                     </Grid>

@@ -58,24 +58,32 @@ namespace GameTimeNext.Core.Application.General.Controller
 
         protected override void Check()
         {
+        }
 
+        protected override void FillViewImpl()
+        {
+        }
+
+        protected override void FillDBOImpl()
+        {
+        }
+
+        protected override void SaveDBOImpl()
+        {
         }
 
         protected override void DataWrapperSelectionChangedImpl(Selector source) { }
 
         protected override void Event_Closing()
         {
-
         }
 
         protected override void Event_Minimize()
         {
-
         }
 
         protected override void Event_Maximize()
         {
-
         }
 
         /// <summary>

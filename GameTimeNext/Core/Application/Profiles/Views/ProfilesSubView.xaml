@@ -1,4 +1,4 @@
-﻿<uix:UIXUserControlBase
+﻿<uix:UIXUserControlHostBase
     x:Class="GameTimeNext.Core.Application.Profiles.Views.ProfilesSubView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -17,8 +17,8 @@
     <Grid
         HorizontalAlignment="Stretch"
         VerticalAlignment="Stretch"
-        Background="Transparent"
-        Cursor="">
+        Background="Transparent">
+
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="2" />
@@ -29,21 +29,66 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <!--  LINKER BEREICH  -->
-        <Border
-            Grid.Column="0"
-            Padding="16"
-            Background="Transparent">
+        <Border Grid.Column="0" Padding="0" Background="Transparent">
             <Grid>
-                <ListBox
-                    x:Name="ListBoxProfiles"
-                    Background="Transparent"
-                    BorderThickness="0"
-                    ItemsSource="{Binding Tbl_Profis}"
-                    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                    ScrollViewer.VerticalScrollBarVisibility="Auto"
-                    SelectedItem="{Binding SelectedTBLPROFI, Mode=TwoWay}"
-                    SelectionMode="Single">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.Row="0"
+                            Orientation="Horizontal"
+                            Margin="0,0,0,12">
+
+                    <TextBox Width="320"
+                             Height="38"
+                             Margin="16,0,0,0"
+                             VerticalAlignment="Center"
+                             Style="{StaticResource TextBox.Modern}"
+                             Tag="Search for name"
+                             ToolTip="Search for name" />
+
+                    <Grid Margin="10,0,0,0">
+                        <Button x:Name="BtnFilter"
+                                Width="38"
+                                Height="38"
+                                VerticalAlignment="Center"
+                                Style="{StaticResource Button.Primary}">
+                            <TextBlock Text=""
+                                       FontFamily="Segoe MDL2 Assets"
+                                       FontSize="14"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" />
+                        </Button>
+
+                        <Popup x:Name="PopFilter"
+                               PlacementTarget="{Binding ElementName=BtnFilter}"
+                               Placement="Right"
+                               StaysOpen="True"
+                               AllowsTransparency="True">
+                            <Border Background="{DynamicResource Brush.Surface}"
+                                    BorderBrush="{DynamicResource Brush.Border}"
+                                    BorderThickness="1"
+                                    CornerRadius="{StaticResource DefaultCornerRadius}"
+                                    Padding="12"
+                                    Style="{StaticResource ModernPopupCardStyle}">
+                                <ContentPresenter x:Name="CPFilter"/>
+                            </Border>
+                        </Popup>
+                    </Grid>
+
+                </StackPanel>
+
+                <ListBox Grid.Row="1"
+                         x:Name="ListBoxProfiles"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         ItemsSource="{Binding Tbl_Profis}"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                         ScrollViewer.VerticalScrollBarVisibility="Auto"
+                         SelectedItem="{Binding SelectedTBLPROFI, Mode=TwoWay}"
+                         SelectionMode="Single"
+                         Padding="{StaticResource TileListPaddingTopOnly}">
 
                     <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -53,7 +98,7 @@
 
                     <ListBox.ItemContainerStyle>
                         <Style BasedOn="{StaticResource TileListBoxItemStyle}" TargetType="{x:Type ListBoxItem}">
-                            <Setter Property="Margin" Value="{StaticResource TileGap}" />
+                            <Setter Property="Margin" Value="{StaticResource TileItemMargin}" />
                         </Style>
                     </ListBox.ItemContainerStyle>
 
@@ -61,23 +106,20 @@
             </Grid>
         </Border>
 
-        <!--  SPLITTER  -->
-        <GridSplitter
-            Grid.Column="1"
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch"
-            Background="{DynamicResource Brush.Border}"
-            Cursor="SizeWE"
-            ResizeBehavior="PreviousAndNext"
-            ResizeDirection="Columns"
-            ShowsPreview="False" />
+        <GridSplitter Grid.Column="1"
+                      HorizontalAlignment="Stretch"
+                      VerticalAlignment="Stretch"
+                      Background="{DynamicResource Brush.Border}"
+                      Cursor="SizeWE"
+                      ResizeBehavior="PreviousAndNext"
+                      ResizeDirection="Columns"
+                      ShowsPreview="False" />
 
-        <!--  RECHTER BEREICH  -->
-        <Border
-            Grid.Column="2"
-            Padding="16"
-            Background="Transparent">
-            <ContentPresenter x:Name="CPProfileDetailView"/>
+        <Border Grid.Column="2"
+                Padding="16"
+                Background="Transparent">
+            <ContentPresenter x:Name="CPProfileDetailView" />
         </Border>
+
     </Grid>
-</uix:UIXUserControlBase>
+</uix:UIXUserControlHostBase>

@@ -5,8 +5,10 @@ using GameTimeNext.Core.Application.Profiles.Views;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
+using UIX.ViewController.Engine.Events;
 
 namespace GameTimeNext.Core.Application.Profiles.Controller
 {
@@ -38,12 +40,20 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected override void TriggeredEvent(FrameworkElement source, string eventName)
         {
+            switch (eventName)
+            {
+                case UIXEventNames.Button.Click:
+                    //if (source is Button && source.Name == "BtnFilter")
+                    if (source is Button)
+                        EV_BtnFilter();
+                    break;
+            }
 
         }
 
         protected override void BuildFirst()
         {
-
+            Console.WriteLine("BuildFirst");
         }
 
         protected override void Build()
@@ -55,16 +65,34 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
         }
 
+        protected override void FillViewImpl()
+        {
+        }
+
+        protected override void FillDBOImpl()
+        {
+        }
+
+        protected override void SaveDBOImpl()
+        {
+        }
+
         protected override void DataWrapperSelectionChangedImpl(Selector source)
         {
 
+        }
+
+        private void EV_BtnFilter()
+        {
+            if (!GetView().ProfileFilterPopupView.IsShown)
+                GetView().ProfileFilterPopupView.ShowView();
+            else
+                GetView().ProfileFilterPopupView.CloseView();
         }
 
         private ProfilesSubView GetView()
         {
             return (ProfilesSubView)View;
         }
-
-
     }
 }

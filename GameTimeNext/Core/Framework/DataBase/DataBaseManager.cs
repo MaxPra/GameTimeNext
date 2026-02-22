@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GameTimeNext.Core.Application.TableObjects;
+using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
 using System.IO;
@@ -97,9 +98,30 @@ namespace GameTimeNext.Core.Framework.DataBase
 
             // -- TAB_GROUP (Tabelle für Gruppen) --
             CreateTableTAB_GROUP();
+            InsertDefaultValuesTAB_GROUP();
 
             // -- TAB_GRPPO (Tabelle für Gruppen und Profile [n zu m] --
             CreateTableTAB_GRPPO();
+        }
+
+        private void InsertDefaultValuesTAB_GROUP()
+        {
+            var sql = @"
+                        INSERT INTO TBL_GROUP (GRNA, GTYP, CRAT, CHAT)
+                        VALUES 
+                        ('Completed', @gtyp, @crat, @chat),
+                        ('Unplayed', @gtyp, @crat, @chat),
+                        ('Currently Playing', @gtyp, @crat, @chat);
+                        ";
+
+            using var command = _connection.CreateCommand();
+            command.CommandText = sql;
+
+            command.Parameters.AddWithValue("@gtyp", GroupType.Condition);
+            command.Parameters.AddWithValue("@crat", DateTime.Today);
+            command.Parameters.AddWithValue("@chat", DateTime.Now);
+
+            command.ExecuteNonQuery();
         }
 
         /// <summary>
@@ -134,6 +156,7 @@ namespace GameTimeNext.Core.Framework.DataBase
             CREATE TABLE IF NOT EXISTS TBL_GROUP (
                 GRID INTEGER PRIMARY KEY AUTOINCREMENT,
                 GRNA VARCHAR(200),
+                GTYP VARCHAR(200),
                 CRAT DATETIME,
                 CHAT DATETIME
             );

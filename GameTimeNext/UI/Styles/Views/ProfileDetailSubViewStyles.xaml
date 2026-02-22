@@ -26,7 +26,7 @@
     <!-- Card / Surface für mehr Tiefe -->
     <Style x:Key="ProfileDetail.Card" TargetType="Border">
         <Setter Property="Background" Value="{DynamicResource Brush.Surface}"/>
-        <Setter Property="CornerRadius" Value="10"/>
+        <Setter Property="CornerRadius" Value="{StaticResource DefaultCornerRadius}"/>
         <Setter Property="Padding" Value="24"/>
         <Setter Property="Margin" Value="0,10,0,10"/>
         <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}"/>
@@ -45,7 +45,7 @@
     <!-- Subtile Vignette/Depth (nur DynamicResource Farben) -->
     <Style x:Key="ProfileDetail.CardGlow" TargetType="Border">
         <Setter Property="IsHitTestVisible" Value="False"/>
-        <Setter Property="CornerRadius" Value="10"/>
+        <Setter Property="CornerRadius" Value="{StaticResource DefaultCornerRadius}"/>
         <Setter Property="Opacity" Value="0.10"/>
         <Setter Property="Background">
             <Setter.Value>
@@ -83,7 +83,7 @@
     <Style x:Key="ProfileDetail.CoverFrame" TargetType="Border">
         <Setter Property="Width" Value="{StaticResource ProfileDetail.CoverWidth}"/>
         <Setter Property="Height" Value="{StaticResource ProfileDetail.CoverHeight}"/>
-        <Setter Property="CornerRadius" Value="10"/>
+        <Setter Property="CornerRadius" Value="{StaticResource DefaultCornerRadius}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="ClipToBounds" Value="True"/>
@@ -125,7 +125,7 @@
     <Style x:Key="ProfileDetail.InfoCard" TargetType="Border">
         <Setter Property="Width" Value="{StaticResource ProfileDetail.CoverWidth}"/>
         <Setter Property="Padding" Value="14,10"/>
-        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="CornerRadius" Value="{StaticResource DefaultCornerRadius}"/>
         <Setter Property="Background" Value="{DynamicResource Brush.Background}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}"/>
         <Setter Property="BorderThickness" Value="1"/>
