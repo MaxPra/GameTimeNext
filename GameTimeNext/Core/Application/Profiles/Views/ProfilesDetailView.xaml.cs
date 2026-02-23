@@ -1,5 +1,4 @@
-﻿using System.Windows;
-using UIX.ViewController.Engine.FrameworkElements.UserControls;
+﻿using UIX.ViewController.Engine.FrameworkElements.UserControls;
 
 namespace GameTimeNext.Core.Application.Profiles.Views
 {

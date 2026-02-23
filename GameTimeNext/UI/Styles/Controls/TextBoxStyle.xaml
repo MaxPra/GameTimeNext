@@ -1,5 +1,4 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <SolidColorBrush x:Key="Brush.TextBox.Background" Color="#14151A" />
     <SolidColorBrush x:Key="Brush.TextBox.BackgroundHover" Color="#171923" />
@@ -8,7 +7,7 @@
     <Thickness x:Key="Thickness.TextBox.Border">1</Thickness>
     <Thickness x:Key="Thickness.TextBox.BorderFocused">1.5</Thickness>
 
-    <Style x:Key="TextBox.Modern" TargetType="{x:Type TextBox}">
+    <Style x:Key="TextBox.Default" TargetType="{x:Type TextBox}">
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
         <Setter Property="CaretBrush" Value="{DynamicResource Brush.TextPrimary}" />
         <Setter Property="SelectionBrush" Value="{DynamicResource Brush.Accent}" />
@@ -32,52 +31,59 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type TextBox}">
                     <Grid>
-                        <Border x:Name="Glow"
-                                CornerRadius="{StaticResource DefaultCornerRadius}"
-                                Background="Transparent"
-                                Opacity="0"
-                                IsHitTestVisible="False">
+                        <Border
+                            x:Name="Glow"
+                            Background="Transparent"
+                            CornerRadius="{StaticResource DefaultCornerRadius}"
+                            IsHitTestVisible="False"
+                            Opacity="0">
                             <Border.Effect>
-                                <DropShadowEffect BlurRadius="18"
-                                                  ShadowDepth="0"
-                                                  Opacity="0.65"
-                                                  Color="#FF4D4F" />
+                                <DropShadowEffect
+                                    BlurRadius="18"
+                                    Opacity="0.65"
+                                    ShadowDepth="0"
+                                    Color="#FF4D4F" />
                             </Border.Effect>
                         </Border>
 
-                        <Border x:Name="Bd"
-                                CornerRadius="{StaticResource DefaultCornerRadius}"
-                                Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                SnapsToDevicePixels="True">
+                        <Border
+                            x:Name="Bd"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{StaticResource DefaultCornerRadius}"
+                            SnapsToDevicePixels="True">
 
                             <Grid>
-                                <Rectangle x:Name="Sheen"
-                                           RadiusX="2" RadiusY="2"
-                                           Margin="1"
-                                           IsHitTestVisible="False"
-                                           Opacity="0">
+                                <Rectangle
+                                    x:Name="Sheen"
+                                    Margin="1"
+                                    IsHitTestVisible="False"
+                                    Opacity="0"
+                                    RadiusX="2"
+                                    RadiusY="2">
                                     <Rectangle.Fill>
                                         <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                            <GradientStop Color="#14FFFFFF" Offset="0" />
-                                            <GradientStop Color="#00FFFFFF" Offset="1" />
+                                            <GradientStop Offset="0" Color="#14FFFFFF" />
+                                            <GradientStop Offset="1" Color="#00FFFFFF" />
                                         </LinearGradientBrush>
                                     </Rectangle.Fill>
                                 </Rectangle>
 
-                                <ScrollViewer x:Name="PART_ContentHost"
-                                              Margin="0"
-                                              Focusable="False" />
+                                <ScrollViewer
+                                    x:Name="PART_ContentHost"
+                                    Margin="0"
+                                    Focusable="False" />
 
-                                <TextBlock x:Name="Watermark"
-                                           Text="{TemplateBinding Tag}"
-                                           Foreground="{DynamicResource Brush.TextSecondary}"
-                                           Margin="{TemplateBinding Padding}"
-                                           VerticalAlignment="Center"
-                                           IsHitTestVisible="False"
-                                           Opacity="0.70"
-                                           Visibility="Collapsed" />
+                                <TextBlock
+                                    x:Name="Watermark"
+                                    Margin="{TemplateBinding Padding}"
+                                    VerticalAlignment="Center"
+                                    Foreground="{DynamicResource Brush.TextSecondary}"
+                                    IsHitTestVisible="False"
+                                    Opacity="0.70"
+                                    Text="{TemplateBinding Tag}"
+                                    Visibility="Collapsed" />
                             </Grid>
                         </Border>
                     </Grid>
@@ -110,10 +116,11 @@
                             <Setter TargetName="Glow" Property="Opacity" Value="1" />
                             <Setter TargetName="Glow" Property="Effect">
                                 <Setter.Value>
-                                    <DropShadowEffect BlurRadius="18"
-                                                      ShadowDepth="0"
-                                                      Opacity="0.75"
-                                                      Color="#E74C3C" />
+                                    <DropShadowEffect
+                                        BlurRadius="18"
+                                        Opacity="0.75"
+                                        ShadowDepth="0"
+                                        Color="#E74C3C" />
                                 </Setter.Value>
                             </Setter>
                         </Trigger>
@@ -132,6 +139,6 @@
         </Setter>
     </Style>
 
-    <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBox.Modern}" />
+    <Style BasedOn="{StaticResource TextBox.Default}" TargetType="{x:Type TextBox}" />
 
 </ResourceDictionary>

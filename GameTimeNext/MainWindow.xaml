@@ -22,6 +22,8 @@
     mc:Ignorable="d">
 
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+
+        <!--  TabControl  -->
         <TabControl
             Padding="0"
             HorizontalAlignment="Stretch"
@@ -39,8 +41,7 @@
                 HorizontalContentAlignment="Stretch"
                 Header="Profiles">
 
-                <ContentPresenter x:Name="CPProfileView"/>
-
+                <ContentPresenter x:Name="CPProfileView" />
             </TabItem>
 
             <!--  Groups  -->
@@ -71,6 +72,44 @@
                 </Grid>
             </TabItem>
 
+            <!--  Metadata  -->
+            <TabItem
+                x:Name="TabMetaData"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                Header="Metadata">
+                <Grid Margin="1" Background="Transparent">
+                    <ContentPresenter x:Name="CpMetadata" />
+                </Grid>
+            </TabItem>
+
         </TabControl>
+
+        <!--  DEV MODE (Overlay oben rechts, auf Tab-Ebene)  -->
+        <Border
+            x:Name="BdDevModeBatch"
+            Margin="0,12,18,0"
+            Padding="12,6"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Panel.ZIndex="10"
+            Background="#22FF4C4C"
+            CornerRadius="{StaticResource DefaultCornerRadius}">
+
+            <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                <Image
+                    Width="30"
+                    Height="30"
+                    Margin="0,0,8,0"
+                    Source="/UI/Ressources/ICON_DEBUG.png"
+                    Stretch="Uniform" />
+
+                <TextBlock
+                    FontWeight="SemiBold"
+                    Foreground="{DynamicResource Brush.TextPrimary}"
+                    Text="DEV. MODE" />
+            </StackPanel>
+        </Border>
+
     </Grid>
 </ui:GTNWindow>

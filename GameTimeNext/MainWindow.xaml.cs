@@ -1,4 +1,6 @@
 ﻿using GameTimeNext.Core.Application.General.Controller;
+using GameTimeNext.Core.Application.Metadata;
+using GameTimeNext.Core.Application.Metadata.Controller;
 using GameTimeNext.Core.Application.Profiles.Controller;
 using GameTimeNext.Core.Application.Profiles.DataWrapper;
 using GameTimeNext.Core.Application.Profiles.Views;
@@ -15,9 +17,12 @@ namespace GameTimeNext
     {
 
         public ProfilesViewController ProfilesSubViewController { get => _profileSubViewController; set; }
+        public MetaDataViewController MetaDataViewController { get; set; }
 
 
         MainWindowController? _mainWindowController;
+
+        MetaDataView? _metaDataView;
 
         ProfilesViewController? _profileSubViewController;
         ProfilesDetailSubViewController? _profileDetailSubViewController;
@@ -37,6 +42,11 @@ namespace GameTimeNext
             // Main-Window Controller
             _mainWindowController = new MainWindowController();
 
+            // -- Metadata View
+            _metaDataView = new MetaDataView();
+            CpMetadata.Content = _metaDataView;
+            MetaDataViewController = new MetaDataViewController();
+
             // -- Profiles View
             _profilesSubView = new ProfilesSubView();
             CPProfileView.Content = _profilesSubView;
@@ -54,6 +64,7 @@ namespace GameTimeNext
             _profileDetailSubViewController.SetCEDataWrapper(_profilesSubViewDataWrapper, UIXDataWrapperType.Target);
 
             SetController(_mainWindowController);
+            _metaDataView.SetController(MetaDataViewController);
             _profilesSubView.SetController(_profileSubViewController);
             _profileDetailSubView.SetController(_profileDetailSubViewController);
         }

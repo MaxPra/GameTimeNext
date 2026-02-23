@@ -7,7 +7,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
 
-                <!--  Colors & Values -->
+                <!--  Colors & Values  -->
                 <ResourceDictionary Source="/GameTimeNext;component/UI/Colors/Colors.xaml" />
                 <ResourceDictionary Source="/GameTimeNext;component/UI/Values/UIValues.xaml" />
 
@@ -20,6 +20,8 @@
                 <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Controls/TextBoxStyle.xaml" />
                 <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Controls/CheckBoxStyle.xaml" />
                 <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Controls/PopupStyle.xaml" />
+                <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Controls/TextBlockStyle.xaml" />
+                <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Controls/GridViewStyle.xaml" />
 
 
                 <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Views/WindowStyle.xaml" />

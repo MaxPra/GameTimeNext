@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -34,9 +32,13 @@ namespace GameTimeNext.Core.Application.General.Controller
 
         protected override void BuildFirst()
         {
-            GetWindowReturn().Test = "Jetzt steht das drin!";
+            // DEV-Batch & Metadata-Tab
+            if (!Debugger.IsAttached)
+            {
+                GetWindow().BdDevModeBatch.Visibility = Visibility.Hidden;
+                GetWindow().TabMetaData.Visibility = Visibility.Hidden;
+            }
 
-            ExitWnd(UIXExitType.Cancel);
         }
 
         protected override void Build()

@@ -5,10 +5,8 @@ using GameTimeNext.Core.Application.Profiles.Views;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
-using UIX.ViewController.Engine.Events;
 
 namespace GameTimeNext.Core.Application.Profiles.Controller
 {
