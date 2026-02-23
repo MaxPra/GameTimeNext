@@ -14,13 +14,13 @@ namespace GameTimeNext
     public partial class MainWindow : GTNWindow
     {
 
-        public ProfileSubViewController ProfilesSubViewController { get => _profileSubViewController; set; }
+        public ProfilesViewController ProfilesSubViewController { get => _profileSubViewController; set; }
 
 
         MainWindowController? _mainWindowController;
 
-        ProfileSubViewController? _profileSubViewController;
-        ProfileDetailSubViewController? _profileDetailSubViewController;
+        ProfilesViewController? _profileSubViewController;
+        ProfilesDetailSubViewController? _profileDetailSubViewController;
 
         ProfileDetailSubView? _profileDetailSubView;
         ProfilesSubView? _profilesSubView;
@@ -40,12 +40,12 @@ namespace GameTimeNext
             // -- Profiles View
             _profilesSubView = new ProfilesSubView();
             CPProfileView.Content = _profilesSubView;
-            _profileSubViewController = new ProfileSubViewController();
+            _profileSubViewController = new ProfilesViewController();
 
             // -- Detailsview
             _profileDetailSubView = new ProfileDetailSubView();
             _profilesSubView.CPProfileDetailView.Content = _profileDetailSubView;
-            _profileDetailSubViewController = new ProfileDetailSubViewController();
+            _profileDetailSubViewController = new ProfilesDetailSubViewController();
 
             // -- Data Wrapper
             _profilesSubViewDataWrapper = new ProfilesSubViewDataWrapper();

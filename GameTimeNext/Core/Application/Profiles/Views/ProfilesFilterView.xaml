@@ -38,10 +38,12 @@
                                Margin="0,0,0,8"/>
 
                     <!-- optional: Search -->
-                    <TextBox Height="30"
+                    <TextBox x:Name="TxtSearchTag"
+                             Height="30"
                              Margin="0,0,0,10"
-                             Text="{Binding TagSearchText, UpdateSourceTrigger=PropertyChanged}"
-                             ToolTip="Search tags" />
+                             ToolTip="Search tags" 
+                             Style="{StaticResource TextBox.Modern}"
+                             Tag="Search tags"/>
 
                     <Border BorderBrush="{DynamicResource Brush.Border}"
                             BorderThickness="1"
@@ -50,7 +52,7 @@
 
                         <ScrollViewer VerticalScrollBarVisibility="Auto"
                                       HorizontalScrollBarVisibility="Disabled"
-                                      MaxHeight="260">
+                                      MaxHeight="250">
 
                             <ItemsControl ItemsSource="{Binding Tbl_Groups}">
                                 <ItemsControl.ItemsPanel>
@@ -109,7 +111,8 @@
                         HorizontalAlignment="Right"
                         Margin="0,14,0,0">
 
-                <Button Content="Reset"
+                <Button x:Name="BtnCancel"
+                        Content="Cancel"
                         Width="90"
                         Height="34"
                         Margin="0,0,10,0"

@@ -7,7 +7,7 @@ using UIX.ViewController.Engine.Controller;
 
 namespace GameTimeNext.Core.Application.Profiles.Controller
 {
-    internal class ProfileDetailSubViewController : UIXViewControllerBase
+    internal class ProfilesDetailSubViewController : UIXViewControllerBase
     {
 
         ProfilesSubViewDataWrapper? _dataWrapper;
@@ -29,7 +29,6 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected override void BuildFirst()
         {
-            //GetView().TxtMegaBox.Text = _dataWrapper.GetTypedTableObject().GANA;
         }
 
         protected override void TriggeredEvent(FrameworkElement source, string eventName)

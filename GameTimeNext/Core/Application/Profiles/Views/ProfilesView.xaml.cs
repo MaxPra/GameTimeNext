@@ -14,7 +14,7 @@ namespace GameTimeNext.Core.Application.Profiles.Views
     public partial class ProfilesSubView : UIXUserControlHostBase
     {
 
-        public ProfileFilterPopupViewController? ProfileFilterPopupViewController { get; set; }
+        public ProfilesFilterViewController? ProfileFilterPopupViewController { get; set; }
 
         public ProfilesFilterPopupView? ProfileFilterPopupView { get; set; }
 
@@ -29,7 +29,7 @@ namespace GameTimeNext.Core.Application.Profiles.Views
             ProfileFilterPopupView.SetContentPresenter(this.CPFilter);
             ProfileFilterPopupView.SetPopup(this.PopFilter);
 
-            ProfileFilterPopupViewController = new ProfileFilterPopupViewController();
+            ProfileFilterPopupViewController = new ProfilesFilterViewController();
 
             ProfileFilterPopupView.SetController(ProfileFilterPopupViewController);
 

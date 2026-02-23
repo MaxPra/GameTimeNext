@@ -30,6 +30,10 @@
     <Color x:Key="Color.AccentHover">#0099D6</Color>
     <Color x:Key="Color.AccentPressed">#006FA3</Color>
 
+    <!--<Color x:Key="Color.Accent">#2F3E3A</Color>
+    <Color x:Key="Color.AccentHover">#C8B8A8</Color>
+    <Color x:Key="Color.AccentPressed">#4A2E2E</Color>-->
+
     <Color x:Key="Color.TitleBarButton.Accent">#60646c</Color>
 
     <Color x:Key="Color.Success">#FF2ECC71</Color>

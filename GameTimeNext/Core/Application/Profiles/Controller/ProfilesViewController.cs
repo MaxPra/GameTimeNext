@@ -12,11 +12,11 @@ using UIX.ViewController.Engine.Events;
 
 namespace GameTimeNext.Core.Application.Profiles.Controller
 {
-    public class ProfileSubViewController : UIXViewControllerBase
+    public class ProfilesViewController : UIXViewControllerBase
     {
         private ProfilesSubViewDataWrapper? dataWrapper;
 
-        ProfilesSubGridViewModel? profilesSubGridViewModel;
+        ProfilesSubGridViewModel? _profilesSubGridViewModel;
 
         protected override void Init()
         {
@@ -26,34 +26,24 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             TBLM_PROFI tblm_profi = new TBLM_PROFI();
             List<TBL_PROFI> tbl_profis = tblm_profi.ReadAll();
 
-            profilesSubGridViewModel = new ProfilesSubGridViewModel();
-            profilesSubGridViewModel.Tbl_Profis = new System.Collections.ObjectModel.ObservableCollection<TBL_PROFI>(tbl_profis);
+            _profilesSubGridViewModel = new ProfilesSubGridViewModel();
+            _profilesSubGridViewModel.Tbl_Profis = new System.Collections.ObjectModel.ObservableCollection<TBL_PROFI>(tbl_profis);
 
             if (tbl_profis.Count > 0)
-                profilesSubGridViewModel.SelectedTBLPROFI = tbl_profis.FirstOrDefault(p => p.PFID == AppEnvironment.GetCurrentProfile().PFID);
+                _profilesSubGridViewModel.SelectedTBLPROFI = tbl_profis.FirstOrDefault(p => p.PFID == AppEnvironment.GetCurrentProfile().PFID);
 
-            dataWrapper.SetTableObject(profilesSubGridViewModel.SelectedTBLPROFI);
+            dataWrapper.SetTableObject(_profilesSubGridViewModel.SelectedTBLPROFI);
 
-            View.DataContext = profilesSubGridViewModel;
+            View.DataContext = _profilesSubGridViewModel;
 
         }
 
         protected override void TriggeredEvent(FrameworkElement source, string eventName)
         {
-            switch (eventName)
-            {
-                case UIXEventNames.Button.Click:
-                    //if (source is Button && source.Name == "BtnFilter")
-                    if (source is Button)
-                        EV_BtnFilter();
-                    break;
-            }
-
         }
 
         protected override void BuildFirst()
         {
-            Console.WriteLine("BuildFirst");
         }
 
         protected override void Build()
@@ -82,10 +72,31 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         }
 
-        private void EV_BtnFilter()
+        /// <summary>
+        /// Button Filter
+        /// </summary>
+        public void EV_BtnFilter()
         {
+            List<TBL_GROUP> groups = new List<TBL_GROUP>();
+            bool applied = false;
+
             if (!GetView().ProfileFilterPopupView.IsShown)
+            {
                 GetView().ProfileFilterPopupView.ShowView();
+
+                // Geschlossen per Apply
+                GetView().ProfileFilterPopupView.ViewController.SetResultCallback<ProfilesFilterViewController.ProfileFilterViewReturn>(r =>
+                {
+                    groups = r.TblGroups;
+                    applied = r.Applied;
+
+                    if (applied)
+                        MessageBox.Show("Applied!!!");
+                    else
+                        MessageBox.Show("Canceled :(");
+                });
+            }
+
             else
                 GetView().ProfileFilterPopupView.CloseView();
         }
