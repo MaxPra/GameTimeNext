@@ -2,15 +2,9 @@
 using GameTimeNext.Core.Application.Profiles.Viewmodel;
 using GameTimeNext.Core.Application.Profiles.Views;
 using GameTimeNext.Core.Application.TableObjects;
-using System.Collections;
-using System.Runtime.InteropServices;
-using System.Security.Policy;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Documents;
 using UIX.ViewController.Engine.Controller;
-using UIX.ViewController.Engine.Events;
 using UIX.ViewController.Engine.FrameworkElements.UserControls;
 
 namespace GameTimeNext.Core.Application.Profiles.Controller
@@ -131,9 +125,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             View.DataContext = _profilesFilterViewModel;
         }
 
-        private ProfilesFilterPopupView GetView()
+        private ProfilesFilterView GetView()
         {
-            return (ProfilesFilterPopupView)this.View;
+            return (ProfilesFilterView)this.View;
         }
     }
 }

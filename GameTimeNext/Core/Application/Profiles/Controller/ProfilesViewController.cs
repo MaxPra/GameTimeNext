@@ -99,9 +99,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 GetView().ProfileFilterPopupView.CloseView();
         }
 
-        private ProfilesSubView GetView()
+        private ProfilesView GetView()
         {
-            return (ProfilesSubView)View;
+            return (ProfilesView)View;
         }
     }
 }

@@ -51,9 +51,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
         }
 
-        private ProfileDetailSubView GetView()
+        private ProfilesDetailView GetView()
         {
-            return (ProfileDetailSubView)this.View;
+            return (ProfilesDetailView)this.View;
         }
 
         protected override void DataWrapperSelectionChangedImpl(Selector source)

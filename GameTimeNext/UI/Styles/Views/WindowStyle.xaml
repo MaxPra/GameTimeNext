@@ -65,36 +65,42 @@
                                         Foreground="{DynamicResource Brush.TextPrimary}"
                                         Text="{TemplateBinding Title}" />
 
-                                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Stretch">
-                                        <Button x:Name="PART_MinButton"
-                                                Width="45"
-                                                Background="Transparent"
-                                                BorderThickness="0"
-                                                Content="&#xE921;"
-                                                FontFamily="Segoe MDL2 Assets"
-                                                FontSize="12"
-                                                Foreground="{DynamicResource Brush.TextPrimary}"
-                                                Style="{StaticResource TitleBarButtonStyle}" />
+                                    <StackPanel
+                                        Grid.Column="1"
+                                        VerticalAlignment="Stretch"
+                                        Orientation="Horizontal">
+                                        <Button
+                                            x:Name="PART_MinButton"
+                                            Width="45"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            Content="&#xE921;"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            FontSize="12"
+                                            Foreground="{DynamicResource Brush.TextPrimary}"
+                                            Style="{StaticResource TitleBarButtonStyle}" />
 
-                                        <Button x:Name="PART_MaxButton"
-                                                Width="45"
-                                                Background="Transparent"
-                                                BorderThickness="0"
-                                                Content="&#xE922;"
-                                                FontFamily="Segoe MDL2 Assets"
-                                                FontSize="12"
-                                                Foreground="{DynamicResource Brush.TextPrimary}"
-                                                Style="{StaticResource TitleBarButtonStyle}" />
+                                        <Button
+                                            x:Name="PART_MaxButton"
+                                            Width="45"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            Content="&#xE922;"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            FontSize="12"
+                                            Foreground="{DynamicResource Brush.TextPrimary}"
+                                            Style="{StaticResource TitleBarButtonStyle}" />
 
-                                        <Button x:Name="PART_CloseButton"
-                                                Width="45"
-                                                Background="Transparent"
-                                                BorderThickness="0"
-                                                Content="&#xE8BB;"
-                                                FontFamily="Segoe MDL2 Assets"
-                                                FontSize="12"
-                                                Foreground="{DynamicResource Brush.TextPrimary}"
-                                                Style="{StaticResource TitleBarCloseButtonStyle}" />
+                                        <Button
+                                            x:Name="PART_CloseButton"
+                                            Width="45"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            Content="&#xE8BB;"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            FontSize="12"
+                                            Foreground="{DynamicResource Brush.TextPrimary}"
+                                            Style="{StaticResource TitleBarCloseButtonStyle}" />
                                     </StackPanel>
                                 </Grid>
                             </Border>

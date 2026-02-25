@@ -1,11 +1,11 @@
 ﻿<uixcontrols:UIXUserControlBase
-    x:Class="GameTimeNext.Core.Application.Profiles.Views.ProfileDetailSubView"
+    x:Class="GameTimeNext.Core.Application.Profiles.Views.ProfilesDetailView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:uixprops="clr-namespace:UIX.ViewController.Engine.AttachedProperties;assembly=UIX.ViewController.Engine"
     xmlns:uixcontrols="clr-namespace:UIX.ViewController.Engine.FrameworkElements.UserControls;assembly=UIX.ViewController.Engine"
+    xmlns:uixprops="clr-namespace:UIX.ViewController.Engine.AttachedProperties;assembly=UIX.ViewController.Engine"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -15,110 +15,122 @@
 
             <DockPanel Style="{StaticResource ProfileDetail.Layout}">
 
-                <!-- Buttons: fixed at bottom -->
-                <Border DockPanel.Dock="Bottom"
-                        Style="{StaticResource ProfileDetail.ButtonHost}"
-                        Margin="0,26,0,6">
+                <!--  Buttons: fixed at bottom  -->
+                <Border
+                    Margin="0,26,0,6"
+                    DockPanel.Dock="Bottom"
+                    Style="{StaticResource ProfileDetail.ButtonHost}">
                     <StackPanel Style="{StaticResource ProfileDetail.ButtonArea}">
-                        <Button Style="{StaticResource Button.Secondary}"
-                                Margin="0, 0, 0, 14"
-                                Content="Launch game"/>
+                        <Button
+                            Margin="0,0,0,14"
+                            Content="Launch game"
+                            Style="{StaticResource Button.Secondary}" />
 
-                        <Button Style="{StaticResource Button.Primary}"
-                                Content="Start Monitoring"/>
+                        <Button Content="Start Monitoring" />
                     </StackPanel>
                 </Border>
 
-                <!-- Content above buttons -->
+                <!--  Content above buttons  -->
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <!-- Title -->
-                        <RowDefinition Height="*"/>
-                        <!-- Body -->
+                        <RowDefinition Height="Auto" />
+                        <!--  Title  -->
+                        <RowDefinition Height="*" />
+                        <!--  Body  -->
                     </Grid.RowDefinitions>
 
-                    <!-- Title -->
-                    <Grid Grid.Row="0"
-                          Width="{StaticResource ProfileDetail.CoverWidth}"
-                          HorizontalAlignment="Center"
-                          Margin="0,0,0,12">
-                        <TextBlock Style="{StaticResource ProfileDetail.Title}"
-                                   uixprops:UIXAttachedProperty.Path="TBL_PROFI.GANA"/>
+                    <!--  Title  -->
+                    <Grid
+                        Grid.Row="0"
+                        Width="{StaticResource ProfileDetail.CoverWidth}"
+                        Margin="0,0,0,12"
+                        HorizontalAlignment="Center">
+                        <TextBlock uixprops:UIXAttachedProperty.Path="TBL_PROFI.GANA" Style="{StaticResource ProfileDetail.Title}" />
                     </Grid>
 
-                    <!-- Body -->
+                    <!--  Body  -->
                     <Grid Grid.Row="1">
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <!-- Cover -->
-                            <RowDefinition Height="10"/>
-                            <!-- small gap cover -> info -->
-                            <RowDefinition Height="Auto"/>
-                            <!-- Infos -->
-                            <RowDefinition Height="*"/>
-                            <!-- free space below infos -->
+                            <RowDefinition Height="Auto" />
+                            <!--  Cover  -->
+                            <RowDefinition Height="10" />
+                            <!--  small gap cover -> info  -->
+                            <RowDefinition Height="Auto" />
+                            <!--  Infos  -->
+                            <RowDefinition Height="*" />
+                            <!--  free space below infos  -->
                         </Grid.RowDefinitions>
 
-                        <!-- Cover -->
-                        <Viewbox Grid.Row="0"
-                                 Stretch="Uniform"
-                                 StretchDirection="DownOnly"
-                                 HorizontalAlignment="Center"
-                                 VerticalAlignment="Top"
-                                 MaxHeight="520">
-                            <Border Style="{StaticResource ProfileDetail.CoverFrame}"
-                                    Margin="0">
+                        <!--  Cover  -->
+                        <Viewbox
+                            Grid.Row="0"
+                            MaxHeight="520"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Top"
+                            Stretch="Uniform"
+                            StretchDirection="DownOnly">
+                            <Border Margin="0" Style="{StaticResource ProfileDetail.CoverFrame}">
                                 <Grid>
-                                    <Image Style="{StaticResource ProfileDetail.CoverImage}"
-                                           uixprops:UIXAttachedProperty.Path="TBL_PROFI.PPFN"/>
-                                    <Border Style="{StaticResource ProfileDetail.CoverOverlay}"/>
+                                    <Image uixprops:UIXAttachedProperty.Path="TBL_PROFI.PPFN" Style="{StaticResource ProfileDetail.CoverImage}" />
+                                    <Border Style="{StaticResource ProfileDetail.CoverOverlay}" />
                                 </Grid>
                             </Border>
                         </Viewbox>
 
-                        <!-- Infos -->
+                        <!--  Infos  -->
                         <Border Grid.Row="2" Style="{StaticResource ProfileDetail.InfoHost}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
 
                                 <Border Grid.Column="1" Style="{StaticResource ProfileDetail.InfoCard}">
                                     <Grid>
                                         <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="18"/>
-                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="18" />
+                                            <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
 
-                                        <TextBlock Grid.Row="0" Grid.Column="0"
-                                                   Style="{StaticResource ProfileDetail.GameTimeLabel}"
-                                                   Text="Game time:"/>
-                                        <TextBlock Grid.Row="0" Grid.Column="2"
-                                                   Style="{StaticResource ProfileDetail.GameTimeValue}"
-                                                   uixprops:UIXAttachedProperty.Path="TBL_PROFI.GATI"/>
+                                        <TextBlock
+                                            Grid.Row="0"
+                                            Grid.Column="0"
+                                            Style="{StaticResource ProfileDetail.GameTimeLabel}"
+                                            Text="Game time:" />
+                                        <TextBlock
+                                            Grid.Row="0"
+                                            Grid.Column="2"
+                                            uixprops:UIXAttachedProperty.Path="TBL_PROFI.GATI"
+                                            Style="{StaticResource ProfileDetail.GameTimeValue}" />
 
-                                        <TextBlock Grid.Row="1" Grid.Column="0"
-                                                   Style="{StaticResource ProfileDetail.InfoLabel}"
-                                                   Text="First time played:"/>
-                                        <TextBlock Grid.Row="1" Grid.Column="2"
-                                                   Style="{StaticResource ProfileDetail.InfoValue}"
-                                                   uixprops:UIXAttachedProperty.Path="TBL_PROFI.FIPL"/>
+                                        <TextBlock
+                                            Grid.Row="1"
+                                            Grid.Column="0"
+                                            Style="{StaticResource ProfileDetail.InfoLabel}"
+                                            Text="First time played:" />
+                                        <TextBlock
+                                            Grid.Row="1"
+                                            Grid.Column="2"
+                                            uixprops:UIXAttachedProperty.Path="TBL_PROFI.FIPL"
+                                            Style="{StaticResource ProfileDetail.InfoValue}" />
 
-                                        <TextBlock Grid.Row="2" Grid.Column="0"
-                                                   Style="{StaticResource ProfileDetail.InfoLabel}"
-                                                   Text="Last time played:"/>
-                                        <TextBlock Grid.Row="2" Grid.Column="2"
-                                                   Style="{StaticResource ProfileDetail.InfoValue}"
-                                                   uixprops:UIXAttachedProperty.Path="TBL_PROFI.LAPL"/>
+                                        <TextBlock
+                                            Grid.Row="2"
+                                            Grid.Column="0"
+                                            Style="{StaticResource ProfileDetail.InfoLabel}"
+                                            Text="Last time played:" />
+                                        <TextBlock
+                                            Grid.Row="2"
+                                            Grid.Column="2"
+                                            uixprops:UIXAttachedProperty.Path="TBL_PROFI.LAPL"
+                                            Style="{StaticResource ProfileDetail.InfoValue}" />
                                     </Grid>
                                 </Border>
                             </Grid>

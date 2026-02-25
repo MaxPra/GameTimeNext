@@ -5,10 +5,10 @@ namespace GameTimeNext.Core.Application.Profiles.Views
     /// <summary>
     /// Interaktionslogik für ProfileDetailSubView.xaml
     /// </summary>
-    public partial class ProfileDetailSubView : UIXUserControlBase
+    public partial class ProfilesDetailView : UIXUserControlBase
     {
 
-        public ProfileDetailSubView()
+        public ProfilesDetailView()
         {
             InitializeComponent();
         }

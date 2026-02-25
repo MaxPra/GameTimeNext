@@ -1,12 +1,11 @@
 ﻿using GameTimeNext.Core.Application.General.Controller;
-using GameTimeNext.Core.Application.Metadata;
-using GameTimeNext.Core.Application.Metadata.Controller;
 using GameTimeNext.Core.Application.Profiles.Controller;
-using GameTimeNext.Core.Application.Profiles.DataWrapper;
 using GameTimeNext.Core.Application.Profiles.Views;
+using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.UI.Base;
 using System.Windows;
-using UIX.ViewController.Engine.DataWrapper;
+using UIX.ViewController.Engine.BuiltInApplications.MetaDataManagerApp.Controller;
+using UIX.ViewController.Engine.BuiltInApplications.MetaDataManagerApp.Views;
 
 namespace GameTimeNext
 {
@@ -21,16 +20,11 @@ namespace GameTimeNext
 
 
         MainWindowController? _mainWindowController;
-
         MetaDataView? _metaDataView;
-
         ProfilesViewController? _profileSubViewController;
-        ProfilesDetailSubViewController? _profileDetailSubViewController;
+        ProfilesView? _profilesSubView;
 
-        ProfileDetailSubView? _profileDetailSubView;
-        ProfilesSubView? _profilesSubView;
 
-        ProfilesSubViewDataWrapper? _profilesSubViewDataWrapper;
 
         public MainWindow()
         {
@@ -43,30 +37,18 @@ namespace GameTimeNext
             _mainWindowController = new MainWindowController();
 
             // -- Metadata View
-            _metaDataView = new MetaDataView();
+            _metaDataView = new MetaDataView(AppEnvironment.GetDataBaseManager().GetConnection());
             CpMetadata.Content = _metaDataView;
             MetaDataViewController = new MetaDataViewController();
 
             // -- Profiles View
-            _profilesSubView = new ProfilesSubView();
+            _profilesSubView = new ProfilesView();
             CPProfileView.Content = _profilesSubView;
             _profileSubViewController = new ProfilesViewController();
-
-            // -- Detailsview
-            _profileDetailSubView = new ProfileDetailSubView();
-            _profilesSubView.CPProfileDetailView.Content = _profileDetailSubView;
-            _profileDetailSubViewController = new ProfilesDetailSubViewController();
-
-            // -- Data Wrapper
-            _profilesSubViewDataWrapper = new ProfilesSubViewDataWrapper();
-            _profilesSubViewDataWrapper.SetDataSource(_profilesSubView.ListBoxProfiles);
-            _profileSubViewController.SetCEDataWrapper(_profilesSubViewDataWrapper, UIXDataWrapperType.Source);
-            _profileDetailSubViewController.SetCEDataWrapper(_profilesSubViewDataWrapper, UIXDataWrapperType.Target);
 
             SetController(_mainWindowController);
             _metaDataView.SetController(MetaDataViewController);
             _profilesSubView.SetController(_profileSubViewController);
-            _profileDetailSubView.SetController(_profileDetailSubViewController);
         }
     }
 }
