@@ -1,12 +1,6 @@
-﻿using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.General.Controller;
-using GameTimeNext.Core.Application.GTXMigration;
+﻿using GameTimeNext.Core.Application.General;
 using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.Config;
-using GameTimeNext.Core.Framework.DataBase;
 using GameTimeNext.Core.Framework.Files;
-using System.Configuration;
-using System.Data;
 using System.Windows;
 
 namespace GameTimeNext
@@ -26,11 +20,9 @@ namespace GameTimeNext
             //GTXMigrationHelper gtxMigHelper = new GTXMigrationHelper("C:\\GameTimeX");
             //gtxMigHelper.MigrateToGTNXT();
 
-            AppEnvironment.SetCurrentProfile(new TBLM_PROFI().Read(10));
-
             // Erst danach Fenster öffnen
-            MainWindow window = new MainWindow();
-            window.Show();
+            MainApp mainApp = new MainApp();
+            mainApp.Start(null, null);
 
         }
 

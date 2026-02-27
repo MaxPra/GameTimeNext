@@ -18,7 +18,7 @@
     d:DesignWidth="1200"
     Style="{StaticResource GTNWindowStyle}"
     WindowStartupLocation="CenterScreen"
-    WindowState="Maximized"
+    WindowState="Normal"
     mc:Ignorable="d">
 
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">

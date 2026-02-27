@@ -5,6 +5,7 @@ using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.Events;
 using UIX.ViewController.Engine.FrameworkElements.Windows;
+using UIX.ViewController.Engine.Runnables;
 
 namespace GameTimeNext.Core.Application.General.Controller
 {
@@ -21,6 +22,10 @@ namespace GameTimeNext.Core.Application.General.Controller
 
         private WindowReturn _mainWindowReturn = new WindowReturn();
 
+        public MainWindowController(UIXApplication app) : base(app)
+        {
+        }
+
         public override WindowReturn GetWindowReturn()
         {
             return _mainWindowReturn;
@@ -28,6 +33,9 @@ namespace GameTimeNext.Core.Application.General.Controller
 
         protected override void Init()
         {
+
+            //ProfilesApp app = new ProfilesApp();
+            //app.Start();
         }
 
         protected override void BuildFirst()
@@ -95,14 +103,18 @@ namespace GameTimeNext.Core.Application.General.Controller
         /// <param name="e"></param>
         private void Event_TabChanged(TabControl source)
         {
-
             if (source.SelectedItem is TabItem ti && ti.Name == "Tab_Profiles")
-                GetWindow().ProfilesSubViewController.Reopen(UIXEvents.Reopen);
+                GetApp().ProfilesApp.ProfilesView.ViewController.Show(false);
         }
 
         private MainWindow GetWindow()
         {
             return (MainWindow)View;
+        }
+
+        private MainApp GetApp()
+        {
+            return (MainApp)App;
         }
     }
 }

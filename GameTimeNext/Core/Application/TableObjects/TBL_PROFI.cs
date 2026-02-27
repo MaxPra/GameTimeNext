@@ -1,6 +1,4 @@
 ﻿using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Framework.DataBase.TableObjects;
-using System;
 using UIX.ViewController.Engine.DataBaseObjects;
 
 namespace GameTimeNext.Core.Application.TableObjects
@@ -8,7 +6,7 @@ namespace GameTimeNext.Core.Application.TableObjects
     public class TBL_PROFI : UIXTableObjectBase
     {
         [UIXSignatureField(0)]
-        public long PFID { get; set; }
+        public long PFID { get; set; } = 0;
 
         [UIXSignatureField(1)]
         public string GANA { get; set; }

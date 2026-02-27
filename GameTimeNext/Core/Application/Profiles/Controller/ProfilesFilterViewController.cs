@@ -6,12 +6,17 @@ using System.Windows;
 using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements.UserControls;
+using UIX.ViewController.Engine.Runnables;
 
 namespace GameTimeNext.Core.Application.Profiles.Controller
 {
     public class ProfilesFilterViewController : UIXViewControllerBase
     {
         private ProfilesFilterViewModel? _profilesFilterViewModel;
+
+        public ProfilesFilterViewController(UIXApplication app) : base(app)
+        {
+        }
 
         public class ProfileFilterViewReturn : UIXViewReturn
         {
@@ -24,9 +29,6 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
 
             ViewReturn = new ProfileFilterViewReturn();
-
-            // Gruppen-Liste (Tags u. States) befüllen
-            BuildGroupList(string.Empty);
         }
 
         protected override void Build()
@@ -35,6 +37,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected override void BuildFirst()
         {
+            // Gruppen-Liste (Tags u. States) befüllen
+            BuildGroupList(string.Empty);
         }
 
         protected override void Check()

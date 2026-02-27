@@ -1,11 +1,7 @@
 ﻿using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.DataBase;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Text.Json;
 
 namespace GameTimeNext.Core.Framework
@@ -14,7 +10,7 @@ namespace GameTimeNext.Core.Framework
     {
         private static AppConfig _appConfig = new AppConfig();
         private static DataBaseManager _databaseManager = new DataBaseManager();
-        private static TBL_PROFI? _tblProfi = null;
+        private static TBL_PROFI? _tblProfi = new TBL_PROFI();
 
         // [------------------------------------------------]
         // [------------------ PUBLIC ----------------------]

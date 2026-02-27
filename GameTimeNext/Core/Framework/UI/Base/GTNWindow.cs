@@ -10,7 +10,7 @@ using UIX.ViewController.Engine.FrameworkElements.Windows;
 
 namespace GameTimeNext.Core.Framework.UI.Base
 {
-    public class GTNWindow : UIXWindowHostBase
+    public class GTNWindow : UIXWindowBase
     {
         private bool _allowClose;
 
@@ -25,8 +25,6 @@ namespace GameTimeNext.Core.Framework.UI.Base
             Loaded += OnLoaded;
             Closing += OnClosing;
         }
-
-        protected override void InitializeViewOutput(object sender, RoutedEventArgs e) { }
 
         protected override void OnSourceInitialized(EventArgs e)
         {

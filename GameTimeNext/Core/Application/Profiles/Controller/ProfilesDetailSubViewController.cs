@@ -4,6 +4,7 @@ using GameTimeNext.Core.Application.Profiles.Views;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
+using UIX.ViewController.Engine.Runnables;
 
 namespace GameTimeNext.Core.Application.Profiles.Controller
 {
@@ -11,6 +12,10 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
     {
 
         ProfilesSubViewDataWrapper? _dataWrapper;
+
+        public ProfilesDetailSubViewController(UIXApplication app) : base(app)
+        {
+        }
 
         protected override void Init()
         {

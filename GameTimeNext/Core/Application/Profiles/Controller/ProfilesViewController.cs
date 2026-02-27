@@ -1,12 +1,12 @@
 ﻿using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Profiles.DataWrapper;
 using GameTimeNext.Core.Application.Profiles.Viewmodel;
-using GameTimeNext.Core.Application.Profiles.Views;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
+using UIX.ViewController.Engine.Runnables;
 
 namespace GameTimeNext.Core.Application.Profiles.Controller
 {
@@ -16,24 +16,13 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         ProfilesSubGridViewModel? _profilesSubGridViewModel;
 
+        public ProfilesViewController(UIXApplication app) : base(app)
+        {
+        }
+
         protected override void Init()
         {
-
             dataWrapper = GetDataWrapper<ProfilesSubViewDataWrapper>();
-
-            TBLM_PROFI tblm_profi = new TBLM_PROFI();
-            List<TBL_PROFI> tbl_profis = tblm_profi.ReadAll();
-
-            _profilesSubGridViewModel = new ProfilesSubGridViewModel();
-            _profilesSubGridViewModel.Tbl_Profis = new System.Collections.ObjectModel.ObservableCollection<TBL_PROFI>(tbl_profis);
-
-            if (tbl_profis.Count > 0)
-                _profilesSubGridViewModel.SelectedTBLPROFI = tbl_profis.FirstOrDefault(p => p.PFID == AppEnvironment.GetCurrentProfile().PFID);
-
-            dataWrapper.SetTableObject(_profilesSubGridViewModel.SelectedTBLPROFI);
-
-            View.DataContext = _profilesSubGridViewModel;
-
         }
 
         protected override void TriggeredEvent(FrameworkElement source, string eventName)
@@ -42,6 +31,19 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected override void BuildFirst()
         {
+            TBLM_PROFI tblm_profi = new TBLM_PROFI();
+            List<TBL_PROFI> tbl_profis = tblm_profi.ReadAll();
+
+            _profilesSubGridViewModel = new ProfilesSubGridViewModel();
+            _profilesSubGridViewModel.Tbl_Profis = new System.Collections.ObjectModel.ObservableCollection<TBL_PROFI>(tbl_profis);
+
+            if (tbl_profis.Count > 0)
+                _profilesSubGridViewModel.SelectedTBLPROFI = tbl_profis.FirstOrDefault(p => p.PFID == AppEnvironment.GetCurrentProfile().PFID) ?? tbl_profis.FirstOrDefault();
+
+            dataWrapper.TableObject = _profilesSubGridViewModel.SelectedTBLPROFI;
+
+            View.DataContext = _profilesSubGridViewModel;
+
         }
 
         protected override void Build()
@@ -78,12 +80,12 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             List<TBL_GROUP> groups = new List<TBL_GROUP>();
             bool applied = false;
 
-            if (!GetView().ProfileFilterPopupView.IsShown)
+            if (!GetApp().ProfilesFilterView.IsShown)
             {
-                GetView().ProfileFilterPopupView.ShowView();
+                GetApp().ProfilesFilterView.ShowView(false);
 
                 // Geschlossen per Apply
-                GetView().ProfileFilterPopupView.ViewController.SetResultCallback<ProfilesFilterViewController.ProfileFilterViewReturn>(r =>
+                GetApp().ProfilesFilterView.ViewController.SetResultCallback<ProfilesFilterViewController.ProfileFilterViewReturn>(r =>
                 {
                     groups = r.TblGroups;
                     applied = r.Applied;
@@ -96,12 +98,12 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             }
 
             else
-                GetView().ProfileFilterPopupView.CloseView();
+                GetApp().ProfilesFilterView.CloseView();
         }
 
-        private ProfilesView GetView()
+        private ProfilesApp GetApp()
         {
-            return (ProfilesView)View;
+            return (ProfilesApp)App;
         }
     }
 }
