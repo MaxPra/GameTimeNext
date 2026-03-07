@@ -17,6 +17,32 @@ namespace GameTimeNext.Core.Framework.UI.Base
         private const int WM_GETMINMAXINFO = 0x0024;
         private const int MONITOR_DEFAULTTONEAREST = 0x00000002;
 
+        public static readonly DependencyProperty ShowMinimizeButtonProperty =
+            DependencyProperty.Register(
+                nameof(ShowMinimizeButton),
+                typeof(bool),
+                typeof(GTNWindow),
+                new PropertyMetadata(true));
+
+        public bool ShowMinimizeButton
+        {
+            get => (bool)GetValue(ShowMinimizeButtonProperty);
+            set => SetValue(ShowMinimizeButtonProperty, value);
+        }
+
+        public static readonly DependencyProperty ShowMaximizeButtonProperty =
+            DependencyProperty.Register(
+                nameof(ShowMaximizeButton),
+                typeof(bool),
+                typeof(GTNWindow),
+                new PropertyMetadata(true));
+
+        public bool ShowMaximizeButton
+        {
+            get => (bool)GetValue(ShowMaximizeButtonProperty);
+            set => SetValue(ShowMaximizeButtonProperty, value);
+        }
+
         public GTNWindow()
         {
             WindowStyle = WindowStyle.None;
@@ -48,13 +74,20 @@ namespace GameTimeNext.Core.Framework.UI.Base
                 closeBtn.Click += (_, __) => Close();
 
             if (GetTemplateChild("PART_MinButton") is Button minBtn)
+            {
                 minBtn.Click += (_, __) => WindowState = WindowState.Minimized;
+                minBtn.Visibility = ShowMinimizeButton ? Visibility.Visible : Visibility.Collapsed;
+            }
 
             if (GetTemplateChild("PART_MaxButton") is Button maxBtn)
+            {
                 maxBtn.Click += (_, __) =>
                     WindowState = WindowState == WindowState.Maximized
                         ? WindowState.Normal
                         : WindowState.Maximized;
+
+                maxBtn.Visibility = ShowMaximizeButton ? Visibility.Visible : Visibility.Collapsed;
+            }
         }
 
         protected override void OnStateChanged(EventArgs e)

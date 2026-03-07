@@ -42,12 +42,17 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <StackPanel
-                    Grid.Row="0"
-                    Margin="0,0,0,12"
-                    Orientation="Horizontal">
+                <!--  Header-Leiste: Suche (links), Filter (daneben), Add (rechts)  -->
+                <Grid Grid.Row="0" Margin="0,0,0,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
 
                     <TextBox
+                        Grid.Column="0"
                         Width="320"
                         Height="38"
                         Margin="16,0,0,0"
@@ -56,7 +61,11 @@
                         Tag="Search for name"
                         ToolTip="Search for name" />
 
-                    <Grid Margin="10,0,0,0">
+                    <!--  Filter bleibt direkt neben der Suchleiste  -->
+                    <Grid
+                        Grid.Column="1"
+                        Margin="10,0,0,0"
+                        VerticalAlignment="Center">
                         <Button
                             x:Name="BtnFilter"
                             Width="38"
@@ -88,7 +97,21 @@
                         </Popup>
                     </Grid>
 
-                </StackPanel>
+                    <Button
+                        x:Name="BtnAddProfile"
+                        Grid.Column="3"
+                        Width="38"
+                        Height="38"
+                        Margin="0,0,16,0"
+                        VerticalAlignment="Center"
+                        ToolTip="Add profile">
+                        <Image
+                            Width="16"
+                            Height="16"
+                            Source="/UI/Ressources/GTN_ICON_ADD_PROFILE.png"
+                            Stretch="Uniform" />
+                    </Button>
+                </Grid>
 
                 <ListBox
                     x:Name="ListBoxProfiles"
@@ -96,10 +119,10 @@
                     Padding="{StaticResource TileListPaddingTopOnly}"
                     Background="Transparent"
                     BorderThickness="0"
-                    ItemsSource="{Binding Tbl_Profis}"
+                    ItemsSource="{Binding TblProfis}"
                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                     ScrollViewer.VerticalScrollBarVisibility="Auto"
-                    SelectedItem="{Binding SelectedTBLPROFI, Mode=TwoWay}"
+                    SelectedItem="{Binding SelectedTblProfi, Mode=TwoWay}"
                     SelectionMode="Single">
 
                     <ListBox.ItemsPanel>

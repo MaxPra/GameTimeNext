@@ -2,23 +2,24 @@
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.ViewModelsBase;
 using System.Collections.ObjectModel;
+using System.Windows.Media.Imaging;
 
 namespace GameTimeNext.Core.Application.Profiles.Viewmodel
 {
     public class ProfilesSubGridViewModel : GTNViewModelBase
     {
-        public ObservableCollection<TBL_PROFI> Tbl_Profis { get; set; }
+        public ObservableCollection<TBL_PROFI> TblProfis { get; set; }
 
-        private TBL_PROFI _selectedTBLPROFI;
-        public TBL_PROFI SelectedTBLPROFI
+        private TBL_PROFI _selectedProfile;
+        public TBL_PROFI SelectedTblProfi
         {
-            get => _selectedTBLPROFI;
-            set => SetProperty(ref _selectedTBLPROFI, value, OnSelectedProfileChanged);
+            get => _selectedProfile;
+            set => SetProperty(ref _selectedProfile, value, OnSelectedProfileChanged);
         }
 
         public ProfilesSubGridViewModel()
         {
-            Tbl_Profis = new ObservableCollection<TBL_PROFI>();
+            TblProfis = new ObservableCollection<TBL_PROFI>();
         }
 
 
@@ -31,5 +32,28 @@ namespace GameTimeNext.Core.Application.Profiles.Viewmodel
         }
 
 
+    }
+
+    public class ProfileCover : GTNViewModelBase
+    {
+        private TBL_PROFI _tblProfi;
+        private BitmapImage _coverImage;
+
+        public TBL_PROFI TblProfi
+        {
+            get => _tblProfi;
+            set => SetProperty(ref _tblProfi, value);
+        }
+
+        public BitmapImage CoverImage
+        {
+            get => _coverImage;
+            set => SetProperty(ref _coverImage, value);
+        }
+
+        public ProfileCover()
+        {
+            _tblProfi = new TBL_PROFI();
+        }
     }
 }

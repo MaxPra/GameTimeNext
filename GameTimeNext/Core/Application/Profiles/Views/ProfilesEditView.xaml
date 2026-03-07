@@ -1,0 +1,432 @@
+﻿<ui:GTNWindow
+    x:Class="GameTimeNext.Core.Application.Profiles.Views.ProfilesEditView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:GameTimeNext.Core.Application.Profiles.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI.Base"
+    xmlns:uixprops="clr-namespace:UIX.ViewController.Engine.AttachedProperties;assembly=UIX.ViewController.Engine"
+    Title="Add profile"
+    Width="980"
+    Height="700"
+    MinWidth="980"
+    MinHeight="700"
+    ResizeMode="CanResize"
+    ShowMaximizeButton="False"
+    ShowMinimizeButton="False"
+    Style="{StaticResource GTNWindowStyle}"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
+
+    <Grid Margin="18">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="16" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="16" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1.35*" />
+                <ColumnDefinition Width="16" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Column="0" Margin="16,0,16,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="12" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.Row="0" Orientation="Vertical">
+                    <TextBlock
+                        FontSize="20"
+                        FontWeight="SemiBold"
+                        Text="Add profile" />
+
+                    <TextBlock
+                        Margin="0,4,0,0"
+                        Opacity="0.75"
+                        Text="Name, folder and cover. Optional Steam settings below." />
+                </StackPanel>
+
+                <Border
+                    x:Name="pnlSteamLinkState"
+                    Grid.Row="2"
+                    Padding="12,10"
+                    Background="#0DFFFFFF"
+                    BorderBrush="#24FFFFFF"
+                    BorderThickness="1"
+                    CornerRadius="10"
+                    Visibility="Visible">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="12" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="12" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock
+                            Grid.Column="0"
+                            VerticalAlignment="Center"
+                            FontSize="16"
+                            Text="🔗" />
+
+                        <StackPanel
+                            Grid.Column="2"
+                            VerticalAlignment="Center"
+                            Orientation="Vertical">
+                            <TextBlock
+                                x:Name="txtSteamLinkStatus"
+                                FontWeight="SemiBold"
+                                Text="Linked with Steam" />
+
+                            <TextBlock
+                                x:Name="txtSteamLinkGame"
+                                Margin="0,2,0,0"
+                                Opacity="0.72"
+                                Text="(not set)" />
+                        </StackPanel>
+
+                        <Button
+                            x:Name="btnUnlinkSteamProfile"
+                            Grid.Column="4"
+                            Width="110"
+                            Height="30"
+                            VerticalAlignment="Center"
+                            Content="Remove link"
+                            ToolTip="Remove Steam link from this profile" />
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <Grid Grid.Column="2" Margin="16,0,16,0">
+                <Button
+                    x:Name="BtnSteamImport"
+                    Width="140"
+                    Height="34"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Content="Steam import"
+                    ToolTip="Import game data from Steam" />
+            </Grid>
+        </Grid>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1.35*" />
+                <ColumnDefinition Width="16" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+
+            <ScrollViewer
+                Grid.Column="0"
+                HorizontalScrollBarVisibility="Disabled"
+                VerticalScrollBarVisibility="Auto">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="14" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="14" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Border
+                        Grid.Row="0"
+                        Padding="16"
+                        CornerRadius="10">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="12" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="8" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="12" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="8" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock
+                                Grid.Row="0"
+                                FontSize="14"
+                                FontWeight="SemiBold"
+                                Text="Profile" />
+
+                            <TextBlock
+                                Grid.Row="2"
+                                Opacity="0.8"
+                                Text="Profile name" />
+
+                            <TextBox
+                                x:Name="txbProfileName"
+                                Grid.Row="4"
+                                Height="36"
+                                uixprops:UIXAttachedProperty.Path="TBL_PROFI.GANA"
+                                ToolTip="Name shown in the profile list" />
+
+                            <TextBlock
+                                Grid.Row="6"
+                                Opacity="0.8"
+                                Text="Game folder (where the .exe is)" />
+
+                            <Grid Grid.Row="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="10" />
+                                    <ColumnDefinition Width="120" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBox
+                                    x:Name="txbGameFolder"
+                                    Grid.Column="0"
+                                    Height="36"
+                                    uixprops:UIXAttachedProperty.Path="TBL_PROFI.EXGF"
+                                    ToolTip="Folder that contains the game executable" />
+
+                                <Button
+                                    x:Name="btnBrowseGameFolder"
+                                    Grid.Column="2"
+                                    Height="36"
+                                    Content="Browse…"
+                                    ToolTip="Select game folder" />
+                            </Grid>
+                        </Grid>
+                    </Border>
+
+                    <Border
+                        x:Name="pnlSteamSettings"
+                        Grid.Row="2"
+                        Padding="16"
+                        CornerRadius="10">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="12" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="12" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock
+                                Grid.Row="0"
+                                FontSize="14"
+                                FontWeight="SemiBold"
+                                Text="Steam settings" />
+
+                            <CheckBox
+                                x:Name="cbEnableHdrOnStart"
+                                Grid.Row="2"
+                                Content="Enable HDR on game start" />
+
+                            <Grid Grid.Row="4">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="8" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <TextBlock
+                                    Grid.Row="0"
+                                    Opacity="0.8"
+                                    Text="Steam launch arguments" />
+
+                                <TextBox
+                                    x:Name="txbSteamArgs"
+                                    Grid.Row="2"
+                                    Height="36"
+                                    ToolTip="Additional Steam launch arguments (e.g. -novid -fullscreen)" />
+                            </Grid>
+                        </Grid>
+                    </Border>
+
+                    <Border
+                        x:Name="pnlGroups"
+                        Grid.Row="4"
+                        Padding="16"
+                        CornerRadius="10">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="12" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock
+                                Grid.Row="0"
+                                FontSize="14"
+                                FontWeight="SemiBold"
+                                Text="Tags" />
+
+                            <ItemsControl Grid.Row="2" ItemsSource="{Binding Tbl_Groups}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <CheckBox
+                                            Margin="0,0,0,6"
+                                            Content="{Binding GRNA}"
+                                            IsChecked="{Binding IsSelected, Mode=TwoWay}" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </ScrollViewer>
+
+            <Grid Grid.Column="2" VerticalAlignment="Top">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="14" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <Border
+                    Grid.Row="0"
+                    Padding="16"
+                    CornerRadius="10">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="12" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="10" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="12" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <TextBlock
+                            Grid.Row="0"
+                            FontSize="14"
+                            FontWeight="SemiBold"
+                            Text="Cover" />
+
+                        <TextBox
+                            x:Name="txbImagePath"
+                            Grid.Row="2"
+                            Height="36"
+                            uixprops:UIXAttachedProperty.Path="TBL_PROFI.PPFN"
+                            IsEnabled="False"
+                            ToolTip="Local path or path set after selecting an image" />
+
+                        <Grid Grid.Row="4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="10" />
+                                <ColumnDefinition Width="150" />
+                            </Grid.ColumnDefinitions>
+
+                            <Button
+                                x:Name="btnBrowseLocalImage"
+                                Grid.Column="0"
+                                Height="36"
+                                Content="Browse local…"
+                                ToolTip="Select a local image file" />
+
+                            <Button
+                                x:Name="btnSteamGridDb"
+                                Grid.Column="2"
+                                Height="36"
+                                Content="SteamGridDB…"
+                                ToolTip="Open SteamGridDB picker window" />
+                        </Grid>
+
+                        <TextBlock
+                            Grid.Row="6"
+                            Opacity="0.65"
+                            Text="Use either “Browse local…” or “SteamGridDB…” to set the image path." />
+                    </Grid>
+                </Border>
+
+                <Border
+                    Grid.Row="2"
+                    Padding="16"
+                    CornerRadius="10">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="12" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="12" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <TextBlock
+                            Grid.Row="0"
+                            FontSize="14"
+                            FontWeight="SemiBold"
+                            Text="Appearance" />
+
+                        <CheckBox
+                            x:Name="cbUseProfileAccentColors"
+                            Grid.Row="2"
+                            Content="Change accent colors based on this profile"
+                            ToolTip="If enabled, the application's accent colors can switch when this profile is selected/active." />
+
+                        <Grid Grid.Row="4">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="8" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock
+                                Grid.Row="0"
+                                Opacity="0.8"
+                                Text="Accent colors" />
+
+                            <UniformGrid Grid.Row="2" Columns="3">
+                                <ToggleButton x:Name="tglAccent1" Style="{StaticResource ProfileAccentColorToggleButtonStyle}" />
+
+                                <ToggleButton x:Name="tglAccent2" Style="{StaticResource ProfileAccentColorToggleButtonStyle}" />
+
+                                <ToggleButton
+                                    x:Name="tglAccent3"
+                                    Margin="0"
+                                    Style="{StaticResource ProfileAccentColorToggleButtonStyle}" />
+                            </UniformGrid>
+                        </Grid>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+
+        <Grid Grid.Row="4" Margin="16,0,16,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="10" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Button
+                x:Name="btnCancel"
+                Grid.Column="1"
+                Width="110"
+                Height="36"
+                Content="Cancel" />
+
+            <Button
+                x:Name="btnSave"
+                Grid.Column="3"
+                Width="140"
+                Height="36"
+                Content="Add profile" />
+        </Grid>
+    </Grid>
+</ui:GTNWindow>

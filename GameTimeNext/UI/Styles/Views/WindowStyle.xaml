@@ -23,105 +23,586 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type baseViews:GTNWindow}">
-                    <Border
-                        x:Name="RootBorder"
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="{DynamicResource Brush.Border}"
-                        BorderThickness="1"
-                        RenderTransformOrigin="0.5,0.5"
-                        SnapsToDevicePixels="True">
+                    <AdornerDecorator>
+                        <Border
+                            x:Name="RootBorder"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{DynamicResource Brush.Border}"
+                            BorderThickness="1"
+                            RenderTransformOrigin="0.5,0.5"
+                            SnapsToDevicePixels="True">
 
-                        <Border.RenderTransform>
-                            <ScaleTransform x:Name="ScaleTf" ScaleX="1" ScaleY="1" />
-                        </Border.RenderTransform>
+                            <Border.RenderTransform>
+                                <ScaleTransform x:Name="ScaleTf" ScaleX="1" ScaleY="1" />
+                            </Border.RenderTransform>
 
-                        <Grid x:Name="LayoutRoot" SnapsToDevicePixels="True">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="32" />
-                                <RowDefinition Height="*" />
-                            </Grid.RowDefinitions>
+                            <Grid x:Name="LayoutRoot" SnapsToDevicePixels="True">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="32" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
 
-                            <Border
-                                Grid.Row="0"
-                                Background="{DynamicResource Brush.Surface}"
-                                BorderBrush="{DynamicResource Brush.Border}"
-                                BorderThickness="0,0,0,1"
-                                SnapsToDevicePixels="True">
+                                <Border
+                                    Grid.Row="0"
+                                    Background="{DynamicResource Brush.Surface}"
+                                    BorderBrush="{DynamicResource Brush.Border}"
+                                    BorderThickness="0,0,0,1"
+                                    SnapsToDevicePixels="True">
 
-                                <Grid
-                                    x:Name="PART_TitleBar"
-                                    Height="32"
-                                    HorizontalAlignment="Stretch"
-                                    shell:WindowChrome.IsHitTestVisibleInChrome="True">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
+                                    <Grid
+                                        x:Name="PART_TitleBar"
+                                        Height="32"
+                                        HorizontalAlignment="Stretch"
+                                        shell:WindowChrome.IsHitTestVisibleInChrome="True">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
 
-                                    <TextBlock
-                                        Margin="15,0"
-                                        VerticalAlignment="Center"
-                                        FontWeight="SemiBold"
-                                        Foreground="{DynamicResource Brush.TextPrimary}"
-                                        Text="{TemplateBinding Title}" />
+                                        <TextBlock
+                                            Margin="15,0"
+                                            VerticalAlignment="Center"
+                                            FontWeight="SemiBold"
+                                            Foreground="{DynamicResource Brush.TextPrimary}"
+                                            Text="{TemplateBinding Title}" />
 
-                                    <StackPanel
-                                        Grid.Column="1"
+                                        <StackPanel
+                                            Grid.Column="1"
+                                            VerticalAlignment="Stretch"
+                                            Orientation="Horizontal">
+                                            <Button
+                                                x:Name="PART_MinButton"
+                                                Width="45"
+                                                Background="Transparent"
+                                                BorderThickness="0"
+                                                Content="&#xE921;"
+                                                FontFamily="Segoe MDL2 Assets"
+                                                FontSize="12"
+                                                Foreground="{DynamicResource Brush.TextPrimary}"
+                                                Style="{StaticResource TitleBarButtonStyle}" />
+
+                                            <Button
+                                                x:Name="PART_MaxButton"
+                                                Width="45"
+                                                Background="Transparent"
+                                                BorderThickness="0"
+                                                Content="&#xE922;"
+                                                FontFamily="Segoe MDL2 Assets"
+                                                FontSize="12"
+                                                Foreground="{DynamicResource Brush.TextPrimary}"
+                                                Style="{StaticResource TitleBarButtonStyle}" />
+
+                                            <Button
+                                                x:Name="PART_CloseButton"
+                                                Width="45"
+                                                Background="Transparent"
+                                                BorderThickness="0"
+                                                Content="&#xE8BB;"
+                                                FontFamily="Segoe MDL2 Assets"
+                                                FontSize="12"
+                                                Foreground="{DynamicResource Brush.TextPrimary}"
+                                                Style="{StaticResource TitleBarCloseButtonStyle}" />
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+
+                                <Grid Grid.Row="1">
+                                    <ContentPresenter
+                                        Margin="0"
+                                        HorizontalAlignment="Stretch"
                                         VerticalAlignment="Stretch"
-                                        Orientation="Horizontal">
-                                        <Button
-                                            x:Name="PART_MinButton"
-                                            Width="45"
-                                            Background="Transparent"
-                                            BorderThickness="0"
-                                            Content="&#xE921;"
-                                            FontFamily="Segoe MDL2 Assets"
-                                            FontSize="12"
-                                            Foreground="{DynamicResource Brush.TextPrimary}"
-                                            Style="{StaticResource TitleBarButtonStyle}" />
+                                        Content="{TemplateBinding Content}"
+                                        ContentTemplate="{TemplateBinding ContentTemplate}" />
 
-                                        <Button
-                                            x:Name="PART_MaxButton"
-                                            Width="45"
-                                            Background="Transparent"
-                                            BorderThickness="0"
-                                            Content="&#xE922;"
-                                            FontFamily="Segoe MDL2 Assets"
-                                            FontSize="12"
-                                            Foreground="{DynamicResource Brush.TextPrimary}"
-                                            Style="{StaticResource TitleBarButtonStyle}" />
+                                    <Grid
+                                        x:Name="PART_Loader"
+                                        Panel.ZIndex="999"
+                                        Background="#8A000000"
+                                        Visibility="Collapsed">
 
-                                        <Button
-                                            x:Name="PART_CloseButton"
-                                            Width="45"
-                                            Background="Transparent"
-                                            BorderThickness="0"
-                                            Content="&#xE8BB;"
-                                            FontFamily="Segoe MDL2 Assets"
-                                            FontSize="12"
-                                            Foreground="{DynamicResource Brush.TextPrimary}"
-                                            Style="{StaticResource TitleBarCloseButtonStyle}" />
-                                    </StackPanel>
+                                        <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                            </Grid.RowDefinitions>
+
+                                            <Grid
+                                                Grid.Row="0"
+                                                Width="360"
+                                                Height="220"
+                                                Margin="0,0,0,18">
+
+                                                <Border
+                                                    x:Name="SlotLeft"
+                                                    Width="92"
+                                                    Height="142"
+                                                    HorizontalAlignment="Center"
+                                                    VerticalAlignment="Center"
+                                                    Background="{DynamicResource Brush.Surface}"
+                                                    BorderBrush="{DynamicResource Brush.Border}"
+                                                    BorderThickness="1"
+                                                    CornerRadius="{StaticResource DefaultCornerRadius}"
+                                                    Opacity="0.42"
+                                                    RenderTransformOrigin="0.5,0.5">
+                                                    <Border.RenderTransform>
+                                                        <TransformGroup>
+                                                            <TranslateTransform x:Name="SlotLeftTranslate" X="-108" Y="18" />
+                                                            <ScaleTransform x:Name="SlotLeftScale" ScaleX="0.9" ScaleY="0.9" />
+                                                        </TransformGroup>
+                                                    </Border.RenderTransform>
+
+                                                    <Grid Margin="10">
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="20" />
+                                                            <RowDefinition Height="*" />
+                                                            <RowDefinition Height="24" />
+                                                        </Grid.RowDefinitions>
+
+                                                        <Border
+                                                            Grid.Row="0"
+                                                            Background="{DynamicResource Brush.Border}"
+                                                            CornerRadius="4">
+                                                            <TextBlock
+                                                                HorizontalAlignment="Center"
+                                                                VerticalAlignment="Center"
+                                                                FontSize="10"
+                                                                FontWeight="SemiBold"
+                                                                Foreground="{DynamicResource Brush.TextPrimary}"
+                                                                Text="SLOT 01" />
+                                                        </Border>
+
+                                                        <Border
+                                                            Grid.Row="1"
+                                                            Margin="0,10,0,10"
+                                                            Background="{DynamicResource Brush.Border}"
+                                                            CornerRadius="6">
+                                                            <Grid Margin="8">
+                                                                <Grid.RowDefinitions>
+                                                                    <RowDefinition Height="10" />
+                                                                    <RowDefinition Height="*" />
+                                                                    <RowDefinition Height="8" />
+                                                                </Grid.RowDefinitions>
+
+                                                                <Rectangle
+                                                                    Grid.Row="0"
+                                                                    Height="6"
+                                                                    HorizontalAlignment="Stretch"
+                                                                    Fill="{DynamicResource Brush.Surface}"
+                                                                    Opacity="0.55"
+                                                                    RadiusX="2"
+                                                                    RadiusY="2" />
+
+                                                                <Rectangle
+                                                                    Grid.Row="1"
+                                                                    Margin="0,8,0,8"
+                                                                    Fill="{DynamicResource Brush.Surface}"
+                                                                    Opacity="0.45"
+                                                                    RadiusX="4"
+                                                                    RadiusY="4" />
+
+                                                                <Rectangle
+                                                                    Grid.Row="2"
+                                                                    Width="34"
+                                                                    HorizontalAlignment="Left"
+                                                                    Fill="{DynamicResource Brush.Surface}"
+                                                                    Opacity="0.55"
+                                                                    RadiusX="2"
+                                                                    RadiusY="2" />
+                                                            </Grid>
+                                                        </Border>
+
+                                                        <Border
+                                                            Grid.Row="2"
+                                                            Background="{DynamicResource Brush.Border}"
+                                                            CornerRadius="4">
+                                                            <TextBlock
+                                                                HorizontalAlignment="Center"
+                                                                VerticalAlignment="Center"
+                                                                FontSize="10"
+                                                                FontWeight="SemiBold"
+                                                                Foreground="{DynamicResource Brush.TextPrimary}"
+                                                                Opacity="0.85"
+                                                                Text="IDLE" />
+                                                        </Border>
+                                                    </Grid>
+                                                </Border>
+
+                                                <Border
+                                                    x:Name="SlotCenter"
+                                                    Width="104"
+                                                    Height="160"
+                                                    HorizontalAlignment="Center"
+                                                    VerticalAlignment="Center"
+                                                    Background="{DynamicResource Brush.Surface}"
+                                                    BorderBrush="{DynamicResource Brush.Accent}"
+                                                    BorderThickness="2"
+                                                    CornerRadius="{StaticResource DefaultCornerRadius}"
+                                                    RenderTransformOrigin="0.5,0.5">
+                                                    <Border.Effect>
+                                                        <DropShadowEffect
+                                                            BlurRadius="24"
+                                                            Direction="270"
+                                                            Opacity="0.28"
+                                                            ShadowDepth="0"
+                                                            Color="{DynamicResource Color.Accent}" />
+                                                    </Border.Effect>
+
+                                                    <Border.RenderTransform>
+                                                        <TransformGroup>
+                                                            <ScaleTransform x:Name="SlotCenterScale" ScaleX="1" ScaleY="1" />
+                                                            <TranslateTransform x:Name="SlotCenterTranslate" X="0" Y="0" />
+                                                        </TransformGroup>
+                                                    </Border.RenderTransform>
+
+                                                    <Grid Margin="10">
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="22" />
+                                                            <RowDefinition Height="*" />
+                                                            <RowDefinition Height="26" />
+                                                        </Grid.RowDefinitions>
+
+                                                        <Border
+                                                            Grid.Row="0"
+                                                            Background="{DynamicResource Brush.Accent}"
+                                                            CornerRadius="4">
+                                                            <DockPanel Margin="6,0">
+                                                                <Ellipse
+                                                                    Width="8"
+                                                                    Height="8"
+                                                                    VerticalAlignment="Center"
+                                                                    DockPanel.Dock="Left"
+                                                                    Fill="{DynamicResource Brush.TextPrimary}"
+                                                                    Opacity="0.9" />
+                                                                <TextBlock
+                                                                    Margin="6,0,0,0"
+                                                                    VerticalAlignment="Center"
+                                                                    FontSize="10"
+                                                                    FontWeight="Bold"
+                                                                    Foreground="{DynamicResource Brush.TextPrimary}"
+                                                                    Text="ACTIVE SLOT" />
+                                                            </DockPanel>
+                                                        </Border>
+
+                                                        <Border
+                                                            Grid.Row="1"
+                                                            Margin="0,10,0,10"
+                                                            Background="#22000000"
+                                                            BorderBrush="{DynamicResource Brush.Accent}"
+                                                            BorderThickness="1"
+                                                            ClipToBounds="True"
+                                                            CornerRadius="6">
+                                                            <Grid Margin="8">
+                                                                <Grid.RowDefinitions>
+                                                                    <RowDefinition Height="10" />
+                                                                    <RowDefinition Height="*" />
+                                                                    <RowDefinition Height="8" />
+                                                                </Grid.RowDefinitions>
+
+                                                                <Rectangle
+                                                                    Grid.Row="0"
+                                                                    Height="6"
+                                                                    HorizontalAlignment="Stretch"
+                                                                    Fill="{DynamicResource Brush.Accent}"
+                                                                    RadiusX="2"
+                                                                    RadiusY="2" />
+
+                                                                <Rectangle
+                                                                    Grid.Row="1"
+                                                                    Margin="0,8,0,8"
+                                                                    Fill="{DynamicResource Brush.Accent}"
+                                                                    Opacity="0.85"
+                                                                    RadiusX="4"
+                                                                    RadiusY="4" />
+
+                                                                <Rectangle
+                                                                    Grid.Row="2"
+                                                                    Width="42"
+                                                                    HorizontalAlignment="Left"
+                                                                    Fill="{DynamicResource Brush.Accent}"
+                                                                    RadiusX="2"
+                                                                    RadiusY="2" />
+
+                                                                <Rectangle
+                                                                    x:Name="SlotCenterScan"
+                                                                    Width="90"
+                                                                    Height="8"
+                                                                    Margin="0,6,0,0"
+                                                                    VerticalAlignment="Top"
+                                                                    Fill="{DynamicResource Brush.TextPrimary}"
+                                                                    Opacity="0.12"
+                                                                    RadiusX="4"
+                                                                    RadiusY="4">
+                                                                    <Rectangle.RenderTransform>
+                                                                        <TranslateTransform x:Name="SlotCenterScanTranslate" Y="0" />
+                                                                    </Rectangle.RenderTransform>
+                                                                </Rectangle>
+                                                            </Grid>
+                                                        </Border>
+
+                                                        <Border
+                                                            Grid.Row="2"
+                                                            Background="{DynamicResource Brush.Accent}"
+                                                            CornerRadius="4">
+                                                            <DockPanel Margin="6,0">
+                                                                <Path
+                                                                    Width="9"
+                                                                    Height="11"
+                                                                    VerticalAlignment="Center"
+                                                                    Data="M 0,0 L 9,5.5 L 0,11 Z"
+                                                                    DockPanel.Dock="Left"
+                                                                    Fill="{DynamicResource Brush.TextPrimary}"
+                                                                    Stretch="Fill" />
+                                                                <TextBlock
+                                                                    Margin="6,0,0,0"
+                                                                    VerticalAlignment="Center"
+                                                                    FontSize="10"
+                                                                    FontWeight="Bold"
+                                                                    Foreground="{DynamicResource Brush.TextPrimary}"
+                                                                    Text="LOADING" />
+                                                            </DockPanel>
+                                                        </Border>
+                                                    </Grid>
+                                                </Border>
+
+                                                <Border
+                                                    x:Name="SlotRight"
+                                                    Width="92"
+                                                    Height="142"
+                                                    HorizontalAlignment="Center"
+                                                    VerticalAlignment="Center"
+                                                    Background="{DynamicResource Brush.Surface}"
+                                                    BorderBrush="{DynamicResource Brush.Border}"
+                                                    BorderThickness="1"
+                                                    CornerRadius="{StaticResource DefaultCornerRadius}"
+                                                    Opacity="0.42"
+                                                    RenderTransformOrigin="0.5,0.5">
+                                                    <Border.RenderTransform>
+                                                        <TransformGroup>
+                                                            <TranslateTransform x:Name="SlotRightTranslate" X="108" Y="18" />
+                                                            <ScaleTransform x:Name="SlotRightScale" ScaleX="0.9" ScaleY="0.9" />
+                                                        </TransformGroup>
+                                                    </Border.RenderTransform>
+
+                                                    <Grid Margin="10">
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="20" />
+                                                            <RowDefinition Height="*" />
+                                                            <RowDefinition Height="24" />
+                                                        </Grid.RowDefinitions>
+
+                                                        <Border
+                                                            Grid.Row="0"
+                                                            Background="{DynamicResource Brush.Border}"
+                                                            CornerRadius="4">
+                                                            <TextBlock
+                                                                HorizontalAlignment="Center"
+                                                                VerticalAlignment="Center"
+                                                                FontSize="10"
+                                                                FontWeight="SemiBold"
+                                                                Foreground="{DynamicResource Brush.TextPrimary}"
+                                                                Text="SLOT 03" />
+                                                        </Border>
+
+                                                        <Border
+                                                            Grid.Row="1"
+                                                            Margin="0,10,0,10"
+                                                            Background="{DynamicResource Brush.Border}"
+                                                            CornerRadius="6">
+                                                            <Grid Margin="8">
+                                                                <Grid.RowDefinitions>
+                                                                    <RowDefinition Height="10" />
+                                                                    <RowDefinition Height="*" />
+                                                                    <RowDefinition Height="8" />
+                                                                </Grid.RowDefinitions>
+
+                                                                <Rectangle
+                                                                    Grid.Row="0"
+                                                                    Height="6"
+                                                                    HorizontalAlignment="Stretch"
+                                                                    Fill="{DynamicResource Brush.Surface}"
+                                                                    Opacity="0.55"
+                                                                    RadiusX="2"
+                                                                    RadiusY="2" />
+
+                                                                <Rectangle
+                                                                    Grid.Row="1"
+                                                                    Margin="0,8,0,8"
+                                                                    Fill="{DynamicResource Brush.Surface}"
+                                                                    Opacity="0.45"
+                                                                    RadiusX="4"
+                                                                    RadiusY="4" />
+
+                                                                <Rectangle
+                                                                    Grid.Row="2"
+                                                                    Width="34"
+                                                                    HorizontalAlignment="Left"
+                                                                    Fill="{DynamicResource Brush.Surface}"
+                                                                    Opacity="0.55"
+                                                                    RadiusX="2"
+                                                                    RadiusY="2" />
+                                                            </Grid>
+                                                        </Border>
+
+                                                        <Border
+                                                            Grid.Row="2"
+                                                            Background="{DynamicResource Brush.Border}"
+                                                            CornerRadius="4">
+                                                            <TextBlock
+                                                                HorizontalAlignment="Center"
+                                                                VerticalAlignment="Center"
+                                                                FontSize="10"
+                                                                FontWeight="SemiBold"
+                                                                Foreground="{DynamicResource Brush.TextPrimary}"
+                                                                Opacity="0.85"
+                                                                Text="WAITING" />
+                                                        </Border>
+                                                    </Grid>
+                                                </Border>
+                                            </Grid>
+
+                                            <StackPanel
+                                                Grid.Row="1"
+                                                Margin="0,0,0,14"
+                                                HorizontalAlignment="Center"
+                                                Orientation="Horizontal">
+                                                <Ellipse
+                                                    x:Name="SlotDotLeft"
+                                                    Width="7"
+                                                    Height="7"
+                                                    Margin="0,0,8,0"
+                                                    Fill="{DynamicResource Brush.Border}"
+                                                    Opacity="0.4" />
+                                                <Ellipse
+                                                    x:Name="SlotDotCenter"
+                                                    Width="9"
+                                                    Height="9"
+                                                    Margin="0,0,8,0"
+                                                    Fill="{DynamicResource Brush.Accent}"
+                                                    Opacity="1.0" />
+                                                <Ellipse
+                                                    x:Name="SlotDotRight"
+                                                    Width="7"
+                                                    Height="7"
+                                                    Fill="{DynamicResource Brush.Border}"
+                                                    Opacity="0.4" />
+                                            </StackPanel>
+
+                                            <TextBlock
+                                                x:Name="LoaderTextBlock"
+                                                Grid.Row="2"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                FontSize="14"
+                                                FontWeight="SemiBold"
+                                                Foreground="{DynamicResource Brush.TextPrimary}"
+                                                Opacity="0.96"
+                                                Text=""
+                                                TextAlignment="Center"
+                                                Visibility="Visible" />
+                                        </Grid>
+                                    </Grid>
                                 </Grid>
-                            </Border>
-
-                            <ContentPresenter
-                                Grid.Row="1"
-                                Margin="0"
-                                HorizontalAlignment="Stretch"
-                                VerticalAlignment="Stretch"
-                                Content="{TemplateBinding Content}"
-                                ContentTemplate="{TemplateBinding ContentTemplate}" />
-                        </Grid>
-                    </Border>
+                            </Grid>
+                        </Border>
+                    </AdornerDecorator>
 
                     <ControlTemplate.Triggers>
+
+                        <Trigger Property="ShowMinimizeButton" Value="False">
+                            <Setter TargetName="PART_MinButton" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+
+                        <Trigger Property="ShowMaximizeButton" Value="False">
+                            <Setter TargetName="PART_MaxButton" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+
                         <Trigger Property="WindowState" Value="Maximized">
                             <Setter TargetName="RootBorder" Property="BorderThickness" Value="0" />
                             <Setter TargetName="LayoutRoot" Property="Margin" Value="0" />
                         </Trigger>
-                    </ControlTemplate.Triggers>
 
+                        <Trigger SourceName="PART_Loader" Property="Visibility" Value="Visible">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard x:Name="LoaderSlotsStoryboard">
+                                    <Storyboard RepeatBehavior="Forever">
+
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SlotLeftTranslate" Storyboard.TargetProperty="X">
+                                            <SplineDoubleKeyFrame KeyTime="0:0:0.0" Value="-108" />
+                                            <SplineDoubleKeyFrame KeyTime="0:0:0.6" Value="-96" />
+                                            <SplineDoubleKeyFrame KeyTime="0:0:1.2" Value="-108" />
+                                        </DoubleAnimationUsingKeyFrames>
+
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SlotRightTranslate" Storyboard.TargetProperty="X">
+                                            <SplineDoubleKeyFrame KeyTime="0:0:0.0" Value="108" />
+                                            <SplineDoubleKeyFrame KeyTime="0:0:0.6" Value="96" />
+                                            <SplineDoubleKeyFrame KeyTime="0:0:1.2" Value="108" />
+                                        </DoubleAnimationUsingKeyFrames>
+
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SlotCenterScale" Storyboard.TargetProperty="ScaleX">
+                                            <SplineDoubleKeyFrame KeyTime="0:0:0.0" Value="1.0" />
+                                            <SplineDoubleKeyFrame KeyTime="0:0:0.6" Value="1.045" />
+                                            <SplineDoubleKeyFrame KeyTime="0:0:1.2" Value="1.0" />
+                                        </DoubleAnimationUsingKeyFrames>
+
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SlotCenterScale" Storyboard.TargetProperty="ScaleY">
+                                            <SplineDoubleKeyFrame KeyTime="0:0:0.0" Value="1.0" />
+                                            <SplineDoubleKeyFrame KeyTime="0:0:0.6" Value="1.045" />
+                                            <SplineDoubleKeyFrame KeyTime="0:0:1.2" Value="1.0" />
+                                        </DoubleAnimationUsingKeyFrames>
+
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SlotLeft" Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeyTime="0:0:0.0" Value="0.42" />
+                                            <SplineDoubleKeyFrame KeyTime="0:0:0.6" Value="0.58" />
+                                            <SplineDoubleKeyFrame KeyTime="0:0:1.2" Value="0.42" />
+                                        </DoubleAnimationUsingKeyFrames>
+
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SlotRight" Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeyTime="0:0:0.0" Value="0.42" />
+                                            <SplineDoubleKeyFrame KeyTime="0:0:0.6" Value="0.58" />
+                                            <SplineDoubleKeyFrame KeyTime="0:0:1.2" Value="0.42" />
+                                        </DoubleAnimationUsingKeyFrames>
+
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SlotCenterScanTranslate" Storyboard.TargetProperty="Y">
+                                            <SplineDoubleKeyFrame KeyTime="0:0:0.0" Value="0" />
+                                            <SplineDoubleKeyFrame KeyTime="0:0:0.6" Value="76" />
+                                            <SplineDoubleKeyFrame KeyTime="0:0:1.2" Value="0" />
+                                        </DoubleAnimationUsingKeyFrames>
+
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SlotDotLeft" Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeyTime="0:0:0.0" Value="0.4" />
+                                            <SplineDoubleKeyFrame KeyTime="0:0:0.6" Value="0.8" />
+                                            <SplineDoubleKeyFrame KeyTime="0:0:1.2" Value="0.4" />
+                                        </DoubleAnimationUsingKeyFrames>
+
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SlotDotCenter" Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeyTime="0:0:0.0" Value="1.0" />
+                                            <SplineDoubleKeyFrame KeyTime="0:0:0.6" Value="0.72" />
+                                            <SplineDoubleKeyFrame KeyTime="0:0:1.2" Value="1.0" />
+                                        </DoubleAnimationUsingKeyFrames>
+
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SlotDotRight" Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeyTime="0:0:0.0" Value="0.4" />
+                                            <SplineDoubleKeyFrame KeyTime="0:0:0.6" Value="0.8" />
+                                            <SplineDoubleKeyFrame KeyTime="0:0:1.2" Value="0.4" />
+                                        </DoubleAnimationUsingKeyFrames>
+
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="LoaderTextBlock" Storyboard.TargetProperty="Opacity">
+                                            <SplineDoubleKeyFrame KeyTime="0:0:0.0" Value="0.82" />
+                                            <SplineDoubleKeyFrame KeyTime="0:0:0.6" Value="1.0" />
+                                            <SplineDoubleKeyFrame KeyTime="0:0:1.2" Value="0.82" />
+                                        </DoubleAnimationUsingKeyFrames>
+
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+
+                            <Trigger.ExitActions>
+                                <StopStoryboard BeginStoryboardName="LoaderSlotsStoryboard" />
+                            </Trigger.ExitActions>
+                        </Trigger>
+
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

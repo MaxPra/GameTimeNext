@@ -1,20 +1,29 @@
-﻿using GameTimeNext.Core.Framework.DataBase.TableObjects;
-using System;
+﻿using GameTimeNext.Core.Application.DataManagers;
+using UIX.ViewController.Engine.DataBaseObjects;
 
 namespace GameTimeNext.Core.Application.TableObjects
 {
-    internal class TBL_SESSI : TableObjectBase
+    internal class TBL_SESSI : UIXTableObjectBase
     {
+        [UIXSignatureField(0)]
         public long SEID { get; set; }
 
+        [UIXSignatureField(1)]
         public long PFID { get; set; }
 
+        [UIXSignatureField(2)]
         public DateTime PLFR { get; set; }
+
+        [UIXSignatureField(3)]
         public DateTime PLTO { get; set; }
 
+        [UIXSignatureField(4)]
         public double PLTI { get; set; }
 
+        [UIXSignatureField(5)]
         public DateTime CRAT { get; set; }
+
+        [UIXSignatureField(6)]
         public DateTime CHAT { get; set; }
 
         public TBL_SESSI()
@@ -33,19 +42,10 @@ namespace GameTimeNext.Core.Application.TableObjects
             AcceptChanges();
         }
 
-        protected override string BuildSignature()
+        public override void Save()
         {
-            string signature = string.Empty;
-
-            signature += NormalizeLong(SEID) + "|";
-            signature += NormalizeLong(PFID) + "|";
-            signature += NormalizeDateTime(PLFR) + "|";
-            signature += NormalizeDateTime(PLTO) + "|";
-            signature += NormalizeDouble(PLTI) + "|";
-            signature += NormalizeDateTime(CRAT) + "|";
-            signature += NormalizeDateTime(CHAT);
-
-            return signature;
+            TBLM_SESSI tblmSessi = new TBLM_SESSI();
+            tblmSessi.Save(this);
         }
     }
 }

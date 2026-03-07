@@ -3,6 +3,7 @@ using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.DataBase;
 using System.IO;
 using System.Text.Json;
+using System.Windows.Controls;
 
 namespace GameTimeNext.Core.Framework
 {
@@ -11,6 +12,7 @@ namespace GameTimeNext.Core.Framework
         private static AppConfig _appConfig = new AppConfig();
         private static DataBaseManager _databaseManager = new DataBaseManager();
         private static TBL_PROFI? _tblProfi = new TBL_PROFI();
+        private static ContentControl _loader = new ContentControl();
 
         // [------------------------------------------------]
         // [------------------ PUBLIC ----------------------]
@@ -42,6 +44,27 @@ namespace GameTimeNext.Core.Framework
             string appConfigText = JsonSerializer.Serialize(GetAppConfig());
 
             File.WriteAllText(new AppConfig().AppConfigPath, appConfigText);
+        }
+
+        public static void ShowLoader()
+        {
+            System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
+            {
+                _loader.Visibility = System.Windows.Visibility.Visible;
+            }, System.Windows.Threading.DispatcherPriority.Render);
+        }
+
+        public static void HideLoader()
+        {
+            System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
+            {
+                _loader.Visibility = System.Windows.Visibility.Collapsed;
+            }, System.Windows.Threading.DispatcherPriority.Render);
+        }
+
+        public static void SetLoader(ContentControl control)
+        {
+            _loader = control;
         }
 
         public static void Initalize()

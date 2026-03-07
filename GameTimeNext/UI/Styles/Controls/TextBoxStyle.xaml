@@ -90,17 +90,12 @@
 
                     <ControlTemplate.Triggers>
 
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Brush.TextBox.BackgroundHover}" />
-                            <Setter TargetName="Sheen" Property="Opacity" Value="1" />
-                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Brush.AccentHover}" />
-                        </Trigger>
-
                         <Trigger Property="IsKeyboardFocusWithin" Value="True">
                             <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Brush.TextBox.BackgroundFocused}" />
                             <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
                             <Setter TargetName="Bd" Property="BorderThickness" Value="{DynamicResource Thickness.TextBox.BorderFocused}" />
                             <Setter TargetName="Glow" Property="Opacity" Value="1" />
+                            <Setter TargetName="Sheen" Property="Opacity" Value="1" />
                         </Trigger>
 
                         <Trigger Property="IsEnabled" Value="False">

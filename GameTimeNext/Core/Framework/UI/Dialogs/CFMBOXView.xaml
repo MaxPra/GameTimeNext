@@ -1,0 +1,105 @@
+﻿<ui:GTNWindow
+    x:Class="GameTimeNext.Core.Framework.UI.Dialogs.CFMBOXView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI.Base"
+    Title="Dialog"
+    Width="600"
+    Height="260"
+    MinWidth="600"
+    MinHeight="260"
+    MaxWidth="900"
+    ResizeMode="NoResize"
+    ShowInTaskbar="True"
+    Style="{StaticResource GTNWindowStyle}"
+    WindowStartupLocation="Manual"
+    mc:Ignorable="d">
+
+    <Grid Margin="36,28,36,28">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!--  CONTENT  -->
+        <Grid x:Name="HeaderRoot" Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="110" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!--  ICON  -->
+            <Border
+                x:Name="BdIconHost"
+                Grid.Column="0"
+                Width="72"
+                Height="72"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Background="{DynamicResource Brush.Accent}"
+                CornerRadius="16">
+
+                <TextBlock
+                    x:Name="TbIconGlyph"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    FontSize="32"
+                    FontWeight="Bold"
+                    Foreground="{DynamicResource Brush.TextPrimary}"
+                    Text="?" />
+            </Border>
+
+            <!--  MESSAGE  -->
+            <TextBlock
+                x:Name="TbMessage"
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                FontSize="15"
+                Foreground="{DynamicResource Brush.TextPrimary}"
+                LineHeight="24"
+                Text="Message"
+                TextWrapping="Wrap" />
+        </Grid>
+
+        <!--  BUTTONS  -->
+        <Grid Grid.Row="1" Margin="0,34,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Button
+                x:Name="BtnButton1"
+                Grid.Column="1"
+                Height="38"
+                MinWidth="120"
+                Margin="0,0,12,0"
+                Padding="18,0"
+                Content="OK"
+                Visibility="Collapsed" />
+
+            <Button
+                x:Name="BtnButton2"
+                Grid.Column="2"
+                Height="38"
+                MinWidth="120"
+                Margin="0,0,12,0"
+                Padding="18,0"
+                Content="No"
+                Visibility="Collapsed" />
+
+            <Button
+                x:Name="BtnButton3"
+                Grid.Column="3"
+                Height="38"
+                MinWidth="120"
+                Padding="18,0"
+                Content="Cancel"
+                Visibility="Collapsed" />
+        </Grid>
+    </Grid>
+</ui:GTNWindow>

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.IO;
 using System.Text.Json.Serialization;
 
 namespace GameTimeNext.Core.Framework.Config
@@ -70,6 +67,22 @@ namespace GameTimeNext.Core.Framework.Config
             get
             {
                 return AppFolderPath + Path.DirectorySeparatorChar + "AppConfig.gtnconf";
+            }
+        }
+
+        [JsonIgnore]
+        public string SteamGridDbAPIKey
+        {
+            get
+            {
+                string? apiKey = Environment.GetEnvironmentVariable("SteamGridDB_API_KEY");
+
+                if (string.IsNullOrWhiteSpace(apiKey))
+                {
+                    throw new InvalidOperationException("Environmentvariable 'STEAMGRIDDB_API_KEY' missing.");
+                }
+
+                return apiKey;
             }
         }
 

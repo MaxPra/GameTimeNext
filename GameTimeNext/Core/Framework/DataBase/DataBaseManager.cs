@@ -1,9 +1,6 @@
 ﻿using GameTimeNext.Core.Application.TableObjects;
-using System;
-using System.Collections.Generic;
 using System.Data.SQLite;
 using System.IO;
-using System.Text;
 
 namespace GameTimeNext.Core.Framework.DataBase
 {
@@ -196,21 +193,21 @@ namespace GameTimeNext.Core.Framework.DataBase
         private void CreateTableTAB_PROFI()
         {
             var sql = @"
-            CREATE TABLE IF NOT EXISTS TBL_PROFI (
-                PFID INTEGER PRIMARY KEY AUTOINCREMENT,
-                GANA VARCHAR(200),
-                FIPL DATETIME,
-                LAPL DATETIME,
-                PPFN VARCHAR(10000),
-                EXGF VARCHAR(10000),
-                SAID INTEGER,
-                PRSE TEXT,
-                EXEC TEXT,
-                PLSP DATETIME NOT NULL DEFAULT '0001-01-01 00:00:00',
-                CRAT DATETIME,
-                CHAT DATETIME
-            );
-        ";
+                    CREATE TABLE IF NOT EXISTS TBL_PROFI (
+                        PFID INTEGER PRIMARY KEY AUTOINCREMENT,
+                        GANA VARCHAR(200),
+                        FIPL DATETIME,
+                        LAPL DATETIME,
+                        PPFN VARCHAR(10000),
+                        EXGF VARCHAR(10000),
+                        SAID INTEGER,
+                        PRSE TEXT,
+                        EXEC TEXT,
+                        PLSP DATETIME NOT NULL DEFAULT '0001-01-01 00:00:00',
+                        CRAT DATETIME,
+                        CHAT DATETIME,
+                        ACCO VARCHAR(200)
+                    );";
 
             if (_connection == null)
                 return;

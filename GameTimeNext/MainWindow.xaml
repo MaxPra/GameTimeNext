@@ -18,13 +18,14 @@
     d:DesignWidth="1200"
     Style="{StaticResource GTNWindowStyle}"
     WindowStartupLocation="CenterScreen"
-    WindowState="Normal"
+    WindowState="Maximized"
     mc:Ignorable="d">
 
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
         <!--  TabControl  -->
         <TabControl
+            x:Name="MainTabs"
             Padding="0"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"

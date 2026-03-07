@@ -1,8 +1,7 @@
 ﻿using GameTimeNext.Core.Framework.Config;
-using System;
-using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
-using System.Text;
 using System.Text.Json;
 
 namespace GameTimeNext.Core.Framework.Files
@@ -74,6 +73,19 @@ namespace GameTimeNext.Core.Framework.Files
 
                 CopyDirectory(directory, targetSubDirectory, overwriteFiles);
             }
+        }
+
+        public static void ConvertToJpeg(string sourcePath, string targetPath, long quality = 90L)
+        {
+            using Image image = Image.FromFile(sourcePath);
+
+            ImageCodecInfo jpgEncoder = ImageCodecInfo.GetImageDecoders()
+                .First(c => c.FormatID == ImageFormat.Jpeg.Guid);
+
+            EncoderParameters encoderParams = new EncoderParameters(1);
+            encoderParams.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, quality);
+
+            image.Save(targetPath, jpgEncoder, encoderParams);
         }
     }
 }

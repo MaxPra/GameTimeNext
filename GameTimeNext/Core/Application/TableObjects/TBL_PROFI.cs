@@ -1,4 +1,5 @@
 ﻿using GameTimeNext.Core.Application.DataManagers;
+using System.Windows.Media.Imaging;
 using UIX.ViewController.Engine.DataBaseObjects;
 
 namespace GameTimeNext.Core.Application.TableObjects
@@ -41,6 +42,11 @@ namespace GameTimeNext.Core.Application.TableObjects
         [UIXSignatureField(11)]
         public DateTime CHAT { get; set; }
 
+        [UIXSignatureField(12)]
+        public string ACCO { get; set; }
+
+        public BitmapImage CoverImage { get; set; }
+
         public TBL_PROFI()
         {
             PFID = 0;
@@ -61,6 +67,8 @@ namespace GameTimeNext.Core.Application.TableObjects
 
             CRAT = DateTime.MinValue;
             CHAT = DateTime.MinValue;
+
+            ACCO = string.Empty;
 
             AcceptChanges();
         }

@@ -1,16 +1,23 @@
-﻿using GameTimeNext.Core.Framework.DataBase.TableObjects;
-using System;
+﻿using GameTimeNext.Core.Application.DataManagers;
+using UIX.ViewController.Engine.DataBaseObjects;
 
 namespace GameTimeNext.Core.Application.TableObjects
 {
-    internal class TBL_GRPPO : TableObjectBase
+    internal class TBL_GRPPO : UIXTableObjectBase
     {
+        [UIXSignatureField(0)]
         public long GPID { get; set; }
 
+        [UIXSignatureField(1)]
         public long GRID { get; set; }
+
+        [UIXSignatureField(2)]
         public long PFID { get; set; }
 
+        [UIXSignatureField(3)]
         public DateTime CRAT { get; set; }
+
+        [UIXSignatureField(4)]
         public DateTime CHAT { get; set; }
 
         public TBL_GRPPO()
@@ -26,17 +33,10 @@ namespace GameTimeNext.Core.Application.TableObjects
             AcceptChanges();
         }
 
-        protected override string BuildSignature()
+        public override void Save()
         {
-            string signature = string.Empty;
-
-            signature += NormalizeLong(GPID) + "|";
-            signature += NormalizeLong(GRID) + "|";
-            signature += NormalizeLong(PFID) + "|";
-            signature += NormalizeDateTime(CRAT) + "|";
-            signature += NormalizeDateTime(CHAT);
-
-            return signature;
+            TBLM_GRPPO tblmGrppo = new TBLM_GRPPO();
+            tblmGrppo.Save(this);
         }
     }
 }

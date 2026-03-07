@@ -25,6 +25,7 @@ namespace GameTimeNext.Core.Application.Profiles
             this.HostApplication = hostApplication;
             this.ProfilesView.ContentPresenter = presenter;
             this.ProfilesView.ViewController.Show(false);
+            Loader = hostApplication.Loader;
         }
 
         public override void InitializeApplicationOutput()

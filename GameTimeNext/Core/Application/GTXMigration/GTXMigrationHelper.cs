@@ -1,4 +1,6 @@
-﻿using GameTimeNext.Core.Framework;
+﻿using GameTimeNext.Core.Application.General;
+using GameTimeNext.Core.Application.Profiles.Components;
+using GameTimeNext.Core.Framework;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing;
 using SixLabors.ImageSharp.Drawing.Processing;
@@ -7,6 +9,8 @@ using SixLabors.ImageSharp.Processing;
 using System.Data.SQLite;
 using System.IO;
 using System.Text;
+using UIX.ViewController.Engine.FrameworkElements.Loader;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.GTXMigration
 {
@@ -19,45 +23,51 @@ namespace GameTimeNext.Core.Application.GTXMigration
         private string _databaseFilePath = string.Empty;
         private string _startUpParmsFilePath = string.Empty;
         private string _imagesFolderPath = string.Empty;
+        private UIXLoader? _loader = null;
+        private string _loaderStartText = string.Empty;
 
         private SQLiteConnection _connectionOld = new SQLiteConnection();
 
-        public GTXMigrationHelper(string rootFolder)
+        public GTXMigrationHelper(string rootFolder, UIXLoader loader)
         {
             _rootFolder = rootFolder;
 
             _databaseFilePath = rootFolder + System.IO.Path.DirectorySeparatorChar + "GameTimeXDB.db";
             _startUpParmsFilePath = rootFolder + System.IO.Path.DirectorySeparatorChar + "startUpParms.json";
             _imagesFolderPath = rootFolder + System.IO.Path.DirectorySeparatorChar + "images";
+
+            _loader = loader;
         }
 
         public void MigrateToGTNXT()
         {
+            _loader.SetTextStep("connecting to old database");
+
             // Verbindung zu alter Datenbank aufbauen
             bool connectSuccess = ConnectToSQLite();
 
             if (!connectSuccess)
-                // Tu was
                 return;
 
+            _loader.SetTextStep("migrating profile data");
             // Profile migrieren
             MigrateProfiles();
 
+            _loader.SetTextStep("migrating session data");
             // Sessions
             MigrateSessions();
 
+            _loader.SetTextStep("migrating profile covers");
             // Profil Covers
             MigrateProfileImagesToCovers();
 
             // Alte Verbindung schließen
             _connectionOld.Close();
-
         }
 
         private bool ConnectToSQLite()
         {
             string connectionString;
-            bool newDB;
 
             if (!File.Exists(_databaseFilePath))
             {
@@ -69,14 +79,22 @@ namespace GameTimeNext.Core.Application.GTXMigration
             }
 
             _connectionOld = new SQLiteConnection(connectionString);
-            try { _connectionOld.Open(); } catch { }
+            try
+            {
+                _connectionOld.Open();
+            }
+            catch
+            {
+            }
 
             try
             {
                 using var fkOn = new SQLiteCommand("PRAGMA foreign_keys = ON;", _connectionOld);
                 fkOn.ExecuteNonQuery();
             }
-            catch { }
+            catch
+            {
+            }
 
             return true;
         }
@@ -99,9 +117,10 @@ namespace GameTimeNext.Core.Application.GTXMigration
                     {
                         while (reader.Read())
                         {
-                            // Werte aus alter DB
                             int pfid = reader.GetInt32(0);
                             string gana = reader.GetString(1);
+
+                            _loader.SetTextStep($"migrating profile data [ {gana} ]");
 
                             DateTime fipl = ParseOldDateTime(reader.GetValue(2));
                             DateTime lapl = ParseOldDateTime(reader.GetValue(3));
@@ -118,14 +137,31 @@ namespace GameTimeNext.Core.Application.GTXMigration
 
                             DateTime plsp = ParseOldDateTime(reader.GetString(11));
 
-                            // INSERT in neue DB
+                            string temp = reader.GetString(4);
+
+                            // -- Accent Color Calculation (START)
+                            List<System.Windows.Media.Color> accentColorsCalc = FnImage.GetTopAccentColors(_imagesFolderPath + System.IO.Path.DirectorySeparatorChar + reader.GetString(4), 1);
+                            System.Windows.Media.Color accentColor = System.Windows.Media.Color.FromArgb(255, accentColorsCalc[0].R, accentColorsCalc[0].G, accentColorsCalc[0].B);
+                            string[] accentColors = FnTheme.CalculateAccentStateColors(accentColor.ToString());
+
+                            Dictionary<string, string> dicAccentColors = new Dictionary<string, string>();
+                            dicAccentColors.Add("accent", accentColors[0]);
+                            dicAccentColors.Add("hover", accentColors[1]);
+                            dicAccentColors.Add("pressed", accentColors[2]);
+
+                            CAccentColors cAccentColors = new CAccentColors();
+                            cAccentColors.AccentColors = dicAccentColors;
+
+                            string acco = cAccentColors.Serialize();
+                            // -- Accent Color Calculation (END)
+
                             using (SQLiteCommand insertCmd = AppEnvironment.GetDataBaseManager().GetConnection().CreateCommand())
                             {
                                 insertCmd.CommandText =
                                     "INSERT INTO TBL_PROFI " +
-                                    "(PFID, GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, PLSP, CRAT, CHAT) " +
+                                    "(PFID, GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, PLSP, CRAT, CHAT, ACCO) " +
                                     "VALUES " +
-                                    "(@PFID, @GANA, @FIPL, @LAPL, @PPFN, @EXGF, @SAID, @PRSE, @EXEC, @PLSP, @CRAT, @CHAT);";
+                                    "(@PFID, @GANA, @FIPL, @LAPL, @PPFN, @EXGF, @SAID, @PRSE, @EXEC, @PLSP, @CRAT, @CHAT, @ACCO);";
 
                                 insertCmd.Parameters.AddWithValue("@PFID", pfid);
                                 insertCmd.Parameters.AddWithValue("@GANA", gana);
@@ -145,6 +181,8 @@ namespace GameTimeNext.Core.Application.GTXMigration
                                 insertCmd.Parameters.AddWithValue("@CRAT", ToDbDateTime(crat));
                                 insertCmd.Parameters.AddWithValue("@CHAT", ToDbDateTime(chat));
 
+                                insertCmd.Parameters.AddWithValue("@ACCO", acco);
+
                                 insertCmd.ExecuteNonQuery();
                             }
                         }
@@ -163,12 +201,22 @@ namespace GameTimeNext.Core.Application.GTXMigration
         {
             bool success = true;
 
-            StringBuilder sb = new StringBuilder();
-            sb.Append("SELECT SID, FK_PID, Played_From, Played_To, Playtime ");
-            sb.Append("from tblGameSessions");
+            int totalCount = 0;
+            int current = 0;
 
             try
             {
+                // Gesamtanzahl ermitteln
+                using (var countCmd = _connectionOld.CreateCommand())
+                {
+                    countCmd.CommandText = "SELECT COUNT(*) FROM tblGameSessions";
+                    totalCount = Convert.ToInt32(countCmd.ExecuteScalar());
+                }
+
+                StringBuilder sb = new StringBuilder();
+                sb.Append("SELECT SID, FK_PID, Played_From, Played_To, Playtime ");
+                sb.Append("from tblGameSessions");
+
                 using (var cmd = _connectionOld.CreateCommand())
                 {
                     cmd.CommandText = sb.ToString();
@@ -177,11 +225,15 @@ namespace GameTimeNext.Core.Application.GTXMigration
                     {
                         while (reader.Read())
                         {
+                            current++;
+
                             int seid = reader.GetInt32(0);
                             int pfid = reader.GetInt32(1);
 
                             DateTime plfr = ParseOldDateTime(reader.GetValue(2));
                             DateTime plto = ParseOldDateTime(reader.GetValue(3));
+
+                            _loader.SetTextStep($"migrating session data [ {current} / {totalCount} ]");
 
                             double plti = Convert.ToDouble(reader.GetValue(4));
 
@@ -201,7 +253,6 @@ namespace GameTimeNext.Core.Application.GTXMigration
 
                                 insertCmd.Parameters.AddWithValue("@PLTI", plti);
 
-                                // In der alten Tabelle sind CRAT/CHAT nicht im SELECT, daher wie "CreateNew": jetzt
                                 DateTime now = DateTime.Now;
                                 insertCmd.Parameters.AddWithValue("@CRAT", ToDbDateTime(now));
                                 insertCmd.Parameters.AddWithValue("@CHAT", ToDbDateTime(now));
@@ -241,16 +292,14 @@ namespace GameTimeNext.Core.Application.GTXMigration
 
             string[] formats = new string[]
             {
-        "dd.MM.yyyy HH:mm:ss",
-        "dd.MM.yyyy H:mm:ss",
-        "dd.MM.yyyy HH:mm",
-        "dd.MM.yyyy H:mm",
-        "dd.MM.yyyy",
-
-        // ISO/Fallbacks
-        "yyyy-MM-dd HH:mm:ss",
-        "yyyy-MM-ddTHH:mm:ss",
-        "yyyy-MM-dd"
+                "dd.MM.yyyy HH:mm:ss",
+                "dd.MM.yyyy H:mm:ss",
+                "dd.MM.yyyy HH:mm",
+                "dd.MM.yyyy H:mm",
+                "dd.MM.yyyy",
+                "yyyy-MM-dd HH:mm:ss",
+                "yyyy-MM-ddTHH:mm:ss",
+                "yyyy-MM-dd"
             };
 
             if (DateTime.TryParseExact(
@@ -275,7 +324,6 @@ namespace GameTimeNext.Core.Application.GTXMigration
             return DateTime.MinValue;
         }
 
-
         private string ToDbDateTime(DateTime value)
         {
             if (value == DateTime.MinValue)
@@ -286,29 +334,32 @@ namespace GameTimeNext.Core.Application.GTXMigration
             return value.ToString("yyyy-MM-dd HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
         }
 
-
-
         private bool MigrateProfileImagesToCovers()
         {
             bool success = true;
 
             try
             {
-                //FileHandler.CopyDirectory(_imagesFolderPath, AppEnvironment.GetAppConfig().CoverFolderTempPath, false);
                 ConvertFolderToNewFormat(_imagesFolderPath, AppEnvironment.GetAppConfig().CoverFolderPath);
             }
-            catch (Exception ex) { success = false; return success; }
+            catch
+            {
+                success = false;
+                return success;
+            }
 
             try
             {
-                //ConvertFolderToNewFormat(AppEnvironment.GetAppConfig().CoverFolderTempPath, AppEnvironment.GetAppConfig().CoverFolderPath);
             }
-            catch (Exception ex) { success = false; }
+            catch
+            {
+                success = false;
+            }
 
             return success;
         }
 
-        public static void ConvertFolderToNewFormat(string sourceFolder, string targetFolder)
+        public void ConvertFolderToNewFormat(string sourceFolder, string targetFolder)
         {
             if (!Directory.Exists(sourceFolder))
             {
@@ -321,6 +372,7 @@ namespace GameTimeNext.Core.Application.GTXMigration
             }
 
             string[] files = Directory.GetFiles(sourceFolder);
+            int total = files.Length;
 
             for (int i = 0; i < files.Length; i++)
             {
@@ -334,6 +386,8 @@ namespace GameTimeNext.Core.Application.GTXMigration
                 string fileName = System.IO.Path.GetFileNameWithoutExtension(path);
                 string targetPath = System.IO.Path.Combine(targetFolder, fileName + ".jpg");
 
+                _loader.SetTextStep($"migrating covers [ {i + 1} / {total} ]");
+
                 ConvertSingleImage(path, targetPath);
             }
         }
@@ -343,7 +397,7 @@ namespace GameTimeNext.Core.Application.GTXMigration
             const int targetW = 600;
             const int targetH = 900;
 
-            int maxImageSize = 600; // Bild bleibt quadratisch, maximal 600x600
+            int maxImageSize = 600;
 
             int topThicknessLeft = 140;
             int topThicknessRight = 80;
@@ -353,7 +407,6 @@ namespace GameTimeNext.Core.Application.GTXMigration
 
             using (Image<Rgba32> src = Image.Load<Rgba32>(inputPath))
             {
-                // Bild nicht strecken: nur so skalieren, dass es maximal 600x600 ist
                 using (Image<Rgba32> img = src.Clone())
                 {
                     img.Mutate(ctx =>
@@ -366,7 +419,6 @@ namespace GameTimeNext.Core.Application.GTXMigration
                         ctx.Resize(opt);
                     });
 
-                    // Hintergrund: dunkelgrau statt weiß
                     Color background = Color.FromRgba(18, 18, 18, 255);
 
                     using (Image<Rgba32> canvas = new Image<Rgba32>(targetW, targetH, background))
@@ -376,10 +428,8 @@ namespace GameTimeNext.Core.Application.GTXMigration
 
                         canvas.Mutate(ctx =>
                         {
-                            // Bild mittig platzieren
                             ctx.DrawImage(img, new Point(x, y), 1f);
 
-                            // Balken darüber (leicht transparent)
                             DrawSlantedOverlays(
                                 ctx,
                                 targetW,
@@ -396,7 +446,6 @@ namespace GameTimeNext.Core.Application.GTXMigration
                 }
             }
         }
-
 
         private static void ResizeTo600x900(IImageProcessingContext ctx)
         {
@@ -417,11 +466,9 @@ namespace GameTimeNext.Core.Application.GTXMigration
             int bottomThicknessLeft,
             int bottomThicknessRight)
         {
-            // Etwas transparent wirkt meistens „wertiger“ als komplett deckend
             Color overlayBlack = Color.FromRgba(0, 0, 0, 220);
             Color edgeBlack = Color.FromRgba(0, 0, 0, 255);
 
-            // Oben: Polygon
             IPath topShape = new Polygon(new LinearLineSegment(
                 new PointF(0, 0),
                 new PointF(targetW, 0),
@@ -430,10 +477,8 @@ namespace GameTimeNext.Core.Application.GTXMigration
             ));
             ctx.Fill(overlayBlack, topShape);
 
-            // Unterkante der oberen Schräge als „saubere Linie“
             ctx.DrawLine(edgeBlack, 3f, new PointF(0, topThicknessLeft), new PointF(targetW, topThicknessRight));
 
-            // Unten: Polygon
             IPath bottomShape = new Polygon(new LinearLineSegment(
                 new PointF(0, targetH),
                 new PointF(targetW, targetH),
@@ -442,7 +487,6 @@ namespace GameTimeNext.Core.Application.GTXMigration
             ));
             ctx.Fill(overlayBlack, bottomShape);
 
-            // Oberkante der unteren Schräge als „saubere Linie“
             ctx.DrawLine(edgeBlack, 3f, new PointF(0, targetH - bottomThicknessLeft), new PointF(targetW, targetH - bottomThicknessRight));
         }
 
@@ -451,9 +495,5 @@ namespace GameTimeNext.Core.Application.GTXMigration
             string ext = System.IO.Path.GetExtension(path).ToLowerInvariant();
             return ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".bmp" || ext == ".webp";
         }
-
-
-
-
     }
 }

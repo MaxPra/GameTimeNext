@@ -1,0 +1,136 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <SolidColorBrush x:Key="Brush.SteamGridDB.CardBackground" Color="#0C0F16" />
+    <SolidColorBrush x:Key="Brush.SteamGridDB.CardBackgroundHover" Color="#121722" />
+    <SolidColorBrush x:Key="Brush.SteamGridDB.CardBorder" Color="#323847" />
+    <SolidColorBrush x:Key="Brush.SteamGridDB.CardBorderHover" Color="#495267" />
+
+    <SolidColorBrush x:Key="Brush.SteamGridDB.Accent" Color="{DynamicResource Color.Accent}" />
+    <SolidColorBrush x:Key="Brush.SteamGridDB.AccentHover" Color="{DynamicResource Color.AccentHover}" />
+    <SolidColorBrush x:Key="Brush.SteamGridDB.AccentPressed" Color="{DynamicResource Color.AccentPressed}" />
+
+    <Style x:Key="SteamGridDBCoverListBoxItemStyle" TargetType="{x:Type ListBoxItem}">
+        <Setter Property="Margin" Value="0,0,16,16" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+        <Setter Property="Background" Value="{StaticResource Brush.SteamGridDB.CardBackground}" />
+        <Setter Property="BorderBrush" Value="{StaticResource Brush.SteamGridDB.CardBorder}" />
+        <Setter Property="BorderThickness" Value="2" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                    <Grid
+                        Width="170"
+                        Height="255"
+                        SnapsToDevicePixels="True">
+                        <Border
+                            x:Name="SelectionGlow"
+                            Margin="-3"
+                            Background="Transparent"
+                            CornerRadius="{DynamicResource DefaultCornerRadius}"
+                            IsHitTestVisible="False"
+                            Opacity="0">
+                            <Border.Effect>
+                                <DropShadowEffect
+                                    BlurRadius="22"
+                                    Opacity="0.45"
+                                    ShadowDepth="0"
+                                    Color="{DynamicResource Color.Accent}" />
+                            </Border.Effect>
+                        </Border>
+
+                        <Border
+                            x:Name="OuterBorder"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{DynamicResource DefaultCornerRadius}"
+                            SnapsToDevicePixels="True">
+
+                            <Grid ClipToBounds="True">
+                                <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+
+                                <Border
+                                    x:Name="HoverOverlay"
+                                    Margin="0"
+                                    Background="#10FFFFFF"
+                                    CornerRadius="{DynamicResource DefaultCornerRadius}"
+                                    IsHitTestVisible="False"
+                                    Opacity="0" />
+
+                                <Border
+                                    x:Name="SelectedBorder"
+                                    Margin="0"
+                                    Background="Transparent"
+                                    BorderBrush="{StaticResource Brush.SteamGridDB.Accent}"
+                                    BorderThickness="3"
+                                    CornerRadius="{DynamicResource DefaultCornerRadius}"
+                                    IsHitTestVisible="False"
+                                    Opacity="0" />
+                            </Grid>
+                        </Border>
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="OuterBorder" Property="Background" Value="{StaticResource Brush.SteamGridDB.CardBackgroundHover}" />
+                            <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{StaticResource Brush.SteamGridDB.CardBorderHover}" />
+                            <Setter TargetName="HoverOverlay" Property="Opacity" Value="1" />
+                        </Trigger>
+
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{StaticResource Brush.SteamGridDB.Accent}" />
+                            <Setter TargetName="SelectedBorder" Property="Opacity" Value="1" />
+                            <Setter TargetName="SelectionGlow" Property="Opacity" Value="1" />
+                        </Trigger>
+
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsSelected" Value="True" />
+                                <Condition Property="IsMouseOver" Value="True" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{StaticResource Brush.SteamGridDB.Accent}" />
+                            <Setter TargetName="HoverOverlay" Property="Opacity" Value="1" />
+                            <Setter TargetName="SelectedBorder" Property="Opacity" Value="1" />
+                            <Setter TargetName="SelectionGlow" Property="Opacity" Value="1" />
+                        </MultiTrigger>
+
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="OuterBorder" Property="Opacity" Value="0.55" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="SteamGridDBCoverListBoxStyle" TargetType="{x:Type ListBox}">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="ItemContainerStyle" Value="{StaticResource SteamGridDBCoverListBoxItemStyle}" />
+        <Setter Property="ScrollViewer.CanContentScroll" Value="False" />
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ListBox}">
+                    <Border Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+                        <ScrollViewer
+                            Padding="{TemplateBinding Padding}"
+                            CanContentScroll="False"
+                            Focusable="False">
+                            <ItemsPresenter />
+                        </ScrollViewer>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

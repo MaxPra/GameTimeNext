@@ -2,6 +2,7 @@
 using GameTimeNext.Core.Framework;
 using System.Data.SQLite;
 using System.Globalization;
+using UIX.ViewController.Engine.DataBaseObjects;
 
 namespace GameTimeNext.Core.Application.DataManagers
 {
@@ -14,6 +15,8 @@ namespace GameTimeNext.Core.Application.DataManagers
             DateTime now = DateTime.Now;
             obj.CRAT = now;
             obj.CHAT = now;
+
+            obj.State = UIXTableObjectState.New;
 
             return obj;
         }
@@ -32,6 +35,8 @@ namespace GameTimeNext.Core.Application.DataManagers
             copy.CRAT = now;
             copy.CHAT = now;
 
+            copy.State = UIXTableObjectState.New;
+
             return copy;
         }
 
@@ -49,13 +54,18 @@ namespace GameTimeNext.Core.Application.DataManagers
                 if (obj.CRAT == DateTime.MinValue) obj.CRAT = now;
                 obj.CHAT = now;
 
+
                 Insert(connection, obj);
             }
             else
             {
                 obj.CHAT = now;
+
+
                 Update(connection, obj);
             }
+
+            obj.State = UIXTableObjectState.Available;
 
             obj.AcceptChanges();
         }
@@ -192,6 +202,8 @@ namespace GameTimeNext.Core.Application.DataManagers
 
             obj.CRAT = ParseDbDateTime(reader.IsDBNull(2) ? null : reader.GetString(2));
             obj.CHAT = ParseDbDateTime(reader.IsDBNull(3) ? null : reader.GetString(3));
+
+            obj.State = UIXTableObjectState.Available;
 
             return obj;
         }

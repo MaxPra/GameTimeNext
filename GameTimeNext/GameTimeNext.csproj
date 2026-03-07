@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="UI\Ressources\GTN_ICON_ADD_PROFILE.png" />
     <None Remove="UI\Ressources\ICON_DEBUG.png" />
   </ItemGroup>
 
@@ -24,6 +25,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="UI\Ressources\GTN_ICON_ADD_PROFILE.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="UI\Ressources\ICON_DEBUG.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>

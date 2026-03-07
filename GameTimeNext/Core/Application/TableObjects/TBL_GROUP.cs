@@ -1,6 +1,4 @@
 ﻿using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Framework.DataBase.TableObjects;
-using System;
 using UIX.ViewController.Engine.DataBaseObjects;
 
 namespace GameTimeNext.Core.Application.TableObjects
@@ -27,6 +25,7 @@ namespace GameTimeNext.Core.Application.TableObjects
         public TBL_GROUP()
         {
             GRID = 0;
+
             GRNA = string.Empty;
             GTYP = string.Empty;
 

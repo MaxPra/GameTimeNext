@@ -2,6 +2,7 @@
 using GameTimeNext.Core.Framework;
 using System.Data.SQLite;
 using System.Globalization;
+using UIX.ViewController.Engine.DataBaseObjects;
 
 namespace GameTimeNext.Core.Application.DataManagers
 {
@@ -14,6 +15,8 @@ namespace GameTimeNext.Core.Application.DataManagers
             DateTime now = DateTime.Now;
             obj.CRAT = now;
             obj.CHAT = now;
+
+            obj.State = UIXTableObjectState.New;
 
             return obj;
         }
@@ -33,32 +36,38 @@ namespace GameTimeNext.Core.Application.DataManagers
             copy.CRAT = now;
             copy.CHAT = now;
 
+            copy.State = UIXTableObjectState.New;
+
             return copy;
         }
 
         public void Save(TBL_GRPPO obj)
         {
+            Save(obj, false);
+        }
+
+        public void Save(TBL_GRPPO obj, bool migration)
+        {
             if (obj == null) throw new ArgumentNullException(nameof(obj));
 
             if (obj.GRID <= 0)
-            {
                 throw new InvalidOperationException("GRID muss > 0 sein, da TBL_GRPPO auf eine Gruppe referenziert.");
-            }
 
             if (obj.PFID <= 0)
-            {
                 throw new InvalidOperationException("PFID muss > 0 sein, da TBL_GRPPO auf ein Profil referenziert.");
-            }
 
             SQLiteConnection connection = AppEnvironment.GetDataBaseManager().GetConnection();
             EnsureOpen(connection);
 
             DateTime now = DateTime.Now;
 
-            if (obj.GPID <= 0)
+            if (obj.GPID <= 0 || migration)
             {
-                if (obj.CRAT == DateTime.MinValue) obj.CRAT = now;
-                obj.CHAT = now;
+                if (!migration)
+                {
+                    if (obj.CRAT == DateTime.MinValue) obj.CRAT = now;
+                    obj.CHAT = now;
+                }
 
                 Insert(connection, obj);
             }
@@ -67,6 +76,8 @@ namespace GameTimeNext.Core.Application.DataManagers
                 obj.CHAT = now;
                 Update(connection, obj);
             }
+
+            obj.State = UIXTableObjectState.Available;
 
             obj.AcceptChanges();
         }
@@ -82,6 +93,53 @@ namespace GameTimeNext.Core.Application.DataManagers
                 cmd.Parameters.AddWithValue("@GPID", gpid);
                 cmd.ExecuteNonQuery();
             }
+        }
+
+        public TBL_GRPPO Read(long gpid)
+        {
+            SQLiteConnection connection = AppEnvironment.GetDataBaseManager().GetConnection();
+            EnsureOpen(connection);
+
+            using (SQLiteCommand cmd = connection.CreateCommand())
+            {
+                cmd.CommandText = "SELECT GPID, GRID, PFID, CRAT, CHAT FROM TBL_GRPPO WHERE GPID = @GPID;";
+                cmd.Parameters.AddWithValue("@GPID", gpid);
+
+                using (SQLiteDataReader reader = cmd.ExecuteReader())
+                {
+                    if (!reader.Read())
+                        return null;
+
+                    TBL_GRPPO obj = Map(reader);
+                    obj.AcceptChanges();
+                    return obj;
+                }
+            }
+        }
+
+        public List<TBL_GRPPO> ReadAll()
+        {
+            SQLiteConnection connection = AppEnvironment.GetDataBaseManager().GetConnection();
+            EnsureOpen(connection);
+
+            List<TBL_GRPPO> list = new List<TBL_GRPPO>();
+
+            using (SQLiteCommand cmd = connection.CreateCommand())
+            {
+                cmd.CommandText = "SELECT GPID, GRID, PFID, CRAT, CHAT FROM TBL_GRPPO ORDER BY GPID;";
+
+                using (SQLiteDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        TBL_GRPPO obj = Map(reader);
+                        obj.AcceptChanges();
+                        list.Add(obj);
+                    }
+                }
+            }
+
+            return list;
         }
 
         private void Insert(SQLiteConnection connection, TBL_GRPPO obj)
@@ -134,63 +192,12 @@ namespace GameTimeNext.Core.Application.DataManagers
         private void EnsureOpen(SQLiteConnection connection)
         {
             if (connection.State != System.Data.ConnectionState.Open)
-            {
                 connection.Open();
-            }
         }
 
         private string ToDbDateTime(DateTime value)
         {
             return value.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
-        }
-
-        public TBL_GRPPO Read(long gpid)
-        {
-            SQLiteConnection connection = AppEnvironment.GetDataBaseManager().GetConnection();
-            EnsureOpen(connection);
-
-            using (SQLiteCommand cmd = connection.CreateCommand())
-            {
-                cmd.CommandText = "SELECT GPID, GRID, PFID, CRAT, CHAT FROM TBL_GRPPO WHERE GPID = @GPID;";
-                cmd.Parameters.AddWithValue("@GPID", gpid);
-
-                using (SQLiteDataReader reader = cmd.ExecuteReader())
-                {
-                    if (!reader.Read())
-                    {
-                        return null;
-                    }
-
-                    TBL_GRPPO obj = Map(reader);
-                    obj.AcceptChanges();
-                    return obj;
-                }
-            }
-        }
-
-        public List<TBL_GRPPO> ReadAll()
-        {
-            SQLiteConnection connection = AppEnvironment.GetDataBaseManager().GetConnection();
-            EnsureOpen(connection);
-
-            List<TBL_GRPPO> list = new List<TBL_GRPPO>();
-
-            using (SQLiteCommand cmd = connection.CreateCommand())
-            {
-                cmd.CommandText = "SELECT GPID, GRID, PFID, CRAT, CHAT FROM TBL_GRPPO ORDER BY GPID;";
-
-                using (SQLiteDataReader reader = cmd.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        TBL_GRPPO obj = Map(reader);
-                        obj.AcceptChanges();
-                        list.Add(obj);
-                    }
-                }
-            }
-
-            return list;
         }
 
         private TBL_GRPPO Map(SQLiteDataReader reader)
@@ -204,34 +211,23 @@ namespace GameTimeNext.Core.Application.DataManagers
             obj.CRAT = ParseDbDateTime(reader.IsDBNull(3) ? null : reader.GetString(3));
             obj.CHAT = ParseDbDateTime(reader.IsDBNull(4) ? null : reader.GetString(4));
 
+            obj.State = UIXTableObjectState.Available;
+
             return obj;
         }
 
         private DateTime ParseDbDateTime(string value)
         {
             if (string.IsNullOrWhiteSpace(value))
-            {
                 return DateTime.MinValue;
-            }
 
-            DateTime result;
-            if (DateTime.TryParseExact(
-                    value,
-                    "yyyy-MM-dd HH:mm:ss",
-                    CultureInfo.InvariantCulture,
-                    DateTimeStyles.None,
-                    out result))
-            {
+            if (DateTime.TryParseExact(value, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime result))
                 return result;
-            }
 
             if (DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
-            {
                 return result;
-            }
 
             return DateTime.MinValue;
         }
-
     }
 }

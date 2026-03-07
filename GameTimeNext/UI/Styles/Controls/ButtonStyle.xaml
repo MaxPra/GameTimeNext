@@ -234,4 +234,92 @@
         </Setter>
     </Style>
 
+    <Style x:Key="ProfileAccentColorToggleButtonStyle" TargetType="{x:Type ToggleButton}">
+        <Setter Property="Width" Value="32" />
+        <Setter Property="Height" Value="32" />
+        <Setter Property="Margin" Value="0,0,10,0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="#2A2F3A" />
+        <Setter Property="BorderThickness" Value="2" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ToggleButton}">
+                    <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
+                        <Border
+                            x:Name="OuterGlow"
+                            Margin="-3"
+                            Background="Transparent"
+                            CornerRadius="10"
+                            IsHitTestVisible="False"
+                            Opacity="0">
+                            <Border.Effect>
+                                <DropShadowEffect
+                                    BlurRadius="16"
+                                    Opacity="0.35"
+                                    ShadowDepth="0"
+                                    Color="{DynamicResource Color.Accent}" />
+                            </Border.Effect>
+                        </Border>
+
+                        <Border
+                            x:Name="MainBorder"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{StaticResource DefaultCornerRadius}"
+                            SnapsToDevicePixels="True">
+
+                            <Grid>
+                                <Border
+                                    x:Name="HoverOverlay"
+                                    Background="#12FFFFFF"
+                                    CornerRadius="{StaticResource DefaultCornerRadius}"
+                                    Opacity="0" />
+
+                                <Border
+                                    x:Name="SelectionBorder"
+                                    Margin="-1"
+                                    Background="Transparent"
+                                    BorderBrush="{DynamicResource Brush.Accent}"
+                                    BorderThickness="3"
+                                    CornerRadius="{StaticResource DefaultCornerRadius}"
+                                    Opacity="0" />
+                            </Grid>
+                        </Border>
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="HoverOverlay" Property="Opacity" Value="1" />
+                            <Setter TargetName="MainBorder" Property="BorderBrush" Value="{DynamicResource Brush.AccentHover}" />
+                        </Trigger>
+
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="MainBorder" Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
+                            <Setter TargetName="SelectionBorder" Property="Opacity" Value="1" />
+                            <Setter TargetName="OuterGlow" Property="Opacity" Value="1" />
+                        </Trigger>
+
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsMouseOver" Value="True" />
+                                <Condition Property="IsChecked" Value="True" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="HoverOverlay" Property="Opacity" Value="1" />
+                            <Setter TargetName="SelectionBorder" Property="Opacity" Value="1" />
+                            <Setter TargetName="OuterGlow" Property="Opacity" Value="1" />
+                        </MultiTrigger>
+
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="MainBorder" Property="Opacity" Value="0.45" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
 </ResourceDictionary>

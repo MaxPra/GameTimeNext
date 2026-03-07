@@ -16,6 +16,8 @@ namespace GameTimeNext.Core.Application.DataManagers
             obj.CRAT = now;
             obj.CHAT = now;
 
+            obj.State = UIXTableObjectState.New;
+
             return obj;
         }
 
@@ -40,10 +42,13 @@ namespace GameTimeNext.Core.Application.DataManagers
             copy.EXEC = source.EXEC;
 
             copy.PLSP = source.PLSP;
+            copy.ACCO = source.ACCO;
 
             DateTime now = DateTime.Now;
             copy.CRAT = now;
             copy.CHAT = now;
+
+            copy.State = UIXTableObjectState.New;
 
             return copy;
         }
@@ -69,6 +74,7 @@ namespace GameTimeNext.Core.Application.DataManagers
                     if (obj.CRAT == DateTime.MinValue) obj.CRAT = now;
                     obj.CHAT = now;
                 }
+
                 Insert(connection, obj);
             }
             else
@@ -76,6 +82,8 @@ namespace GameTimeNext.Core.Application.DataManagers
                 obj.CHAT = now;
                 Update(connection, obj);
             }
+
+            obj.State = UIXTableObjectState.Available;
 
             obj.AcceptChanges();
         }
@@ -99,9 +107,9 @@ namespace GameTimeNext.Core.Application.DataManagers
             {
                 cmd.CommandText =
                     "INSERT INTO TBL_PROFI " +
-                    "(GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, PLSP, CRAT, CHAT) " +
+                    "(GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, PLSP, CRAT, CHAT, ACCO) " +
                     "VALUES " +
-                    "(@GANA, @FIPL, @LAPL, @PPFN, @EXGF, @SAID, @PRSE, @EXEC, @PLSP, @CRAT, @CHAT);";
+                    "(@GANA, @FIPL, @LAPL, @PPFN, @EXGF, @SAID, @PRSE, @EXEC, @PLSP, @CRAT, @CHAT, @ACCO);";
 
                 cmd.Parameters.AddWithValue("@GANA", obj.GANA);
                 cmd.Parameters.AddWithValue("@FIPL", ToDbDateTime(obj.FIPL));
@@ -114,6 +122,7 @@ namespace GameTimeNext.Core.Application.DataManagers
                 cmd.Parameters.AddWithValue("@PLSP", ToDbDateTime(obj.PLSP));
                 cmd.Parameters.AddWithValue("@CRAT", ToDbDateTime(obj.CRAT));
                 cmd.Parameters.AddWithValue("@CHAT", ToDbDateTime(obj.CHAT));
+                cmd.Parameters.AddWithValue("@ACCO", obj.ACCO);
 
                 cmd.ExecuteNonQuery();
             }
@@ -142,7 +151,8 @@ namespace GameTimeNext.Core.Application.DataManagers
                     "EXEC = @EXEC, " +
                     "PLSP = @PLSP, " +
                     "CRAT = @CRAT, " +
-                    "CHAT = @CHAT " +
+                    "CHAT = @CHAT, " +
+                    "ACCO = @ACCO " +
                     "WHERE PFID = @PFID;";
 
                 cmd.Parameters.AddWithValue("@PFID", obj.PFID);
@@ -158,6 +168,7 @@ namespace GameTimeNext.Core.Application.DataManagers
                 cmd.Parameters.AddWithValue("@PLSP", ToDbDateTime(obj.PLSP));
                 cmd.Parameters.AddWithValue("@CRAT", ToDbDateTime(obj.CRAT));
                 cmd.Parameters.AddWithValue("@CHAT", ToDbDateTime(obj.CHAT));
+                cmd.Parameters.AddWithValue("@ACCO", obj.ACCO);
 
                 cmd.ExecuteNonQuery();
             }
@@ -184,7 +195,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             using (SQLiteCommand cmd = connection.CreateCommand())
             {
                 cmd.CommandText =
-                    "SELECT PFID, GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, PLSP, CRAT, CHAT " +
+                    "SELECT PFID, GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, PLSP, CRAT, CHAT, ACCO " +
                     "FROM TBL_PROFI WHERE PFID = @PFID;";
                 cmd.Parameters.AddWithValue("@PFID", pfid);
 
@@ -212,7 +223,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             using (SQLiteCommand cmd = connection.CreateCommand())
             {
                 cmd.CommandText =
-                    "SELECT PFID, GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, PLSP, CRAT, CHAT " +
+                    "SELECT PFID, GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, PLSP, CRAT, CHAT, ACCO " +
                     "FROM TBL_PROFI ORDER BY PFID;";
 
                 using (SQLiteDataReader reader = cmd.ExecuteReader())
@@ -252,6 +263,10 @@ namespace GameTimeNext.Core.Application.DataManagers
             obj.CRAT = ParseDbDateTime(reader.IsDBNull(10) ? null : reader.GetString(10));
             obj.CHAT = ParseDbDateTime(reader.IsDBNull(11) ? null : reader.GetString(11));
 
+            obj.ACCO = reader.IsDBNull(12) ? string.Empty : reader.GetString(12);
+
+            obj.State = UIXTableObjectState.Available;
+
             return obj;
         }
 
@@ -262,13 +277,7 @@ namespace GameTimeNext.Core.Application.DataManagers
                 return DateTime.MinValue;
             }
 
-            DateTime result;
-            if (DateTime.TryParseExact(
-                    value,
-                    "yyyy-MM-dd HH:mm:ss",
-                    CultureInfo.InvariantCulture,
-                    DateTimeStyles.None,
-                    out result))
+            if (DateTime.TryParseExact(value, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime result))
             {
                 return result;
             }

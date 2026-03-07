@@ -73,8 +73,7 @@
                                         <CheckBox
                                             Margin="0,0,0,6"
                                             Content="{Binding GRNA}"
-                                            IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                                            Style="{StaticResource Checkbox.Default}" />
+                                            IsChecked="{Binding IsSelected, Mode=TwoWay}" />
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
@@ -108,8 +107,7 @@
                                     <CheckBox
                                         Margin="0,0,0,6"
                                         Content="{Binding GRNA}"
-                                        IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                                        Style="{StaticResource Checkbox.Default}" />
+                                        IsChecked="{Binding IsSelected, Mode=TwoWay}" />
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>

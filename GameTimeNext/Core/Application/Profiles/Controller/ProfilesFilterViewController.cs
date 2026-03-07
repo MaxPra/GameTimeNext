@@ -76,7 +76,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             GetViewReturn<ProfileFilterViewReturn>().States = _profilesFilterViewModel.States.Where(g => (bool)g.IsSelected).ToList();
             GetViewReturn<ProfileFilterViewReturn>().Applied = true;
 
-            Exit();
+            Exit(true);
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
             GetViewReturn<ProfileFilterViewReturn>().Applied = false;
 
-            Exit();
+            Exit(true);
         }
 
 
