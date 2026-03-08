@@ -4,7 +4,7 @@ using UIX.ViewController.Engine.Controller;
 
 namespace GameTimeNext.Core.Application.Profiles.DataWrapper
 {
-    public class ProfilesSubViewDataWrapper : UIXCE_DataWrapperBase<ListBox, TBL_PROFI>
+    public class ProfilesSubViewDataWrapper : UIXCE_DataWrapperBase<ListBox, T1PROFI>
     {
         public ProfilesSubViewDataWrapper(ListBox dataSource, UIXControllerBase controllerSource, UIXControllerBase controllerTarget)
             : base(dataSource, controllerSource, controllerTarget)

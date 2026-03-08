@@ -7,11 +7,14 @@ using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.LauncherIntegration;
 using GameTimeNext.Core.Framework.UI.Dialogs;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.Events;
+using UIX.ViewController.Engine.FrameworkElements.UserControls;
+using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
@@ -24,23 +27,30 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         private string _coverAppDataPath = string.Empty;
         private string _coverAppFolderFileName = string.Empty;
+        private string _selectedSteamGridDBImagePath = string.Empty;
 
         public ProfilesEditViewController(UIXApplication app) : base(app)
         {
+        }
+
+        public class ProfilesEditViewReturn : UIXViewReturn
+        {
+            public long PFID { get; set; } = 0;
         }
 
         protected override void Init()
         {
 
             _profilesEditViewModel = new ProfilesEditViewModel();
+            ViewReturn = new ProfilesEditViewReturn();
 
-            AddIdentifier("TBL_PROFI", GetApp().TblProfi);
+            AddIdentifier("T1PROFI", GetApp().T1Profi);
         }
 
         protected override void Build()
         {
             // Sichtbarkeitssteuerung Steam Linked Sektion
-            if (GetApp().TblProfi.SAID == 0)
+            if (GetApp().T1Profi.SAID == 0)
             {
                 GetWnd().pnlSteamLinkState.Visibility = Visibility.Collapsed;
                 GetWnd().pnlSteamSettings.Visibility = Visibility.Collapsed;
@@ -50,12 +60,15 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
                 GetWnd().pnlSteamLinkState.Visibility = Visibility.Visible;
                 GetWnd().pnlSteamSettings.Visibility = Visibility.Visible;
+
+                if (GetWnd().ViewIndicator.Contains("ED"))
+                    FillViewSteamImport(null);
             }
         }
 
         protected override void BuildFirst()
         {
-            BuildTagGrid();
+            BuildTagGrid(GetApp().T1Profi.PFID);
         }
 
         protected override void Check()
@@ -84,6 +97,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected override void Event_Closing()
         {
+            try { Directory.Delete(AppEnvironment.GetAppConfig().AppDataLocalPathSteamGridDBCovers, true); } catch { }
+
+            Exit(false);
         }
 
         protected override void Event_Maximize()
@@ -98,16 +114,45 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
             // Akzentfarben
             HandleAccentColors();
+
+            // Bild kopieren
+            if (GetApp().T1Profi.HasFieldDataChanged(K1PROFI.Fields.PPFN))
+                CFProfilesEditApp.CopyProfileCoverToAppCoverFolder(_coverAppDataPath, _coverAppFolderFileName);
         }
 
         protected override void FillViewImpl()
         {
+            if (FnString.IsNullEmptyOrWhitespace(_selectedSteamGridDBImagePath))
+            {
+                // Aus T1PROFI lesen
+                CAccentColorsInit cAccentColorsInit = new CAccentColorsInit(GetApp().T1Profi.ACIN);
+                cAccentColorsInit = cAccentColorsInit.Dezerialize();
+
+                CAccentColors cAccentColors = new CAccentColors(GetApp().T1Profi.ACCO);
+                cAccentColors = cAccentColors.Dezerialize();
+
+                Color color1 = (Color)ColorConverter.ConvertFromString(cAccentColorsInit.AccentColors.ElementAt(0).Key);
+                Color color2 = (Color)ColorConverter.ConvertFromString(cAccentColorsInit.AccentColors.ElementAt(1).Key);
+                Color color3 = (Color)ColorConverter.ConvertFromString(cAccentColorsInit.AccentColors.ElementAt(2).Key);
+
+                GetWnd().tglAccent1.Background = new SolidColorBrush(color1);
+                GetWnd().tglAccent1.Tag = color1;
+                GetWnd().tglAccent1.IsChecked = cAccentColorsInit.AccentColors.ElementAt(0).Value;
+
+                GetWnd().tglAccent2.Background = new SolidColorBrush(color2);
+                GetWnd().tglAccent2.Tag = color2;
+                GetWnd().tglAccent2.IsChecked = cAccentColorsInit.AccentColors.ElementAt(1).Value;
+
+                GetWnd().tglAccent3.Background = new SolidColorBrush(color3);
+                GetWnd().tglAccent3.Tag = color3;
+                GetWnd().tglAccent3.IsChecked = cAccentColorsInit.AccentColors.ElementAt(2).Value;
+            }
         }
 
         protected override void SaveDBOImpl()
         {
-            // Bild kopieren
-            CFProfilesEditApp.CopyProfileCoverToAppCoverFolder(_coverAppDataPath, _coverAppFolderFileName);
+            // Tags
+            FillDBOTags();
         }
 
         protected override void TriggeredEvent(FrameworkElement source, string eventName)
@@ -143,7 +188,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             }
 
             // Steamprofilverknüpfung prüfen
-            if (GetApp().TblProfi.SAID == 0)
+            if (GetApp().T1Profi.SAID == 0)
             {
                 CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>();
                 cfmbox.Show("No Steam profile has been linked!", "Please note that the SteamGridDB cover selection is only available if a Steam profile is linked to a GameTimeNext profile.", CFMBOXResult.Ok, CFMBOXIcon.Info);
@@ -151,7 +196,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             }
 
             ProfilesSteamGridDBApp app = GetApp().GetApplication<ProfilesSteamGridDBApp>();
-            app.Search(GetApp(), GetApp().TblProfi.SAID, r =>
+            app.Search(GetApp(), GetApp().T1Profi.SAID, r =>
             {
                 if (!r.Canceled)
                 {
@@ -162,27 +207,46 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 }
             });
         }
-
         protected void EV_btnUnlinkSteamProfile()
         {
-            GetApp().TblProfi.SAID = 0;
+            GetApp().T1Profi.SAID = 0;
+        }
+
+        protected void EV_btnSave()
+        {
+            GetViewReturn<ProfilesEditViewReturn>().Canceled = false;
+            GetViewReturn<ProfilesEditViewReturn>().PFID = GetApp().T1Profi.PFID;
+            Exit(true);
+        }
+
+        protected void EV_btnCancel()
+        {
+            Exit(true);
         }
 
         private void FillViewSteamImport(SteamGame selectedGame)
         {
-            // Textblock von Steam Link Sektion
-            GetWnd().txtSteamLinkGame.Text = selectedGame.Name;
 
             // Profilname
-            GetWnd().txbProfileName.Text = selectedGame.Name;
+            if (GetWnd().ViewIndicator.Contains("CN"))
+            {
+                GetWnd().txbProfileName.Text = selectedGame.Name;
 
-            // Spielordner
-            GetWnd().txbGameFolder.Text = SteamManifestHelper.ResolveInstallPath(selectedGame);
+                // Spielordner
+                GetWnd().txbGameFolder.Text = SteamManifestHelper.ResolveInstallPath(selectedGame);
+            }
+            else
+            {
+                GetWnd().txbProfileName.Text = GetApp().T1Profi.GANA;
+
+                // Spielordner
+                GetWnd().txbGameFolder.Text = GetApp().T1Profi.EXGF;
+            }
         }
 
         private void CheckSteamRelatedFields()
         {
-            if (GetApp().TblProfi.SAID == 0)
+            if (GetApp().T1Profi.SAID == 0)
                 return;
         }
 
@@ -191,7 +255,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             if (GetWnd().cbUseProfileAccentColors.IsChecked == false)
                 return;
 
-            // Akzent farben
+            // -- Akzent farben (korrespondierend aus der gewählten)
             string[] accentColorsCalculated = FnTheme.CalculateAccentStateColors(CFProfilesEditApp.GetSelectedToggleButton(GetWnd()).Tag.ToString());
 
             Dictionary<string, string> accentColorsDic = new Dictionary<string, string>();
@@ -203,7 +267,24 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             CAccentColors cAccentColors = new CAccentColors();
             cAccentColors.AccentColors = accentColorsDic;
 
-            GetApp().TblProfi.ACCO = cAccentColors.Serialize();
+            GetApp().T1Profi.ACCO = cAccentColors.Serialize();
+
+            // -- Automatisch ermittelte Akzentfarben abspeichern
+            string[] accentColorsInit = new string[3];
+
+            accentColorsInit[0] = GetWnd().tglAccent1.Tag.ToString()!;
+            accentColorsInit[1] = GetWnd().tglAccent2.Tag.ToString()!;
+            accentColorsInit[2] = GetWnd().tglAccent3.Tag.ToString()!;
+
+            Dictionary<string, bool> dicAccentColorsInit = new Dictionary<string, bool>();
+            dicAccentColorsInit.Add(accentColorsInit[0], GetWnd().tglAccent1.IsChecked == true);
+            dicAccentColorsInit.Add(accentColorsInit[1], GetWnd().tglAccent2.IsChecked == true);
+            dicAccentColorsInit.Add(accentColorsInit[2], GetWnd().tglAccent3.IsChecked == true);
+
+            CAccentColorsInit cAccentColorsInit = new CAccentColorsInit();
+            cAccentColorsInit.AccentColors = dicAccentColorsInit;
+
+            GetApp().T1Profi.ACIN = cAccentColorsInit.Serialize();
         }
 
         private async Task FillViewSteamGridDBCoverChanged(string path)
@@ -265,7 +346,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         private void FillDBOSteamImport(SteamGame selectedGame)
         {
             // Steam App Id setzen --> Ausnahme direkt am Table Object
-            GetApp().TblProfi.SAID = selectedGame.AppId;
+            GetApp().T1Profi.SAID = selectedGame.AppId;
         }
 
         private void ToggleAccentChanged(FrameworkElement toggleChecked)
@@ -287,25 +368,84 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             }
         }
 
-        private void BuildTagGrid()
+        private void FillDBOTags()
         {
-            TBLM_GROUP tblm_group = new TBLM_GROUP();
+            // selektierte Gruppen auslesen
+            List<T1GROUP> selectedGroups = _profilesEditViewModel!.T1GROUPs.Where(t => t.IsSelected == true).ToList();
 
-            List<TBL_GROUP> states = new List<TBL_GROUP>();
-            List<TBL_GROUP> tbl_groups = tblm_group.ReadAll();
+            // Alle bisherigen für dieses Profil löschen
+            TXGRPPO tblmGrppo = new TXGRPPO();
+            tblmGrppo.DeleteAllWherePFID(GetApp().T1Profi.PFID);
+
+            foreach (T1GROUP grp in selectedGroups)
+            {
+                T1GRPPO tblGrppo = tblmGrppo.CreateNew();
+                tblGrppo.GRID = grp.GRID;
+                tblGrppo.PFID = GetApp().T1Profi.PFID;
+                tblmGrppo.Save(tblGrppo);
+            }
+        }
+
+        private void BuildTagGrid(long pfid)
+        {
+            TXGROUP TXGROUP = new TXGROUP();
+
+            List<T1GROUP> t1groups = new List<T1GROUP>();
+
+            UIXQuery query = BuildTagGridQuery(pfid);
+
+            string sql = query.PreviewQuery();
+
+            using (var reader = query.Execute())
+            {
+                while (reader.Read())
+                {
+
+                    long grid = UIXQuery.GetInt64(reader, K1GROUP.Name, K1GROUP.Fields.GRID);
+                    long gpid = UIXQuery.GetInt64(reader, K1GRPPO.Name, K1GRPPO.Fields.GPID);
+
+                    T1GROUP t1group = new TXGROUP().Read(grid);
+
+                    if (gpid > 0)
+                        t1group.IsSelected = true;
+
+                    t1groups.Add(t1group);
+                }
+            }
 
             // Filtern
-            tbl_groups = tbl_groups.Where(s => s.GTYP == GroupType.Tag).ToList();
+            t1groups = t1groups.Where(s => s.GTYP == GroupType.Tag).ToList();
 
             // Viewmodel befüllen
             _profilesEditViewModel = new ProfilesEditViewModel();
-            _profilesEditViewModel.Tbl_Groups = new System.Collections.ObjectModel.ObservableCollection<TBL_GROUP>(tbl_groups);
+            _profilesEditViewModel.T1GROUPs = new System.Collections.ObjectModel.ObservableCollection<T1GROUP>(t1groups);
 
 
-            if (tbl_groups != null && tbl_groups.Count > 0)
-                _profilesEditViewModel.SelectedTBLGROUP = tbl_groups.FirstOrDefault(p => p.IsSelected == true);
+            if (t1groups != null && t1groups.Count > 0)
+                _profilesEditViewModel.SelectedTBLGROUP = t1groups.FirstOrDefault(p => p.IsSelected == true);
 
             View.DataContext = _profilesEditViewModel;
+        }
+
+        private UIXQuery BuildTagGridQuery(long pfid)
+        {
+            UIXQuery query = new UIXQuery(K1GROUP.Name, AppEnvironment.GetDataBaseManager().GetConnection());
+
+            // Felder
+            query.AddField(K1GROUP.Name, K1GROUP.Fields.GRID);
+            query.AddField(K1GRPPO.Name, K1GRPPO.Fields.GPID);
+
+            // Left Join T1GRPPO
+            UIXQueryTable t1grppo = query.AddJoinTable(K1GRPPO.Name, JoinType.LEFT);
+            t1grppo.AddJoinCondition(K1GROUP.Name, K1GROUP.Fields.GRID, QueryCompareType.EQUALS, K1GRPPO.Name, K1GRPPO.Fields.GRID);
+
+            if (pfid > 0)
+                t1grppo.AddJoinCondition(K1GRPPO.Name, K1GRPPO.Fields.PFID, QueryCompareType.EQUALS, pfid);
+
+            // Where
+            query.AddWhere(K1GROUP.Name, K1GROUP.Fields.GTYP, QueryCompareType.EQUALS, GroupType.Tag);
+
+            return query;
         }
 
         private ProfilesEditApp GetApp()

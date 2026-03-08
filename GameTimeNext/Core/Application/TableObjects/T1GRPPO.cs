@@ -3,31 +3,29 @@ using UIX.ViewController.Engine.DataBaseObjects;
 
 namespace GameTimeNext.Core.Application.TableObjects
 {
-    public class TBL_GROUP : UIXTableObjectBase
+    internal class T1GRPPO : UIXTableObjectBase
     {
         [UIXSignatureField(0)]
-        public long GRID { get; set; }
+        public long GPID { get; set; }
 
         [UIXSignatureField(1)]
-        public string GRNA { get; set; }
+        public long GRID { get; set; }
 
         [UIXSignatureField(2)]
-        public DateTime CRAT { get; set; }
+        public long PFID { get; set; }
 
         [UIXSignatureField(3)]
-        public DateTime CHAT { get; set; }
+        public DateTime CRAT { get; set; }
 
         [UIXSignatureField(4)]
-        public string GTYP { get; set; }
+        public DateTime CHAT { get; set; }
 
-        public bool? IsSelected { get; set; } = false;
-
-        public TBL_GROUP()
+        public T1GRPPO()
         {
-            GRID = 0;
+            GPID = 0;
 
-            GRNA = string.Empty;
-            GTYP = string.Empty;
+            GRID = 0;
+            PFID = 0;
 
             CRAT = DateTime.MinValue;
             CHAT = DateTime.MinValue;
@@ -37,8 +35,8 @@ namespace GameTimeNext.Core.Application.TableObjects
 
         public override void Save()
         {
-            TBLM_GROUP tblmGroup = new TBLM_GROUP();
-            tblmGroup.Save(this);
+            TXGRPPO tblmGrppo = new TXGRPPO();
+            tblmGrppo.Save(this);
         }
     }
 }

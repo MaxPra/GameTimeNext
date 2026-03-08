@@ -21,8 +21,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         public class ProfileFilterViewReturn : UIXViewReturn
         {
             public bool Applied { get; set; } = false;
-            public List<TBL_GROUP> TblGroups { get; set; } = new List<TBL_GROUP>();
-            public List<TBL_GROUP> States { get; set; } = new List<TBL_GROUP>();
+            public List<T1GROUP> TblGroups { get; set; } = new List<T1GROUP>();
+            public List<T1GROUP> States { get; set; } = new List<T1GROUP>();
         }
 
         protected override void Init()
@@ -72,7 +72,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
 
             // View Return setzen
-            GetViewReturn<ProfileFilterViewReturn>().TblGroups = _profilesFilterViewModel.Tbl_Groups.Where(g => (bool)g.IsSelected).ToList();
+            GetViewReturn<ProfileFilterViewReturn>().TblGroups = _profilesFilterViewModel.T1GROUPs.Where(g => (bool)g.IsSelected).ToList();
             GetViewReturn<ProfileFilterViewReturn>().States = _profilesFilterViewModel.States.Where(g => (bool)g.IsSelected).ToList();
             GetViewReturn<ProfileFilterViewReturn>().Applied = true;
 
@@ -101,28 +101,28 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         /// </summary>
         private void BuildGroupList(string searchText)
         {
-            TBLM_GROUP tblm_group = new TBLM_GROUP();
+            TXGROUP TXGROUP = new TXGROUP();
 
-            List<TBL_GROUP> states = new List<TBL_GROUP>();
-            List<TBL_GROUP> tbl_groups = tblm_group.ReadAll();
+            List<T1GROUP> states = new List<T1GROUP>();
+            List<T1GROUP> T1GROUPs = TXGROUP.ReadAll();
 
             // Filtern
-            states = tbl_groups.Where(s => s.GTYP == GroupType.Condition).ToList();
-            tbl_groups = tbl_groups.Where(s => s.GTYP == GroupType.Tag).ToList();
+            states = T1GROUPs.Where(s => s.GTYP == GroupType.Condition).ToList();
+            T1GROUPs = T1GROUPs.Where(s => s.GTYP == GroupType.Tag).ToList();
 
             if (!string.IsNullOrWhiteSpace(searchText))
             {
-                tbl_groups = tbl_groups.Where(st => st.GRNA.Contains(searchText, StringComparison.OrdinalIgnoreCase)).ToList();
+                T1GROUPs = T1GROUPs.Where(st => st.GRNA.Contains(searchText, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
             // Viewmodel befüllen
             _profilesFilterViewModel = new ProfilesFilterViewModel();
-            _profilesFilterViewModel.Tbl_Groups = new System.Collections.ObjectModel.ObservableCollection<TBL_GROUP>(tbl_groups);
-            _profilesFilterViewModel.States = new System.Collections.ObjectModel.ObservableCollection<TBL_GROUP>(states);
+            _profilesFilterViewModel.T1GROUPs = new System.Collections.ObjectModel.ObservableCollection<T1GROUP>(T1GROUPs);
+            _profilesFilterViewModel.States = new System.Collections.ObjectModel.ObservableCollection<T1GROUP>(states);
 
 
-            if (tbl_groups != null && tbl_groups.Count > 0)
-                _profilesFilterViewModel.SelectedTBLGROUP = tbl_groups.FirstOrDefault(p => p.IsSelected == true);
+            if (T1GROUPs != null && T1GROUPs.Count > 0)
+                _profilesFilterViewModel.SelectedT1GROUP = T1GROUPs.FirstOrDefault(p => p.IsSelected == true);
 
             _profilesFilterViewModel.SelectedState = states.FirstOrDefault(s => s.IsSelected == true);
 

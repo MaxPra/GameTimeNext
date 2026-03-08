@@ -42,7 +42,6 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <!--  Header-Leiste: Suche (links), Filter (daneben), Add (rechts)  -->
                 <Grid Grid.Row="0" Margin="0,0,0,12">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -61,7 +60,6 @@
                         Tag="Search for name"
                         ToolTip="Search for name" />
 
-                    <!--  Filter bleibt direkt neben der Suchleiste  -->
                     <Grid
                         Grid.Column="1"
                         Margin="10,0,0,0"
@@ -119,10 +117,10 @@
                     Padding="{StaticResource TileListPaddingTopOnly}"
                     Background="Transparent"
                     BorderThickness="0"
-                    ItemsSource="{Binding TblProfis}"
+                    ItemsSource="{Binding T1Profis}"
                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                     ScrollViewer.VerticalScrollBarVisibility="Auto"
-                    SelectedItem="{Binding SelectedTblProfi, Mode=TwoWay}"
+                    SelectedItem="{Binding SelectedT1Profi, Mode=TwoWay}"
                     SelectionMode="Single">
 
                     <ListBox.ItemsPanel>
@@ -134,6 +132,39 @@
                     <ListBox.ItemContainerStyle>
                         <Style BasedOn="{StaticResource TileListBoxItemStyle}" TargetType="{x:Type ListBoxItem}">
                             <Setter Property="Margin" Value="{StaticResource TileItemMargin}" />
+                            <Setter Property="ContextMenu">
+                                <Setter.Value>
+                                    <ContextMenu Style="{StaticResource ModernContextMenuStyle}">
+                                        <MenuItem
+                                            x:Name="ctxtEdit"
+                                            Header="Edit"
+                                            Style="{StaticResource ModernContextMenuItemStyle}">
+                                            <MenuItem.Icon>
+                                                <TextBlock
+                                                    FontFamily="Segoe MDL2 Assets"
+                                                    FontSize="14"
+                                                    Foreground="{DynamicResource Brush.TextSecondary}"
+                                                    Text="" />
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+
+                                        <Separator Style="{StaticResource ModernContextMenuSeparatorStyle}" />
+
+                                        <MenuItem
+                                            x:Name="ctxtDelete"
+                                            Header="Delete"
+                                            Style="{StaticResource ModernContextMenuItemStyle}">
+                                            <MenuItem.Icon>
+                                                <TextBlock
+                                                    FontFamily="Segoe MDL2 Assets"
+                                                    FontSize="14"
+                                                    Foreground="{DynamicResource Brush.TextSecondary}"
+                                                    Text="" />
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                    </ContextMenu>
+                                </Setter.Value>
+                            </Setter>
                         </Style>
                     </ListBox.ItemContainerStyle>
 

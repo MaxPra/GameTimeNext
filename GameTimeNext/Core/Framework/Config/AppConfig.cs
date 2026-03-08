@@ -86,6 +86,26 @@ namespace GameTimeNext.Core.Framework.Config
             }
         }
 
+        [JsonIgnore]
+        public string AppDataLocalPath
+        {
+            get
+            {
+
+                return Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + Path.DirectorySeparatorChar + "GameTimeNext";
+            }
+        }
+
+        [JsonIgnore]
+        public string AppDataLocalPathSteamGridDBCovers
+        {
+            get
+            {
+
+                return AppDataLocalPath + Path.DirectorySeparatorChar + "Temp_SteamGridDBCovers";
+            }
+        }
+
         public AppConfig()
         {
 

@@ -4,7 +4,6 @@ using GameTimeNext.Core.Application.Profiles.Components;
 using GameTimeNext.Core.Application.Profiles.DataWrapper;
 using GameTimeNext.Core.Application.Profiles.Viewmodel;
 using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Threading;
@@ -61,45 +60,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
         }
 
-        protected override Task BuildFirstAsync()
+        protected override async Task BuildFirstAsync()
         {
-            GetApp().Loader.Begin();
-
-            return Task.Run(() =>
-            {
-                TBLM_PROFI tblm_profi = new TBLM_PROFI();
-                List<TBL_PROFI> tbl_profis = tblm_profi.ReadAll();
-
-                FillProfileCover(tbl_profis);
-
-                Thread.Sleep(5000);
-
-                View.Dispatcher.Invoke(() =>
-                {
-                    _profilesSubGridViewModel = new ProfilesSubGridViewModel();
-                    _profilesSubGridViewModel.TblProfis = new System.Collections.ObjectModel.ObservableCollection<TBL_PROFI>(tbl_profis);
-
-                    if (tbl_profis.Count > 0 && AppEnvironment.GetCurrentProfile() != null)
-                    {
-                        _profilesSubGridViewModel.SelectedTblProfi =
-                            tbl_profis.FirstOrDefault(p => p.PFID == AppEnvironment.GetCurrentProfile()!.PFID)
-                            ?? tbl_profis.FirstOrDefault()!;
-                    }
-
-                    dataWrapper!.TableObject = _profilesSubGridViewModel.SelectedTblProfi;
-
-                    if (dataWrapper!.TableObject == null)
-                        dataWrapper!.TableObject = new TBLM_PROFI().CreateNew();
-
-                    View.DataContext = _profilesSubGridViewModel;
-
-                    if (!FnString.IsNullEmptyOrWhitespace(dataWrapper!.TableObject.ACCO))
-                        FnTheme.ApplyThemeColors(new CAccentColors(dataWrapper!.TableObject.ACCO).Dezerialize().AccentColors);
-
-                    GetApp().Loader.Stop();
-
-                }, DispatcherPriority.Normal);
-            });
+            await BuildProfilesListBoxAsync(0);
         }
 
         protected override void Build()
@@ -125,9 +88,12 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected override void DataWrapperSelectionChangedImpl(Selector source)
         {
-            TBL_PROFI selectedProfi = source.SelectedItem as TBL_PROFI;
+            T1PROFI selectedProfi = source.SelectedItem as T1PROFI;
 
             if (selectedProfi == null)
+                return;
+
+            if (!selectedProfi.ACAC)
                 return;
 
             if (FnString.IsNullEmptyOrWhitespace(selectedProfi.ACCO))
@@ -141,7 +107,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         /// </summary>
         public void EV_BtnFilter()
         {
-            List<TBL_GROUP> groups = new List<TBL_GROUP>();
+            List<T1GROUP> groups = new List<T1GROUP>();
             bool applied = false;
 
             if (!GetApp().ProfilesFilterView.IsShown)
@@ -168,12 +134,69 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         protected void EV_BtnAddProfile()
         {
             ProfilesEditApp app = new ProfilesEditApp();
-            app.CreateNew(GetApp());
+            app.CreateNew(async r =>
+            {
+                if (!r.Canceled)
+                    await BuildProfilesListBoxAsync(r.PFID);
+            });
         }
 
-        private void FillProfileCover(List<TBL_PROFI> tbl_profis)
+        protected void EV_ctxtEdit()
         {
-            foreach (TBL_PROFI prof in tbl_profis)
+            T1PROFI t1profi = _profilesSubGridViewModel!.SelectedT1Profi;
+
+            ProfilesEditApp app = new ProfilesEditApp();
+            app.Edit(t1profi, async r =>
+            {
+                if (!r.Canceled)
+                    await BuildProfilesListBoxAsync(r.PFID);
+            });
+        }
+
+        private async Task BuildProfilesListBoxAsync(long pfid)
+        {
+            GetApp().Loader.Begin();
+
+            await Task.Run(() =>
+            {
+                TXPROFI TXPROFI = new TXPROFI();
+                List<T1PROFI> T1PROFIs = TXPROFI.ReadAll();
+
+                FillProfileCover(T1PROFIs);
+
+                //Thread.Sleep(3000);
+
+                View.Dispatcher.Invoke(() =>
+                {
+                    _profilesSubGridViewModel = new ProfilesSubGridViewModel();
+                    _profilesSubGridViewModel.T1Profis = new System.Collections.ObjectModel.ObservableCollection<T1PROFI>(T1PROFIs);
+
+                    if (T1PROFIs.Count > 0)
+                    {
+                        _profilesSubGridViewModel.SelectedT1Profi =
+                            T1PROFIs.FirstOrDefault(p => p.PFID == pfid)
+                            ?? T1PROFIs.FirstOrDefault()!;
+                    }
+
+                    dataWrapper!.TableObject = _profilesSubGridViewModel.SelectedT1Profi;
+
+                    if (dataWrapper!.TableObject == null)
+                        dataWrapper!.TableObject = new TXPROFI().CreateNew();
+
+                    View.DataContext = _profilesSubGridViewModel;
+
+                    if (!FnString.IsNullEmptyOrWhitespace(dataWrapper!.TableObject.ACCO))
+                        FnTheme.ApplyThemeColors(new CAccentColors(dataWrapper!.TableObject.ACCO).Dezerialize().AccentColors);
+
+                    GetApp().Loader.Stop();
+
+                }, DispatcherPriority.Normal);
+            });
+        }
+
+        private void FillProfileCover(List<T1PROFI> T1PROFIs)
+        {
+            foreach (T1PROFI prof in T1PROFIs)
             {
                 prof.CoverImage = FnImage.LoadImageWithoutLock(prof.PPFN, 300, 450);
             }

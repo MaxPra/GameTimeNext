@@ -252,7 +252,7 @@
                             x:Name="OuterGlow"
                             Margin="-3"
                             Background="Transparent"
-                            CornerRadius="10"
+                            CornerRadius="{StaticResource DefaultCornerRadius}"
                             IsHitTestVisible="False"
                             Opacity="0">
                             <Border.Effect>
@@ -281,7 +281,7 @@
 
                                 <Border
                                     x:Name="SelectionBorder"
-                                    Margin="-1"
+                                    Margin="-10"
                                     Background="Transparent"
                                     BorderBrush="{DynamicResource Brush.Accent}"
                                     BorderThickness="3"

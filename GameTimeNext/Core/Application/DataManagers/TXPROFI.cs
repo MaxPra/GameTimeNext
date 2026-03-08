@@ -6,11 +6,11 @@ using UIX.ViewController.Engine.DataBaseObjects;
 
 namespace GameTimeNext.Core.Application.DataManagers
 {
-    public class TBLM_PROFI
+    public class TXPROFI
     {
-        public TBL_PROFI CreateNew()
+        public T1PROFI CreateNew()
         {
-            TBL_PROFI obj = new TBL_PROFI();
+            T1PROFI obj = new T1PROFI();
 
             DateTime now = DateTime.Now;
             obj.CRAT = now;
@@ -21,11 +21,11 @@ namespace GameTimeNext.Core.Application.DataManagers
             return obj;
         }
 
-        public TBL_PROFI Copy(TBL_PROFI source)
+        public T1PROFI Copy(T1PROFI source)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
 
-            TBL_PROFI copy = new TBL_PROFI();
+            T1PROFI copy = new T1PROFI();
 
             copy.PFID = 0;
 
@@ -43,6 +43,8 @@ namespace GameTimeNext.Core.Application.DataManagers
 
             copy.PLSP = source.PLSP;
             copy.ACCO = source.ACCO;
+            copy.ACIN = source.ACIN;
+            copy.ACAC = source.ACAC;
 
             DateTime now = DateTime.Now;
             copy.CRAT = now;
@@ -53,12 +55,12 @@ namespace GameTimeNext.Core.Application.DataManagers
             return copy;
         }
 
-        public void Save(TBL_PROFI obj)
+        public void Save(T1PROFI obj)
         {
             Save(obj, false);
         }
 
-        public void Save(TBL_PROFI obj, bool migration)
+        public void Save(T1PROFI obj, bool migration)
         {
             if (obj == null) throw new ArgumentNullException(nameof(obj));
 
@@ -95,21 +97,21 @@ namespace GameTimeNext.Core.Application.DataManagers
 
             using (SQLiteCommand cmd = connection.CreateCommand())
             {
-                cmd.CommandText = "DELETE FROM TBL_PROFI WHERE PFID = @PFID;";
+                cmd.CommandText = "DELETE FROM T1PROFI WHERE PFID = @PFID;";
                 cmd.Parameters.AddWithValue("@PFID", pfid);
                 cmd.ExecuteNonQuery();
             }
         }
 
-        private void Insert(SQLiteConnection connection, TBL_PROFI obj)
+        private void Insert(SQLiteConnection connection, T1PROFI obj)
         {
             using (SQLiteCommand cmd = connection.CreateCommand())
             {
                 cmd.CommandText =
-                    "INSERT INTO TBL_PROFI " +
-                    "(GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, PLSP, CRAT, CHAT, ACCO) " +
-                    "VALUES " +
-                    "(@GANA, @FIPL, @LAPL, @PPFN, @EXGF, @SAID, @PRSE, @EXEC, @PLSP, @CRAT, @CHAT, @ACCO);";
+                            "INSERT INTO T1PROFI " +
+                            "(GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, PLSP, CRAT, CHAT, ACCO, ACIN, ACAC) " +
+                            "VALUES " +
+                            "(@GANA, @FIPL, @LAPL, @PPFN, @EXGF, @SAID, @PRSE, @EXEC, @PLSP, @CRAT, @CHAT, @ACCO, @ACIN, @ACAC);";
 
                 cmd.Parameters.AddWithValue("@GANA", obj.GANA);
                 cmd.Parameters.AddWithValue("@FIPL", ToDbDateTime(obj.FIPL));
@@ -123,6 +125,8 @@ namespace GameTimeNext.Core.Application.DataManagers
                 cmd.Parameters.AddWithValue("@CRAT", ToDbDateTime(obj.CRAT));
                 cmd.Parameters.AddWithValue("@CHAT", ToDbDateTime(obj.CHAT));
                 cmd.Parameters.AddWithValue("@ACCO", obj.ACCO);
+                cmd.Parameters.AddWithValue("@ACIN", obj.ACIN);
+                cmd.Parameters.AddWithValue("@ACAC", obj.ACAC ? 1 : 0);
 
                 cmd.ExecuteNonQuery();
             }
@@ -135,12 +139,12 @@ namespace GameTimeNext.Core.Application.DataManagers
             }
         }
 
-        private void Update(SQLiteConnection connection, TBL_PROFI obj)
+        private void Update(SQLiteConnection connection, T1PROFI obj)
         {
             using (SQLiteCommand cmd = connection.CreateCommand())
             {
                 cmd.CommandText =
-                    "UPDATE TBL_PROFI SET " +
+                    "UPDATE T1PROFI SET " +
                     "GANA = @GANA, " +
                     "FIPL = @FIPL, " +
                     "LAPL = @LAPL, " +
@@ -152,7 +156,9 @@ namespace GameTimeNext.Core.Application.DataManagers
                     "PLSP = @PLSP, " +
                     "CRAT = @CRAT, " +
                     "CHAT = @CHAT, " +
-                    "ACCO = @ACCO " +
+                    "ACCO = @ACCO, " +
+                    "ACIN = @ACIN, " +
+                    "ACAC = @ACAC " +
                     "WHERE PFID = @PFID;";
 
                 cmd.Parameters.AddWithValue("@PFID", obj.PFID);
@@ -169,6 +175,8 @@ namespace GameTimeNext.Core.Application.DataManagers
                 cmd.Parameters.AddWithValue("@CRAT", ToDbDateTime(obj.CRAT));
                 cmd.Parameters.AddWithValue("@CHAT", ToDbDateTime(obj.CHAT));
                 cmd.Parameters.AddWithValue("@ACCO", obj.ACCO);
+                cmd.Parameters.AddWithValue("@ACIN", obj.ACIN);
+                cmd.Parameters.AddWithValue("@ACAC", obj.ACAC ? 1 : 0);
 
                 cmd.ExecuteNonQuery();
             }
@@ -187,7 +195,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             return value.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
         }
 
-        public TBL_PROFI Read(long pfid)
+        public T1PROFI Read(long pfid)
         {
             SQLiteConnection connection = AppEnvironment.GetDataBaseManager().GetConnection();
             EnsureOpen(connection);
@@ -195,8 +203,8 @@ namespace GameTimeNext.Core.Application.DataManagers
             using (SQLiteCommand cmd = connection.CreateCommand())
             {
                 cmd.CommandText =
-                    "SELECT PFID, GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, PLSP, CRAT, CHAT, ACCO " +
-                    "FROM TBL_PROFI WHERE PFID = @PFID;";
+                    "SELECT PFID, GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, PLSP, CRAT, CHAT, ACCO, ACIN, ACAC " +
+                    "FROM T1PROFI WHERE PFID = @PFID;";
                 cmd.Parameters.AddWithValue("@PFID", pfid);
 
                 using (SQLiteDataReader reader = cmd.ExecuteReader())
@@ -206,31 +214,31 @@ namespace GameTimeNext.Core.Application.DataManagers
                         return null;
                     }
 
-                    TBL_PROFI obj = Map(reader);
+                    T1PROFI obj = Map(reader);
                     obj.AcceptChanges();
                     return obj;
                 }
             }
         }
 
-        public List<TBL_PROFI> ReadAll()
+        public List<T1PROFI> ReadAll()
         {
             SQLiteConnection connection = AppEnvironment.GetDataBaseManager().GetConnection();
             EnsureOpen(connection);
 
-            List<TBL_PROFI> list = new List<TBL_PROFI>();
+            List<T1PROFI> list = new List<T1PROFI>();
 
             using (SQLiteCommand cmd = connection.CreateCommand())
             {
                 cmd.CommandText =
-                    "SELECT PFID, GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, PLSP, CRAT, CHAT, ACCO " +
-                    "FROM TBL_PROFI ORDER BY PFID;";
+                    "SELECT PFID, GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, PLSP, CRAT, CHAT, ACCO, ACIN, ACAC " +
+                    "FROM T1PROFI ORDER BY PFID;";
 
                 using (SQLiteDataReader reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        TBL_PROFI obj = Map(reader);
+                        T1PROFI obj = Map(reader);
                         obj.AcceptChanges();
                         list.Add(obj);
                     }
@@ -240,9 +248,9 @@ namespace GameTimeNext.Core.Application.DataManagers
             return list;
         }
 
-        private TBL_PROFI Map(SQLiteDataReader reader)
+        private T1PROFI Map(SQLiteDataReader reader)
         {
-            TBL_PROFI obj = new TBL_PROFI();
+            T1PROFI obj = new T1PROFI();
 
             obj.PFID = Convert.ToInt64(reader.GetValue(0));
             obj.GANA = reader.IsDBNull(1) ? string.Empty : reader.GetString(1);
@@ -264,6 +272,8 @@ namespace GameTimeNext.Core.Application.DataManagers
             obj.CHAT = ParseDbDateTime(reader.IsDBNull(11) ? null : reader.GetString(11));
 
             obj.ACCO = reader.IsDBNull(12) ? string.Empty : reader.GetString(12);
+            obj.ACIN = reader.IsDBNull(13) ? string.Empty : reader.GetString(13);
+            obj.ACAC = !reader.IsDBNull(14) && (Convert.ToInt32(reader.GetValue(14)) == 1);
 
             obj.State = UIXTableObjectState.Available;
 

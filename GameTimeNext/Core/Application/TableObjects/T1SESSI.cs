@@ -3,7 +3,7 @@ using UIX.ViewController.Engine.DataBaseObjects;
 
 namespace GameTimeNext.Core.Application.TableObjects
 {
-    internal class TBL_SESSI : UIXTableObjectBase
+    internal class T1SESSI : UIXTableObjectBase
     {
         [UIXSignatureField(0)]
         public long SEID { get; set; }
@@ -26,7 +26,7 @@ namespace GameTimeNext.Core.Application.TableObjects
         [UIXSignatureField(6)]
         public DateTime CHAT { get; set; }
 
-        public TBL_SESSI()
+        public T1SESSI()
         {
             SEID = 0;
             PFID = 0;
@@ -44,7 +44,7 @@ namespace GameTimeNext.Core.Application.TableObjects
 
         public override void Save()
         {
-            TBLM_SESSI tblmSessi = new TBLM_SESSI();
+            TXSESSI tblmSessi = new TXSESSI();
             tblmSessi.Save(this);
         }
     }

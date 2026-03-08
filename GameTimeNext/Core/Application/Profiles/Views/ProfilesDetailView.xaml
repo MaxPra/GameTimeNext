@@ -45,7 +45,7 @@
                         Width="{StaticResource ProfileDetail.CoverWidth}"
                         Margin="0,0,0,12"
                         HorizontalAlignment="Center">
-                        <TextBlock uixprops:UIXAttachedProperty.Path="TBL_PROFI.GANA" Style="{StaticResource ProfileDetail.Title}" />
+                        <TextBlock uixprops:UIXAttachedProperty.Path="T1PROFI.GANA" Style="{StaticResource ProfileDetail.Title}" />
                     </Grid>
 
                     <!--  Body  -->
@@ -71,7 +71,7 @@
                             StretchDirection="DownOnly">
                             <Border Margin="0" Style="{StaticResource ProfileDetail.CoverFrame}">
                                 <Grid>
-                                    <Image uixprops:UIXAttachedProperty.Path="TBL_PROFI.PPFN" Style="{StaticResource ProfileDetail.CoverImage}" />
+                                    <Image uixprops:UIXAttachedProperty.Path="T1PROFI.PPFN" Style="{StaticResource ProfileDetail.CoverImage}" />
                                     <Border Style="{StaticResource ProfileDetail.CoverOverlay}" />
                                 </Grid>
                             </Border>
@@ -105,9 +105,9 @@
                                             Style="{StaticResource ProfileDetail.GameTimeLabel}"
                                             Text="Game time:" />
                                         <TextBlock
+                                            x:Name="txTotalGameTime"
                                             Grid.Row="0"
                                             Grid.Column="2"
-                                            uixprops:UIXAttachedProperty.Path="TBL_PROFI.GATI"
                                             Style="{StaticResource ProfileDetail.GameTimeValue}" />
 
                                         <TextBlock
@@ -116,9 +116,9 @@
                                             Style="{StaticResource ProfileDetail.InfoLabel}"
                                             Text="First time played:" />
                                         <TextBlock
+                                            x:Name="txFirstTimePlayed"
                                             Grid.Row="1"
                                             Grid.Column="2"
-                                            uixprops:UIXAttachedProperty.Path="TBL_PROFI.FIPL"
                                             Style="{StaticResource ProfileDetail.InfoValue}" />
 
                                         <TextBlock
@@ -127,9 +127,9 @@
                                             Style="{StaticResource ProfileDetail.InfoLabel}"
                                             Text="Last time played:" />
                                         <TextBlock
+                                            x:Name="txLastTimePlayed"
                                             Grid.Row="2"
                                             Grid.Column="2"
-                                            uixprops:UIXAttachedProperty.Path="TBL_PROFI.LAPL"
                                             Style="{StaticResource ProfileDetail.InfoValue}" />
                                     </Grid>
                                 </Border>

@@ -11,7 +11,7 @@ namespace GameTimeNext.Core.Framework
     {
         private static AppConfig _appConfig = new AppConfig();
         private static DataBaseManager _databaseManager = new DataBaseManager();
-        private static TBL_PROFI? _tblProfi = new TBL_PROFI();
+        private static T1PROFI? _t1Profi = new T1PROFI();
         private static ContentControl _loader = new ContentControl();
 
         // [------------------------------------------------]
@@ -28,14 +28,14 @@ namespace GameTimeNext.Core.Framework
             return _databaseManager;
         }
 
-        public static TBL_PROFI? GetCurrentProfile()
+        public static T1PROFI? GetCurrentProfile()
         {
-            return _tblProfi;
+            return _t1Profi;
         }
 
-        public static void SetCurrentProfile(TBL_PROFI? tblProfi)
+        public static void SetCurrentProfile(T1PROFI? t1Profi)
         {
-            _tblProfi = tblProfi;
+            _t1Profi = t1Profi;
         }
 
 

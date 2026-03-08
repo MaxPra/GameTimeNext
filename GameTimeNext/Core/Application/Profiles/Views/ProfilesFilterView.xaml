@@ -61,7 +61,7 @@
                             HorizontalScrollBarVisibility="Disabled"
                             VerticalScrollBarVisibility="Auto">
 
-                            <ItemsControl ItemsSource="{Binding Tbl_Groups}">
+                            <ItemsControl ItemsSource="{Binding T1GROUPs}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <StackPanel />

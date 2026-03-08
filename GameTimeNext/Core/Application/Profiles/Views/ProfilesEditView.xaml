@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI.Base"
     xmlns:uixprops="clr-namespace:UIX.ViewController.Engine.AttachedProperties;assembly=UIX.ViewController.Engine"
-    Title="Add profile"
+    Title="Profile"
     Width="980"
     Height="700"
     MinWidth="980"
@@ -86,12 +86,6 @@
                                 x:Name="txtSteamLinkStatus"
                                 FontWeight="SemiBold"
                                 Text="Linked with Steam" />
-
-                            <TextBlock
-                                x:Name="txtSteamLinkGame"
-                                Margin="0,2,0,0"
-                                Opacity="0.72"
-                                Text="(not set)" />
                         </StackPanel>
 
                         <Button
@@ -170,7 +164,7 @@
                                 x:Name="txbProfileName"
                                 Grid.Row="4"
                                 Height="36"
-                                uixprops:UIXAttachedProperty.Path="TBL_PROFI.GANA"
+                                uixprops:UIXAttachedProperty.Path="T1PROFI.GANA"
                                 ToolTip="Name shown in the profile list" />
 
                             <TextBlock
@@ -189,7 +183,7 @@
                                     x:Name="txbGameFolder"
                                     Grid.Column="0"
                                     Height="36"
-                                    uixprops:UIXAttachedProperty.Path="TBL_PROFI.EXGF"
+                                    uixprops:UIXAttachedProperty.Path="T1PROFI.EXGF"
                                     ToolTip="Folder that contains the game executable" />
 
                                 <Button
@@ -266,7 +260,7 @@
                                 FontWeight="SemiBold"
                                 Text="Tags" />
 
-                            <ItemsControl Grid.Row="2" ItemsSource="{Binding Tbl_Groups}">
+                            <ItemsControl Grid.Row="2" ItemsSource="{Binding T1GROUPs}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <StackPanel />
@@ -320,7 +314,7 @@
                             x:Name="txbImagePath"
                             Grid.Row="2"
                             Height="36"
-                            uixprops:UIXAttachedProperty.Path="TBL_PROFI.PPFN"
+                            uixprops:UIXAttachedProperty.Path="T1PROFI.PPFN"
                             IsEnabled="False"
                             ToolTip="Local path or path set after selecting an image" />
 
@@ -375,6 +369,7 @@
                         <CheckBox
                             x:Name="cbUseProfileAccentColors"
                             Grid.Row="2"
+                            uixprops:UIXAttachedProperty.Path="T1PROFI.ACAC"
                             Content="Change accent colors based on this profile"
                             ToolTip="If enabled, the application's accent colors can switch when this profile is selected/active." />
 
@@ -426,7 +421,7 @@
                 Grid.Column="3"
                 Width="140"
                 Height="36"
-                Content="Add profile" />
+                Content="Save" />
         </Grid>
     </Grid>
 </ui:GTNWindow>

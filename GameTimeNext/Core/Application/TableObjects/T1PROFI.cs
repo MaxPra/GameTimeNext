@@ -4,7 +4,7 @@ using UIX.ViewController.Engine.DataBaseObjects;
 
 namespace GameTimeNext.Core.Application.TableObjects
 {
-    public class TBL_PROFI : UIXTableObjectBase
+    public class T1PROFI : UIXTableObjectBase
     {
         [UIXSignatureField(0)]
         public long PFID { get; set; } = 0;
@@ -45,9 +45,15 @@ namespace GameTimeNext.Core.Application.TableObjects
         [UIXSignatureField(12)]
         public string ACCO { get; set; }
 
+        [UIXSignatureField(13)]
+        public string ACIN { get; set; }
+
+        [UIXSignatureField(14)]
+        public bool ACAC { get; set; }
+
         public BitmapImage CoverImage { get; set; }
 
-        public TBL_PROFI()
+        public T1PROFI()
         {
             PFID = 0;
 
@@ -69,13 +75,15 @@ namespace GameTimeNext.Core.Application.TableObjects
             CHAT = DateTime.MinValue;
 
             ACCO = string.Empty;
+            ACIN = string.Empty;
+            ACAC = false;
 
             AcceptChanges();
         }
 
         public override void Save()
         {
-            TBLM_PROFI tblmProfi = new TBLM_PROFI();
+            TXPROFI tblmProfi = new TXPROFI();
             tblmProfi.Save(this);
         }
     }

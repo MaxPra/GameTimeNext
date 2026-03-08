@@ -6,11 +6,11 @@ using UIX.ViewController.Engine.DataBaseObjects;
 
 namespace GameTimeNext.Core.Application.DataManagers
 {
-    internal class TBLM_SESSI
+    internal class TXGROUP
     {
-        public TBL_SESSI CreateNew()
+        public T1GROUP CreateNew()
         {
-            TBL_SESSI obj = new TBL_SESSI();
+            T1GROUP obj = new T1GROUP();
 
             DateTime now = DateTime.Now;
             obj.CRAT = now;
@@ -21,19 +21,15 @@ namespace GameTimeNext.Core.Application.DataManagers
             return obj;
         }
 
-        public TBL_SESSI Copy(TBL_SESSI source)
+        public T1GROUP Copy(T1GROUP source)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
 
-            TBL_SESSI copy = new TBL_SESSI();
+            T1GROUP copy = new T1GROUP();
 
-            copy.SEID = 0;
-
-            copy.PFID = source.PFID;
-
-            copy.PLFR = source.PLFR;
-            copy.PLTO = source.PLTO;
-            copy.PLTI = source.PLTI;
+            copy.GRID = 0;
+            copy.GRNA = source.GRNA;
+            copy.GTYP = source.GTYP;
 
             DateTime now = DateTime.Now;
             copy.CRAT = now;
@@ -44,36 +40,28 @@ namespace GameTimeNext.Core.Application.DataManagers
             return copy;
         }
 
-        public void Save(TBL_SESSI obj)
-        {
-            Save(obj, false);
-        }
-
-        public void Save(TBL_SESSI obj, bool migration)
+        public void Save(T1GROUP obj)
         {
             if (obj == null) throw new ArgumentNullException(nameof(obj));
-
-            if (obj.PFID <= 0)
-                throw new InvalidOperationException("PFID muss > 0 sein, da TBL_SESSI auf ein Profil referenziert.");
 
             SQLiteConnection connection = AppEnvironment.GetDataBaseManager().GetConnection();
             EnsureOpen(connection);
 
             DateTime now = DateTime.Now;
 
-            if (obj.SEID <= 0 || migration)
+            if (obj.GRID <= 0)
             {
-                if (!migration)
-                {
-                    if (obj.CRAT == DateTime.MinValue) obj.CRAT = now;
-                    obj.CHAT = now;
-                }
+                if (obj.CRAT == DateTime.MinValue) obj.CRAT = now;
+                obj.CHAT = now;
+
 
                 Insert(connection, obj);
             }
             else
             {
                 obj.CHAT = now;
+
+
                 Update(connection, obj);
             }
 
@@ -82,61 +70,35 @@ namespace GameTimeNext.Core.Application.DataManagers
             obj.AcceptChanges();
         }
 
-        public void Delete(long seid)
+        public void Delete(long grid)
         {
             SQLiteConnection connection = AppEnvironment.GetDataBaseManager().GetConnection();
             EnsureOpen(connection);
 
             using (SQLiteCommand cmd = connection.CreateCommand())
             {
-                cmd.CommandText = "DELETE FROM TBL_SESSI WHERE SEID = @SEID;";
-                cmd.Parameters.AddWithValue("@SEID", seid);
+                cmd.CommandText = "DELETE FROM T1GROUP WHERE GRID = @GRID;";
+                cmd.Parameters.AddWithValue("@GRID", grid);
                 cmd.ExecuteNonQuery();
             }
         }
 
-        public TBL_SESSI Read(long seid)
+        public List<T1GROUP> ReadAll()
         {
             SQLiteConnection connection = AppEnvironment.GetDataBaseManager().GetConnection();
             EnsureOpen(connection);
 
-            using (SQLiteCommand cmd = connection.CreateCommand())
-            {
-                cmd.CommandText =
-                    "SELECT SEID, PFID, PLFR, PLTO, PLTI, CRAT, CHAT " +
-                    "FROM TBL_SESSI WHERE SEID = @SEID;";
-                cmd.Parameters.AddWithValue("@SEID", seid);
-
-                using (SQLiteDataReader reader = cmd.ExecuteReader())
-                {
-                    if (!reader.Read())
-                        return null;
-
-                    TBL_SESSI obj = Map(reader);
-                    obj.AcceptChanges();
-                    return obj;
-                }
-            }
-        }
-
-        public List<TBL_SESSI> ReadAll()
-        {
-            SQLiteConnection connection = AppEnvironment.GetDataBaseManager().GetConnection();
-            EnsureOpen(connection);
-
-            List<TBL_SESSI> list = new List<TBL_SESSI>();
+            List<T1GROUP> list = new List<T1GROUP>();
 
             using (SQLiteCommand cmd = connection.CreateCommand())
             {
-                cmd.CommandText =
-                    "SELECT SEID, PFID, PLFR, PLTO, PLTI, CRAT, CHAT " +
-                    "FROM TBL_SESSI ORDER BY SEID;";
+                cmd.CommandText = "SELECT GRID, GRNA, GTYP, CRAT, CHAT FROM T1GROUP ORDER BY GRID;";
 
                 using (SQLiteDataReader reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        TBL_SESSI obj = Map(reader);
+                        T1GROUP obj = Map(reader);
                         obj.AcceptChanges();
                         list.Add(obj);
                     }
@@ -146,18 +108,40 @@ namespace GameTimeNext.Core.Application.DataManagers
             return list;
         }
 
-        private void Insert(SQLiteConnection connection, TBL_SESSI obj)
+        public T1GROUP Read(long grid)
+        {
+            SQLiteConnection connection = AppEnvironment.GetDataBaseManager().GetConnection();
+            EnsureOpen(connection);
+
+            using (SQLiteCommand cmd = connection.CreateCommand())
+            {
+                cmd.CommandText = "SELECT GRID, GRNA, GTYP, CRAT, CHAT FROM T1GROUP WHERE GRID = @GRID;";
+                cmd.Parameters.AddWithValue("@GRID", grid);
+
+                using (SQLiteDataReader reader = cmd.ExecuteReader())
+                {
+                    if (!reader.Read())
+                    {
+                        return null;
+                    }
+
+                    T1GROUP obj = Map(reader);
+                    obj.AcceptChanges();
+                    return obj;
+                }
+            }
+        }
+
+        private void Insert(SQLiteConnection connection, T1GROUP obj)
         {
             using (SQLiteCommand cmd = connection.CreateCommand())
             {
                 cmd.CommandText =
-                    "INSERT INTO TBL_SESSI (PFID, PLFR, PLTO, PLTI, CRAT, CHAT) " +
-                    "VALUES (@PFID, @PLFR, @PLTO, @PLTI, @CRAT, @CHAT);";
+                    "INSERT INTO T1GROUP (GRNA, CRAT, GTYP, CHAT) " +
+                    "VALUES (@GRNA, @CRAT, @CHAT);";
 
-                cmd.Parameters.AddWithValue("@PFID", obj.PFID);
-                cmd.Parameters.AddWithValue("@PLFR", ToDbDateTime(obj.PLFR));
-                cmd.Parameters.AddWithValue("@PLTO", ToDbDateTime(obj.PLTO));
-                cmd.Parameters.AddWithValue("@PLTI", obj.PLTI);
+                cmd.Parameters.AddWithValue("@GRNA", obj.GRNA);
+                cmd.Parameters.AddWithValue("@GTYP", obj.GTYP);
                 cmd.Parameters.AddWithValue("@CRAT", ToDbDateTime(obj.CRAT));
                 cmd.Parameters.AddWithValue("@CHAT", ToDbDateTime(obj.CHAT));
 
@@ -168,30 +152,26 @@ namespace GameTimeNext.Core.Application.DataManagers
             {
                 cmdId.CommandText = "SELECT last_insert_rowid();";
                 object result = cmdId.ExecuteScalar();
-                obj.SEID = Convert.ToInt64(result);
+                obj.GRID = Convert.ToInt64(result);
             }
         }
 
-        private void Update(SQLiteConnection connection, TBL_SESSI obj)
+        private void Update(SQLiteConnection connection, T1GROUP obj)
         {
             using (SQLiteCommand cmd = connection.CreateCommand())
             {
                 cmd.CommandText =
-                    "UPDATE TBL_SESSI SET " +
-                    "PFID = @PFID, " +
-                    "PLFR = @PLFR, " +
-                    "PLTO = @PLTO, " +
-                    "PLTI = @PLTI, " +
+                    "UPDATE T1GROUP SET " +
+                    "GRNA = @GRNA, " +
+                    "GTYP = @GTYP," +
                     "CRAT = @CRAT, " +
                     "CHAT = @CHAT " +
-                    "WHERE SEID = @SEID;";
+                    "WHERE GRID = @GRID;";
 
-                cmd.Parameters.AddWithValue("@SEID", obj.SEID);
+                cmd.Parameters.AddWithValue("@GRID", obj.GRID);
 
-                cmd.Parameters.AddWithValue("@PFID", obj.PFID);
-                cmd.Parameters.AddWithValue("@PLFR", ToDbDateTime(obj.PLFR));
-                cmd.Parameters.AddWithValue("@PLTO", ToDbDateTime(obj.PLTO));
-                cmd.Parameters.AddWithValue("@PLTI", obj.PLTI);
+                cmd.Parameters.AddWithValue("@GRNA", obj.GRNA);
+                cmd.Parameters.AddWithValue("@GTYP", obj.GTYP);
                 cmd.Parameters.AddWithValue("@CRAT", ToDbDateTime(obj.CRAT));
                 cmd.Parameters.AddWithValue("@CHAT", ToDbDateTime(obj.CHAT));
 
@@ -202,7 +182,9 @@ namespace GameTimeNext.Core.Application.DataManagers
         private void EnsureOpen(SQLiteConnection connection)
         {
             if (connection.State != System.Data.ConnectionState.Open)
+            {
                 connection.Open();
+            }
         }
 
         private string ToDbDateTime(DateTime value)
@@ -210,20 +192,16 @@ namespace GameTimeNext.Core.Application.DataManagers
             return value.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
         }
 
-        private TBL_SESSI Map(SQLiteDataReader reader)
+        private T1GROUP Map(SQLiteDataReader reader)
         {
-            TBL_SESSI obj = new TBL_SESSI();
+            T1GROUP obj = new T1GROUP();
 
-            obj.SEID = Convert.ToInt64(reader.GetValue(0));
-            obj.PFID = Convert.ToInt64(reader.GetValue(1));
+            obj.GRID = Convert.ToInt64(reader.GetValue(0));
+            obj.GRNA = reader.IsDBNull(1) ? string.Empty : reader.GetString(1);
+            obj.GTYP = reader.IsDBNull(1) ? string.Empty : reader.GetString(2);
 
-            obj.PLFR = ParseDbDateTime(reader.IsDBNull(2) ? null : reader.GetString(2));
-            obj.PLTO = ParseDbDateTime(reader.IsDBNull(3) ? null : reader.GetString(3));
-
-            obj.PLTI = reader.IsDBNull(4) ? 0.0 : Convert.ToDouble(reader.GetValue(4));
-
-            obj.CRAT = ParseDbDateTime(reader.IsDBNull(5) ? null : reader.GetString(5));
-            obj.CHAT = ParseDbDateTime(reader.IsDBNull(6) ? null : reader.GetString(6));
+            obj.CRAT = ParseDbDateTime(reader.IsDBNull(2) ? null : reader.GetString(2));
+            obj.CHAT = ParseDbDateTime(reader.IsDBNull(3) ? null : reader.GetString(3));
 
             obj.State = UIXTableObjectState.Available;
 
@@ -233,15 +211,28 @@ namespace GameTimeNext.Core.Application.DataManagers
         private DateTime ParseDbDateTime(string value)
         {
             if (string.IsNullOrWhiteSpace(value))
+            {
                 return DateTime.MinValue;
+            }
 
-            if (DateTime.TryParseExact(value, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime result))
+            DateTime result;
+            if (DateTime.TryParseExact(
+                    value,
+                    "yyyy-MM-dd HH:mm:ss",
+                    CultureInfo.InvariantCulture,
+                    DateTimeStyles.None,
+                    out result))
+            {
                 return result;
+            }
 
             if (DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
+            {
                 return result;
+            }
 
             return DateTime.MinValue;
         }
+
     }
 }

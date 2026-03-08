@@ -17,7 +17,7 @@ namespace GameTimeNext.Core.Application.GTXMigration
     /// <summary>
     /// Für die Migration der alten GameTimeX Daten zu den neuen GameTimeNXT Daten verantwortlich
     /// </summary>
-    public class GTXMigrationHelper
+    public class GTXMigrationService
     {
         private string _rootFolder = string.Empty;
         private string _databaseFilePath = string.Empty;
@@ -28,7 +28,7 @@ namespace GameTimeNext.Core.Application.GTXMigration
 
         private SQLiteConnection _connectionOld = new SQLiteConnection();
 
-        public GTXMigrationHelper(string rootFolder, UIXLoader loader)
+        public GTXMigrationService(string rootFolder, UIXLoader loader)
         {
             _rootFolder = rootFolder;
 
@@ -140,7 +140,9 @@ namespace GameTimeNext.Core.Application.GTXMigration
                             string temp = reader.GetString(4);
 
                             // -- Accent Color Calculation (START)
-                            List<System.Windows.Media.Color> accentColorsCalc = FnImage.GetTopAccentColors(_imagesFolderPath + System.IO.Path.DirectorySeparatorChar + reader.GetString(4), 1);
+
+                            // -- Accent Colors
+                            List<System.Windows.Media.Color> accentColorsCalc = FnImage.GetTopAccentColors(_imagesFolderPath + System.IO.Path.DirectorySeparatorChar + reader.GetString(4), 3);
                             System.Windows.Media.Color accentColor = System.Windows.Media.Color.FromArgb(255, accentColorsCalc[0].R, accentColorsCalc[0].G, accentColorsCalc[0].B);
                             string[] accentColors = FnTheme.CalculateAccentStateColors(accentColor.ToString());
 
@@ -153,15 +155,36 @@ namespace GameTimeNext.Core.Application.GTXMigration
                             cAccentColors.AccentColors = dicAccentColors;
 
                             string acco = cAccentColors.Serialize();
+
+                            // -- Accent Colors Init
+
+                            string[] accentColorsInitArray = new string[3];
+                            accentColorsInitArray[0] = System.Windows.Media.Color.FromArgb(255, accentColorsCalc[0].R, accentColorsCalc[0].G, accentColorsCalc[0].B).ToString();
+                            accentColorsInitArray[1] = System.Windows.Media.Color.FromArgb(255, accentColorsCalc[1].R, accentColorsCalc[1].G, accentColorsCalc[1].B).ToString();
+                            accentColorsInitArray[2] = System.Windows.Media.Color.FromArgb(255, accentColorsCalc[2].R, accentColorsCalc[2].G, accentColorsCalc[2].B).ToString();
+
+                            Dictionary<string, bool> dicAccentColorsInit = new Dictionary<string, bool>();
+                            dicAccentColorsInit.Add(accentColorsInitArray[0], true);
+                            dicAccentColorsInit.Add(accentColorsInitArray[1], false);
+                            dicAccentColorsInit.Add(accentColorsInitArray[2], false);
+
+                            CAccentColorsInit cAccentColorsInit = new CAccentColorsInit();
+                            cAccentColorsInit.AccentColors = dicAccentColorsInit;
+
+                            string acin = cAccentColorsInit.Serialize();
+
+                            // -- Accent Colors sind standardmäßig aktiviert
+                            bool acac = true;
+
                             // -- Accent Color Calculation (END)
 
                             using (SQLiteCommand insertCmd = AppEnvironment.GetDataBaseManager().GetConnection().CreateCommand())
                             {
                                 insertCmd.CommandText =
-                                    "INSERT INTO TBL_PROFI " +
-                                    "(PFID, GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, PLSP, CRAT, CHAT, ACCO) " +
+                                    "INSERT INTO T1PROFI " +
+                                    "(PFID, GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, PLSP, CRAT, CHAT, ACCO, ACIN, ACAC) " +
                                     "VALUES " +
-                                    "(@PFID, @GANA, @FIPL, @LAPL, @PPFN, @EXGF, @SAID, @PRSE, @EXEC, @PLSP, @CRAT, @CHAT, @ACCO);";
+                                    "(@PFID, @GANA, @FIPL, @LAPL, @PPFN, @EXGF, @SAID, @PRSE, @EXEC, @PLSP, @CRAT, @CHAT, @ACCO, @ACIN, @ACAC);";
 
                                 insertCmd.Parameters.AddWithValue("@PFID", pfid);
                                 insertCmd.Parameters.AddWithValue("@GANA", gana);
@@ -182,6 +205,8 @@ namespace GameTimeNext.Core.Application.GTXMigration
                                 insertCmd.Parameters.AddWithValue("@CHAT", ToDbDateTime(chat));
 
                                 insertCmd.Parameters.AddWithValue("@ACCO", acco);
+                                insertCmd.Parameters.AddWithValue("@ACIN", acin);
+                                insertCmd.Parameters.AddWithValue("@ACAC", acac ? 1 : 0);
 
                                 insertCmd.ExecuteNonQuery();
                             }
@@ -240,7 +265,7 @@ namespace GameTimeNext.Core.Application.GTXMigration
                             using (SQLiteCommand insertCmd = AppEnvironment.GetDataBaseManager().GetConnection().CreateCommand())
                             {
                                 insertCmd.CommandText =
-                                    "INSERT INTO TBL_SESSI " +
+                                    "INSERT INTO T1SESSI " +
                                     "(SEID, PFID, PLFR, PLTO, PLTI, CRAT, CHAT) " +
                                     "VALUES " +
                                     "(@SEID, @PFID, @PLFR, @PLTO, @PLTI, @CRAT, @CHAT);";

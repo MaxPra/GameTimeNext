@@ -95,16 +95,17 @@ namespace GameTimeNext.Core.Framework.DataBase
 
             // -- TAB_GROUP (Tabelle für Gruppen) --
             CreateTableTAB_GROUP();
-            InsertDefaultValuesTAB_GROUP();
+            InsertDefaultValuesTAB_GROUPConditions();
+            InsertDefaultValuesTAB_GROUPTags();
 
             // -- TAB_GRPPO (Tabelle für Gruppen und Profile [n zu m] --
             CreateTableTAB_GRPPO();
         }
 
-        private void InsertDefaultValuesTAB_GROUP()
+        private void InsertDefaultValuesTAB_GROUPConditions()
         {
             var sql = @"
-                        INSERT INTO TBL_GROUP (GRNA, GTYP, CRAT, CHAT)
+                        INSERT INTO T1GROUP (GRNA, GTYP, CRAT, CHAT)
                         VALUES 
                         ('Completed', @gtyp, @crat, @chat),
                         ('Unplayed', @gtyp, @crat, @chat),
@@ -121,20 +122,62 @@ namespace GameTimeNext.Core.Framework.DataBase
             command.ExecuteNonQuery();
         }
 
+        private void InsertDefaultValuesTAB_GROUPTags()
+        {
+            var sql = @"
+                        INSERT INTO T1GROUP (GRNA, GTYP, CRAT, CHAT)
+                        VALUES
+                        ('Singleplayer', @gtyp, @crat, @chat),
+                        ('Multiplayer', @gtyp, @crat, @chat),
+                        ('Co-op', @gtyp, @crat, @chat),
+                        ('PvP', @gtyp, @crat, @chat),
+
+                        ('Action', @gtyp, @crat, @chat),
+                        ('Adventure', @gtyp, @crat, @chat),
+                        ('RPG', @gtyp, @crat, @chat),
+                        ('Strategy', @gtyp, @crat, @chat),
+                        ('Simulation', @gtyp, @crat, @chat),
+                        ('Shooter', @gtyp, @crat, @chat),
+                        ('Horror', @gtyp, @crat, @chat),
+                        ('Survival', @gtyp, @crat, @chat),
+
+                        ('Open World', @gtyp, @crat, @chat),
+                        ('Sandbox', @gtyp, @crat, @chat),
+                        ('Story Rich', @gtyp, @crat, @chat),
+                        ('Exploration', @gtyp, @crat, @chat),
+                        ('Crafting', @gtyp, @crat, @chat),
+                        ('Building', @gtyp, @crat, @chat),
+
+                        ('First Person', @gtyp, @crat, @chat),
+                        ('Third Person', @gtyp, @crat, @chat),
+                        ('Isometric', @gtyp, @crat, @chat),
+                        ('Top-Down', @gtyp, @crat, @chat);
+                    ";
+
+            using var command = _connection.CreateCommand();
+            command.CommandText = sql;
+
+            command.Parameters.AddWithValue("@gtyp", GroupType.Tag);
+            command.Parameters.AddWithValue("@crat", DateTime.Today);
+            command.Parameters.AddWithValue("@chat", DateTime.Now);
+
+            command.ExecuteNonQuery();
+        }
+
         /// <summary>
         /// Erstellt die Tabelle für die Beziehung zwischen TAB_GROUP und TAB_PROFI
         /// </summary>
         private void CreateTableTAB_GRPPO()
         {
             var sql = @"
-            CREATE TABLE IF NOT EXISTS TBL_GRPPO (
+            CREATE TABLE IF NOT EXISTS T1GRPPO (
                 GPID INTEGER PRIMARY KEY AUTOINCREMENT,
                 GRID INTEGER NOT NULL,
                 PFID INTEGER NOT NULL,
                 CRAT DATETIME,
                 CHAT DATETIME,
-                FOREIGN KEY (GRID) REFERENCES TBL_GROUP(GRID) ON DELETE CASCADE,
-                FOREIGN KEY (PFID) REFERENCES TBL_PROFI(PFID) ON DELETE CASCADE
+                FOREIGN KEY (GRID) REFERENCES T1GROUP(GRID) ON DELETE CASCADE,
+                FOREIGN KEY (PFID) REFERENCES T1PROFI(PFID) ON DELETE CASCADE
             );
         ";
 
@@ -150,7 +193,7 @@ namespace GameTimeNext.Core.Framework.DataBase
         private void CreateTableTAB_GROUP()
         {
             var sql = @"
-            CREATE TABLE IF NOT EXISTS TBL_GROUP (
+            CREATE TABLE IF NOT EXISTS T1GROUP (
                 GRID INTEGER PRIMARY KEY AUTOINCREMENT,
                 GRNA VARCHAR(200),
                 GTYP VARCHAR(200),
@@ -170,7 +213,7 @@ namespace GameTimeNext.Core.Framework.DataBase
         private void CreateTableTAB_SESSI()
         {
             var sql = @"
-            CREATE TABLE IF NOT EXISTS TBL_SESSI (
+            CREATE TABLE IF NOT EXISTS T1SESSI (
                 SEID INTEGER PRIMARY KEY AUTOINCREMENT,
                 PFID INTEGER NOT NULL,
                 PLFR DATETIME,
@@ -178,7 +221,7 @@ namespace GameTimeNext.Core.Framework.DataBase
                 PLTI REAL NOT NULL DEFAULT 0.0,
                 CRAT DATETIME,
                 CHAT DATETIME,
-                FOREIGN KEY (PFID) REFERENCES TBL_PROFI(PFID) ON DELETE CASCADE
+                FOREIGN KEY (PFID) REFERENCES T1PROFI(PFID) ON DELETE CASCADE
             );
         ";
 
@@ -193,7 +236,7 @@ namespace GameTimeNext.Core.Framework.DataBase
         private void CreateTableTAB_PROFI()
         {
             var sql = @"
-                    CREATE TABLE IF NOT EXISTS TBL_PROFI (
+                    CREATE TABLE IF NOT EXISTS T1PROFI (
                         PFID INTEGER PRIMARY KEY AUTOINCREMENT,
                         GANA VARCHAR(200),
                         FIPL DATETIME,
@@ -206,7 +249,9 @@ namespace GameTimeNext.Core.Framework.DataBase
                         PLSP DATETIME NOT NULL DEFAULT '0001-01-01 00:00:00',
                         CRAT DATETIME,
                         CHAT DATETIME,
-                        ACCO VARCHAR(200)
+                        ACCO VARCHAR(200),
+                        ACIN VARCHAR(200),
+                        ACAC INTEGER
                     );";
 
             if (_connection == null)

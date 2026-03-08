@@ -12,18 +12,18 @@ namespace GameTimeNext.Core.Application.Profiles
         private ProfilesEditView? _profilesEditView = null;
         private ProfilesEditViewController? _profilesEditViewController = null;
 
-        private TBL_PROFI _tblProfi = new TBL_PROFI();
+        private T1PROFI _t1Profi = new T1PROFI();
 
-        public TBL_PROFI TblProfi
+        public T1PROFI T1Profi
         {
             get
             {
-                return _tblProfi;
+                return _t1Profi;
             }
 
             set
             {
-                _tblProfi = value;
+                _t1Profi = value;
             }
         }
 
@@ -36,11 +36,21 @@ namespace GameTimeNext.Core.Application.Profiles
             _profilesEditView.WndController = _profilesEditViewController;
         }
 
-        public void CreateNew(UIXApplication hostApplication)
+        public void CreateNew(Action<ProfilesEditViewController.ProfilesEditViewReturn> callback)
         {
-            _tblProfi = new TBLM_PROFI().CreateNew();
+            _t1Profi = new TXPROFI().CreateNew();
 
-            _profilesEditView.ViewIndicator.Add("CN");
+            _profilesEditView!.ViewIndicator.Add("CN");
+            _profilesEditViewController!.SetResultCallback(callback);
+            _profilesEditViewController.Show(true);
+        }
+
+        public void Edit(T1PROFI t1profi, Action<ProfilesEditViewController.ProfilesEditViewReturn> callback)
+        {
+            _t1Profi = t1profi;
+
+            _profilesEditView!.ViewIndicator.Add("ED");
+            _profilesEditViewController!.SetResultCallback(callback);
             _profilesEditViewController.Show(true);
         }
     }

@@ -141,7 +141,7 @@ namespace GameTimeNext.Core.Application.General.Controller
                     {
                         try
                         {
-                            GTXMigrationHelper gtxMigHelper = new GTXMigrationHelper("C:\\GameTimeX", GetApp().Loader);
+                            GTXMigrationService gtxMigHelper = new GTXMigrationService("C:\\GameTimeX", GetApp().Loader);
                             gtxMigHelper.MigrateToGTNXT();
                         }
                         catch (Exception ex)
