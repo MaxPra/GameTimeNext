@@ -142,7 +142,6 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
 
         private void ApplyContent(string title, string message, CFMBOXResult buttons, CFMBOXIcon icon, Window? owner)
         {
-            GetWnd().Owner = owner;
             GetWnd().Title = title;
             GetWnd().TbMessage.Text = message;
 

@@ -251,7 +251,8 @@ namespace GameTimeNext.Core.Framework.DataBase
                         CHAT DATETIME,
                         ACCO VARCHAR(200),
                         ACIN VARCHAR(200),
-                        ACAC INTEGER
+                        ACAC INTEGER,
+                        COMP INTEGER
                     );";
 
             if (_connection == null)

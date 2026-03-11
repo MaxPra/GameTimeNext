@@ -15,7 +15,7 @@
     ShowMaximizeButton="False"
     ShowMinimizeButton="False"
     Style="{StaticResource GTNWindowStyle}"
-    WindowStartupLocation="CenterOwner"
+    WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
 
     <Grid Margin="18">

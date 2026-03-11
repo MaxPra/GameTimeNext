@@ -38,6 +38,12 @@ namespace GameTimeNext
             AppEnvironment.GetDataBaseManager().Initialize();
 
         }
+
+        protected override void OnExit(ExitEventArgs e)
+        {
+            if (AppEnvironment.GetDataBaseManager().GetConnection() != null)
+                AppEnvironment.GetDataBaseManager().GetConnection().Close();
+        }
     }
 
 }

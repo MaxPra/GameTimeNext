@@ -21,6 +21,7 @@
             public const string ACCO = "ACCO";
             public const string ACIN = "ACIN";
             public const string ACAC = "ACAC";
+            public const string COMP = "COMP";
         }
     }
 }

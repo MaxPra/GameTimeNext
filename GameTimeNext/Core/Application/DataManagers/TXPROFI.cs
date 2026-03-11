@@ -45,6 +45,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             copy.ACCO = source.ACCO;
             copy.ACIN = source.ACIN;
             copy.ACAC = source.ACAC;
+            copy.COMP = source.COMP;
 
             DateTime now = DateTime.Now;
             copy.CRAT = now;
@@ -109,9 +110,9 @@ namespace GameTimeNext.Core.Application.DataManagers
             {
                 cmd.CommandText =
                             "INSERT INTO T1PROFI " +
-                            "(GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, PLSP, CRAT, CHAT, ACCO, ACIN, ACAC) " +
+                            "(GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, PLSP, CRAT, CHAT, ACCO, ACIN, ACAC, COMP) " +
                             "VALUES " +
-                            "(@GANA, @FIPL, @LAPL, @PPFN, @EXGF, @SAID, @PRSE, @EXEC, @PLSP, @CRAT, @CHAT, @ACCO, @ACIN, @ACAC);";
+                            "(@GANA, @FIPL, @LAPL, @PPFN, @EXGF, @SAID, @PRSE, @EXEC, @PLSP, @CRAT, @CHAT, @ACCO, @ACIN, @ACAC, @COMP);";
 
                 cmd.Parameters.AddWithValue("@GANA", obj.GANA);
                 cmd.Parameters.AddWithValue("@FIPL", ToDbDateTime(obj.FIPL));
@@ -127,6 +128,7 @@ namespace GameTimeNext.Core.Application.DataManagers
                 cmd.Parameters.AddWithValue("@ACCO", obj.ACCO);
                 cmd.Parameters.AddWithValue("@ACIN", obj.ACIN);
                 cmd.Parameters.AddWithValue("@ACAC", obj.ACAC ? 1 : 0);
+                cmd.Parameters.AddWithValue("@COMP", obj.COMP ? 1 : 0);
 
                 cmd.ExecuteNonQuery();
             }
@@ -158,7 +160,8 @@ namespace GameTimeNext.Core.Application.DataManagers
                     "CHAT = @CHAT, " +
                     "ACCO = @ACCO, " +
                     "ACIN = @ACIN, " +
-                    "ACAC = @ACAC " +
+                    "ACAC = @ACAC, " +
+                    "COMP = @COMP " +
                     "WHERE PFID = @PFID;";
 
                 cmd.Parameters.AddWithValue("@PFID", obj.PFID);
@@ -177,6 +180,7 @@ namespace GameTimeNext.Core.Application.DataManagers
                 cmd.Parameters.AddWithValue("@ACCO", obj.ACCO);
                 cmd.Parameters.AddWithValue("@ACIN", obj.ACIN);
                 cmd.Parameters.AddWithValue("@ACAC", obj.ACAC ? 1 : 0);
+                cmd.Parameters.AddWithValue("@COMP", obj.COMP ? 1 : 0);
 
                 cmd.ExecuteNonQuery();
             }
@@ -203,7 +207,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             using (SQLiteCommand cmd = connection.CreateCommand())
             {
                 cmd.CommandText =
-                    "SELECT PFID, GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, PLSP, CRAT, CHAT, ACCO, ACIN, ACAC " +
+                    "SELECT PFID, GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, PLSP, CRAT, CHAT, ACCO, ACIN, ACAC, COMP " +
                     "FROM T1PROFI WHERE PFID = @PFID;";
                 cmd.Parameters.AddWithValue("@PFID", pfid);
 
@@ -231,7 +235,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             using (SQLiteCommand cmd = connection.CreateCommand())
             {
                 cmd.CommandText =
-                    "SELECT PFID, GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, PLSP, CRAT, CHAT, ACCO, ACIN, ACAC " +
+                    "SELECT PFID, GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, PLSP, CRAT, CHAT, ACCO, ACIN, ACAC, COMP " +
                     "FROM T1PROFI ORDER BY PFID;";
 
                 using (SQLiteDataReader reader = cmd.ExecuteReader())
@@ -274,6 +278,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             obj.ACCO = reader.IsDBNull(12) ? string.Empty : reader.GetString(12);
             obj.ACIN = reader.IsDBNull(13) ? string.Empty : reader.GetString(13);
             obj.ACAC = !reader.IsDBNull(14) && (Convert.ToInt32(reader.GetValue(14)) == 1);
+            obj.COMP = !reader.IsDBNull(15) && (Convert.ToInt32(reader.GetValue(15)) == 1);
 
             obj.State = UIXTableObjectState.Available;
 

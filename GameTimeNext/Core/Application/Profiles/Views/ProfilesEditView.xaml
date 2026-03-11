@@ -147,6 +147,8 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="8" />
                                 <RowDefinition Height="Auto" />
+                                <RowDefinition Height="12" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
                             <TextBlock
@@ -167,12 +169,19 @@
                                 uixprops:UIXAttachedProperty.Path="T1PROFI.GANA"
                                 ToolTip="Name shown in the profile list" />
 
-                            <TextBlock
+                            <CheckBox
+                                x:Name="cbCompleted"
                                 Grid.Row="6"
+                                uixprops:UIXAttachedProperty.Path="T1PROFI.COMP"
+                                Content="Completed"
+                                ToolTip="Marks this profile as completed" />
+
+                            <TextBlock
+                                Grid.Row="8"
                                 Opacity="0.8"
                                 Text="Game folder (where the .exe is)" />
 
-                            <Grid Grid.Row="8">
+                            <Grid Grid.Row="10">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="10" />
@@ -351,7 +360,7 @@
                     Grid.Row="2"
                     Padding="16"
                     CornerRadius="10">
-                    <Grid>
+                    <Grid x:Name="grdAccentColorSettings">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="12" />

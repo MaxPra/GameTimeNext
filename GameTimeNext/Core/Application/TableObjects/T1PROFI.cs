@@ -51,6 +51,9 @@ namespace GameTimeNext.Core.Application.TableObjects
         [UIXSignatureField(14)]
         public bool ACAC { get; set; }
 
+        [UIXSignatureField(15)]
+        public bool COMP { get; set; }
+
         public BitmapImage CoverImage { get; set; }
 
         public T1PROFI()
@@ -77,6 +80,7 @@ namespace GameTimeNext.Core.Application.TableObjects
             ACCO = string.Empty;
             ACIN = string.Empty;
             ACAC = false;
+            COMP = false;
 
             AcceptChanges();
         }

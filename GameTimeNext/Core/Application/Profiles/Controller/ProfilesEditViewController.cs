@@ -47,28 +47,16 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             AddIdentifier("T1PROFI", GetApp().T1Profi);
         }
 
-        protected override void Build()
-        {
-            // Sichtbarkeitssteuerung Steam Linked Sektion
-            if (GetApp().T1Profi.SAID == 0)
-            {
-                GetWnd().pnlSteamLinkState.Visibility = Visibility.Collapsed;
-                GetWnd().pnlSteamSettings.Visibility = Visibility.Collapsed;
-            }
-            else
-            {
-
-                GetWnd().pnlSteamLinkState.Visibility = Visibility.Visible;
-                GetWnd().pnlSteamSettings.Visibility = Visibility.Visible;
-
-                if (GetWnd().ViewIndicator.Contains("ED"))
-                    FillViewSteamImport(null);
-            }
-        }
-
         protected override void BuildFirst()
         {
             BuildTagGrid(GetApp().T1Profi.PFID);
+        }
+
+        protected override void Build()
+        {
+            BuildSteamRelatedSettings();
+            BuildSteamLinkSection();
+            BuildAccentColorSection();
         }
 
         protected override void Check()
@@ -113,16 +101,79 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         protected override void FillDBOImpl()
         {
             // Akzentfarben
-            HandleAccentColors();
+            SaveAccentColors();
+
+            // Profileinstellungen
+            FillDBOProfileSettings();
 
             // Bild kopieren
             if (GetApp().T1Profi.HasFieldDataChanged(K1PROFI.Fields.PPFN))
                 CFProfilesEditApp.CopyProfileCoverToAppCoverFolder(_coverAppDataPath, _coverAppFolderFileName);
         }
 
+
         protected override void FillViewImpl()
         {
-            if (FnString.IsNullEmptyOrWhitespace(_selectedSteamGridDBImagePath))
+            if (GetWnd().ViewIndicator.Contains("ED"))
+                FillViewSteamImport(null!);
+
+
+
+            FillViewProfileSettings();
+
+            FillViewAccentColors();
+        }
+
+        protected override void SaveDBOImpl()
+        {
+            // Tags
+            FillDBOTags();
+        }
+
+        protected override void TriggeredEvent(FrameworkElement source, string eventName)
+        {
+            if (source is ToggleButton && source.Name.StartsWith("tglAccent") && eventName == UIXEventNames.ToggleButton.Checked)
+            {
+                ToggleAccentChanged(source);
+            }
+        }
+
+        private void FillViewSteamImport(SteamGame selectedGame)
+        {
+
+            if (GetApp().T1Profi.SAID == 0)
+                return;
+
+            // Profilname
+            if (GetWnd().ViewIndicator.Contains("CN"))
+            {
+                GetWnd().txbProfileName.Text = selectedGame.Name;
+
+                // Spielordner
+                GetWnd().txbGameFolder.Text = SteamManifestHelper.ResolveInstallPath(selectedGame);
+            }
+            else
+            {
+                GetWnd().txbProfileName.Text = GetApp().T1Profi.GANA;
+
+                // Spielordner
+                GetWnd().txbGameFolder.Text = GetApp().T1Profi.EXGF;
+            }
+        }
+
+        private void FillViewProfileSettings()
+        {
+            // Profileinstellungen laden
+            CProfileSettings cProfileSettings = new CProfileSettings(GetApp().T1Profi.PRSE).Dezerialize();
+
+            GetWnd().cbEnableHdrOnStart.IsChecked = cProfileSettings.HDREnabled == true;
+
+            GetWnd().txbSteamArgs.Text = cProfileSettings.SteamGameArgs.Replace(";", " ");
+        }
+
+        private void FillViewAccentColors()
+        {
+            if (FnString.IsNullEmptyOrWhitespace(_selectedSteamGridDBImagePath) && GetWnd().ViewIndicator.Contains("ED"))
             {
                 // Aus T1PROFI lesen
                 CAccentColorsInit cAccentColorsInit = new CAccentColorsInit(GetApp().T1Profi.ACIN);
@@ -149,144 +200,6 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             }
         }
 
-        protected override void SaveDBOImpl()
-        {
-            // Tags
-            FillDBOTags();
-        }
-
-        protected override void TriggeredEvent(FrameworkElement source, string eventName)
-        {
-            if (source is ToggleButton && source.Name.StartsWith("tglAccent") && eventName == UIXEventNames.ToggleButton.Checked)
-            {
-                ToggleAccentChanged(source);
-            }
-        }
-
-        protected void EV_BtnSteamImport()
-        {
-            ProfilesSteamImportApp app = new ProfilesSteamImportApp();
-            app.Search(r =>
-            {
-                if (!r.Canceled)
-                {
-                    FillDBOSteamImport(r.SteamGame!);
-                    FillViewSteamImport(r.SteamGame!);
-                    Build();
-                }
-            });
-        }
-
-        protected async Task EV_btnSteamGridDb()
-        {
-            // SteamGridDb API Key prüfen
-            if (FnString.IsNullEmptyOrWhitespace(AppEnvironment.GetAppConfig().SteamGridDbAPIKey))
-            {
-                CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>();
-                cfmbox.Show("No API Key found!", "No API key was found.\nPlease make sure that the API key is stored in the settings.", CFMBOXResult.Ok, CFMBOXIcon.Info);
-                return;
-            }
-
-            // Steamprofilverknüpfung prüfen
-            if (GetApp().T1Profi.SAID == 0)
-            {
-                CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>();
-                cfmbox.Show("No Steam profile has been linked!", "Please note that the SteamGridDB cover selection is only available if a Steam profile is linked to a GameTimeNext profile.", CFMBOXResult.Ok, CFMBOXIcon.Info);
-                return;
-            }
-
-            ProfilesSteamGridDBApp app = GetApp().GetApplication<ProfilesSteamGridDBApp>();
-            app.Search(GetApp(), GetApp().T1Profi.SAID, r =>
-            {
-                if (!r.Canceled)
-                {
-                    Task.Run(async () =>
-                    {
-                        await FillViewSteamGridDBCoverChanged(r.SelectedImagePath);
-                    });
-                }
-            });
-        }
-        protected void EV_btnUnlinkSteamProfile()
-        {
-            GetApp().T1Profi.SAID = 0;
-        }
-
-        protected void EV_btnSave()
-        {
-            GetViewReturn<ProfilesEditViewReturn>().Canceled = false;
-            GetViewReturn<ProfilesEditViewReturn>().PFID = GetApp().T1Profi.PFID;
-            Exit(true);
-        }
-
-        protected void EV_btnCancel()
-        {
-            Exit(true);
-        }
-
-        private void FillViewSteamImport(SteamGame selectedGame)
-        {
-
-            // Profilname
-            if (GetWnd().ViewIndicator.Contains("CN"))
-            {
-                GetWnd().txbProfileName.Text = selectedGame.Name;
-
-                // Spielordner
-                GetWnd().txbGameFolder.Text = SteamManifestHelper.ResolveInstallPath(selectedGame);
-            }
-            else
-            {
-                GetWnd().txbProfileName.Text = GetApp().T1Profi.GANA;
-
-                // Spielordner
-                GetWnd().txbGameFolder.Text = GetApp().T1Profi.EXGF;
-            }
-        }
-
-        private void CheckSteamRelatedFields()
-        {
-            if (GetApp().T1Profi.SAID == 0)
-                return;
-        }
-
-        private void HandleAccentColors()
-        {
-            if (GetWnd().cbUseProfileAccentColors.IsChecked == false)
-                return;
-
-            // -- Akzent farben (korrespondierend aus der gewählten)
-            string[] accentColorsCalculated = FnTheme.CalculateAccentStateColors(CFProfilesEditApp.GetSelectedToggleButton(GetWnd()).Tag.ToString());
-
-            Dictionary<string, string> accentColorsDic = new Dictionary<string, string>();
-
-            accentColorsDic.Add("accent", accentColorsCalculated[0]);
-            accentColorsDic.Add("hover", accentColorsCalculated[1]);
-            accentColorsDic.Add("pressed", accentColorsCalculated[2]);
-
-            CAccentColors cAccentColors = new CAccentColors();
-            cAccentColors.AccentColors = accentColorsDic;
-
-            GetApp().T1Profi.ACCO = cAccentColors.Serialize();
-
-            // -- Automatisch ermittelte Akzentfarben abspeichern
-            string[] accentColorsInit = new string[3];
-
-            accentColorsInit[0] = GetWnd().tglAccent1.Tag.ToString()!;
-            accentColorsInit[1] = GetWnd().tglAccent2.Tag.ToString()!;
-            accentColorsInit[2] = GetWnd().tglAccent3.Tag.ToString()!;
-
-            Dictionary<string, bool> dicAccentColorsInit = new Dictionary<string, bool>();
-            dicAccentColorsInit.Add(accentColorsInit[0], GetWnd().tglAccent1.IsChecked == true);
-            dicAccentColorsInit.Add(accentColorsInit[1], GetWnd().tglAccent2.IsChecked == true);
-            dicAccentColorsInit.Add(accentColorsInit[2], GetWnd().tglAccent3.IsChecked == true);
-
-            CAccentColorsInit cAccentColorsInit = new CAccentColorsInit();
-            cAccentColorsInit.AccentColors = dicAccentColorsInit;
-
-            GetApp().T1Profi.ACIN = cAccentColorsInit.Serialize();
-        }
-
         private async Task FillViewSteamGridDBCoverChanged(string path)
         {
 
@@ -295,7 +208,6 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             GetWnd().Dispatcher.Invoke(() =>
             {
                 GetWnd().txbImagePath.Text = AppEnvironment.GetAppConfig().CoverFolderPath + System.IO.Path.DirectorySeparatorChar + _coverAppFolderFileName;
-
             });
 
             GetApp().Loader.Begin();
@@ -347,25 +259,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
             // Steam App Id setzen --> Ausnahme direkt am Table Object
             GetApp().T1Profi.SAID = selectedGame.AppId;
-        }
 
-        private void ToggleAccentChanged(FrameworkElement toggleChecked)
-        {
-            if (toggleChecked == GetWnd().tglAccent1)
-            {
-                GetWnd().tglAccent2.IsChecked = false;
-                GetWnd().tglAccent3.IsChecked = false;
-            }
-            else if (toggleChecked == GetWnd().tglAccent2)
-            {
-                GetWnd().tglAccent1.IsChecked = false;
-                GetWnd().tglAccent3.IsChecked = false;
-            }
-            else if (toggleChecked == GetWnd().tglAccent3)
-            {
-                GetWnd().tglAccent1.IsChecked = false;
-                GetWnd().tglAccent2.IsChecked = false;
-            }
+            GetApp().T1Profi.EXEC = string.Empty;
         }
 
         private void FillDBOTags()
@@ -386,6 +281,69 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             }
         }
 
+        private void FillDBOProfileSettings()
+        {
+            CProfileSettings cProfileSettings = new CProfileSettings();
+
+            cProfileSettings.HDREnabled = GetWnd().cbEnableHdrOnStart.IsChecked == true;
+            cProfileSettings.SteamGameArgs = GetWnd().txbSteamArgs.Text.Replace(" ", ";");
+
+            GetApp().T1Profi.PRSE = cProfileSettings.Serialize();
+        }
+
+        private void FillDBOExecutables(List<Executable> selectedExecutables)
+        {
+            CExecutables cExecutables = new CExecutables();
+
+            foreach (Executable executable in selectedExecutables)
+            {
+                cExecutables.KeyValuePairs.Add(executable.Name, executable.IsSelected);
+            }
+
+            GetApp().T1Profi.EXEC = cExecutables.Serialize();
+        }
+
+        private void BuildSteamLinkSection()
+        {
+            // Sichtbarkeitssteuerung Steam Linked Sektion
+            if (GetApp().T1Profi.SAID == 0)
+            {
+                GetWnd().pnlSteamLinkState.Visibility = Visibility.Collapsed;
+                GetWnd().pnlSteamSettings.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+
+                GetWnd().pnlSteamLinkState.Visibility = Visibility.Visible;
+                GetWnd().pnlSteamSettings.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void BuildAccentColorSection()
+        {
+            // Sichtbarkeitssteuerung AccentColors
+            if (!FnString.IsNullEmptyOrWhitespace(GetWnd().txbImagePath.Text))
+            {
+                GetWnd().grdAccentColorSettings.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                GetWnd().grdAccentColorSettings.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void BuildSteamRelatedSettings()
+        {
+            if (GetApp().T1Profi.SAID == 0)
+            {
+                GetWnd().pnlSteamSettings.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                GetWnd().pnlSteamSettings.Visibility = Visibility.Visible;
+            }
+        }
+
         private void BuildTagGrid(long pfid)
         {
             TXGROUP TXGROUP = new TXGROUP();
@@ -393,8 +351,6 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             List<T1GROUP> t1groups = new List<T1GROUP>();
 
             UIXQuery query = BuildTagGridQuery(pfid);
-
-            string sql = query.PreviewQuery();
 
             using (var reader = query.Execute())
             {
@@ -433,19 +389,79 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             // Felder
             query.AddField(K1GROUP.Name, K1GROUP.Fields.GRID);
-            query.AddField(K1GRPPO.Name, K1GRPPO.Fields.GPID);
-
-            // Left Join T1GRPPO
-            UIXQueryTable t1grppo = query.AddJoinTable(K1GRPPO.Name, JoinType.LEFT);
-            t1grppo.AddJoinCondition(K1GROUP.Name, K1GROUP.Fields.GRID, QueryCompareType.EQUALS, K1GRPPO.Name, K1GRPPO.Fields.GRID);
 
             if (pfid > 0)
-                t1grppo.AddJoinCondition(K1GRPPO.Name, K1GRPPO.Fields.PFID, QueryCompareType.EQUALS, pfid);
+            {
+                query.AddField(K1GRPPO.Name, K1GRPPO.Fields.GPID);
+
+                // Left Join T1GRPPO
+                UIXQueryTable t1grppo = query.AddJoinTable(K1GRPPO.Name, JoinType.LEFT);
+                t1grppo.AddJoinCondition(K1GROUP.Name, K1GROUP.Fields.GRID, QueryCompareType.EQUALS, K1GRPPO.Name, K1GRPPO.Fields.GRID);
+
+                if (pfid > 0)
+                    t1grppo.AddJoinCondition(K1GRPPO.Name, K1GRPPO.Fields.PFID, QueryCompareType.EQUALS, pfid);
+            }
 
             // Where
             query.AddWhere(K1GROUP.Name, K1GROUP.Fields.GTYP, QueryCompareType.EQUALS, GroupType.Tag);
 
             return query;
+        }
+
+        private void SaveAccentColors()
+        {
+            if (GetWnd().cbUseProfileAccentColors.IsChecked == false)
+                return;
+
+            // -- Akzent farben (korrespondierend aus der gewählten)
+            string[] accentColorsCalculated = FnTheme.CalculateAccentStateColors(CFProfilesEditApp.GetSelectedToggleButton(GetWnd()).Tag.ToString());
+
+            Dictionary<string, string> accentColorsDic = new Dictionary<string, string>();
+
+            accentColorsDic.Add("accent", accentColorsCalculated[0]);
+            accentColorsDic.Add("hover", accentColorsCalculated[1]);
+            accentColorsDic.Add("pressed", accentColorsCalculated[2]);
+
+            CAccentColors cAccentColors = new CAccentColors();
+            cAccentColors.AccentColors = accentColorsDic;
+
+            GetApp().T1Profi.ACCO = cAccentColors.Serialize();
+
+            // -- Automatisch ermittelte Akzentfarben abspeichern
+            string[] accentColorsInit = new string[3];
+
+            accentColorsInit[0] = GetWnd().tglAccent1.Tag.ToString()!;
+            accentColorsInit[1] = GetWnd().tglAccent2.Tag.ToString()!;
+            accentColorsInit[2] = GetWnd().tglAccent3.Tag.ToString()!;
+
+            Dictionary<string, bool> dicAccentColorsInit = new Dictionary<string, bool>();
+            dicAccentColorsInit.Add(accentColorsInit[0], GetWnd().tglAccent1.IsChecked == true);
+            dicAccentColorsInit.Add(accentColorsInit[1], GetWnd().tglAccent2.IsChecked == true);
+            dicAccentColorsInit.Add(accentColorsInit[2], GetWnd().tglAccent3.IsChecked == true);
+
+            CAccentColorsInit cAccentColorsInit = new CAccentColorsInit();
+            cAccentColorsInit.AccentColors = dicAccentColorsInit;
+
+            GetApp().T1Profi.ACIN = cAccentColorsInit.Serialize();
+        }
+
+        private void ToggleAccentChanged(FrameworkElement toggleChecked)
+        {
+            if (toggleChecked == GetWnd().tglAccent1)
+            {
+                GetWnd().tglAccent2.IsChecked = false;
+                GetWnd().tglAccent3.IsChecked = false;
+            }
+            else if (toggleChecked == GetWnd().tglAccent2)
+            {
+                GetWnd().tglAccent1.IsChecked = false;
+                GetWnd().tglAccent3.IsChecked = false;
+            }
+            else if (toggleChecked == GetWnd().tglAccent3)
+            {
+                GetWnd().tglAccent1.IsChecked = false;
+                GetWnd().tglAccent2.IsChecked = false;
+            }
         }
 
         private ProfilesEditApp GetApp()
@@ -456,6 +472,82 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         private ProfilesEditView GetWnd()
         {
             return (ProfilesEditView)View;
+        }
+
+        protected void EV_BtnSteamImport()
+        {
+            ProfilesSteamImportApp app = new ProfilesSteamImportApp();
+            app.Search(r =>
+            {
+                if (!r.Canceled)
+                {
+                    FillDBOSteamImport(r.SteamGame!);
+                    FillViewSteamImport(r.SteamGame!);
+                    Build();
+
+                    // Exe auswählen
+                    ProfilesExecutablesEditApp profilesExecutablesEditApp = GetApp().GetApplication<ProfilesExecutablesEditApp>();
+                    profilesExecutablesEditApp.Search(SteamManifestHelper.ResolveInstallPath(r.SteamGame!), r =>
+                    {
+                        if (!r.Canceled)
+                        {
+                            FillDBOExecutables(r.SelectedExecutables);
+                        }
+
+                    });
+                }
+            });
+        }
+
+        protected async Task EV_btnSteamGridDb()
+        {
+            // SteamGridDb API Key prüfen
+            if (FnString.IsNullEmptyOrWhitespace(AppEnvironment.GetAppConfig().SteamGridDbAPIKey))
+            {
+                CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>();
+                cfmbox.Show("No API Key found!", "No API key was found.\nPlease make sure that the API key is stored in the settings.", CFMBOXResult.Ok, CFMBOXIcon.Info);
+                return;
+            }
+
+            // Steamprofilverknüpfung prüfen
+            if (GetApp().T1Profi.SAID == 0)
+            {
+                CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>();
+                cfmbox.Show("No Steam profile has been linked!", "Please note that the SteamGridDB cover selection is only available if a Steam profile is linked to a GameTimeNext profile.", CFMBOXResult.Ok, CFMBOXIcon.Info);
+                return;
+            }
+
+            ProfilesSteamGridDBApp app = GetApp().GetApplication<ProfilesSteamGridDBApp>();
+            app.Search(GetApp(), GetApp().T1Profi.SAID, r =>
+            {
+                if (!r.Canceled)
+                {
+                    Task.Run(async () =>
+                    {
+                        await FillViewSteamGridDBCoverChanged(r.SelectedImagePath);
+                    });
+
+
+                    RunEventPipelineSync(View, string.Empty);
+
+                }
+            });
+        }
+        protected void EV_btnUnlinkSteamProfile()
+        {
+            GetApp().T1Profi.SAID = 0;
+        }
+
+        protected void EV_btnSave()
+        {
+            GetViewReturn<ProfilesEditViewReturn>().Canceled = false;
+            GetViewReturn<ProfilesEditViewReturn>().PFID = GetApp().T1Profi.PFID;
+            Exit(true);
+        }
+
+        protected void EV_btnCancel()
+        {
+            Exit(true);
         }
     }
 }

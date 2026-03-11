@@ -43,6 +43,32 @@ namespace GameTimeNext.Core.Framework.UI.Base
             set => SetValue(ShowMaximizeButtonProperty, value);
         }
 
+        public static readonly DependencyProperty ShowCloseButtonProperty =
+            DependencyProperty.Register(
+                nameof(ShowCloseButton),
+                typeof(bool),
+                typeof(GTNWindow),
+                new PropertyMetadata(true));
+
+        public bool ShowCloseButton
+        {
+            get => (bool)GetValue(ShowCloseButtonProperty);
+            set => SetValue(ShowCloseButtonProperty, value);
+        }
+
+        public static readonly DependencyProperty SubtitleProperty =
+            DependencyProperty.Register(
+                nameof(Subtitle),
+                typeof(string),
+                typeof(GTNWindow),
+                new PropertyMetadata(string.Empty));
+
+        public string Subtitle
+        {
+            get => (string)GetValue(SubtitleProperty);
+            set => SetValue(SubtitleProperty, value);
+        }
+
         public GTNWindow()
         {
             WindowStyle = WindowStyle.None;
@@ -66,12 +92,13 @@ namespace GameTimeNext.Core.Framework.UI.Base
             base.OnApplyTemplate();
 
             if (GetTemplateChild("PART_TitleBar") is FrameworkElement titleBar)
-            {
                 titleBar.MouseLeftButtonDown += TitleBar_MouseLeftButtonDown;
-            }
 
             if (GetTemplateChild("PART_CloseButton") is Button closeBtn)
+            {
                 closeBtn.Click += (_, __) => Close();
+                closeBtn.Visibility = ShowCloseButton ? Visibility.Visible : Visibility.Collapsed;
+            }
 
             if (GetTemplateChild("PART_MinButton") is Button minBtn)
             {

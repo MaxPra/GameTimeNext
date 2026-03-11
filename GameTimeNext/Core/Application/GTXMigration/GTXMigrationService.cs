@@ -41,7 +41,7 @@ namespace GameTimeNext.Core.Application.GTXMigration
 
         public void MigrateToGTNXT()
         {
-            _loader.SetTextStep("connecting to old database");
+            _loader!.SetTextStep("connecting to old database");
 
             // Verbindung zu alter Datenbank aufbauen
             bool connectSuccess = ConnectToSQLite();
@@ -135,6 +135,8 @@ namespace GameTimeNext.Core.Application.GTXMigration
                             string prse = reader.GetString(9);
                             string exec = reader.GetString(10);
 
+                            bool comp = false;
+
                             DateTime plsp = ParseOldDateTime(reader.GetString(11));
 
                             string temp = reader.GetString(4);
@@ -182,9 +184,9 @@ namespace GameTimeNext.Core.Application.GTXMigration
                             {
                                 insertCmd.CommandText =
                                     "INSERT INTO T1PROFI " +
-                                    "(PFID, GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, PLSP, CRAT, CHAT, ACCO, ACIN, ACAC) " +
+                                    "(PFID, GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, PLSP, CRAT, CHAT, ACCO, ACIN, ACAC, COMP) " +
                                     "VALUES " +
-                                    "(@PFID, @GANA, @FIPL, @LAPL, @PPFN, @EXGF, @SAID, @PRSE, @EXEC, @PLSP, @CRAT, @CHAT, @ACCO, @ACIN, @ACAC);";
+                                    "(@PFID, @GANA, @FIPL, @LAPL, @PPFN, @EXGF, @SAID, @PRSE, @EXEC, @PLSP, @CRAT, @CHAT, @ACCO, @ACIN, @ACAC, @COMP);";
 
                                 insertCmd.Parameters.AddWithValue("@PFID", pfid);
                                 insertCmd.Parameters.AddWithValue("@GANA", gana);
@@ -207,6 +209,7 @@ namespace GameTimeNext.Core.Application.GTXMigration
                                 insertCmd.Parameters.AddWithValue("@ACCO", acco);
                                 insertCmd.Parameters.AddWithValue("@ACIN", acin);
                                 insertCmd.Parameters.AddWithValue("@ACAC", acac ? 1 : 0);
+                                insertCmd.Parameters.AddWithValue("@COMP", comp ? 1 : 0);
 
                                 insertCmd.ExecuteNonQuery();
                             }

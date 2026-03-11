@@ -13,8 +13,10 @@
     MaxWidth="900"
     ResizeMode="NoResize"
     ShowInTaskbar="True"
+    ShowMaximizeButton="False"
+    ShowMinimizeButton="False"
     Style="{StaticResource GTNWindowStyle}"
-    WindowStartupLocation="Manual"
+    WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
 
     <Grid Margin="36,28,36,28">

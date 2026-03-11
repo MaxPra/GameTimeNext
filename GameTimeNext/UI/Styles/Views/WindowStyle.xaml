@@ -59,12 +59,37 @@
                                             <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
 
-                                        <TextBlock
+                                        <Grid
+                                            Grid.Column="0"
                                             Margin="15,0"
-                                            VerticalAlignment="Center"
-                                            FontWeight="SemiBold"
-                                            Foreground="{DynamicResource Brush.TextPrimary}"
-                                            Text="{TemplateBinding Title}" />
+                                            VerticalAlignment="Center">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBlock
+                                                VerticalAlignment="Center"
+                                                FontWeight="SemiBold"
+                                                Foreground="{DynamicResource Brush.TextPrimary}"
+                                                Text="{TemplateBinding Title}" />
+
+                                            <Border
+                                                x:Name="PART_SubtitleHost"
+                                                Grid.Column="1"
+                                                Margin="8,0,0,0"
+                                                Padding="0"
+                                                Background="Transparent"
+                                                Visibility="Visible">
+                                                <TextBlock
+                                                    x:Name="PART_SubtitleText"
+                                                    VerticalAlignment="Center"
+                                                    FontSize="12"
+                                                    FontWeight="SemiBold"
+                                                    Foreground="{DynamicResource Brush.TextSecondary}"
+                                                    Text="{TemplateBinding Subtitle}" />
+                                            </Border>
+                                        </Grid>
 
                                         <StackPanel
                                             Grid.Column="1"
@@ -508,13 +533,24 @@
                     </AdornerDecorator>
 
                     <ControlTemplate.Triggers>
-
                         <Trigger Property="ShowMinimizeButton" Value="False">
                             <Setter TargetName="PART_MinButton" Property="Visibility" Value="Collapsed" />
                         </Trigger>
 
                         <Trigger Property="ShowMaximizeButton" Value="False">
                             <Setter TargetName="PART_MaxButton" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+
+                        <Trigger Property="ShowCloseButton" Value="False">
+                            <Setter TargetName="PART_CloseButton" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+
+                        <Trigger Property="Subtitle" Value="">
+                            <Setter TargetName="PART_SubtitleHost" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+
+                        <Trigger Property="Subtitle" Value="{x:Null}">
+                            <Setter TargetName="PART_SubtitleHost" Property="Visibility" Value="Collapsed" />
                         </Trigger>
 
                         <Trigger Property="WindowState" Value="Maximized">
@@ -526,7 +562,6 @@
                             <Trigger.EnterActions>
                                 <BeginStoryboard x:Name="LoaderSlotsStoryboard">
                                     <Storyboard RepeatBehavior="Forever">
-
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SlotLeftTranslate" Storyboard.TargetProperty="X">
                                             <SplineDoubleKeyFrame KeyTime="0:0:0.0" Value="-108" />
                                             <SplineDoubleKeyFrame KeyTime="0:0:0.6" Value="-96" />
@@ -592,7 +627,6 @@
                                             <SplineDoubleKeyFrame KeyTime="0:0:0.6" Value="1.0" />
                                             <SplineDoubleKeyFrame KeyTime="0:0:1.2" Value="0.82" />
                                         </DoubleAnimationUsingKeyFrames>
-
                                     </Storyboard>
                                 </BeginStoryboard>
                             </Trigger.EnterActions>
@@ -601,7 +635,6 @@
                                 <StopStoryboard BeginStoryboardName="LoaderSlotsStoryboard" />
                             </Trigger.ExitActions>
                         </Trigger>
-
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>

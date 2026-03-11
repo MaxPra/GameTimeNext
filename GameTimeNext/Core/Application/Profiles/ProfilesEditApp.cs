@@ -34,6 +34,8 @@ namespace GameTimeNext.Core.Application.Profiles
 
             _profilesEditViewController = new ProfilesEditViewController(this);
             _profilesEditView.WndController = _profilesEditViewController;
+
+
         }
 
         public void CreateNew(Action<ProfilesEditViewController.ProfilesEditViewReturn> callback)
