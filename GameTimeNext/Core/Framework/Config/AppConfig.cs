@@ -1,10 +1,14 @@
-﻿using System.IO;
+﻿using GameTimeNext.Core.Application.TableObjects;
+using System.IO;
 using System.Text.Json.Serialization;
+using static GameTimeNext.Core.Application.Profiles.Controller.ProfilesViewController;
 
 namespace GameTimeNext.Core.Framework.Config
 {
     internal class AppConfig
     {
+
+        #region Internal
         /// <summary>
         /// Liefert den RootFolder (Dokumente)
         /// </summary>
@@ -44,6 +48,7 @@ namespace GameTimeNext.Core.Framework.Config
             }
         }
 
+        [JsonIgnore]
         public string CoverFolderTempPath
         {
             get
@@ -105,13 +110,19 @@ namespace GameTimeNext.Core.Framework.Config
                 return AppDataLocalPath + Path.DirectorySeparatorChar + "Temp_SteamGridDBCovers";
             }
         }
+        #endregion
+
+
+        #region External
+
+        public FilterCache FilterCache { get; set; } = new FilterCache();
+        public AppSettings AppSettings { get; set; } = new AppSettings();
+
+        #endregion
 
         public AppConfig()
         {
 
         }
-
-
-
     }
 }

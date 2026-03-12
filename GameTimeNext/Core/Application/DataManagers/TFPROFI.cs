@@ -2,7 +2,7 @@
 
 namespace GameTimeNext.Core.Application.DataManagers
 {
-    public class CFPROFI
+    public class TFPROFI
     {
         /// <summary>
         /// Löscht das übergebene Profil inkl. der zugehörigen Daten
@@ -24,6 +24,11 @@ namespace GameTimeNext.Core.Application.DataManagers
 
             // Profil löschen
             txprofi.Delete(t1profi.PFID);
+        }
+
+        public static bool GetIsUnplayed(T1PROFI t1profi)
+        {
+            return t1profi.FIPL == DateTime.MinValue;
         }
     }
 }

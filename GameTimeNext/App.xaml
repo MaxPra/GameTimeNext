@@ -2,10 +2,15 @@
     x:Class="GameTimeNext.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converter="clr-namespace:GameTimeNext.Core.Application.Profiles.Converter"
     xmlns:local="clr-namespace:GameTimeNext"
     ShutdownMode="OnMainWindowClose">
     <Application.Resources>
         <ResourceDictionary>
+
+            <!--  Converter  -->
+            <converter:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+
             <ResourceDictionary.MergedDictionaries>
 
                 <!--  Colors & Values  -->
@@ -30,6 +35,7 @@
                 <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Views/WindowStyle.xaml" />
                 <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Views/ProfileDetailSubViewStyles.xaml" />
                 <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Views/SteamGridDBViewStyles.xaml" />
+                <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Views/SettingsViewStyles.xaml" />
 
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

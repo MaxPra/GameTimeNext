@@ -1,5 +1,6 @@
 ﻿using GameTimeNext.Core.Application.GTXMigration;
 using GameTimeNext.Core.Application.Profiles;
+using GameTimeNext.Core.Application.Settings;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using System.Diagnostics;
@@ -9,7 +10,6 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.Events;
-using UIX.ViewController.Engine.FrameworkElements.Windows;
 using UIX.ViewController.Engine.Runnables;
 
 namespace GameTimeNext.Core.Application.General.Controller
@@ -18,23 +18,8 @@ namespace GameTimeNext.Core.Application.General.Controller
     {
         private string _gtxPath = "C:\\GameTimeX";
 
-        public class WindowReturn : UIXWindowReturn
-        {
-            public string Test { get; set; } = "Das steht am Anfang drin!";
-
-            public WindowReturn() { }
-
-        }
-
-        private WindowReturn _mainWindowReturn = new WindowReturn();
-
         public MainWindowController(UIXApplication app) : base(app)
         {
-        }
-
-        public override WindowReturn GetWindowReturn()
-        {
-            return _mainWindowReturn;
         }
 
         protected override void Init()
@@ -59,8 +44,20 @@ namespace GameTimeNext.Core.Application.General.Controller
 
             await CheckGTXMigration();
 
+
+            // Normale Anwendungen
             GetApp().ProfilesApp = new ProfilesApp();
             GetApp().ProfilesApp.Start(GetApp(), GetWindow().CPProfileView);
+
+            GetApp().SettingsApp = GetApp().GetApplication<SettingsApp>();
+            GetApp().SettingsApp.Start(GetApp(), GetWindow().cpSettingsView);
+
+            AppEnvironment.StartedApplications.Add("ProfilesApp", GetApp().ProfilesApp);
+            AppEnvironment.StartedApplications.Add("SettingsApp", GetApp().SettingsApp);
+
+            // Hintergrundjobs
+
+
         }
 
         protected override void Build()
@@ -118,7 +115,18 @@ namespace GameTimeNext.Core.Application.General.Controller
         private void Event_TabChanged(TabControl source)
         {
             if (source.SelectedItem is TabItem ti && ti.Name == "Tab_Profiles")
-                GetApp().ProfilesApp.ProfilesView.ViewController.Show(false);
+            {
+
+                //T1GROUP t1group = new TXGROUP().CreateNew();
+                //t1group.GRID = 15;
+                //t1group.IsSelected = true;
+
+                //GetApp().ProfilesApp.FilterCache.SelectedTags.Clear();
+                //GetApp().ProfilesApp.FilterCache.SelectedTags.Add(t1group);
+
+                GetApp().ProfilesApp.ProfilesView.ViewController.Show(true);
+            }
+
         }
 
         private async Task CheckGTXMigration()

@@ -109,7 +109,8 @@ namespace GameTimeNext.Core.Framework.DataBase
                         VALUES 
                         ('Completed', @gtyp, @crat, @chat),
                         ('Unplayed', @gtyp, @crat, @chat),
-                        ('Currently Playing', @gtyp, @crat, @chat);
+                        ('Currently Playing', @gtyp, @crat, @chat),
+                        ('Playable', @gtyp, @crat, @chat);
                         ";
 
             using var command = _connection.CreateCommand();

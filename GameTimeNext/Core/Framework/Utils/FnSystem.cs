@@ -1,6 +1,7 @@
 ﻿using GameTimeNext.Core.Application.Profiles.Viewmodel;
 using System.IO;
 using System.Text.RegularExpressions;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Framework.Utils
 {
@@ -84,6 +85,17 @@ namespace GameTimeNext.Core.Framework.Utils
             }
 
             return result;
+        }
+
+        public static bool IsExeFoundInPath(string path)
+        {
+            if (FnString.IsNullEmptyOrWhitespace(path))
+                return false;
+
+            if (!Directory.Exists(path))
+                return false;
+
+            return FindExecutables(path).Count > 0;
         }
 
         private static int RateExecutable(string exeName)

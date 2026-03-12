@@ -1,29 +1,25 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converter="clr-namespace:GameTimeNext.Core.Application.Profiles.Converter"
     xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <converter:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
 
     <sys:Double x:Key="TileWidth">210</sys:Double>
     <sys:Double x:Key="TileHeight">300</sys:Double>
 
-    <!--  Reservierter Puffer um die Kachel  -->
     <Thickness x:Key="TileOuterPadding">30</Thickness>
 
-    <!--  Ziel-Gap, wie es "optisch" zwischen Kacheln wirken soll  -->
     <sys:Double x:Key="TileGapValue">12</sys:Double>
-
-    <!--  Half-Gap  -->
     <sys:Double x:Key="TileGapHalf">6</sys:Double>
 
-    <!--  Optischer Ausgleich: unten mehr Abstand wegen Shadow/Glow  -->
     <Thickness x:Key="TileItemMargin">6,6,6,20</Thickness>
 
-    <!--  Genug Innen-Padding, damit oben nichts clippt  -->
     <Thickness x:Key="TileListPadding">26</Thickness>
 
     <Thickness x:Key="TileListPaddingTopOnly">0,26,0,26</Thickness>
 
-    <!--  Gewünscht: kleinerer Radius  -->
     <CornerRadius x:Key="TileCornerRadius">2</CornerRadius>
     <CornerRadius x:Key="TileImageCornerRadius">2,2,0,0</CornerRadius>
     <CornerRadius x:Key="TileTitleCornerRadius">0,0,2,2</CornerRadius>
@@ -367,19 +363,37 @@
                                                             Background="{DynamicResource Brush.Accent}"
                                                             CornerRadius="{StaticResource TileTitleCornerRadius}"
                                                             Opacity="{StaticResource TileTitleAccentOpacityNormal}" />
+
                                                         <Border
                                                             Height="1"
                                                             VerticalAlignment="Top"
                                                             Background="#30FFFFFF" />
+
                                                         <Grid Margin="12,10">
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="*" />
+                                                                <ColumnDefinition Width="8" />
+                                                                <ColumnDefinition Width="Auto" />
+                                                            </Grid.ColumnDefinitions>
+
                                                             <TextBlock
                                                                 x:Name="TitleText"
+                                                                Grid.Column="0"
                                                                 VerticalAlignment="Center"
                                                                 FontSize="14"
                                                                 FontWeight="SemiBold"
                                                                 Foreground="{DynamicResource Brush.TileForeground}"
                                                                 Text="{Binding GANA}"
                                                                 TextTrimming="CharacterEllipsis" />
+
+                                                            <Image
+                                                                Grid.Column="2"
+                                                                Width="16"
+                                                                Height="16"
+                                                                Margin="0"
+                                                                VerticalAlignment="Center"
+                                                                Source="/UI/Ressources/GTN_ICON_PLAYABLE.png"
+                                                                Visibility="{Binding IsPlayable, Converter={StaticResource BoolToVisibilityConverter}}" />
                                                         </Grid>
                                                     </Grid>
                                                 </Border>
@@ -421,13 +435,11 @@
                                         </Border>
                                     </Viewport2DVisual3D.Visual>
                                 </Viewport2DVisual3D>
-
                             </Viewport3D>
                         </Grid>
                     </Border>
 
                     <ControlTemplate.Triggers>
-
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter Property="Panel.ZIndex" Value="10" />
                             <Trigger.EnterActions>
@@ -463,7 +475,6 @@
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="Root" Property="Opacity" Value="0.55" />
                         </Trigger>
-
                     </ControlTemplate.Triggers>
 
                 </ControlTemplate>

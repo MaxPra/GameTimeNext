@@ -51,6 +51,7 @@
                     </Grid.ColumnDefinitions>
 
                     <TextBox
+                        x:Name="tbSearchProfileName"
                         Grid.Column="0"
                         Width="320"
                         Height="38"

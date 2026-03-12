@@ -1,0 +1,151 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <SolidColorBrush x:Key="Brush.SettingsTab.NormalBackground" Color="#00000000" />
+    <SolidColorBrush x:Key="Brush.SettingsTab.HoverBackground" Color="#14FFFFFF" />
+    <SolidColorBrush x:Key="Brush.SettingsTab.SelectedBackground" Color="#22FFFFFF" />
+    <SolidColorBrush x:Key="Brush.SettingsTab.SelectedOverlay" Color="#16000000" />
+    <SolidColorBrush x:Key="Brush.SettingsTab.Separator" Color="#22FFFFFF" />
+
+    <Style x:Key="SettingsPageTitleStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+    </Style>
+
+    <Style x:Key="SettingsPageSubtitleStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="Margin" Value="0,4,0,0" />
+        <Setter Property="Opacity" Value="0.75" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+    </Style>
+
+    <Style x:Key="SettingsGroupTitleStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+    </Style>
+
+    <Style x:Key="VerticalSettingsTabControlStyle" TargetType="{x:Type TabControl}">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TabControl}">
+                    <Grid Background="Transparent" ClipToBounds="True">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="220" />
+                            <ColumnDefinition Width="24" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!--  Left navigation  -->
+                        <Border Grid.Column="0" Background="Transparent">
+                            <TabPanel
+                                Margin="0"
+                                Background="Transparent"
+                                IsItemsHost="True"
+                                KeyboardNavigation.TabIndex="1" />
+                        </Border>
+
+                        <!--  Right content  -->
+                        <Border
+                            Grid.Column="2"
+                            VerticalAlignment="Top"
+                            Background="Transparent"
+                            BorderThickness="0">
+                            <ContentPresenter
+                                x:Name="PART_SelectedContentHost"
+                                Margin="0"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Top"
+                                ContentSource="SelectedContent" />
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="VerticalSettingsTabItemStyle" TargetType="{x:Type TabItem}">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Height" Value="46" />
+        <Setter Property="Margin" Value="0,0,0,4" />
+        <Setter Property="Background" Value="{StaticResource Brush.SettingsTab.NormalBackground}" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TabItem}">
+                    <Border
+                        x:Name="RootBorder"
+                        Height="{TemplateBinding Height}"
+                        Background="{TemplateBinding Background}"
+                        SnapsToDevicePixels="True">
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="4" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Border
+                                x:Name="SelectionBar"
+                                Grid.Column="0"
+                                Background="Transparent" />
+
+                            <Border
+                                x:Name="ItemBackground"
+                                Grid.Column="1"
+                                Background="Transparent">
+                                <Grid>
+                                    <Border
+                                        x:Name="AccentTint"
+                                        Background="{DynamicResource Brush.Accent}"
+                                        Opacity="0" />
+
+                                    <Border
+                                        x:Name="DarkOverlay"
+                                        Background="{StaticResource Brush.SettingsTab.SelectedOverlay}"
+                                        Opacity="0" />
+
+                                    <ContentPresenter
+                                        Margin="16,0,16,0"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center"
+                                        ContentSource="Header"
+                                        RecognizesAccessKey="True" />
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="ItemBackground" Property="Background" Value="{StaticResource Brush.SettingsTab.HoverBackground}" />
+                            <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+                        </Trigger>
+
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="SelectionBar" Property="Background" Value="{DynamicResource Brush.Accent}" />
+                            <Setter TargetName="ItemBackground" Property="Background" Value="{StaticResource Brush.SettingsTab.SelectedBackground}" />
+                            <Setter TargetName="AccentTint" Property="Opacity" Value="0.22" />
+                            <Setter TargetName="DarkOverlay" Property="Opacity" Value="1" />
+                            <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+                            <Setter Property="FontWeight" Value="Bold" />
+                        </Trigger>
+
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="{DynamicResource Brush.TextDisabled}" />
+                            <Setter TargetName="RootBorder" Property="Opacity" Value="0.5" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

@@ -46,32 +46,13 @@
                 <ContentPresenter x:Name="CPProfileView" />
             </TabItem>
 
-            <!--  Groups  -->
-            <TabItem
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch"
-                Header="Groups">
-                <Grid Margin="1" Background="Transparent">
-                    <TextBlock
-                        FontSize="22"
-                        FontWeight="SemiBold"
-                        Foreground="{DynamicResource Brush.TextPrimary}"
-                        Text="Groups" />
-                </Grid>
-            </TabItem>
-
             <!--  Settings  -->
             <TabItem
+                x:Name="Tab_Settings"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 Header="Settings">
-                <Grid Margin="1" Background="Transparent">
-                    <TextBlock
-                        FontSize="22"
-                        FontWeight="SemiBold"
-                        Foreground="{DynamicResource Brush.TextPrimary}"
-                        Text="Settings" />
-                </Grid>
+                <ContentPresenter x:Name="cpSettingsView" />
             </TabItem>
 
             <!--  Metadata  -->

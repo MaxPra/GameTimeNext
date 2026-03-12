@@ -1,0 +1,295 @@
+﻿<uix:UIXUserControlBase
+    x:Class="GameTimeNext.Core.Application.Settings.Views.SettingsView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:GameTimeNext.Core.Application.Settings.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:uix="clr-namespace:UIX.ViewController.Engine.FrameworkElements.UserControls;assembly=UIX.ViewController.Engine"
+    xmlns:uixprops="clr-namespace:UIX.ViewController.Engine.AttachedProperties;assembly=UIX.ViewController.Engine"
+    HorizontalAlignment="Stretch"
+    VerticalAlignment="Stretch"
+    HorizontalContentAlignment="Stretch"
+    VerticalContentAlignment="Stretch"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TabControl
+            x:Name="tbcSettings"
+            Grid.Row="0"
+            Background="Transparent"
+            BorderThickness="0"
+            SelectedIndex="0"
+            Style="{StaticResource VerticalSettingsTabControlStyle}"
+            TabStripPlacement="Left">
+
+            <!--  General  -->
+            <TabItem Header="General" Style="{StaticResource VerticalSettingsTabItemStyle}">
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="30,10,24,0">
+
+                        <TextBlock Style="{StaticResource SettingsPageTitleStyle}" Text="General" />
+
+                        <TextBlock
+                            Margin="0,4,0,28"
+                            Style="{StaticResource SettingsPageSubtitleStyle}"
+                            Text="General application settings and appearance behavior." />
+
+                        <Grid Margin="0,0,0,28">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="16" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="10" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock
+                                Grid.Row="0"
+                                Style="{StaticResource SettingsGroupTitleStyle}"
+                                Text="General" />
+
+                            <CheckBox
+                                x:Name="cbAutomaticGameProfileSwitching"
+                                Grid.Row="2"
+                                Content="Automatic game profile switching"
+                                Foreground="{DynamicResource Brush.TextPrimary}" />
+
+                            <CheckBox
+                                x:Name="cbActivateBlackoutKeyCombination"
+                                Grid.Row="4"
+                                Content="Activate blackout key combination"
+                                Foreground="{DynamicResource Brush.TextPrimary}"
+                                ToolTip="Blacks out all screens to protect OLED displays (CTRL + B)" />
+                        </Grid>
+
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="16" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock
+                                Grid.Row="0"
+                                Style="{StaticResource SettingsGroupTitleStyle}"
+                                Text="Appearance" />
+
+                            <CheckBox
+                                x:Name="cbAllowProfileSpecificStyleChanges"
+                                Grid.Row="2"
+                                Content="Allow profile-specific style changes"
+                                Foreground="{DynamicResource Brush.TextPrimary}" />
+                        </Grid>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!--  Monitoring  -->
+            <TabItem Header="Monitoring" Style="{StaticResource VerticalSettingsTabItemStyle}">
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="30,10,24,0">
+
+                        <TextBlock Style="{StaticResource SettingsPageTitleStyle}" Text="Monitoring" />
+
+                        <TextBlock
+                            Margin="0,4,0,28"
+                            Style="{StaticResource SettingsPageSubtitleStyle}"
+                            Text="Configure game monitoring behavior and blackout handling." />
+
+                        <Grid Margin="0,0,0,32">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="16" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="12" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock
+                                Grid.Row="0"
+                                Style="{StaticResource SettingsGroupTitleStyle}"
+                                Text="Monitoring behavior" />
+
+                            <Grid Grid.Row="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="260" />
+                                    <ColumnDefinition Width="260" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="12" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <CheckBox
+                                    x:Name="cbMonitoringKeyActive"
+                                    Grid.Row="0"
+                                    Grid.Column="0"
+                                    Content="Key active"
+                                    Foreground="{DynamicResource Brush.TextPrimary}" />
+
+                                <CheckBox
+                                    x:Name="cbShowToastNotification"
+                                    Grid.Row="0"
+                                    Grid.Column="1"
+                                    Content="Show toast notification"
+                                    Foreground="{DynamicResource Brush.TextPrimary}" />
+
+                                <CheckBox
+                                    x:Name="cbShowMonitoringIndicator"
+                                    Grid.Row="2"
+                                    Grid.Column="0"
+                                    Content="Show monitoring indicator"
+                                    Foreground="{DynamicResource Brush.TextPrimary}" />
+
+                                <CheckBox
+                                    x:Name="cbBlackoutSideMonitors"
+                                    Grid.Row="2"
+                                    Grid.Column="1"
+                                    Content="Blackout side monitors"
+                                    Foreground="{DynamicResource Brush.TextPrimary}" />
+                            </Grid>
+                        </Grid>
+
+                        <Grid x:Name="pnlMonitoringKey">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="16" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="8" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock
+                                Grid.Row="0"
+                                Style="{StaticResource SettingsGroupTitleStyle}"
+                                Text="Monitoring hotkey" />
+
+                            <Grid Grid.Row="2" HorizontalAlignment="Left">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="140" />
+                                    <ColumnDefinition Width="8" />
+                                    <ColumnDefinition Width="36" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBox
+                                    x:Name="txbMonitoringKey"
+                                    Grid.Column="0"
+                                    Height="36"
+                                    IsEnabled="False"
+                                    ToolTip="Current monitoring hotkey" />
+
+                                <Button
+                                    x:Name="btnCaptureMonitoringKey"
+                                    Grid.Column="2"
+                                    Width="36"
+                                    Height="36"
+                                    ToolTip="Click to capture a new monitoring key">
+                                    <Image
+                                        Width="16"
+                                        Height="16"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Source="/UI/Ressources/GTN_ICON_MONITOR_KEY.png" />
+                                </Button>
+                            </Grid>
+
+                            <TextBlock
+                                Grid.Row="4"
+                                Foreground="{DynamicResource Brush.TextSecondary}"
+                                Opacity="0.7"
+                                Text="Press the button to listen for a new hotkey." />
+                        </Grid>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!--  Tags  -->
+            <TabItem Header="Tags" Style="{StaticResource VerticalSettingsTabItemStyle}">
+                <StackPanel Margin="30,10,24,0">
+
+                    <TextBlock Style="{StaticResource SettingsPageTitleStyle}" Text="Tags" />
+
+                    <TextBlock
+                        Margin="0,4,0,24"
+                        Style="{StaticResource SettingsPageSubtitleStyle}"
+                        Text="Tag related settings will be available here later." />
+
+                    <Border
+                        Padding="16,14"
+                        HorizontalAlignment="Left"
+                        Background="#0DFFFFFF"
+                        BorderBrush="#24FFFFFF"
+                        BorderThickness="1"
+                        CornerRadius="10">
+                        <TextBlock Foreground="{DynamicResource Brush.TextSecondary}" Text="This feature isn't available yet." />
+                    </Border>
+
+                </StackPanel>
+            </TabItem>
+
+            <!--  About  -->
+            <TabItem Header="About" Style="{StaticResource VerticalSettingsTabItemStyle}">
+                <StackPanel Margin="30,10,24,0">
+
+                    <TextBlock Style="{StaticResource SettingsPageTitleStyle}" Text="About" />
+
+                    <TextBlock
+                        Margin="0,4,0,24"
+                        Style="{StaticResource SettingsPageSubtitleStyle}"
+                        Text="Application information and version details." />
+
+                    <TextBlock
+                        Margin="0,0,0,10"
+                        Style="{StaticResource SettingsGroupTitleStyle}"
+                        Text="GameTimeNext" />
+
+                    <TextBlock
+                        Margin="0,0,0,20"
+                        Foreground="{DynamicResource Brush.TextPrimary}"
+                        Text="Beta 0.1.0" />
+
+                    <TextBlock
+                        Margin="0,0,0,4"
+                        Foreground="{DynamicResource Brush.TextSecondary}"
+                        Text="Developer" />
+
+                    <TextBlock Foreground="{DynamicResource Brush.TextPrimary}" Text="maxpra" />
+
+                    <TextBlock
+                        Margin="0,0,0,4"
+                        Foreground="{DynamicResource Brush.TextSecondary}"
+                        Text="Icons" />
+
+                    <TextBlock Foreground="{DynamicResource Brush.TextPrimary}" Text="Icons by icons8" />
+
+                </StackPanel>
+            </TabItem>
+
+        </TabControl>
+
+        <Grid Grid.Row="1" Margin="0,28,0,8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Button
+                x:Name="btnSave"
+                Grid.Column="1"
+                Width="140"
+                Height="36"
+                Content="Save settings" />
+        </Grid>
+    </Grid>
+</uix:UIXUserControlBase>

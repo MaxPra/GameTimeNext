@@ -4,6 +4,7 @@ using GameTimeNext.Core.Framework.DataBase;
 using System.IO;
 using System.Text.Json;
 using System.Windows.Controls;
+using UIX.ViewController.Engine.Runnables;
 
 namespace GameTimeNext.Core.Framework
 {
@@ -13,10 +14,15 @@ namespace GameTimeNext.Core.Framework
         private static DataBaseManager _databaseManager = new DataBaseManager();
         private static T1PROFI? _t1Profi = new T1PROFI();
         private static ContentControl _loader = new ContentControl();
+        private static Dictionary<string, UIXApplication> _startedApplications = new Dictionary<string, UIXApplication>();
+        private static Dictionary<string, UIXBackgroundProcess> _startedBackgroundProcesses = new Dictionary<string, UIXBackgroundProcess>();
 
         // [------------------------------------------------]
         // [------------------ PUBLIC ----------------------]
         // [------------------------------------------------]
+
+        public static Dictionary<string, UIXApplication> StartedApplications { get => _startedApplications; set => _startedApplications = value; }
+        public Dictionary<string, UIXBackgroundProcess> StartedBackgroundProcesses { get => _startedBackgroundProcesses; set => _startedBackgroundProcesses = value; }
 
         public static AppConfig GetAppConfig()
         {
@@ -38,33 +44,16 @@ namespace GameTimeNext.Core.Framework
             _t1Profi = t1Profi;
         }
 
-
         public static void SaveAppConfig()
         {
-            string appConfigText = JsonSerializer.Serialize(GetAppConfig());
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true
+            };
+
+            string appConfigText = JsonSerializer.Serialize(GetAppConfig(), options);
 
             File.WriteAllText(new AppConfig().AppConfigPath, appConfigText);
-        }
-
-        public static void ShowLoader()
-        {
-            System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
-            {
-                _loader.Visibility = System.Windows.Visibility.Visible;
-            }, System.Windows.Threading.DispatcherPriority.Render);
-        }
-
-        public static void HideLoader()
-        {
-            System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
-            {
-                _loader.Visibility = System.Windows.Visibility.Collapsed;
-            }, System.Windows.Threading.DispatcherPriority.Render);
-        }
-
-        public static void SetLoader(ContentControl control)
-        {
-            _loader = control;
         }
 
         public static void Initalize()

@@ -1,8 +1,10 @@
 ﻿using GameTimeNext.Core.Application.Profiles.Controller;
 using GameTimeNext.Core.Application.Profiles.DataWrapper;
 using GameTimeNext.Core.Application.Profiles.Views;
+using GameTimeNext.Core.Framework;
 using System.Windows.Controls;
 using UIX.ViewController.Engine.Runnables;
+using static GameTimeNext.Core.Application.Profiles.Controller.ProfilesViewController;
 
 namespace GameTimeNext.Core.Application.Profiles
 {
@@ -10,6 +12,7 @@ namespace GameTimeNext.Core.Application.Profiles
     {
 
         private ProfilesSubViewDataWrapper _dataWrapper;
+        private FilterCache _filterCache;
 
         public ProfilesApp() : base()
         {
@@ -19,6 +22,7 @@ namespace GameTimeNext.Core.Application.Profiles
         public ProfilesView ProfilesView { get; set; }
         public ProfilesFilterView ProfilesFilterView { get; set; }
         public ProfilesDetailView ProfilesDetailView { get; set; }
+        public FilterCache FilterCache { get => _filterCache; set => _filterCache = value; }
 
         public void Start(UIXApplication hostApplication, ContentPresenter presenter)
         {
@@ -30,6 +34,9 @@ namespace GameTimeNext.Core.Application.Profiles
 
         public override void InitializeApplicationOutput()
         {
+            _filterCache = new FilterCache();
+            _filterCache = AppEnvironment.GetAppConfig().FilterCache;
+
             // -- Profiles View (Overview)
             this.ProfilesView = new ProfilesView();
             this.MainView = ProfilesView;

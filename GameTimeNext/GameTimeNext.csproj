@@ -6,11 +6,19 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>UI\Ressources\GTN_APP_ICON.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="UI\Ressources\GTN_APP_ICON.ico" />
     <None Remove="UI\Ressources\GTN_ICON_ADD_PROFILE.png" />
+    <None Remove="UI\Ressources\GTN_ICON_MONITOR_KEY.png" />
+    <None Remove="UI\Ressources\GTN_ICON_PLAYABLE.png" />
     <None Remove="UI\Ressources\ICON_DEBUG.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="UI\Ressources\GTN_APP_ICON.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,12 +33,25 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="UI\Ressources\GTN_APP_ICON.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="UI\Ressources\GTN_ICON_ADD_PROFILE.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="UI\Ressources\GTN_ICON_MONITOR_KEY.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="UI\Ressources\GTN_ICON_PLAYABLE.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="UI\Ressources\ICON_DEBUG.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Core\Application\Settings\Viewmodels\" />
   </ItemGroup>
 
 </Project>

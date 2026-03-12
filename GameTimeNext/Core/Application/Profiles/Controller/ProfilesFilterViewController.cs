@@ -14,6 +14,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
     {
         private ProfilesFilterViewModel? _profilesFilterViewModel;
 
+        public ProfilesFilterViewModel ProfilesFilterViewModel { get => _profilesFilterViewModel; private set; }
+
         public ProfilesFilterViewController(UIXApplication app) : base(app)
         {
         }
@@ -27,12 +29,12 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected override void Init()
         {
-
             ViewReturn = new ProfileFilterViewReturn();
         }
 
         protected override void Build()
         {
+
         }
 
         protected override void BuildFirst()
@@ -110,6 +112,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             states = T1GROUPs.Where(s => s.GTYP == GroupType.Condition).ToList();
             T1GROUPs = T1GROUPs.Where(s => s.GTYP == GroupType.Tag).ToList();
 
+            SelectTags(T1GROUPs);
+            SelectStates(states);
+
             if (!string.IsNullOrWhiteSpace(searchText))
             {
                 T1GROUPs = T1GROUPs.Where(st => st.GRNA.Contains(searchText, StringComparison.OrdinalIgnoreCase)).ToList();
@@ -127,6 +132,47 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             _profilesFilterViewModel.SelectedState = states.FirstOrDefault(s => s.IsSelected == true);
 
             View.DataContext = _profilesFilterViewModel;
+        }
+
+        private void SelectStates(List<T1GROUP> states)
+        {
+            if (GetApp().FilterCache.SelectedStates == null)
+                return;
+
+            foreach (var state in states)
+            {
+                foreach (var stateCached in GetApp().FilterCache.SelectedStates)
+                {
+                    if (state.GRID != stateCached.GRID)
+                        continue;
+
+                    state.IsSelected = stateCached.IsSelected == true;
+                }
+            }
+        }
+
+        private void SelectTags(List<T1GROUP> tags)
+        {
+
+            if (GetApp().FilterCache.SelectedTags == null)
+                return;
+
+            foreach (var tag in tags)
+            {
+                foreach (var tagCached in GetApp().FilterCache.SelectedTags)
+                {
+
+                    if (tag.GRID != tagCached.GRID)
+                        continue;
+
+                    tag.IsSelected = tagCached.IsSelected == true;
+                }
+            }
+        }
+
+        private ProfilesApp GetApp()
+        {
+            return (ProfilesApp)App;
         }
 
         private ProfilesFilterView GetView()

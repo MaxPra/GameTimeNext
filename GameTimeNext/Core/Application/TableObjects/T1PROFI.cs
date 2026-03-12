@@ -55,6 +55,7 @@ namespace GameTimeNext.Core.Application.TableObjects
         public bool COMP { get; set; }
 
         public BitmapImage CoverImage { get; set; }
+        public bool IsPlayable { get; set; } = false;
 
         public T1PROFI()
         {
