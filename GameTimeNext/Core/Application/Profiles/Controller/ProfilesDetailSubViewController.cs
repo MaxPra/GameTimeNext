@@ -2,6 +2,7 @@
 using GameTimeNext.Core.Application.Profiles.DataWrapper;
 using GameTimeNext.Core.Application.Profiles.Views;
 using GameTimeNext.Core.Application.TableObjects;
+using GameTimeNext.Core.Application.TimeMonitoring;
 using GameTimeNext.Core.Framework;
 using System.Windows;
 using System.Windows.Controls.Primitives;
@@ -18,6 +19,16 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         public ProfilesDetailSubViewController(UIXApplication app) : base(app)
         {
+        }
+
+        public void UpdateUIMonitoringStarted()
+        {
+            GetView().btnStartMonitoring.Content = "Stop monitoring";
+        }
+
+        public void UpdateUIMonitoringStopped()
+        {
+            GetView().btnStartMonitoring.Content = "Start monitoring";
         }
 
         protected override void Init()
@@ -122,9 +133,28 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             return (ProfilesDetailView)this.View;
         }
 
+        private ProfilesApp GetApp()
+        {
+            return (ProfilesApp)this.App;
+        }
+
         protected override void DataWrapperSelectionChangedImpl(Selector source)
         {
 
+        }
+
+        protected void EV_btnStartMonitoring()
+        {
+            if (CFGameTimeMonitoring.IsMonitoring)
+            {
+                CFGameTimeMonitoring.StopMonitoring();
+                GetApp().CallDispatcher.Trigger("EXEV_GameTimeMonitoringStopped");
+            }
+            else
+            {
+                CFGameTimeMonitoring.StartMonitoring(AppEnvironment.CurrentPfid);
+                GetApp().CallDispatcher.Trigger("EXEV_GameTimeMonitoringStarted");
+            }
         }
     }
 }

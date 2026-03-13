@@ -22,11 +22,12 @@
                     Style="{StaticResource ProfileDetail.ButtonHost}">
                     <StackPanel Style="{StaticResource ProfileDetail.ButtonArea}">
                         <Button
+                            x:Name="btnLaunchGame"
                             Margin="0,0,0,14"
                             Content="Launch game"
                             Style="{StaticResource Button.Secondary}" />
 
-                        <Button Content="Start Monitoring" />
+                        <Button x:Name="btnStartMonitoring" Content="Start monitoring" />
                     </StackPanel>
                 </Border>
 

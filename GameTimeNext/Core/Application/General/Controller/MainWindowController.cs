@@ -1,6 +1,6 @@
-﻿using GameTimeNext.Core.Application.GTXMigration;
-using GameTimeNext.Core.Application.Profiles;
-using GameTimeNext.Core.Application.Settings;
+﻿using GameTimeNext.Core.Application.General.UserSettings;
+using GameTimeNext.Core.Application.General.ViewModels;
+using GameTimeNext.Core.Application.GTXMigration;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using System.Diagnostics;
@@ -11,12 +11,15 @@ using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.Events;
 using UIX.ViewController.Engine.Runnables;
+using AppEnvironment = GameTimeNext.Core.Framework.AppEnvironment;
 
 namespace GameTimeNext.Core.Application.General.Controller
 {
     internal class MainWindowController : UIXWindowControllerBase
     {
         private string _gtxPath = "C:\\GameTimeX";
+
+        private MainWindowViewModel? _mainWindowViewModel = null;
 
         public MainWindowController(UIXApplication app) : base(app)
         {
@@ -34,30 +37,37 @@ namespace GameTimeNext.Core.Application.General.Controller
 
         protected override async Task BuildFirstAsync()
         {
+            // Für Applauncher Tab Control setzen
+            AppEnvironment.AppLauncher.TabControl = GetWindow().MainTabControl;
+
             // DEV-Batch & Metadata-Tab
             if (!Debugger.IsAttached)
             {
                 GetWindow().BdDevModeBatch.Visibility = Visibility.Hidden;
             }
 
-            GetWindow().TabMetaData.Visibility = Visibility.Hidden;
+            //GetWindow().TabMetaData.Visibility = Visibility.Hidden;
 
             await CheckGTXMigration();
 
+            await BuildApplicationSearch();
+
+            //AppEnvironment.AppLauncher.LaunchApplication("GameTimeNext.Core.Application.Profiles.ProfilesApp", GetApp(), "Profiles");
+
+            AppEnvironment.AppLauncher.StartFavorites(GetApp());
+
+            // Hintergrundprozesse starten
+            AppEnvironment.StartBackgroundProcesses(GetApp());
 
             // Normale Anwendungen
-            GetApp().ProfilesApp = new ProfilesApp();
-            GetApp().ProfilesApp.Start(GetApp(), GetWindow().CPProfileView);
+            //GetApp().ProfilesApp = new ProfilesApp();
+            //GetApp().ProfilesApp.Start(GetApp(), GetWindow().CPProfileView);
 
-            GetApp().SettingsApp = GetApp().GetApplication<SettingsApp>();
-            GetApp().SettingsApp.Start(GetApp(), GetWindow().cpSettingsView);
+            //GetApp().SettingsApp = GetApp().GetApplication<SettingsApp>();
+            //GetApp().SettingsApp.Start(GetApp(), GetWindow().cpSettingsView);
 
-            AppEnvironment.StartedApplications.Add("ProfilesApp", GetApp().ProfilesApp);
-            AppEnvironment.StartedApplications.Add("SettingsApp", GetApp().SettingsApp);
-
-            // Hintergrundjobs
-
-
+            //AppEnvironment.StartedApplications.Add("ProfilesApp", GetApp().ProfilesApp);
+            //AppEnvironment.StartedApplications.Add("SettingsApp", GetApp().SettingsApp);
         }
 
         protected override void Build()
@@ -131,7 +141,6 @@ namespace GameTimeNext.Core.Application.General.Controller
 
         private async Task CheckGTXMigration()
         {
-
             string[] gtnFiles = Directory.GetFiles(AppEnvironment.GetAppConfig().CoverFolderPath);
             string loaderTextStart = "Migrating GTX -> GTN ...";
 
@@ -162,6 +171,95 @@ namespace GameTimeNext.Core.Application.General.Controller
                     });
                 }
             }
+        }
+
+        private async Task BuildApplicationSearch()
+        {
+            _mainWindowViewModel = new MainWindowViewModel();
+            _mainWindowViewModel.AvailableApplications =
+                new System.Collections.ObjectModel.ObservableCollection<SearchableApplication>(AppEnvironment.AvailableApplications);
+
+            _mainWindowViewModel.PropertyChanged += MainWindowViewModel_PropertyChanged;
+
+            GetWindow().DataContext = _mainWindowViewModel;
+        }
+
+        private void MainWindowViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(MainWindowViewModel.SelectedApplication))
+            {
+                SearchableApplication selected = _mainWindowViewModel?.SelectedApplication;
+
+                if (selected == null)
+                    return;
+
+                if (!AppEnvironment.StartedApplications.ContainsKey(selected.ClassName))
+                    AppEnvironment.AppLauncher.LaunchApplication(selected.ClassName, GetApp(), selected.Name);
+
+                _mainWindowViewModel.SelectedApplication = null;
+            }
+        }
+
+        protected void EV_ctxtClose(FrameworkElement target)
+        {
+            TabItem tab = (TabItem)target;
+
+            if (tab != null)
+            {
+                AppEnvironment.AppLauncher.CloseApplication(tab.Tag.ToString(), tab);
+            }
+        }
+
+        protected void EV_ctxtFav(FrameworkElement target)
+        {
+            TabItem tab = (TabItem)target;
+
+            if (tab != null)
+            {
+                FavoriteApplication favoriteApplication = new FavoriteApplication();
+                favoriteApplication.FullName = tab.Tag.ToString();
+                favoriteApplication.AppName = tab.Header.ToString();
+                favoriteApplication.PrimaryStart = false;
+
+                FnUserSettings.AddFavoriteApplication(AppEnvironment.GetAppConfig().UserSettings.FavApps, favoriteApplication);
+            }
+        }
+
+        protected void EV_ctxtDeleteFav(FrameworkElement target)
+        {
+            TabItem tab = (TabItem)target;
+
+            if (tab == null)
+                return;
+
+            FavoriteApplication favApp = FnUserSettings.GetFavoriteApplication(AppEnvironment.GetAppConfig().UserSettings.FavApps, tab.Tag.ToString());
+
+            FnUserSettings.RemoveFavoriteApplication(AppEnvironment.GetAppConfig().UserSettings.FavApps, favApp);
+
+        }
+
+        protected void EV_ctxtSetAsPrimaryStart(FrameworkElement target)
+        {
+            TabItem tab = (TabItem)target;
+
+            if (tab == null)
+                return;
+
+            FavoriteApplication favApp = FnUserSettings.GetFavoriteApplication(AppEnvironment.GetAppConfig().UserSettings.FavApps, tab.Tag.ToString());
+
+            FnUserSettings.SetAsPrimaryStart(favApp);
+        }
+
+        protected void EV_tabApplication(FrameworkElement target)
+        {
+            if (target is not TabItem tab)
+                return;
+
+            FavoriteApplication favApp = FnUserSettings.GetFavoriteApplication(
+                AppEnvironment.GetAppConfig().UserSettings.FavApps,
+                tab.Tag?.ToString());
+
+            AppEnvironment.AppLauncher.BuildContextMenu(tab, favApp);
         }
 
         private MainWindow GetWindow()

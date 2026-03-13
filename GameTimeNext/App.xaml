@@ -30,6 +30,7 @@
                 <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Controls/GridViewStyle.xaml" />
                 <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Controls/LoaderStyles.xaml" />
                 <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Controls/ContextMenuStyles.xaml" />
+                <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Controls/SearchBoxStyles.xaml" />
 
                 <!--  View Styles  -->
                 <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Views/WindowStyle.xaml" />

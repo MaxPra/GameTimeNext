@@ -5,7 +5,7 @@ using UIX.ViewController.Engine.Runnables;
 
 namespace GameTimeNext.Core.Application.Settings
 {
-    public class SettingsApp : UIXApplication
+    public class SettingsApp : UIXApplication, IUIXApplicationStarter
     {
 
         private SettingsView? _settingsView;

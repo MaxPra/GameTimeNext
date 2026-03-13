@@ -16,6 +16,10 @@
     HorizontalContentAlignment="Stretch"
     d:DesignHeight="800"
     d:DesignWidth="1200"
+    ApplicationSearchItemsSource="{Binding AvailableApplications}"
+    ApplicationSearchPlaceholder="Search Application"
+    ApplicationSearchSelectedItem="{Binding SelectedApplication}"
+    ShowApplicationSearch="True"
     Style="{StaticResource GTNWindowStyle}"
     Subtitle="BETA"
     WindowStartupLocation="CenterScreen"
@@ -24,9 +28,8 @@
 
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
-        <!--  TabControl  -->
         <TabControl
-            x:Name="MainTabs"
+            x:Name="MainTabControl"
             Padding="0"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
@@ -36,39 +39,48 @@
             BorderThickness="0"
             Style="{StaticResource ModernTabControlStyle}">
 
-            <!--  Profiles  -->
-            <TabItem
-                x:Name="Tab_Profiles"
-                HorizontalAlignment="Stretch"
-                HorizontalContentAlignment="Stretch"
-                Header="Profiles">
+            <!--<TabControl.ItemContainerStyle>
+                <Style BasedOn="{StaticResource ModernTabItemStyle}" TargetType="TabItem">
 
-                <ContentPresenter x:Name="CPProfileView" />
-            </TabItem>
+                    <Setter Property="ContextMenu">
+                        <Setter.Value>
+                            <ContextMenu Style="{StaticResource ModernContextMenuStyle}">
+                                <MenuItem
+                                    x:Name="ctxtClose"
+                                    Header="Close"
+                                    Style="{StaticResource ModernContextMenuItemStyle}">
 
-            <!--  Settings  -->
-            <TabItem
-                x:Name="Tab_Settings"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch"
-                Header="Settings">
-                <ContentPresenter x:Name="cpSettingsView" />
-            </TabItem>
+                                    <MenuItem.Icon>
+                                        <TextBlock
+                                            VerticalAlignment="Center"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            FontSize="14"
+                                            Text="&#xE8BB;" />
+                                    </MenuItem.Icon>
 
-            <!--  Metadata  -->
-            <TabItem
-                x:Name="TabMetaData"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch"
-                Header="Metadata">
-                <Grid Margin="1" Background="Transparent">
-                    <ContentPresenter x:Name="CpMetadata" />
-                </Grid>
-            </TabItem>
+                                </MenuItem>
+                                <MenuItem
+                                    x:Name="ctxtFav"
+                                    Header="Add to favorites"
+                                    Style="{StaticResource ModernContextMenuItemStyle}">
+
+                                    <MenuItem.Icon>
+                                        <TextBlock
+                                            VerticalAlignment="Center"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            FontSize="14"
+                                            Text="&#xE734;" />
+                                    </MenuItem.Icon>
+
+                                </MenuItem>
+                            </ContextMenu>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </TabControl.ItemContainerStyle>-->
 
         </TabControl>
 
-        <!--  DEV MODE (Overlay oben rechts, auf Tab-Ebene)  -->
         <Border
             x:Name="BdDevModeBatch"
             Margin="0,12,18,0"

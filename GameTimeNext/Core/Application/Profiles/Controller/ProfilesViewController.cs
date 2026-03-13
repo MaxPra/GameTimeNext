@@ -5,6 +5,7 @@ using GameTimeNext.Core.Application.Profiles.DataWrapper;
 using GameTimeNext.Core.Application.Profiles.Viewmodel;
 using GameTimeNext.Core.Application.Profiles.Views;
 using GameTimeNext.Core.Application.TableObjects;
+using GameTimeNext.Core.Application.TimeMonitoring;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.Utils;
@@ -34,6 +35,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         protected override void Init()
         {
             _dataWrapper = GetDataWrapper<ProfilesSubViewDataWrapper>();
+            GetApp().CallDispatcher.Register(this, nameof(EXEV_GameTimeMonitoringStarted));
+            GetApp().CallDispatcher.Register(this, nameof(EXEV_GameTimeMonitoringStopped));
 
             // Loadertexte setzen
             GetApp().Loader.SetRandomTexts(
@@ -70,7 +73,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected override async Task BuildFirstAsync()
         {
-            await BuildProfilesListBoxAsync(0);
+            await BuildProfilesListBoxAsync(AppEnvironment.CurrentPfid);
         }
 
         protected override void Build()
@@ -107,7 +110,12 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             if (FnString.IsNullEmptyOrWhitespace(selectedProfi.ACCO))
                 return;
 
+            if (!AppEnvironment.GetAppConfig().AppSettings.AllowProfileSpecificStyleChanges)
+                return;
+
             FnTheme.ApplyThemeColors(new CAccentColors(selectedProfi.ACCO).Dezerialize().AccentColors);
+
+            AppEnvironment.CurrentPfid = selectedProfi.PFID;
         }
 
         private async Task BuildProfilesListBoxAsync(long pfid)
@@ -144,12 +152,16 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                     {
                         _dataWrapper!.TableObject = new TXPROFI().CreateNew();
                         GetApp().ProfilesDetailView.Visibility = Visibility.Hidden;
+                        AppEnvironment.CurrentPfid = 0;
                     }
                     else
+                    {
                         GetApp().ProfilesDetailView.Visibility = Visibility.Visible;
+                        AppEnvironment.CurrentPfid = _profilesSubGridViewModel.SelectedT1Profi.PFID;
+                    }
 
 
-                    if (!FnString.IsNullEmptyOrWhitespace(_dataWrapper!.TableObject.ACCO))
+                    if (!FnString.IsNullEmptyOrWhitespace(_dataWrapper!.TableObject.ACCO) && AppEnvironment.GetAppConfig().AppSettings.AllowProfileSpecificStyleChanges)
                         FnTheme.ApplyThemeColors(new CAccentColors(_dataWrapper!.TableObject.ACCO).Dezerialize().AccentColors);
 
                     GetApp().Loader.Stop();
@@ -315,10 +327,25 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             return (ProfilesView)View;
         }
 
+        protected void EXEV_GameTimeMonitoringStarted()
+        {
+            ProfilesDetailSubViewController profileDetailViewController = (ProfilesDetailSubViewController)GetApp().ProfilesDetailView.ViewController;
+            profileDetailViewController.UpdateUIMonitoringStarted();
+        }
+
+        protected async Task EXEV_GameTimeMonitoringStopped()
+        {
+            CFGameTimeMonitoring.UpdateTableObject();
+
+            await BuildProfilesListBoxAsync(AppEnvironment.CurrentPfid);
+
+            ProfilesDetailSubViewController profileDetailViewController = (ProfilesDetailSubViewController)GetApp().ProfilesDetailView.ViewController;
+            profileDetailViewController.UpdateUIMonitoringStopped();
+        }
 
         protected async Task EV_tbSearchProfileName()
         {
-            await BuildProfilesListBoxAsync(0);
+            await BuildProfilesListBoxAsync(AppEnvironment.CurrentPfid);
         }
 
         /// <summary>

@@ -36,7 +36,6 @@ namespace GameTimeNext
 
             // Datenbank initialisieren
             AppEnvironment.GetDataBaseManager().Initialize();
-
         }
 
         protected override void OnExit(ExitEventArgs e)

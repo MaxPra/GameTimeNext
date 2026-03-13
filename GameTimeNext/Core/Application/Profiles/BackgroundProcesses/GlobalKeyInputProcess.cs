@@ -1,4 +1,6 @@
-﻿using GameTimeNext.Core.Framework.UserInput;
+﻿using GameTimeNext.Core.Application.TimeMonitoring;
+using GameTimeNext.Core.Framework;
+using GameTimeNext.Core.Framework.UserInput;
 using System.Runtime.InteropServices;
 using UIX.ViewController.Engine.Runnables;
 using static GameTimeNext.Core.Framework.UserInput.KeyInput;
@@ -26,20 +28,20 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
             switch (StartingType)
             {
                 case StartingTypes.Normal:
-                    processNormal();
+                    ProcessNormal();
                     break;
 
                 case StartingTypes.MonitorKey:
-                    processMonitorKey();
+                    ProcessMonitorKey();
                     break;
             }
         }
-        private void processNormal()
+        private void ProcessNormal()
         {
-            throw new NotImplementedException();
+            ProcessNormalGameTimeMonitoring();
         }
 
-        private void processMonitorKey()
+        private void ProcessMonitorKey()
         {
             VirtualKey pressedKey = CheckAllKeysOnKeyboard();
 
@@ -50,6 +52,33 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
                 return;
 
             AfterKeyPressed?.Invoke(pressedKey);
+        }
+
+        private void ProcessNormalGameTimeMonitoring()
+        {
+            VirtualKey keyToListenFor = KeyInput.GetVirtualKeyFromString(AppEnvironment.GetAppConfig().AppSettings.MonitoringKey);
+
+            if (keyToListenFor == VirtualKey.VK_NONE || keyToListenFor == VirtualKey.VK_NORESULT)
+                return;
+
+            bool pressed = CheckForSpecificKeyOnKeyboard(keyToListenFor);
+
+            if (pressed)
+            {
+                if (!AppEnvironment.IsApplicationRunning(typeof(ProfilesApp).FullName!))
+                    return;
+
+                if (CFGameTimeMonitoring.IsMonitoring)
+                {
+                    CFGameTimeMonitoring.StopMonitoring();
+                    CallDispatcher!.Trigger("EXEV_GameTimeMonitoringStopped");
+                }
+                else
+                {
+                    CFGameTimeMonitoring.StartMonitoring(AppEnvironment.CurrentPfid);
+                    CallDispatcher!.Trigger("EXEV_GameTimeMonitoringStarted");
+                }
+            }
         }
 
         protected override void InitializeInfos()

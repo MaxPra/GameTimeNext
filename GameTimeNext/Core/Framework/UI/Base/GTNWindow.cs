@@ -1,7 +1,10 @@
-﻿using System.ComponentModel;
+﻿using System.Collections;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
@@ -13,9 +16,17 @@ namespace GameTimeNext.Core.Framework.UI.Base
     public class GTNWindow : UIXWindowBase
     {
         private bool _allowClose;
+        private bool _suppressSearchTextSync;
 
         private const int WM_GETMINMAXINFO = 0x0024;
         private const int MONITOR_DEFAULTTONEAREST = 0x00000002;
+
+        private FrameworkElement? _titleBar;
+        private Button? _closeButton;
+        private Button? _minButton;
+        private Button? _maxButton;
+        private ComboBox? _applicationSearchBox;
+        private TextBox? _applicationSearchTextBox;
 
         public static readonly DependencyProperty ShowMinimizeButtonProperty =
             DependencyProperty.Register(
@@ -56,6 +67,71 @@ namespace GameTimeNext.Core.Framework.UI.Base
             set => SetValue(ShowCloseButtonProperty, value);
         }
 
+        public static readonly DependencyProperty ShowApplicationSearchProperty =
+            DependencyProperty.Register(
+                nameof(ShowApplicationSearch),
+                typeof(bool),
+                typeof(GTNWindow),
+                new PropertyMetadata(false));
+
+        public bool ShowApplicationSearch
+        {
+            get => (bool)GetValue(ShowApplicationSearchProperty);
+            set => SetValue(ShowApplicationSearchProperty, value);
+        }
+
+        public static readonly DependencyProperty ApplicationSearchItemsSourceProperty =
+            DependencyProperty.Register(
+                nameof(ApplicationSearchItemsSource),
+                typeof(IEnumerable),
+                typeof(GTNWindow),
+                new PropertyMetadata(null, OnApplicationSearchItemsSourceChanged));
+
+        public IEnumerable? ApplicationSearchItemsSource
+        {
+            get => (IEnumerable?)GetValue(ApplicationSearchItemsSourceProperty);
+            set => SetValue(ApplicationSearchItemsSourceProperty, value);
+        }
+
+        public static readonly DependencyProperty ApplicationSearchSelectedItemProperty =
+            DependencyProperty.Register(
+                nameof(ApplicationSearchSelectedItem),
+                typeof(object),
+                typeof(GTNWindow),
+                new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
+        public object? ApplicationSearchSelectedItem
+        {
+            get => GetValue(ApplicationSearchSelectedItemProperty);
+            set => SetValue(ApplicationSearchSelectedItemProperty, value);
+        }
+
+        public static readonly DependencyProperty ApplicationSearchTextProperty =
+            DependencyProperty.Register(
+                nameof(ApplicationSearchText),
+                typeof(string),
+                typeof(GTNWindow),
+                new FrameworkPropertyMetadata(string.Empty, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnApplicationSearchTextChanged));
+
+        public string ApplicationSearchText
+        {
+            get => (string)GetValue(ApplicationSearchTextProperty);
+            set => SetValue(ApplicationSearchTextProperty, value);
+        }
+
+        public static readonly DependencyProperty ApplicationSearchPlaceholderProperty =
+            DependencyProperty.Register(
+                nameof(ApplicationSearchPlaceholder),
+                typeof(string),
+                typeof(GTNWindow),
+                new PropertyMetadata("Suchen..."));
+
+        public string ApplicationSearchPlaceholder
+        {
+            get => (string)GetValue(ApplicationSearchPlaceholderProperty);
+            set => SetValue(ApplicationSearchPlaceholderProperty, value);
+        }
+
         public static readonly DependencyProperty SubtitleProperty =
             DependencyProperty.Register(
                 nameof(Subtitle),
@@ -89,31 +165,55 @@ namespace GameTimeNext.Core.Framework.UI.Base
 
         public override void OnApplyTemplate()
         {
+            DetachTemplateEvents();
+
             base.OnApplyTemplate();
 
-            if (GetTemplateChild("PART_TitleBar") is FrameworkElement titleBar)
-                titleBar.MouseLeftButtonDown += TitleBar_MouseLeftButtonDown;
+            _titleBar = GetTemplateChild("PART_TitleBar") as FrameworkElement;
+            _closeButton = GetTemplateChild("PART_CloseButton") as Button;
+            _minButton = GetTemplateChild("PART_MinButton") as Button;
+            _maxButton = GetTemplateChild("PART_MaxButton") as Button;
+            _applicationSearchBox = GetTemplateChild("PART_ApplicationSearchBox") as ComboBox;
 
-            if (GetTemplateChild("PART_CloseButton") is Button closeBtn)
+            if (_titleBar != null)
+                _titleBar.MouseLeftButtonDown += TitleBar_MouseLeftButtonDown;
+
+            if (_closeButton != null)
             {
-                closeBtn.Click += (_, __) => Close();
-                closeBtn.Visibility = ShowCloseButton ? Visibility.Visible : Visibility.Collapsed;
+                _closeButton.Click += CloseButton_Click;
+                _closeButton.Visibility = ShowCloseButton ? Visibility.Visible : Visibility.Collapsed;
             }
 
-            if (GetTemplateChild("PART_MinButton") is Button minBtn)
+            if (_minButton != null)
             {
-                minBtn.Click += (_, __) => WindowState = WindowState.Minimized;
-                minBtn.Visibility = ShowMinimizeButton ? Visibility.Visible : Visibility.Collapsed;
+                _minButton.Click += MinButton_Click;
+                _minButton.Visibility = ShowMinimizeButton ? Visibility.Visible : Visibility.Collapsed;
             }
 
-            if (GetTemplateChild("PART_MaxButton") is Button maxBtn)
+            if (_maxButton != null)
             {
-                maxBtn.Click += (_, __) =>
-                    WindowState = WindowState == WindowState.Maximized
-                        ? WindowState.Normal
-                        : WindowState.Maximized;
+                _maxButton.Click += MaxButton_Click;
+                _maxButton.Visibility = ShowMaximizeButton ? Visibility.Visible : Visibility.Collapsed;
+            }
 
-                maxBtn.Visibility = ShowMaximizeButton ? Visibility.Visible : Visibility.Collapsed;
+            if (_applicationSearchBox != null)
+            {
+                _applicationSearchBox.ApplyTemplate();
+                _applicationSearchBox.DropDownOpened += ApplicationSearchBox_DropDownOpened;
+                _applicationSearchBox.GotKeyboardFocus += ApplicationSearchBox_GotKeyboardFocus;
+                _applicationSearchBox.LostKeyboardFocus += ApplicationSearchBox_LostKeyboardFocus;
+
+                _applicationSearchTextBox = _applicationSearchBox.Template.FindName("PART_EditableTextBox", _applicationSearchBox) as TextBox;
+
+                if (_applicationSearchTextBox != null)
+                {
+                    _applicationSearchTextBox.TextChanged += ApplicationSearchTextBox_TextChanged;
+                    _applicationSearchTextBox.GotKeyboardFocus += ApplicationSearchTextBox_GotKeyboardFocus;
+                    _applicationSearchTextBox.PreviewMouseLeftButtonDown += ApplicationSearchTextBox_PreviewMouseLeftButtonDown;
+                    _applicationSearchTextBox.Text = ApplicationSearchText ?? string.Empty;
+                }
+
+                RefreshApplicationSearchFilter();
             }
         }
 
@@ -149,6 +249,17 @@ namespace GameTimeNext.Core.Framework.UI.Base
 
         private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            if (e.OriginalSource is DependencyObject source)
+            {
+                if (FindParent<TextBoxBase>(source) != null ||
+                    FindParent<ComboBox>(source) != null ||
+                    FindParent<ComboBoxItem>(source) != null ||
+                    FindParent<Button>(source) != null)
+                {
+                    return;
+                }
+            }
+
             if (e.ClickCount == 2 && ResizeMode != ResizeMode.NoResize)
             {
                 WindowState = WindowState == WindowState.Maximized
@@ -198,6 +309,215 @@ namespace GameTimeNext.Core.Framework.UI.Base
             };
 
             BeginAnimation(OpacityProperty, fadeOut);
+        }
+
+        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+
+        private void MinButton_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
+
+        private void MaxButton_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState == WindowState.Maximized
+                ? WindowState.Normal
+                : WindowState.Maximized;
+        }
+
+        private void ApplicationSearchBox_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            OpenSearchDropDown(showAllWhenEmpty: true);
+        }
+
+        private void ApplicationSearchBox_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            if (_applicationSearchBox == null)
+                return;
+
+            if (!_applicationSearchBox.IsKeyboardFocusWithin)
+                _applicationSearchBox.IsDropDownOpen = false;
+        }
+
+        private void ApplicationSearchTextBox_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            OpenSearchDropDown(showAllWhenEmpty: true);
+        }
+
+        private void ApplicationSearchTextBox_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (_applicationSearchTextBox == null)
+                return;
+
+            if (!_applicationSearchTextBox.IsKeyboardFocusWithin)
+                _applicationSearchTextBox.Focus();
+
+            OpenSearchDropDown(showAllWhenEmpty: true);
+            e.Handled = false;
+        }
+
+        private void ApplicationSearchBox_DropDownOpened(object? sender, EventArgs e)
+        {
+            RefreshApplicationSearchFilter();
+        }
+
+        private void ApplicationSearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (_suppressSearchTextSync || _applicationSearchTextBox == null || _applicationSearchBox == null)
+                return;
+
+            ApplicationSearchText = _applicationSearchTextBox.Text;
+            _applicationSearchBox.SelectedItem = null;
+            _applicationSearchBox.SelectedIndex = -1;
+            ApplicationSearchSelectedItem = null;
+
+            RefreshApplicationSearchFilter();
+
+            if (_applicationSearchBox.IsKeyboardFocusWithin || _applicationSearchTextBox.IsKeyboardFocusWithin)
+                _applicationSearchBox.IsDropDownOpen = HasVisibleItems();
+        }
+
+        private static void OnApplicationSearchItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is GTNWindow window)
+                window.RefreshApplicationSearchFilter();
+        }
+
+        private static void OnApplicationSearchTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is GTNWindow window)
+                window.SyncApplicationSearchTextFromProperty();
+        }
+
+        private void SyncApplicationSearchTextFromProperty()
+        {
+            if (_applicationSearchTextBox == null)
+                return;
+
+            var newText = ApplicationSearchText ?? string.Empty;
+
+            if (_applicationSearchTextBox.Text != newText)
+            {
+                _suppressSearchTextSync = true;
+                _applicationSearchTextBox.Text = newText;
+                _applicationSearchTextBox.CaretIndex = _applicationSearchTextBox.Text.Length;
+                _suppressSearchTextSync = false;
+            }
+
+            RefreshApplicationSearchFilter();
+        }
+
+        private void RefreshApplicationSearchFilter()
+        {
+            if (_applicationSearchBox == null)
+                return;
+
+            var source = ApplicationSearchItemsSource;
+            if (source == null)
+            {
+                _applicationSearchBox.IsDropDownOpen = false;
+                return;
+            }
+
+            var view = CollectionViewSource.GetDefaultView(source);
+            if (view == null)
+            {
+                _applicationSearchBox.IsDropDownOpen = false;
+                return;
+            }
+
+            var searchText = ApplicationSearchText ?? string.Empty;
+
+            view.Filter = item =>
+            {
+                if (item == null)
+                    return false;
+
+                if (string.IsNullOrWhiteSpace(searchText))
+                    return true;
+
+                var text = item.ToString() ?? string.Empty;
+                return text.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0;
+            };
+
+            view.Refresh();
+        }
+
+        private void OpenSearchDropDown(bool showAllWhenEmpty)
+        {
+            if (_applicationSearchBox == null)
+                return;
+
+            if (!ShowApplicationSearch)
+            {
+                _applicationSearchBox.IsDropDownOpen = false;
+                return;
+            }
+
+            if (showAllWhenEmpty && string.IsNullOrWhiteSpace(ApplicationSearchText))
+                RefreshApplicationSearchFilter();
+
+            _applicationSearchBox.IsDropDownOpen = HasVisibleItems();
+        }
+
+        private bool HasVisibleItems()
+        {
+            if (_applicationSearchBox == null)
+                return false;
+
+            return _applicationSearchBox.Items.Count > 0;
+        }
+
+        private void DetachTemplateEvents()
+        {
+            if (_titleBar != null)
+                _titleBar.MouseLeftButtonDown -= TitleBar_MouseLeftButtonDown;
+
+            if (_closeButton != null)
+                _closeButton.Click -= CloseButton_Click;
+
+            if (_minButton != null)
+                _minButton.Click -= MinButton_Click;
+
+            if (_maxButton != null)
+                _maxButton.Click -= MaxButton_Click;
+
+            if (_applicationSearchBox != null)
+            {
+                _applicationSearchBox.DropDownOpened -= ApplicationSearchBox_DropDownOpened;
+                _applicationSearchBox.GotKeyboardFocus -= ApplicationSearchBox_GotKeyboardFocus;
+                _applicationSearchBox.LostKeyboardFocus -= ApplicationSearchBox_LostKeyboardFocus;
+            }
+
+            if (_applicationSearchTextBox != null)
+            {
+                _applicationSearchTextBox.TextChanged -= ApplicationSearchTextBox_TextChanged;
+                _applicationSearchTextBox.GotKeyboardFocus -= ApplicationSearchTextBox_GotKeyboardFocus;
+                _applicationSearchTextBox.PreviewMouseLeftButtonDown -= ApplicationSearchTextBox_PreviewMouseLeftButtonDown;
+            }
+
+            _titleBar = null;
+            _closeButton = null;
+            _minButton = null;
+            _maxButton = null;
+            _applicationSearchBox = null;
+            _applicationSearchTextBox = null;
+        }
+
+        private static T? FindParent<T>(DependencyObject? child) where T : DependencyObject
+        {
+            while (child != null)
+            {
+                if (child is T typedChild)
+                    return typedChild;
+
+                child = VisualTreeHelper.GetParent(child);
+            }
+
+            return null;
         }
 
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)

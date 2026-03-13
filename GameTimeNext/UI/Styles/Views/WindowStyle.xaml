@@ -57,11 +57,13 @@
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*" />
                                             <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
 
                                         <Grid
                                             Grid.Column="0"
-                                            Margin="15,0"
+                                            Margin="15,0,12,0"
+                                            HorizontalAlignment="Left"
                                             VerticalAlignment="Center">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="Auto" />
@@ -91,8 +93,31 @@
                                             </Border>
                                         </Grid>
 
-                                        <StackPanel
+                                        <Border
+                                            x:Name="PART_ApplicationSearchHost"
                                             Grid.Column="1"
+                                            Width="420"
+                                            Height="26"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            shell:WindowChrome.IsHitTestVisibleInChrome="True"
+                                            Background="Transparent"
+                                            Visibility="Collapsed">
+
+                                            <ComboBox
+                                                x:Name="PART_ApplicationSearchBox"
+                                                IsEditable="True"
+                                                IsTextSearchEnabled="False"
+                                                ItemsSource="{TemplateBinding ApplicationSearchItemsSource}"
+                                                SelectedItem="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=ApplicationSearchSelectedItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                StaysOpenOnEdit="True"
+                                                Style="{StaticResource TitleBarSearchComboBoxStyle}"
+                                                Tag="{TemplateBinding ApplicationSearchPlaceholder}" />
+                                        </Border>
+
+                                        <StackPanel
+                                            Grid.Column="2"
+                                            HorizontalAlignment="Right"
                                             VerticalAlignment="Stretch"
                                             Orientation="Horizontal">
                                             <Button
@@ -543,6 +568,10 @@
 
                         <Trigger Property="ShowCloseButton" Value="False">
                             <Setter TargetName="PART_CloseButton" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+
+                        <Trigger Property="ShowApplicationSearch" Value="True">
+                            <Setter TargetName="PART_ApplicationSearchHost" Property="Visibility" Value="Visible" />
                         </Trigger>
 
                         <Trigger Property="Subtitle" Value="">

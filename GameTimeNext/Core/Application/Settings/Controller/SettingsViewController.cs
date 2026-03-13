@@ -92,6 +92,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             _appSettings!.ShowToastNotification = GetView().cbShowToastNotification.IsChecked == true;
             _appSettings!.ShowMonitoringIndicator = GetView().cbShowMonitoringIndicator.IsChecked == true;
             _appSettings!.BlackoutSideMonitors = GetView().cbBlackoutSideMonitors.IsChecked == true;
+            _appSettings!.MonitoringKeyActive = GetView().cbMonitoringKeyActive.IsChecked == true;
             _appSettings!.MonitoringKey = GetView().txbMonitoringKey.Text;
         }
 

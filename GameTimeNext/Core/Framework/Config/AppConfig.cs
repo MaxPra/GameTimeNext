@@ -1,4 +1,5 @@
-﻿using GameTimeNext.Core.Application.TableObjects;
+﻿using GameTimeNext.Core.Application.General.UserSettings;
+using GameTimeNext.Core.Application.TableObjects;
 using System.IO;
 using System.Text.Json.Serialization;
 using static GameTimeNext.Core.Application.Profiles.Controller.ProfilesViewController;
@@ -117,6 +118,7 @@ namespace GameTimeNext.Core.Framework.Config
 
         public FilterCache FilterCache { get; set; } = new FilterCache();
         public AppSettings AppSettings { get; set; } = new AppSettings();
+        public UserSettings UserSettings { get; set; } = new UserSettings();
 
         #endregion
 

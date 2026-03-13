@@ -1,4 +1,7 @@
-﻿using GameTimeNext.Core.Application.TableObjects;
+﻿using GameTimeNext.Core.Application.Profiles;
+using GameTimeNext.Core.Application.Profiles.BackgroundProcesses;
+using GameTimeNext.Core.Application.Settings;
+using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.DataBase;
 using System.IO;
@@ -22,7 +25,11 @@ namespace GameTimeNext.Core.Framework
         // [------------------------------------------------]
 
         public static Dictionary<string, UIXApplication> StartedApplications { get => _startedApplications; set => _startedApplications = value; }
-        public Dictionary<string, UIXBackgroundProcess> StartedBackgroundProcesses { get => _startedBackgroundProcesses; set => _startedBackgroundProcesses = value; }
+        public static List<SearchableApplication> AvailableApplications { get; set; } = new List<SearchableApplication>();
+        public static Dictionary<string, UIXBackgroundProcess> StartedBackgroundProcesses { get => _startedBackgroundProcesses; set => _startedBackgroundProcesses = value; }
+        public static long CurrentPfid { get; set; } = 0;
+
+        public static ApplicationLauncher AppLauncher { get; set; } = new ApplicationLauncher(null);
 
         public static AppConfig GetAppConfig()
         {
@@ -44,6 +51,11 @@ namespace GameTimeNext.Core.Framework
             _t1Profi = t1Profi;
         }
 
+        public static bool IsApplicationRunning(string fullName)
+        {
+            return _startedApplications.ContainsKey(fullName);
+        }
+
         public static void SaveAppConfig()
         {
             var options = new JsonSerializerOptions
@@ -58,9 +70,21 @@ namespace GameTimeNext.Core.Framework
 
         public static void Initalize()
         {
+            InitializeStartableApps();
+
             LoadAppConfig();
 
             InitiateDataBaseManager();
+        }
+
+        public static void StartBackgroundProcesses(UIXApplication app)
+        {
+            // GlobalKeyInputProcess
+            GlobalKeyInputProcess globalKeyInputProcess = app.GetBackgroundProcess<GlobalKeyInputProcess>();
+            globalKeyInputProcess.CallDispatcher = app.CallDispatcher;
+            globalKeyInputProcess.Start(20);
+
+            StartedBackgroundProcesses.Add(typeof(GlobalKeyInputProcess).FullName!, globalKeyInputProcess);
         }
 
         public static void InitiateDataBaseManager()
@@ -83,6 +107,23 @@ namespace GameTimeNext.Core.Framework
             }
 
             _appConfig = JsonSerializer.Deserialize<AppConfig>(appConfigText);
+        }
+
+        private static void InitializeStartableApps()
+        {
+            // Aufrufbare Anwendungen hinzufügen
+            AvailableApplications.Add(new SearchableApplication
+            {
+                Code = "P",
+                Name = "Profiles",
+                ClassName = typeof(ProfilesApp).FullName
+            });
+            AvailableApplications.Add(new SearchableApplication
+            {
+                Code = "SE",
+                Name = "Settings",
+                ClassName = typeof(SettingsApp).FullName
+            });
         }
     }
 }

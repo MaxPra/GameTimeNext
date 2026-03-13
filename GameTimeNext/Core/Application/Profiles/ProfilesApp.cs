@@ -30,6 +30,7 @@ namespace GameTimeNext.Core.Application.Profiles
             this.ProfilesView.ContentPresenter = presenter;
             this.ProfilesView.ViewController.Show(false);
             Loader = hostApplication.Loader;
+            CallDispatcher = hostApplication.CallDispatcher;
         }
 
         public override void InitializeApplicationOutput()

@@ -193,6 +193,11 @@
             VK_OEM_CLEAR = 0xFE        // Clear key
         }
 
+        public static VirtualKey GetVirtualKeyFromString(string key)
+        {
+            return virtualKeyMap.FirstOrDefault(x => x.Value == key).Key;
+        }
+
         // Erstellen der HashMap (Dictionary)
         public static Dictionary<VirtualKey, string> virtualKeyMap = new Dictionary<VirtualKey, string>
         {
@@ -356,8 +361,6 @@
             { VirtualKey.VK_OEM_CLEAR, "Clear key" },
             { VirtualKey.VK_NONE, "(no key)" },
             { VirtualKey.VK_NORESULT, "(no key)" }
-
-
         };
 
     }
