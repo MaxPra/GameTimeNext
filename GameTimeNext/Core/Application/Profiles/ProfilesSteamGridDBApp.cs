@@ -11,6 +11,7 @@ namespace GameTimeNext.Core.Application.Profiles
         ProfilesSteamGridDBViewController? _profilesSteamGridDBViewController = null;
 
         public long SteamAppId { get; set; }
+        public string GameName { get; set; }
 
         public override void InitializeApplicationOutput()
         {
@@ -23,9 +24,10 @@ namespace GameTimeNext.Core.Application.Profiles
             _profilesSteamGridDBView.WndController = _profilesSteamGridDBViewController;
         }
 
-        public void Search(UIXApplication hostApplication, long steamAppId, Action<ProfilesSteamGridDBViewController.ProfilesSteamGridDBViewReturn> callback)
+        public void Search(UIXApplication hostApplication, long steamAppId, string gameName, Action<ProfilesSteamGridDBViewController.ProfilesSteamGridDBViewReturn> callback)
         {
             SteamAppId = steamAppId;
+            GameName = gameName;
 
             _profilesSteamGridDBView!.ViewIndicator.Add("ED");
             _profilesSteamGridDBViewController!.SetResultCallback(callback);

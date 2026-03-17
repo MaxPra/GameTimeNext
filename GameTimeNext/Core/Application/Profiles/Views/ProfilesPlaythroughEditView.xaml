@@ -1,0 +1,113 @@
+﻿<ui:GTNWindow
+    x:Class="GameTimeNext.Core.Application.Profiles.Views.ProfilesPlaythroughEditView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:GameTimeNext.Core.Application.Profiles.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI.Base"
+    Title="Playthrough"
+    Width="760"
+    Height="460"
+    MinWidth="760"
+    MinHeight="460"
+    ResizeMode="CanResize"
+    ShowMaximizeButton="False"
+    ShowMinimizeButton="False"
+    Style="{StaticResource GTNWindowStyle}"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
+
+    <Grid Margin="18">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="16" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="16" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Margin="16,0,16,0">
+            <StackPanel Orientation="Vertical">
+                <TextBlock
+                    FontSize="20"
+                    FontWeight="SemiBold"
+                    Text="Add playthrough" />
+
+                <TextBlock
+                    Margin="0,4,0,0"
+                    Opacity="0.75"
+                    Text="Create a new playthrough and choose its type." />
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="2" Margin="16,0,16,0">
+            <Border Padding="16" CornerRadius="10">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="12" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="8" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="16" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="8" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock
+                        Grid.Row="0"
+                        FontSize="14"
+                        FontWeight="SemiBold"
+                        Text="Playthrough" />
+
+                    <TextBlock
+                        Grid.Row="2"
+                        Opacity="0.8"
+                        Text="Description" />
+
+                    <TextBox
+                        x:Name="txbDescription"
+                        Grid.Row="4"
+                        Height="36"
+                        ToolTip="Description of the playthrough" />
+
+                    <TextBlock
+                        Grid.Row="6"
+                        Opacity="0.8"
+                        Text="Type" />
+
+                    <ComboBox
+                        x:Name="cmbType"
+                        Grid.Row="8"
+                        SelectedIndex="0"
+                        ToolTip="Select the playthrough type" />
+                </Grid>
+            </Border>
+        </Grid>
+
+        <Grid Grid.Row="4" Margin="16,0,16,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="10" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Button
+                x:Name="btnCancel"
+                Grid.Column="1"
+                Width="110"
+                Height="36"
+                Content="Cancel" />
+
+            <Button
+                x:Name="btnSave"
+                Grid.Column="3"
+                Width="140"
+                Height="36"
+                Content="Save" />
+        </Grid>
+    </Grid>
+</ui:GTNWindow>

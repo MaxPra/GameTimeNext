@@ -60,6 +60,11 @@ namespace GameTimeNext.Core.Application.TimeMonitoring
             t1sessi.PLTO = _endTime;
             t1sessi.PLTI = GetMonitoredTimeInMinutes();
 
+            // Derzeitigen Playthrough ermitteln
+            long ptid = TFPLTHR.GetCurrentPlaythroughPtid(t1sessi.PFID);
+
+            t1sessi.PTID = ptid;
+
             txsessi.Save(t1sessi);
 
             // -- Profildaten befüllen

@@ -77,22 +77,6 @@ namespace GameTimeNext.Core.Framework.Config
         }
 
         [JsonIgnore]
-        public string SteamGridDbAPIKey
-        {
-            get
-            {
-                string? apiKey = Environment.GetEnvironmentVariable("SteamGridDB_API_KEY");
-
-                if (string.IsNullOrWhiteSpace(apiKey))
-                {
-                    throw new InvalidOperationException("Environmentvariable 'STEAMGRIDDB_API_KEY' missing.");
-                }
-
-                return apiKey;
-            }
-        }
-
-        [JsonIgnore]
         public string AppDataLocalPath
         {
             get
@@ -119,6 +103,8 @@ namespace GameTimeNext.Core.Framework.Config
         public FilterCache FilterCache { get; set; } = new FilterCache();
         public AppSettings AppSettings { get; set; } = new AppSettings();
         public UserSettings UserSettings { get; set; } = new UserSettings();
+
+        public string AppVersion { get; set; } = string.Empty;
 
         #endregion
 

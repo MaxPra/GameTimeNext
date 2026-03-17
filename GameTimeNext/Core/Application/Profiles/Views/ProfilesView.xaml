@@ -168,10 +168,21 @@
                             </Setter>
                         </Style>
                     </ListBox.ItemContainerStyle>
-
                 </ListBox>
             </Grid>
         </Border>
+
+        <ContentControl
+            x:Name="MonitoringOverlay"
+            Grid.Column="0"
+            Style="{StaticResource MonitoringOverlayHostStyle}"
+            Visibility="Collapsed" />
+
+        <ContentControl
+            x:Name="LaunchingOverlay"
+            Grid.Column="0"
+            Style="{StaticResource GameStartOverlayHostStyle}"
+            Visibility="Collapsed" />
 
         <GridSplitter
             Grid.Column="1"
@@ -189,6 +200,5 @@
             Background="Transparent">
             <ContentPresenter x:Name="CPProfileDetailView" />
         </Border>
-
     </Grid>
 </uix:UIXUserControlBase>

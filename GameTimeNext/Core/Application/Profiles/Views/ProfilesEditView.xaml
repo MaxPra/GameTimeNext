@@ -281,7 +281,8 @@
                                         <CheckBox
                                             Margin="0,0,0,6"
                                             Content="{Binding GRNA}"
-                                            IsChecked="{Binding IsSelected, Mode=TwoWay}" />
+                                            IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                            Style="{StaticResource CheckBox.Left}" />
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>

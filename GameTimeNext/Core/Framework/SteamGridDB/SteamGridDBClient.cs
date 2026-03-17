@@ -60,6 +60,54 @@ namespace GameTimeNext.Core.Framework.SteamGridDB
 
         }
 
+        public async Task<IReadOnlyList<SgdbGrid>> GetGridsByNameAsync(string name,
+                                                               string? dimensions = "600x900",
+                                                               string? styles = null,
+                                                               CancellationToken cancellationToken = default)
+        {
+            if (FnString.IsNullEmptyOrWhitespace(name))
+                return Array.Empty<SgdbGrid>();
+
+            string searchUrl = $"search/autocomplete/{Uri.EscapeDataString(name)}";
+
+            using var searchResponse = await _httpClient.GetAsync(searchUrl, cancellationToken);
+            searchResponse.EnsureSuccessStatusCode();
+
+            await using var searchStream = await searchResponse.Content.ReadAsStreamAsync(cancellationToken);
+
+            using var document = await JsonDocument.ParseAsync(searchStream, cancellationToken: cancellationToken);
+
+            if (!document.RootElement.TryGetProperty("data", out var data) || data.GetArrayLength() == 0)
+                return Array.Empty<SgdbGrid>();
+
+            int gameId = data[0].GetProperty("id").GetInt32();
+
+            List<string> query = new List<string>();
+
+            if (!FnString.IsNullEmptyOrWhitespace(dimensions))
+                query.Add($"dimensions={Uri.EscapeDataString(dimensions)}");
+
+            if (!FnString.IsNullEmptyOrWhitespace(styles))
+                query.Add($"styles={Uri.EscapeDataString(styles)}");
+
+            string url = $"grids/game/{gameId}";
+
+            if (query.Count > 0)
+                url += "?" + string.Join("&", query);
+
+            using var response = await _httpClient.GetAsync(url, cancellationToken);
+            response.EnsureSuccessStatusCode();
+
+            await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+
+            var result = await JsonSerializer.DeserializeAsync<SgdbResponse<List<SgdbGrid>>>(
+                stream,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true },
+                cancellationToken);
+
+            return result?.Data ?? new List<SgdbGrid>();
+        }
+
 
         public async Task DownloadFileAsync(string fileUrl, string targetPath, CancellationToken cancellationToken = default)
         {

@@ -1,4 +1,5 @@
 <Solution>
   <Project Path="../UIX.ViewController.Engine/UIX.ViewController.Engine.csproj" />
   <Project Path="GameTimeNext/GameTimeNext.csproj" />
+  <Project Path="GameTimeNext_Installer/GameTimeNext_Installer.vdproj" Type="Installer" />
 </Solution>

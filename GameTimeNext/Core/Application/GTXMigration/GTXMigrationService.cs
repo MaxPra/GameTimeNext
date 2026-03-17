@@ -1,5 +1,7 @@
-﻿using GameTimeNext.Core.Application.General;
+﻿using GameTimeNext.Core.Application.DataManagers;
+using GameTimeNext.Core.Application.General;
 using GameTimeNext.Core.Application.Profiles.Components;
+using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing;
@@ -10,6 +12,7 @@ using System.Data.SQLite;
 using System.IO;
 using System.Text;
 using UIX.ViewController.Engine.FrameworkElements.Loader;
+using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.GTXMigration
@@ -56,6 +59,10 @@ namespace GameTimeNext.Core.Application.GTXMigration
             _loader.SetTextStep("migrating session data");
             // Sessions
             MigrateSessions();
+
+            // Playthroughs
+            _loader.SetTextStep("migrating playthroughs [NEW]");
+            MigratePlaythroughs();
 
             _loader.SetTextStep("migrating profile covers");
             // Profil Covers
@@ -104,7 +111,7 @@ namespace GameTimeNext.Core.Application.GTXMigration
             bool success = true;
 
             StringBuilder sb = new StringBuilder();
-            sb.Append("SELECT ProfileID, GameName, FirstPlay, LastPlay, ProfilePicFileName, ExtGameFolder, CreatedAt, ChangedAt, SteamAppID, ProfileSettings, Executables, PlaythroughStartPointDate ");
+            sb.Append("SELECT ProfileID, GameName, FirstPlay, LastPlay, ProfilePicFileName, ExtGameFolder, CreatedAt, ChangedAt, SteamAppID, ProfileSettings, Executables ");
             sb.Append("from tblGameProfiles");
 
             try
@@ -135,15 +142,8 @@ namespace GameTimeNext.Core.Application.GTXMigration
                             string prse = reader.GetString(9);
                             string exec = reader.GetString(10);
 
-                            bool comp = false;
+                            long cupt = 0;
 
-                            DateTime plsp = ParseOldDateTime(reader.GetString(11));
-
-                            string temp = reader.GetString(4);
-
-                            // -- Accent Color Calculation (START)
-
-                            // -- Accent Colors
                             List<System.Windows.Media.Color> accentColorsCalc = FnImage.GetTopAccentColors(_imagesFolderPath + System.IO.Path.DirectorySeparatorChar + reader.GetString(4), 3);
                             System.Windows.Media.Color accentColor = System.Windows.Media.Color.FromArgb(255, accentColorsCalc[0].R, accentColorsCalc[0].G, accentColorsCalc[0].B);
                             string[] accentColors = FnTheme.CalculateAccentStateColors(accentColor.ToString());
@@ -157,8 +157,6 @@ namespace GameTimeNext.Core.Application.GTXMigration
                             cAccentColors.AccentColors = dicAccentColors;
 
                             string acco = cAccentColors.Serialize();
-
-                            // -- Accent Colors Init
 
                             string[] accentColorsInitArray = new string[3];
                             accentColorsInitArray[0] = System.Windows.Media.Color.FromArgb(255, accentColorsCalc[0].R, accentColorsCalc[0].G, accentColorsCalc[0].B).ToString();
@@ -175,18 +173,15 @@ namespace GameTimeNext.Core.Application.GTXMigration
 
                             string acin = cAccentColorsInit.Serialize();
 
-                            // -- Accent Colors sind standardmäßig aktiviert
                             bool acac = true;
-
-                            // -- Accent Color Calculation (END)
 
                             using (SQLiteCommand insertCmd = AppEnvironment.GetDataBaseManager().GetConnection().CreateCommand())
                             {
                                 insertCmd.CommandText =
                                     "INSERT INTO T1PROFI " +
-                                    "(PFID, GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, PLSP, CRAT, CHAT, ACCO, ACIN, ACAC, COMP) " +
+                                    "(PFID, GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, CRAT, CHAT, ACCO, ACIN, ACAC, CUPT) " +
                                     "VALUES " +
-                                    "(@PFID, @GANA, @FIPL, @LAPL, @PPFN, @EXGF, @SAID, @PRSE, @EXEC, @PLSP, @CRAT, @CHAT, @ACCO, @ACIN, @ACAC, @COMP);";
+                                    "(@PFID, @GANA, @FIPL, @LAPL, @PPFN, @EXGF, @SAID, @PRSE, @EXEC, @CRAT, @CHAT, @ACCO, @ACIN, @ACAC, @CUPT);";
 
                                 insertCmd.Parameters.AddWithValue("@PFID", pfid);
                                 insertCmd.Parameters.AddWithValue("@GANA", gana);
@@ -201,15 +196,14 @@ namespace GameTimeNext.Core.Application.GTXMigration
                                 insertCmd.Parameters.AddWithValue("@PRSE", prse);
                                 insertCmd.Parameters.AddWithValue("@EXEC", exec);
 
-                                insertCmd.Parameters.AddWithValue("@PLSP", ToDbDateTime(plsp));
-
                                 insertCmd.Parameters.AddWithValue("@CRAT", ToDbDateTime(crat));
                                 insertCmd.Parameters.AddWithValue("@CHAT", ToDbDateTime(chat));
 
                                 insertCmd.Parameters.AddWithValue("@ACCO", acco);
                                 insertCmd.Parameters.AddWithValue("@ACIN", acin);
                                 insertCmd.Parameters.AddWithValue("@ACAC", acac ? 1 : 0);
-                                insertCmd.Parameters.AddWithValue("@COMP", comp ? 1 : 0);
+
+                                insertCmd.Parameters.AddWithValue("@CUPT", cupt);
 
                                 insertCmd.ExecuteNonQuery();
                             }
@@ -261,7 +255,7 @@ namespace GameTimeNext.Core.Application.GTXMigration
                             DateTime plfr = ParseOldDateTime(reader.GetValue(2));
                             DateTime plto = ParseOldDateTime(reader.GetValue(3));
 
-                            _loader.SetTextStep($"migrating session data [ {current} / {totalCount} ]");
+                            _loader!.SetTextStep($"migrating session data [ {current} / {totalCount} ]");
 
                             double plti = Convert.ToDouble(reader.GetValue(4));
 
@@ -269,9 +263,9 @@ namespace GameTimeNext.Core.Application.GTXMigration
                             {
                                 insertCmd.CommandText =
                                     "INSERT INTO T1SESSI " +
-                                    "(SEID, PFID, PLFR, PLTO, PLTI, CRAT, CHAT) " +
+                                    "(SEID, PFID, PLFR, PLTO, PLTI, CRAT, CHAT, PTID) " +
                                     "VALUES " +
-                                    "(@SEID, @PFID, @PLFR, @PLTO, @PLTI, @CRAT, @CHAT);";
+                                    "(@SEID, @PFID, @PLFR, @PLTO, @PLTI, @CRAT, @CHAT, @PTID);";
 
                                 insertCmd.Parameters.AddWithValue("@SEID", seid);
                                 insertCmd.Parameters.AddWithValue("@PFID", pfid);
@@ -285,6 +279,8 @@ namespace GameTimeNext.Core.Application.GTXMigration
                                 insertCmd.Parameters.AddWithValue("@CRAT", ToDbDateTime(now));
                                 insertCmd.Parameters.AddWithValue("@CHAT", ToDbDateTime(now));
 
+                                insertCmd.Parameters.AddWithValue("@PTID", 0);
+
                                 insertCmd.ExecuteNonQuery();
                             }
                         }
@@ -297,6 +293,50 @@ namespace GameTimeNext.Core.Application.GTXMigration
             }
 
             return success;
+        }
+
+        private void MigratePlaythroughs()
+        {
+            // Alle Profile lasen
+            List<T1PROFI> t1profis = new TXPROFI().ReadAll();
+
+            foreach (T1PROFI t1profi in t1profis)
+            {
+                long ptid = TFPLTHR.CreateNewPlaythrough(t1profi.PFID);
+
+                List<T1SESSI> t1sessis = TFPROFI.GetAllSessions(t1profi);
+
+                foreach (T1SESSI t1sessi in t1sessis)
+                {
+                    t1sessi.PTID = ptid;
+                    new TXSESSI().Save(t1sessi);
+                }
+
+            }
+        }
+
+        private List<T1SESSI> GetAllT1SESSIsOrderedByPFID()
+        {
+            List<T1SESSI> t1sessis = new List<T1SESSI>();
+
+            UIXQuery query = new UIXQuery(K1SESSI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
+
+            query.AddField(K1SESSI.Name, K1SESSI.Fields.SEID);
+            query.AddField(K1SESSI.Name, K1SESSI.Fields.PFID);
+
+            query.AddOrderBy(K1SESSI.Name, K1SESSI.Fields.PFID, OrderDirection.ASC);
+
+            using (var reader = query.Execute())
+            {
+                while (reader.Read())
+                {
+                    long seid = UIXQuery.GetInt64(reader, K1SESSI.Name, K1SESSI.Fields.SEID);
+
+                    t1sessis.Add(new TXSESSI().Read(seid));
+                }
+            }
+
+            return t1sessis;
         }
 
         private DateTime ParseOldDateTime(object value)

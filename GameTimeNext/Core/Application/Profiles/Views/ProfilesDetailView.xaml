@@ -6,7 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:uixcontrols="clr-namespace:UIX.ViewController.Engine.FrameworkElements.UserControls;assembly=UIX.ViewController.Engine"
     xmlns:uixprops="clr-namespace:UIX.ViewController.Engine.AttachedProperties;assembly=UIX.ViewController.Engine"
-    d:DesignHeight="450"
+    d:DesignHeight="1000"
     d:DesignWidth="800"
     mc:Ignorable="d">
 
@@ -15,7 +15,6 @@
 
             <DockPanel Style="{StaticResource ProfileDetail.Layout}">
 
-                <!--  Buttons: fixed at bottom  -->
                 <Border
                     Margin="0,26,0,6"
                     DockPanel.Dock="Bottom"
@@ -31,16 +30,12 @@
                     </StackPanel>
                 </Border>
 
-                <!--  Content above buttons  -->
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
-                        <!--  Title  -->
                         <RowDefinition Height="*" />
-                        <!--  Body  -->
                     </Grid.RowDefinitions>
 
-                    <!--  Title  -->
                     <Grid
                         Grid.Row="0"
                         Width="{StaticResource ProfileDetail.CoverWidth}"
@@ -49,20 +44,16 @@
                         <TextBlock uixprops:UIXAttachedProperty.Path="T1PROFI.GANA" Style="{StaticResource ProfileDetail.Title}" />
                     </Grid>
 
-                    <!--  Body  -->
                     <Grid Grid.Row="1">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
-                            <!--  Cover  -->
                             <RowDefinition Height="10" />
-                            <!--  small gap cover -> info  -->
                             <RowDefinition Height="Auto" />
-                            <!--  Infos  -->
+                            <RowDefinition Height="10" />
+                            <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
-                            <!--  free space below infos  -->
                         </Grid.RowDefinitions>
 
-                        <!--  Cover  -->
                         <Viewbox
                             Grid.Row="0"
                             MaxHeight="520"
@@ -78,7 +69,6 @@
                             </Border>
                         </Viewbox>
 
-                        <!--  Infos  -->
                         <Border Grid.Row="2" Style="{StaticResource ProfileDetail.InfoHost}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -90,6 +80,7 @@
                                 <Border Grid.Column="1" Style="{StaticResource ProfileDetail.InfoCard}">
                                     <Grid>
                                         <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
@@ -115,9 +106,9 @@
                                             Grid.Row="1"
                                             Grid.Column="0"
                                             Style="{StaticResource ProfileDetail.InfoLabel}"
-                                            Text="First time played:" />
+                                            Text="Played today:" />
                                         <TextBlock
-                                            x:Name="txFirstTimePlayed"
+                                            x:Name="txPlayedToday"
                                             Grid.Row="1"
                                             Grid.Column="2"
                                             Style="{StaticResource ProfileDetail.InfoValue}" />
@@ -126,12 +117,56 @@
                                             Grid.Row="2"
                                             Grid.Column="0"
                                             Style="{StaticResource ProfileDetail.InfoLabel}"
-                                            Text="Last time played:" />
+                                            Text="First time played:" />
                                         <TextBlock
-                                            x:Name="txLastTimePlayed"
+                                            x:Name="txFirstTimePlayed"
                                             Grid.Row="2"
                                             Grid.Column="2"
                                             Style="{StaticResource ProfileDetail.InfoValue}" />
+
+                                        <TextBlock
+                                            Grid.Row="3"
+                                            Grid.Column="0"
+                                            Style="{StaticResource ProfileDetail.InfoLabel}"
+                                            Text="Last time played:" />
+                                        <TextBlock
+                                            x:Name="txLastTimePlayed"
+                                            Grid.Row="3"
+                                            Grid.Column="2"
+                                            Style="{StaticResource ProfileDetail.InfoValue}" />
+                                    </Grid>
+                                </Border>
+                            </Grid>
+                        </Border>
+
+                        <Border
+                            x:Name="pnlPlaythrough"
+                            Grid.Row="4"
+                            Style="{StaticResource ProfileDetail.InfoHost}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <Border Grid.Column="1" Style="{StaticResource ProfileDetail.InfoCard}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="18" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock
+                                            x:Name="txPlaythrough"
+                                            Grid.Column="0"
+                                            Style="{StaticResource ProfileDetail.GameTimeLabel}"
+                                            Text="Playthrough:" />
+                                        <TextBlock
+                                            x:Name="txPlaythroughTime"
+                                            Grid.Column="2"
+                                            Style="{StaticResource ProfileDetail.GameTimeValue}" />
                                     </Grid>
                                 </Border>
                             </Grid>

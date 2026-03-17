@@ -15,13 +15,12 @@
             public const string SAID = "SAID";
             public const string PRSE = "PRSE";
             public const string EXEC = "EXEC";
-            public const string PLSP = "PLSP";
             public const string CRAT = "CRAT";
             public const string CHAT = "CHAT";
             public const string ACCO = "ACCO";
             public const string ACIN = "ACIN";
             public const string ACAC = "ACAC";
-            public const string COMP = "COMP";
+            public const string CUPT = "CUPT";
         }
     }
 }

@@ -9,6 +9,16 @@
     <ApplicationIcon>UI\Ressources\GTN_APP_ICON.ico</ApplicationIcon>
   </PropertyGroup>
 
+	<PropertyGroup>
+		<Version>0.1.0</Version>
+		<VersionTag>beta</VersionTag>
+		<BuildDate>2026-03-17</BuildDate>
+
+		<InformationalVersion>$(Version)-$(VersionTag)+$(BuildDate)</InformationalVersion>
+
+		<PlatformTarget>x64</PlatformTarget>
+	</PropertyGroup>
+
   <ItemGroup>
     <None Remove="UI\Ressources\GTN_APP_ICON.ico" />
     <None Remove="UI\Ressources\GTN_ICON_ADD_PROFILE.png" />

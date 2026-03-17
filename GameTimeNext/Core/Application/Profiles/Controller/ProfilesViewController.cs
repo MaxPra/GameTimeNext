@@ -1,5 +1,6 @@
 ﻿using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.General;
+using GameTimeNext.Core.Application.Profiles.BackgroundProcesses;
 using GameTimeNext.Core.Application.Profiles.Components;
 using GameTimeNext.Core.Application.Profiles.DataWrapper;
 using GameTimeNext.Core.Application.Profiles.Viewmodel;
@@ -7,15 +8,19 @@ using GameTimeNext.Core.Application.Profiles.Views;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Application.TimeMonitoring;
 using GameTimeNext.Core.Framework;
+using GameTimeNext.Core.Framework.UI;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.Utils;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Threading;
 using UIX.ViewController.Engine.Controller;
+using UIX.ViewController.Engine.FrameworkElements;
 using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
+using static UIX.ViewController.Engine.FrameworkElements.UIXContextMenuFactory;
 
 namespace GameTimeNext.Core.Application.Profiles.Controller
 {
@@ -23,20 +28,21 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
     {
         private ProfilesSubViewDataWrapper? _dataWrapper;
         private ProfilesSubGridViewModel? _profilesSubGridViewModel;
-
-
-
-        bool _playableFilter = false;
+        private bool _playableFilter = false;
 
         public ProfilesViewController(UIXApplication app) : base(app)
         {
         }
 
+        #region Event-Pipeline-Methods
         protected override void Init()
         {
             _dataWrapper = GetDataWrapper<ProfilesSubViewDataWrapper>();
             GetApp().CallDispatcher.Register(this, nameof(EXEV_GameTimeMonitoringStarted));
             GetApp().CallDispatcher.Register(this, nameof(EXEV_GameTimeMonitoringStopped));
+            GetApp().CallDispatcher.Register(this, nameof(EXEV_SwitchProfile));
+            GetApp().CallDispatcher.Register(this, nameof(EXEV_GameLaunched));
+            GetApp().CallDispatcher.Register(this, nameof(EXEV_GameClosed));
 
             // Loadertexte setzen
             GetApp().Loader.SetRandomTexts(
@@ -116,8 +122,12 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             FnTheme.ApplyThemeColors(new CAccentColors(selectedProfi.ACCO).Dezerialize().AccentColors);
 
             AppEnvironment.CurrentPfid = selectedProfi.PFID;
-        }
 
+            GetView().ListBoxProfiles.ScrollIntoView(selectedProfi);
+        }
+        #endregion
+
+        #region Profiles List View
         private async Task BuildProfilesListBoxAsync(long pfid)
         {
             GetApp().Loader.Begin();
@@ -277,7 +287,13 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 }
 
                 if (containsCompleted)
-                    query.AddWhere(K1PROFI.Name, K1PROFI.Fields.COMP, QueryCompareType.EQUALS, true);
+                {
+                    // query.AddWhere(K1PROFI.Name, K1PROFI.Fields.COMP, QueryCompareType.EQUALS, true);
+                    UIXQueryTable t1plthr_table = query.AddJoinTable(K1PLTHR.Name, JoinType.INNER);
+                    t1plthr_table.AddJoinCondition(K1PROFI.Name, K1PROFI.Fields.PFID, QueryCompareType.EQUALS, K1PLTHR.Name, K1PLTHR.Fields.PFID);
+                    query.AddWhere(K1PLTHR.Name, K1PLTHR.Fields.PTCO, QueryCompareType.EQUALS, true);
+                }
+
 
                 // Hier im Objekt speichern, da außerhalb der Methode darauf zugegriffen werden muss (ausnahme)
                 _playableFilter = containsPlayable;
@@ -308,6 +324,37 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             return keyList;
         }
 
+        private void BuildContextMenu(ListBoxItem lbi, T1PROFI t1profi)
+        {
+            Style contextMenuItemStyle = (Style)System.Windows.Application.Current.FindResource("ModernContextMenuItemStyle");
+            Style contextMenuStyle = (Style)System.Windows.Application.Current.FindResource("ModernContextMenuStyle");
+
+            ContextMenuBuilder contextBuilder = UIXContextMenuFactory.Create("ProfilesListBoxContextMenu");
+            contextBuilder.SetStyle(contextMenuStyle);
+
+            // Prinzipiell immer Edit und Delete
+            contextBuilder.AddItem("ctxtEdit", "Edit", icon: UIXContextMenuFactory.CreateMdlIcon("\uE70F"), itemStyle: contextMenuItemStyle);
+            contextBuilder.AddItem("ctxtDelete", "Delete", icon: UIXContextMenuFactory.CreateMdlIcon("\uE74D"), itemStyle: contextMenuItemStyle);
+
+            // Wenn Profil noch nicht als durchgespielt markiert
+            T1PLTHR currentPlaythrough = TFPLTHR.GetCurrentPlaythrough(t1profi.PFID);
+
+            if (currentPlaythrough != null && !TFPLTHR.GetCurrentPlaythrough(t1profi.PFID).PTCO)
+            {
+                contextBuilder.AddItem("ctxtCompleteProfile", "Current playthrough completed", icon: UIXContextMenuFactory.CreateMdlIcon("\uE930"), itemStyle: contextMenuItemStyle);
+            }
+            else
+            {
+                contextBuilder.AddItem("ctxtStartNewPlaythrough", "Start new playthrough", icon: UIXContextMenuFactory.CreateMdlIcon("\uE72C"), itemStyle: contextMenuItemStyle);
+            }
+
+            if (contextBuilder.HasItems())
+                lbi.ContextMenu = contextBuilder.Build();
+            else
+                lbi.ContextMenu = null;
+        }
+        #endregion
+
         private void FillProfileCover(List<T1PROFI> T1PROFIs)
         {
             foreach (T1PROFI prof in T1PROFIs)
@@ -317,6 +364,31 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             }
         }
 
+        private async Task AdjustFiltersToStartedGameProfile(long pfid)
+        {
+            // Ermittlung der zugeordneten Gruppen
+            T1PROFI t1profi = new TXPROFI().Read(pfid);
+
+            List<T1GROUP> tags = TFPROFI.GetAllLinkedTags(t1profi);
+
+            // Alle Selektionen bereinigen
+            if (tags.Count == 0)
+                GetApp().FilterCache.SelectedTags = new List<T1GROUP>();
+            else
+                GetApp().FilterCache.SelectedTags = tags;
+
+            // Alle States bereinigen
+            GetApp().FilterCache.SelectedStates = new List<T1GROUP>();
+
+            foreach (var tag in tags)
+            {
+                tag.IsSelected = true;
+            }
+
+            await BuildProfilesListBoxAsync(pfid);
+        }
+
+        #region Getter App & View
         private ProfilesApp GetApp()
         {
             return (ProfilesApp)App;
@@ -326,9 +398,13 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
             return (ProfilesView)View;
         }
+        #endregion
 
-        protected void EXEV_GameTimeMonitoringStarted()
+        #region External Events
+        protected async Task EXEV_GameTimeMonitoringStarted()
         {
+            GetView().MonitoringOverlay.Visibility = Visibility.Visible;
+
             ProfilesDetailSubViewController profileDetailViewController = (ProfilesDetailSubViewController)GetApp().ProfilesDetailView.ViewController;
             profileDetailViewController.UpdateUIMonitoringStarted();
         }
@@ -337,12 +413,46 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
             CFGameTimeMonitoring.UpdateTableObject();
 
+            GetView().MonitoringOverlay.Visibility = Visibility.Hidden;
+
             await BuildProfilesListBoxAsync(AppEnvironment.CurrentPfid);
 
             ProfilesDetailSubViewController profileDetailViewController = (ProfilesDetailSubViewController)GetApp().ProfilesDetailView.ViewController;
             profileDetailViewController.UpdateUIMonitoringStopped();
         }
 
+        protected async Task EXEV_SwitchProfile()
+        {
+            if (_profilesSubGridViewModel == null)
+                return;
+
+            List<T1PROFI> currentProfis = _profilesSubGridViewModel.T1Profis.Where(p => p.PFID == AppEnvironment.CurrentPfid).ToList();
+
+            if (currentProfis == null || currentProfis.Count == 0)
+                await AdjustFiltersToStartedGameProfile(AppEnvironment.CurrentPfid);
+
+            _profilesSubGridViewModel.SelectedT1Profi = _profilesSubGridViewModel.T1Profis.Where(p => p.PFID == AppEnvironment.CurrentPfid).ToList()[0];
+
+            ToastMessage tm = new ToastMessage("Switched profile...", _profilesSubGridViewModel!.SelectedT1Profi.GANA);
+            tm.Show();
+        }
+
+        protected async Task EXEV_GameLaunched()
+        {
+            ProfilesDetailSubViewController profileDetailViewController = (ProfilesDetailSubViewController)GetApp().ProfilesDetailView.ViewController;
+            GetView().LaunchingOverlay.Visibility = Visibility.Visible;
+
+            profileDetailViewController.UpdateUIGameRunning();
+        }
+
+        protected async Task EXEV_GameClosed()
+        {
+            ProfilesDetailSubViewController profileDetailViewController = (ProfilesDetailSubViewController)GetApp().ProfilesDetailView.ViewController;
+            profileDetailViewController.UpdateUIGameClosed();
+        }
+        #endregion
+
+        #region Internal Events
         protected async Task EV_tbSearchProfileName()
         {
             await BuildProfilesListBoxAsync(AppEnvironment.CurrentPfid);
@@ -377,7 +487,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                         AppEnvironment.GetAppConfig().FilterCache = GetApp().FilterCache;
                         AppEnvironment.SaveAppConfig();
 
-                        await BuildProfilesListBoxAsync(0);
+                        await BuildProfilesListBoxAsync(AppEnvironment.CurrentPfid);
                     }
                 });
             }
@@ -392,8 +502,33 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             app.CreateNew(async r =>
             {
                 if (!r.Canceled)
+                {
                     await BuildProfilesListBoxAsync(r.PFID);
+                    GameRunningProcess grp = ((GameRunningProcess)AppEnvironment.StartedBackgroundProcesses[typeof(GameRunningProcess).FullName]);
+
+                    T1PROFI t1profi = new TXPROFI().Read(r.PFID);
+                    grp.AddT1profi(t1profi);
+                    grp.AddExecutables(t1profi.PFID, FnExecutables.GetAllActiveExecutablesFromDBObj(t1profi));
+                }
+
             });
+        }
+
+        /// <summary>
+        /// Kontextmenü öffnet sich
+        /// </summary>
+        /// <param name="target"></param>
+        protected void EV_ListBoxProfiles_CtxtOpening(FrameworkElement target)
+        {
+            ListBoxItem listBoxItem = target as ListBoxItem;
+
+            if (listBoxItem == null)
+                return;
+
+            if (listBoxItem.DataContext is not T1PROFI profi)
+                return;
+
+            BuildContextMenu(listBoxItem, profi);
         }
 
         protected void EV_ctxtEdit()
@@ -404,7 +539,15 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             app.Edit(t1profi, async r =>
             {
                 if (!r.Canceled)
+                {
+                    GameRunningProcess grp = ((GameRunningProcess)AppEnvironment.StartedBackgroundProcesses[typeof(GameRunningProcess).FullName]);
+
+                    T1PROFI t1profi = new TXPROFI().Read(r.PFID);
+                    grp.AddT1profi(t1profi);
+                    grp.AddExecutables(t1profi.PFID, FnExecutables.GetAllActiveExecutablesFromDBObj(t1profi));
+
                     await BuildProfilesListBoxAsync(r.PFID);
+                }
             });
         }
 
@@ -415,11 +558,48 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             if (result == CFMBOXResult.Yes)
             {
-                TFPROFI.DeleteProfiAndLinkedData(_profilesSubGridViewModel!.SelectedT1Profi);
+                T1PROFI selectedT1profi = _profilesSubGridViewModel!.SelectedT1Profi;
+
+                TFPROFI.DeleteProfiAndLinkedData(selectedT1profi);
+
+                GameRunningProcess grp = ((GameRunningProcess)AppEnvironment.StartedBackgroundProcesses[typeof(GameRunningProcess).FullName!]);
+                grp.RemoveT1profi(selectedT1profi);
+                grp.RemoveExecutables(selectedT1profi.PFID);
 
                 await BuildProfilesListBoxAsync(0);
             }
         }
+
+        protected void EV_ctxtCompleteProfile()
+        {
+            T1PROFI t1profi = _profilesSubGridViewModel!.SelectedT1Profi;
+
+            T1PLTHR t1plthr = TFPLTHR.GetCurrentPlaythrough(t1profi.PFID);
+
+            // Playthrough als Abgeschlossen markieren
+            t1plthr.PTCO = true;
+
+            new TXPLTHR().Save(t1plthr);
+
+            _dataWrapper.TargetController.Open(true);
+        }
+
+        protected void EV_ctxtStartNewPlaythrough()
+        {
+            T1PROFI t1profi = _profilesSubGridViewModel!.SelectedT1Profi;
+
+            ProfilesPlaythroughEditApp app = GetApp().GetApplication<ProfilesPlaythroughEditApp>();
+            app.CreateNew(t1profi, r =>
+            {
+                if (!r.Canceled)
+                {
+                    // Nochmaliges öffnen triggern
+                    _dataWrapper!.TargetController.Open(true);
+                }
+            });
+        }
+
+        #endregion
 
         /// <summary>
         /// Filter Cache (Hier werden die Selektionen des Filters gespeichert)

@@ -36,6 +36,9 @@ namespace GameTimeNext.Core.Application.TableObjects
         [UIXSignatureField(7)]
         public string MonitoringKey { get; set; }
 
+        [UIXSignatureField(8)]
+        public string SteamGridDbKey { get; set; }
+
         public AppSettings()
         {
             AutomaticGameProfileSwitching = false;
@@ -47,6 +50,8 @@ namespace GameTimeNext.Core.Application.TableObjects
             ShowMonitoringIndicator = false;
             BlackoutSideMonitors = false;
             MonitoringKey = KeyInput.virtualKeyMap[KeyInput.VirtualKey.VK_NONE];
+            SteamGridDbKey = string.Empty;
+
 
             AcceptChanges();
         }

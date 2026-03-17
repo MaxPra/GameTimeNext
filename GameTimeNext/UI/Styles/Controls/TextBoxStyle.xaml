@@ -17,11 +17,16 @@
         <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
         <Setter Property="BorderThickness" Value="{DynamicResource Thickness.TextBox.Border}" />
 
-        <Setter Property="Padding" Value="12,9" />
-        <Setter Property="MinHeight" Value="38" />
+        <Setter Property="Padding" Value="12,7" />
+        <Setter Property="MinHeight" Value="34" />
+        <Setter Property="Height" Value="34" />
         <Setter Property="FontSize" Value="13" />
+        <Setter Property="FontWeight" Value="Normal" />
+        <Setter Property="FontFamily" Value="Segoe UI" />
 
+        <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="UseLayoutRounding" Value="True" />
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden" />
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Hidden" />
 
@@ -39,8 +44,8 @@
                             Opacity="0">
                             <Border.Effect>
                                 <DropShadowEffect
-                                    BlurRadius="18"
-                                    Opacity="0.65"
+                                    BlurRadius="16"
+                                    Opacity="0.60"
                                     ShadowDepth="0"
                                     Color="#FF4D4F" />
                             </Border.Effect>
@@ -48,6 +53,8 @@
 
                         <Border
                             x:Name="Bd"
+                            Height="{TemplateBinding Height}"
+                            MinHeight="{TemplateBinding MinHeight}"
                             Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
@@ -64,7 +71,7 @@
                                     RadiusY="2">
                                     <Rectangle.Fill>
                                         <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                            <GradientStop Offset="0" Color="#14FFFFFF" />
+                                            <GradientStop Offset="0" Color="#12FFFFFF" />
                                             <GradientStop Offset="1" Color="#00FFFFFF" />
                                         </LinearGradientBrush>
                                     </Rectangle.Fill>
@@ -73,12 +80,16 @@
                                 <ScrollViewer
                                     x:Name="PART_ContentHost"
                                     Margin="0"
+                                    VerticalAlignment="Center"
                                     Focusable="False" />
 
                                 <TextBlock
                                     x:Name="Watermark"
                                     Margin="{TemplateBinding Padding}"
                                     VerticalAlignment="Center"
+                                    FontFamily="{TemplateBinding FontFamily}"
+                                    FontSize="{TemplateBinding FontSize}"
+                                    FontWeight="{TemplateBinding FontWeight}"
                                     Foreground="{DynamicResource Brush.TextSecondary}"
                                     IsHitTestVisible="False"
                                     Opacity="0.70"
@@ -89,6 +100,10 @@
                     </Grid>
 
                     <ControlTemplate.Triggers>
+
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Brush.TextBox.BackgroundHover}" />
+                        </Trigger>
 
                         <Trigger Property="IsKeyboardFocusWithin" Value="True">
                             <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Brush.TextBox.BackgroundFocused}" />
@@ -112,7 +127,7 @@
                             <Setter TargetName="Glow" Property="Effect">
                                 <Setter.Value>
                                     <DropShadowEffect
-                                        BlurRadius="18"
+                                        BlurRadius="16"
                                         Opacity="0.75"
                                         ShadowDepth="0"
                                         Color="#E74C3C" />

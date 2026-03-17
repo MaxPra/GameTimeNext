@@ -1,9 +1,11 @@
-﻿using GameTimeNext.Core.Application.Profiles;
+﻿using GameTimeNext.Core.Application.DataManagers;
+using GameTimeNext.Core.Application.Profiles;
 using GameTimeNext.Core.Application.Profiles.BackgroundProcesses;
 using GameTimeNext.Core.Application.Settings;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.DataBase;
+using GameTimeNext.Core.Framework.Versioning;
 using System.IO;
 using System.Text.Json;
 using System.Windows.Controls;
@@ -13,6 +15,7 @@ namespace GameTimeNext.Core.Framework
 {
     internal class AppEnvironment
     {
+
         private static AppConfig _appConfig = new AppConfig();
         private static DataBaseManager _databaseManager = new DataBaseManager();
         private static T1PROFI? _t1Profi = new T1PROFI();
@@ -28,6 +31,7 @@ namespace GameTimeNext.Core.Framework
         public static List<SearchableApplication> AvailableApplications { get; set; } = new List<SearchableApplication>();
         public static Dictionary<string, UIXBackgroundProcess> StartedBackgroundProcesses { get => _startedBackgroundProcesses; set => _startedBackgroundProcesses = value; }
         public static long CurrentPfid { get; set; } = 0;
+        public static AppVersion AppVersion { get; set; } = new AppVersion();
 
         public static ApplicationLauncher AppLauncher { get; set; } = new ApplicationLauncher(null);
 
@@ -75,6 +79,9 @@ namespace GameTimeNext.Core.Framework
             LoadAppConfig();
 
             InitiateDataBaseManager();
+
+            AppVersion.Get();
+            AppVersion.SetAppVersionInConfig();
         }
 
         public static void StartBackgroundProcesses(UIXApplication app)
@@ -84,7 +91,23 @@ namespace GameTimeNext.Core.Framework
             globalKeyInputProcess.CallDispatcher = app.CallDispatcher;
             globalKeyInputProcess.Start(20);
 
+            // GameRunningProcess
+            GameRunningProcess gameRunningProcess = app.GetBackgroundProcess<GameRunningProcess>();
+            gameRunningProcess.CallDispatcher = app.CallDispatcher;
+            gameRunningProcess.Initialize(new TXPROFI().ReadAll());
+            gameRunningProcess.Start(500);
+
             StartedBackgroundProcesses.Add(typeof(GlobalKeyInputProcess).FullName!, globalKeyInputProcess);
+            StartedBackgroundProcesses.Add(typeof(GameRunningProcess).FullName!, gameRunningProcess);
+        }
+
+        public static void StopBackgroundProcesses()
+        {
+            foreach (UIXBackgroundProcess process in StartedBackgroundProcesses.Values)
+            {
+                if (process.IsRunning())
+                    process.Stop();
+            }
         }
 
         public static void InitiateDataBaseManager()

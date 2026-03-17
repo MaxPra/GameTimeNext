@@ -46,28 +46,16 @@ namespace GameTimeNext.Core.Application.General.Controller
                 GetWindow().BdDevModeBatch.Visibility = Visibility.Hidden;
             }
 
-            //GetWindow().TabMetaData.Visibility = Visibility.Hidden;
+            BuildBetaTag();
 
             await CheckGTXMigration();
 
             await BuildApplicationSearch();
 
-            //AppEnvironment.AppLauncher.LaunchApplication("GameTimeNext.Core.Application.Profiles.ProfilesApp", GetApp(), "Profiles");
-
             AppEnvironment.AppLauncher.StartFavorites(GetApp());
 
             // Hintergrundprozesse starten
             AppEnvironment.StartBackgroundProcesses(GetApp());
-
-            // Normale Anwendungen
-            //GetApp().ProfilesApp = new ProfilesApp();
-            //GetApp().ProfilesApp.Start(GetApp(), GetWindow().CPProfileView);
-
-            //GetApp().SettingsApp = GetApp().GetApplication<SettingsApp>();
-            //GetApp().SettingsApp.Start(GetApp(), GetWindow().cpSettingsView);
-
-            //AppEnvironment.StartedApplications.Add("ProfilesApp", GetApp().ProfilesApp);
-            //AppEnvironment.StartedApplications.Add("SettingsApp", GetApp().SettingsApp);
         }
 
         protected override void Build()
@@ -200,6 +188,14 @@ namespace GameTimeNext.Core.Application.General.Controller
             }
         }
 
+        private void BuildBetaTag()
+        {
+            if (AppEnvironment.AppVersion.IsBeta)
+                GetWindow().Subtitle = "BETA";
+            else
+                GetWindow().Subtitle = string.Empty;
+        }
+
         protected void EV_ctxtClose(FrameworkElement target)
         {
             TabItem tab = (TabItem)target;
@@ -250,7 +246,7 @@ namespace GameTimeNext.Core.Application.General.Controller
             FnUserSettings.SetAsPrimaryStart(favApp);
         }
 
-        protected void EV_tabApplication(FrameworkElement target)
+        protected void EV_tabApplication_CtxtOpening(FrameworkElement target)
         {
             if (target is not TabItem tab)
                 return;

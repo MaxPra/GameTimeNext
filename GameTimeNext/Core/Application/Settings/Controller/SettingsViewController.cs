@@ -3,6 +3,7 @@ using GameTimeNext.Core.Application.Settings.Views;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.UserInput;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
@@ -34,6 +35,16 @@ namespace GameTimeNext.Core.Application.Settings.Controller
         {
             // Sichtbarkeitssteuerung Monitoring Key Panel
             FnControls.SetVisible(GetView().pnlMonitoringKey, GetView().cbMonitoringKeyActive.IsChecked == true);
+
+            // Enabledsteuerung Toastmessage
+            FnControls.SetEnabled(GetView().cbShowToastNotification, GetView().cbMonitoringKeyActive.IsChecked == true);
+            if (!GetView().cbShowToastNotification.IsEnabled)
+                GetView().cbShowToastNotification.IsChecked = false;
+
+            // Enabledsteuerung Blackout Side Monitors
+            FnControls.SetEnabled(GetView().cbBlackoutSideMonitors, GetView().cbMonitoringKeyActive.IsChecked == true);
+            if (!GetView().cbBlackoutSideMonitors.IsEnabled)
+                GetView().cbBlackoutSideMonitors.IsChecked = false;
         }
 
         protected override void Check()
@@ -66,9 +77,9 @@ namespace GameTimeNext.Core.Application.Settings.Controller
 
         private void FillTabGeneral()
         {
-            GetView().cbAutomaticGameProfileSwitching.IsChecked = _appSettings!.AutomaticGameProfileSwitching;
             GetView().cbActivateBlackoutKeyCombination.IsChecked = _appSettings!.ActivateBlackoutKeyCombination;
             GetView().cbAllowProfileSpecificStyleChanges.IsChecked = _appSettings!.AllowProfileSpecificStyleChanges;
+            GetView().txbSteamGridDbApiKey.Text = _appSettings!.SteamGridDbKey;
         }
 
         private void FillTabMonitoring()
@@ -82,9 +93,9 @@ namespace GameTimeNext.Core.Application.Settings.Controller
 
         private void FillDBOGeneral()
         {
-            _appSettings!.AutomaticGameProfileSwitching = GetView().cbAutomaticGameProfileSwitching.IsChecked == true;
             _appSettings!.ActivateBlackoutKeyCombination = GetView().cbActivateBlackoutKeyCombination.IsChecked == true;
             _appSettings!.AllowProfileSpecificStyleChanges = GetView().cbAllowProfileSpecificStyleChanges.IsChecked == true;
+            _appSettings!.SteamGridDbKey = GetView().txbSteamGridDbApiKey.Text;
         }
 
         private void FillDBOMonitoring()
@@ -110,6 +121,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
 
         private void FillTabAbout()
         {
+            GetView().txVersion.Text = AppEnvironment.AppVersion.InformationalVersion;
         }
 
         protected override void SaveDBOImpl()
@@ -148,6 +160,15 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             };
 
             globalKeyInputProcess.Start(20);
+        }
+
+        protected void EV_btnOpenSteamGridDB()
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "https://www.steamgriddb.com/login",
+                UseShellExecute = true
+            });
         }
     }
 }

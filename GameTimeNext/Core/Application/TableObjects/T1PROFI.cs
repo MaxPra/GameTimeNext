@@ -34,27 +34,25 @@ namespace GameTimeNext.Core.Application.TableObjects
         public string EXEC { get; set; }
 
         [UIXSignatureField(9)]
-        public DateTime PLSP { get; set; }
-
-        [UIXSignatureField(10)]
         public DateTime CRAT { get; set; }
 
-        [UIXSignatureField(11)]
+        [UIXSignatureField(10)]
         public DateTime CHAT { get; set; }
 
-        [UIXSignatureField(12)]
+        [UIXSignatureField(11)]
         public string ACCO { get; set; }
 
-        [UIXSignatureField(13)]
+        [UIXSignatureField(12)]
         public string ACIN { get; set; }
 
-        [UIXSignatureField(14)]
+        [UIXSignatureField(13)]
         public bool ACAC { get; set; }
 
-        [UIXSignatureField(15)]
-        public bool COMP { get; set; }
+        [UIXSignatureField(14)]
+        public long CUPT { get; set; }
 
         public BitmapImage CoverImage { get; set; }
+
         public bool IsPlayable { get; set; } = false;
 
         public T1PROFI()
@@ -73,15 +71,15 @@ namespace GameTimeNext.Core.Application.TableObjects
             PRSE = string.Empty;
             EXEC = string.Empty;
 
-            PLSP = DateTime.MinValue;
-
             CRAT = DateTime.MinValue;
             CHAT = DateTime.MinValue;
 
             ACCO = string.Empty;
             ACIN = string.Empty;
+
             ACAC = false;
-            COMP = false;
+
+            CUPT = 0;
 
             AcceptChanges();
         }

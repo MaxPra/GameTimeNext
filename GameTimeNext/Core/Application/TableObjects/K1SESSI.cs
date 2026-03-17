@@ -8,6 +8,7 @@
         {
             public const string SEID = "SEID";
             public const string PFID = "PFID";
+            public const string PTID = "PTID";
             public const string PLFR = "PLFR";
             public const string PLTO = "PLTO";
             public const string PLTI = "PLTI";

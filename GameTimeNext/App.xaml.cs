@@ -16,14 +16,9 @@ namespace GameTimeNext
 
             InitializeApp();
 
-            // Test Migration GTX => GTNXT
-            //GTXMigrationHelper gtxMigHelper = new GTXMigrationHelper("C:\\GameTimeX");
-            //gtxMigHelper.MigrateToGTNXT();
-
             // Erst danach Fenster öffnen
             MainApp mainApp = new MainApp();
             mainApp.Start(null, null);
-
         }
 
         private void InitializeApp()
@@ -40,6 +35,8 @@ namespace GameTimeNext
 
         protected override void OnExit(ExitEventArgs e)
         {
+            AppEnvironment.StopBackgroundProcesses();
+
             if (AppEnvironment.GetDataBaseManager().GetConnection() != null)
                 AppEnvironment.GetDataBaseManager().GetConnection().Close();
         }

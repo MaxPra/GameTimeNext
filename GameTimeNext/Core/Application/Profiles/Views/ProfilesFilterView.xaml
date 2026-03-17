@@ -33,7 +33,6 @@
                     <ColumnDefinition Width="1*" />
                 </Grid.ColumnDefinitions>
 
-                <!--  TAGS  -->
                 <StackPanel Grid.Column="0" Margin="0,0,18,0">
                     <TextBlock
                         Margin="0,0,0,8"
@@ -41,14 +40,34 @@
                         Foreground="{DynamicResource Brush.Accent}"
                         Text="TAGS" />
 
-                    <!--  optional: Search  -->
-                    <TextBox
-                        x:Name="TxtSearchTag"
-                        Height="30"
-                        Margin="0,0,0,10"
-                        Style="{StaticResource TextBox.Default}"
-                        Tag="Search tags"
-                        ToolTip="Search tags" />
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBox
+                            x:Name="TxtSearchTag"
+                            Grid.Column="0"
+                            Height="30"
+                            Margin="0,0,8,0"
+                            Style="{StaticResource TextBox.Default}"
+                            Tag="Search tags"
+                            ToolTip="Search tags" />
+
+                        <Button
+                            x:Name="btnDisableAllTags"
+                            Grid.Column="1"
+                            Width="40"
+                            ToolTip="Disable all tags">
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                FontFamily="Segoe MDL2 Assets"
+                                FontSize="14"
+                                Text="&#xE711;" />
+                        </Button>
+                    </Grid>
 
                     <Border
                         Padding="10"
@@ -73,7 +92,8 @@
                                         <CheckBox
                                             Margin="0,0,0,6"
                                             Content="{Binding GRNA}"
-                                            IsChecked="{Binding IsSelected, Mode=TwoWay}" />
+                                            IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                            Style="{StaticResource CheckBox.Left}" />
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
@@ -81,7 +101,6 @@
                     </Border>
                 </StackPanel>
 
-                <!--  PLAY STATUS  -->
                 <StackPanel Grid.Column="1">
                     <TextBlock
                         Margin="0,0,0,8"
@@ -107,7 +126,8 @@
                                     <CheckBox
                                         Margin="0,0,0,6"
                                         Content="{Binding GRNA}"
-                                        IsChecked="{Binding IsSelected, Mode=TwoWay}" />
+                                        IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                        Style="{StaticResource CheckBox.Left}" />
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>

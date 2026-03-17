@@ -12,7 +12,7 @@
     HorizontalContentAlignment="Stretch"
     VerticalContentAlignment="Stretch"
     d:DesignHeight="450"
-    d:DesignWidth="800"
+    d:DesignWidth="2000"
     mc:Ignorable="d">
 
     <Grid Margin="20">
@@ -47,7 +47,7 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="16" />
                                 <RowDefinition Height="Auto" />
-                                <RowDefinition Height="10" />
+                                <RowDefinition Height="14" />
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
@@ -56,18 +56,67 @@
                                 Style="{StaticResource SettingsGroupTitleStyle}"
                                 Text="General" />
 
-                            <CheckBox
-                                x:Name="cbAutomaticGameProfileSwitching"
-                                Grid.Row="2"
-                                Content="Automatic game profile switching"
-                                Foreground="{DynamicResource Brush.TextPrimary}" />
+                            <Grid Grid.Row="2" HorizontalAlignment="Left">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="220" />
+                                    <ColumnDefinition Width="16" />
+                                    <ColumnDefinition Width="22" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
 
-                            <CheckBox
-                                x:Name="cbActivateBlackoutKeyCombination"
-                                Grid.Row="4"
-                                Content="Activate blackout key combination"
-                                Foreground="{DynamicResource Brush.TextPrimary}"
-                                ToolTip="Blacks out all screens to protect OLED displays (CTRL + B)" />
+                                <TextBlock
+                                    Grid.Column="0"
+                                    VerticalAlignment="Center"
+                                    Foreground="{DynamicResource Brush.TextPrimary}"
+                                    Text="Activate blackout key combination" />
+
+                                <CheckBox
+                                    x:Name="cbActivateBlackoutKeyCombination"
+                                    Grid.Column="2"
+                                    Width="20"
+                                    Height="20"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    ToolTip="Blacks out all screens to protect OLED displays (CTRL + B)" />
+                            </Grid>
+
+                            <Grid Grid.Row="4" HorizontalAlignment="Left">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="220" />
+                                    <ColumnDefinition Width="16" />
+                                    <ColumnDefinition Width="320" />
+                                    <ColumnDefinition Width="50" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock
+                                    Grid.Column="0"
+                                    VerticalAlignment="Center"
+                                    Foreground="{DynamicResource Brush.TextPrimary}"
+                                    Text="SteamGridDB API key" />
+
+                                <TextBox
+                                    x:Name="txbSteamGridDbApiKey"
+                                    Grid.Column="2"
+                                    Width="320"
+                                    HorizontalAlignment="Left"
+                                    ToolTip="API key used to retrieve game artwork from SteamGridDB" />
+
+                                <Button
+                                    x:Name="btnOpenSteamGridDB"
+                                    Grid.Column="3"
+                                    Width="36"
+                                    Height="34"
+                                    ToolTip="Open SteamGridDB and get your key">
+                                    <TextBlock
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        FontFamily="Segoe MDL2 Assets"
+                                        FontSize="16"
+                                        Text="&#xE128;" />
+                                </Button>
+
+
+                            </Grid>
                         </Grid>
 
                         <Grid>
@@ -82,11 +131,28 @@
                                 Style="{StaticResource SettingsGroupTitleStyle}"
                                 Text="Appearance" />
 
-                            <CheckBox
-                                x:Name="cbAllowProfileSpecificStyleChanges"
-                                Grid.Row="2"
-                                Content="Allow profile-specific style changes"
-                                Foreground="{DynamicResource Brush.TextPrimary}" />
+                            <Grid Grid.Row="2" HorizontalAlignment="Left">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="220" />
+                                    <ColumnDefinition Width="16" />
+                                    <ColumnDefinition Width="22" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock
+                                    Grid.Column="0"
+                                    VerticalAlignment="Center"
+                                    Foreground="{DynamicResource Brush.TextPrimary}"
+                                    Text="Allow profile-specific style changes" />
+
+                                <CheckBox
+                                    x:Name="cbAllowProfileSpecificStyleChanges"
+                                    Grid.Column="2"
+                                    Width="20"
+                                    Height="20"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center" />
+                            </Grid>
                         </Grid>
 
                     </StackPanel>
@@ -130,33 +196,105 @@
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
-                                <CheckBox
-                                    x:Name="cbMonitoringKeyActive"
+                                <Grid
                                     Grid.Row="0"
                                     Grid.Column="0"
-                                    Content="Key active"
-                                    Foreground="{DynamicResource Brush.TextPrimary}" />
+                                    HorizontalAlignment="Left">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="170" />
+                                        <ColumnDefinition Width="16" />
+                                        <ColumnDefinition Width="22" />
+                                    </Grid.ColumnDefinitions>
 
-                                <CheckBox
-                                    x:Name="cbShowToastNotification"
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        VerticalAlignment="Center"
+                                        Foreground="{DynamicResource Brush.TextPrimary}"
+                                        Text="Key active" />
+
+                                    <CheckBox
+                                        x:Name="cbMonitoringKeyActive"
+                                        Grid.Column="2"
+                                        Width="20"
+                                        Height="20"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center" />
+                                </Grid>
+
+                                <Grid
                                     Grid.Row="0"
                                     Grid.Column="1"
-                                    Content="Show toast notification"
-                                    Foreground="{DynamicResource Brush.TextPrimary}" />
+                                    HorizontalAlignment="Left">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="160" />
+                                        <ColumnDefinition Width="16" />
+                                        <ColumnDefinition Width="22" />
+                                    </Grid.ColumnDefinitions>
 
-                                <CheckBox
-                                    x:Name="cbShowMonitoringIndicator"
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        VerticalAlignment="Center"
+                                        Foreground="{DynamicResource Brush.TextPrimary}"
+                                        Text="Show toast notification" />
+
+                                    <CheckBox
+                                        x:Name="cbShowToastNotification"
+                                        Grid.Column="2"
+                                        Width="20"
+                                        Height="20"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center" />
+                                </Grid>
+
+                                <Grid
                                     Grid.Row="2"
                                     Grid.Column="0"
-                                    Content="Show monitoring indicator"
-                                    Foreground="{DynamicResource Brush.TextPrimary}" />
+                                    HorizontalAlignment="Left">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="170" />
+                                        <ColumnDefinition Width="16" />
+                                        <ColumnDefinition Width="22" />
+                                    </Grid.ColumnDefinitions>
 
-                                <CheckBox
-                                    x:Name="cbBlackoutSideMonitors"
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        VerticalAlignment="Center"
+                                        Foreground="{DynamicResource Brush.TextPrimary}"
+                                        Text="Show monitoring indicator" />
+
+                                    <CheckBox
+                                        x:Name="cbShowMonitoringIndicator"
+                                        Grid.Column="2"
+                                        Width="20"
+                                        Height="20"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center" />
+                                </Grid>
+
+                                <Grid
                                     Grid.Row="2"
                                     Grid.Column="1"
-                                    Content="Blackout side monitors"
-                                    Foreground="{DynamicResource Brush.TextPrimary}" />
+                                    HorizontalAlignment="Left">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="160" />
+                                        <ColumnDefinition Width="16" />
+                                        <ColumnDefinition Width="22" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        VerticalAlignment="Center"
+                                        Foreground="{DynamicResource Brush.TextPrimary}"
+                                        Text="Blackout side monitors" />
+
+                                    <CheckBox
+                                        x:Name="cbBlackoutSideMonitors"
+                                        Grid.Column="2"
+                                        Width="20"
+                                        Height="20"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center" />
+                                </Grid>
                             </Grid>
                         </Grid>
 
@@ -184,7 +322,6 @@
                                 <TextBox
                                     x:Name="txbMonitoringKey"
                                     Grid.Column="0"
-                                    Height="36"
                                     IsEnabled="False"
                                     ToolTip="Current monitoring hotkey" />
 
@@ -192,7 +329,7 @@
                                     x:Name="btnCaptureMonitoringKey"
                                     Grid.Column="2"
                                     Width="36"
-                                    Height="36"
+                                    Height="34"
                                     ToolTip="Click to capture a new monitoring key">
                                     <Image
                                         Width="16"
@@ -255,6 +392,7 @@
                         Text="GameTimeNext" />
 
                     <TextBlock
+                        x:Name="txVersion"
                         Margin="0,0,0,20"
                         Foreground="{DynamicResource Brush.TextPrimary}"
                         Text="Beta 0.1.0" />

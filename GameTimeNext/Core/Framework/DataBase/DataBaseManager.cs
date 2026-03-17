@@ -87,22 +87,25 @@ namespace GameTimeNext.Core.Framework.DataBase
         /// </summary>
         private void CreateTables()
         {
-            // -- TAB_PROFI (Tabelle für Profile) --
-            CreateTableTAB_PROFI();
+            // -- T1PROFI (Tabelle für Profile) --
+            CreateTableT1PROFI();
 
-            // -- TAB_SESSI (Tabelle für Sessions) --
-            CreateTableTAB_SESSI();
+            // -- T1SESSI (Tabelle für Sessions) --
+            CreateTableT1SESSI();
 
-            // -- TAB_GROUP (Tabelle für Gruppen) --
-            CreateTableTAB_GROUP();
-            InsertDefaultValuesTAB_GROUPConditions();
-            InsertDefaultValuesTAB_GROUPTags();
+            // -- T1GROUP (Tabelle für Gruppen) --
+            CreateTableT1GROUP();
+            InsertDefaultValuesT1GROUPConditions();
+            InsertDefaultValuesT1GROUPTags();
 
-            // -- TAB_GRPPO (Tabelle für Gruppen und Profile [n zu m] --
-            CreateTableTAB_GRPPO();
+            // -- T1GRPPO (Tabelle für Gruppen und Profile [n zu m] --
+            CreateTableT1GRPPO();
+
+            // -- T1PLTHR (Tabelle für Playthroughs)
+            CreateTableT1PLTHR();
         }
 
-        private void InsertDefaultValuesTAB_GROUPConditions()
+        private void InsertDefaultValuesT1GROUPConditions()
         {
             var sql = @"
                         INSERT INTO T1GROUP (GRNA, GTYP, CRAT, CHAT)
@@ -123,7 +126,7 @@ namespace GameTimeNext.Core.Framework.DataBase
             command.ExecuteNonQuery();
         }
 
-        private void InsertDefaultValuesTAB_GROUPTags()
+        private void InsertDefaultValuesT1GROUPTags()
         {
             var sql = @"
                         INSERT INTO T1GROUP (GRNA, GTYP, CRAT, CHAT)
@@ -168,7 +171,7 @@ namespace GameTimeNext.Core.Framework.DataBase
         /// <summary>
         /// Erstellt die Tabelle für die Beziehung zwischen TAB_GROUP und TAB_PROFI
         /// </summary>
-        private void CreateTableTAB_GRPPO()
+        private void CreateTableT1GRPPO()
         {
             var sql = @"
             CREATE TABLE IF NOT EXISTS T1GRPPO (
@@ -191,7 +194,7 @@ namespace GameTimeNext.Core.Framework.DataBase
         /// Erstellt die Tabelle für die Groups (TAB_GROUP)
         /// </summary>
         /// <exception cref="NotImplementedException"></exception>
-        private void CreateTableTAB_GROUP()
+        private void CreateTableT1GROUP()
         {
             var sql = @"
             CREATE TABLE IF NOT EXISTS T1GROUP (
@@ -211,20 +214,24 @@ namespace GameTimeNext.Core.Framework.DataBase
         /// <summary>
         /// Erstellt die Tabelle für die Sessions (TAB_SESSI)
         /// </summary>
-        private void CreateTableTAB_SESSI()
+        private void CreateTableT1SESSI()
         {
             var sql = @"
-            CREATE TABLE IF NOT EXISTS T1SESSI (
-                SEID INTEGER PRIMARY KEY AUTOINCREMENT,
-                PFID INTEGER NOT NULL,
-                PLFR DATETIME,
-                PLTO DATETIME,
-                PLTI REAL NOT NULL DEFAULT 0.0,
-                CRAT DATETIME,
-                CHAT DATETIME,
-                FOREIGN KEY (PFID) REFERENCES T1PROFI(PFID) ON DELETE CASCADE
-            );
-        ";
+                CREATE TABLE IF NOT EXISTS T1SESSI (
+                    SEID INTEGER PRIMARY KEY AUTOINCREMENT,
+                    PFID INTEGER NOT NULL,
+                    PTID INTEGER NOT NULL,
+                    PLFR DATETIME,
+                    PLTO DATETIME,
+                    PLTI REAL NOT NULL DEFAULT 0.0,
+                    CRAT DATETIME,
+                    CHAT DATETIME,
+                    FOREIGN KEY (PFID) REFERENCES T1PROFI(PFID) ON DELETE CASCADE
+                );
+            ";
+
+            if (_connection == null)
+                return;
 
             using var command = _connection.CreateCommand();
             command.CommandText = sql;
@@ -234,27 +241,48 @@ namespace GameTimeNext.Core.Framework.DataBase
         /// <summary>
         /// Erstellt die Tabelle für die Profile (TAB_PROFI)
         /// </summary>
-        private void CreateTableTAB_PROFI()
+        private void CreateTableT1PROFI()
         {
             var sql = @"
-                    CREATE TABLE IF NOT EXISTS T1PROFI (
-                        PFID INTEGER PRIMARY KEY AUTOINCREMENT,
-                        GANA VARCHAR(200),
-                        FIPL DATETIME,
-                        LAPL DATETIME,
-                        PPFN VARCHAR(10000),
-                        EXGF VARCHAR(10000),
-                        SAID INTEGER,
-                        PRSE TEXT,
-                        EXEC TEXT,
-                        PLSP DATETIME NOT NULL DEFAULT '0001-01-01 00:00:00',
-                        CRAT DATETIME,
-                        CHAT DATETIME,
-                        ACCO VARCHAR(200),
-                        ACIN VARCHAR(200),
-                        ACAC INTEGER,
-                        COMP INTEGER
-                    );";
+                CREATE TABLE IF NOT EXISTS T1PROFI (
+                    PFID INTEGER PRIMARY KEY AUTOINCREMENT,
+                    GANA VARCHAR(200),
+                    FIPL DATETIME,
+                    LAPL DATETIME,
+                    PPFN VARCHAR(10000),
+                    EXGF VARCHAR(10000),
+                    SAID INTEGER,
+                    PRSE TEXT,
+                    EXEC TEXT,
+                    CRAT DATETIME,
+                    CHAT DATETIME,
+                    ACCO VARCHAR(200),
+                    ACIN VARCHAR(200),
+                    ACAC INTEGER,
+                    CUPT INTEGER
+                );";
+
+            if (_connection == null)
+                return;
+
+            using var command = _connection.CreateCommand();
+            command.CommandText = sql;
+            command.ExecuteNonQuery();
+        }
+
+        private void CreateTableT1PLTHR()
+        {
+            var sql = @"
+            CREATE TABLE IF NOT EXISTS T1PLTHR (
+                PTID INTEGER PRIMARY KEY AUTOINCREMENT,
+                PFID INTEGER NOT NULL,
+                PTTY VARCHAR(200),
+                PTDE VARCHAR(200),
+                PTCO INTEGER,
+                CRAT DATETIME,
+                CHAT DATETIME,
+                UNIQUE (PFID, PTID)
+            );";
 
             if (_connection == null)
                 return;

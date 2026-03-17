@@ -2,7 +2,7 @@
 
 namespace GameTimeNext.Core.Application.Profiles.Components
 {
-    internal class CProfileSettings : GTNComponent<CProfileSettings>
+    public class CProfileSettings : GTNComponent<CProfileSettings>
     {
 
         public bool HDREnabled { get; set; } = false;

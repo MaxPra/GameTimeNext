@@ -31,12 +31,16 @@
                 <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Controls/LoaderStyles.xaml" />
                 <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Controls/ContextMenuStyles.xaml" />
                 <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Controls/SearchBoxStyles.xaml" />
+                <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Controls/MonitoringOverlayStyles.xaml" />
+                <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Controls/LaunchingOverlayStyles.xaml" />
+                <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Controls/ComboBoxStyles.xaml" />
 
                 <!--  View Styles  -->
                 <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Views/WindowStyle.xaml" />
                 <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Views/ProfileDetailSubViewStyles.xaml" />
                 <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Views/SteamGridDBViewStyles.xaml" />
                 <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Views/SettingsViewStyles.xaml" />
+                <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Views/ToastWindowStyles.xaml" />
 
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

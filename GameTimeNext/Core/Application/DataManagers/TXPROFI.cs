@@ -41,11 +41,10 @@ namespace GameTimeNext.Core.Application.DataManagers
             copy.PRSE = source.PRSE;
             copy.EXEC = source.EXEC;
 
-            copy.PLSP = source.PLSP;
             copy.ACCO = source.ACCO;
             copy.ACIN = source.ACIN;
             copy.ACAC = source.ACAC;
-            copy.COMP = source.COMP;
+            copy.CUPT = source.CUPT;
 
             DateTime now = DateTime.Now;
             copy.CRAT = now;
@@ -87,7 +86,6 @@ namespace GameTimeNext.Core.Application.DataManagers
             }
 
             obj.State = UIXTableObjectState.Available;
-
             obj.AcceptChanges();
         }
 
@@ -109,10 +107,10 @@ namespace GameTimeNext.Core.Application.DataManagers
             using (SQLiteCommand cmd = connection.CreateCommand())
             {
                 cmd.CommandText =
-                            "INSERT INTO T1PROFI " +
-                            "(GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, PLSP, CRAT, CHAT, ACCO, ACIN, ACAC, COMP) " +
-                            "VALUES " +
-                            "(@GANA, @FIPL, @LAPL, @PPFN, @EXGF, @SAID, @PRSE, @EXEC, @PLSP, @CRAT, @CHAT, @ACCO, @ACIN, @ACAC, @COMP);";
+                    "INSERT INTO T1PROFI " +
+                    "(GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, CRAT, CHAT, ACCO, ACIN, ACAC, CUPT) " +
+                    "VALUES " +
+                    "(@GANA, @FIPL, @LAPL, @PPFN, @EXGF, @SAID, @PRSE, @EXEC, @CRAT, @CHAT, @ACCO, @ACIN, @ACAC, @CUPT);";
 
                 cmd.Parameters.AddWithValue("@GANA", obj.GANA);
                 cmd.Parameters.AddWithValue("@FIPL", ToDbDateTime(obj.FIPL));
@@ -122,13 +120,12 @@ namespace GameTimeNext.Core.Application.DataManagers
                 cmd.Parameters.AddWithValue("@SAID", obj.SAID);
                 cmd.Parameters.AddWithValue("@PRSE", obj.PRSE);
                 cmd.Parameters.AddWithValue("@EXEC", obj.EXEC);
-                cmd.Parameters.AddWithValue("@PLSP", ToDbDateTime(obj.PLSP));
                 cmd.Parameters.AddWithValue("@CRAT", ToDbDateTime(obj.CRAT));
                 cmd.Parameters.AddWithValue("@CHAT", ToDbDateTime(obj.CHAT));
                 cmd.Parameters.AddWithValue("@ACCO", obj.ACCO);
                 cmd.Parameters.AddWithValue("@ACIN", obj.ACIN);
                 cmd.Parameters.AddWithValue("@ACAC", obj.ACAC ? 1 : 0);
-                cmd.Parameters.AddWithValue("@COMP", obj.COMP ? 1 : 0);
+                cmd.Parameters.AddWithValue("@CUPT", obj.CUPT);
 
                 cmd.ExecuteNonQuery();
             }
@@ -155,17 +152,15 @@ namespace GameTimeNext.Core.Application.DataManagers
                     "SAID = @SAID, " +
                     "PRSE = @PRSE, " +
                     "EXEC = @EXEC, " +
-                    "PLSP = @PLSP, " +
                     "CRAT = @CRAT, " +
                     "CHAT = @CHAT, " +
                     "ACCO = @ACCO, " +
                     "ACIN = @ACIN, " +
                     "ACAC = @ACAC, " +
-                    "COMP = @COMP " +
+                    "CUPT = @CUPT " +
                     "WHERE PFID = @PFID;";
 
                 cmd.Parameters.AddWithValue("@PFID", obj.PFID);
-
                 cmd.Parameters.AddWithValue("@GANA", obj.GANA);
                 cmd.Parameters.AddWithValue("@FIPL", ToDbDateTime(obj.FIPL));
                 cmd.Parameters.AddWithValue("@LAPL", ToDbDateTime(obj.LAPL));
@@ -174,13 +169,12 @@ namespace GameTimeNext.Core.Application.DataManagers
                 cmd.Parameters.AddWithValue("@SAID", obj.SAID);
                 cmd.Parameters.AddWithValue("@PRSE", obj.PRSE);
                 cmd.Parameters.AddWithValue("@EXEC", obj.EXEC);
-                cmd.Parameters.AddWithValue("@PLSP", ToDbDateTime(obj.PLSP));
                 cmd.Parameters.AddWithValue("@CRAT", ToDbDateTime(obj.CRAT));
                 cmd.Parameters.AddWithValue("@CHAT", ToDbDateTime(obj.CHAT));
                 cmd.Parameters.AddWithValue("@ACCO", obj.ACCO);
                 cmd.Parameters.AddWithValue("@ACIN", obj.ACIN);
                 cmd.Parameters.AddWithValue("@ACAC", obj.ACAC ? 1 : 0);
-                cmd.Parameters.AddWithValue("@COMP", obj.COMP ? 1 : 0);
+                cmd.Parameters.AddWithValue("@CUPT", obj.CUPT);
 
                 cmd.ExecuteNonQuery();
             }
@@ -189,9 +183,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         private void EnsureOpen(SQLiteConnection connection)
         {
             if (connection.State != System.Data.ConnectionState.Open)
-            {
                 connection.Open();
-            }
         }
 
         private string ToDbDateTime(DateTime value)
@@ -207,16 +199,14 @@ namespace GameTimeNext.Core.Application.DataManagers
             using (SQLiteCommand cmd = connection.CreateCommand())
             {
                 cmd.CommandText =
-                    "SELECT PFID, GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, PLSP, CRAT, CHAT, ACCO, ACIN, ACAC, COMP " +
+                    "SELECT PFID, GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, CRAT, CHAT, ACCO, ACIN, ACAC, CUPT " +
                     "FROM T1PROFI WHERE PFID = @PFID;";
                 cmd.Parameters.AddWithValue("@PFID", pfid);
 
                 using (SQLiteDataReader reader = cmd.ExecuteReader())
                 {
                     if (!reader.Read())
-                    {
                         return null;
-                    }
 
                     T1PROFI obj = Map(reader);
                     obj.AcceptChanges();
@@ -235,7 +225,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             using (SQLiteCommand cmd = connection.CreateCommand())
             {
                 cmd.CommandText =
-                    "SELECT PFID, GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, PLSP, CRAT, CHAT, ACCO, ACIN, ACAC, COMP " +
+                    "SELECT PFID, GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, CRAT, CHAT, ACCO, ACIN, ACAC, CUPT " +
                     "FROM T1PROFI ORDER BY PFID;";
 
                 using (SQLiteDataReader reader = cmd.ExecuteReader())
@@ -270,15 +260,13 @@ namespace GameTimeNext.Core.Application.DataManagers
             obj.PRSE = reader.IsDBNull(7) ? string.Empty : reader.GetString(7);
             obj.EXEC = reader.IsDBNull(8) ? string.Empty : reader.GetString(8);
 
-            obj.PLSP = ParseDbDateTime(reader.IsDBNull(9) ? null : reader.GetString(9));
+            obj.CRAT = ParseDbDateTime(reader.IsDBNull(9) ? null : reader.GetString(9));
+            obj.CHAT = ParseDbDateTime(reader.IsDBNull(10) ? null : reader.GetString(10));
 
-            obj.CRAT = ParseDbDateTime(reader.IsDBNull(10) ? null : reader.GetString(10));
-            obj.CHAT = ParseDbDateTime(reader.IsDBNull(11) ? null : reader.GetString(11));
-
-            obj.ACCO = reader.IsDBNull(12) ? string.Empty : reader.GetString(12);
-            obj.ACIN = reader.IsDBNull(13) ? string.Empty : reader.GetString(13);
-            obj.ACAC = !reader.IsDBNull(14) && (Convert.ToInt32(reader.GetValue(14)) == 1);
-            obj.COMP = !reader.IsDBNull(15) && (Convert.ToInt32(reader.GetValue(15)) == 1);
+            obj.ACCO = reader.IsDBNull(11) ? string.Empty : reader.GetString(11);
+            obj.ACIN = reader.IsDBNull(12) ? string.Empty : reader.GetString(12);
+            obj.ACAC = !reader.IsDBNull(13) && (Convert.ToInt32(reader.GetValue(13)) == 1);
+            obj.CUPT = reader.IsDBNull(14) ? 0 : Convert.ToInt64(reader.GetValue(14));
 
             obj.State = UIXTableObjectState.Available;
 
@@ -288,19 +276,13 @@ namespace GameTimeNext.Core.Application.DataManagers
         private DateTime ParseDbDateTime(string value)
         {
             if (string.IsNullOrWhiteSpace(value))
-            {
                 return DateTime.MinValue;
-            }
 
             if (DateTime.TryParseExact(value, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime result))
-            {
                 return result;
-            }
 
             if (DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
-            {
                 return result;
-            }
 
             return DateTime.MinValue;
         }

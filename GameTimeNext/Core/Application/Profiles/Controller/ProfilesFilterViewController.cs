@@ -91,7 +91,10 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             Exit(true);
         }
 
-
+        protected async Task EV_btnDisableAllTags()
+        {
+            BuildGroupList(GetView().TxtSearchTag.Text, true);
+        }
 
         protected void EV_TxtSearchTag()
         {
@@ -101,7 +104,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         /// <summary>
         /// Befüllt die Listbox Groups u. States
         /// </summary>
-        private void BuildGroupList(string searchText)
+        private void BuildGroupList(string searchText, bool disableAll = false)
         {
             TXGROUP TXGROUP = new TXGROUP();
 
@@ -114,6 +117,12 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             SelectTags(T1GROUPs);
             SelectStates(states);
+
+            if (disableAll)
+            {
+                foreach (T1GROUP group in T1GROUPs)
+                    group.IsSelected = false;
+            }
 
             if (!string.IsNullOrWhiteSpace(searchText))
             {

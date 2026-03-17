@@ -128,6 +128,11 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
             // Tags
             FillDBOTags();
+
+            if (GetWnd().ViewIndicator.Contains("CN"))
+            {
+                TFPLTHR.CreateNewPlaythrough(GetApp().T1Profi.PFID);
+            }
         }
 
         protected override void TriggeredEvent(FrameworkElement source, string eventName)
@@ -481,9 +486,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             {
                 if (!r.Canceled)
                 {
+
                     FillDBOSteamImport(r.SteamGame!);
-                    FillViewSteamImport(r.SteamGame!);
-                    Build();
 
                     // Exe auswählen
                     ProfilesExecutablesEditApp profilesExecutablesEditApp = GetApp().GetApplication<ProfilesExecutablesEditApp>();
@@ -495,30 +499,38 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                         }
 
                     });
+
+                    FillViewSteamImport(r.SteamGame!);
+                    Build();
                 }
             });
+        }
+
+        protected void EV_btnBrowseGameFolder()
+        {
+            new CFMBOX().Show("Coming soon!", "This feature isn't available in the current BETA-build but will likely be added in the future!", CFMBOXResult.Ok);
         }
 
         protected async Task EV_btnSteamGridDb()
         {
             // SteamGridDb API Key prüfen
-            if (FnString.IsNullEmptyOrWhitespace(AppEnvironment.GetAppConfig().SteamGridDbAPIKey))
+            if (FnString.IsNullEmptyOrWhitespace(AppEnvironment.GetAppConfig().AppSettings.SteamGridDbKey))
             {
                 CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>();
                 cfmbox.Show("No API Key found!", "No API key was found.\nPlease make sure that the API key is stored in the settings.", CFMBOXResult.Ok, CFMBOXIcon.Info);
                 return;
             }
 
-            // Steamprofilverknüpfung prüfen
-            if (GetApp().T1Profi.SAID == 0)
+            // Steamprofilverknüpfung oder Spielnamen prüfen
+            if (GetApp().T1Profi.SAID == 0 && FnString.IsNullEmptyOrWhitespace(GetWnd().txbProfileName.Text))
             {
                 CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>();
-                cfmbox.Show("No Steam profile has been linked!", "Please note that the SteamGridDB cover selection is only available if a Steam profile is linked to a GameTimeNext profile.", CFMBOXResult.Ok, CFMBOXIcon.Info);
+                cfmbox.Show("Attention!", "Please note that the SteamGridDB search is only available if a profile name is provided or the profile is linked to a Steam game.", CFMBOXResult.Ok, CFMBOXIcon.Info);
                 return;
             }
 
             ProfilesSteamGridDBApp app = GetApp().GetApplication<ProfilesSteamGridDBApp>();
-            app.Search(GetApp(), GetApp().T1Profi.SAID, r =>
+            app.Search(GetApp(), GetApp().T1Profi.SAID, GetWnd().txbProfileName.Text, r =>
             {
                 if (!r.Canceled)
                 {

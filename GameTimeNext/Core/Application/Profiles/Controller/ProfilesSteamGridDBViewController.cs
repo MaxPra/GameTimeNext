@@ -2,6 +2,7 @@
 using GameTimeNext.Core.Application.Profiles.Views;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.SteamGridDB;
+using GameTimeNext.Core.Framework.UI.Dialogs;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls.Primitives;
@@ -46,9 +47,23 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             {
                 try
                 {
-                    SteamGridDBClient client = new SteamGridDBClient(AppEnvironment.GetAppConfig().SteamGridDbAPIKey.Trim());
+                    SteamGridDBClient client = new SteamGridDBClient(AppEnvironment.GetAppConfig().AppSettings.SteamGridDbKey.Trim());
+                    IReadOnlyList<SgdbGrid> grids;
 
-                    var grids = await client.GetGridsBySteamAppIdAsync((int)GetApp().SteamAppId, dimensions: "600x900");
+                    if (GetApp().SteamAppId != 0)
+                        grids = await client.GetGridsBySteamAppIdAsync((int)GetApp().SteamAppId, dimensions: "600x900");
+                    else
+                        grids = await client.GetGridsByNameAsync(GetApp().GameName, dimensions: "600x900");
+
+                    if (grids.Count == 0)
+                    {
+                        GetWnd().Dispatcher.Invoke(() =>
+                        {
+                            CFMBOX cfmbox = new CFMBOX();
+                            cfmbox.Show("Attention", "There were no covers found", CFMBOXResult.Ok);
+                            Exit(true);
+                        });
+                    }
 
                     int index = 1;
 

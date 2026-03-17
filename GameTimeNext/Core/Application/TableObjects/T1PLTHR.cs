@@ -3,42 +3,38 @@ using UIX.ViewController.Engine.DataBaseObjects;
 
 namespace GameTimeNext.Core.Application.TableObjects
 {
-    public class T1SESSI : UIXTableObjectBase
+    public class T1PLTHR : UIXTableObjectBase
     {
         [UIXSignatureField(0)]
-        public long SEID { get; set; }
+        public long PTID { get; set; }
 
         [UIXSignatureField(1)]
         public long PFID { get; set; }
 
         [UIXSignatureField(2)]
-        public long PTID { get; set; }
+        public string PTTY { get; set; }
 
         [UIXSignatureField(3)]
-        public DateTime PLFR { get; set; }
+        public string PTDE { get; set; }
 
         [UIXSignatureField(4)]
-        public DateTime PLTO { get; set; }
+        public bool PTCO { get; set; }
 
         [UIXSignatureField(5)]
-        public double PLTI { get; set; }
-
-        [UIXSignatureField(6)]
         public DateTime CRAT { get; set; }
 
-        [UIXSignatureField(7)]
+        [UIXSignatureField(6)]
         public DateTime CHAT { get; set; }
 
-        public T1SESSI()
+        public T1PLTHR()
         {
-            SEID = 0;
-            PFID = 0;
             PTID = 0;
+            PFID = 0;
 
-            PLFR = DateTime.MinValue;
-            PLTO = DateTime.MinValue;
+            PTTY = string.Empty;
+            PTDE = string.Empty;
 
-            PLTI = 0.0;
+            PTCO = false;
 
             CRAT = DateTime.MinValue;
             CHAT = DateTime.MinValue;
@@ -48,8 +44,8 @@ namespace GameTimeNext.Core.Application.TableObjects
 
         public override void Save()
         {
-            TXSESSI tblmSessi = new TXSESSI();
-            tblmSessi.Save(this);
+            TXPLTHR tblmPlthr = new TXPLTHR();
+            tblmPlthr.Save(this);
         }
     }
 }
