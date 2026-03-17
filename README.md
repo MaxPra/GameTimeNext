@@ -4,6 +4,10 @@ GameTimeNext is a modern reimplementation and evolution of GameTimeX, designed t
 
 Built upon the original concept of GameTimeX (https://github.com/MaxPra/GameTimeX), this project improves usability, expands functionality, and introduces a more modern architecture.
 
+## ⬇️ Download / BETA
+
+[Download GameTimeNext Installer (v0.1.0 Beta)](https://github.com/MaxPra/GameTimeNext/releases/download/GameTimeNext_v0.0.1beta/GameTimeNext_Installer_v0.1.0beta.msi)
+
 ---
 
 ## 🚀 Getting Started
