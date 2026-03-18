@@ -570,8 +570,6 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected async Task EV_btnBrowseLocalImage()
         {
-            GetApp().GetApplication<CFMBOX>().Show("Coming soon!", "This feature isn't available in the current BETA-build but will likely be added in the future!", CFMBOXResult.Ok);
-
             OpenFileDialog dialog = new OpenFileDialog();
 
             dialog.Title = "Choose local image";
