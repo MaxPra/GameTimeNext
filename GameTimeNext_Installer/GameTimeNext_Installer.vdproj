@@ -43,6 +43,14 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+            }
         }
         "Release"
         {
@@ -59,6 +67,14 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+            }
         }
     }
     "Deployable"
@@ -287,9 +303,23 @@
         }
         "Shortcut"
         {
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_8379BA75D4B24844A4BB278BC9F2C0DE"
+            {
+            "Name" = "8:GameTimeNext (BETA)"
+            "Arguments" = "8:"
+            "Description" = "8:"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_33B075D218AF48D191AA9B6D69A7EA4E"
+            "Folder" = "8:_FDDB36AFE07B4F25B09BC77879BAEB79"
+            "WorkingFolder" = "8:_F3573923E98D4B04813A6129989D73C0"
+            "Icon" = "8:_94653770127F4D258429F2144DB94053"
+            "Feature" = "8:"
+            }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_F9E8A5FEF0C04768AFB60ECC8D06BC7B"
             {
-            "Name" = "8:GameTimeNext"
+            "Name" = "8:GameTimeNext (BETA)"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"

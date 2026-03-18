@@ -36,7 +36,7 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
 
                 foreach (string executable in ExecutablesToSearch[t1profi.PFID])
                 {
-                    if (FnSystem.IsProcessRunningWithPathPart(executable, t1profi.EXGF))
+                    if (FnSystem.IsProcessRunningWithPathPart(executable, t1profi.EXGF) && AppEnvironment.IsApplicationRunning(typeof(ProfilesApp).FullName!))
                     {
                         if (_currentProfileRunning.pfid == 0)
                         {
