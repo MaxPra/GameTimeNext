@@ -41,6 +41,7 @@
                 <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Views/SteamGridDBViewStyles.xaml" />
                 <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Views/SettingsViewStyles.xaml" />
                 <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Views/ToastWindowStyles.xaml" />
+                <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Views/ProfilesCropImageViewStyles.xaml" />
 
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

@@ -11,6 +11,7 @@ using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.UI;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.Utils;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -498,7 +499,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected void EV_BtnAddProfile()
         {
-            ProfilesEditApp app = new ProfilesEditApp();
+            ProfilesEditApp app = GetApp().GetApplication<ProfilesEditApp>();
             app.CreateNew(async r =>
             {
                 if (!r.Canceled)
@@ -535,7 +536,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
             T1PROFI t1profi = _profilesSubGridViewModel!.SelectedT1Profi;
 
-            ProfilesEditApp app = new ProfilesEditApp();
+            ProfilesEditApp app = GetApp().GetApplication<ProfilesEditApp>();
             app.Edit(t1profi, async r =>
             {
                 if (!r.Canceled)
@@ -553,14 +554,16 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected async Task EV_ctxtDelete()
         {
-            CFMBOX cfmbox = new CFMBOX();
+            CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>();
             CFMBOXResult result = cfmbox.Show("Question", "Are you sure you want to delete this profile?\nAll associated data will also be deleted.", CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
 
             if (result == CFMBOXResult.Yes)
             {
                 T1PROFI selectedT1profi = _profilesSubGridViewModel!.SelectedT1Profi;
 
-                TFPROFI.DeleteProfiAndLinkedData(selectedT1profi);
+                File.Delete(selectedT1profi.PPFN);
+
+                TFPROFI.DeleteT1PROFIAndLinkedData(selectedT1profi);
 
                 GameRunningProcess grp = ((GameRunningProcess)AppEnvironment.StartedBackgroundProcesses[typeof(GameRunningProcess).FullName!]);
                 grp.RemoveT1profi(selectedT1profi);

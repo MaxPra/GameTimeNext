@@ -99,7 +99,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         private void ShowExitWarning()
         {
-            CFMBOX cfmbox = new CFMBOX();
+            CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>();
 
             CFMBOXResult result = cfmbox.Show("Question", "Cancel selection of valid executables?\nSome GameTimeNext features may not be available for this profile afterward.", CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
 

@@ -183,6 +183,10 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
             return !(currentProfileRunning.countNotRunning == currentProfileRunning.executables.Count);
         }
 
+        public override void InitializeApplicationOutput()
+        {
+        }
+
         private class CurrentProfileRunning
         {
             public long pfid = 0;

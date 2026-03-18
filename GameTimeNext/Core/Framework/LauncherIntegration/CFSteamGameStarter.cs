@@ -3,6 +3,7 @@ using GameTimeNext.Core.Application.Profiles.Components;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.Utils;
+using UIX.ViewController.Engine.Runnables;
 
 namespace GameTimeNext.Core.Framework.LauncherIntegration
 {
@@ -12,7 +13,7 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
         /// Startet ein Steam-Spiel anhand der ID
         /// </summary>
         /// <param name="steamAppID"></param>
-        public static async void StartSteamGame(string steamAppID, long pfid)
+        public static async void StartSteamGame(string steamAppID, long pfid, UIXApplication app)
         {
             if (SteamLocatorService.IsGameInstalledByAppId(steamAppID))
             {
@@ -36,7 +37,7 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
             }
             else
             {
-                CFMBOX cfmbox = new CFMBOX();
+                CFMBOX cfmbox = app.GetApplication<CFMBOX>();
                 cfmbox.Show("Info", "Steam could not be found!", CFMBOXResult.Ok, CFMBOXIcon.Info);
             }
         }

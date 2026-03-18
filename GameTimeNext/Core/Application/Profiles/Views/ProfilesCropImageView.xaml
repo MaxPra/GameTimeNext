@@ -1,0 +1,203 @@
+﻿<!--  ProfilesCropImageView.xaml  -->
+<ui:GTNWindow
+    x:Class="GameTimeNext.Core.Application.Profiles.Views.ProfilesCropImageView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:GameTimeNext.Core.Application.Profiles.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI.Base"
+    Title="Crop image"
+    Width="980"
+    Height="760"
+    MinWidth="900"
+    MinHeight="680"
+    ResizeMode="CanResize"
+    ShowMaximizeButton="False"
+    ShowMinimizeButton="False"
+    Style="{StaticResource GTNWindowStyle}"
+    WindowStartupLocation="CenterOwner"
+    mc:Ignorable="d">
+
+
+
+    <Grid>
+        <Border Background="Transparent" />
+
+        <Grid Margin="18">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="14" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="14" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" Margin="16,0,16,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Orientation="Vertical">
+                    <TextBlock
+                        FontSize="20"
+                        FontWeight="SemiBold"
+                        Foreground="{DynamicResource Brush.TextPrimary}"
+                        Text="Crop cover image" />
+
+                    <TextBlock
+                        Margin="0,4,0,0"
+                        Foreground="{DynamicResource Brush.TextSecondary}"
+                        Text="Move the selection and resize it at the corners. Aspect ratio stays fixed at 600 × 900." />
+                </StackPanel>
+
+                <Border
+                    Grid.Column="1"
+                    Padding="12,8"
+                    Style="{StaticResource CropInfoBadgeStyle}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock
+                            FontWeight="SemiBold"
+                            Foreground="{DynamicResource Brush.TextPrimary}"
+                            Text="Format:" />
+                        <TextBlock
+                            Margin="6,0,0,0"
+                            Foreground="{DynamicResource Brush.TextSecondary}"
+                            Text="2:3 (600 × 900)" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <Border
+                Grid.Row="2"
+                Margin="16,0,16,0"
+                Padding="16"
+                Style="{StaticResource CropWorkspaceBorderStyle}">
+                <Grid>
+                    <Viewbox Stretch="Uniform" StretchDirection="Both">
+                        <Grid
+                            x:Name="grdImageHost"
+                            Width="860"
+                            Height="560"
+                            Background="Transparent"
+                            ClipToBounds="True">
+
+                            <Border
+                                Width="860"
+                                Height="560"
+                                Background="#22000000"
+                                CornerRadius="{DynamicResource DefaultCornerRadius}" />
+
+                            <Image
+                                x:Name="imgSource"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                RenderOptions.BitmapScalingMode="HighQuality"
+                                SnapsToDevicePixels="True"
+                                Stretch="Uniform" />
+
+                            <Canvas
+                                x:Name="cnvOverlay"
+                                Width="860"
+                                Height="560"
+                                Background="Transparent"
+                                ClipToBounds="True">
+
+                                <Path
+                                    x:Name="pthOverlay"
+                                    Fill="#AA000000"
+                                    IsHitTestVisible="False" />
+
+                                <Border
+                                    x:Name="brdCropArea"
+                                    Background="Transparent"
+                                    Style="{StaticResource CropSelectionBorderStyle}">
+
+                                    <Grid Background="Transparent">
+
+                                        <Canvas Background="Transparent" IsHitTestVisible="False">
+                                            <Line x:Name="lnV1" Style="{StaticResource CropGuideLineStyle}" />
+                                            <Line x:Name="lnV2" Style="{StaticResource CropGuideLineStyle}" />
+                                            <Line x:Name="lnH1" Style="{StaticResource CropGuideLineStyle}" />
+                                            <Line x:Name="lnH2" Style="{StaticResource CropGuideLineStyle}" />
+                                        </Canvas>
+
+                                        <Thumb
+                                            x:Name="thbMove"
+                                            Background="Transparent"
+                                            Cursor="SizeAll"
+                                            Style="{StaticResource CropMoveThumbStyle}" />
+
+                                        <Thumb
+                                            x:Name="thbTopLeft"
+                                            Width="16"
+                                            Height="16"
+                                            Margin="-8,-8,0,0"
+                                            HorizontalAlignment="Left"
+                                            VerticalAlignment="Top"
+                                            Cursor="SizeNWSE"
+                                            Style="{StaticResource CropCornerThumbStyle}" />
+
+                                        <Thumb
+                                            x:Name="thbTopRight"
+                                            Width="16"
+                                            Height="16"
+                                            Margin="0,-8,-8,0"
+                                            HorizontalAlignment="Right"
+                                            VerticalAlignment="Top"
+                                            Cursor="SizeNESW"
+                                            Style="{StaticResource CropCornerThumbStyle}" />
+
+                                        <Thumb
+                                            x:Name="thbBottomLeft"
+                                            Width="16"
+                                            Height="16"
+                                            Margin="-8,0,0,-8"
+                                            HorizontalAlignment="Left"
+                                            VerticalAlignment="Bottom"
+                                            Cursor="SizeNESW"
+                                            Style="{StaticResource CropCornerThumbStyle}" />
+
+                                        <Thumb
+                                            x:Name="thbBottomRight"
+                                            Width="16"
+                                            Height="16"
+                                            Margin="0,0,-8,-8"
+                                            HorizontalAlignment="Right"
+                                            VerticalAlignment="Bottom"
+                                            Cursor="SizeNWSE"
+                                            Style="{StaticResource CropCornerThumbStyle}" />
+                                    </Grid>
+                                </Border>
+                            </Canvas>
+                        </Grid>
+                    </Viewbox>
+                </Grid>
+            </Border>
+
+            <Grid Grid.Row="4" Margin="16,0,16,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="10" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Button
+                    x:Name="btnCancel"
+                    Grid.Column="1"
+                    Width="110"
+                    Height="36"
+                    Content="Exit" />
+
+                <Button
+                    x:Name="btnApply"
+                    Grid.Column="3"
+                    Width="140"
+                    Height="36"
+                    Content="Apply crop" />
+            </Grid>
+        </Grid>
+    </Grid>
+</ui:GTNWindow>

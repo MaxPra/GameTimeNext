@@ -2,6 +2,7 @@
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework.UI;
 using GameTimeNext.Core.Framework.UI.Dialogs;
+using UIX.ViewController.Engine.Runnables;
 
 namespace GameTimeNext.Core.Application.Profiles
 {
@@ -55,7 +56,7 @@ namespace GameTimeNext.Core.Application.Profiles
             return dateTime.ToString("dd.MM.yyyy HH:mm");
         }
 
-        public static bool AskForNewPlaythroughCreationIfNotActive(long pfid)
+        public static bool AskForNewPlaythroughCreationIfNotActive(long pfid, UIXApplication app)
         {
             bool resultNewPlaythrough = false;
 
@@ -70,7 +71,7 @@ namespace GameTimeNext.Core.Application.Profiles
                 ToastMessage tm = new ToastMessage("Attention!", "GameTimeNext needs your attention!");
                 tm.Show();
 
-                CFMBOX cfmbox = new CFMBOX();
+                CFMBOX cfmbox = app.GetApplication<CFMBOX>();
                 CFMBOXResult result = cfmbox.Show("Question", "No active playthrough is set for this profile.\nCreate a new playthrough?", CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
 
                 if (result == CFMBOXResult.Yes)

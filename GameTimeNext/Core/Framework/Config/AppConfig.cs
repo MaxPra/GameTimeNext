@@ -92,10 +92,20 @@ namespace GameTimeNext.Core.Framework.Config
             get
             {
 
-                return AppDataLocalPath + Path.DirectorySeparatorChar + "Temp_SteamGridDBCovers";
+                return AppDataLocalPath + Path.DirectorySeparatorChar + "tmp_steamgriddbcovers";
+            }
+        }
+
+        [JsonIgnore]
+        public string AppDataLocalPathTempCovers
+        {
+            get
+            {
+                return AppDataLocalPath + Path.DirectorySeparatorChar + "tmp_covers";
             }
         }
         #endregion
+
 
 
         #region External

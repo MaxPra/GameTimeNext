@@ -7,10 +7,13 @@ using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.LauncherIntegration;
 using GameTimeNext.Core.Framework.UI.Dialogs;
+using GameTimeNext.Core.Framework.Utils;
+using Microsoft.Win32;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.Events;
 using UIX.ViewController.Engine.FrameworkElements.UserControls;
@@ -28,6 +31,19 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         private string _coverAppDataPath = string.Empty;
         private string _coverAppFolderFileName = string.Empty;
         private string _selectedSteamGridDBImagePath = string.Empty;
+        private BitmapImage _croppedProfileCover = new BitmapImage();
+
+        public string CoverAppDataPath
+        {
+            get { return _coverAppDataPath; }
+            set { _coverAppDataPath = value; }
+        }
+
+        public string CoverAppFolderFileName
+        {
+            get { return _coverAppFolderFileName; }
+            set { _coverAppFolderFileName = value; }
+        }
 
         public ProfilesEditViewController(UIXApplication app) : base(app)
         {
@@ -86,6 +102,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         protected override void Event_Closing()
         {
             try { Directory.Delete(AppEnvironment.GetAppConfig().AppDataLocalPathSteamGridDBCovers, true); } catch { }
+            try { Directory.Delete(AppEnvironment.GetAppConfig().AppDataLocalPathTempCovers, true); } catch { }
+
 
             Exit(false);
         }
@@ -205,7 +223,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             }
         }
 
-        private async Task FillViewSteamGridDBCoverChanged(string path)
+        private async Task FillViewCoverChanged(string path)
         {
 
             _coverAppFolderFileName = CFProfilesEditApp.GetGUIDCoverName("jpg");
@@ -469,19 +487,19 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             }
         }
 
-        private ProfilesEditApp GetApp()
+        public ProfilesEditApp GetApp()
         {
             return (ProfilesEditApp)App;
         }
 
-        private ProfilesEditView GetWnd()
+        public ProfilesEditView GetWnd()
         {
             return (ProfilesEditView)View;
         }
 
         protected void EV_BtnSteamImport()
         {
-            ProfilesSteamImportApp app = new ProfilesSteamImportApp();
+            ProfilesSteamImportApp app = GetApp().GetApplication<ProfilesSteamImportApp>();
             app.Search(r =>
             {
                 if (!r.Canceled)
@@ -508,7 +526,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected void EV_btnBrowseGameFolder()
         {
-            new CFMBOX().Show("Coming soon!", "This feature isn't available in the current BETA-build but will likely be added in the future!", CFMBOXResult.Ok);
+            GetApp().GetApplication<CFMBOX>().Show("Coming soon!", "This feature isn't available in the current BETA-build but will likely be added in the future!", CFMBOXResult.Ok);
         }
 
         protected async Task EV_btnSteamGridDb()
@@ -536,7 +554,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 {
                     Task.Run(async () =>
                     {
-                        await FillViewSteamGridDBCoverChanged(r.SelectedImagePath);
+                        await FillViewCoverChanged(r.SelectedImagePath);
                     });
 
 
@@ -548,6 +566,42 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         protected void EV_btnUnlinkSteamProfile()
         {
             GetApp().T1Profi.SAID = 0;
+        }
+
+        protected async Task EV_btnBrowseLocalImage()
+        {
+            GetApp().GetApplication<CFMBOX>().Show("Coming soon!", "This feature isn't available in the current BETA-build but will likely be added in the future!", CFMBOXResult.Ok);
+
+            OpenFileDialog dialog = new OpenFileDialog();
+
+            dialog.Title = "Choose local image";
+            dialog.Filter = "Images (*.png;*.jpg;*.jpeg;*.bmp)|*.png;*.jpg;*.jpeg;*.bmp";
+            dialog.Multiselect = false;
+
+            bool? result = dialog.ShowDialog();
+
+            if (result == true)
+            {
+                BitmapImage chosenImage = FnImage.LoadImageWithoutLock(dialog.FileName);
+
+                ProfilesCropImageApp app = GetApp().GetApplication<ProfilesCropImageApp>();
+                app.Crop(chosenImage, r =>
+                {
+                    if (!r.Canceled)
+                    {
+                        (string path, string fileName) tuple = (string.Empty, string.Empty);
+
+                        Task.Run(async () =>
+                        {
+                            tuple = await FnSystem.SaveCroppedImageTempPath(r.CroppedImage!, GetApp().Loader);
+
+                            await FillViewCoverChanged(tuple.path);
+                        });
+
+                        RunEventPipelineSync(View, string.Empty);
+                    }
+                });
+            }
         }
 
         protected void EV_btnSave()

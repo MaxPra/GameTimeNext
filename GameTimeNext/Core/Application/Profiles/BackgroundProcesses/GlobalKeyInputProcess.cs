@@ -100,7 +100,7 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
             {
                 // Wenn kein aktiver Playthrough gefunden wurde, nachfragen und
                 // Abbruch, falls keiner angelegt werden soll
-                if (!CFProfilesApp.AskForNewPlaythroughCreationIfNotActive(AppEnvironment.CurrentPfid))
+                if (!CFProfilesApp.AskForNewPlaythroughCreationIfNotActive(AppEnvironment.CurrentPfid, this))
                     return;
 
                 if (AppEnvironment.GetAppConfig().AppSettings.BlackoutSideMonitors)
@@ -147,6 +147,10 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
         public static VirtualKey GetVirtualKeyByValue(Dictionary<VirtualKey, string> list, string value)
         {
             return list.FirstOrDefault(x => x.Value == value).Key;
+        }
+
+        public override void InitializeApplicationOutput()
+        {
         }
 
         public enum StartType

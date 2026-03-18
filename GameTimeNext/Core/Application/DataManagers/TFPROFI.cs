@@ -10,20 +10,13 @@ namespace GameTimeNext.Core.Application.DataManagers
         /// <summary>
         /// Löscht das übergebene Profil inkl. der zugehörigen Daten
         /// </summary>
-        public static void DeleteProfiAndLinkedData(T1PROFI t1profi)
+        public static void DeleteT1PROFIAndLinkedData(T1PROFI t1profi)
         {
             TXPROFI txprofi = new TXPROFI();
 
-            // Zugehörige Daten löschen
-            TXGRPPO txgrppo = new TXGRPPO();
-            List<T1GRPPO> t1grppos = txgrppo.ReadAll();
-
-            t1grppos = t1grppos.Where(g => g.PFID == t1profi.PFID).ToList();
-
-            foreach (T1GRPPO t1grppo in t1grppos)
-            {
-                txgrppo.Delete(t1grppo.GPID);
-            }
+            DeleteAllLinkedT1GRPPOs(t1profi);
+            DeleteAllLinkedT1SESSIs(t1profi);
+            DeleteAllLinkedT1PLTHRs(t1profi);
 
             // Profil löschen
             txprofi.Delete(t1profi.PFID);
@@ -86,6 +79,28 @@ namespace GameTimeNext.Core.Application.DataManagers
             return t1sessis;
         }
 
+        public static List<T1PLTHR> GetAllPlaythroughs(T1PROFI t1profi)
+        {
+            List<T1PLTHR> t1plthrs = new List<T1PLTHR>();
+
+            UIXQuery query = new UIXQuery(K1PLTHR.Name, AppEnvironment.GetDataBaseManager().GetConnection());
+
+            query.AddField(K1PLTHR.Name, K1PLTHR.Fields.PTID);
+
+            query.AddWhere(K1PLTHR.Name, K1PLTHR.Fields.PFID, QueryCompareType.EQUALS, t1profi.PFID);
+
+            using (var reader = query.Execute())
+            {
+                while (reader.Read())
+                {
+                    long ptid = UIXQuery.GetInt64(reader, K1PLTHR.Name, K1PLTHR.Fields.PTID);
+                    t1plthrs.Add(new TXPLTHR().Read(ptid));
+                }
+            }
+
+            return t1plthrs;
+        }
+
         public static double GetTodaysGameTimeInMinutes(long pfid)
         {
             UIXQuery query = BuildQueryTodaysGameTime(pfid);
@@ -115,6 +130,41 @@ namespace GameTimeNext.Core.Application.DataManagers
             }
 
             return playedMinutesToday;
+        }
+
+        private static void DeleteAllLinkedT1GRPPOs(T1PROFI t1profi)
+        {
+            // Zugehörige Daten löschen
+            TXGRPPO txgrppo = new TXGRPPO();
+            List<T1GRPPO> t1grppos = txgrppo.ReadAll();
+
+            t1grppos = t1grppos.Where(g => g.PFID == t1profi.PFID).ToList();
+
+            foreach (T1GRPPO t1grppo in t1grppos)
+            {
+                txgrppo.Delete(t1grppo.GPID);
+            }
+        }
+
+        private static void DeleteAllLinkedT1SESSIs(T1PROFI t1profi)
+        {
+            // Zugehörige Daten löschen
+            List<T1SESSI> t1sessis = GetAllSessions(t1profi);
+
+            foreach (T1SESSI t1sessi in t1sessis)
+            {
+                new TXSESSI().Delete(t1sessi.SEID);
+            }
+        }
+
+        private static void DeleteAllLinkedT1PLTHRs(T1PROFI t1profi)
+        {
+            List<T1PLTHR> t1plthrs = GetAllPlaythroughs(t1profi);
+
+            foreach (T1PLTHR t1plthr in t1plthrs)
+            {
+                new TXPLTHR().Delete(t1plthr.PTID);
+            }
         }
 
         private static UIXQuery BuildQueryTodaysGameTime(long pfid)

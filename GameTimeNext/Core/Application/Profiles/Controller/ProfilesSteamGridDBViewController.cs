@@ -18,11 +18,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         private ProfilesSteamGridDBViewModel _profilesSteamGridDBViewModel;
 
-        private string _coversFolder = Path.Combine(
-                                          Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                                          "GameTimeNext",
-                                          "Temp_SteamGridDBCovers"
-                                          );
+        private string _coversFolder = AppEnvironment.GetAppConfig().AppDataLocalPathSteamGridDBCovers;
 
         public ProfilesSteamGridDBViewController(UIXApplication app) : base(app)
         {
@@ -59,7 +55,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                     {
                         GetWnd().Dispatcher.Invoke(() =>
                         {
-                            CFMBOX cfmbox = new CFMBOX();
+                            CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>();
                             cfmbox.Show("Attention", "There were no covers found", CFMBOXResult.Ok);
                             Exit(true);
                         });

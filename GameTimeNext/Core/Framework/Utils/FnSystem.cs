@@ -1,7 +1,10 @@
-﻿using GameTimeNext.Core.Application.Profiles.Viewmodel;
+﻿using GameTimeNext.Core.Application.Profiles;
+using GameTimeNext.Core.Application.Profiles.Viewmodel;
 using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Windows.Media.Imaging;
+using UIX.ViewController.Engine.FrameworkElements.Loader;
 using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Framework.Utils
@@ -151,6 +154,51 @@ namespace GameTimeNext.Core.Framework.Utils
                 }
             }
             return false;
+        }
+
+        /// <summary>
+        /// Legt das übergebene BitmapBild im App-Data Temp_cover pfad ab und gibt den kompletten Pfad und Dateinamen zurück
+        /// </summary>
+        /// <param name="croppedImage"></param>
+        /// <returns>Tuple (fullPath, fileName)</returns>
+        public static async Task<(string fullpath, string fileName)> SaveCroppedImageTempPath(BitmapImage croppedImage, UIXLoader loader)
+        {
+            if (loader != null)
+                loader.Begin();
+
+            string pathReturn = string.Empty;
+            string fileNameReturn = string.Empty;
+
+            try
+            {
+                await Task.Run(async () =>
+                {
+                    fileNameReturn = CFProfilesEditApp.GetGUIDCoverName("jpg");
+
+                    pathReturn = AppEnvironment.GetAppConfig().AppDataLocalPathTempCovers + System.IO.Path.DirectorySeparatorChar + fileNameReturn;
+
+                    BitmapEncoder encoder = new PngBitmapEncoder();
+                    encoder.Frames.Add(BitmapFrame.Create(croppedImage));
+
+                    if (!Directory.Exists(AppEnvironment.GetAppConfig().AppDataLocalPathTempCovers))
+                        Directory.CreateDirectory(AppEnvironment.GetAppConfig().AppDataLocalPathTempCovers);
+
+                    using (FileStream stream = new FileStream(pathReturn, FileMode.Create))
+                    {
+                        encoder.Save(stream);
+                    }
+                });
+
+                if (loader != null)
+                    loader.Stop();
+            }
+            catch (Exception e)
+            {
+                if (loader != null)
+                    loader.Stop();
+            }
+
+            return (pathReturn, fileNameReturn);
         }
 
         private static int RateExecutable(string exeName)
