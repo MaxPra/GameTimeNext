@@ -6,7 +6,7 @@ Built upon the original concept of GameTimeX (https://github.com/MaxPra/GameTime
 
 ## ⬇️ Download / BETA
 
-[Download GameTimeNext Installer (v0.1.0 Beta)](https://github.com/MaxPra/GameTimeNext/releases/download/GameTimeNext_v0.0.1beta/GameTimeNext_Installer_v0.1.0beta.msi)
+[Download GameTimeNext Installer (v0.1.1 Beta)](https://github.com/MaxPra/GameTimeNext/releases/download/GameTimeNext_v0.1.1beta/GameTimeNext_Installerv0.1.1beta.msi)
 
 ---
 
