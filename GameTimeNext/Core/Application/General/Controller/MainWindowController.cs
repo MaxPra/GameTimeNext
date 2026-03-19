@@ -56,6 +56,9 @@ namespace GameTimeNext.Core.Application.General.Controller
 
             // Hintergrundprozesse starten
             AppEnvironment.StartBackgroundProcesses(GetApp());
+
+            // Fehler anzeigen, die vor MainWindow passiert sind (Appstart)
+            ShowErrorsFromErrorList();
         }
 
         protected override void Build()
@@ -194,6 +197,20 @@ namespace GameTimeNext.Core.Application.General.Controller
                 GetWindow().Subtitle = "BETA";
             else
                 GetWindow().Subtitle = string.Empty;
+        }
+
+        private void ShowErrorsFromErrorList()
+        {
+
+            if (AppEnvironment.ErrorList == null || AppEnvironment.ErrorList.Count == 0)
+                return;
+
+            foreach (string errorTxt in AppEnvironment.ErrorList)
+            {
+                GetApp().GetApplication<CFMBOX>().Show("Error", errorTxt, CFMBOXResult.Ok, CFMBOXIcon.Error);
+            }
+
+            AppEnvironment.ErrorList.Clear();
         }
 
         protected void EV_ctxtClose(FrameworkElement target)

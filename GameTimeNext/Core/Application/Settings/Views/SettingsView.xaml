@@ -11,7 +11,7 @@
     VerticalAlignment="Stretch"
     HorizontalContentAlignment="Stretch"
     VerticalContentAlignment="Stretch"
-    d:DesignHeight="450"
+    d:DesignHeight="800"
     d:DesignWidth="2000"
     mc:Ignorable="d">
 
@@ -114,12 +114,10 @@
                                         FontSize="16"
                                         Text="&#xE128;" />
                                 </Button>
-
-
                             </Grid>
                         </Grid>
 
-                        <Grid>
+                        <Grid Margin="0,0,0,28">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="16" />
@@ -152,6 +150,143 @@
                                     Height="20"
                                     HorizontalAlignment="Left"
                                     VerticalAlignment="Center" />
+                            </Grid>
+                        </Grid>
+
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="16" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="12" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="14" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock
+                                Grid.Row="0"
+                                Style="{StaticResource SettingsGroupTitleStyle}"
+                                Text="Backup" />
+
+                            <Grid Grid.Row="2" HorizontalAlignment="Left">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="220" />
+                                    <ColumnDefinition Width="16" />
+                                    <ColumnDefinition Width="320" />
+                                    <ColumnDefinition Width="8" />
+                                    <ColumnDefinition Width="36" />
+                                    <ColumnDefinition Width="12" />
+                                    <ColumnDefinition Width="130" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock
+                                    Grid.Column="0"
+                                    VerticalAlignment="Center"
+                                    Foreground="{DynamicResource Brush.TextPrimary}"
+                                    Text="Backup Export path" />
+
+                                <TextBox
+                                    x:Name="txbBackupExportPath"
+                                    Grid.Column="2"
+                                    Width="320"
+                                    HorizontalAlignment="Left"
+                                    IsReadOnly="True"
+                                    ToolTip="Path used to export a backup" />
+
+                                <Button
+                                    x:Name="btnBrowseBackupExportPath"
+                                    Grid.Column="4"
+                                    Width="36"
+                                    Height="34"
+                                    ToolTip="Select backup export path">
+                                    <TextBlock
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        FontFamily="Segoe MDL2 Assets"
+                                        FontSize="16"
+                                        Text="&#xE188;" />
+                                </Button>
+
+                                <Button
+                                    x:Name="btnCreateBackup"
+                                    Grid.Column="6"
+                                    Width="130"
+                                    Height="34"
+                                    Content="Create backup"
+                                    ToolTip="Create a backup at the selected export path" />
+                            </Grid>
+
+                            <Grid Grid.Row="4" HorizontalAlignment="Left">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="220" />
+                                    <ColumnDefinition Width="16" />
+                                    <ColumnDefinition Width="22" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock
+                                    Grid.Column="0"
+                                    VerticalAlignment="Center"
+                                    Foreground="{DynamicResource Brush.TextPrimary}"
+                                    Text="Auto Backup" />
+
+                                <CheckBox
+                                    x:Name="cbAutoBackup"
+                                    Grid.Column="2"
+                                    Width="20"
+                                    Height="20"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    ToolTip="Every time the app starts and closes, a backup is created." />
+                            </Grid>
+
+                            <Grid Grid.Row="6" HorizontalAlignment="Left">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="220" />
+                                    <ColumnDefinition Width="16" />
+                                    <ColumnDefinition Width="320" />
+                                    <ColumnDefinition Width="8" />
+                                    <ColumnDefinition Width="36" />
+                                    <ColumnDefinition Width="12" />
+                                    <ColumnDefinition Width="130" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock
+                                    Grid.Column="0"
+                                    VerticalAlignment="Center"
+                                    Foreground="{DynamicResource Brush.TextPrimary}"
+                                    Text="Backup Import path" />
+
+                                <TextBox
+                                    x:Name="txbBackupImportPath"
+                                    Grid.Column="2"
+                                    Width="320"
+                                    HorizontalAlignment="Left"
+                                    IsReadOnly="True"
+                                    ToolTip="Path used to import a backup" />
+
+                                <Button
+                                    x:Name="btnBrowseBackupImportPath"
+                                    Grid.Column="4"
+                                    Width="36"
+                                    Height="34"
+                                    ToolTip="Select backup import file">
+                                    <TextBlock
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        FontFamily="Segoe MDL2 Assets"
+                                        FontSize="16"
+                                        Text="&#xE8B7;" />
+                                </Button>
+
+                                <Button
+                                    x:Name="btnImportBackup"
+                                    Grid.Column="6"
+                                    Width="130"
+                                    Height="34"
+                                    Content="Import backup"
+                                    ToolTip="Import a backup from the selected path" />
                             </Grid>
                         </Grid>
 

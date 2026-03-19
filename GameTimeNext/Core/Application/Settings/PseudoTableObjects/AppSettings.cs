@@ -39,6 +39,20 @@ namespace GameTimeNext.Core.Application.TableObjects
         [UIXSignatureField(8)]
         public string SteamGridDbKey { get; set; }
 
+        [UIXSignatureField(9)]
+        public string BackupType { get; set; }
+
+        [UIXSignatureField(10)]
+        public string BackupExportPath { get; set; }
+
+        [UIXSignatureField(11)]
+        public string BackupImportPath { get; set; }
+
+        [UIXSignatureField(12)]
+        public bool AutoBackup { get; set; }
+
+
+
         public AppSettings()
         {
             AutomaticGameProfileSwitching = false;
@@ -51,6 +65,11 @@ namespace GameTimeNext.Core.Application.TableObjects
             BlackoutSideMonitors = false;
             MonitoringKey = KeyInput.virtualKeyMap[KeyInput.VirtualKey.VK_NONE];
             SteamGridDbKey = string.Empty;
+
+            BackupType = string.Empty;
+            BackupExportPath = string.Empty;
+            BackupImportPath = string.Empty;
+            AutoBackup = false;
 
 
             AcceptChanges();

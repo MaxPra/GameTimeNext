@@ -8,7 +8,6 @@ using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.LauncherIntegration;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.Utils;
-using Microsoft.Win32;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls.Primitives;
@@ -570,17 +569,11 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected async Task EV_btnBrowseLocalImage()
         {
-            OpenFileDialog dialog = new OpenFileDialog();
+            string filePath = FnSystemDialogs.ShowFileDialog("Choose local image", "Images (*.png;*.jpg;*.jpeg;*.bmp)|*.png;*.jpg;*.jpeg;*.bmp", false);
 
-            dialog.Title = "Choose local image";
-            dialog.Filter = "Images (*.png;*.jpg;*.jpeg;*.bmp)|*.png;*.jpg;*.jpeg;*.bmp";
-            dialog.Multiselect = false;
-
-            bool? result = dialog.ShowDialog();
-
-            if (result == true)
+            if (!FnString.IsNullEmptyOrWhitespace(filePath))
             {
-                BitmapImage chosenImage = FnImage.LoadImageWithoutLock(dialog.FileName);
+                BitmapImage chosenImage = FnImage.LoadImageWithoutLock(filePath);
 
                 ProfilesCropImageApp app = GetApp().GetApplication<ProfilesCropImageApp>();
                 app.Crop(chosenImage, r =>

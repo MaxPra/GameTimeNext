@@ -1,4 +1,5 @@
 ﻿using GameTimeNext.Core.Application.General;
+using GameTimeNext.Core.Application.Settings;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Files;
 using System.Windows;
@@ -36,6 +37,9 @@ namespace GameTimeNext
         protected override void OnExit(ExitEventArgs e)
         {
             AppEnvironment.StopBackgroundProcesses();
+
+            if (AppEnvironment.GetAppConfig().AppSettings.AutoBackup)
+                FnBackup.CreateBackupSync(AppEnvironment.GetAppConfig().AppSettings.BackupExportPath, BackupType.APP_CLOSED_BACKUP);
 
             if (AppEnvironment.GetDataBaseManager().GetConnection() != null)
                 AppEnvironment.GetDataBaseManager().GetConnection().Close();

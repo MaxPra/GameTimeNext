@@ -5,7 +5,9 @@ using GameTimeNext.Core.Application.Settings;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.DataBase;
+using GameTimeNext.Core.Framework.Files;
 using GameTimeNext.Core.Framework.Versioning;
+using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
 using System.Windows.Controls;
@@ -30,6 +32,8 @@ namespace GameTimeNext.Core.Framework
         public static Dictionary<string, UIXApplication> StartedApplications { get => _startedApplications; set => _startedApplications = value; }
         public static List<SearchableApplication> AvailableApplications { get; set; } = new List<SearchableApplication>();
         public static Dictionary<string, UIXBackgroundProcess> StartedBackgroundProcesses { get => _startedBackgroundProcesses; set => _startedBackgroundProcesses = value; }
+        public static List<string> ErrorList { get; set; } = new List<string>();
+
         public static long CurrentPfid { get; set; } = 0;
         public static AppVersion AppVersion { get; set; } = new AppVersion();
 
@@ -78,9 +82,12 @@ namespace GameTimeNext.Core.Framework
 
             LoadAppConfig();
 
+            AppVersion.Get();
+
+            HandleBackup();
+
             InitiateDataBaseManager();
 
-            AppVersion.Get();
             AppVersion.SetAppVersionInConfig();
         }
 
@@ -110,6 +117,12 @@ namespace GameTimeNext.Core.Framework
             }
         }
 
+        public static void RestartGTNApplication()
+        {
+            Process.Start(Environment.ProcessPath!);
+            System.Windows.Application.Current.Shutdown();
+        }
+
         public static void InitiateDataBaseManager()
         {
             _databaseManager = new DataBaseManager();
@@ -118,6 +131,49 @@ namespace GameTimeNext.Core.Framework
         // [------------------------------------------------]
         // [------------------ PRIVATE ---------------------]
         // [------------------------------------------------]
+
+        private static void HandleBackup()
+        {
+            // Backup hier einspielen
+            if (_appConfig.AppSettings.BackupType == BackupType.IMPORT_BACKUP)
+            {
+
+                //if (AppVersion.IsBiggerThan(_appConfig.AppVersion) || AppVersion.IsSmallerThan(_appConfig.AppVersion))
+                //    ErrorList.Add("Backups can not be imported from another version.\nCurrent version: " + AppVersion.VersionText + "\n Backup version: " + _appConfig.Ver);
+
+                try
+                {
+                    FnBackup.ImportBackup(_appConfig.AppSettings.BackupImportPath);
+                }
+                catch (Exception)
+                {
+                    ErrorList.Add("Could not import backupfile:\n" + _appConfig.AppSettings.BackupImportPath + ".");
+                }
+
+                // Hier nochmal AppConfig laden, da vorher durch Backupimport überschrieben
+                LoadAppConfig();
+            }
+            else
+            {
+                if (!_appConfig.AppSettings.AutoBackup)
+                    return;
+
+                if (!Directory.Exists(_appConfig.AppSettings.BackupExportPath))
+                {
+                    ErrorList.Add("Could not create auto backup.\nBackup export path doesn't exist.");
+                    return;
+                }
+
+                try
+                {
+                    FnBackup.CreateBackupSync(_appConfig.AppSettings.BackupExportPath);
+                }
+                catch (Exception e)
+                {
+                    ErrorList.Add("Something went wrong while auto-backup creation!");
+                }
+            }
+        }
 
         private static void LoadAppConfig()
         {

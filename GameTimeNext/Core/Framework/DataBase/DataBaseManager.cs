@@ -1,4 +1,5 @@
 ﻿using GameTimeNext.Core.Application.TableObjects;
+using System.Data;
 using System.Data.SQLite;
 using System.IO;
 
@@ -40,6 +41,36 @@ namespace GameTimeNext.Core.Framework.DataBase
 
         }
 
+        public void CreateBackup(string backupPathInklFileName)
+        {
+
+            using var destinationConnection = new SQLiteConnection($"Data Source={backupPathInklFileName};Version=3;");
+
+            ConnectToSQLite();
+
+            try
+            {
+                destinationConnection.Open();
+
+                _connection.BackupDatabase(
+                    destinationConnection,
+                    "main",
+                    "main",
+                    -1,
+                    null,
+                    0);
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+            finally
+            {
+                if (destinationConnection != null)
+                    destinationConnection.Close();
+            }
+        }
+
         /// <summary>
         /// Liefert die Connection zur SQLite Datenbank
         /// </summary>
@@ -55,6 +86,10 @@ namespace GameTimeNext.Core.Framework.DataBase
 
         private bool ConnectToSQLite()
         {
+
+            if (_connection != null && _connection.State == ConnectionState.Open)
+                return true;
+
             bool newDataBase = false;
             string connectionString = String.Empty;
 

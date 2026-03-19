@@ -62,6 +62,7 @@
 
   <ItemGroup>
     <Folder Include="Core\Application\Settings\Viewmodels\" />
+    <Folder Include="Core\Framework\ErrorHandling\" />
   </ItemGroup>
 
 </Project>
