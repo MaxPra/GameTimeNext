@@ -99,7 +99,7 @@ namespace GameTimeNext.Core.Framework.Files
             // Alle Backups einlesen
             if (Directory.Exists(AppEnvironment.GetAppConfig().AppSettings.BackupExportPath))
             {
-                FileInfo[] backupFiles = new DirectoryInfo(AppEnvironment.GetAppConfig().AppSettings.BackupExportPath).GetFiles();
+                FileInfo[] backupFiles = new DirectoryInfo(AppEnvironment.GetAppConfig().AppSettings.BackupExportPath).GetFiles().Where(f => f.Name.EndsWith("gtnbkp")).ToArray();
 
                 List<FileInfo> oldFiles = GetFilesOlderThanDays(backupFiles, 3);
 

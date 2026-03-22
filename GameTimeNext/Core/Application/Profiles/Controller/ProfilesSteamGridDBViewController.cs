@@ -15,10 +15,15 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 {
     public class ProfilesSteamGridDBViewController : UIXWindowControllerBase
     {
-
         private ProfilesSteamGridDBViewModel _profilesSteamGridDBViewModel;
 
-        private string _coversFolder = AppEnvironment.GetAppConfig().AppDataLocalPathSteamGridDBCovers;
+        private readonly string _coversFolder = AppEnvironment.GetAppConfig().AppDataLocalPathSteamGridDBCovers;
+        private readonly int _coversPerPage = 12;
+
+        private int _currentPage = 0;
+
+        private readonly List<SteamGridDBPage> _sgdbPages = new List<SteamGridDBPage>();
+        private SteamGridDBClient _client;
 
         public ProfilesSteamGridDBViewController(UIXApplication app) : base(app)
         {
@@ -37,93 +42,61 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
             GetApp().Loader.Begin();
 
-            List<SteamGridDBImage> images = new List<SteamGridDBImage>();
-
-            await Task.Run(async () =>
+            try
             {
-                try
+                _client = new SteamGridDBClient(AppEnvironment.GetAppConfig().AppSettings.SteamGridDbKey.Trim());
+
+                IReadOnlyList<SgdbGrid> grids;
+
+                if (GetApp().SteamAppId != 0)
+                    grids = await _client.GetGridsBySteamAppIdAsync((int)GetApp().SteamAppId, dimensions: "600x900");
+                else
+                    grids = await _client.GetGridsByNameAsync(GetApp().GameName, dimensions: "600x900");
+
+                if (grids == null || grids.Count == 0)
                 {
-                    SteamGridDBClient client = new SteamGridDBClient(AppEnvironment.GetAppConfig().AppSettings.SteamGridDbKey.Trim());
-                    IReadOnlyList<SgdbGrid> grids;
+                    GetApp().GetApplication<CFMBOX>().Show(
+                        "Attention",
+                        "There were no covers found",
+                        CFMBOXResult.Ok
+                    );
 
-                    if (GetApp().SteamAppId != 0)
-                        grids = await client.GetGridsBySteamAppIdAsync((int)GetApp().SteamAppId, dimensions: "600x900");
-                    else
-                        grids = await client.GetGridsByNameAsync(GetApp().GameName, dimensions: "600x900");
-
-                    if (grids.Count == 0)
-                    {
-                        GetWnd().Dispatcher.Invoke(() =>
-                        {
-                            CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>();
-                            cfmbox.Show("Attention", "There were no covers found", CFMBOXResult.Ok);
-                            Exit(true);
-                        });
-                    }
-
-                    int index = 1;
-
-                    Directory.CreateDirectory(_coversFolder);
-
-                    List<Task> downloadTasks = new List<Task>();
-                    using SemaphoreSlim semaphore = new SemaphoreSlim(6);
-
-                    //Thread.Sleep(10000);
-
-                    foreach (var grid in grids.Where(g => !string.IsNullOrWhiteSpace(g.Url)))
-                    {
-
-                        int currentIndex = index;
-                        string currentUrl = grid.Url;
-
-                        downloadTasks.Add(Task.Run(async () =>
-                        {
-
-                            await semaphore.WaitAsync();
-
-                            try
-                            {
-                                var fileName = $"{GetApp().SteamAppId}_cover_{currentIndex}.jpg";
-                                var path = Path.Combine(_coversFolder, fileName);
-
-                                await client.DownloadFileAsync(currentUrl!, path);
-
-                                SteamGridDBImage image = new SteamGridDBImage();
-                                image.BitmapImage = FnImage.LoadImageWithoutLock(path, 200, 300);
-                                image.Path = path;
-
-                                images.Add(image);
-                            }
-                            catch (Exception ex)
-                            {
-                                int j = 0;
-                            }
-                            finally
-                            {
-                                semaphore.Release();
-                            }
-                        }
-                        ));
-
-                        index++;
-                    }
-
-                    await Task.WhenAll(downloadTasks);
-
-                    View.Dispatcher.Invoke(() =>
-                    {
-                        BuildSGCoverList(images);
-                    });
+                    Exit(true);
+                    return;
                 }
-                catch (Exception ex)
+
+                Directory.CreateDirectory(_coversFolder);
+
+                BuildSteamGridDBPagesDictionary(grids);
+
+                if (_sgdbPages.Count == 0)
                 {
-                    int i = 0;
+                    GetApp().GetApplication<CFMBOX>().Show(
+                        "Attention",
+                        "There were no covers found",
+                        CFMBOXResult.Ok
+                    );
+
+                    Exit(true);
+                    return;
                 }
-                finally
-                {
-                    GetApp().Loader.Stop();
-                }
-            });
+
+                _currentPage = 0;
+                await ShowCurrentPageAsync();
+            }
+            catch (Exception)
+            {
+                GetApp().GetApplication<CFMBOX>().Show(
+                    "Error",
+                    "An error occured!\nTry again later!",
+                    CFMBOXResult.Ok,
+                    CFMBOXIcon.Error
+                );
+            }
+            finally
+            {
+                GetApp().Loader.Stop();
+            }
         }
 
         protected override void Init()
@@ -131,64 +104,65 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             ViewReturn = new ProfilesSteamGridDBViewReturn();
 
             GetApp().Loader.SetRandomTexts(
-                                            "Fetching artwork from SteamGridDB...",
-                                            "Searching SteamGridDB for the perfect covers...",
-                                            "Looting shiny new artwork...",
-                                            "Downloading cosmetic upgrades for your games...",
-                                            "Consulting the SteamGridDB archives...",
-                                            "Preparing beautiful covers...",
-                                            "Equipping your games with fresh artwork...",
-                                            "Scanning SteamGridDB for legendary covers...",
-                                            "Polishing your game library with new art...",
-                                            "Importing community-made artwork...",
-                                            "Grabbing some fancy covers...",
-                                            "Synchronizing with SteamGridDB...",
-                                            "Collecting high-resolution artwork...",
-                                            "Looking for the perfect grid...",
-                                            "Upgrading your game library visuals...",
-
-                                            "Exploring the SteamGridDB vault...",
-                                            "Checking the artwork armory...",
-                                            "Gathering premium covers...",
-                                            "Searching for epic grid art...",
-                                            "Hunting for legendary artwork...",
-                                            "Inspecting community masterpieces...",
-                                            "Fetching visual upgrades...",
-                                            "Preparing visual enhancements...",
-                                            "Scanning for rare covers...",
-                                            "Downloading fresh grid artwork...",
-                                            "Exploring the cover dimension...",
-                                            "Finding the perfect look for your games...",
-                                            "Collecting artwork like rare loot...",
-                                            "Opening the SteamGridDB treasure chest...",
-                                            "Summoning high-resolution covers...",
-                                            "Unlocking cosmetic upgrades...",
-                                            "Searching for artistic perfection...",
-                                            "Exploring new visual styles...",
-                                            "Browsing the cover archives...",
-                                            "Importing premium grid artwork...",
-                                            "Gathering stylish covers...",
-                                            "Preparing some visual magic...",
-                                            "Checking the artwork inventory...",
-                                            "Downloading the finest covers...",
-                                            "Looking for next-level artwork...",
-                                            "Scanning for community favorites...",
-                                            "Collecting the best grids available...",
-                                            "Equipping next-gen artwork...",
-                                            "Summoning new library visuals...",
-                                            "Retrieving rare visual upgrades...",
-                                            "Discovering hidden cover gems...",
-                                            "Upgrading your games' wardrobe...",
-                                            "Finding the ultimate cover art...",
-                                            "Inspecting SteamGridDB treasures...",
-                                            "Bringing beautiful artwork to your library...",
-                                            "Fetching premium community covers...",
-                                            "Collecting stylish visual upgrades..."
-                                        );
+                "Fetching artwork from SteamGridDB...",
+                "Searching SteamGridDB for the perfect covers...",
+                "Looting shiny new artwork...",
+                "Downloading cosmetic upgrades for your games...",
+                "Consulting the SteamGridDB archives...",
+                "Preparing beautiful covers...",
+                "Equipping your games with fresh artwork...",
+                "Scanning SteamGridDB for legendary covers...",
+                "Polishing your game library with new art...",
+                "Importing community-made artwork...",
+                "Grabbing some fancy covers...",
+                "Synchronizing with SteamGridDB...",
+                "Collecting high-resolution artwork...",
+                "Looking for the perfect grid...",
+                "Upgrading your game library visuals...",
+                "Exploring the SteamGridDB vault...",
+                "Checking the artwork armory...",
+                "Gathering premium covers...",
+                "Searching for epic grid art...",
+                "Hunting for legendary artwork...",
+                "Inspecting community masterpieces...",
+                "Fetching visual upgrades...",
+                "Preparing visual enhancements...",
+                "Scanning for rare covers...",
+                "Downloading fresh grid artwork...",
+                "Exploring the cover dimension...",
+                "Finding the perfect look for your games...",
+                "Collecting artwork like rare loot...",
+                "Opening the SteamGridDB treasure chest...",
+                "Summoning high-resolution covers...",
+                "Unlocking cosmetic upgrades...",
+                "Searching for artistic perfection...",
+                "Exploring new visual styles...",
+                "Browsing the cover archives...",
+                "Importing premium grid artwork...",
+                "Gathering stylish covers...",
+                "Preparing some visual magic...",
+                "Checking the artwork inventory...",
+                "Downloading the finest covers...",
+                "Looking for next-level artwork...",
+                "Scanning for community favorites...",
+                "Collecting the best grids available...",
+                "Equipping next-gen artwork...",
+                "Summoning new library visuals...",
+                "Retrieving rare visual upgrades...",
+                "Discovering hidden cover gems...",
+                "Upgrading your games' wardrobe...",
+                "Finding the ultimate cover art...",
+                "Inspecting SteamGridDB treasures...",
+                "Bringing beautiful artwork to your library...",
+                "Fetching premium community covers...",
+                "Collecting stylish visual upgrades..."
+            );
         }
 
         protected override void Build()
         {
+            FnControls.SetEnabled(GetWnd().btnPreviousPage, _currentPage > 0);
+            FnControls.SetEnabled(GetWnd().btnNextPage, _currentPage < _sgdbPages.Count - 1);
         }
 
         protected override void Check()
@@ -201,7 +175,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected override void Event_Closing()
         {
-            //try { Directory.Delete(_coversFolder, true); } catch (Exception e) { /* Ignorieren */ }
+            // try { Directory.Delete(_coversFolder, true); } catch (Exception) { }
         }
 
         protected override void Event_Maximize()
@@ -230,8 +204,10 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected void EV_btnApply()
         {
+            SteamGridDBImage selected = _profilesSteamGridDBViewModel?.SelectedImage as SteamGridDBImage;
 
-            SteamGridDBImage selected = _profilesSteamGridDBViewModel.SelectedImage! as SteamGridDBImage;
+            if (selected == null)
+                return;
 
             GetViewReturn<ProfilesSteamGridDBViewReturn>().SelectedImagePath = selected.Path;
             GetViewReturn<ProfilesSteamGridDBViewReturn>().Canceled = false;
@@ -244,17 +220,182 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             Exit(true);
         }
 
+        protected async Task EV_btnPreviousPage()
+        {
+            if (_currentPage <= 0)
+                return;
+
+            _currentPage--;
+            await ShowCurrentPageAsync();
+        }
+
+        protected async Task EV_btnNextPage()
+        {
+            if (_currentPage >= _sgdbPages.Count - 1)
+                return;
+
+            _currentPage++;
+            await ShowCurrentPageAsync();
+        }
+
+        private async Task ShowCurrentPageAsync()
+        {
+            if (_currentPage < 0 || _currentPage >= _sgdbPages.Count)
+                return;
+
+            GetApp().Loader.Begin();
+
+            try
+            {
+                SteamGridDBPage currentPage = _sgdbPages[_currentPage];
+
+                if (!currentPage.Downloaded)
+                    await DownloadPageAsync(currentPage);
+
+                BuildSGCoverList(currentPage.Images);
+                Build();
+            }
+            catch (Exception)
+            {
+                GetApp().GetApplication<CFMBOX>().Show(
+                    "Error",
+                    "An error occured while loading the page.",
+                    CFMBOXResult.Ok,
+                    CFMBOXIcon.Error
+                );
+            }
+            finally
+            {
+                GetApp().Loader.Stop();
+            }
+        }
+
         private void BuildSGCoverList(List<SteamGridDBImage> images)
         {
-            // Viewmodel befüllen
             _profilesSteamGridDBViewModel = new ProfilesSteamGridDBViewModel();
-            _profilesSteamGridDBViewModel.Images = new System.Collections.ObjectModel.ObservableCollection<SteamGridDBImage>(images);
+            _profilesSteamGridDBViewModel.Images =
+                new System.Collections.ObjectModel.ObservableCollection<SteamGridDBImage>(images);
 
-
-            if (images != null && images.Count > 0)
-                _profilesSteamGridDBViewModel.SelectedImage = images.FirstOrDefault<SteamGridDBImage>()!;
+            if (images.Count > 0)
+                _profilesSteamGridDBViewModel.SelectedImage = images[0];
 
             View.DataContext = _profilesSteamGridDBViewModel;
+        }
+
+        private async Task DownloadPageAsync(SteamGridDBPage page)
+        {
+            if (page == null || page.Downloaded)
+                return;
+
+            using SemaphoreSlim semaphore = new SemaphoreSlim(6);
+
+            SteamGridDBImage[] downloadedImages = new SteamGridDBImage[page.PageItems.Count];
+            List<Task> downloadTasks = new List<Task>();
+
+            for (int i = 0; i < page.PageItems.Count; i++)
+            {
+                int itemIndex = i;
+                SgdbGrid grid = page.PageItems[itemIndex];
+
+                if (grid == null || string.IsNullOrWhiteSpace(grid.Url))
+                    continue;
+
+                downloadTasks.Add(Task.Run(async () =>
+                {
+                    await semaphore.WaitAsync();
+
+                    try
+                    {
+                        string fileName = BuildImageFileName(_currentPage, itemIndex, grid);
+                        string path = Path.Combine(_coversFolder, fileName);
+
+                        if (!File.Exists(path))
+                            await _client.DownloadFileAsync(grid.Url, path);
+
+                        SteamGridDBImage image = new SteamGridDBImage
+                        {
+                            BitmapImage = FnImage.LoadImageWithoutLock(path, 200, 300),
+                            Path = path
+                        };
+
+                        downloadedImages[itemIndex] = image;
+                    }
+                    finally
+                    {
+                        semaphore.Release();
+                    }
+                }));
+            }
+
+            await Task.WhenAll(downloadTasks);
+
+            page.Images = downloadedImages
+                .Where(x => x != null)
+                .ToList();
+
+            page.Downloaded = true;
+        }
+
+        private string BuildImageFileName(int pageIndex, int itemIndex, SgdbGrid grid)
+        {
+            string appPart = GetApp().SteamAppId != 0
+                ? GetApp().SteamAppId.ToString()
+                : SanitizeFileName(GetApp().GameName);
+
+            string gridPart = "grid";
+
+            try
+            {
+                object gridIdValue = grid.GetType().GetProperty("Id")?.GetValue(grid);
+                if (gridIdValue != null)
+                    gridPart = gridIdValue.ToString();
+            }
+            catch
+            {
+            }
+
+            return $"{appPart}_p{pageIndex}_i{itemIndex}_{gridPart}.jpg";
+        }
+
+        private string SanitizeFileName(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return "unknown";
+
+            foreach (char invalidChar in Path.GetInvalidFileNameChars())
+                value = value.Replace(invalidChar, '_');
+
+            return value.Replace(' ', '_');
+        }
+
+        private void BuildSteamGridDBPagesDictionary(IReadOnlyList<SgdbGrid> grids)
+        {
+            _sgdbPages.Clear();
+
+            for (int i = 0; i < grids.Count; i += _coversPerPage)
+            {
+                List<SgdbGrid> pageItems = grids
+                    .Skip(i)
+                    .Take(_coversPerPage)
+                    .ToList();
+
+                if (pageItems.Count == 0)
+                    continue;
+
+                _sgdbPages.Add(new SteamGridDBPage
+                {
+                    PageItems = pageItems,
+                    Images = new List<SteamGridDBImage>(),
+                    Downloaded = false
+                });
+            }
+        }
+
+        private class SteamGridDBPage
+        {
+            public List<SgdbGrid> PageItems { get; set; } = new List<SgdbGrid>();
+            public List<SteamGridDBImage> Images { get; set; } = new List<SteamGridDBImage>();
+            public bool Downloaded { get; set; } = false;
         }
 
         private ProfilesSteamGridDBApp GetApp()

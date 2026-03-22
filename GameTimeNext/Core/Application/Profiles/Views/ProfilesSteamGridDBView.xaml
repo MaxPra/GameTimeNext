@@ -28,46 +28,15 @@
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0" Margin="16,0,16,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="16" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
+            <TextBlock
+                FontSize="22"
+                FontWeight="SemiBold"
+                Text="Select SteamGridDB cover" />
 
-            <StackPanel Grid.Column="0" Orientation="Vertical">
-                <TextBlock
-                    FontSize="22"
-                    FontWeight="SemiBold"
-                    Text="Select SteamGridDB cover" />
-
-                <TextBlock
-                    Margin="0,4,0,0"
-                    Opacity="0.75"
-                    Text="Choose a cover image for the profile." />
-            </StackPanel>
-
-            <Border
-                x:Name="brdSelectionInfo"
-                Grid.Column="2"
-                Padding="12,8"
-                VerticalAlignment="Top"
-                Background="#0DFFFFFF"
-                BorderBrush="#24FFFFFF"
-                BorderThickness="1"
-                CornerRadius="{DynamicResource DefaultCornerRadius}">
-                <StackPanel Orientation="Vertical">
-                    <TextBlock
-                        x:Name="txtSelectionTitle"
-                        FontWeight="SemiBold"
-                        Text="No cover selected" />
-
-                    <TextBlock
-                        x:Name="txtSelectionSubTitle"
-                        Margin="0,2,0,0"
-                        Opacity="0.70"
-                        Text="Select a cover from the list below" />
-                </StackPanel>
-            </Border>
+            <TextBlock
+                Margin="0,34,0,0"
+                Opacity="0.75"
+                Text="Choose a cover image for the profile." />
         </Grid>
 
         <Border
@@ -124,6 +93,9 @@
 
         <Grid Grid.Row="4" Margin="16,0,16,0">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="10" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="10" />
@@ -131,15 +103,29 @@
             </Grid.ColumnDefinitions>
 
             <Button
+                x:Name="btnPreviousPage"
+                Grid.Column="0"
+                Width="130"
+                Height="36"
+                Content="Previous Page" />
+
+            <Button
+                x:Name="btnNextPage"
+                Grid.Column="2"
+                Width="130"
+                Height="36"
+                Content="Next Page" />
+
+            <Button
                 x:Name="btnCancel"
-                Grid.Column="1"
+                Grid.Column="4"
                 Width="110"
                 Height="36"
                 Content="Cancel" />
 
             <Button
                 x:Name="btnApply"
-                Grid.Column="3"
+                Grid.Column="6"
                 Width="140"
                 Height="36"
                 Content="Apply" />
