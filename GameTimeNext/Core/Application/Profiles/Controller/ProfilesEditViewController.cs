@@ -525,7 +525,25 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected void EV_btnBrowseGameFolder()
         {
-            GetApp().GetApplication<CFMBOX>().Show("Coming soon!", "This feature isn't available in the current BETA-build but will likely be added in the future!", CFMBOXResult.Ok);
+            //GetApp().GetApplication<CFMBOX>().Show("Coming soon!", "This feature isn't available in the current BETA-build but will likely be added in the future!", CFMBOXResult.Ok);
+
+            string gameFolderPath = FnSystemDialogs.ShowFolderDialog("Choose game folder", false);
+
+            if (!FnString.IsNullEmptyOrWhitespace(gameFolderPath))
+            {
+                // Exe auswählen
+                ProfilesExecutablesEditApp profilesExecutablesEditApp = GetApp().GetApplication<ProfilesExecutablesEditApp>();
+                profilesExecutablesEditApp.Search(gameFolderPath, r =>
+                {
+                    if (!r.Canceled)
+                    {
+                        FillDBOExecutables(r.SelectedExecutables);
+                    }
+
+                });
+
+                GetWnd().txbGameFolder.Text = gameFolderPath;
+            }
         }
 
         protected async Task EV_btnSteamGridDb()

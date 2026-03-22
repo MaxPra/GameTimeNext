@@ -87,5 +87,62 @@ namespace GameTimeNext.Core.Framework.Files
 
             image.Save(targetPath, jpgEncoder, encoderParams);
         }
+
+        /// <summary>
+        /// Diese Methode sorgt dafür, dass nur die neusten Backups der letzten 3 Backuptage bestehen bleiben
+        /// </summary>
+        public static void DeleteOldBackupFiles()
+        {
+            if (!AppEnvironment.GetAppConfig().AppSettings.AutoDelete)
+                return;
+
+            // Alle Backups einlesen
+            if (Directory.Exists(AppEnvironment.GetAppConfig().AppSettings.BackupExportPath))
+            {
+                FileInfo[] backupFiles = new DirectoryInfo(AppEnvironment.GetAppConfig().AppSettings.BackupExportPath).GetFiles();
+
+                List<FileInfo> oldFiles = GetFilesOlderThanDays(backupFiles, 3);
+
+                // Alle alten Dateien löschen
+                foreach (FileInfo file in oldFiles)
+                {
+                    file.Delete();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Ermittelt alle Dateien, die älter sind als die letzten 5 Tage
+        /// Nimmt dabei Rücksicht darauf, die neusten 3 Tage (verdichtet um die neusten der 3 Tage) zu "ignorieren"
+        /// </summary>
+        /// <param name="files"></param>
+        /// <param name="days"></param>
+        /// <returns></returns>
+        private static List<FileInfo> GetFilesOlderThanDays(FileInfo[] files, int days = 3)
+        {
+            DateTime today = DateTime.Today;
+            DateTime fromDay;
+
+            FileInfo? newestFile = GetNewestFile(files);
+
+            if (newestFile == null)
+                return new List<FileInfo>();
+
+            fromDay = newestFile.LastWriteTime;
+
+            // Alte Dateien bestimmen
+            // Älter als [days] Tage
+
+            var oldFiles = files.Where(f => f.LastWriteTime < (fromDay.AddDays(-days))).ToList();
+
+            return oldFiles;
+        }
+
+        private static FileInfo? GetNewestFile(FileInfo[] files)
+        {
+            FileInfo? newestFile = files.OrderByDescending(f => f.LastWriteTime).FirstOrDefault();
+
+            return newestFile;
+        }
     }
 }

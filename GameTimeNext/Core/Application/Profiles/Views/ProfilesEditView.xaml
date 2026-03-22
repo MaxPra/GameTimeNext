@@ -169,13 +169,6 @@
                                 uixprops:UIXAttachedProperty.Path="T1PROFI.GANA"
                                 ToolTip="Name shown in the profile list" />
 
-                            <CheckBox
-                                x:Name="cbCompleted"
-                                Grid.Row="6"
-                                uixprops:UIXAttachedProperty.Path="T1PROFI.COMP"
-                                Content="Completed"
-                                ToolTip="Marks this profile as completed" />
-
                             <TextBlock
                                 Grid.Row="8"
                                 Opacity="0.8"
@@ -193,6 +186,7 @@
                                     Grid.Column="0"
                                     Height="36"
                                     uixprops:UIXAttachedProperty.Path="T1PROFI.EXGF"
+                                    IsReadOnly="True"
                                     ToolTip="Folder that contains the game executable" />
 
                                 <Button
@@ -325,7 +319,7 @@
                             Grid.Row="2"
                             Height="36"
                             uixprops:UIXAttachedProperty.Path="T1PROFI.PPFN"
-                            IsEnabled="False"
+                            IsReadOnly="True"
                             ToolTip="Local path or path set after selecting an image" />
 
                         <Grid Grid.Row="4">

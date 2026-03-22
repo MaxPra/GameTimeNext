@@ -53,6 +53,7 @@
 
                             <TextBlock
                                 Grid.Row="0"
+                                Foreground="{DynamicResource Brush.TextPrimary}"
                                 Style="{StaticResource SettingsGroupTitleStyle}"
                                 Text="General" />
 
@@ -67,7 +68,7 @@
                                 <TextBlock
                                     Grid.Column="0"
                                     VerticalAlignment="Center"
-                                    Foreground="{DynamicResource Brush.TextPrimary}"
+                                    Foreground="{DynamicResource Brush.TextSecondary}"
                                     Text="Activate blackout key combination" />
 
                                 <CheckBox
@@ -77,7 +78,7 @@
                                     Height="20"
                                     HorizontalAlignment="Left"
                                     VerticalAlignment="Center"
-                                    ToolTip="Blacks out all screens to protect OLED displays (CTRL + B)" />
+                                    ToolTip="Blacks out all screens to help protect OLED displays (Ctrl + B)." />
                             </Grid>
 
                             <Grid Grid.Row="4" HorizontalAlignment="Left">
@@ -91,7 +92,7 @@
                                 <TextBlock
                                     Grid.Column="0"
                                     VerticalAlignment="Center"
-                                    Foreground="{DynamicResource Brush.TextPrimary}"
+                                    Foreground="{DynamicResource Brush.TextSecondary}"
                                     Text="SteamGridDB API key" />
 
                                 <TextBox
@@ -99,14 +100,14 @@
                                     Grid.Column="2"
                                     Width="320"
                                     HorizontalAlignment="Left"
-                                    ToolTip="API key used to retrieve game artwork from SteamGridDB" />
+                                    ToolTip="API key used to retrieve game artwork from SteamGridDB." />
 
                                 <Button
                                     x:Name="btnOpenSteamGridDB"
                                     Grid.Column="3"
                                     Width="36"
                                     Height="34"
-                                    ToolTip="Open SteamGridDB and get your key">
+                                    ToolTip="Open SteamGridDB and get your key.">
                                     <TextBlock
                                         HorizontalAlignment="Center"
                                         VerticalAlignment="Center"
@@ -126,6 +127,7 @@
 
                             <TextBlock
                                 Grid.Row="0"
+                                Foreground="{DynamicResource Brush.TextPrimary}"
                                 Style="{StaticResource SettingsGroupTitleStyle}"
                                 Text="Appearance" />
 
@@ -140,7 +142,7 @@
                                 <TextBlock
                                     Grid.Column="0"
                                     VerticalAlignment="Center"
-                                    Foreground="{DynamicResource Brush.TextPrimary}"
+                                    Foreground="{DynamicResource Brush.TextSecondary}"
                                     Text="Allow profile-specific style changes" />
 
                                 <CheckBox
@@ -166,6 +168,7 @@
 
                             <TextBlock
                                 Grid.Row="0"
+                                Foreground="{DynamicResource Brush.TextPrimary}"
                                 Style="{StaticResource SettingsGroupTitleStyle}"
                                 Text="Backup" />
 
@@ -183,8 +186,8 @@
                                 <TextBlock
                                     Grid.Column="0"
                                     VerticalAlignment="Center"
-                                    Foreground="{DynamicResource Brush.TextPrimary}"
-                                    Text="Backup Export path" />
+                                    Foreground="{DynamicResource Brush.TextSecondary}"
+                                    Text="Backup export path" />
 
                                 <TextBox
                                     x:Name="txbBackupExportPath"
@@ -192,14 +195,14 @@
                                     Width="320"
                                     HorizontalAlignment="Left"
                                     IsReadOnly="True"
-                                    ToolTip="Path used to export a backup" />
+                                    ToolTip="Path used to export a backup." />
 
                                 <Button
                                     x:Name="btnBrowseBackupExportPath"
                                     Grid.Column="4"
                                     Width="36"
                                     Height="34"
-                                    ToolTip="Select backup export path">
+                                    ToolTip="Select a backup export path.">
                                     <TextBlock
                                         HorizontalAlignment="Center"
                                         VerticalAlignment="Center"
@@ -214,7 +217,7 @@
                                     Width="130"
                                     Height="34"
                                     Content="Create backup"
-                                    ToolTip="Create a backup at the selected export path" />
+                                    ToolTip="Create a backup at the selected export path." />
                             </Grid>
 
                             <Grid Grid.Row="4" HorizontalAlignment="Left">
@@ -222,14 +225,18 @@
                                     <ColumnDefinition Width="220" />
                                     <ColumnDefinition Width="16" />
                                     <ColumnDefinition Width="22" />
+                                    <ColumnDefinition Width="18" />
+                                    <ColumnDefinition Width="100" />
+                                    <ColumnDefinition Width="20" />
+                                    <ColumnDefinition Width="22" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
 
                                 <TextBlock
                                     Grid.Column="0"
                                     VerticalAlignment="Center"
-                                    Foreground="{DynamicResource Brush.TextPrimary}"
-                                    Text="Auto Backup" />
+                                    Foreground="{DynamicResource Brush.TextSecondary}"
+                                    Text="Auto backup" />
 
                                 <CheckBox
                                     x:Name="cbAutoBackup"
@@ -238,7 +245,22 @@
                                     Height="20"
                                     HorizontalAlignment="Left"
                                     VerticalAlignment="Center"
-                                    ToolTip="Every time the app starts and closes, a backup is created." />
+                                    ToolTip="Creates a backup automatically whenever the application starts or closes." />
+
+                                <TextBlock
+                                    Grid.Column="4"
+                                    VerticalAlignment="Center"
+                                    Foreground="{DynamicResource Brush.TextSecondary}"
+                                    Text="Auto delete" />
+
+                                <CheckBox
+                                    x:Name="cbAutoDeleteBackups"
+                                    Grid.Column="6"
+                                    Width="20"
+                                    Height="20"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    ToolTip="Automatically deletes backups older than three days and keeps only the most recent backups from the last three days." />
                             </Grid>
 
                             <Grid Grid.Row="6" HorizontalAlignment="Left">
@@ -255,8 +277,8 @@
                                 <TextBlock
                                     Grid.Column="0"
                                     VerticalAlignment="Center"
-                                    Foreground="{DynamicResource Brush.TextPrimary}"
-                                    Text="Backup Import path" />
+                                    Foreground="{DynamicResource Brush.TextSecondary}"
+                                    Text="Backup import path" />
 
                                 <TextBox
                                     x:Name="txbBackupImportPath"
@@ -264,14 +286,14 @@
                                     Width="320"
                                     HorizontalAlignment="Left"
                                     IsReadOnly="True"
-                                    ToolTip="Path used to import a backup" />
+                                    ToolTip="Path used to import a backup." />
 
                                 <Button
                                     x:Name="btnBrowseBackupImportPath"
                                     Grid.Column="4"
                                     Width="36"
                                     Height="34"
-                                    ToolTip="Select backup import file">
+                                    ToolTip="Select a backup import file.">
                                     <TextBlock
                                         HorizontalAlignment="Center"
                                         VerticalAlignment="Center"
@@ -286,7 +308,7 @@
                                     Width="130"
                                     Height="34"
                                     Content="Import backup"
-                                    ToolTip="Import a backup from the selected path" />
+                                    ToolTip="Import a backup from the selected path." />
                             </Grid>
                         </Grid>
 
@@ -317,6 +339,7 @@
 
                             <TextBlock
                                 Grid.Row="0"
+                                Foreground="{DynamicResource Brush.TextPrimary}"
                                 Style="{StaticResource SettingsGroupTitleStyle}"
                                 Text="Monitoring behavior" />
 
@@ -344,7 +367,7 @@
                                     <TextBlock
                                         Grid.Column="0"
                                         VerticalAlignment="Center"
-                                        Foreground="{DynamicResource Brush.TextPrimary}"
+                                        Foreground="{DynamicResource Brush.TextSecondary}"
                                         Text="Key active" />
 
                                     <CheckBox
@@ -369,7 +392,7 @@
                                     <TextBlock
                                         Grid.Column="0"
                                         VerticalAlignment="Center"
-                                        Foreground="{DynamicResource Brush.TextPrimary}"
+                                        Foreground="{DynamicResource Brush.TextSecondary}"
                                         Text="Show toast notification" />
 
                                     <CheckBox
@@ -394,8 +417,9 @@
                                     <TextBlock
                                         Grid.Column="0"
                                         VerticalAlignment="Center"
-                                        Foreground="{DynamicResource Brush.TextPrimary}"
-                                        Text="Show monitoring indicator" />
+                                        Foreground="{DynamicResource Brush.TextSecondary}"
+                                        Text="Show monitoring indicator"
+                                        ToolTip="This feature will be available in a future release." />
 
                                     <CheckBox
                                         x:Name="cbShowMonitoringIndicator"
@@ -403,7 +427,8 @@
                                         Width="20"
                                         Height="20"
                                         HorizontalAlignment="Left"
-                                        VerticalAlignment="Center" />
+                                        VerticalAlignment="Center"
+                                        IsEnabled="False" />
                                 </Grid>
 
                                 <Grid
@@ -419,7 +444,7 @@
                                     <TextBlock
                                         Grid.Column="0"
                                         VerticalAlignment="Center"
-                                        Foreground="{DynamicResource Brush.TextPrimary}"
+                                        Foreground="{DynamicResource Brush.TextSecondary}"
                                         Text="Blackout side monitors" />
 
                                     <CheckBox
@@ -444,6 +469,7 @@
 
                             <TextBlock
                                 Grid.Row="0"
+                                Foreground="{DynamicResource Brush.TextPrimary}"
                                 Style="{StaticResource SettingsGroupTitleStyle}"
                                 Text="Monitoring hotkey" />
 
@@ -465,7 +491,7 @@
                                     Grid.Column="2"
                                     Width="36"
                                     Height="34"
-                                    ToolTip="Click to capture a new monitoring key">
+                                    ToolTip="Click to capture a new monitoring key.">
                                     <Image
                                         Width="16"
                                         Height="16"
@@ -495,7 +521,7 @@
                     <TextBlock
                         Margin="0,4,0,24"
                         Style="{StaticResource SettingsPageSubtitleStyle}"
-                        Text="Tag related settings will be available here later." />
+                        Text="Tag-related settings will be available here later." />
 
                     <Border
                         Padding="16,14"
@@ -504,7 +530,7 @@
                         BorderBrush="#24FFFFFF"
                         BorderThickness="1"
                         CornerRadius="10">
-                        <TextBlock Foreground="{DynamicResource Brush.TextSecondary}" Text="This feature isn't available yet." />
+                        <TextBlock Foreground="{DynamicResource Brush.TextSecondary}" Text="This feature is not available yet." />
                     </Border>
 
                 </StackPanel>
@@ -523,6 +549,7 @@
 
                     <TextBlock
                         Margin="0,0,0,10"
+                        Foreground="{DynamicResource Brush.TextPrimary}"
                         Style="{StaticResource SettingsGroupTitleStyle}"
                         Text="GameTimeNext" />
 

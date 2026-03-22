@@ -51,6 +51,9 @@ namespace GameTimeNext.Core.Application.TableObjects
         [UIXSignatureField(12)]
         public bool AutoBackup { get; set; }
 
+        [UIXSignatureField(13)]
+        public bool AutoDelete { get; set; }
+
 
 
         public AppSettings()
@@ -70,7 +73,7 @@ namespace GameTimeNext.Core.Application.TableObjects
             BackupExportPath = string.Empty;
             BackupImportPath = string.Empty;
             AutoBackup = false;
-
+            AutoDelete = false;
 
             AcceptChanges();
         }

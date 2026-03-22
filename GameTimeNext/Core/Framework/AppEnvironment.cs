@@ -119,7 +119,15 @@ namespace GameTimeNext.Core.Framework
 
         public static void RestartGTNApplication()
         {
-            Process.Start(Environment.ProcessPath!);
+            var exePath = Environment.ProcessPath!;
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "cmd.exe",
+                Arguments = $"/C timeout /t 3 > nul && start \"\" \"{exePath}\"",
+                CreateNoWindow = true,
+                UseShellExecute = false
+            });
+
             System.Windows.Application.Current.Shutdown();
         }
 

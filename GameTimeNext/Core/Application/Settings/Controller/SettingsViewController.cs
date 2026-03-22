@@ -37,27 +37,27 @@ namespace GameTimeNext.Core.Application.Settings.Controller
 
         protected override void Build()
         {
-            // Sichtbarkeitssteuerung Monitoring Key Panel
             FnControls.SetVisible(GetView().pnlMonitoringKey, GetView().cbMonitoringKeyActive.IsChecked == true);
 
-            // Enabledsteuerung Toastmessage
             FnControls.SetEnabled(GetView().cbShowToastNotification, GetView().cbMonitoringKeyActive.IsChecked == true);
             if (!GetView().cbShowToastNotification.IsEnabled)
                 GetView().cbShowToastNotification.IsChecked = false;
 
-            // Enabledsteuerung Blackout Side Monitors
             FnControls.SetEnabled(GetView().cbBlackoutSideMonitors, GetView().cbMonitoringKeyActive.IsChecked == true);
             if (!GetView().cbBlackoutSideMonitors.IsEnabled)
                 GetView().cbBlackoutSideMonitors.IsChecked = false;
 
-            // Enabledsteuerung Import Backup
             FnControls.SetEnabled(GetView().btnImportBackup, !FnString.IsNullEmptyOrWhitespace(GetView().txbBackupImportPath.Text));
-
-            // Enabledsteuerung Export Backup
             FnControls.SetEnabled(GetView().btnCreateBackup, !FnString.IsNullEmptyOrWhitespace(GetView().txbBackupExportPath.Text));
 
-            // Enbaledsteuerung Auto Backup
-            FnControls.SetEnabled(GetView().cbAutoBackup, !FnString.IsNullEmptyOrWhitespace(GetView().txbBackupExportPath.Text));
+            bool hasBackupExportPath = !FnString.IsNullEmptyOrWhitespace(GetView().txbBackupExportPath.Text);
+            bool autoBackupEnabled = GetView().cbAutoBackup.IsChecked == true;
+
+            FnControls.SetEnabled(GetView().cbAutoBackup, hasBackupExportPath);
+            FnControls.SetEnabled(GetView().cbAutoDeleteBackups, hasBackupExportPath && autoBackupEnabled);
+
+            if (!GetView().cbAutoDeleteBackups.IsEnabled)
+                GetView().cbAutoDeleteBackups.IsChecked = false;
         }
 
         protected override void Check()
@@ -97,6 +97,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             // Backup
             GetView().txbBackupExportPath.Text = AppEnvironment.GetAppConfig().AppSettings.BackupExportPath;
             GetView().cbAutoBackup.IsChecked = _appSettings!.AutoBackup == true;
+            GetView().cbAutoDeleteBackups.IsChecked = _appSettings.AutoDelete == true;
         }
 
         private void FillTabMonitoring()
@@ -115,6 +116,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             _appSettings!.SteamGridDbKey = GetView().txbSteamGridDbApiKey.Text;
             _appSettings!.BackupExportPath = GetView().txbBackupExportPath.Text;
             _appSettings!.AutoBackup = GetView().cbAutoBackup.IsChecked == true;
+            _appSettings!.AutoDelete = GetView().cbAutoDeleteBackups.IsChecked == true;
         }
 
         private void FillDBOMonitoring()
@@ -213,7 +215,10 @@ namespace GameTimeNext.Core.Application.Settings.Controller
         protected async Task EV_btnCreateBackup()
         {
             if (!Directory.Exists(GetView().txbBackupExportPath.Text))
+            {
                 GetApp().GetApplication<CFMBOX>().Show("Error", "Chosen backup path doesn't exist!", CFMBOXResult.Ok, CFMBOXIcon.Error);
+                return;
+            }
 
             string exportPath = GetView().txbBackupExportPath.Text;
 

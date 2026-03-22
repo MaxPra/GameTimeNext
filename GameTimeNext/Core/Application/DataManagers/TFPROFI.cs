@@ -1,7 +1,9 @@
 ﻿using GameTimeNext.Core.Application.Profiles.Components;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
+using System.IO;
 using UIX.ViewController.Engine.Querying;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.DataManagers
 {
@@ -17,6 +19,8 @@ namespace GameTimeNext.Core.Application.DataManagers
             DeleteAllLinkedT1GRPPOs(t1profi);
             DeleteAllLinkedT1SESSIs(t1profi);
             DeleteAllLinkedT1PLTHRs(t1profi);
+
+            DeleteCoverImage(t1profi);
 
             // Profil löschen
             txprofi.Delete(t1profi.PFID);
@@ -164,6 +168,20 @@ namespace GameTimeNext.Core.Application.DataManagers
             foreach (T1PLTHR t1plthr in t1plthrs)
             {
                 new TXPLTHR().Delete(t1plthr.PTID);
+            }
+        }
+
+        private static void DeleteCoverImage(T1PROFI t1profi)
+        {
+            if (!FnString.IsNullEmptyOrWhitespace(t1profi.PPFN))
+            {
+                try
+                {
+                    File.Delete(t1profi.PPFN);
+                }
+                catch (FileNotFoundException fnfe)
+                {
+                }
             }
         }
 

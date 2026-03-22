@@ -30,6 +30,9 @@ namespace GameTimeNext
             // AppEnvironment initialisieren
             AppEnvironment.Initalize();
 
+            // Alte Backups löschen
+            FileHandler.DeleteOldBackupFiles();
+
             // Datenbank initialisieren
             AppEnvironment.GetDataBaseManager().Initialize();
         }
