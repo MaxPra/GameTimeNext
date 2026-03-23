@@ -81,7 +81,10 @@
                                     <Grid>
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="15" />
                                             <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="15" />
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
@@ -103,35 +106,46 @@
                                             Style="{StaticResource ProfileDetail.GameTimeValue}" />
 
                                         <TextBlock
-                                            Grid.Row="1"
+                                            Grid.Row="2"
                                             Grid.Column="0"
                                             Style="{StaticResource ProfileDetail.InfoLabel}"
                                             Text="Played today:" />
                                         <TextBlock
                                             x:Name="txPlayedToday"
-                                            Grid.Row="1"
+                                            Grid.Row="2"
                                             Grid.Column="2"
                                             Style="{StaticResource ProfileDetail.InfoValue}" />
 
                                         <TextBlock
-                                            Grid.Row="2"
+                                            Grid.Row="3"
+                                            Grid.Column="0"
+                                            Style="{StaticResource ProfileDetail.InfoLabel}"
+                                            Text="Last session:" />
+                                        <TextBlock
+                                            x:Name="txLastSession"
+                                            Grid.Row="3"
+                                            Grid.Column="2"
+                                            Style="{StaticResource ProfileDetail.InfoValue}" />
+
+                                        <TextBlock
+                                            Grid.Row="5"
                                             Grid.Column="0"
                                             Style="{StaticResource ProfileDetail.InfoLabel}"
                                             Text="First time played:" />
                                         <TextBlock
                                             x:Name="txFirstTimePlayed"
-                                            Grid.Row="2"
+                                            Grid.Row="5"
                                             Grid.Column="2"
                                             Style="{StaticResource ProfileDetail.InfoValue}" />
 
                                         <TextBlock
-                                            Grid.Row="3"
+                                            Grid.Row="6"
                                             Grid.Column="0"
                                             Style="{StaticResource ProfileDetail.InfoLabel}"
                                             Text="Last time played:" />
                                         <TextBlock
                                             x:Name="txLastTimePlayed"
-                                            Grid.Row="3"
+                                            Grid.Row="6"
                                             Grid.Column="2"
                                             Style="{StaticResource ProfileDetail.InfoValue}" />
                                     </Grid>

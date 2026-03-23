@@ -93,6 +93,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             // Heutige Spielzeit
             FillTodaysGameTime();
 
+            // Letzte Session
+            FillLastSessionGameTime();
+
             // First und Lastplayed
             FillFirstLastDatePlayed();
 
@@ -173,6 +176,16 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 return;
 
             GetView().txPlaythrough.Text = t1plthr.PTDE + ":";
+        }
+
+        private void FillLastSessionGameTime()
+        {
+
+            double lastSessionTime = TFSESSI.GetLastSessionGameTime(_dataWrapper!.GetTypedTableObject().PFID);
+
+            string text = CFProfilesApp.FormatGameTimeHours(lastSessionTime) + " (" + CFProfilesApp.FormatGameTimeMinutes(lastSessionTime) + ")";
+
+            GetView().txLastSession.Text = text;
         }
 
         private UIXQuery BuildFirstLastDatePlayedQuery()

@@ -89,60 +89,96 @@ namespace GameTimeNext.Core.Framework.Files
         }
 
         /// <summary>
-        /// Diese Methode sorgt dafür, dass nur die neusten Backups der letzten 3 Backuptage bestehen bleiben
+        /// Behält alle Dateien von heute.
+        /// Von den letzten 2 Tagen vor heute bleibt jeweils nur die neueste Datei bestehen.
+        /// Alle älteren Dateien werden gelöscht.
         /// </summary>
         public static void DeleteOldBackupFiles()
         {
             if (!AppEnvironment.GetAppConfig().AppSettings.AutoDelete)
                 return;
 
-            // Alle Backups einlesen
-            if (Directory.Exists(AppEnvironment.GetAppConfig().AppSettings.BackupExportPath))
+            string backupPath = AppEnvironment.GetAppConfig().AppSettings.BackupExportPath;
+
+            if (!Directory.Exists(backupPath))
+                return;
+
+            FileInfo[] backupFiles = new DirectoryInfo(backupPath)
+                .GetFiles()
+                .Where(f => f.Name.EndsWith("gtnbkp"))
+                .ToArray();
+
+            List<FileInfo> filesToDelete = GetFilesOlderThanDays(backupFiles, 3);
+
+            foreach (FileInfo file in filesToDelete)
             {
-                FileInfo[] backupFiles = new DirectoryInfo(AppEnvironment.GetAppConfig().AppSettings.BackupExportPath).GetFiles().Where(f => f.Name.EndsWith("gtnbkp")).ToArray();
-
-                List<FileInfo> oldFiles = GetFilesOlderThanDays(backupFiles, 3);
-
-                // Alle alten Dateien löschen
-                foreach (FileInfo file in oldFiles)
-                {
-                    file.Delete();
-                }
+                file.Delete();
             }
         }
 
         /// <summary>
-        /// Ermittelt alle Dateien, die älter sind als die letzten 5 Tage
-        /// Nimmt dabei Rücksicht darauf, die neusten 3 Tage (verdichtet um die neusten der 3 Tage) zu "ignorieren"
+        /// Ermittelt alle Dateien, die gelöscht werden sollen.
+        /// Es bleiben:
+        /// - alle Dateien von heute
+        /// - die jeweils neueste Datei von gestern
+        /// - die jeweils neueste Datei von vorgestern
+        /// Alle anderen Dateien werden zurückgegeben.
         /// </summary>
         /// <param name="files"></param>
         /// <param name="days"></param>
         /// <returns></returns>
         private static List<FileInfo> GetFilesOlderThanDays(FileInfo[] files, int days = 3)
         {
+            List<FileInfo> filesToDelete = new List<FileInfo>();
+
+            if (files == null || files.Length == 0)
+                return filesToDelete;
+
             DateTime today = DateTime.Today;
-            DateTime fromDay;
+            DateTime oldestKeptDay = today.AddDays(-(days - 1));
 
-            FileInfo? newestFile = GetNewestFile(files);
+            var groupedByDay = files
+                .GroupBy(f => f.LastWriteTime.Date)
+                .OrderByDescending(g => g.Key)
+                .ToList();
 
-            if (newestFile == null)
-                return new List<FileInfo>();
+            foreach (var dayGroup in groupedByDay)
+            {
+                DateTime fileDay = dayGroup.Key;
 
-            fromDay = newestFile.LastWriteTime;
+                // Alles löschen, was älter ist als der zu behaltende Zeitraum
+                if (fileDay < oldestKeptDay)
+                {
+                    filesToDelete.AddRange(dayGroup);
+                    continue;
+                }
 
-            // Alte Dateien bestimmen
-            // Älter als [days] Tage
+                // Von heute alle Dateien behalten
+                if (fileDay == today)
+                    continue;
 
-            var oldFiles = files.Where(f => f.LastWriteTime < (fromDay.AddDays(-days))).ToList();
+                // Von den restlichen Tagen im 3-Tage-Fenster nur die neueste Datei behalten
+                FileInfo? newestFileOfDay = dayGroup
+                    .OrderByDescending(f => f.LastWriteTime)
+                    .FirstOrDefault();
 
-            return oldFiles;
+                if (newestFileOfDay == null)
+                    continue;
+
+                filesToDelete.AddRange(dayGroup.Where(f => f.FullName != newestFileOfDay.FullName));
+            }
+
+            return filesToDelete;
         }
 
         private static FileInfo? GetNewestFile(FileInfo[] files)
         {
-            FileInfo? newestFile = files.OrderByDescending(f => f.LastWriteTime).FirstOrDefault();
+            if (files == null || files.Length == 0)
+                return null;
 
-            return newestFile;
+            return files
+                .OrderByDescending(f => f.LastWriteTime)
+                .FirstOrDefault();
         }
     }
 }
