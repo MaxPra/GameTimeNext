@@ -40,18 +40,24 @@ namespace GameTimeNext.Core.Application.TableObjects
         public string SteamGridDbKey { get; set; }
 
         [UIXSignatureField(9)]
-        public string BackupType { get; set; }
+        public string TwitchIGDBClientID { get; set; }
 
         [UIXSignatureField(10)]
-        public string BackupExportPath { get; set; }
+        public string TwitchIGDBClientSecret { get; set; }
 
         [UIXSignatureField(11)]
-        public string BackupImportPath { get; set; }
+        public string BackupType { get; set; }
 
         [UIXSignatureField(12)]
-        public bool AutoBackup { get; set; }
+        public string BackupExportPath { get; set; }
 
         [UIXSignatureField(13)]
+        public string BackupImportPath { get; set; }
+
+        [UIXSignatureField(14)]
+        public bool AutoBackup { get; set; }
+
+        [UIXSignatureField(15)]
         public bool AutoDelete { get; set; }
 
 
@@ -68,6 +74,8 @@ namespace GameTimeNext.Core.Application.TableObjects
             BlackoutSideMonitors = false;
             MonitoringKey = KeyInput.virtualKeyMap[KeyInput.VirtualKey.VK_NONE];
             SteamGridDbKey = string.Empty;
+            TwitchIGDBClientID = string.Empty;
+            TwitchIGDBClientSecret = string.Empty;
 
             BackupType = string.Empty;
             BackupExportPath = string.Empty;

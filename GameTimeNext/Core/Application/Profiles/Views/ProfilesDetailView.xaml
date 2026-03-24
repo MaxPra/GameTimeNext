@@ -51,6 +51,8 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="10" />
                             <RowDefinition Height="Auto" />
+                            <RowDefinition Height="10" />
+                            <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
@@ -153,9 +155,120 @@
                             </Grid>
                         </Border>
 
+                        <Border Grid.Row="4" Style="{StaticResource ProfileDetail.InfoHost}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <Border
+                                    x:Name="pnlProgressSection"
+                                    Grid.Column="1"
+                                    Style="{StaticResource ProfileDetail.InfoCard}">
+                                    <StackPanel>
+
+                                        <!--  Progress  -->
+                                        <Grid Style="{StaticResource ProfileDetail.ProgressHost}">
+
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="6" />
+                                                <RowDefinition Height="Auto" />
+                                            </Grid.RowDefinitions>
+
+                                            <!--  Prozent mittig  -->
+                                            <TextBlock
+                                                x:Name="txtProgress"
+                                                Grid.Row="0"
+                                                HorizontalAlignment="Center"
+                                                Style="{StaticResource ProfileDetail.InfoValue}"
+                                                Text="0%" />
+
+                                            <!--  Progress Linie  -->
+                                            <Grid Grid.Row="2">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+
+                                                <Ellipse Grid.Column="0" Style="{StaticResource ProfileDetail.ProgressDot}" />
+
+                                                <Grid
+                                                    x:Name="pnlProgressContainer"
+                                                    Grid.Column="1"
+                                                    Margin="8,0">
+                                                    <Border Style="{StaticResource ProfileDetail.ProgressTrack}" />
+                                                    <Border x:Name="pnlProgress" Style="{StaticResource ProfileDetail.ProgressFill}" />
+                                                </Grid>
+
+                                                <TextBlock Grid.Column="2" Style="{StaticResource ProfileDetail.ProgressFlag}" />
+                                            </Grid>
+
+                                        </Grid>
+
+                                        <!--  Estimates  -->
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="6" />
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="6" />
+                                                <RowDefinition Height="Auto" />
+                                            </Grid.RowDefinitions>
+
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBlock
+                                                x:Name="lblEstMain"
+                                                Grid.Row="0"
+                                                Grid.Column="0"
+                                                Style="{StaticResource ProfileDetail.InfoLabel}"
+                                                Text="Est. Story" />
+                                            <TextBlock
+                                                x:Name="txEstMain"
+                                                Grid.Row="0"
+                                                Grid.Column="1"
+                                                Style="{StaticResource ProfileDetail.InfoValue}" />
+
+                                            <TextBlock
+                                                x:Name="lblEstExtra"
+                                                Grid.Row="2"
+                                                Grid.Column="0"
+                                                Style="{StaticResource ProfileDetail.InfoLabel}"
+                                                Text="Est. Story + Extra" />
+                                            <TextBlock
+                                                x:Name="txEstExtra"
+                                                Grid.Row="2"
+                                                Grid.Column="1"
+                                                Style="{StaticResource ProfileDetail.InfoValue}" />
+
+                                            <TextBlock
+                                                x:Name="lblEstCompletionist"
+                                                Grid.Row="4"
+                                                Grid.Column="0"
+                                                Style="{StaticResource ProfileDetail.InfoLabel}"
+                                                Text="Est. Completionist" />
+                                            <TextBlock
+                                                x:Name="txEstCompletionist"
+                                                Grid.Row="4"
+                                                Grid.Column="1"
+                                                Style="{StaticResource ProfileDetail.InfoValue}" />
+                                        </Grid>
+
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                        </Border>
+
                         <Border
                             x:Name="pnlPlaythrough"
-                            Grid.Row="4"
+                            Grid.Row="6"
                             Style="{StaticResource ProfileDetail.InfoHost}">
                             <Grid>
                                 <Grid.ColumnDefinitions>

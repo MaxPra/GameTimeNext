@@ -294,7 +294,11 @@ namespace GameTimeNext.Core.Framework.DataBase
                     ACCO VARCHAR(200),
                     ACIN VARCHAR(200),
                     ACAC INTEGER,
-                    CUPT INTEGER
+                    CUPT INTEGER,
+                    ETMA REAL,
+                    ETME REAL,
+                    ETCO REAL,
+                    ETTY VARCHAR(200)
                 );";
 
             if (_connection == null)

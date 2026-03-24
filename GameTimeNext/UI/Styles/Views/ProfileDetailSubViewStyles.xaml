@@ -189,4 +189,39 @@
         <Setter Property="HorizontalAlignment" Value="Stretch" />
     </Style>
 
+    <!--  Progress Bar  -->
+    <Style x:Key="ProfileDetail.ProgressHost" TargetType="Grid">
+        <Setter Property="Margin" Value="0,0,0,14" />
+    </Style>
+
+    <Style x:Key="ProfileDetail.ProgressTrack" TargetType="Border">
+        <Setter Property="Height" Value="3" />
+        <Setter Property="CornerRadius" Value="2" />
+        <Setter Property="Background" Value="{DynamicResource Brush.Border}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <Style x:Key="ProfileDetail.ProgressFill" TargetType="Border">
+        <Setter Property="Height" Value="3" />
+        <Setter Property="CornerRadius" Value="2" />
+        <Setter Property="Background" Value="{DynamicResource Brush.Accent}" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="Width" Value="120" />
+    </Style>
+
+    <Style x:Key="ProfileDetail.ProgressDot" TargetType="Ellipse">
+        <Setter Property="Width" Value="10" />
+        <Setter Property="Height" Value="10" />
+        <Setter Property="Fill" Value="{DynamicResource Brush.Accent}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <Style x:Key="ProfileDetail.ProgressFlag" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
+        <Setter Property="Text" Value="&#xE7C1;" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
 </ResourceDictionary>

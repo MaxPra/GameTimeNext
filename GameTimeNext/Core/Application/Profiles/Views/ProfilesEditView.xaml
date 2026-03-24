@@ -149,6 +149,8 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="12" />
                                 <RowDefinition Height="Auto" />
+                                <RowDefinition Height="8" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
                             <TextBlock
@@ -170,11 +172,23 @@
                                 ToolTip="Name shown in the profile list" />
 
                             <TextBlock
+                                Grid.Row="6"
+                                Opacity="0.8"
+                                Text="Target play style" />
+
+                            <ComboBox
+                                x:Name="cmbEstimatedTimeType"
                                 Grid.Row="8"
+                                Height="36"
+                                SelectedIndex="0"
+                                ToolTip="Select the target play style" />
+
+                            <TextBlock
+                                Grid.Row="10"
                                 Opacity="0.8"
                                 Text="Game folder (where the .exe is)" />
 
-                            <Grid Grid.Row="10">
+                            <Grid Grid.Row="12">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="10" />

@@ -1,0 +1,267 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--<SolidColorBrush x:Key="Brush.Splash.OverlaySoft" Color="#14000000" />
+    <SolidColorBrush x:Key="Brush.Splash.OverlayMedium" Color="#22000000" />
+    <SolidColorBrush x:Key="Brush.Splash.OverlayStrong" Color="#44000000" />
+    <SolidColorBrush x:Key="Brush.Splash.BorderSoft" Color="#30FFFFFF" />
+    <SolidColorBrush x:Key="Brush.Splash.BorderAccentSoft" Color="#50FFFFFF" />
+    <SolidColorBrush x:Key="Brush.Splash.Panel" Color="#16181C" />
+    <SolidColorBrush x:Key="Brush.Splash.PanelSecondary" Color="#101215" />
+    <SolidColorBrush x:Key="Brush.Splash.TileTop" Color="#1AFFFFFF" />
+    <SolidColorBrush x:Key="Brush.Splash.TileBottom" Color="#06FFFFFF" />
+
+    <LinearGradientBrush x:Key="Brush.Splash.WindowBorderGradient" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0" Color="#55FFFFFF" />
+        <GradientStop Offset="0.45" Color="#25FFFFFF" />
+        <GradientStop Offset="1" Color="#10FFFFFF" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="Brush.Splash.TopBarBackground" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Offset="0" Color="#15000000" />
+        <GradientStop Offset="0.5" Color="#22000000" />
+        <GradientStop Offset="1" Color="#18000000" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="Brush.Splash.BottomBarBackground" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Offset="0" Color="#18000000" />
+        <GradientStop Offset="0.5" Color="#26000000" />
+        <GradientStop Offset="1" Color="#18000000" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="Brush.Splash.PreviewTopBackground" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Offset="0" Color="#1D000000" />
+        <GradientStop Offset="1" Color="#12000000" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="Brush.Splash.GameTileBackground" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="#20242A" />
+        <GradientStop Offset="1" Color="#121419" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="Brush.Splash.GameTileOverlay" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="#1EFFFFFF" />
+        <GradientStop Offset="1" Color="#00FFFFFF" />
+    </LinearGradientBrush>
+
+    <Style x:Key="SplashScreenWindowBorderStyle" TargetType="Border">
+        <Setter Property="CornerRadius" Value="20" />
+        <Setter Property="BorderBrush" Value="{StaticResource Brush.Splash.WindowBorderGradient}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Background" Value="{DynamicResource Brush.Background}" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+    </Style>
+
+    <Style x:Key="SplashScreenTopBarBorderStyle" TargetType="Border">
+        <Setter Property="Background" Value="{StaticResource Brush.Splash.TopBarBackground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
+        <Setter Property="BorderThickness" Value="0,0,0,1" />
+        <Setter Property="Padding" Value="28,0,28,0" />
+    </Style>
+
+    <Style x:Key="SplashScreenBottomBarBorderStyle" TargetType="Border">
+        <Setter Property="Background" Value="{StaticResource Brush.Splash.BottomBarBackground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
+        <Setter Property="BorderThickness" Value="0,1,0,0" />
+        <Setter Property="Padding" Value="28,0,28,0" />
+    </Style>
+
+    <Style x:Key="SplashScreenAppTitleTextStyle" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+        <Setter Property="FontSize" Value="26" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <Style x:Key="SplashScreenBadgeBorderStyle" TargetType="Border">
+        <Setter Property="Margin" Value="12,0,0,0" />
+        <Setter Property="Padding" Value="10,4,10,4" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="Background" Value="{DynamicResource Brush.Accent}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <Style x:Key="SplashScreenBadgeTextStyle" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+
+    <Style x:Key="SplashScreenStatusBorderStyle" TargetType="Border">
+        <Setter Property="Padding" Value="12,6,12,6" />
+        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="Background" Value="{StaticResource Brush.Splash.OverlayStrong}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+    </Style>
+
+    <Style x:Key="SplashScreenStatusTextStyle" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}" />
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="LetterSpacing" Value="0.8" />
+    </Style>
+
+    <Style x:Key="SplashScreenHeadlineTextStyle" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+        <Setter Property="FontSize" Value="42" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="LineHeight" Value="50" />
+    </Style>
+
+    <Style x:Key="SplashScreenSubtitleTextStyle" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="LineHeight" Value="24" />
+    </Style>
+
+    <Style x:Key="SplashScreenFeatureChipBorderStyle" TargetType="Border">
+        <Setter Property="Margin" Value="0,0,10,10" />
+        <Setter Property="Padding" Value="14,8,14,8" />
+        <Setter Property="CornerRadius" Value="14" />
+        <Setter Property="Background" Value="{StaticResource Brush.Splash.OverlayMedium}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+    </Style>
+
+    <Style x:Key="SplashScreenFeatureChipTextStyle" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <Style x:Key="SplashScreenInfoCardBorderStyle" TargetType="Border">
+        <Setter Property="Padding" Value="16,14,16,14" />
+        <Setter Property="CornerRadius" Value="16" />
+        <Setter Property="Background" Value="{StaticResource Brush.Splash.OverlayMedium}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+    </Style>
+
+    <Style x:Key="SplashScreenInfoLabelTextStyle" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextDisabled}" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <Style x:Key="SplashScreenInfoValueTextStyle" TargetType="TextBlock">
+        <Setter Property="Margin" Value="0,8,0,0" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <Style x:Key="SplashScreenPreviewPanelBorderStyle" TargetType="Border">
+        <Setter Property="CornerRadius" Value="22" />
+        <Setter Property="Background" Value="{StaticResource Brush.Splash.Panel}" />
+        <Setter Property="BorderBrush" Value="{StaticResource Brush.Splash.BorderSoft}" />
+        <Setter Property="BorderThickness" Value="1" />
+    </Style>
+
+    <Style x:Key="SplashScreenPreviewTopBorderStyle" TargetType="Border">
+        <Setter Property="Background" Value="{StaticResource Brush.Splash.PreviewTopBackground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
+        <Setter Property="BorderThickness" Value="0,0,0,1" />
+        <Setter Property="CornerRadius" Value="22,22,0,0" />
+        <Setter Property="Padding" Value="18,0,18,0" />
+    </Style>
+
+    <Style x:Key="SplashScreenPreviewBottomBorderStyle" TargetType="Border">
+        <Setter Property="Background" Value="{StaticResource Brush.Splash.PanelSecondary}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
+        <Setter Property="BorderThickness" Value="0,1,0,0" />
+        <Setter Property="CornerRadius" Value="0,0,22,22" />
+    </Style>
+
+    <Style x:Key="SplashScreenPreviewDotStyle" TargetType="Ellipse">
+        <Setter Property="Width" Value="8" />
+        <Setter Property="Height" Value="8" />
+        <Setter Property="Fill" Value="{DynamicResource Brush.TextDisabled}" />
+        <Setter Property="Opacity" Value="0.9" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <Style x:Key="SplashScreenPreviewTitleTextStyle" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <Style x:Key="SplashScreenMiniAccentBarStyle" TargetType="Border">
+        <Setter Property="Width" Value="46" />
+        <Setter Property="Height" Value="10" />
+        <Setter Property="CornerRadius" Value="5" />
+        <Setter Property="Background" Value="{DynamicResource Brush.Accent}" />
+        <Setter Property="Opacity" Value="0.85" />
+    </Style>
+
+    <Style x:Key="SplashScreenGameTileStyle" TargetType="Border">
+        <Setter Property="CornerRadius" Value="14" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Background" Value="{StaticResource Brush.Splash.GameTileBackground}" />
+        <Setter Property="MinHeight" Value="110" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Border">
+                    <Grid>
+                        <Border
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding CornerRadius}" />
+
+                        <Border
+                            Margin="1"
+                            Background="{StaticResource Brush.Splash.GameTileOverlay}"
+                            CornerRadius="13" />
+
+                        <Border
+                            Height="28"
+                            VerticalAlignment="Bottom"
+                            Background="{StaticResource Brush.Splash.OverlayStrong}"
+                            CornerRadius="0,0,14,14" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="SplashScreenPreviewBottomTitleTextStyle" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <Style x:Key="SplashScreenPreviewBottomSubtitleTextStyle" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}" />
+        <Setter Property="FontSize" Value="12" />
+    </Style>
+
+    <Style x:Key="SplashScreenLaunchBadgeBorderStyle" TargetType="Border">
+        <Setter Property="Padding" Value="14,8,14,8" />
+        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="Background" Value="{DynamicResource Brush.Accent}" />
+    </Style>
+
+    <Style x:Key="SplashScreenLaunchBadgeTextStyle" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+
+    <Style x:Key="SplashScreenBottomAccentLineStyle" TargetType="Rectangle">
+        <Setter Property="Width" Value="58" />
+        <Setter Property="Height" Value="4" />
+        <Setter Property="RadiusX" Value="2" />
+        <Setter Property="RadiusY" Value="2" />
+        <Setter Property="Fill" Value="{DynamicResource Brush.Accent}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <Style x:Key="SplashScreenFooterTextStyle" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}" />
+        <Setter Property="FontSize" Value="12" />
+    </Style>-->
+
+</ResourceDictionary>

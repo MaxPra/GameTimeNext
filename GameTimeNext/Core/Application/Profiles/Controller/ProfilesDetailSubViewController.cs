@@ -1,6 +1,7 @@
 ﻿
 using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Profiles.DataWrapper;
+using GameTimeNext.Core.Application.Profiles.Types;
 using GameTimeNext.Core.Application.Profiles.Views;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Application.TimeMonitoring;
@@ -71,8 +72,17 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected override void BuildFirst()
         {
+            ResetView();
+
             GetView().btnLaunchGame.IsEnabled = _dataWrapper!.GetTypedTableObject().SAID != 0 && GetView().btnLaunchGame.Content != "Running..." && TFPROFI.HasExecutables(_dataWrapper.GetTypedTableObject());
 
+            // -- Progressbar Sektion
+            bool isIGDBLinkedCorrectly = !FnString.IsNullEmptyOrWhitespace(AppEnvironment.GetAppConfig().AppSettings.TwitchIGDBClientID) &&
+                !FnString.IsNullEmptyOrWhitespace(AppEnvironment.GetAppConfig().AppSettings.TwitchIGDBClientSecret);
+
+            FnControls.SetVisible(GetView().pnlProgressSection, _dataWrapper!.GetTypedTableObject().ETTY != EstimatedTimeTypes.EST_TIME_NONE && TFPLTHR.HasCurrentPlaythrough(_dataWrapper!.GetTypedTableObject().PFID) && isIGDBLinkedCorrectly);
+
+            BuildProgressBarPanel();
 
             BuildCurrentPlaythroughPanel();
         }
@@ -102,6 +112,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             // Playthrough
             FillCurrentPlaythroughTime();
             FillCurrentPlaythroughName();
+
+            // Progressbar
+            FillProgressbarAndTimes();
         }
 
         protected override void FillDBOImpl()
@@ -188,6 +201,102 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             GetView().txLastSession.Text = text;
         }
 
+        private void FillProgressbarAndTimes()
+        {
+            T1PROFI t1profi = _dataWrapper!.GetTypedTableObject();
+
+            switch (t1profi.ETTY)
+            {
+                case EstimatedTimeTypes.EST_TIME_MAIN:
+                    FillProgressbarAndTimesMain(t1profi);
+                    break;
+
+                case EstimatedTimeTypes.EST_TIME_MAIN_EXTRA:
+                    FillProgressbarAndTimesMainExtra(t1profi);
+                    break;
+
+                case EstimatedTimeTypes.EST_TIME_COMPLETIONIST:
+                    FillProgressbarAndTimesCompletionist(t1profi);
+                    break;
+            }
+
+            GetView().txEstMain.Text = CFProfilesApp.FormatGameTimeHours(t1profi.ETMA);
+            GetView().txEstExtra.Text = CFProfilesApp.FormatGameTimeHours(t1profi.ETME);
+            GetView().txEstCompletionist.Text = CFProfilesApp.FormatGameTimeHours(t1profi.ETCO);
+        }
+
+        private void FillProgressbarAndTimesCompletionist(T1PROFI t1profi)
+        {
+            double totalGameTimeMinutes = 0;
+
+            UIXQuery query = BuildCurrentPlaythroughTimeQuery();
+
+            string sql = query.PreviewQuery();
+
+            using (var reader = query.Execute())
+            {
+                if (reader.Read())
+                {
+                    totalGameTimeMinutes = UIXQuery.GetDouble(reader, "TotalPlaytimePlaythrough");
+                }
+            }
+
+            if (totalGameTimeMinutes == 0)
+                return;
+
+            double percent = (totalGameTimeMinutes / t1profi.ETCO) * 100.0;
+
+            SetProgress(percent);
+        }
+
+        private void FillProgressbarAndTimesMainExtra(T1PROFI t1profi)
+        {
+            double totalGameTimeMinutes = 0;
+
+            UIXQuery query = BuildCurrentPlaythroughTimeQuery();
+
+            string sql = query.PreviewQuery();
+
+            using (var reader = query.Execute())
+            {
+                if (reader.Read())
+                {
+                    totalGameTimeMinutes = UIXQuery.GetDouble(reader, "TotalPlaytimePlaythrough");
+                }
+            }
+
+            if (totalGameTimeMinutes == 0)
+                return;
+
+            double percent = (totalGameTimeMinutes / t1profi.ETME) * 100.0;
+
+            SetProgress(percent);
+        }
+
+        private void FillProgressbarAndTimesMain(T1PROFI t1profi)
+        {
+            double totalGameTimeMinutes = 0;
+
+            UIXQuery query = BuildCurrentPlaythroughTimeQuery();
+
+            string sql = query.PreviewQuery();
+
+            using (var reader = query.Execute())
+            {
+                if (reader.Read())
+                {
+                    totalGameTimeMinutes = UIXQuery.GetDouble(reader, "TotalPlaytimePlaythrough");
+                }
+            }
+
+            if (totalGameTimeMinutes == 0)
+                return;
+
+            double percent = (totalGameTimeMinutes / t1profi.ETMA) * 100.0;
+
+            SetProgress(percent);
+        }
+
         private UIXQuery BuildFirstLastDatePlayedQuery()
         {
             UIXQuery query = new UIXQuery(K1PROFI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
@@ -249,6 +358,54 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             {
                 FnControls.SetVisible(GetView().pnlPlaythrough, false);
             }
+        }
+
+        private void BuildProgressBarPanel()
+        {
+            T1PROFI t1profi = _dataWrapper!.GetTypedTableObject();
+
+            switch (t1profi.ETTY)
+            {
+                case EstimatedTimeTypes.EST_TIME_MAIN:
+                    GetView().txEstMain.FontWeight = FontWeights.Bold;
+                    GetView().lblEstMain.FontWeight = FontWeights.Bold;
+                    break;
+
+                case EstimatedTimeTypes.EST_TIME_MAIN_EXTRA:
+                    GetView().lblEstExtra.FontWeight = FontWeights.Bold;
+                    GetView().txEstExtra.FontWeight = FontWeights.Bold;
+                    break;
+
+                case EstimatedTimeTypes.EST_TIME_COMPLETIONIST:
+                    GetView().lblEstCompletionist.FontWeight = FontWeights.Bold;
+                    GetView().txEstCompletionist.FontWeight = FontWeights.Bold;
+                    break;
+            }
+        }
+
+        public void SetProgress(double percent)
+        {
+            percent = Math.Clamp(percent, 0, 100);
+
+            GetView().txtProgress.Text = $"~ {percent:0}%";
+
+            double maxWidth = GetView().pnlProgressContainer.ActualWidth;
+            GetView().pnlProgress.Width = maxWidth * (percent / 100.0);
+        }
+
+        private void ResetView()
+        {
+            // Styles vorher zurücksetzen
+            GetView().txEstMain.FontWeight = FontWeights.Normal;
+            GetView().lblEstMain.FontWeight = FontWeights.Normal;
+
+            GetView().lblEstExtra.FontWeight = FontWeights.Normal;
+            GetView().txEstExtra.FontWeight = FontWeights.Normal;
+
+            GetView().lblEstCompletionist.FontWeight = FontWeights.Normal;
+            GetView().txEstCompletionist.FontWeight = FontWeights.Normal;
+
+            SetProgress(0);
         }
 
         private ProfilesDetailView GetView()

@@ -1,15 +1,18 @@
 ﻿using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.General;
 using GameTimeNext.Core.Application.Profiles.Components;
+using GameTimeNext.Core.Application.Profiles.Types;
 using GameTimeNext.Core.Application.Profiles.Viewmodel;
 using GameTimeNext.Core.Application.Profiles.Views;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
+using GameTimeNext.Core.Framework.Igdb;
 using GameTimeNext.Core.Framework.LauncherIntegration;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.Utils;
 using System.IO;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -65,6 +68,12 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         protected override void BuildFirst()
         {
             BuildTagGrid(GetApp().T1Profi.PFID);
+
+            // Enabled Steuerung Combobox IGDB Estimated Time
+            bool isIGDBLinkedCorrectly = !FnString.IsNullEmptyOrWhitespace(AppEnvironment.GetAppConfig().AppSettings.TwitchIGDBClientID) &&
+                !FnString.IsNullEmptyOrWhitespace(AppEnvironment.GetAppConfig().AppSettings.TwitchIGDBClientSecret);
+
+            FnControls.SetEnabled(GetWnd().cmbEstimatedTimeType, isIGDBLinkedCorrectly);
         }
 
         protected override void Build()
@@ -117,11 +126,17 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected override void FillDBOImpl()
         {
+        }
+
+        protected override async Task FillDBOImplAsync()
+        {
             // Akzentfarben
             SaveAccentColors();
 
             // Profileinstellungen
             FillDBOProfileSettings();
+
+
 
             // Bild kopieren
             if (GetApp().T1Profi.HasFieldDataChanged(K1PROFI.Fields.PPFN))
@@ -134,11 +149,19 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             if (GetWnd().ViewIndicator.Contains("ED"))
                 FillViewSteamImport(null!);
 
-
+            FillComboboxPlayTypes();
 
             FillViewProfileSettings();
 
             FillViewAccentColors();
+        }
+
+        private void FillComboboxPlayTypes()
+        {
+            GetWnd().cmbEstimatedTimeType.Items.Add(new ComboBoxItem { Content = "(None)", Tag = EstimatedTimeTypes.EST_TIME_NONE });
+            GetWnd().cmbEstimatedTimeType.Items.Add(new ComboBoxItem { Content = "Main Story", Tag = EstimatedTimeTypes.EST_TIME_MAIN });
+            GetWnd().cmbEstimatedTimeType.Items.Add(new ComboBoxItem { Content = "Main Story + Extra", Tag = EstimatedTimeTypes.EST_TIME_MAIN_EXTRA });
+            GetWnd().cmbEstimatedTimeType.Items.Add(new ComboBoxItem { Content = "Completionist", Tag = EstimatedTimeTypes.EST_TIME_COMPLETIONIST });
         }
 
         protected override void SaveDBOImpl()
@@ -154,9 +177,18 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected override void TriggeredEvent(FrameworkElement source, string eventName)
         {
+        }
+
+        protected override async Task TriggeredEventAsync(FrameworkElement source, string eventName)
+        {
             if (source is ToggleButton && source.Name.StartsWith("tglAccent") && eventName == UIXEventNames.ToggleButton.Checked)
             {
                 ToggleAccentChanged(source);
+            }
+
+            if (source is ComboBox && source.Name.StartsWith("cmbEstimatedTimeType") && eventName == UIXEventNames.Selector.SelectionChanged)
+            {
+                await FillDBOEstimatedTimesIGDBAsync();
             }
         }
 
@@ -323,6 +355,70 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             }
 
             GetApp().T1Profi.EXEC = cExecutables.Serialize();
+        }
+
+        private async Task FillDBOEstimatedTimesIGDBAsync()
+        {
+            ComboBoxItem combItem = GetWnd().cmbEstimatedTimeType.SelectedItem as ComboBoxItem;
+
+            if (GetApp().T1Profi.SAID == 0 && FnString.IsNullEmptyOrWhitespace(GetWnd().txbProfileName.Text) || combItem.Tag.ToString() == EstimatedTimeTypes.EST_TIME_NONE)
+                return;
+
+            GetApp().Loader.Begin();
+
+            string clientId = AppEnvironment.GetAppConfig().AppSettings.TwitchIGDBClientID;
+
+            IgdbService igdbservice = new IgdbService(clientId, AppEnvironment.TwitchAuthenticationToken);
+
+            int? gameId = null;
+
+            if (GetApp().T1Profi.SAID != 0)
+            {
+                int steamSourceId = igdbservice.GetSteamSourceId();
+                gameId = await igdbservice.FindGameIdBySteamAppIdAsync(steamSourceId, GetApp().T1Profi.SAID.ToString());
+            }
+
+            if (gameId == null)
+            {
+                var game = await igdbservice.FindGameByNameAsync(GetApp().T1Profi.GANA);
+
+                gameId = game?.Id;
+            }
+
+            if (gameId == null)
+            {
+                GetWnd().Dispatcher.Invoke(() =>
+                {
+                    GetApp().GetApplication<CFMBOX>().Show("Warning", "Could not find game on IGDB.", CFMBOXResult.Ok, CFMBOXIcon.Warning);
+                });
+
+                GetApp().Loader.Stop();
+
+                return;
+            }
+
+            var timeToBeat = await igdbservice.GetGameTimeToBeatAsync(gameId!.Value);
+
+            if (timeToBeat == null)
+            {
+                GetWnd().Dispatcher.Invoke(() =>
+                {
+                    GetApp().GetApplication<CFMBOX>().Show("Warning", "Could not query time to beat.", CFMBOXResult.Ok, CFMBOXIcon.Warning);
+                });
+
+                GetApp().Loader.Stop();
+                return;
+            }
+
+            // -- Befüllung
+            GetApp().T1Profi.ETMA = ((double)timeToBeat.Hastily!) / 60;
+            GetApp().T1Profi.ETME = ((double)timeToBeat.Normally!) / 60;
+            GetApp().T1Profi.ETCO = ((double)timeToBeat.Completely!) / 60;
+
+            GetApp().T1Profi.ETTY = combItem.Tag.ToString();
+
+            GetApp().Loader.Stop();
+
         }
 
         private void BuildSteamLinkSection()

@@ -38,7 +38,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         {
             T1PLTHR currT1plthr = GetCurrentPlaythrough(pfid);
 
-            return currT1plthr.PTCO == false;
+            return currT1plthr != null && currT1plthr.PTCO == false;
         }
 
         public static long GetCurrentPlaythroughCount(long pfid, string type)

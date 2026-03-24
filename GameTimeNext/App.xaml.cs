@@ -15,7 +15,16 @@ namespace GameTimeNext
         {
             base.OnStartup(e);
 
+            ShutdownMode = ShutdownMode.OnExplicitShutdown;
+
+            Core.Application.General.SplashScreen splash = new Core.Application.General.SplashScreen();
+            splash.Show();
+
             InitializeApp();
+
+            splash.Close();
+
+            ShutdownMode = ShutdownMode.OnMainWindowClose;
 
             // Erst danach Fenster öffnen
             MainApp mainApp = new MainApp();
@@ -27,14 +36,16 @@ namespace GameTimeNext
             // Ordner erstellen
             FileHandler.CreateApplicationFoldersAndFiles();
 
+            AppEnvironment.InitiateDataBaseManager();
+
+            // Datenbank initialisieren
+            AppEnvironment.GetDataBaseManager().Initialize();
+
             // AppEnvironment initialisieren
             AppEnvironment.Initalize();
 
             // Alte Backups löschen
             FileHandler.DeleteOldBackupFiles();
-
-            // Datenbank initialisieren
-            AppEnvironment.GetDataBaseManager().Initialize();
         }
 
         protected override void OnExit(ExitEventArgs e)

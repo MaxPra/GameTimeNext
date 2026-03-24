@@ -147,6 +147,17 @@ namespace GameTimeNext.Core.Framework.Versioning
             return IsBiggerThan(version);
         }
 
+        public bool NeedsMigrationFrom(string informationalVersion, string maxVersion)
+        {
+            AppVersion input = new AppVersion();
+            input.Get(informationalVersion);
+
+            AppVersion upperBound = new AppVersion();
+            upperBound.Get(maxVersion);
+
+            return IsBiggerThan(input) && !input.IsBiggerThan(upperBound);
+        }
+
         private void FillFromInformationalVersion(string raw)
         {
             raw = string.IsNullOrWhiteSpace(raw) ? "0.0.0" : raw;

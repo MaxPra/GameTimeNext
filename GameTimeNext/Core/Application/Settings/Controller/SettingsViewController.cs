@@ -21,6 +21,8 @@ namespace GameTimeNext.Core.Application.Settings.Controller
 
         private AppSettings? _appSettings = null;
 
+        private bool _hasIGDBChanged = false;
+
         public SettingsViewController(UIXApplication app) : base(app)
         {
         }
@@ -28,6 +30,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
         protected override void Init()
         {
             _appSettings = AppEnvironment.GetAppConfig().AppSettings;
+            _appSettings.AcceptChanges();
         }
 
         protected override void BuildFirst()
@@ -78,6 +81,9 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             FillDBOMonitoring();
             FillDBOTags();
             FillDBOAbout();
+
+            if (_appSettings.HasFieldDataChanged("TwitchIGDBClientID") || _appSettings.HasFieldDataChanged("TwitchIGDBClientSecret"))
+                _hasIGDBChanged = true;
         }
 
         protected override void FillViewImpl()
@@ -98,6 +104,10 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             GetView().txbBackupExportPath.Text = AppEnvironment.GetAppConfig().AppSettings.BackupExportPath;
             GetView().cbAutoBackup.IsChecked = _appSettings!.AutoBackup == true;
             GetView().cbAutoDeleteBackups.IsChecked = _appSettings.AutoDelete == true;
+
+            // IGDB
+            GetView().txbIgdbClientId.Text = _appSettings.TwitchIGDBClientID;
+            GetView().txbIgdbClientSecret.Text = _appSettings.TwitchIGDBClientSecret;
         }
 
         private void FillTabMonitoring()
@@ -117,6 +127,9 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             _appSettings!.BackupExportPath = GetView().txbBackupExportPath.Text;
             _appSettings!.AutoBackup = GetView().cbAutoBackup.IsChecked == true;
             _appSettings!.AutoDelete = GetView().cbAutoDeleteBackups.IsChecked == true;
+
+            _appSettings!.TwitchIGDBClientID = GetView().txbIgdbClientId.Text;
+            _appSettings!.TwitchIGDBClientSecret = GetView().txbIgdbClientSecret.Text;
         }
 
         private void FillDBOMonitoring()
@@ -148,6 +161,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
         protected override void SaveDBOImpl()
         {
             AppEnvironment.SaveAppConfig();
+            _appSettings!.AcceptChanges();
         }
 
         private SettingsView GetView()
@@ -188,6 +202,24 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             Process.Start(new ProcessStartInfo
             {
                 FileName = "https://www.steamgriddb.com/login",
+                UseShellExecute = true
+            });
+        }
+
+        protected void EV_btnOpenIgdbClientId()
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "https://api-docs.igdb.com/#getting-started",
+                UseShellExecute = true
+            });
+        }
+
+        protected void btnOpenIgdbClientSecret()
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "https://api-docs.igdb.com/#getting-started",
                 UseShellExecute = true
             });
         }
@@ -269,6 +301,16 @@ namespace GameTimeNext.Core.Application.Settings.Controller
                 // GameTimeNext neustarten
                 AppEnvironment.RestartGTNApplication();
             }
+        }
+
+        protected void EV_btnSave()
+        {
+            if (_hasIGDBChanged)
+            {
+                GetApp().GetApplication<CFMBOX>().Show("Attention", "Settings for IGDB have changed.\nRestart required!\nGameTimeNext will restart now!", CFMBOXResult.Ok, CFMBOXIcon.Info);
+                AppEnvironment.RestartGTNApplication();
+            }
+
         }
     }
 }

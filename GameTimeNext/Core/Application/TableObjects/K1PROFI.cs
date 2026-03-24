@@ -21,6 +21,10 @@
             public const string ACIN = "ACIN";
             public const string ACAC = "ACAC";
             public const string CUPT = "CUPT";
+            public const string ETMA = "ETMA";
+            public const string ETME = "ETME";
+            public const string ETCO = "ETCO";
+            public const string ETTY = "ETTY";
         }
     }
 }

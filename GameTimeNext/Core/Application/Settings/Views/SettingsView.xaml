@@ -30,7 +30,6 @@
             Style="{StaticResource VerticalSettingsTabControlStyle}"
             TabStripPlacement="Left">
 
-            <!--  General  -->
             <TabItem Header="General" Style="{StaticResource VerticalSettingsTabItemStyle}">
                 <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="30,10,24,0">
@@ -46,8 +45,6 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="16" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="14" />
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
@@ -80,6 +77,117 @@
                                     VerticalAlignment="Center"
                                     ToolTip="Blacks out all screens to help protect OLED displays (Ctrl + B)." />
                             </Grid>
+                        </Grid>
+
+                        <Grid Margin="0,0,0,28">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="16" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="12" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock
+                                Grid.Row="0"
+                                Foreground="{DynamicResource Brush.TextPrimary}"
+                                Style="{StaticResource SettingsGroupTitleStyle}"
+                                Text="Steam Grid DB" />
+
+                            <Grid Grid.Row="2" HorizontalAlignment="Left">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="220" />
+                                    <ColumnDefinition Width="16" />
+                                    <ColumnDefinition Width="320" />
+                                    <ColumnDefinition Width="50" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock
+                                    Grid.Column="0"
+                                    VerticalAlignment="Center"
+                                    Foreground="{DynamicResource Brush.TextSecondary}"
+                                    Text="API key" />
+
+                                <TextBox
+                                    x:Name="txbSteamGridDbApiKey"
+                                    Grid.Column="2"
+                                    Width="320"
+                                    HorizontalAlignment="Left"
+                                    ToolTip="API key used to retrieve game artwork from Steam Grid DB." />
+
+                                <Button
+                                    x:Name="btnOpenSteamGridDB"
+                                    Grid.Column="3"
+                                    Width="36"
+                                    Height="34"
+                                    ToolTip="Open Steam Grid DB and get your API key.">
+                                    <TextBlock
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        FontFamily="Segoe MDL2 Assets"
+                                        FontSize="16"
+                                        Text="&#xE128;" />
+                                </Button>
+                            </Grid>
+
+                            <TextBlock
+                                Grid.Row="4"
+                                Foreground="{DynamicResource Brush.TextSecondary}"
+                                Text="Used to retrieve game artwork and grid images." />
+                        </Grid>
+
+                        <Grid Margin="0,0,0,28">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="16" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="14" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="12" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock
+                                Grid.Row="0"
+                                Foreground="{DynamicResource Brush.TextPrimary}"
+                                Style="{StaticResource SettingsGroupTitleStyle}"
+                                Text="IGDB API" />
+
+                            <Grid Grid.Row="2" HorizontalAlignment="Left">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="220" />
+                                    <ColumnDefinition Width="16" />
+                                    <ColumnDefinition Width="320" />
+                                    <ColumnDefinition Width="50" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock
+                                    Grid.Column="0"
+                                    VerticalAlignment="Center"
+                                    Foreground="{DynamicResource Brush.TextSecondary}"
+                                    Text="Client ID" />
+
+                                <TextBox
+                                    x:Name="txbIgdbClientId"
+                                    Grid.Column="2"
+                                    Width="320"
+                                    HorizontalAlignment="Left"
+                                    ToolTip="Client ID used for IGDB / Twitch authentication." />
+
+                                <Button
+                                    x:Name="btnOpenIgdbClientId"
+                                    Grid.Column="3"
+                                    Width="36"
+                                    Height="34"
+                                    ToolTip="Open Twitch Developer Portal to get your client ID.">
+                                    <TextBlock
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        FontFamily="Segoe MDL2 Assets"
+                                        FontSize="16"
+                                        Text="&#xE128;" />
+                                </Button>
+                            </Grid>
 
                             <Grid Grid.Row="4" HorizontalAlignment="Left">
                                 <Grid.ColumnDefinitions>
@@ -93,21 +201,21 @@
                                     Grid.Column="0"
                                     VerticalAlignment="Center"
                                     Foreground="{DynamicResource Brush.TextSecondary}"
-                                    Text="SteamGridDB API key" />
+                                    Text="Client Secret" />
 
                                 <TextBox
-                                    x:Name="txbSteamGridDbApiKey"
+                                    x:Name="txbIgdbClientSecret"
                                     Grid.Column="2"
                                     Width="320"
                                     HorizontalAlignment="Left"
-                                    ToolTip="API key used to retrieve game artwork from SteamGridDB." />
+                                    ToolTip="Client secret used for IGDB / Twitch authentication." />
 
                                 <Button
-                                    x:Name="btnOpenSteamGridDB"
+                                    x:Name="btnOpenIgdbClientSecret"
                                     Grid.Column="3"
                                     Width="36"
                                     Height="34"
-                                    ToolTip="Open SteamGridDB and get your key.">
+                                    ToolTip="Open Twitch Developer Portal to get your client secret.">
                                     <TextBlock
                                         HorizontalAlignment="Center"
                                         VerticalAlignment="Center"
@@ -116,6 +224,11 @@
                                         Text="&#xE128;" />
                                 </Button>
                             </Grid>
+
+                            <TextBlock
+                                Grid.Row="6"
+                                Foreground="{DynamicResource Brush.TextSecondary}"
+                                Text="Required for IGDB access via Twitch developer credentials." />
                         </Grid>
 
                         <Grid Margin="0,0,0,28">
@@ -316,7 +429,6 @@
                 </ScrollViewer>
             </TabItem>
 
-            <!--  Monitoring  -->
             <TabItem Header="Monitoring" Style="{StaticResource VerticalSettingsTabItemStyle}">
                 <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="30,10,24,0">
@@ -354,10 +466,7 @@
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
-                                <Grid
-                                    Grid.Row="0"
-                                    Grid.Column="0"
-                                    HorizontalAlignment="Left">
+                                <Grid Grid.Row="0" Grid.Column="0">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="170" />
                                         <ColumnDefinition Width="16" />
@@ -369,20 +478,14 @@
                                         VerticalAlignment="Center"
                                         Foreground="{DynamicResource Brush.TextSecondary}"
                                         Text="Key active" />
-
                                     <CheckBox
                                         x:Name="cbMonitoringKeyActive"
                                         Grid.Column="2"
                                         Width="20"
-                                        Height="20"
-                                        HorizontalAlignment="Left"
-                                        VerticalAlignment="Center" />
+                                        Height="20" />
                                 </Grid>
 
-                                <Grid
-                                    Grid.Row="0"
-                                    Grid.Column="1"
-                                    HorizontalAlignment="Left">
+                                <Grid Grid.Row="0" Grid.Column="1">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="160" />
                                         <ColumnDefinition Width="16" />
@@ -394,20 +497,14 @@
                                         VerticalAlignment="Center"
                                         Foreground="{DynamicResource Brush.TextSecondary}"
                                         Text="Show toast notification" />
-
                                     <CheckBox
                                         x:Name="cbShowToastNotification"
                                         Grid.Column="2"
                                         Width="20"
-                                        Height="20"
-                                        HorizontalAlignment="Left"
-                                        VerticalAlignment="Center" />
+                                        Height="20" />
                                 </Grid>
 
-                                <Grid
-                                    Grid.Row="2"
-                                    Grid.Column="0"
-                                    HorizontalAlignment="Left">
+                                <Grid Grid.Row="2" Grid.Column="0">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="170" />
                                         <ColumnDefinition Width="16" />
@@ -418,23 +515,16 @@
                                         Grid.Column="0"
                                         VerticalAlignment="Center"
                                         Foreground="{DynamicResource Brush.TextSecondary}"
-                                        Text="Show monitoring indicator"
-                                        ToolTip="This feature will be available in a future release." />
-
+                                        Text="Show monitoring indicator" />
                                     <CheckBox
                                         x:Name="cbShowMonitoringIndicator"
                                         Grid.Column="2"
                                         Width="20"
                                         Height="20"
-                                        HorizontalAlignment="Left"
-                                        VerticalAlignment="Center"
                                         IsEnabled="False" />
                                 </Grid>
 
-                                <Grid
-                                    Grid.Row="2"
-                                    Grid.Column="1"
-                                    HorizontalAlignment="Left">
+                                <Grid Grid.Row="2" Grid.Column="1">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="160" />
                                         <ColumnDefinition Width="16" />
@@ -446,14 +536,11 @@
                                         VerticalAlignment="Center"
                                         Foreground="{DynamicResource Brush.TextSecondary}"
                                         Text="Blackout side monitors" />
-
                                     <CheckBox
                                         x:Name="cbBlackoutSideMonitors"
                                         Grid.Column="2"
                                         Width="20"
-                                        Height="20"
-                                        HorizontalAlignment="Left"
-                                        VerticalAlignment="Center" />
+                                        Height="20" />
                                 </Grid>
                             </Grid>
                         </Grid>
@@ -469,11 +556,10 @@
 
                             <TextBlock
                                 Grid.Row="0"
-                                Foreground="{DynamicResource Brush.TextPrimary}"
                                 Style="{StaticResource SettingsGroupTitleStyle}"
                                 Text="Monitoring hotkey" />
 
-                            <Grid Grid.Row="2" HorizontalAlignment="Left">
+                            <Grid Grid.Row="2">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="140" />
                                     <ColumnDefinition Width="8" />
@@ -483,20 +569,16 @@
                                 <TextBox
                                     x:Name="txbMonitoringKey"
                                     Grid.Column="0"
-                                    IsEnabled="False"
-                                    ToolTip="Current monitoring hotkey" />
+                                    IsEnabled="False" />
 
                                 <Button
                                     x:Name="btnCaptureMonitoringKey"
                                     Grid.Column="2"
                                     Width="36"
-                                    Height="34"
-                                    ToolTip="Click to capture a new monitoring key.">
+                                    Height="34">
                                     <Image
                                         Width="16"
                                         Height="16"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
                                         Source="/UI/Ressources/GTN_ICON_MONITOR_KEY.png" />
                                 </Button>
                             </Grid>
@@ -504,7 +586,6 @@
                             <TextBlock
                                 Grid.Row="4"
                                 Foreground="{DynamicResource Brush.TextSecondary}"
-                                Opacity="0.7"
                                 Text="Press the button to listen for a new hotkey." />
                         </Grid>
 
@@ -512,83 +593,88 @@
                 </ScrollViewer>
             </TabItem>
 
-            <!--  Tags  -->
             <TabItem Header="Tags" Style="{StaticResource VerticalSettingsTabItemStyle}">
                 <StackPanel Margin="30,10,24,0">
-
                     <TextBlock Style="{StaticResource SettingsPageTitleStyle}" Text="Tags" />
-
-                    <TextBlock
-                        Margin="0,4,0,24"
-                        Style="{StaticResource SettingsPageSubtitleStyle}"
-                        Text="Tag-related settings will be available here later." />
-
-                    <Border
-                        Padding="16,14"
-                        HorizontalAlignment="Left"
-                        Background="#0DFFFFFF"
-                        BorderBrush="#24FFFFFF"
-                        BorderThickness="1"
-                        CornerRadius="10">
-                        <TextBlock Foreground="{DynamicResource Brush.TextSecondary}" Text="This feature is not available yet." />
-                    </Border>
-
+                    <TextBlock Style="{StaticResource SettingsPageSubtitleStyle}" Text="Tag-related settings will be available here later." />
                 </StackPanel>
             </TabItem>
 
-            <!--  About  -->
             <TabItem Header="About" Style="{StaticResource VerticalSettingsTabItemStyle}">
-                <StackPanel Margin="30,10,24,0">
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="30,10,24,0">
 
-                    <TextBlock Style="{StaticResource SettingsPageTitleStyle}" Text="About" />
+                        <TextBlock Style="{StaticResource SettingsPageTitleStyle}" Text="About" />
 
-                    <TextBlock
-                        Margin="0,4,0,24"
-                        Style="{StaticResource SettingsPageSubtitleStyle}"
-                        Text="Application information and version details." />
+                        <TextBlock
+                            Margin="0,4,0,28"
+                            Style="{StaticResource SettingsPageSubtitleStyle}"
+                            Text="Application information, version details and credits." />
 
-                    <TextBlock
-                        Margin="0,0,0,10"
-                        Foreground="{DynamicResource Brush.TextPrimary}"
-                        Style="{StaticResource SettingsGroupTitleStyle}"
-                        Text="GameTimeNext" />
+                        <Grid Margin="0,0,0,28">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="16" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="10" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
 
-                    <TextBlock
-                        x:Name="txVersion"
-                        Margin="0,0,0,20"
-                        Foreground="{DynamicResource Brush.TextPrimary}"
-                        Text="Beta 0.1.0" />
+                            <TextBlock
+                                Grid.Row="0"
+                                Foreground="{DynamicResource Brush.TextPrimary}"
+                                Style="{StaticResource SettingsGroupTitleStyle}"
+                                Text="Application" />
 
-                    <TextBlock
-                        Margin="0,0,0,4"
-                        Foreground="{DynamicResource Brush.TextSecondary}"
-                        Text="Developer" />
+                            <TextBlock
+                                x:Name="txVersion"
+                                Grid.Row="2"
+                                Foreground="{DynamicResource Brush.TextSecondary}"
+                                Text="Beta 0.1.0" />
 
-                    <TextBlock Foreground="{DynamicResource Brush.TextPrimary}" Text="maxpra" />
+                            <TextBlock
+                                Grid.Row="4"
+                                Foreground="{DynamicResource Brush.TextSecondary}"
+                                Text="GameTimeNext is currently in beta." />
+                        </Grid>
 
-                    <TextBlock
-                        Margin="0,0,0,4"
-                        Foreground="{DynamicResource Brush.TextSecondary}"
-                        Text="Icons" />
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="16" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="10" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
 
-                    <TextBlock Foreground="{DynamicResource Brush.TextPrimary}" Text="Icons by icons8" />
+                            <TextBlock
+                                Grid.Row="0"
+                                Foreground="{DynamicResource Brush.TextPrimary}"
+                                Style="{StaticResource SettingsGroupTitleStyle}"
+                                Text="Credits" />
 
-                </StackPanel>
+                            <TextBlock
+                                Grid.Row="2"
+                                Foreground="{DynamicResource Brush.TextSecondary}"
+                                Text="Some icons used in this application are provided by Icons8." />
+
+                            <TextBlock
+                                Grid.Row="4"
+                                Foreground="{DynamicResource Brush.TextSecondary}"
+                                Text="Thanks to all services and tools used during development." />
+                        </Grid>
+                    </StackPanel>
+                </ScrollViewer>
             </TabItem>
 
         </TabControl>
 
         <Grid Grid.Row="1" Margin="0,28,0,8">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-
             <Button
                 x:Name="btnSave"
-                Grid.Column="1"
                 Width="140"
                 Height="36"
+                HorizontalAlignment="Right"
                 Content="Save settings" />
         </Grid>
     </Grid>

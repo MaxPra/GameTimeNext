@@ -1,4 +1,5 @@
 ﻿using GameTimeNext.Core.Application.DataManagers;
+using GameTimeNext.Core.Application.MigrationTasks;
 using GameTimeNext.Core.Application.Profiles;
 using GameTimeNext.Core.Application.Profiles.BackgroundProcesses;
 using GameTimeNext.Core.Application.Settings;
@@ -6,12 +7,14 @@ using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.DataBase;
 using GameTimeNext.Core.Framework.Files;
+using GameTimeNext.Core.Framework.Igdb;
 using GameTimeNext.Core.Framework.Versioning;
 using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
 using System.Windows.Controls;
 using UIX.ViewController.Engine.Runnables;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Framework
 {
@@ -33,6 +36,10 @@ namespace GameTimeNext.Core.Framework
         public static List<SearchableApplication> AvailableApplications { get; set; } = new List<SearchableApplication>();
         public static Dictionary<string, UIXBackgroundProcess> StartedBackgroundProcesses { get => _startedBackgroundProcesses; set => _startedBackgroundProcesses = value; }
         public static List<string> ErrorList { get; set; } = new List<string>();
+
+        public static string TwitchAuthenticationToken { get; set; } = string.Empty;
+
+        public static string IgdbExtGameSources { get; set; } = string.Empty;
 
         public static long CurrentPfid { get; set; } = 0;
         public static AppVersion AppVersion { get; set; } = new AppVersion();
@@ -86,10 +93,14 @@ namespace GameTimeNext.Core.Framework
 
             HandleBackup();
 
-            InitiateDataBaseManager();
+            MigrationManager.MigrateIfNeeded();
+
+            InitializeIGDBAuthTokenAndExternalGameSources();
 
             AppVersion.SetAppVersionInConfig();
         }
+
+
 
         public static void StartBackgroundProcesses(UIXApplication app)
         {
@@ -139,6 +150,43 @@ namespace GameTimeNext.Core.Framework
         // [------------------------------------------------]
         // [------------------ PRIVATE ---------------------]
         // [------------------------------------------------]
+        private static void InitializeIGDBAuthTokenAndExternalGameSources()
+        {
+
+            string clientId = GetAppConfig().AppSettings.TwitchIGDBClientID;
+            string clientSecret = GetAppConfig().AppSettings.TwitchIGDBClientSecret;
+
+            if (FnString.IsNullEmptyOrWhitespace(clientId) || FnString.IsNullEmptyOrWhitespace(clientSecret))
+                return;
+
+            try
+            {
+                TwitchAuthenticationToken = FnTwitchAuthentication.GetAccessToken(clientId, clientSecret);
+            }
+            catch (Exception)
+            {
+                TwitchAuthenticationToken = string.Empty;
+            }
+
+            if (FnString.IsNullEmptyOrWhitespace(TwitchAuthenticationToken))
+            {
+                ErrorList.Add("Couldn't get auth-token for IGDB!");
+                return;
+            }
+
+            try
+            {
+                IgdbExtGameSources = FnTwitchAuthentication.GetExternalGameSources(new System.Net.Http.HttpClient(), clientId, TwitchAuthenticationToken);
+            }
+            catch (Exception)
+            {
+                IgdbExtGameSources = string.Empty;
+            }
+
+
+            if (FnString.IsNullEmptyOrWhitespace(IgdbExtGameSources))
+                ErrorList.Add("Couldn't get external game sources from IGDB!");
+        }
 
         private static void HandleBackup()
         {

@@ -10,9 +10,9 @@
     <Color x:Key="Color.TextDisabled">#FF6E7781</Color>
 
     <!--  ===== Accent Colors =====  -->
-    <!--<Color x:Key="Color.Accent">#3498e5</Color>
+    <Color x:Key="Color.Accent">#3498e5</Color>
     <Color x:Key="Color.AccentHover">#1a7fcb</Color>
-    <Color x:Key="Color.AccentPressed">#15629e</Color>-->
+    <Color x:Key="Color.AccentPressed">#15629e</Color>
 
     <!--<Color x:Key="Color.Accent">#7BFF00</Color>
     <Color x:Key="Color.AccentHover">#66D900</Color>
@@ -38,9 +38,9 @@
     <Color x:Key="Color.AccentHover">#A62A30</Color>
     <Color x:Key="Color.AccentPressed">#5F1418</Color>-->
 
-    <Color x:Key="Color.Accent">#7F2A1F</Color>
+    <!--<Color x:Key="Color.Accent">#7F2A1F</Color>
     <Color x:Key="Color.AccentHover">#9B382A</Color>
-    <Color x:Key="Color.AccentPressed">#5A1E16</Color>
+    <Color x:Key="Color.AccentPressed">#5A1E16</Color>-->
 
     <Color x:Key="Color.TitleBarButton.Accent">#60646c</Color>
 

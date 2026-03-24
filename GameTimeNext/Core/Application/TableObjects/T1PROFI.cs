@@ -51,6 +51,18 @@ namespace GameTimeNext.Core.Application.TableObjects
         [UIXSignatureField(14)]
         public long CUPT { get; set; }
 
+        [UIXSignatureField(15)]
+        public double ETMA { get; set; }
+
+        [UIXSignatureField(16)]
+        public double ETME { get; set; }
+
+        [UIXSignatureField(17)]
+        public double ETCO { get; set; }
+
+        [UIXSignatureField(18)]
+        public string ETTY { get; set; }
+
         public BitmapImage CoverImage { get; set; }
 
         public bool IsPlayable { get; set; } = false;
@@ -80,6 +92,12 @@ namespace GameTimeNext.Core.Application.TableObjects
             ACAC = false;
 
             CUPT = 0;
+
+            ETMA = 0;
+            ETME = 0;
+            ETCO = 0;
+
+            ETTY = string.Empty;
 
             AcceptChanges();
         }

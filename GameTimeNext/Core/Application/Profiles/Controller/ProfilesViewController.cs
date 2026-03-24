@@ -111,6 +111,10 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             if (selectedProfi == null)
                 return;
 
+            AppEnvironment.CurrentPfid = selectedProfi.PFID;
+
+            GetView().ListBoxProfiles.ScrollIntoView(selectedProfi);
+
             if (!selectedProfi.ACAC)
                 return;
 
@@ -121,10 +125,6 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 return;
 
             FnTheme.ApplyThemeColors(new CAccentColors(selectedProfi.ACCO).Dezerialize().AccentColors);
-
-            AppEnvironment.CurrentPfid = selectedProfi.PFID;
-
-            GetView().ListBoxProfiles.ScrollIntoView(selectedProfi);
         }
         #endregion
 
