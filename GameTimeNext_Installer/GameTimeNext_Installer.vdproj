@@ -199,7 +199,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:GameTimeNext"
         "ProductCode" = "8:{9BDF7CC5-D0BC-4CE5-B989-5E1293BE3CC7}"
-        "PackageCode" = "8:{FA99237B-7D73-46E1-8BBD-90B43EB2E887}"
+        "PackageCode" = "8:{E218B7A7-C014-4A78-B84F-F9F040CFAE63}"
         "UpgradeCode" = "8:{B6D12BF9-6933-4610-BB15-68F30712EEAD}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"

@@ -35,6 +35,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         private string _selectedSteamGridDBImagePath = string.Empty;
         private BitmapImage _croppedProfileCover = new BitmapImage();
 
+        private bool _cmbTargetPlayTypeFilledCompletely = false;
+
         public string CoverAppDataPath
         {
             get { return _coverAppDataPath; }
@@ -136,8 +138,6 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             // Profileinstellungen
             FillDBOProfileSettings();
 
-
-
             // Bild kopieren
             if (GetApp().T1Profi.HasFieldDataChanged(K1PROFI.Fields.PPFN))
                 CFProfilesEditApp.CopyProfileCoverToAppCoverFolder(_coverAppDataPath, _coverAppFolderFileName);
@@ -158,10 +158,26 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         private void FillComboboxPlayTypes()
         {
+            _cmbTargetPlayTypeFilledCompletely = false;
+
             GetWnd().cmbEstimatedTimeType.Items.Add(new ComboBoxItem { Content = "(None)", Tag = EstimatedTimeTypes.EST_TIME_NONE });
             GetWnd().cmbEstimatedTimeType.Items.Add(new ComboBoxItem { Content = "Main Story", Tag = EstimatedTimeTypes.EST_TIME_MAIN });
             GetWnd().cmbEstimatedTimeType.Items.Add(new ComboBoxItem { Content = "Main Story + Extra", Tag = EstimatedTimeTypes.EST_TIME_MAIN_EXTRA });
             GetWnd().cmbEstimatedTimeType.Items.Add(new ComboBoxItem { Content = "Completionist", Tag = EstimatedTimeTypes.EST_TIME_COMPLETIONIST });
+
+            _cmbTargetPlayTypeFilledCompletely = true;
+
+            if (!FnString.IsNullEmptyOrWhitespace(GetApp().T1Profi.ETTY))
+            {
+                foreach (ComboBoxItem item in GetWnd().cmbEstimatedTimeType.Items)
+                {
+                    if (item.Tag?.ToString() == GetApp().T1Profi.ETTY)
+                    {
+                        GetWnd().cmbEstimatedTimeType.SelectedItem = item;
+                        break;
+                    }
+                }
+            }
         }
 
         protected override void SaveDBOImpl()
@@ -359,10 +375,22 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         private async Task FillDBOEstimatedTimesIGDBAsync()
         {
+
+            if (!_cmbTargetPlayTypeFilledCompletely)
+                return;
+
             ComboBoxItem combItem = GetWnd().cmbEstimatedTimeType.SelectedItem as ComboBoxItem;
 
             if (GetApp().T1Profi.SAID == 0 && FnString.IsNullEmptyOrWhitespace(GetWnd().txbProfileName.Text) || combItem.Tag.ToString() == EstimatedTimeTypes.EST_TIME_NONE)
+            {
+                // -- Befüllung
+                GetApp().T1Profi.ETMA = 0;
+                GetApp().T1Profi.ETME = 0;
+                GetApp().T1Profi.ETCO = 0;
+
+                GetApp().T1Profi.ETTY = EstimatedTimeTypes.EST_TIME_NONE;
                 return;
+            }
 
             GetApp().Loader.Begin();
 
@@ -406,6 +434,16 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                     GetApp().GetApplication<CFMBOX>().Show("Warning", "Could not query time to beat.", CFMBOXResult.Ok, CFMBOXIcon.Warning);
                 });
 
+                GetApp().Loader.Stop();
+                return;
+            }
+
+            if (timeToBeat.Hastily == null || timeToBeat.Normally == null || timeToBeat.Completely == null)
+            {
+                GetWnd().Dispatcher.Invoke(() =>
+                {
+                    GetApp().GetApplication<CFMBOX>().Show("Warning", "Could not query time to beat.", CFMBOXResult.Ok, CFMBOXIcon.Warning);
+                });
                 GetApp().Loader.Stop();
                 return;
             }
