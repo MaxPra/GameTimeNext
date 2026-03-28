@@ -50,6 +50,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             copy.ETME = source.ETME;
             copy.ETCO = source.ETCO;
             copy.ETTY = source.ETTY;
+            copy.ETML = source.ETML;
 
             DateTime now = DateTime.Now;
             copy.CRAT = now;
@@ -113,9 +114,9 @@ namespace GameTimeNext.Core.Application.DataManagers
             {
                 cmd.CommandText =
                     "INSERT INTO T1PROFI " +
-                    "(GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, CRAT, CHAT, ACCO, ACIN, ACAC, CUPT, ETMA, ETME, ETCO, ETTY) " +
+                    "(GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, CRAT, CHAT, ACCO, ACIN, ACAC, CUPT, ETMA, ETME, ETCO, ETTY, ETML) " +
                     "VALUES " +
-                    "(@GANA, @FIPL, @LAPL, @PPFN, @EXGF, @SAID, @PRSE, @EXEC, @CRAT, @CHAT, @ACCO, @ACIN, @ACAC, @CUPT, @ETMA, @ETME, @ETCO, @ETTY);";
+                    "(@GANA, @FIPL, @LAPL, @PPFN, @EXGF, @SAID, @PRSE, @EXEC, @CRAT, @CHAT, @ACCO, @ACIN, @ACAC, @CUPT, @ETMA, @ETME, @ETCO, @ETTY, @ETML);";
 
                 cmd.Parameters.AddWithValue("@GANA", obj.GANA);
                 cmd.Parameters.AddWithValue("@FIPL", ToDbDateTime(obj.FIPL));
@@ -135,6 +136,7 @@ namespace GameTimeNext.Core.Application.DataManagers
                 cmd.Parameters.AddWithValue("@ETME", obj.ETME);
                 cmd.Parameters.AddWithValue("@ETCO", obj.ETCO);
                 cmd.Parameters.AddWithValue("@ETTY", obj.ETTY);
+                cmd.Parameters.AddWithValue("@ETML", obj.ETML ? 1 : 0);
 
                 cmd.ExecuteNonQuery();
             }
@@ -170,7 +172,8 @@ namespace GameTimeNext.Core.Application.DataManagers
                     "ETMA = @ETMA, " +
                     "ETME = @ETME, " +
                     "ETCO = @ETCO, " +
-                    "ETTY = @ETTY " +
+                    "ETTY = @ETTY, " +
+                    "ETML = @ETML " +
                     "WHERE PFID = @PFID;";
 
                 cmd.Parameters.AddWithValue("@PFID", obj.PFID);
@@ -192,6 +195,7 @@ namespace GameTimeNext.Core.Application.DataManagers
                 cmd.Parameters.AddWithValue("@ETME", obj.ETME);
                 cmd.Parameters.AddWithValue("@ETCO", obj.ETCO);
                 cmd.Parameters.AddWithValue("@ETTY", obj.ETTY);
+                cmd.Parameters.AddWithValue("@ETML", obj.ETML ? 1 : 0);
 
                 cmd.ExecuteNonQuery();
             }
@@ -216,7 +220,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             using (SQLiteCommand cmd = connection.CreateCommand())
             {
                 cmd.CommandText =
-                    "SELECT PFID, GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, CRAT, CHAT, ACCO, ACIN, ACAC, CUPT, ETMA, ETME, ETCO, ETTY " +
+                    "SELECT PFID, GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, CRAT, CHAT, ACCO, ACIN, ACAC, CUPT, ETMA, ETME, ETCO, ETTY, ETML " +
                     "FROM T1PROFI WHERE PFID = @PFID;";
                 cmd.Parameters.AddWithValue("@PFID", pfid);
 
@@ -242,7 +246,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             using (SQLiteCommand cmd = connection.CreateCommand())
             {
                 cmd.CommandText =
-                    "SELECT PFID, GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, CRAT, CHAT, ACCO, ACIN, ACAC, CUPT, ETMA, ETME, ETCO, ETTY " +
+                    "SELECT PFID, GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, CRAT, CHAT, ACCO, ACIN, ACAC, CUPT, ETMA, ETME, ETCO, ETTY, ETML " +
                     "FROM T1PROFI ORDER BY PFID;";
 
                 using (SQLiteDataReader reader = cmd.ExecuteReader())
@@ -288,6 +292,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             obj.ETME = reader.IsDBNull(16) ? 0 : Convert.ToDouble(reader.GetValue(16));
             obj.ETCO = reader.IsDBNull(17) ? 0 : Convert.ToDouble(reader.GetValue(17));
             obj.ETTY = reader.IsDBNull(18) ? string.Empty : reader.GetString(18);
+            obj.ETML = !reader.IsDBNull(19) && (Convert.ToInt32(reader.GetValue(19)) == 1);
 
             obj.State = UIXTableObjectState.Available;
 

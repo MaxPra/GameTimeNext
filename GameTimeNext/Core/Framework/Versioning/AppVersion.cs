@@ -155,7 +155,7 @@ namespace GameTimeNext.Core.Framework.Versioning
             AppVersion upperBound = new AppVersion();
             upperBound.Get(maxVersion);
 
-            return IsBiggerThan(input) && !input.IsBiggerThan(upperBound);
+            return IsBiggerThan(input) && input.IsSmallerThan(upperBound);
         }
 
         private void FillFromInformationalVersion(string raw)

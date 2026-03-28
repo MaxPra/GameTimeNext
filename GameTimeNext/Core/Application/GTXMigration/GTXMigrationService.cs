@@ -179,9 +179,9 @@ namespace GameTimeNext.Core.Application.GTXMigration
                             {
                                 insertCmd.CommandText =
                                     "INSERT INTO T1PROFI " +
-                                    "(PFID, GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, CRAT, CHAT, ACCO, ACIN, ACAC, CUPT, ETMA, ETME, ETCO) " +
+                                    "(PFID, GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, CRAT, CHAT, ACCO, ACIN, ACAC, CUPT, ETMA, ETME, ETCO, ETML) " +
                                     "VALUES " +
-                                    "(@PFID, @GANA, @FIPL, @LAPL, @PPFN, @EXGF, @SAID, @PRSE, @EXEC, @CRAT, @CHAT, @ACCO, @ACIN, @ACAC, @CUPT, 0, 0, 0);";
+                                    "(@PFID, @GANA, @FIPL, @LAPL, @PPFN, @EXGF, @SAID, @PRSE, @EXEC, @CRAT, @CHAT, @ACCO, @ACIN, @ACAC, @CUPT, 0, 0, 0, 0);";
 
                                 insertCmd.Parameters.AddWithValue("@PFID", pfid);
                                 insertCmd.Parameters.AddWithValue("@GANA", gana);

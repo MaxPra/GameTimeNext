@@ -49,6 +49,17 @@ namespace GameTimeNext.Core.Application.General
             SetBrushColor("Brush.AccentPressed", dicAccentColors["pressed"]);
         }
 
+        public static void ApplyDefaultTheme()
+        {
+            SetColorResource("Color.Accent", "#3498e5");
+            SetColorResource("Color.AccentHover", "#1a7fcb");
+            SetColorResource("Color.AccentPressed", "#15629e");
+
+            SetBrushColor("Brush.Accent", "#3498e5");
+            SetBrushColor("Brush.AccentHover", "#1a7fcb");
+            SetBrushColor("Brush.AccentPressed", "#15629e");
+        }
+
         private static void SetBrushColor(string key, string colorHex)
         {
             Color color = (Color)ColorConverter.ConvertFromString(colorHex);

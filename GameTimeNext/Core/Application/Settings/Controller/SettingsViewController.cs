@@ -1,4 +1,5 @@
-﻿using GameTimeNext.Core.Application.Profiles.BackgroundProcesses;
+﻿using GameTimeNext.Core.Application.General;
+using GameTimeNext.Core.Application.Profiles.BackgroundProcesses;
 using GameTimeNext.Core.Application.Settings.Views;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
@@ -112,10 +113,10 @@ namespace GameTimeNext.Core.Application.Settings.Controller
 
         private void FillTabMonitoring()
         {
+            GetView().cbMonitoringKeyActive.IsChecked = _appSettings!.MonitoringKeyActive;
             GetView().cbShowToastNotification.IsChecked = _appSettings!.ShowToastNotification;
             GetView().cbShowMonitoringIndicator.IsChecked = _appSettings!.ShowMonitoringIndicator;
             GetView().cbBlackoutSideMonitors.IsChecked = _appSettings!.BlackoutSideMonitors;
-            GetView().cbMonitoringKeyActive.IsChecked = _appSettings!.MonitoringKeyActive;
             GetView().txbMonitoringKey.Text = _appSettings!.MonitoringKey;
         }
 
@@ -195,6 +196,11 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             };
 
             globalKeyInputProcess.Start(20);
+        }
+
+        protected void EV_cbAllowProfileSpecificStyleChanges()
+        {
+
         }
 
         protected void EV_btnOpenSteamGridDB()
@@ -305,6 +311,9 @@ namespace GameTimeNext.Core.Application.Settings.Controller
 
         protected void EV_btnSave()
         {
+            if (GetView().cbAllowProfileSpecificStyleChanges.IsChecked == false)
+                FnTheme.ApplyDefaultTheme();
+
             if (_hasIGDBChanged)
             {
                 GetApp().GetApplication<CFMBOX>().Show("Attention", "Settings for IGDB have changed.\nRestart required!\nGameTimeNext will restart now!", CFMBOXResult.Ok, CFMBOXIcon.Info);

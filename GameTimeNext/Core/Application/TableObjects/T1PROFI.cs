@@ -63,6 +63,9 @@ namespace GameTimeNext.Core.Application.TableObjects
         [UIXSignatureField(18)]
         public string ETTY { get; set; }
 
+        [UIXSignatureField(19)]
+        public bool ETML { get; set; }
+
         public BitmapImage CoverImage { get; set; }
 
         public bool IsPlayable { get; set; } = false;
@@ -98,6 +101,8 @@ namespace GameTimeNext.Core.Application.TableObjects
             ETCO = 0;
 
             ETTY = string.Empty;
+
+            ETML = false;
 
             AcceptChanges();
         }

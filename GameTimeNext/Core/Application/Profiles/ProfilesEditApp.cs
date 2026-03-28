@@ -3,6 +3,7 @@ using GameTimeNext.Core.Application.Profiles.Controller;
 using GameTimeNext.Core.Application.Profiles.Views;
 using GameTimeNext.Core.Application.TableObjects;
 using UIX.ViewController.Engine.Runnables;
+using static GameTimeNext.Core.Application.Profiles.Controller.ProfilesManualEstTimesEditViewController;
 
 namespace GameTimeNext.Core.Application.Profiles
 {
@@ -11,6 +12,9 @@ namespace GameTimeNext.Core.Application.Profiles
 
         private ProfilesEditView? _profilesEditView = null;
         private ProfilesEditViewController? _profilesEditViewController = null;
+
+        private ProfilesManualEstTimesEditView? _profilesManualEstTimesEditView = null;
+        private ProfilesManualEstTimesEditViewController? _profilesManualEstTimesEditViewController = null;
 
         private T1PROFI _t1Profi = new T1PROFI();
 
@@ -27,6 +31,14 @@ namespace GameTimeNext.Core.Application.Profiles
             }
         }
 
+        public ProfilesManualEstTimesEditView ProfilesManualEstTimesEditView
+        {
+            get => _profilesManualEstTimesEditView!;
+            set => _profilesManualEstTimesEditView = value;
+        }
+
+        public ProfilesManualEstTimesCache ManualEstTimesCache { get; set; } = new ProfilesManualEstTimesCache();
+
         public override void InitializeApplicationOutput()
         {
             _profilesEditView = new ProfilesEditView();
@@ -35,7 +47,9 @@ namespace GameTimeNext.Core.Application.Profiles
             _profilesEditViewController = new ProfilesEditViewController(this);
             _profilesEditView.WndController = _profilesEditViewController;
 
-
+            _profilesManualEstTimesEditView = new ProfilesManualEstTimesEditView();
+            _profilesManualEstTimesEditViewController = new ProfilesManualEstTimesEditViewController(this);
+            _profilesManualEstTimesEditView.WndController = _profilesManualEstTimesEditViewController;
         }
 
         public void CreateNew(Action<ProfilesEditViewController.ProfilesEditViewReturn> callback)

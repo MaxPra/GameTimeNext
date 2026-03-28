@@ -298,7 +298,8 @@ namespace GameTimeNext.Core.Framework.DataBase
                     ETMA REAL,
                     ETME REAL,
                     ETCO REAL,
-                    ETTY VARCHAR(200)
+                    ETTY VARCHAR(200),
+                    ETML INTEGER
                 );";
 
             if (_connection == null)

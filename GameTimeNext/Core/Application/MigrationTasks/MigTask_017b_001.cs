@@ -6,7 +6,7 @@ namespace GameTimeNext.Core.Application.MigrationTasks
     /// <summary>
     /// Migriert die neuen Felder im T1PROFI hinzu (ETMA, ETME, ETCO)
     /// </summary>
-    public class MigTask_001
+    public class MigTask_017b_001
     {
         public static void Execute()
         {

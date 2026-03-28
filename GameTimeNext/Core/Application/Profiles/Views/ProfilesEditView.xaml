@@ -176,12 +176,27 @@
                                 Opacity="0.8"
                                 Text="Target play style" />
 
-                            <ComboBox
-                                x:Name="cmbEstimatedTimeType"
-                                Grid.Row="8"
-                                Height="36"
-                                SelectedIndex="0"
-                                ToolTip="Select the target play style" />
+                            <Grid Grid.Row="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="10" />
+                                    <ColumnDefinition Width="120" />
+                                </Grid.ColumnDefinitions>
+
+                                <ComboBox
+                                    x:Name="cmbEstimatedTimeType"
+                                    Grid.Column="0"
+                                    Height="36"
+                                    SelectedIndex="0"
+                                    ToolTip="Select the target play style" />
+
+                                <Button
+                                    x:Name="btnManualEstTimes"
+                                    Grid.Column="2"
+                                    Height="36"
+                                    Content="Enter manual"
+                                    ToolTip="Open the window to manually enter estimated times" />
+                            </Grid>
 
                             <TextBlock
                                 Grid.Row="10"

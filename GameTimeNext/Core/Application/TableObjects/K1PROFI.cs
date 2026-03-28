@@ -25,6 +25,7 @@
             public const string ETME = "ETME";
             public const string ETCO = "ETCO";
             public const string ETTY = "ETTY";
+            public const string ETML = "ETML";
         }
     }
 }

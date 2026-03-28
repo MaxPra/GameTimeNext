@@ -34,5 +34,17 @@
 
             return listStr;
         }
+
+        public static double ToDouble(string str)
+        {
+            double result = 0;
+
+            if (Double.TryParse(str, out result))
+            {
+                return result;
+            }
+
+            return 0;
+        }
     }
 }

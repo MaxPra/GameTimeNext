@@ -22,6 +22,7 @@ using UIX.ViewController.Engine.FrameworkElements.UserControls;
 using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
+using static GameTimeNext.Core.Application.Profiles.Controller.ProfilesManualEstTimesEditViewController;
 
 namespace GameTimeNext.Core.Application.Profiles.Controller
 {
@@ -35,7 +36,15 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         private string _selectedSteamGridDBImagePath = string.Empty;
         private BitmapImage _croppedProfileCover = new BitmapImage();
 
+        private bool _isEstTimeFilledManual = false;
+        private double _estTimeManualMain = 0.0;
+        private double _estTimeManualMainExtra = 0.0;
+        private double _estTimeManualCompletionist = 0.0;
+
         private bool _cmbTargetPlayTypeFilledCompletely = false;
+
+        private bool _successfullyFilledEstTimes = false;
+        private bool _hasProfileCoverChanged = false;
 
         public string CoverAppDataPath
         {
@@ -63,6 +72,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             _profilesEditViewModel = new ProfilesEditViewModel();
             ViewReturn = new ProfilesEditViewReturn();
+
+            _hasProfileCoverChanged = false;
 
             AddIdentifier("T1PROFI", GetApp().T1Profi);
         }
@@ -135,12 +146,18 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             // Akzentfarben
             SaveAccentColors();
 
+            // Erwartete Spielzeit speichern (Manuell)
+            FillDBOManualEstTimes();
+
+            // Erwartete Spielzeiten speichern
+            _successfullyFilledEstTimes = await FillDBOEstimatedTimesIGDBAsync();
+
             // Profileinstellungen
             FillDBOProfileSettings();
 
             // Bild kopieren
             if (GetApp().T1Profi.HasFieldDataChanged(K1PROFI.Fields.PPFN))
-                CFProfilesEditApp.CopyProfileCoverToAppCoverFolder(_coverAppDataPath, _coverAppFolderFileName);
+                _hasProfileCoverChanged = true;
         }
 
 
@@ -159,6 +176,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         private void FillComboboxPlayTypes()
         {
             _cmbTargetPlayTypeFilledCompletely = false;
+
+            GetWnd().cmbEstimatedTimeType.Items.Clear();
 
             GetWnd().cmbEstimatedTimeType.Items.Add(new ComboBoxItem { Content = "(None)", Tag = EstimatedTimeTypes.EST_TIME_NONE });
             GetWnd().cmbEstimatedTimeType.Items.Add(new ComboBoxItem { Content = "Main Story", Tag = EstimatedTimeTypes.EST_TIME_MAIN });
@@ -200,11 +219,6 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             if (source is ToggleButton && source.Name.StartsWith("tglAccent") && eventName == UIXEventNames.ToggleButton.Checked)
             {
                 ToggleAccentChanged(source);
-            }
-
-            if (source is ComboBox && source.Name.StartsWith("cmbEstimatedTimeType") && eventName == UIXEventNames.Selector.SelectionChanged)
-            {
-                await FillDBOEstimatedTimesIGDBAsync();
             }
         }
 
@@ -333,6 +347,18 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             GetApp().T1Profi.EXEC = string.Empty;
         }
 
+        private void FillDBOManualEstTimes()
+        {
+            ComboBoxItem combItem = GetWnd().cmbEstimatedTimeType.SelectedItem as ComboBoxItem;
+
+            GetApp().T1Profi.ETML = _isEstTimeFilledManual;
+            GetApp().T1Profi.ETMA = _estTimeManualMain * 60;
+            GetApp().T1Profi.ETME = _estTimeManualMainExtra * 60;
+            GetApp().T1Profi.ETCO = _estTimeManualCompletionist * 60;
+
+            GetApp().T1Profi.ETTY = combItem.Tag.ToString();
+        }
+
         private void FillDBOTags()
         {
             // selektierte Gruppen auslesen
@@ -373,11 +399,11 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             GetApp().T1Profi.EXEC = cExecutables.Serialize();
         }
 
-        private async Task FillDBOEstimatedTimesIGDBAsync()
+        private async Task<bool> FillDBOEstimatedTimesIGDBAsync()
         {
 
-            if (!_cmbTargetPlayTypeFilledCompletely)
-                return;
+            if (!_cmbTargetPlayTypeFilledCompletely || GetApp().T1Profi.ETML)
+                return false;
 
             ComboBoxItem combItem = GetWnd().cmbEstimatedTimeType.SelectedItem as ComboBoxItem;
 
@@ -389,7 +415,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 GetApp().T1Profi.ETCO = 0;
 
                 GetApp().T1Profi.ETTY = EstimatedTimeTypes.EST_TIME_NONE;
-                return;
+                return true;
             }
 
             GetApp().Loader.Begin();
@@ -420,9 +446,11 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                     GetApp().GetApplication<CFMBOX>().Show("Warning", "Could not find game on IGDB.", CFMBOXResult.Ok, CFMBOXIcon.Warning);
                 });
 
+                ResetPlaytypes();
+
                 GetApp().Loader.Stop();
 
-                return;
+                return false;
             }
 
             var timeToBeat = await igdbservice.GetGameTimeToBeatAsync(gameId!.Value);
@@ -434,8 +462,10 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                     GetApp().GetApplication<CFMBOX>().Show("Warning", "Could not query time to beat.", CFMBOXResult.Ok, CFMBOXIcon.Warning);
                 });
 
+                ResetPlaytypes();
+
                 GetApp().Loader.Stop();
-                return;
+                return false;
             }
 
             if (timeToBeat.Hastily == null || timeToBeat.Normally == null || timeToBeat.Completely == null)
@@ -444,8 +474,11 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 {
                     GetApp().GetApplication<CFMBOX>().Show("Warning", "Could not query time to beat.", CFMBOXResult.Ok, CFMBOXIcon.Warning);
                 });
+
+                ResetPlaytypes();
+
                 GetApp().Loader.Stop();
-                return;
+                return false;
             }
 
             // -- Befüllung
@@ -456,6 +489,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             GetApp().T1Profi.ETTY = combItem.Tag.ToString();
 
             GetApp().Loader.Stop();
+
+            return true;
 
         }
 
@@ -620,6 +655,40 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             }
         }
 
+        private void ResetPlaytypes()
+        {
+            GetWnd().cmbEstimatedTimeType.SelectedIndex = 0;
+
+            FillDBO();
+        }
+
+        private void ShowManualEstTimesEditView()
+        {
+            GetApp().ProfilesManualEstTimesEditView = new ProfilesManualEstTimesEditView();
+            GetApp().ProfilesManualEstTimesEditView.WndController = new ProfilesManualEstTimesEditViewController(GetApp());
+
+            GetApp().ManualEstTimesCache.estTimeMain = GetApp().T1Profi.ETMA / 60;
+            GetApp().ManualEstTimesCache.estTimeMainExtra = GetApp().T1Profi.ETME / 60;
+            GetApp().ManualEstTimesCache.estTimeCompletionist = GetApp().T1Profi.ETCO / 60;
+
+            GetApp().ProfilesManualEstTimesEditView.WndController.SetResultCallback<ProfilesManualEstTimesEditViewReturn>(r =>
+            {
+                if (!r.Canceled)
+                {
+                    _isEstTimeFilledManual = true;
+                    _estTimeManualMain = r.estTimeMain;
+                    _estTimeManualMainExtra = r.estTimeMainExtra;
+                    _estTimeManualCompletionist = r.estTimeCompletionist;
+
+                    GetApp().ManualEstTimesCache.estTimeMain = _estTimeManualMain;
+                    GetApp().ManualEstTimesCache.estTimeMainExtra = _estTimeManualMainExtra;
+                    GetApp().ManualEstTimesCache.estTimeCompletionist = _estTimeManualCompletionist;
+                }
+            });
+
+            GetApp().ProfilesManualEstTimesEditView.WndController.Show(true);
+        }
+
         public ProfilesEditApp GetApp()
         {
             return (ProfilesEditApp)App;
@@ -747,10 +816,19 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             }
         }
 
+        protected void EV_btnManualEstTimes()
+        {
+            ShowManualEstTimesEditView();
+        }
+
         protected void EV_btnSave()
         {
             GetViewReturn<ProfilesEditViewReturn>().Canceled = false;
             GetViewReturn<ProfilesEditViewReturn>().PFID = GetApp().T1Profi.PFID;
+
+            if (_hasProfileCoverChanged)
+                CFProfilesEditApp.CopyProfileCoverToAppCoverFolder(_coverAppDataPath, _coverAppFolderFileName);
+
             Exit(true);
         }
 
