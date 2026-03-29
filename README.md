@@ -33,15 +33,6 @@ GameTimeNext is a modern reimplementation of GameTimeX, designed to provide:
 
 ---
 
-## 🖼️ Preview
-
-<!-- Replace with your own screenshots -->
-<p align="center">
-  <img src="https://via.placeholder.com/900x500?text=GameTimeNext+Preview" />
-</p>
-
----
-
 ## ⚙️ Setup
 
 ### SteamGridDB Integration
