@@ -72,6 +72,26 @@ Without an API key, cover fetching and previews will not be available in the bet
 
 ---
 
+## 🔮 Planned Features
+
+GameTimeNext is continuously evolving. The following features are planned for future versions:
+
+### 🧩 Core Improvements
+- Abort the current playthrough  
+- Archive game profiles  
+
+### 🎮 Platform Expansion
+- Integration of additional game launchers (e.g. Epic Games, others)  
+
+### 📚 Usability & Support
+- Built-in help system and documentation  
+- Improved application search  
+
+### ⭐ Personalization
+- Local game rating system  
+
+---
+
 ## 🔄 Migration from GameTimeX
 
 GameTimeNext includes a built-in migration system:
