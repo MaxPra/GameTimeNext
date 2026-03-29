@@ -1,101 +1,112 @@
-# GameTimeNext
+# 🎮 GameTimeNext
 
-GameTimeNext is a modern reimplementation and evolution of GameTimeX.  
-It provides a flexible, automated, and user-friendly way to track gaming sessions.
+<p align="center">
+  <b>Modern game time tracking with automation and structure</b><br>
+  Successor to GameTimeX
+</p>
 
-The project is based on the original concept of GameTimeX:  
-https://github.com/MaxPra/GameTimeX
+<p align="center">
+  <img src="https://img.shields.io/badge/status-beta-orange" />
+  <img src="https://img.shields.io/badge/version-0.1.9-blue" />
+  <img src="https://img.shields.io/badge/platform-Windows-informational" />
+  <img src="https://img.shields.io/badge/.NET-WPF-purple" />
+</p>
 
 ---
 
-## Download (Beta)
+## 📥 Download
 
-[Download GameTimeNext Installer (v0.1.9 Beta)](https://github.com/MaxPra/GameTimeNext/releases/download/GameTimeNext_v0.1.9beta/GameTimeNext_v0.1.9betaInstaller.msi)
+👉 [Download Installer (v0.1.9 Beta)](https://github.com/MaxPra/GameTimeNext/releases/download/GameTimeNext_v0.1.9beta/GameTimeNext_v0.1.9betaInstaller.msi)
 
 ---
 
-## Overview
+## 🧭 Overview
 
-GameTimeNext focuses on:
+GameTimeNext is a modern reimplementation of GameTimeX, designed to provide:
 
 - Automated playtime tracking  
-- Structured game and playthrough management  
-- Clean and modern user interface  
-- Extensibility for future features  
+- Structured playthrough management  
+- Clean and modern UI  
+- Expandable architecture  
+
+🔗 Original Project: https://github.com/MaxPra/GameTimeX
 
 ---
 
-## Getting Started
+## 🖼️ Preview
 
-### Application Navigation
-
-GameTimeNext uses an application-based interface.
-
-- Use the **Search Application** bar to locate available modules  
-- Open applications directly from the search results  
-
-### Favorites and Startup Behavior
-
-Applications can be configured via right-click:
-
-- Add to **Favorites** → automatically opens on startup  
-- Set as **Primary Start Application** → opens and gains focus on startup  
+<!-- Replace with your own screenshots -->
+<p align="center">
+  <img src="https://via.placeholder.com/900x500?text=GameTimeNext+Preview" />
+</p>
 
 ---
 
-## Setup
+## ⚙️ Setup
 
 ### SteamGridDB Integration
 
-To enable cover artwork and previews:
+To enable cover artwork:
 
 1. Open **Settings**  
 2. Enter your **SteamGridDB API Key**  
 3. Save  
 
-Without an API key, artwork features are disabled in the current beta.
+> Without an API key, artwork features are disabled in the current beta.
 
 ---
 
-## Features
+## 🚀 Usage
 
-### Playtime Tracking
-- Manual start/stop tracking  
-- Full control over recorded sessions  
+### Application Navigation
+- Use **Search Application** to find modules  
+- Open directly from results  
 
-### Playtime Overview
+### Startup Configuration
+Right-click any application:
+
+- ⭐ Add to Favorites  
+- 🚀 Set as Primary Start Application  
+
+---
+
+## ✨ Features
+
+### ⏱️ Tracking
+- Manual start/stop system  
+- Precise session control  
+
+### 📊 Overview
 - Total playtime per game  
-- Daily playtime tracking  
+- Daily tracking  
 
-### Playthrough Management
-- Multiple playthroughs per game  
-- Support for DLC or separate runs  
+### 🎯 Playthroughs
+- Multiple runs per game  
+- DLC separation  
 
-### Automatic Profile Switching
+### 🔄 Automation
 - Detects running games  
-- Switches to the correct profile automatically  
+- Automatic profile switching  
 
-### SteamGridDB Integration
-- Link Steam profile or use custom naming  
-- Fetch and preview covers  
-- Improve library visuals  
+### 🖼️ Visuals
+- SteamGridDB integration  
+- Cover previews  
 
 ---
 
-## Planned Features
+## 🔮 Roadmap
 
-The following features are planned for future releases:
-
-### Core Functionality
+### Core
 - Abort current playthrough  
 - Archive profiles  
 
-### Platform Integration
-- Support for additional launchers (e.g. Epic Games)  
+### Platforms
+- Epic Games integration  
+- Additional launcher support  
 
 ### Usability
-- Integrated help system / documentation  
-- Improved application search  
+- Built-in help system  
+- Improved search  
 
 ### Personalization
 - Local game rating system  
@@ -105,37 +116,30 @@ The following features are planned for future releases:
 
 ---
 
-## Migration from GameTimeX
+## 🔄 Migration
 
-A built-in migration system is available:
-
-- Detects existing GameTimeX installations (latest version required)  
-- Guides through the migration process  
-- Imports existing data (playtime, profiles, etc.)  
+- Detects GameTimeX installation  
+- Guided migration  
+- Automatic data import  
 
 ---
 
-## Beta Status
-
-GameTimeNext is currently in beta.
+## ⚠️ Beta
 
 - Features may change  
-- Minor issues may occur  
-- Feedback is welcome  
+- Minor issues possible  
+- Feedback appreciated  
 
 ---
 
-## Summary
+## 🧩 Tech Stack
 
-GameTimeNext extends GameTimeX with:
-
-- Improved automation  
-- Better structure  
-- Modern UI  
-- Expanded functionality  
+- .NET / WPF  
+- Local data storage  
+- External API (SteamGridDB)  
 
 ---
 
-## Feedback
+## 💬 Feedback
 
-Issues and feature requests can be submitted via GitHub.
+Open an issue on GitHub if you encounter problems or have suggestions.
