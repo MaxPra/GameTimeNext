@@ -11,6 +11,7 @@
             public const string PTTY = "PTTY";
             public const string PTDE = "PTDE";
             public const string PTCO = "PTCO";
+            public const string PTCA = "PTCA";
             public const string CRAT = "CRAT";
             public const string CHAT = "CHAT";
         }

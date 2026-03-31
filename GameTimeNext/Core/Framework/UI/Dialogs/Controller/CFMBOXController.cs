@@ -70,7 +70,7 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
             GetWnd().Loaded += Wnd_Loaded;
             GetWnd().LocationChanged += Wnd_LocationChanged;
             GetWnd().PreviewKeyDown += Wnd_PreviewKeyDown;
-            GetWnd().HeaderRoot.MouseLeftButtonDown += HeaderRoot_MouseLeftButtonDown;
+            //GetWnd().HeaderRoot.MouseLeftButtonDown += HeaderRoot_MouseLeftButtonDown;
         }
 
         protected override void BuildFirst()
@@ -129,7 +129,7 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
             GetWnd().Loaded -= Wnd_Loaded;
             GetWnd().LocationChanged -= Wnd_LocationChanged;
             GetWnd().PreviewKeyDown -= Wnd_PreviewKeyDown;
-            GetWnd().HeaderRoot.MouseLeftButtonDown -= HeaderRoot_MouseLeftButtonDown;
+            //GetWnd().HeaderRoot.MouseLeftButtonDown -= HeaderRoot_MouseLeftButtonDown;
         }
 
         protected override void Event_Minimize()

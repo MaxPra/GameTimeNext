@@ -21,9 +21,12 @@ namespace GameTimeNext.Core.Application.TableObjects
         public bool PTCO { get; set; }
 
         [UIXSignatureField(5)]
-        public DateTime CRAT { get; set; }
+        public bool PTCA { get; set; }
 
         [UIXSignatureField(6)]
+        public DateTime CRAT { get; set; }
+
+        [UIXSignatureField(7)]
         public DateTime CHAT { get; set; }
 
         public T1PLTHR()
@@ -35,6 +38,7 @@ namespace GameTimeNext.Core.Application.TableObjects
             PTDE = string.Empty;
 
             PTCO = false;
+            PTCA = false;
 
             CRAT = DateTime.MinValue;
             CHAT = DateTime.MinValue;

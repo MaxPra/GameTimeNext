@@ -75,7 +75,7 @@
                     Grid.Column="1"
                     FontSize="12"
                     Foreground="{DynamicResource Brush.TextDisabled}"
-                    Text="v0.1.7" />
+                    Text="v0.2.0" />
             </Grid>
 
         </Grid>

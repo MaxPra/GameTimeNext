@@ -313,16 +313,17 @@ namespace GameTimeNext.Core.Framework.DataBase
         private void CreateTableT1PLTHR()
         {
             var sql = @"
-            CREATE TABLE IF NOT EXISTS T1PLTHR (
-                PTID INTEGER PRIMARY KEY AUTOINCREMENT,
-                PFID INTEGER NOT NULL,
-                PTTY VARCHAR(200),
-                PTDE VARCHAR(200),
-                PTCO INTEGER,
-                CRAT DATETIME,
-                CHAT DATETIME,
-                UNIQUE (PFID, PTID)
-            );";
+                CREATE TABLE IF NOT EXISTS T1PLTHR (
+                    PTID INTEGER PRIMARY KEY AUTOINCREMENT,
+                    PFID INTEGER NOT NULL,
+                    PTTY VARCHAR(200),
+                    PTDE VARCHAR(200),
+                    PTCO INTEGER,
+                    PTCA INTEGER,
+                    CRAT DATETIME,
+                    CHAT DATETIME,
+                    UNIQUE (PFID, PTID)
+                );";
 
             if (_connection == null)
                 return;

@@ -337,12 +337,13 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             contextBuilder.AddItem("ctxtEdit", "Edit", icon: UIXContextMenuFactory.CreateMdlIcon("\uE70F"), itemStyle: contextMenuItemStyle);
             contextBuilder.AddItem("ctxtDelete", "Delete", icon: UIXContextMenuFactory.CreateMdlIcon("\uE74D"), itemStyle: contextMenuItemStyle);
 
-            // Wenn Profil noch nicht als durchgespielt markiert
+            // Wenn Profil noch nicht als durchgespielt markiert oder gecancelt
             T1PLTHR currentPlaythrough = TFPLTHR.GetCurrentPlaythrough(t1profi.PFID);
 
-            if (currentPlaythrough != null && !TFPLTHR.GetCurrentPlaythrough(t1profi.PFID).PTCO)
+            if (currentPlaythrough != null && !currentPlaythrough.PTCO && !currentPlaythrough.PTCA)
             {
                 contextBuilder.AddItem("ctxtCompleteProfile", "Current playthrough completed", icon: UIXContextMenuFactory.CreateMdlIcon("\uE930"), itemStyle: contextMenuItemStyle);
+                contextBuilder.AddItem("ctxtCancelPlaythrough", "Cancel current playthrough", icon: UIXContextMenuFactory.CreateMdlIcon("\uE711"), itemStyle: contextMenuItemStyle);
             }
             else
             {
@@ -600,6 +601,26 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                     _dataWrapper!.TargetController.Open(true);
                 }
             });
+        }
+
+        protected void EV_ctxtCancelPlaythrough()
+        {
+            T1PROFI t1profi = _profilesSubGridViewModel!.SelectedT1Profi;
+
+            T1PLTHR t1plthr = TFPLTHR.GetCurrentPlaythrough(t1profi.PFID);
+
+            string text = "Do you really want to cancel your current playthrough?\nYou won't be able to undo this action!\n\nInformation: The gametime of this playthrough will be added to your overall gametime!";
+            CFMBOXResult result = GetApp().GetApplication<CFMBOX>().Show("Question", text, CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
+
+            if (result == CFMBOXResult.No)
+                return;
+
+            // Playthrough canceln
+            t1plthr.PTCA = true;
+
+            new TXPLTHR().Save(t1plthr);
+
+            _dataWrapper!.TargetController.Open(true);
         }
 
         #endregion
