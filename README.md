@@ -16,7 +16,7 @@
 
 ## 📥 Download
 
-👉 [Download Installer (v0.1.9 Beta)](https://github.com/MaxPra/GameTimeNext/releases/download/GameTimeNext_v0.1.9beta/GameTimeNext_v0.1.9betaInstaller.msi)
+👉 [Download Installer (v0.2.0 Beta)](https://github.com/MaxPra/GameTimeNext/releases/download/GameTimeNext_v0.2.0beta/GameTimeNext_v0.2.0betaInstaller.msi)
 
 ---
 
