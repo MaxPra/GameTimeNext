@@ -72,7 +72,8 @@ Right-click any application:
 - Daily tracking  
 
 ### 🎯 Playthroughs
-- Multiple runs per game  
+- Multiple runs per game
+- Abort current playthrough 
 - DLC separation  
 
 ### 🔄 Automation
@@ -87,8 +88,7 @@ Right-click any application:
 
 ## 🔮 Roadmap
 
-### Core
-- Abort current playthrough  
+### Core 
 - Archive profiles  
 
 ### Platforms
