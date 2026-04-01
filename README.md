@@ -16,7 +16,7 @@
 
 ## 📥 Download
 
-👉 [Download Installer (v0.1.9 Beta)](https://github.com/MaxPra/GameTimeNext/releases/download/GameTimeNext_v0.1.9beta/GameTimeNext_v0.1.9betaInstaller.msi)
+👉 [Download Installer (v0.2.0 Beta)](https://github.com/MaxPra/GameTimeNext/releases/download/GameTimeNext_v0.2.0beta/GameTimeNext_v0.2.0betaInstaller.msi)
 
 ---
 
@@ -68,11 +68,13 @@ Right-click any application:
 - Precise session control  
 
 ### 📊 Overview
-- Total playtime per game  
+- Total playtime per game
+- Archive profiles
 - Daily tracking  
 
 ### 🎯 Playthroughs
-- Multiple runs per game  
+- Multiple runs per game
+- Abort current playthrough 
 - DLC separation  
 
 ### 🔄 Automation
@@ -85,11 +87,7 @@ Right-click any application:
 
 ---
 
-## 🔮 Roadmap
-
-### Core
-- Abort current playthrough  
-- Archive profiles  
+## 🔮 Roadmap  
 
 ### Platforms
 - Epic Games integration  
