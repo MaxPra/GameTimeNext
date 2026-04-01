@@ -7,6 +7,7 @@ using GameTimeNext.Core.Framework.Files;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.UserInput;
 using GameTimeNext.Core.Framework.Utils;
+using Microsoft.VisualBasic.FileIO;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
@@ -259,6 +260,14 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             }
 
             string exportPath = GetView().txbBackupExportPath.Text;
+
+            if (FnSystem.IsDebug())
+            {
+                exportPath = SpecialDirectories.MyDocuments + @"\GameTimeNext_Backup_dev";
+
+                if (!Directory.Exists(exportPath))
+                    Directory.CreateDirectory(exportPath);
+            }
 
             GetApp().Loader.Begin("Creating backup...");
 

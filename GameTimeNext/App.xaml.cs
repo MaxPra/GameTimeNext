@@ -2,6 +2,9 @@
 using GameTimeNext.Core.Application.Settings;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Files;
+using GameTimeNext.Core.Framework.Utils;
+using Microsoft.VisualBasic.FileIO;
+using System.IO;
 using System.Windows;
 
 namespace GameTimeNext
@@ -53,7 +56,20 @@ namespace GameTimeNext
             AppEnvironment.StopBackgroundProcesses();
 
             if (AppEnvironment.GetAppConfig().AppSettings.AutoBackup)
-                FnBackup.CreateBackupSync(AppEnvironment.GetAppConfig().AppSettings.BackupExportPath, BackupType.APP_CLOSED_BACKUP);
+            {
+                string backupPath = AppEnvironment.GetAppConfig().AppSettings.BackupExportPath;
+
+                if (FnSystem.IsDebug())
+                {
+                    backupPath = SpecialDirectories.MyDocuments + @"\GameTimeNext_Backup_dev";
+
+                    if (!Directory.Exists(backupPath))
+                        Directory.CreateDirectory(backupPath);
+                }
+
+                FnBackup.CreateBackupSync(backupPath, BackupType.APP_CLOSED_BACKUP);
+            }
+
 
             if (AppEnvironment.GetDataBaseManager().GetConnection() != null)
                 AppEnvironment.GetDataBaseManager().GetConnection().Close();
