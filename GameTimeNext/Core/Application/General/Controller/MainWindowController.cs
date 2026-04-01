@@ -44,6 +44,7 @@ namespace GameTimeNext.Core.Application.General.Controller
             if (!Debugger.IsAttached)
             {
                 GetWindow().BdDevModeBatch.Visibility = Visibility.Hidden;
+                GetWindow().pnlDevPathsFooter.Visibility = Visibility.Hidden;
             }
 
             BuildBetaTag();

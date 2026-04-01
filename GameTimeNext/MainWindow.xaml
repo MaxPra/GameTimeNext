@@ -27,9 +27,14 @@
     mc:Ignorable="d">
 
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
 
         <TabControl
             x:Name="MainTabControl"
+            Grid.Row="1"
             Padding="0"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
@@ -83,6 +88,7 @@
 
         <Border
             x:Name="BdDevModeBatch"
+            Grid.Row="1"
             Margin="0,12,18,0"
             Padding="12,6"
             HorizontalAlignment="Right"
@@ -102,8 +108,30 @@
                 <TextBlock
                     FontWeight="SemiBold"
                     Foreground="{DynamicResource Brush.TextPrimary}"
-                    Text="DEV. MODE" />
+                    Text="DEV MODE" />
             </StackPanel>
+        </Border>
+
+        <Border
+            x:Name="pnlDevPathsFooter"
+            Grid.Row="0"
+            Height="26"
+            Margin="0"
+            Padding="8,2"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Top"
+            Panel.ZIndex="10"
+            Background="#FF8B0000"
+            ToolTip="Development paths are being used.">
+
+            <TextBlock
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                FontSize="12"
+                FontWeight="SemiBold"
+                Foreground="White"
+                Text="Development paths are being used." />
+
         </Border>
 
     </Grid>

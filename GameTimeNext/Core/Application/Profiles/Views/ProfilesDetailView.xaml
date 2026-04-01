@@ -65,7 +65,7 @@
                             StretchDirection="DownOnly">
                             <Border Margin="0" Style="{StaticResource ProfileDetail.CoverFrame}">
                                 <Grid>
-                                    <Image uixprops:UIXAttachedProperty.Path="T1PROFI.PPFN" Style="{StaticResource ProfileDetail.CoverImage}" />
+                                    <Image x:Name="imgProfileCover" Style="{StaticResource ProfileDetail.CoverImage}" />
                                     <Border Style="{StaticResource ProfileDetail.CoverOverlay}" />
                                 </Grid>
                             </Border>

@@ -1,4 +1,7 @@
-﻿using GameTimeNext.Core.Application.TableObjects;
+﻿using System;
+using System.IO;
+using System.Collections.Generic;
+using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
 
 namespace GameTimeNext.Core.Application.MigrationTasks
@@ -76,6 +79,44 @@ namespace GameTimeNext.Core.Application.MigrationTasks
                     insertGroupCmd.Parameters.AddWithValue("@chat", DateTime.Now);
                     insertGroupCmd.ExecuteNonQuery();
                 }
+            }
+
+            // Kürze in allen T1PROFI-Einträgen das Feld PPFN auf den Dateinamen (ohne Pfad)
+            var updates = new List<(long RowId, string Ppfn)>();
+
+            using (var selectCmd = connection.CreateCommand())
+            {
+                // Ensure a stable column name for the row identifier across different SQLite provider behaviors
+                selectCmd.CommandText = "SELECT ROWID AS _ROWID, PPFN FROM T1PROFI;";
+
+                using (var reader = selectCmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        object rowObj = reader["_ROWID"];
+                        if (rowObj == null || rowObj == DBNull.Value)
+                            continue;
+
+                        long rowid = Convert.ToInt64(rowObj);
+                        var ppfnObj = reader["PPFN"];
+                        var ppfn = ppfnObj?.ToString();
+                        if (string.IsNullOrEmpty(ppfn))
+                            continue;
+
+                        var fileName = Path.GetFileName(ppfn);
+                        if (!string.Equals(ppfn, fileName, StringComparison.Ordinal))
+                            updates.Add((rowid, fileName ?? string.Empty));
+                    }
+                }
+            }
+
+            foreach (var u in updates)
+            {
+                using var updateCmd = connection.CreateCommand();
+                updateCmd.CommandText = "UPDATE T1PROFI SET PPFN = @ppfn WHERE ROWID = @rowid;";
+                updateCmd.Parameters.AddWithValue("@ppfn", u.Ppfn);
+                updateCmd.Parameters.AddWithValue("@rowid", u.RowId);
+                updateCmd.ExecuteNonQuery();
             }
         }
     }

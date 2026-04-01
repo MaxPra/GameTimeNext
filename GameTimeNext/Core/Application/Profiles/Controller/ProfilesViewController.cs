@@ -395,7 +395,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
             foreach (T1PROFI prof in T1PROFIs)
             {
-                prof.CoverImage = FnImage.LoadImageWithoutLock(prof.PPFN, 300, 450);
+                string coverPath = Path.Combine(AppEnvironment.GetAppConfig().CoverFolderPath ?? string.Empty, prof.PPFN);
+                prof.CoverImage = FnImage.LoadImageWithoutLock(coverPath, 300, 450);
                 prof.IsPlayable = FnSystem.IsExeFoundInPath(prof.EXGF);
             }
         }
@@ -596,7 +597,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             {
                 T1PROFI selectedT1profi = _profilesSubGridViewModel!.SelectedT1Profi;
 
-                File.Delete(selectedT1profi.PPFN);
+                string coverPath = Path.Combine(AppEnvironment.GetAppConfig().CoverFolderPath ?? string.Empty, selectedT1profi.PPFN);
+                File.Delete(coverPath);
 
                 TFPROFI.DeleteT1PROFIAndLinkedData(selectedT1profi);
 

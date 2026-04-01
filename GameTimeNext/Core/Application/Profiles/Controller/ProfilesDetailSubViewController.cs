@@ -7,6 +7,7 @@ using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Application.TimeMonitoring;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.LauncherIntegration;
+using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls.Primitives;
@@ -73,6 +74,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         protected override void BuildFirst()
         {
             ResetView();
+
+            GetView().imgProfileCover.Source = FnImage.LoadImageWithoutLock(Path.Combine(AppEnvironment.GetAppConfig().CoverFolderPath, _dataWrapper!.GetTypedTableObject().PPFN), 300, 450);
 
             GetView().btnLaunchGame.IsEnabled = _dataWrapper!.GetTypedTableObject().SAID != 0 && GetView().btnLaunchGame.Content != "Running..." && TFPROFI.HasExecutables(_dataWrapper.GetTypedTableObject());
 
