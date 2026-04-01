@@ -87,33 +87,7 @@
         </TabControl>
 
         <Border
-            x:Name="BdDevModeBatch"
-            Grid.Row="1"
-            Margin="0,12,18,0"
-            Padding="12,6"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Top"
-            Panel.ZIndex="10"
-            Background="#22FF4C4C"
-            CornerRadius="{StaticResource DefaultCornerRadius}">
-
-            <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-                <Image
-                    Width="30"
-                    Height="30"
-                    Margin="0,0,8,0"
-                    Source="/UI/Ressources/ICON_DEBUG.png"
-                    Stretch="Uniform" />
-
-                <TextBlock
-                    FontWeight="SemiBold"
-                    Foreground="{DynamicResource Brush.TextPrimary}"
-                    Text="DEV MODE" />
-            </StackPanel>
-        </Border>
-
-        <Border
-            x:Name="pnlDevPathsFooter"
+            x:Name="pnlDevPathsHeader"
             Grid.Row="0"
             Height="26"
             Margin="0"
@@ -122,7 +96,7 @@
             VerticalAlignment="Top"
             Panel.ZIndex="10"
             Background="#FF8B0000"
-            ToolTip="Development paths are being used.">
+            ToolTip="DEVMODE ON: Development paths are being used.">
 
             <TextBlock
                 HorizontalAlignment="Center"
@@ -130,7 +104,7 @@
                 FontSize="12"
                 FontWeight="SemiBold"
                 Foreground="White"
-                Text="Development paths are being used." />
+                Text="DEVMODE ON: Development paths are being used." />
 
         </Border>
 

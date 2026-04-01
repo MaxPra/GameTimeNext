@@ -3,7 +3,7 @@ using GameTimeNext.Core.Application.General.ViewModels;
 using GameTimeNext.Core.Application.GTXMigration;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.UI.Dialogs;
-using System.Diagnostics;
+using GameTimeNext.Core.Framework.Utils;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,6 +11,7 @@ using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.Events;
 using UIX.ViewController.Engine.Runnables;
+using UIX.ViewController.Engine.Utils;
 using AppEnvironment = GameTimeNext.Core.Framework.AppEnvironment;
 
 namespace GameTimeNext.Core.Application.General.Controller
@@ -40,12 +41,7 @@ namespace GameTimeNext.Core.Application.General.Controller
             // Für Applauncher Tab Control setzen
             AppEnvironment.AppLauncher.TabControl = GetWindow().MainTabControl;
 
-            // DEV-Batch & Metadata-Tab
-            if (!Debugger.IsAttached)
-            {
-                GetWindow().BdDevModeBatch.Visibility = Visibility.Hidden;
-                GetWindow().pnlDevPathsFooter.Visibility = Visibility.Hidden;
-            }
+            FnControls.SetVisible(GetWindow().pnlDevPathsHeader, FnSystem.IsDebug());
 
             BuildBetaTag();
 
