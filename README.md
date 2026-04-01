@@ -68,7 +68,8 @@ Right-click any application:
 - Precise session control  
 
 ### 📊 Overview
-- Total playtime per game  
+- Total playtime per game
+- Archive profiles
 - Daily tracking  
 
 ### 🎯 Playthroughs
@@ -86,10 +87,7 @@ Right-click any application:
 
 ---
 
-## 🔮 Roadmap
-
-### Core 
-- Archive profiles  
+## 🔮 Roadmap  
 
 ### Platforms
 - Epic Games integration  
