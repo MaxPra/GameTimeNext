@@ -202,15 +202,16 @@ namespace GameTimeNext.Core.Application.General.Controller
         private void ShowErrorsFromErrorList()
         {
 
-            if (AppEnvironment.ErrorList == null || AppEnvironment.ErrorList.Count == 0)
+            if (AppEnvironment.InformationList == null || AppEnvironment.InformationList.Count == 0)
                 return;
 
-            foreach (string errorTxt in AppEnvironment.ErrorList)
+            foreach (InformationListItem informationListItem in AppEnvironment.InformationList)
             {
-                GetApp().GetApplication<CFMBOX>().Show("Error", errorTxt, CFMBOXResult.Ok, CFMBOXIcon.Error);
+
+                GetApp().GetApplication<CFMBOX>().Show(informationListItem.Text, CFMBOXResult.Ok, informationListItem.Icon);
             }
 
-            AppEnvironment.ErrorList.Clear();
+            AppEnvironment.InformationList.Clear();
         }
 
         protected void EV_ctxtClose(FrameworkElement target)

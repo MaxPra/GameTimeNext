@@ -1,4 +1,5 @@
 ﻿using GameTimeNext.Core.Framework.Config;
+using GameTimeNext.Core.Framework.Utils;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -10,6 +11,9 @@ namespace GameTimeNext.Core.Framework.Files
     {
         public static void CreateApplicationFoldersAndFiles()
         {
+
+            CreateDevAppFolder();
+
             if (!Directory.Exists(AppEnvironment.GetAppConfig().AppFolderPath))
             {
                 Directory.CreateDirectory(AppEnvironment.GetAppConfig().AppFolderPath);
@@ -36,8 +40,6 @@ namespace GameTimeNext.Core.Framework.Files
 
                 File.WriteAllText(AppEnvironment.GetAppConfig().AppConfigPath, JsonSerializer.Serialize(appConfig));
             }
-
-
         }
 
         public static void CopyDirectory(string sourceDirectory, string targetDirectory, bool overwriteFiles)
@@ -179,6 +181,36 @@ namespace GameTimeNext.Core.Framework.Files
             return files
                 .OrderByDescending(f => f.LastWriteTime)
                 .FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Creates the development application folder if it does not already exist and the application is running in
+        /// debug mode.
+        /// </summary>
+        /// <remarks>If a normal application folder exists, its contents are copied to the development
+        /// folder. Otherwise, an empty development folder is created. This method has no effect when not running in
+        /// debug mode.</remarks>
+        private static void CreateDevAppFolder()
+        {
+            if (!FnSystem.IsDebug())
+                return;
+
+            string appFolderPathNormal = AppEnvironment.GetAppConfig().AppFolderPathNormal;
+            string appFolderPathDev = AppEnvironment.GetAppConfig().AppFolderPath;
+
+            if (Directory.Exists(appFolderPathDev))
+                return;
+
+            if (Directory.Exists(appFolderPathNormal))
+            {
+                CopyDirectory(appFolderPathNormal, appFolderPathDev, true);
+
+                AppEnvironment.InformationList.Add(new InformationListItem(UI.Dialogs.CFMBOXIcon.Info, "Dev folder was created from production app folder!"));
+            }
+            else
+            {
+                Directory.CreateDirectory(appFolderPathDev);
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using GameTimeNext.Core.Application.General.UserSettings;
 using GameTimeNext.Core.Application.TableObjects;
+using GameTimeNext.Core.Framework.Utils;
 using System.IO;
 using System.Text.Json.Serialization;
 using static GameTimeNext.Core.Application.Profiles.Controller.ProfilesViewController;
@@ -27,8 +28,21 @@ namespace GameTimeNext.Core.Framework.Config
         {
             get
             {
-                return RootFolderPath + Path.DirectorySeparatorChar + "GameTimeNXT";
+                string appFolderPath = AppFolderPathNormal;
+
+                if (FnSystem.IsDebug())
+                {
+                    appFolderPath += "_dev";
+                }
+
+                return appFolderPath;
             }
+        }
+
+        [JsonIgnore]
+        public string AppFolderPathNormal
+        {
+            get => RootFolderPath + Path.DirectorySeparatorChar + "GameTimeNXT";
         }
 
         [JsonIgnore]

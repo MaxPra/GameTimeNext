@@ -60,7 +60,8 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
             _windowReturn.Result = CFMBOXResult.None;
 
             ApplyContent(title, message, buttons, icon, owner);
-            GetWnd().ShowDialog();
+
+            Show(true);
 
             return _windowReturn.Result;
         }
@@ -142,12 +143,33 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
 
         private void ApplyContent(string title, string message, CFMBOXResult buttons, CFMBOXIcon icon, Window? owner)
         {
+            // Ensure dialog has correct owner so it stays on top of the main window
+            GetWnd().Owner = owner;
+            // Do not show dialog as separate taskbar window
+            GetWnd().ShowInTaskbar = false;
+
+            if (string.IsNullOrWhiteSpace(title))
+                title = DeriveTitleFromIcon(icon);
+
             GetWnd().Title = title;
             GetWnd().TbMessage.Text = message;
 
             ConfigureButtons(buttons);
             ApplyIcon(icon);
             PrepareStartupPosition();
+        }
+
+        private static string DeriveTitleFromIcon(CFMBOXIcon icon)
+        {
+            return icon switch
+            {
+                CFMBOXIcon.Info => "Information",
+                CFMBOXIcon.Question => "Question",
+                CFMBOXIcon.Warning => "Warning",
+                CFMBOXIcon.Error => "Error",
+                CFMBOXIcon.Success => "Success",
+                _ => string.Empty,
+            };
         }
 
         private void Wnd_Loaded(object? sender, RoutedEventArgs e)

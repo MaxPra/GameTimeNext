@@ -19,7 +19,18 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
 
         public CFMBOXResult Show(string title, string message, CFMBOXResult buttons)
         {
-            return Show(title, message, buttons, CFMBOXIcon.Info, System.Windows.Application.Current?.MainWindow);
+            return Show(title, message, buttons, CFMBOXIcon.Info, this.WndParent ?? System.Windows.Application.Current?.MainWindow);
+        }
+
+        public CFMBOXResult Show(string message, CFMBOXResult buttons, CFMBOXIcon icon)
+        {
+            return Show(message, buttons, icon, this.WndParent ?? System.Windows.Application.Current?.MainWindow);
+        }
+
+        public CFMBOXResult Show(string message, CFMBOXResult buttons, CFMBOXIcon icon, Window? owner)
+        {
+            string title = DeriveTitleFromIcon(icon);
+            return Show(title, message, buttons, icon, owner ?? this.WndParent ?? System.Windows.Application.Current?.MainWindow);
         }
 
         public CFMBOXResult Show(string title, string message, CFMBOXResult buttons, CFMBOXIcon icon)
@@ -45,6 +56,19 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
 
             _cfmboxController = new CFMBOXController(this);
             _cfmboxView.WndController = _cfmboxController;
+        }
+
+        private static string DeriveTitleFromIcon(CFMBOXIcon icon)
+        {
+            return icon switch
+            {
+                CFMBOXIcon.Info => "Information",
+                CFMBOXIcon.Question => "Question",
+                CFMBOXIcon.Warning => "Warning",
+                CFMBOXIcon.Error => "Error",
+                CFMBOXIcon.Success => "Success",
+                _ => string.Empty,
+            };
         }
     }
 }

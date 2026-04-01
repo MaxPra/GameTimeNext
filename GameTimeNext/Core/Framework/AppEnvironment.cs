@@ -8,7 +8,10 @@ using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.DataBase;
 using GameTimeNext.Core.Framework.Files;
 using GameTimeNext.Core.Framework.Igdb;
+using GameTimeNext.Core.Framework.UI.Dialogs;
+using GameTimeNext.Core.Framework.Utils;
 using GameTimeNext.Core.Framework.Versioning;
+using Microsoft.VisualBasic.FileIO;
 using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
@@ -35,7 +38,7 @@ namespace GameTimeNext.Core.Framework
         public static Dictionary<string, UIXApplication> StartedApplications { get => _startedApplications; set => _startedApplications = value; }
         public static List<SearchableApplication> AvailableApplications { get; set; } = new List<SearchableApplication>();
         public static Dictionary<string, UIXBackgroundProcess> StartedBackgroundProcesses { get => _startedBackgroundProcesses; set => _startedBackgroundProcesses = value; }
-        public static List<string> ErrorList { get; set; } = new List<string>();
+        public static List<InformationListItem> InformationList { get; set; } = new List<InformationListItem>();
 
         public static string TwitchAuthenticationToken { get; set; } = string.Empty;
 
@@ -170,7 +173,7 @@ namespace GameTimeNext.Core.Framework
 
             if (FnString.IsNullEmptyOrWhitespace(TwitchAuthenticationToken))
             {
-                ErrorList.Add("Couldn't get auth-token for IGDB!");
+                InformationList.Add(new InformationListItem(CFMBOXIcon.Error, "Couldn't get auth-token for IGDB!"));
                 return;
             }
 
@@ -185,7 +188,7 @@ namespace GameTimeNext.Core.Framework
 
 
             if (FnString.IsNullEmptyOrWhitespace(IgdbExtGameSources))
-                ErrorList.Add("Couldn't get external game sources from IGDB!");
+                InformationList.Add(new InformationListItem(CFMBOXIcon.Error, "Couldn't get external game sources from IGDB!"));
         }
 
         private static void HandleBackup()
@@ -193,17 +196,13 @@ namespace GameTimeNext.Core.Framework
             // Backup hier einspielen
             if (_appConfig.AppSettings.BackupType == BackupType.IMPORT_BACKUP)
             {
-
-                //if (AppVersion.IsBiggerThan(_appConfig.AppVersion) || AppVersion.IsSmallerThan(_appConfig.AppVersion))
-                //    ErrorList.Add("Backups can not be imported from another version.\nCurrent version: " + AppVersion.VersionText + "\n Backup version: " + _appConfig.Ver);
-
                 try
                 {
                     FnBackup.ImportBackup(_appConfig.AppSettings.BackupImportPath);
                 }
                 catch (Exception)
                 {
-                    ErrorList.Add("Could not import backupfile:\n" + _appConfig.AppSettings.BackupImportPath + ".");
+                    InformationList.Add(new InformationListItem(CFMBOXIcon.Error, "Could not import backupfile:\n" + _appConfig.AppSettings.BackupImportPath + "."));
                 }
 
                 // Hier nochmal AppConfig laden, da vorher durch Backupimport überschrieben
@@ -214,19 +213,29 @@ namespace GameTimeNext.Core.Framework
                 if (!_appConfig.AppSettings.AutoBackup)
                     return;
 
-                if (!Directory.Exists(_appConfig.AppSettings.BackupExportPath))
+                string backupPath = _appConfig.AppSettings.BackupExportPath;
+
+                if (FnSystem.IsDebug())
                 {
-                    ErrorList.Add("Could not create auto backup.\nBackup export path doesn't exist.");
+                    backupPath = SpecialDirectories.MyDocuments + @"\GameTimeNext_Backup_dev";
+
+                    if (!Directory.Exists(backupPath))
+                        Directory.CreateDirectory(backupPath);
+                }
+
+                if (!Directory.Exists(backupPath))
+                {
+                    InformationList.Add(new InformationListItem(CFMBOXIcon.Error, "Could not create auto backup.\nBackup export path doesn't exist."));
                     return;
                 }
 
                 try
                 {
-                    FnBackup.CreateBackupSync(_appConfig.AppSettings.BackupExportPath);
+                    FnBackup.CreateBackupSync(backupPath);
                 }
                 catch (Exception e)
                 {
-                    ErrorList.Add("Something went wrong while auto-backup creation!");
+                    InformationList.Add(new InformationListItem(CFMBOXIcon.Error, "Something went wrong while auto-backup creation!"));
                 }
             }
         }

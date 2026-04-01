@@ -102,6 +102,31 @@ namespace GameTimeNext.Core.Framework.Utils
             return FindExecutables(path).Count > 0;
         }
 
+        /// <summary>
+        /// Determines whether the current process is running under a debugger or within a Visual Studio environment.
+        /// </summary>
+        /// <remarks>This method can be used to enable debug-specific behavior at runtime. It checks both
+        /// for an attached debugger and for the presence of Visual Studio processes, which may indicate a development
+        /// environment even if a debugger is not directly attached.</remarks>
+        /// <returns>true if a debugger is attached or if the process is running inside Visual Studio; otherwise, false.</returns>
+        public static bool IsDebug()
+        {
+            try
+            {
+                if (Debugger.IsAttached)
+                    return true;
+
+                var vs = Process.GetProcessesByName("devenv");
+                if (vs != null && vs.Length > 0)
+                    return true;
+            }
+            catch
+            {
+            }
+
+            return false;
+        }
+
         public static bool IsProcessRunning(string exeName)
         {
             // Hole alle laufenden Prozesse
