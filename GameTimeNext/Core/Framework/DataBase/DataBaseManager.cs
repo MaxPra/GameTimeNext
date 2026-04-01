@@ -148,7 +148,8 @@ namespace GameTimeNext.Core.Framework.DataBase
                         ('Completed', @gtyp, @crat, @chat),
                         ('Unplayed', @gtyp, @crat, @chat),
                         ('Currently Playing', @gtyp, @crat, @chat),
-                        ('Playable', @gtyp, @crat, @chat);
+                        ('Playable', @gtyp, @crat, @chat),
+                        ('Archived', @gtyp, @crat, @chat);
                         ";
 
             using var command = _connection.CreateCommand();
@@ -299,7 +300,8 @@ namespace GameTimeNext.Core.Framework.DataBase
                     ETME REAL,
                     ETCO REAL,
                     ETTY VARCHAR(200),
-                    ETML INTEGER
+                    ETML INTEGER,
+                    ARCH INTEGER
                 );";
 
             if (_connection == null)

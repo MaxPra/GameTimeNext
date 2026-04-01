@@ -256,13 +256,14 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             }
 
             // -- States
-            if (selectedStates != null && selectedStates.Count > 0)
+            if (selectedStates != null)
             {
 
                 bool containsCompleted = false;
                 bool containsUnplayed = false;
                 bool containsCurrentlyPlaying = false;
                 bool containsPlayable = false;
+                bool containsArchived = false;
 
                 foreach (T1GROUP group in selectedStates)
                 {
@@ -274,6 +275,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                         containsCurrentlyPlaying = true;
                     else if (group.GRNA == "Playable")
                         containsPlayable = true;
+                    else if (group.GRNA == "Archived")
+                        containsArchived = true;
                 }
 
                 if (containsUnplayed)
@@ -289,14 +292,18 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
                 if (containsCompleted)
                 {
-                    // query.AddWhere(K1PROFI.Name, K1PROFI.Fields.COMP, QueryCompareType.EQUALS, true);
                     UIXQueryTable t1plthr_table = query.AddJoinTable(K1PLTHR.Name, JoinType.INNER);
                     t1plthr_table.AddJoinCondition(K1PROFI.Name, K1PROFI.Fields.PFID, QueryCompareType.EQUALS, K1PLTHR.Name, K1PLTHR.Fields.PFID);
                     query.AddWhere(K1PLTHR.Name, K1PLTHR.Fields.PTCO, QueryCompareType.EQUALS, true);
                 }
 
+                // Archiviert
+                if (containsArchived)
+                    query.AddWhere(K1PROFI.Name, K1PROFI.Fields.ARCH, QueryCompareType.EQUALS, true);
+                else
+                    query.AddWhere(K1PROFI.Name, K1PROFI.Fields.ARCH, QueryCompareType.EQUALS, false);
 
-                // Hier im Objekt speichern, da außerhalb der Methode darauf zugegriffen werden muss (ausnahme)
+                // Hier im Objekt speichern, da außerhalb der Methode darauf zugegriffen werden muss (Ausnahme)
                 _playableFilter = containsPlayable;
             }
             else
@@ -310,6 +317,20 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                     query.AddWhere(K1PROFI.Name, K1PROFI.Fields.GANA, QueryCompareType.LIKE, GetView().tbSearchProfileName.Text);
                 }
             });
+        }
+
+        private bool ContainsArchived(List<T1GROUP> selectedStates)
+        {
+            if (selectedStates == null)
+                return false;
+
+            foreach (T1GROUP selectedState in selectedStates)
+            {
+                if (selectedState.GRNA == "Archived")
+                    return true;
+            }
+
+            return false;
         }
 
         private List<long> BuildTagListForQuery(List<T1GROUP> selectedTags)
@@ -329,6 +350,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
             Style contextMenuItemStyle = (Style)System.Windows.Application.Current.FindResource("ModernContextMenuItemStyle");
             Style contextMenuStyle = (Style)System.Windows.Application.Current.FindResource("ModernContextMenuStyle");
+            Style contextMenuSeparatorStyle = (Style)System.Windows.Application.Current.FindResource("ModernContextMenuSeparatorStyle");
 
             ContextMenuBuilder contextBuilder = UIXContextMenuFactory.Create("ProfilesListBoxContextMenu");
             contextBuilder.SetStyle(contextMenuStyle);
@@ -336,6 +358,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             // Prinzipiell immer Edit und Delete
             contextBuilder.AddItem("ctxtEdit", "Edit", icon: UIXContextMenuFactory.CreateMdlIcon("\uE70F"), itemStyle: contextMenuItemStyle);
             contextBuilder.AddItem("ctxtDelete", "Delete", icon: UIXContextMenuFactory.CreateMdlIcon("\uE74D"), itemStyle: contextMenuItemStyle);
+
+            contextBuilder.AddSeparator(contextMenuSeparatorStyle);
 
             // Wenn Profil noch nicht als durchgespielt markiert oder gecancelt
             T1PLTHR currentPlaythrough = TFPLTHR.GetCurrentPlaythrough(t1profi.PFID);
@@ -349,6 +373,16 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             {
                 contextBuilder.AddItem("ctxtStartNewPlaythrough", "Start new playthrough", icon: UIXContextMenuFactory.CreateMdlIcon("\uE72C"), itemStyle: contextMenuItemStyle);
             }
+
+            contextBuilder.AddSeparator(contextMenuSeparatorStyle);
+
+            // Archivieren hinzufügen
+            if (t1profi.ARCH)
+                contextBuilder.AddItem("ctxtUnarchiveProfile", "Unarchive profile", icon: UIXContextMenuFactory.CreateMdlIcon("\uE8B7"), itemStyle: contextMenuItemStyle);
+
+            else
+                contextBuilder.AddItem("ctxtArchiveProfile", "Archive profile", icon: UIXContextMenuFactory.CreateMdlIcon("\uE8B7"), itemStyle: contextMenuItemStyle);
+
 
             if (contextBuilder.HasItems())
                 lbi.ContextMenu = contextBuilder.Build();
@@ -622,6 +656,29 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             _dataWrapper!.TargetController.Open(true);
         }
+
+        protected async Task EV_ctxtArchiveProfile()
+        {
+            T1PROFI t1profi = _profilesSubGridViewModel!.SelectedT1Profi;
+
+            t1profi.ARCH = true;
+
+            new TXPROFI().Save(t1profi);
+
+            await BuildProfilesListBoxAsync(0);
+        }
+
+        protected async Task EV_ctxtUnarchiveProfile()
+        {
+            T1PROFI t1profi = _profilesSubGridViewModel!.SelectedT1Profi;
+
+            t1profi.ARCH = false;
+
+            new TXPROFI().Save(t1profi);
+
+            await BuildProfilesListBoxAsync(0);
+        }
+
 
         #endregion
 

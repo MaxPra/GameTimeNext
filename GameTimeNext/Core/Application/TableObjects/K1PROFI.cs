@@ -26,6 +26,7 @@
             public const string ETCO = "ETCO";
             public const string ETTY = "ETTY";
             public const string ETML = "ETML";
+            public const string ARCH = "ARCH";
         }
     }
 }

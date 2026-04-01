@@ -38,7 +38,7 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
                 {
                     if (FnSystem.IsProcessRunningWithPathPart(executable, t1profi.EXGF) && AppEnvironment.IsApplicationRunning(typeof(ProfilesApp).FullName!))
                     {
-                        if (_currentProfileRunning.pfid == 0)
+                        if (_currentProfileRunning.pfid == 0 && !t1profi.ARCH)
                         {
                             // Hier Profil wechseln
                             AppEnvironment.CurrentPfid = t1profi.PFID;

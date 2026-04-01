@@ -51,6 +51,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             copy.ETCO = source.ETCO;
             copy.ETTY = source.ETTY;
             copy.ETML = source.ETML;
+            copy.ARCH = source.ARCH;
 
             DateTime now = DateTime.Now;
             copy.CRAT = now;
@@ -114,9 +115,9 @@ namespace GameTimeNext.Core.Application.DataManagers
             {
                 cmd.CommandText =
                     "INSERT INTO T1PROFI " +
-                    "(GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, CRAT, CHAT, ACCO, ACIN, ACAC, CUPT, ETMA, ETME, ETCO, ETTY, ETML) " +
+                    "(GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, CRAT, CHAT, ACCO, ACIN, ACAC, CUPT, ETMA, ETME, ETCO, ETTY, ETML, ARCH) " +
                     "VALUES " +
-                    "(@GANA, @FIPL, @LAPL, @PPFN, @EXGF, @SAID, @PRSE, @EXEC, @CRAT, @CHAT, @ACCO, @ACIN, @ACAC, @CUPT, @ETMA, @ETME, @ETCO, @ETTY, @ETML);";
+                    "(@GANA, @FIPL, @LAPL, @PPFN, @EXGF, @SAID, @PRSE, @EXEC, @CRAT, @CHAT, @ACCO, @ACIN, @ACAC, @CUPT, @ETMA, @ETME, @ETCO, @ETTY, @ETML, @ARCH);";
 
                 cmd.Parameters.AddWithValue("@GANA", obj.GANA);
                 cmd.Parameters.AddWithValue("@FIPL", ToDbDateTime(obj.FIPL));
@@ -137,6 +138,8 @@ namespace GameTimeNext.Core.Application.DataManagers
                 cmd.Parameters.AddWithValue("@ETCO", obj.ETCO);
                 cmd.Parameters.AddWithValue("@ETTY", obj.ETTY);
                 cmd.Parameters.AddWithValue("@ETML", obj.ETML ? 1 : 0);
+
+                cmd.Parameters.AddWithValue("@ARCH", obj.ARCH ? 1 : 0);
 
                 cmd.ExecuteNonQuery();
             }
@@ -173,7 +176,8 @@ namespace GameTimeNext.Core.Application.DataManagers
                     "ETME = @ETME, " +
                     "ETCO = @ETCO, " +
                     "ETTY = @ETTY, " +
-                    "ETML = @ETML " +
+                    "ETML = @ETML, " +
+                    "ARCH = @ARCH " +
                     "WHERE PFID = @PFID;";
 
                 cmd.Parameters.AddWithValue("@PFID", obj.PFID);
@@ -196,6 +200,7 @@ namespace GameTimeNext.Core.Application.DataManagers
                 cmd.Parameters.AddWithValue("@ETCO", obj.ETCO);
                 cmd.Parameters.AddWithValue("@ETTY", obj.ETTY);
                 cmd.Parameters.AddWithValue("@ETML", obj.ETML ? 1 : 0);
+                cmd.Parameters.AddWithValue("@ARCH", obj.ARCH ? 1 : 0);
 
                 cmd.ExecuteNonQuery();
             }
@@ -220,7 +225,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             using (SQLiteCommand cmd = connection.CreateCommand())
             {
                 cmd.CommandText =
-                    "SELECT PFID, GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, CRAT, CHAT, ACCO, ACIN, ACAC, CUPT, ETMA, ETME, ETCO, ETTY, ETML " +
+                    "SELECT PFID, GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, CRAT, CHAT, ACCO, ACIN, ACAC, CUPT, ETMA, ETME, ETCO, ETTY, ETML, ARCH " +
                     "FROM T1PROFI WHERE PFID = @PFID;";
                 cmd.Parameters.AddWithValue("@PFID", pfid);
 
@@ -246,7 +251,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             using (SQLiteCommand cmd = connection.CreateCommand())
             {
                 cmd.CommandText =
-                    "SELECT PFID, GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, CRAT, CHAT, ACCO, ACIN, ACAC, CUPT, ETMA, ETME, ETCO, ETTY, ETML " +
+                    "SELECT PFID, GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, CRAT, CHAT, ACCO, ACIN, ACAC, CUPT, ETMA, ETME, ETCO, ETTY, ETML, ARCH " +
                     "FROM T1PROFI ORDER BY PFID;";
 
                 using (SQLiteDataReader reader = cmd.ExecuteReader())
@@ -293,6 +298,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             obj.ETCO = reader.IsDBNull(17) ? 0 : Convert.ToDouble(reader.GetValue(17));
             obj.ETTY = reader.IsDBNull(18) ? string.Empty : reader.GetString(18);
             obj.ETML = !reader.IsDBNull(19) && (Convert.ToInt32(reader.GetValue(19)) == 1);
+            obj.ARCH = !reader.IsDBNull(20) && (Convert.ToInt32(reader.GetValue(20)) == 1);
 
             obj.State = UIXTableObjectState.Available;
 
