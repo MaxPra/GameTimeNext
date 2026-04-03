@@ -16,7 +16,7 @@
 
 ## 📥 Download
 
-👉 [Download Installer (v0.2.1 Beta)](https://github.com/MaxPra/GameTimeNext/releases/download/GameTimeNext_v0.2.1beta/GameTimeNext_v0.2.1betaInstaller.msi)
+👉 [Download Installer (v0.2.2 Beta)](https://github.com/MaxPra/GameTimeNext/releases/download/GameTimeNext_v0.2.2beta/GameTimeNext_v0.2.2betaInstaller.msi)
 
 ---
 
@@ -65,7 +65,8 @@ Right-click any application:
 
 ### ⏱️ Tracking
 - Manual start/stop system  
-- Precise session control  
+- Precise session control
+- Query current monitored time since start
 
 ### 📊 Overview
 - Total playtime per game
