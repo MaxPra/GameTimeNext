@@ -34,30 +34,33 @@ namespace GameTimeNext.Core.Application.TableObjects
         public bool BlackoutSideMonitors { get; set; }
 
         [UIXSignatureField(7)]
-        public string MonitoringKey { get; set; }
+        public bool EnableSessionTimeQuery { get; set; }
 
         [UIXSignatureField(8)]
-        public string SteamGridDbKey { get; set; }
+        public string MonitoringKey { get; set; }
 
         [UIXSignatureField(9)]
-        public string TwitchIGDBClientID { get; set; }
+        public string SteamGridDbKey { get; set; }
 
         [UIXSignatureField(10)]
-        public string TwitchIGDBClientSecret { get; set; }
+        public string TwitchIGDBClientID { get; set; }
 
         [UIXSignatureField(11)]
-        public string BackupType { get; set; }
+        public string TwitchIGDBClientSecret { get; set; }
 
         [UIXSignatureField(12)]
-        public string BackupExportPath { get; set; }
+        public string BackupType { get; set; }
 
         [UIXSignatureField(13)]
-        public string BackupImportPath { get; set; }
+        public string BackupExportPath { get; set; }
 
         [UIXSignatureField(14)]
-        public bool AutoBackup { get; set; }
+        public string BackupImportPath { get; set; }
 
         [UIXSignatureField(15)]
+        public bool AutoBackup { get; set; }
+
+        [UIXSignatureField(16)]
         public bool AutoDelete { get; set; }
 
 
@@ -72,6 +75,7 @@ namespace GameTimeNext.Core.Application.TableObjects
             ShowToastNotification = false;
             ShowMonitoringIndicator = false;
             BlackoutSideMonitors = false;
+            EnableSessionTimeQuery = false;
             MonitoringKey = KeyInput.virtualKeyMap[KeyInput.VirtualKey.VK_NONE];
             SteamGridDbKey = string.Empty;
             TwitchIGDBClientID = string.Empty;

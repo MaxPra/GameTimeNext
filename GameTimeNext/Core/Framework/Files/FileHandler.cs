@@ -1,5 +1,6 @@
 ﻿using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.Utils;
+using Microsoft.VisualBasic.FileIO;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -101,6 +102,14 @@ namespace GameTimeNext.Core.Framework.Files
                 return;
 
             string backupPath = AppEnvironment.GetAppConfig().AppSettings.BackupExportPath;
+
+            if (FnSystem.IsDebug())
+            {
+                backupPath = SpecialDirectories.MyDocuments + @"\GameTimeNext_Backup_dev";
+
+                if (!Directory.Exists(backupPath))
+                    Directory.CreateDirectory(backupPath);
+            }
 
             if (!Directory.Exists(backupPath))
                 return;

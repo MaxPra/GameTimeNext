@@ -464,6 +464,8 @@
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="12" />
                                     <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="12" />
+                                    <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
                                 <Grid Grid.Row="0" Grid.Column="0">
@@ -483,6 +485,29 @@
                                         Grid.Column="2"
                                         Width="20"
                                         Height="20" />
+                                </Grid>
+
+                                <Grid Grid.Row="4" Grid.Column="0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="170" />
+                                        <ColumnDefinition Width="16" />
+                                        <ColumnDefinition Width="22" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        VerticalAlignment="Center"
+                                        Foreground="{DynamicResource Brush.TextSecondary}"
+                                        Text="Enable session time query" />
+
+                                    <CheckBox
+                                        x:Name="cbEnableSessionTimeQuery"
+                                        Grid.Column="2"
+                                        Width="20"
+                                        Height="20"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center"
+                                        ToolTip="When enabled, pressing Ctrl+Shift+T will display the current recorded playtime." />
                                 </Grid>
 
                                 <Grid Grid.Row="0" Grid.Column="1">

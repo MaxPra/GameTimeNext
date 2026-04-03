@@ -78,5 +78,23 @@ namespace GameTimeNext.Core.Application.TimeMonitoring
 
             txprofi.Save(t1profi);
         }
+
+        /// <summary>
+        /// Gets the elapsed game time, in minutes, since monitoring started.
+        /// </summary>
+        /// <returns>The number of minutes that have elapsed since monitoring began. Returns 0.0 if monitoring is not active or
+        /// the monitoring session is not initialized.</returns>
+        public static double GetCurrentGameTimeMinutes()
+        {
+            if (!IsMonitoring)
+                return 0.0;
+
+            if (_monitoringPFID == 0)
+                return 0.0;
+
+            TimeSpan currentTimeSpan = DateTime.Now - _startTime;
+
+            return (double)currentTimeSpan.TotalSeconds / 60;
+        }
     }
 }

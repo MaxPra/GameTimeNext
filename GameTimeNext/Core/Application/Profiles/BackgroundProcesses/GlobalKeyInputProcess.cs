@@ -38,6 +38,7 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
         {
             ProcessNormalGameTimeMonitoring();
             ProcessNormalBlackoutAllMonitors();
+            ProcessQueryGameTime();
         }
 
         private void ProcessMonitorKey()
@@ -123,6 +124,31 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
 
                 CFGameTimeMonitoring.StartMonitoring(AppEnvironment.CurrentPfid);
                 CallDispatcher!.Trigger("EXEV_GameTimeMonitoringStarted");
+            }
+        }
+
+        private void ProcessQueryGameTime()
+        {
+            if (!AppEnvironment.GetAppConfig().AppSettings.EnableSessionTimeQuery)
+                return;
+
+            // Kombination Strg + Shift + T
+            if (keyPressTracker.IsCombinationPressedOnce(VirtualKey.VK_CONTROL, VirtualKey.VK_SHIFT, VirtualKey.VK_T))
+            {
+                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                {
+                    double currentSessionGameTime = CFGameTimeMonitoring.GetCurrentGameTimeMinutes();
+
+                    if (currentSessionGameTime == 0.0)
+                        return;
+
+                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        T1PROFI t1profi = new TXPROFI().Read(AppEnvironment.CurrentPfid);
+                        ToastMessage tm = new ToastMessage(t1profi.GANA, $"Current session game time: {CFProfilesApp.FormatGameTimeMinutes(currentSessionGameTime)}");
+                        tm.Show();
+                    });
+                });
             }
         }
 

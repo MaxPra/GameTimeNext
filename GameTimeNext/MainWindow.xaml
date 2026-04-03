@@ -96,7 +96,8 @@
             VerticalAlignment="Top"
             Panel.ZIndex="10"
             Background="#FF8B0000"
-            ToolTip="DEVMODE ON: Development paths are being used.">
+            ToolTip="DEVMODE ON: Development paths are being used."
+            Visibility="Collapsed">
 
             <TextBlock
                 HorizontalAlignment="Center"

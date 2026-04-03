@@ -119,6 +119,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             GetView().cbShowMonitoringIndicator.IsChecked = _appSettings!.ShowMonitoringIndicator;
             GetView().cbBlackoutSideMonitors.IsChecked = _appSettings!.BlackoutSideMonitors;
             GetView().txbMonitoringKey.Text = _appSettings!.MonitoringKey;
+            GetView().cbEnableSessionTimeQuery.IsChecked = _appSettings!.EnableSessionTimeQuery;
         }
 
         private void FillDBOGeneral()
@@ -141,6 +142,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             _appSettings!.BlackoutSideMonitors = GetView().cbBlackoutSideMonitors.IsChecked == true;
             _appSettings!.MonitoringKeyActive = GetView().cbMonitoringKeyActive.IsChecked == true;
             _appSettings!.MonitoringKey = GetView().txbMonitoringKey.Text;
+            _appSettings!.EnableSessionTimeQuery = GetView().cbEnableSessionTimeQuery.IsChecked == true;
         }
 
         private void FillDBOTags()
