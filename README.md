@@ -65,7 +65,8 @@ Right-click any application:
 
 ### ⏱️ Tracking
 - Manual start/stop system  
-- Precise session control  
+- Precise session control
+- Query current monitored time since start
 
 ### 📊 Overview
 - Total playtime per game
