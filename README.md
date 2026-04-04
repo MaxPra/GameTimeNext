@@ -7,7 +7,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/status-beta-orange" />
-  <img src="https://img.shields.io/badge/version-0.2.1-blue" />
+  <img src="https://img.shields.io/badge/version-0.2.2-blue" />
   <img src="https://img.shields.io/badge/platform-Windows-informational" />
   <img src="https://img.shields.io/badge/.NET-WPF-purple" />
 </p>
