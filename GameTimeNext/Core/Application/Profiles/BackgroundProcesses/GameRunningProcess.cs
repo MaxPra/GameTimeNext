@@ -17,12 +17,16 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
 
         private CurrentProfileRunning? _currentProfileRunning = new CurrentProfileRunning();
 
+        private int _lastBreakReminderBlock = -1;
+
         public GameRunningProcess() : base()
         {
         }
 
         public override void Logic()
         {
+            ProcessBreakReminder();
+
             if (ExecutablesToSearch.Count == 0)
                 return;
 
@@ -164,6 +168,37 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
         protected override void InitializeInfos()
         {
             ProcessName = "AutoProfileSwitchingProcess";
+        }
+
+        private void ProcessBreakReminder()
+        {
+            if (!AppEnvironment.GetAppConfig().AppSettings.BreakReminder)
+                return;
+
+            if (!CFGameTimeMonitoring.IsMonitoring)
+                return;
+
+            double currentSessionTimeMinutes = CFGameTimeMonitoring.GetCurrentGameTimeMinutes();
+            double intervalMinutes = AppEnvironment.GetAppConfig().AppSettings.BreakReminderHrs * 60.0;
+
+            if (currentSessionTimeMinutes > 0 && intervalMinutes > 0)
+            {
+                int currentBlock = (int)(currentSessionTimeMinutes / intervalMinutes);
+
+                if (currentBlock > 0 && currentBlock != _lastBreakReminderBlock)
+                {
+                    _lastBreakReminderBlock = currentBlock;
+
+                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        ToastMessage tm = new ToastMessage(
+                            "Break reminder",
+                            "You've played " + AppEnvironment.GetAppConfig().AppSettings.BreakReminderHrs + " hours\nTime for a break!");
+                        tm.Show();
+                    });
+                }
+
+            }
         }
 
         private bool IsAnyExeRunning(CurrentProfileRunning currentProfileRunning, string executable, string exePath)

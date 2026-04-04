@@ -17,11 +17,14 @@
         <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
         <Setter Property="BorderThickness" Value="1" />
 
-        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontSize" Value="13" />
         <Setter Property="FontWeight" Value="SemiBold" />
 
-        <Setter Property="Padding" Value="0,0,14,0" />
-        <Setter Property="MinWidth" Value="20" />
+        <!-- match TextBox height for a consistent control size -->
+        <Setter Property="MinHeight" Value="32" />
+        <Setter Property="Height" Value="32" />
+        <Setter Property="Padding" Value="0,0,12,0" />
+        <Setter Property="MinWidth" Value="32" />
 
         <Setter Property="Template">
             <Setter.Value>
@@ -44,8 +47,8 @@
                         <Border
                             x:Name="Box"
                             Grid.Column="1"
-                            Width="{TemplateBinding MinWidth}"
-                            Height="{TemplateBinding MinWidth}"
+                            Width="{TemplateBinding Height}"
+                            Height="{TemplateBinding Height}"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Center"
                             Background="{TemplateBinding Background}"
@@ -150,11 +153,14 @@
         <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
         <Setter Property="BorderThickness" Value="1" />
 
-        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontSize" Value="13" />
         <Setter Property="FontWeight" Value="SemiBold" />
 
-        <Setter Property="Padding" Value="14,0,0,0" />
-        <Setter Property="MinWidth" Value="20" />
+        <!-- match TextBox height for a consistent control size -->
+        <Setter Property="MinHeight" Value="32" />
+        <Setter Property="Height" Value="32" />
+        <Setter Property="Padding" Value="12,0,0,0" />
+        <Setter Property="MinWidth" Value="32" />
 
         <Setter Property="Template">
             <Setter.Value>
@@ -168,8 +174,8 @@
                         <Border
                             x:Name="Box"
                             Grid.Column="0"
-                            Width="{TemplateBinding MinWidth}"
-                            Height="{TemplateBinding MinWidth}"
+                            Width="{TemplateBinding Height}"
+                            Height="{TemplateBinding Height}"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center"
                             Background="{TemplateBinding Background}"

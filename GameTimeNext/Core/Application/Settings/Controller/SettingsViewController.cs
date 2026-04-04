@@ -42,6 +42,8 @@ namespace GameTimeNext.Core.Application.Settings.Controller
 
         protected override void Build()
         {
+            FnControls.SetEnabled(GetView().txbBreakReminderHours, GetView().cbRemindTakeBreak.IsChecked == true);
+
             FnControls.SetVisible(GetView().pnlMonitoringKey, GetView().cbMonitoringKeyActive.IsChecked == true);
 
             FnControls.SetEnabled(GetView().cbShowToastNotification, GetView().cbMonitoringKeyActive.IsChecked == true);
@@ -67,6 +69,10 @@ namespace GameTimeNext.Core.Application.Settings.Controller
 
         protected override void Check()
         {
+            if (!FnControls.ContainsOnlyNumericValue(GetView().txbBreakReminderHours))
+            {
+                AddViewError(GetView().txbBreakReminderHours, "Only numeric values allowed!");
+            }
         }
 
         protected override void DataWrapperSelectionChangedImpl(Selector source)
@@ -110,6 +116,9 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             // IGDB
             GetView().txbIgdbClientId.Text = _appSettings.TwitchIGDBClientID;
             GetView().txbIgdbClientSecret.Text = _appSettings.TwitchIGDBClientSecret;
+
+            GetView().cbRemindTakeBreak.IsChecked = _appSettings.BreakReminder;
+            GetView().txbBreakReminderHours.Text = _appSettings.BreakReminderHrs.ToString();
         }
 
         private void FillTabMonitoring()
@@ -133,6 +142,9 @@ namespace GameTimeNext.Core.Application.Settings.Controller
 
             _appSettings!.TwitchIGDBClientID = GetView().txbIgdbClientId.Text;
             _appSettings!.TwitchIGDBClientSecret = GetView().txbIgdbClientSecret.Text;
+
+            _appSettings!.BreakReminder = GetView().cbRemindTakeBreak.IsChecked == true;
+            _appSettings!.BreakReminderHrs = FnConvert.ToDouble(GetView().txbBreakReminderHours.Text);
         }
 
         private void FillDBOMonitoring()

@@ -63,6 +63,12 @@ namespace GameTimeNext.Core.Application.TableObjects
         [UIXSignatureField(16)]
         public bool AutoDelete { get; set; }
 
+        [UIXSignatureField(17)]
+        public bool BreakReminder { get; set; }
+
+        [UIXSignatureField(18)]
+        public double BreakReminderHrs { get; set; }
+
 
 
         public AppSettings()
@@ -86,6 +92,9 @@ namespace GameTimeNext.Core.Application.TableObjects
             BackupImportPath = string.Empty;
             AutoBackup = false;
             AutoDelete = false;
+
+            BreakReminder = false;
+            BreakReminderHrs = 0.0;
 
             AcceptChanges();
         }

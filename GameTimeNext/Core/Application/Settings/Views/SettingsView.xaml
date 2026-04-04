@@ -46,6 +46,8 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="16" />
                                 <RowDefinition Height="Auto" />
+                                <RowDefinition Height="12" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
                             <TextBlock
@@ -58,7 +60,7 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="220" />
                                     <ColumnDefinition Width="16" />
-                                    <ColumnDefinition Width="22" />
+                                    <ColumnDefinition Width="32" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
 
@@ -71,11 +73,49 @@
                                 <CheckBox
                                     x:Name="cbActivateBlackoutKeyCombination"
                                     Grid.Column="2"
-                                    Width="20"
-                                    Height="20"
                                     HorizontalAlignment="Left"
                                     VerticalAlignment="Center"
                                     ToolTip="Blacks out all screens to help protect OLED displays (Ctrl + B)." />
+                            </Grid>
+
+                            <!--  New: remind to take a break option  -->
+                            <Grid Grid.Row="4" HorizontalAlignment="Left">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="220" />
+                                    <ColumnDefinition Width="16" />
+                                    <ColumnDefinition Width="32" />
+                                    <ColumnDefinition Width="8" />
+                                    <ColumnDefinition Width="80" />
+                                    <ColumnDefinition Width="30" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock
+                                    Grid.Column="0"
+                                    VerticalAlignment="Center"
+                                    Foreground="{DynamicResource Brush.TextSecondary}"
+                                    Text="Remind me to take a break" />
+
+                                <CheckBox
+                                    x:Name="cbRemindTakeBreak"
+                                    Grid.Column="2"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    ToolTip="Enable periodic break reminders." />
+
+                                <TextBox
+                                    x:Name="txbBreakReminderHours"
+                                    Grid.Column="4"
+                                    Width="80"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    ToolTip="Enter number of hours between reminders." />
+                                <TextBlock
+                                    Grid.Column="5"
+                                    Margin="8,0,0,0"
+                                    VerticalAlignment="Center"
+                                    Foreground="{DynamicResource Brush.TextSecondary}"
+                                    Text="hrs" />
                             </Grid>
                         </Grid>
 
@@ -246,25 +286,23 @@
 
                             <Grid Grid.Row="2" HorizontalAlignment="Left">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="220" />
+                                    <ColumnDefinition Width="200" />
+                                    <ColumnDefinition Width="10" />
                                     <ColumnDefinition Width="16" />
-                                    <ColumnDefinition Width="22" />
+                                    <ColumnDefinition Width="32" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
 
                                 <TextBlock
                                     Grid.Column="0"
-                                    VerticalAlignment="Center"
+                                    Grid.ColumnSpan="2"
                                     Foreground="{DynamicResource Brush.TextSecondary}"
                                     Text="Allow profile-specific style changes" />
 
                                 <CheckBox
                                     x:Name="cbAllowProfileSpecificStyleChanges"
-                                    Grid.Column="2"
-                                    Width="20"
-                                    Height="20"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Center" />
+                                    Grid.Column="3"
+                                    Grid.ColumnSpan="2" />
                             </Grid>
                         </Grid>
 
@@ -337,11 +375,11 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="220" />
                                     <ColumnDefinition Width="16" />
-                                    <ColumnDefinition Width="22" />
+                                    <ColumnDefinition Width="32" />
                                     <ColumnDefinition Width="18" />
                                     <ColumnDefinition Width="100" />
                                     <ColumnDefinition Width="20" />
-                                    <ColumnDefinition Width="22" />
+                                    <ColumnDefinition Width="32" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
 
@@ -354,8 +392,6 @@
                                 <CheckBox
                                     x:Name="cbAutoBackup"
                                     Grid.Column="2"
-                                    Width="20"
-                                    Height="20"
                                     HorizontalAlignment="Left"
                                     VerticalAlignment="Center"
                                     ToolTip="Creates a backup automatically whenever the application starts or closes." />
@@ -369,8 +405,6 @@
                                 <CheckBox
                                     x:Name="cbAutoDeleteBackups"
                                     Grid.Column="6"
-                                    Width="20"
-                                    Height="20"
                                     HorizontalAlignment="Left"
                                     VerticalAlignment="Center"
                                     ToolTip="Automatically deletes backups older than three days and keeps only the most recent backups from the last three days." />
@@ -472,7 +506,7 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="170" />
                                         <ColumnDefinition Width="16" />
-                                        <ColumnDefinition Width="22" />
+                                        <ColumnDefinition Width="32" />
                                     </Grid.ColumnDefinitions>
 
                                     <TextBlock
@@ -480,18 +514,14 @@
                                         VerticalAlignment="Center"
                                         Foreground="{DynamicResource Brush.TextSecondary}"
                                         Text="Key active" />
-                                    <CheckBox
-                                        x:Name="cbMonitoringKeyActive"
-                                        Grid.Column="2"
-                                        Width="20"
-                                        Height="20" />
+                                    <CheckBox x:Name="cbMonitoringKeyActive" Grid.Column="2" />
                                 </Grid>
 
                                 <Grid Grid.Row="4" Grid.Column="0">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="170" />
                                         <ColumnDefinition Width="16" />
-                                        <ColumnDefinition Width="22" />
+                                        <ColumnDefinition Width="32" />
                                     </Grid.ColumnDefinitions>
 
                                     <TextBlock
@@ -503,8 +533,6 @@
                                     <CheckBox
                                         x:Name="cbEnableSessionTimeQuery"
                                         Grid.Column="2"
-                                        Width="20"
-                                        Height="20"
                                         HorizontalAlignment="Left"
                                         VerticalAlignment="Center"
                                         ToolTip="When enabled, pressing Ctrl+Shift+T will display the current recorded playtime." />
@@ -514,7 +542,7 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="160" />
                                         <ColumnDefinition Width="16" />
-                                        <ColumnDefinition Width="22" />
+                                        <ColumnDefinition Width="32" />
                                     </Grid.ColumnDefinitions>
 
                                     <TextBlock
@@ -522,18 +550,14 @@
                                         VerticalAlignment="Center"
                                         Foreground="{DynamicResource Brush.TextSecondary}"
                                         Text="Show toast notification" />
-                                    <CheckBox
-                                        x:Name="cbShowToastNotification"
-                                        Grid.Column="2"
-                                        Width="20"
-                                        Height="20" />
+                                    <CheckBox x:Name="cbShowToastNotification" Grid.Column="2" />
                                 </Grid>
 
                                 <Grid Grid.Row="2" Grid.Column="0">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="170" />
                                         <ColumnDefinition Width="16" />
-                                        <ColumnDefinition Width="22" />
+                                        <ColumnDefinition Width="32" />
                                     </Grid.ColumnDefinitions>
 
                                     <TextBlock
@@ -544,8 +568,6 @@
                                     <CheckBox
                                         x:Name="cbShowMonitoringIndicator"
                                         Grid.Column="2"
-                                        Width="20"
-                                        Height="20"
                                         IsEnabled="False" />
                                 </Grid>
 
@@ -553,7 +575,7 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="160" />
                                         <ColumnDefinition Width="16" />
-                                        <ColumnDefinition Width="22" />
+                                        <ColumnDefinition Width="32" />
                                     </Grid.ColumnDefinitions>
 
                                     <TextBlock
@@ -561,11 +583,7 @@
                                         VerticalAlignment="Center"
                                         Foreground="{DynamicResource Brush.TextSecondary}"
                                         Text="Blackout side monitors" />
-                                    <CheckBox
-                                        x:Name="cbBlackoutSideMonitors"
-                                        Grid.Column="2"
-                                        Width="20"
-                                        Height="20" />
+                                    <CheckBox x:Name="cbBlackoutSideMonitors" Grid.Column="2" />
                                 </Grid>
                             </Grid>
                         </Grid>

@@ -11,15 +11,15 @@
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
         <Setter Property="CaretBrush" Value="{DynamicResource Brush.TextPrimary}" />
         <Setter Property="SelectionBrush" Value="{DynamicResource Brush.Accent}" />
-        <Setter Property="SelectionOpacity" Value="0.35" />
+        <Setter Property="SelectionOpacity" Value="0.20" />
 
         <Setter Property="Background" Value="{DynamicResource Brush.TextBox.Background}" />
         <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
         <Setter Property="BorderThickness" Value="{DynamicResource Thickness.TextBox.Border}" />
 
-        <Setter Property="Padding" Value="12,7" />
-        <Setter Property="MinHeight" Value="34" />
-        <Setter Property="Height" Value="34" />
+        <Setter Property="Padding" Value="10,6" />
+        <Setter Property="MinHeight" Value="32" />
+        <Setter Property="Height" Value="32" />
         <Setter Property="FontSize" Value="13" />
         <Setter Property="FontWeight" Value="Normal" />
         <Setter Property="FontFamily" Value="Segoe UI" />
@@ -43,11 +43,12 @@
                             IsHitTestVisible="False"
                             Opacity="0">
                             <Border.Effect>
+                                <!--  very subtle shadow for focus / error states to keep the style flat  -->
                                 <DropShadowEffect
-                                    BlurRadius="16"
-                                    Opacity="0.60"
+                                    BlurRadius="6"
+                                    Opacity="0.25"
                                     ShadowDepth="0"
-                                    Color="#FF4D4F" />
+                                    Color="#000000" />
                             </Border.Effect>
                         </Border>
 
@@ -70,8 +71,9 @@
                                     RadiusX="2"
                                     RadiusY="2">
                                     <Rectangle.Fill>
+                                        <!--  subtle top highlight for a modern flat feel  -->
                                         <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                            <GradientStop Offset="0" Color="#12FFFFFF" />
+                                            <GradientStop Offset="0" Color="#08FFFFFF" />
                                             <GradientStop Offset="1" Color="#00FFFFFF" />
                                         </LinearGradientBrush>
                                     </Rectangle.Fill>
@@ -109,8 +111,9 @@
                             <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Brush.TextBox.BackgroundFocused}" />
                             <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
                             <Setter TargetName="Bd" Property="BorderThickness" Value="{DynamicResource Thickness.TextBox.BorderFocused}" />
-                            <Setter TargetName="Glow" Property="Opacity" Value="1" />
-                            <Setter TargetName="Sheen" Property="Opacity" Value="1" />
+                            <!--  subtle glow on focus  -->
+                            <Setter TargetName="Glow" Property="Opacity" Value="0.25" />
+                            <Setter TargetName="Sheen" Property="Opacity" Value="0.25" />
                         </Trigger>
 
                         <Trigger Property="IsEnabled" Value="False">
@@ -123,12 +126,13 @@
                         <Trigger Property="Validation.HasError" Value="True">
                             <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Brush.Danger}" />
                             <Setter TargetName="Bd" Property="BorderThickness" Value="{DynamicResource Thickness.TextBox.BorderFocused}" />
-                            <Setter TargetName="Glow" Property="Opacity" Value="1" />
+                            <!--  slightly stronger but still subtle red glow for validation  -->
+                            <Setter TargetName="Glow" Property="Opacity" Value="0.45" />
                             <Setter TargetName="Glow" Property="Effect">
                                 <Setter.Value>
                                     <DropShadowEffect
-                                        BlurRadius="16"
-                                        Opacity="0.75"
+                                        BlurRadius="8"
+                                        Opacity="0.50"
                                         ShadowDepth="0"
                                         Color="#E74C3C" />
                                 </Setter.Value>
