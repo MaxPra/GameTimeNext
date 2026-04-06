@@ -143,6 +143,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                            g.Name?.IndexOf(t, StringComparison.OrdinalIgnoreCase) >= 0))
                 .ToList();
 
+            // Nur vollständig installierte Spiele (StateFlags == 4)
+            games = games.Where(g => g.StateFlags == 4).ToList();
+
             games = games.Where(g => SteamManifestHelper.ResolveInstallPath(g) != null).ToList();
 
             // Suche

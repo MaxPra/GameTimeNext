@@ -205,7 +205,10 @@ namespace GameTimeNext.Core.Application.General.Controller
             foreach (InformationListItem informationListItem in AppEnvironment.InformationList)
             {
 
-                GetApp().GetApplication<CFMBOX>().Show(informationListItem.Text, CFMBOXResult.Ok, informationListItem.Icon);
+                CFMBOXResult result = GetApp().GetApplication<CFMBOX>().Show(informationListItem.Text, informationListItem.Buttons, informationListItem.Icon);
+
+                if (result == CFMBOXResult.Yes)
+                    informationListItem.YesAction?.Invoke();
             }
 
             AppEnvironment.InformationList.Clear();

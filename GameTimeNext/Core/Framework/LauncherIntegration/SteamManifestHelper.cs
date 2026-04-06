@@ -3,13 +3,14 @@ using System.Text.RegularExpressions;
 
 namespace GameTimeNext.Core.Framework.LauncherIntegration
 {
-    public record SteamGame(uint AppId, string Name, string InstallDir, string LibraryPath);
+    public record SteamGame(uint AppId, string Name, string InstallDir, string LibraryPath, uint StateFlags = 0);
 
     internal static class SteamManifestHelper
     {
         private static readonly Regex rxAppId = new(@"""appid""\s*""(\d+)""", RegexOptions.IgnoreCase);
         private static readonly Regex rxName = new(@"""name""\s*""([^""]+)""", RegexOptions.IgnoreCase);
         private static readonly Regex rxDir = new(@"""installdir""\s*""([^""]+)""", RegexOptions.IgnoreCase);
+        private static readonly Regex rxStateFlags = new(@"""StateFlags""\s*""(\d+)""", RegexOptions.IgnoreCase);
 
         /// <summary>
         /// Scannt alle appmanifest_*.acf in den angegebenen steamapps-Ordnern.
@@ -29,14 +30,18 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
                     var idMatch = rxAppId.Match(s);
                     var nmMatch = rxName.Match(s);
                     var dirMatch = rxDir.Match(s);
+                    var stateFlagsMatch = rxStateFlags.Match(s);
 
                     if (!idMatch.Success || !nmMatch.Success) continue;
 
                     uint.TryParse(idMatch.Groups[1].Value, out var appid);
                     var name = nmMatch.Groups[1].Value;
                     var installdir = dirMatch.Success ? dirMatch.Groups[1].Value : string.Empty;
+                    uint stateFlags = 0;
+                    if (stateFlagsMatch.Success)
+                        uint.TryParse(stateFlagsMatch.Groups[1].Value, out stateFlags);
 
-                    result.Add(new SteamGame(appid, name, installdir, steamapps));
+                    result.Add(new SteamGame(appid, name, installdir, steamapps, stateFlags));
                 }
             }
 

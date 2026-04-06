@@ -2,8 +2,10 @@
 using GameTimeNext.Core.Application.Settings;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Files;
+using GameTimeNext.Core.Framework.GitHub;
 using GameTimeNext.Core.Framework.Utils;
 using Microsoft.VisualBasic.FileIO;
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 
@@ -49,6 +51,9 @@ namespace GameTimeNext
 
             // Alte Backups löschen
             FileHandler.DeleteOldBackupFiles();
+
+            // Auf neue Version (Github) prüfen
+            CheckForNewVersion();
         }
 
         protected override void OnExit(ExitEventArgs e)
@@ -73,6 +78,32 @@ namespace GameTimeNext
 
             if (AppEnvironment.GetDataBaseManager().GetConnection() != null)
                 AppEnvironment.GetDataBaseManager().GetConnection().Close();
+        }
+
+        private void CheckForNewVersion()
+        {
+            UpdateCheckResult result = FnGithub.CheckForUpdateAsync(
+                AppEnvironment.AppVersion.Version.ToString(),
+                "MaxPra",
+                "GameTimeNext"
+            ).GetAwaiter().GetResult();
+
+            if (result.UpdateAvailable)
+            {
+
+                InformationListItem infoItem = new InformationListItem(Core.Framework.UI.Dialogs.CFMBOXIcon.Question, "Version " + result.LatestVersion + " is available.\n\nDo you want to open GitHub to download now?");
+                infoItem.Buttons = Core.Framework.UI.Dialogs.CFMBOXResult.Yes | Core.Framework.UI.Dialogs.CFMBOXResult.No;
+                infoItem.YesAction = () =>
+                {
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = result.ReleaseUrl,
+                        UseShellExecute = true
+                    });
+                };
+
+                AppEnvironment.InformationList.Add(infoItem);
+            }
         }
     }
 

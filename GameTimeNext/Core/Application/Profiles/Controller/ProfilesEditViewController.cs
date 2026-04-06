@@ -666,6 +666,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         private void ShowManualEstTimesEditView()
         {
+            GetApp().ManualEstTimesCache.ProfileName = GetWnd().txbProfileName.Text;
+
             GetApp().ProfilesManualEstTimesEditView = new ProfilesManualEstTimesEditView();
             GetApp().ProfilesManualEstTimesEditView.WndController = new ProfilesManualEstTimesEditViewController(GetApp());
 
@@ -813,6 +815,10 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected void EV_btnManualEstTimes()
         {
+
+            if (GetApp().ManualEstTimesCache.estTimeMain == 0 && GetApp().ManualEstTimesCache.estTimeMainExtra == 0 && GetApp().ManualEstTimesCache.estTimeCompletionist == 0)
+                CFProfilesEditApp.OpenHowLongToBeatForGame(GetWnd().txbProfileName.Text);
+
             ShowManualEstTimesEditView();
         }
 

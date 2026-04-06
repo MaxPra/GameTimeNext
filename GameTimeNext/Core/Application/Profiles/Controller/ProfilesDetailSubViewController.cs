@@ -426,8 +426,6 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         }
 
-
-
         public async void EV_btnLaunchGame()
         {
             CFSteamGameStarter.StartSteamGame(_dataWrapper!.GetTypedTableObject().SAID.ToString(), _dataWrapper!.GetTypedTableObject().PFID, GetApp());
@@ -439,10 +437,10 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             await Task.Run(() =>
             {
-                // 15 Sekunden warten
-                Thread.Sleep(15000);
+                // 30 Sekunden warten
+                Thread.Sleep(30000);
 
-                // Sollte das Spiel in diesen 15 Sekunden nicht gestartet worden sein --> zurücksetzen des Buttons
+                // Sollte das Spiel in diesen 30 Sekunden nicht gestartet worden sein --> zurücksetzen des Buttons
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
                     if (!_gameRunning)

@@ -119,18 +119,27 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="10" />
                 <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="10" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
             <Button
-                x:Name="btnCancel"
+                x:Name="btnOpenHowLongToBeat"
                 Grid.Column="1"
+                Width="180"
+                Height="36"
+                Content="Open HowLongToBeat" />
+
+            <Button
+                x:Name="btnCancel"
+                Grid.Column="3"
                 Width="110"
                 Height="36"
                 Content="Cancel" />
 
             <Button
                 x:Name="btnApply"
-                Grid.Column="3"
+                Grid.Column="5"
                 Width="140"
                 Height="36"
                 Content="Apply" />

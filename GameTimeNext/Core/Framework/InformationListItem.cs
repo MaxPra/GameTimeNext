@@ -8,6 +8,10 @@ namespace GameTimeNext.Core.Framework
 
         public string Text { get; set; } = string.Empty;
 
+        public Action YesAction = new Action(() => { });
+
+        public CFMBOXResult Buttons = CFMBOXResult.Ok;
+
         public InformationListItem(CFMBOXIcon icon, string text)
         {
             Icon = icon;

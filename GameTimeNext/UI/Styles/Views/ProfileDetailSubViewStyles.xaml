@@ -99,21 +99,6 @@
         <Setter Property="SnapsToDevicePixels" Value="True" />
     </Style>
 
-    <!--  Overlay nur mit DynamicResource Farben  -->
-    <Style x:Key="ProfileDetail.CoverOverlay" TargetType="Border">
-        <Setter Property="VerticalAlignment" Value="Bottom" />
-        <Setter Property="Height" Value="90" />
-        <Setter Property="Opacity" Value="0.55" />
-        <Setter Property="Background">
-            <Setter.Value>
-                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                    <GradientStop Offset="0" Color="{DynamicResource Color.Background}" />
-                    <GradientStop Offset="1" Color="{DynamicResource Color.Background}" />
-                </LinearGradientBrush>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
     <Style x:Key="ProfileDetail.InfoHost" TargetType="Border">
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="VerticalAlignment" Value="Top" />

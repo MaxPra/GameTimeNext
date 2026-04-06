@@ -20,6 +20,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             public double estTimeMain { get; set; }
             public double estTimeMainExtra { get; set; }
             public double estTimeCompletionist { get; set; }
+
+            public string ProfileName { get; set; }
         }
 
         public class ProfilesManualEstTimesEditViewReturn : UIXViewReturn
@@ -106,6 +108,11 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         private ProfilesEditApp GetApp()
         {
             return (ProfilesEditApp)App;
+        }
+
+        protected void EV_btnOpenHowLongToBeat()
+        {
+            CFProfilesEditApp.OpenHowLongToBeatForGame(GetApp().ManualEstTimesCache.ProfileName);
         }
 
         protected void EV_btnApply()

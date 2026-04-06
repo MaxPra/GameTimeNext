@@ -2,6 +2,7 @@
 using GameTimeNext.Core.Framework;
 using System.IO;
 using System.Windows.Controls.Primitives;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Profiles
 {
@@ -45,6 +46,32 @@ namespace GameTimeNext.Core.Application.Profiles
                 return editView.tglAccent3;
 
             return null;
+        }
+
+        /// <summary>
+        /// Opens the HowLongToBeat website in the default browser with a search for the specified game profile name.
+        /// </summary>
+        /// <remarks>If the specified profile name is null, empty, or white space, the method does
+        /// nothing. The method attempts to launch the default web browser using the operating system shell.</remarks>
+        /// <param name="profileName">The name of the game profile to search for on HowLongToBeat. Cannot be null, empty, or consist only of
+        /// white-space characters.</param>
+        public static void OpenHowLongToBeatForGame(string profileName)
+        {
+            if (FnString.IsNullEmptyOrWhitespace(profileName))
+                return;
+
+            string url = $"https://howlongtobeat.com/?q={Uri.EscapeDataString(profileName)}";
+            try
+            {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = url,
+                    UseShellExecute = true
+                });
+            }
+            catch (Exception)
+            {
+            }
         }
     }
 }
