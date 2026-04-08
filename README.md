@@ -95,8 +95,7 @@ Right-click any application:
 - Additional launcher support  
 
 ### Usability
-- Built-in help system  
-- Improved search  
+- Built-in help system    
 
 ### Personalization
 - Local game rating system  
