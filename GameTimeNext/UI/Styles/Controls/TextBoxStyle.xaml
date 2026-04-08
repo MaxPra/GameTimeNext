@@ -82,7 +82,7 @@
                                 <ScrollViewer
                                     x:Name="PART_ContentHost"
                                     Margin="0"
-                                    VerticalAlignment="Center"
+                                    VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                                     Focusable="False" />
 
                                 <TextBlock

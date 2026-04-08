@@ -120,6 +120,9 @@ namespace GameTimeNext
                         FileName = result.ReleaseUrl,
                         UseShellExecute = true
                     });
+
+                    AppEnvironment.ShutdownGTNApplication();
+
                 };
 
                 AppEnvironment.InformationList.Add(infoItem);

@@ -165,12 +165,17 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
                 GetWnd().TxbMemotext.Text = message;
                 GetWnd().TxbMemotext.Visibility = Visibility.Visible;
 
+                var lines = message.Split('\n').Length;
+                var contentHeight = Math.Max(80, (lines * 20) + 18);
+                var screenMax = (int)SystemParameters.WorkArea.Height - 100;
+                var targetHeight = Math.Min(contentHeight + 178, screenMax);
+
                 GetWnd().SizeToContent = SizeToContent.Manual;
                 GetWnd().ResizeMode = ResizeMode.CanResize;
                 GetWnd().Width = 720;
-                GetWnd().Height = 520;
+                GetWnd().Height = targetHeight;
                 GetWnd().MinWidth = 500;
-                GetWnd().MinHeight = 350;
+                GetWnd().MinHeight = 220;
                 GetWnd().MaxWidth = double.PositiveInfinity;
                 GetWnd().MaxHeight = double.PositiveInfinity;
             }

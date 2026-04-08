@@ -34,6 +34,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         private string _coverAppDataPath = string.Empty;
         private string _coverAppFolderFileName = string.Empty;
         private string _selectedSteamGridDBImagePath = string.Empty;
+        private string _oldProfileCoverFileName = string.Empty;
         private BitmapImage _croppedProfileCover = new BitmapImage();
 
         private bool _isEstTimeFilledManual = false;
@@ -72,6 +73,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             _hasProfileCoverChanged = false;
             _isEstTimeFilledManual = GetApp().T1Profi.ETML;
+            _oldProfileCoverFileName = GetApp().T1Profi.PPFN;
 
             GetApp().ManualEstTimesCache.estTimeMain = GetApp().T1Profi.ETMA / 60;
             GetApp().ManualEstTimesCache.estTimeMainExtra = GetApp().T1Profi.ETME / 60;
@@ -828,7 +830,18 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             GetViewReturn<ProfilesEditViewReturn>().PFID = GetApp().T1Profi.PFID;
 
             if (_hasProfileCoverChanged)
+            {
                 CFProfilesEditApp.CopyProfileCoverToAppCoverFolder(_coverAppDataPath, _coverAppFolderFileName);
+
+                try
+                {
+                    // Altes Bild löschen
+                    File.Delete(Path.Combine(AppEnvironment.GetAppConfig().CoverFolderPath, _oldProfileCoverFileName));
+                }
+                catch (Exception)
+                {
+                }
+            }
 
             Exit(true);
         }

@@ -147,6 +147,11 @@ namespace GameTimeNext.Core.Framework
             System.Windows.Application.Current.Shutdown();
         }
 
+        public static void ShutdownGTNApplication()
+        {
+            System.Windows.Application.Current.Shutdown();
+        }
+
         public static void InitiateDataBaseManager()
         {
             _databaseManager = new DataBaseManager();
