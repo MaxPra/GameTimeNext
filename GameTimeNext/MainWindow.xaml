@@ -19,7 +19,7 @@
     ApplicationSearchItemsSource="{Binding AvailableApplications}"
     ApplicationSearchPlaceholder="Search Application"
     ApplicationSearchSelectedItem="{Binding SelectedApplication}"
-    ShowApplicationSearch="True"
+    ShowApplicationSearch="False"
     Style="{StaticResource GTNWindowStyle}"
     Subtitle="BETA"
     WindowStartupLocation="CenterScreen"
@@ -85,6 +85,16 @@
             </TabControl.ItemContainerStyle>-->
 
         </TabControl>
+
+        <TextBlock
+            x:Name="txtEmptyTabMessage"
+            Grid.Row="1"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            FontSize="16"
+            Foreground="{DynamicResource Brush.TextPrimary}"
+            Text="Press CTRL + M to open application search"
+            Visibility="Collapsed" />
 
         <Border
             x:Name="pnlDevPathsHeader"

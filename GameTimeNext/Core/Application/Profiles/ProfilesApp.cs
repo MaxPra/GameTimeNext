@@ -1,6 +1,7 @@
 ﻿using GameTimeNext.Core.Application.Profiles.Controller;
 using GameTimeNext.Core.Application.Profiles.DataWrapper;
 using GameTimeNext.Core.Application.Profiles.Views;
+using GameTimeNext.Core.Application.TimeMonitoring;
 using GameTimeNext.Core.Framework;
 using System.Windows.Controls;
 using UIX.ViewController.Engine.Runnables;
@@ -58,6 +59,11 @@ namespace GameTimeNext.Core.Application.Profiles
             this.ProfilesFilterView.ViewController = new ProfilesFilterViewController(this);
             this.ProfilesFilterView.ContentPresenter = ProfilesView.CPFilter;
             this.ProfilesFilterView.Popup = ProfilesView.PopFilter;
+        }
+
+        public override bool CanClose()
+        {
+            return !CFGameTimeMonitoring.IsMonitoring;
         }
 
 

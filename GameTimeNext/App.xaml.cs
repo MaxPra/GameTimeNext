@@ -8,6 +8,7 @@ using Microsoft.VisualBasic.FileIO;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace GameTimeNext
 {
@@ -28,6 +29,8 @@ namespace GameTimeNext
             InitializeApp();
 
             splash.Close();
+
+            Dispatcher.CurrentDispatcher.Invoke(() => { }, DispatcherPriority.Background);
 
             ShutdownMode = ShutdownMode.OnMainWindowClose;
 
@@ -58,6 +61,12 @@ namespace GameTimeNext
 
         protected override void OnExit(ExitEventArgs e)
         {
+            //if (!CanCloseApplication())
+            //{
+            //    e.ApplicationExitCode = 1;
+            //    return;
+            //}
+
             AppEnvironment.StopBackgroundProcesses();
 
             if (AppEnvironment.GetAppConfig().AppSettings.AutoBackup)
@@ -78,6 +87,17 @@ namespace GameTimeNext
 
             if (AppEnvironment.GetDataBaseManager().GetConnection() != null)
                 AppEnvironment.GetDataBaseManager().GetConnection().Close();
+        }
+
+        private bool CanCloseApplication()
+        {
+            foreach (var app in AppEnvironment.StartedApplications.Values)
+            {
+                if (!app.CanClose())
+                    return false;
+            }
+
+            return true;
         }
 
         private void CheckForNewVersion()

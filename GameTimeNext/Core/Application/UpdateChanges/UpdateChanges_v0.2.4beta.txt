@@ -1,0 +1,27 @@
+﻿=============================================
+  GameTimeNext  |  Version 0.2.4 Beta
+=============================================
+
+  IMPROVEMENTS
+  ____________
+
+  * Enhanced the application search for faster
+    and more accurate results.
+
+
+  NEW FEATURES
+  ____________
+
+  * Added the ability to reorder favorite applications
+    both in the topbar and on application startup.
+
+  * Added changelog
+
+
+  BUG FIXES
+  _________
+
+  * Fixed the application state being
+    restored too soon (timeout was extended to 30 seconds)
+
+=============================================

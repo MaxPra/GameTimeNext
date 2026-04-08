@@ -81,14 +81,14 @@ namespace GameTimeNext.Core.Application.General.UserSettings
             return false;
         }
 
-        private static void ReorderFavoriteApplications(List<FavoriteApplication> favoriteApplications)
+        public static void ReorderFavoriteApplications(List<FavoriteApplication> favoriteApplications)
         {
-
             int orderPos = 1;
 
             foreach (var application in favoriteApplications)
             {
                 application.Order = orderPos;
+                orderPos++;
             }
         }
 

@@ -10,9 +10,9 @@
   </PropertyGroup>
 
 	<PropertyGroup>
-		<Version>0.2.3</Version>
+		<Version>0.2.4</Version>
 		<VersionTag>beta</VersionTag>
-		<BuildDate>2026-04-03</BuildDate>
+		<BuildDate>2026-04-07</BuildDate>
 
 		<InformationalVersion>$(Version)-$(VersionTag)+$(BuildDate)</InformationalVersion>
 
@@ -20,6 +20,7 @@
 	</PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Core\Application\UpdateChanges\UpdateChanges_v0.2.4beta.txt" />
     <None Remove="UI\Ressources\GTN_APP_ICON.ico" />
     <None Remove="UI\Ressources\GTN_ICON_ADD_PROFILE.png" />
     <None Remove="UI\Ressources\GTN_ICON_MONITOR_KEY.png" />
@@ -43,9 +44,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="UI\Ressources\GTN_APP_ICON.ico">
+    <Content Include="Core\Application\UpdateChanges\UpdateChanges_v0.2.4beta.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
+    </Content>
+    <Content Include="UI\Ressources\GTN_APP_ICON.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Resource Include="UI\Ressources\GTN_ICON_ADD_PROFILE.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
@@ -63,6 +67,13 @@
   <ItemGroup>
     <Folder Include="Core\Application\Settings\Viewmodels\" />
     <Folder Include="Core\Framework\ErrorHandling\" />
+    <Folder Include="Core\Framework\UI\AttachedProperties\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Core\Application\StartableApps.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

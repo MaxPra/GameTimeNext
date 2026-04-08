@@ -35,6 +35,9 @@
             CornerRadius="{DynamicResource DefaultCornerRadius}">
 
             <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="72" />
                     <ColumnDefinition Width="16" />
@@ -43,6 +46,7 @@
 
                 <Border
                     x:Name="BdIconHost"
+                    Grid.Row="0"
                     Grid.Column="0"
                     Width="56"
                     Height="56"
@@ -64,6 +68,8 @@
                 </Border>
 
                 <ScrollViewer
+                    x:Name="SvMessage"
+                    Grid.Row="0"
                     Grid.Column="2"
                     MaxHeight="360"
                     Padding="0"
@@ -82,6 +88,27 @@
                         Text="Message"
                         TextWrapping="Wrap" />
                 </ScrollViewer>
+
+                <TextBox
+                    x:Name="TxbMemotext"
+                    Grid.Row="0"
+                    Grid.Column="2"
+                    Height="Auto"
+                    MinHeight="0"
+                    Padding="8"
+                    VerticalAlignment="Stretch"
+                    AcceptsReturn="True"
+                    Background="{DynamicResource Brush.TextBox.Background}"
+                    BorderBrush="{DynamicResource Brush.Border}"
+                    BorderThickness="1"
+                    FontFamily="Consolas"
+                    FontSize="13"
+                    Foreground="{DynamicResource Brush.TextPrimary}"
+                    HorizontalScrollBarVisibility="Auto"
+                    IsReadOnly="True"
+                    TextWrapping="NoWrap"
+                    VerticalScrollBarVisibility="Auto"
+                    Visibility="Collapsed" />
             </Grid>
         </Border>
 

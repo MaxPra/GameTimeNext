@@ -1,0 +1,12 @@
+[
+  {
+    "Code": "P",
+    "Name": "Profiles",
+    "ClassName": "GameTimeNext.Core.Application.Profiles.ProfilesApp"
+  },
+  {
+    "Code": "SE",
+    "Name": "Settings",
+    "ClassName": "GameTimeNext.Core.Application.Settings.SettingsApp"
+  }
+]

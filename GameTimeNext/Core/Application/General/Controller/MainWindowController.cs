@@ -1,4 +1,6 @@
-﻿using GameTimeNext.Core.Application.General.UserSettings;
+﻿using GameTimeNext.Core.Application.General.AppSearch;
+using GameTimeNext.Core.Application.General.FavAppsReorder;
+using GameTimeNext.Core.Application.General.UserSettings;
 using GameTimeNext.Core.Application.General.ViewModels;
 using GameTimeNext.Core.Application.GTXMigration;
 using GameTimeNext.Core.Framework;
@@ -8,6 +10,8 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
+using System.Windows.Threading;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.Events;
 using UIX.ViewController.Engine.Runnables;
@@ -28,7 +32,7 @@ namespace GameTimeNext.Core.Application.General.Controller
 
         protected override void Init()
         {
-
+            GetApp().RootController = this;
         }
 
         protected override void BuildFirst()
@@ -47,12 +51,15 @@ namespace GameTimeNext.Core.Application.General.Controller
 
             await CheckGTXMigration();
 
-            await BuildApplicationSearch();
-
             AppEnvironment.AppLauncher.StartFavorites(GetApp());
 
             // Hintergrundprozesse starten
             AppEnvironment.StartBackgroundProcesses(GetApp());
+
+            // Warten bis alle ausstehenden Render-Operationen (Prio 7) abgearbeitet
+            // sind, bevor modale Dialoge gezeigt werden. Background-Prio (4) ist
+            // niedriger als Render (7) → Render läuft zuerst durch.
+            await System.Windows.Application.Current.Dispatcher.InvokeAsync(() => { }, DispatcherPriority.Background);
 
             // Fehler anzeigen, die vor MainWindow passiert sind (Appstart)
             ShowErrorsFromErrorList();
@@ -60,7 +67,19 @@ namespace GameTimeNext.Core.Application.General.Controller
 
         protected override void Build()
         {
+            FnControls.SetVisible(GetWindow().txtEmptyTabMessage, GetWindow().MainTabControl.Items.Count == 0);
+        }
 
+        public override bool HandleGlobalShortcut(KeyEventArgs e)
+        {
+            if (e.KeyboardDevice.Modifiers.HasFlag(ModifierKeys.Control) && e.Key == Key.M)
+            {
+                AppSearchApp? appSearch = GetApp().GetApplication<AppSearchApp>();
+                appSearch?.AppSearchViewController?.Show(true);
+                return true;
+            }
+
+            return false;
         }
 
         protected override void TriggeredEvent(FrameworkElement source, string eventName)
@@ -161,33 +180,6 @@ namespace GameTimeNext.Core.Application.General.Controller
             }
         }
 
-        private async Task BuildApplicationSearch()
-        {
-            _mainWindowViewModel = new MainWindowViewModel();
-            _mainWindowViewModel.AvailableApplications =
-                new System.Collections.ObjectModel.ObservableCollection<SearchableApplication>(AppEnvironment.AvailableApplications);
-
-            _mainWindowViewModel.PropertyChanged += MainWindowViewModel_PropertyChanged;
-
-            GetWindow().DataContext = _mainWindowViewModel;
-        }
-
-        private void MainWindowViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(MainWindowViewModel.SelectedApplication))
-            {
-                SearchableApplication selected = _mainWindowViewModel?.SelectedApplication;
-
-                if (selected == null)
-                    return;
-
-                if (!AppEnvironment.StartedApplications.ContainsKey(selected.ClassName))
-                    AppEnvironment.AppLauncher.LaunchApplication(selected.ClassName, GetApp(), selected.Name);
-
-                _mainWindowViewModel.SelectedApplication = null;
-            }
-        }
-
         private void BuildBetaTag()
         {
             if (AppEnvironment.AppVersion.IsBeta)
@@ -205,7 +197,12 @@ namespace GameTimeNext.Core.Application.General.Controller
             foreach (InformationListItem informationListItem in AppEnvironment.InformationList)
             {
 
-                CFMBOXResult result = GetApp().GetApplication<CFMBOX>().Show(informationListItem.Text, informationListItem.Buttons, informationListItem.Icon);
+                CFMBOXResult result;
+
+                if (informationListItem.MBoxType == CFMBOXType.Default)
+                    result = GetApp().GetApplication<CFMBOX>().Show(informationListItem.Text, informationListItem.Buttons, informationListItem.Icon, informationListItem.MBoxType);
+                else
+                    result = GetApp().GetApplication<CFMBOX>().Show(informationListItem.Title, informationListItem.Text, informationListItem.Buttons, informationListItem.Icon, informationListItem.MBoxType);
 
                 if (result == CFMBOXResult.Yes)
                     informationListItem.YesAction?.Invoke();
@@ -262,6 +259,52 @@ namespace GameTimeNext.Core.Application.General.Controller
             FavoriteApplication favApp = FnUserSettings.GetFavoriteApplication(AppEnvironment.GetAppConfig().UserSettings.FavApps, tab.Tag.ToString());
 
             FnUserSettings.SetAsPrimaryStart(favApp);
+        }
+
+        protected void EV_ctxtEditOrder()
+        {
+            FavAppsReorderApp? favAppsReorderApp = GetApp().GetApplication<FavAppsReorderApp>();
+
+            favAppsReorderApp.AppResult = (result =>
+            {
+                if (result.HasChanged)
+                {
+                    ReorderTabsByFavApps();
+                }
+            });
+
+            favAppsReorderApp.Reorder();
+        }
+
+        private void ReorderTabsByFavApps()
+        {
+            var favApps = AppEnvironment.GetAppConfig().UserSettings.FavApps;
+            var tabControl = GetWindow().MainTabControl;
+
+            if (favApps == null || favApps.Count == 0 || tabControl.Items.Count == 0)
+                return;
+
+            var sortedFavApps = favApps.OrderBy(f => f.Order).ToList();
+
+            var tabs = tabControl.Items.Cast<TabItem>().ToList();
+
+            for (int i = 0; i < sortedFavApps.Count; i++)
+            {
+                var favApp = sortedFavApps[i];
+                var matchingTab = tabs.FirstOrDefault(t => t.Tag?.ToString() == favApp.FullName);
+
+                if (matchingTab != null)
+                {
+                    int currentIndex = tabControl.Items.IndexOf(matchingTab);
+                    if (currentIndex != i && currentIndex >= 0)
+                    {
+                        tabControl.Items.RemoveAt(currentIndex);
+
+                        int insertIndex = Math.Min(i, tabControl.Items.Count);
+                        tabControl.Items.Insert(insertIndex, matchingTab);
+                    }
+                }
+            }
         }
 
         protected void EV_tabApplication_CtxtOpening(FrameworkElement target)

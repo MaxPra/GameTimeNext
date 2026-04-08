@@ -17,36 +17,36 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
             _cfmboxView.WndController = _cfmboxController;
         }
 
-        public CFMBOXResult Show(string title, string message, CFMBOXResult buttons)
+        public CFMBOXResult Show(string title, string message, CFMBOXResult buttons, CFMBOXType type = CFMBOXType.Default)
         {
-            return Show(title, message, buttons, CFMBOXIcon.Info, this.WndParent ?? System.Windows.Application.Current?.MainWindow);
+            return Show(title, message, buttons, CFMBOXIcon.Info, this.WndParent ?? System.Windows.Application.Current?.MainWindow, type);
         }
 
-        public CFMBOXResult Show(string message, CFMBOXResult buttons, CFMBOXIcon icon)
+        public CFMBOXResult Show(string message, CFMBOXResult buttons, CFMBOXIcon icon, CFMBOXType type = CFMBOXType.Default)
         {
-            return Show(message, buttons, icon, this.WndParent ?? System.Windows.Application.Current?.MainWindow);
+            return Show(message, buttons, icon, this.WndParent ?? System.Windows.Application.Current?.MainWindow, type);
         }
 
-        public CFMBOXResult Show(string message, CFMBOXResult buttons, CFMBOXIcon icon, Window? owner)
+        public CFMBOXResult Show(string message, CFMBOXResult buttons, CFMBOXIcon icon, Window? owner, CFMBOXType type = CFMBOXType.Default)
         {
             string title = DeriveTitleFromIcon(icon);
-            return Show(title, message, buttons, icon, owner ?? this.WndParent ?? System.Windows.Application.Current?.MainWindow);
+            return Show(title, message, buttons, icon, owner ?? this.WndParent ?? System.Windows.Application.Current?.MainWindow, type);
         }
 
-        public CFMBOXResult Show(string title, string message, CFMBOXResult buttons, CFMBOXIcon icon)
+        public CFMBOXResult Show(string title, string message, CFMBOXResult buttons, CFMBOXIcon icon, CFMBOXType type = CFMBOXType.Default)
         {
-            return Show(title, message, buttons, icon, System.Windows.Application.Current?.MainWindow);
+            return Show(title, message, buttons, icon, System.Windows.Application.Current?.MainWindow, type);
         }
 
-        public CFMBOXResult Show(string title, string message, CFMBOXResult buttons, Window? owner)
+        public CFMBOXResult Show(string title, string message, CFMBOXResult buttons, Window? owner, CFMBOXType type = CFMBOXType.Default)
         {
-            return Show(title, message, buttons, CFMBOXIcon.Info, owner);
+            return Show(title, message, buttons, CFMBOXIcon.Info, owner, type);
         }
 
-        public CFMBOXResult Show(string title, string message, CFMBOXResult buttons, CFMBOXIcon icon, Window? owner)
+        public CFMBOXResult Show(string title, string message, CFMBOXResult buttons, CFMBOXIcon icon, Window? owner, CFMBOXType type = CFMBOXType.Default)
         {
             CreateFreshDialog();
-            return _cfmboxController!.ShowDialog(title, message, buttons, icon, owner);
+            return _cfmboxController!.ShowDialog(title, message, buttons, icon, owner, type);
         }
 
         private void CreateFreshDialog()

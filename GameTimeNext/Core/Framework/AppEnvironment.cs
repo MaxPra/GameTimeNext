@@ -1,6 +1,5 @@
 ﻿using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.MigrationTasks;
-using GameTimeNext.Core.Application.Profiles;
 using GameTimeNext.Core.Application.Profiles.BackgroundProcesses;
 using GameTimeNext.Core.Application.Settings;
 using GameTimeNext.Core.Application.TableObjects;
@@ -14,6 +13,7 @@ using GameTimeNext.Core.Framework.Versioning;
 using Microsoft.VisualBasic.FileIO;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 using System.Text.Json;
 using System.Windows.Controls;
 using UIX.ViewController.Engine.Runnables;
@@ -95,6 +95,8 @@ namespace GameTimeNext.Core.Framework
             AppVersion.Get();
 
             HandleBackup();
+
+            CheckShowChangeLog();
 
             MigrationManager.MigrateIfNeeded();
 
@@ -240,6 +242,50 @@ namespace GameTimeNext.Core.Framework
             }
         }
 
+        private static void CheckShowChangeLog()
+        {
+            string versionOldRaw = AppEnvironment.GetAppConfig().AppVersion;
+
+            AppVersion versionOld = new AppVersion();
+            versionOld.Get(versionOldRaw);
+
+            AppVersion currentVersion = AppEnvironment.AppVersion;
+
+
+
+            if (currentVersion.IsBiggerThan(versionOld))
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.Append("UpdateChanges_v" + currentVersion.VersionText);
+
+                if (currentVersion.IsBeta)
+                    sb.Append("beta");
+
+                sb.Append(".txt");
+
+                string text = string.Empty;
+
+                try
+                {
+                    text = File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Core", "Application", "UpdateChanges", sb.ToString()));
+                }
+                catch (Exception)
+                {
+                    return;
+                }
+
+                if (FnString.IsNullEmptyOrWhitespace(text))
+                    return;
+
+                InformationListItem infoListItem = new InformationListItem(CFMBOXIcon.Info, sb.ToString(), text);
+                infoListItem.MBoxType = CFMBOXType.Memotext;
+                infoListItem.Buttons = CFMBOXResult.Ok;
+
+                InformationList.Add(infoListItem);
+
+            }
+        }
+
         private static void LoadAppConfig()
         {
             string appConfigText = File.ReadAllText(new AppConfig().AppConfigPath);
@@ -255,19 +301,32 @@ namespace GameTimeNext.Core.Framework
 
         private static void InitializeStartableApps()
         {
-            // Aufrufbare Anwendungen hinzufügen
-            AvailableApplications.Add(new SearchableApplication
+            string jsonFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Core", "Application", "StartableApps.json");
+
+            if (!File.Exists(jsonFilePath))
             {
-                Code = "P",
-                Name = "Profiles",
-                ClassName = typeof(ProfilesApp).FullName
-            });
-            AvailableApplications.Add(new SearchableApplication
+                InformationList.Add(new InformationListItem(CFMBOXIcon.Error, $"StartableApps.json not found at: {jsonFilePath}"));
+                return;
+            }
+
+            try
             {
-                Code = "SE",
-                Name = "Settings",
-                ClassName = typeof(SettingsApp).FullName
-            });
+                string jsonContent = File.ReadAllText(jsonFilePath);
+                var apps = JsonSerializer.Deserialize<List<SearchableApplication>>(jsonContent);
+
+                if (apps != null && apps.Count > 0)
+                {
+                    AvailableApplications.AddRange(apps);
+                }
+                else
+                {
+                    InformationList.Add(new InformationListItem(CFMBOXIcon.Warning, "No applications found in StartableApps.json"));
+                }
+            }
+            catch (Exception ex)
+            {
+                InformationList.Add(new InformationListItem(CFMBOXIcon.Error, $"Error loading StartableApps.json: {ex.Message}"));
+            }
         }
     }
 }

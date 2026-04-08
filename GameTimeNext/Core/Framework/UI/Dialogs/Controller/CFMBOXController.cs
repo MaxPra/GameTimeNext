@@ -29,6 +29,12 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
         Success = 5
     }
 
+    public enum CFMBOXType
+    {
+        Default = 0,
+        Memotext = 1
+    }
+
     internal class CFMBOXController : UIXWindowControllerBase
     {
         public class WindowReturn : UIXWindowReturn
@@ -54,12 +60,12 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
             return _windowReturn;
         }
 
-        public CFMBOXResult ShowDialog(string title, string message, CFMBOXResult buttons, CFMBOXIcon icon, Window? owner)
+        public CFMBOXResult ShowDialog(string title, string message, CFMBOXResult buttons, CFMBOXIcon icon, Window? owner, CFMBOXType type = CFMBOXType.Default)
         {
             _owner = owner;
             _windowReturn.Result = CFMBOXResult.None;
 
-            ApplyContent(title, message, buttons, icon, owner);
+            ApplyContent(title, message, buttons, icon, owner, type);
 
             Show(true);
 
@@ -141,7 +147,7 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
         {
         }
 
-        private void ApplyContent(string title, string message, CFMBOXResult buttons, CFMBOXIcon icon, Window? owner)
+        private void ApplyContent(string title, string message, CFMBOXResult buttons, CFMBOXIcon icon, Window? owner, CFMBOXType type = CFMBOXType.Default)
         {
             // Ensure dialog has correct owner so it stays on top of the main window
             GetWnd().Owner = owner;
@@ -152,7 +158,36 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
                 title = DeriveTitleFromIcon(icon);
 
             GetWnd().Title = title;
-            GetWnd().TbMessage.Text = message;
+
+            if (type == CFMBOXType.Memotext)
+            {
+                GetWnd().SvMessage.Visibility = Visibility.Collapsed;
+                GetWnd().TxbMemotext.Text = message;
+                GetWnd().TxbMemotext.Visibility = Visibility.Visible;
+
+                GetWnd().SizeToContent = SizeToContent.Manual;
+                GetWnd().ResizeMode = ResizeMode.CanResize;
+                GetWnd().Width = 720;
+                GetWnd().Height = 520;
+                GetWnd().MinWidth = 500;
+                GetWnd().MinHeight = 350;
+                GetWnd().MaxWidth = double.PositiveInfinity;
+                GetWnd().MaxHeight = double.PositiveInfinity;
+            }
+            else
+            {
+                GetWnd().TxbMemotext.Visibility = Visibility.Collapsed;
+                GetWnd().TbMessage.Text = message;
+                GetWnd().SvMessage.Visibility = Visibility.Visible;
+
+                GetWnd().SizeToContent = SizeToContent.Height;
+                GetWnd().ResizeMode = ResizeMode.NoResize;
+                GetWnd().Width = 560;
+                GetWnd().MinWidth = 560;
+                GetWnd().MinHeight = 220;
+                GetWnd().MaxWidth = 820;
+                GetWnd().MaxHeight = 700;
+            }
 
             ConfigureButtons(buttons);
             ApplyIcon(icon);

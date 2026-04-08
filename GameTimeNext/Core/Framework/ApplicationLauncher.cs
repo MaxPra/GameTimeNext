@@ -26,9 +26,6 @@ namespace GameTimeNext.Core.Framework
 
             UIXApplication app = (UIXApplication)Activator.CreateInstance(type);
 
-            if (type.Name == "ProfilesApp")
-                app.IsClosable = false;
-
             TabItem tabItem = new TabItem
             {
                 Header = header,
@@ -96,6 +93,11 @@ namespace GameTimeNext.Core.Framework
 
             Type type = Type.GetType(typeName!);
 
+            UIXApplication app = AppEnvironment.StartedApplications[typeName];
+
+            if (!app.CanClose())
+                return;
+
             AppEnvironment.StartedApplications.Remove(type!.FullName!);
 
             TabControl tabControl = ItemsControl.ItemsControlFromItemContainer(tab) as TabControl;
@@ -108,6 +110,7 @@ namespace GameTimeNext.Core.Framework
         {
             Style contextMenuItemStyle = (Style)System.Windows.Application.Current.FindResource("ModernContextMenuItemStyle");
             Style contextMenuStyle = (Style)System.Windows.Application.Current.FindResource("ModernContextMenuStyle");
+            Style contextMenuSeparatorStyle = (Style)System.Windows.Application.Current.FindResource("ModernContextMenuSeparatorStyle");
 
             UIXApplication application = AppEnvironment.StartedApplications[tabItem.Tag.ToString()];
 
@@ -125,6 +128,15 @@ namespace GameTimeNext.Core.Framework
 
                 if (!favApp.PrimaryStart && !FnUserSettings.IsPrimaryStartSet())
                     contextBuilder.AddItem("ctxtSetAsPrimaryStart", "Set as primary start", icon: UIXContextMenuFactory.CreateMdlIcon("\uE840"), itemStyle: contextMenuItemStyle);
+            }
+
+            var favApps = AppEnvironment.GetAppConfig().UserSettings.FavApps.OrderBy(a => a.Order).ToList();
+
+            if (favApps != null && favApps.Count > 1)
+            {
+                contextBuilder.AddSeparator(contextMenuSeparatorStyle);
+
+                contextBuilder.AddItem("ctxtEditOrder", "Edit favorite apps order", icon: UIXContextMenuFactory.CreateMdlIcon("\uE7C2"), itemStyle: contextMenuItemStyle);
             }
 
             if (contextBuilder.HasItems())

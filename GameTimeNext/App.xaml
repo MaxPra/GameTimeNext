@@ -28,6 +28,8 @@
                 <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Controls/PopupStyle.xaml" />
                 <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Controls/TextBlockStyle.xaml" />
                 <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Controls/GridViewStyle.xaml" />
+                <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Controls/ListViewStyle.xaml" />
+                <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Controls/DragDropListViewStyle.xaml" />
                 <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Controls/LoaderStyles.xaml" />
                 <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Controls/ContextMenuStyles.xaml" />
                 <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Controls/SearchBoxStyles.xaml" />
