@@ -25,9 +25,9 @@
                         CornerRadius="{StaticResource DefaultCornerRadius}"
                         SnapsToDevicePixels="True">
                         <ScrollViewer
+                            Padding="{TemplateBinding Padding}"
                             Focusable="False"
                             HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
-                            Padding="{TemplateBinding Padding}"
                             VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}">
                             <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
                         </ScrollViewer>
@@ -115,7 +115,7 @@
                         <Trigger Property="IsSelected" Value="True">
                             <Setter TargetName="Bd" Property="Background">
                                 <Setter.Value>
-                                    <SolidColorBrush Color="{DynamicResource Color.Accent}" Opacity="0.15" />
+                                    <SolidColorBrush Opacity="0.15" Color="{DynamicResource Color.Accent}" />
                                 </Setter.Value>
                             </Setter>
                             <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
@@ -132,7 +132,7 @@
                             </MultiTrigger.Conditions>
                             <Setter TargetName="Bd" Property="Background">
                                 <Setter.Value>
-                                    <SolidColorBrush Color="{DynamicResource Color.Accent}" Opacity="0.20" />
+                                    <SolidColorBrush Opacity="0.20" Color="{DynamicResource Color.Accent}" />
                                 </Setter.Value>
                             </Setter>
                             <Setter TargetName="GlowBorder" Property="Opacity" Value="0.5" />

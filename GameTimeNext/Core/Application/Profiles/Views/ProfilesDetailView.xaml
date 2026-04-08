@@ -154,7 +154,7 @@
                             </Grid>
                         </Border>
 
-                        <Border Grid.Row="4" Style="{StaticResource ProfileDetail.InfoHost}">
+                        <Border Grid.Row="6" Style="{StaticResource ProfileDetail.InfoHost}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
@@ -267,7 +267,7 @@
 
                         <Border
                             x:Name="pnlPlaythrough"
-                            Grid.Row="6"
+                            Grid.Row="4"
                             Style="{StaticResource ProfileDetail.InfoHost}">
                             <Grid>
                                 <Grid.ColumnDefinitions>

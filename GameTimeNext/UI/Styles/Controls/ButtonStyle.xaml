@@ -8,6 +8,7 @@
         <Setter Property="Width" Value="45" />
         <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
         <Setter Property="FontSize" Value="12" />
+        <Setter Property="Cursor" Value="Arrow" />
 
         <Setter Property="Template">
             <Setter.Value>
@@ -34,12 +35,12 @@
         </Setter>
     </Style>
 
-
     <!--  Title Bar Close Button  -->
     <Style
         x:Key="TitleBarCloseButtonStyle"
         BasedOn="{StaticResource TitleBarButtonStyle}"
         TargetType="Button">
+        <Setter Property="Cursor" Value="Arrow" />
 
         <Setter Property="Template">
             <Setter.Value>
@@ -77,6 +78,7 @@
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
@@ -163,6 +165,7 @@
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">

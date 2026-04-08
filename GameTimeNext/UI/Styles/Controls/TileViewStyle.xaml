@@ -75,6 +75,7 @@
         <Setter Property="VerticalContentAlignment" Value="Stretch" />
         <Setter Property="KeyboardNavigation.DirectionalNavigation" Value="None" />
         <Setter Property="KeyboardNavigation.TabNavigation" Value="None" />
+        <Setter Property="Cursor" Value="Hand" />
 
         <Setter Property="Template">
             <Setter.Value>

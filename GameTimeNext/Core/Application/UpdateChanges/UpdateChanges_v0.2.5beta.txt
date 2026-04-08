@@ -6,17 +6,6 @@
   ____________
 
   * UI experience revised by using a different cursor type for certain UI elements.
-
-
-  NEW FEATURES
-  ____________
-
-  * ...
-
-
-  BUG FIXES
-  _________
-
-  * ...
+  * Improved the styling of the application tabs.
 
 =============================================
