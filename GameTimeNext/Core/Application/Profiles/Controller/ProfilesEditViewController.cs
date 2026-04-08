@@ -293,7 +293,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             GetWnd().Dispatcher.Invoke(() =>
             {
-                GetWnd().txbImagePath.Text = AppEnvironment.GetAppConfig().CoverFolderPath + System.IO.Path.DirectorySeparatorChar + _coverAppFolderFileName;
+                GetWnd().txbImagePath.Text = _coverAppFolderFileName;
             });
 
             GetApp().Loader.Begin();

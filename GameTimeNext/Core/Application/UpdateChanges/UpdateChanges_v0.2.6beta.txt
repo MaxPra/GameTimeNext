@@ -1,0 +1,11 @@
+﻿=============================================
+  GameTimeNext  |  Version 0.2.6 Beta
+=============================================
+
+  BUG FIXES
+  _________
+
+  * Fixed a bug where false image saving could 
+    result in application crash
+
+=============================================
