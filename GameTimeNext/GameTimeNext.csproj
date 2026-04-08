@@ -29,6 +29,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Core\Application\UpdateChanges\UpdateChanges_v0.2.5beta.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="UI\Ressources\GTN_APP_ICON.ico" />
   </ItemGroup>
 

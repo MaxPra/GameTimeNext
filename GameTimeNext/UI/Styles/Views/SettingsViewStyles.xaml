@@ -127,6 +127,7 @@
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="ItemBackground" Property="Background" Value="{StaticResource Brush.SettingsTab.HoverBackground}" />
                             <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+                            <Setter TargetName="RootBorder" Property="Cursor" Value="Hand" />
                         </Trigger>
 
                         <Trigger Property="IsSelected" Value="True">
