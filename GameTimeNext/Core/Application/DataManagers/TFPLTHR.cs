@@ -17,6 +17,7 @@ namespace GameTimeNext.Core.Application.DataManagers
 
             query.AddWhere(K1PLTHR.Name, K1PLTHR.Fields.PFID, QueryCompareType.EQUALS, pfid);
             query.AddWhere(K1PLTHR.Name, K1PLTHR.Fields.PTCO, QueryCompareType.EQUALS, false);
+            query.AddWhere(K1PLTHR.Name, K1PLTHR.Fields.PTCA, QueryCompareType.EQUALS, false);
 
             using (var reader = query.Execute())
             {

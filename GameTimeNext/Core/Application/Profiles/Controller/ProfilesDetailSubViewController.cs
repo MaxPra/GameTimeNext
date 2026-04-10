@@ -453,6 +453,10 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected void EV_btnStartMonitoring()
         {
+
+            if (!CFProfilesApp.AskForNewPlaythroughCreationIfNotActive(_dataWrapper!.GetTypedTableObject().PFID, GetApp()))
+                return;
+
             if (CFGameTimeMonitoring.IsMonitoring)
             {
                 CFGameTimeMonitoring.StopMonitoring();

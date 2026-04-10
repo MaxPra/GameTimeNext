@@ -67,7 +67,6 @@ namespace GameTimeNext.Core.Application.Profiles
 
             System.Windows.Application.Current.Dispatcher.Invoke(() =>
             {
-
                 ToastMessage tm = new ToastMessage("Attention!", "GameTimeNext needs your attention!");
                 tm.Show();
 
