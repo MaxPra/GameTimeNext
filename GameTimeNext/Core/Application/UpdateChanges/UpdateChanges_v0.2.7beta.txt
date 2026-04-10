@@ -1,0 +1,11 @@
+﻿=============================================
+  GameTimeNext  |  Version 0.2.7 Beta
+=============================================
+
+  BUG FIXES
+  _________
+
+  * Fixed a bug regarding starting a new monitoring session without
+    a valid playthrough
+
+=============================================
