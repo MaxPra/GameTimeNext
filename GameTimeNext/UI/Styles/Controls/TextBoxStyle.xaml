@@ -1,4 +1,7 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI">
 
     <SolidColorBrush x:Key="Brush.TextBox.Background" Color="#14151A" />
     <SolidColorBrush x:Key="Brush.TextBox.BackgroundHover" Color="#171923" />
@@ -23,6 +26,8 @@
         <Setter Property="FontSize" Value="13" />
         <Setter Property="FontWeight" Value="Normal" />
         <Setter Property="FontFamily" Value="Segoe UI" />
+
+        <Setter Property="ui:TextBoxBehaviors.SelectAllOnFocus" Value="True" />
 
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
