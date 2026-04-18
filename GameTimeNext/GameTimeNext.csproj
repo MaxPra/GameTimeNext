@@ -10,9 +10,9 @@
   </PropertyGroup>
 
 	<PropertyGroup>
-		<Version>0.2.7</Version>
+		<Version>0.2.8</Version>
 		<VersionTag>beta</VersionTag>
-		<BuildDate>2026-04-10</BuildDate>
+		<BuildDate>2026-04-18</BuildDate>
 
 		<InformationalVersion>$(Version)-$(VersionTag)+$(BuildDate)</InformationalVersion>
 
@@ -29,6 +29,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Core\Application\UpdateChanges\UpdateChanges_v0.2.8beta.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Core\Application\UpdateChanges\UpdateChanges_v0.2.7beta.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

@@ -74,6 +74,7 @@ namespace GameTimeNext.Core.Framework.Utils
                 })
                 .OrderByDescending(x => x.Score)
                 .ThenBy(x => x.Executable.Name.Length)
+                .DistinctBy(x => x.NormalizedName)
                 .Select(x => x.Executable)
                 .ToList();
 
@@ -83,6 +84,7 @@ namespace GameTimeNext.Core.Framework.Utils
                     .Where(x => !IsHardBlocked(x.NormalizedName))
                     .OrderByDescending(x => x.Score)
                     .ThenBy(x => x.Executable.Name.Length)
+                    .DistinctBy(x => x.NormalizedName)
                     .Take(3)
                     .Select(x => x.Executable)
                     .ToList();

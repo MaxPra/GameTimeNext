@@ -27,67 +27,67 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
         {
             ProcessBreakReminder();
 
-            if (ExecutablesToSearch.Count == 0)
-                return;
-
-            // Alle Profile durchloopen
-            List<T1PROFI> t1profis = T1profis.Values.ToList();
-
-            foreach (var t1profi in t1profis)
+            if (ExecutablesToSearch.Count > 0)
             {
-                if (FnString.IsNullEmptyOrWhitespace(t1profi.EXGF))
-                    continue;
+                // Alle Profile durchloopen
+                List<T1PROFI> t1profis = T1profis.Values.ToList();
 
-                foreach (string executable in ExecutablesToSearch[t1profi.PFID])
+                foreach (var t1profi in t1profis)
                 {
-                    if (FnSystem.IsProcessRunningWithPathPart(executable, t1profi.EXGF) && AppEnvironment.IsApplicationRunning(typeof(ProfilesApp).FullName!))
+                    if (FnString.IsNullEmptyOrWhitespace(t1profi.EXGF))
+                        continue;
+
+                    foreach (string executable in ExecutablesToSearch[t1profi.PFID])
                     {
-                        if (_currentProfileRunning.pfid == 0 && !t1profi.ARCH)
+                        if (FnSystem.IsProcessRunningWithPathPart(executable, t1profi.EXGF) && AppEnvironment.IsApplicationRunning(typeof(ProfilesApp).FullName!))
                         {
-                            // Hier Profil wechseln
-                            AppEnvironment.CurrentPfid = t1profi.PFID;
-
-                            CallDispatcher!.Trigger("EXEV_SwitchProfile");
-                            CallDispatcher.Trigger("EXEV_GameLaunched");
-
-                        }
-
-                        if (!_currentProfileRunning.executables.Contains(executable))
-                        {
-                            _currentProfileRunning!.pfid = t1profi.PFID;
-                            _currentProfileRunning.executables.Add(executable);
-                            _currentProfileRunning.path = t1profi.EXGF;
-                        }
-                    }
-                    else
-                    {
-                        if (_currentProfileRunning.pfid == 0)
-                            continue;
-
-                        if (!IsAnyExeRunning(_currentProfileRunning, executable, t1profi.EXGF))
-                        {
-                            if (CFGameTimeMonitoring.IsMonitoring)
+                            if (_currentProfileRunning.pfid == 0 && !t1profi.ARCH)
                             {
-                                // Nebenmonitore ausschwärzen beenden, wenn in Settings aktiviert
-                                if (AppEnvironment.GetAppConfig().AppSettings.BlackoutSideMonitors)
-                                {
-                                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
-                                    {
-                                        CFBlackout.ToggleSecondaryBlackout(System.Windows.Application.Current.MainWindow);
-                                    });
-                                }
+                                // Hier Profil wechseln
+                                AppEnvironment.CurrentPfid = t1profi.PFID;
 
-                                CFGameTimeMonitoring.StopMonitoring();
-                                CallDispatcher!.Trigger("EXEV_GameTimeMonitoringStopped");
+                                CallDispatcher!.Trigger("EXEV_SwitchProfile");
+                                CallDispatcher.Trigger("EXEV_GameLaunched");
+
                             }
 
-                            CFGameStarter.DeactivateProfileSettings(t1profi.PFID);
-
-                            CallDispatcher!.Trigger("EXEV_GameClosed");
-
-                            _currentProfileRunning = new CurrentProfileRunning();
+                            if (!_currentProfileRunning.executables.Contains(executable))
+                            {
+                                _currentProfileRunning!.pfid = t1profi.PFID;
+                                _currentProfileRunning.executables.Add(executable);
+                                _currentProfileRunning.path = t1profi.EXGF;
+                            }
                         }
+                        else
+                        {
+                            if (_currentProfileRunning.pfid == 0)
+                                continue;
 
+                            if (!IsAnyExeRunning(_currentProfileRunning, executable, t1profi.EXGF))
+                            {
+                                if (CFGameTimeMonitoring.IsMonitoring)
+                                {
+                                    // Nebenmonitore ausschwärzen beenden, wenn in Settings aktiviert
+                                    if (AppEnvironment.GetAppConfig().AppSettings.BlackoutSideMonitors)
+                                    {
+                                        System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                                        {
+                                            CFBlackout.ToggleSecondaryBlackout(System.Windows.Application.Current.MainWindow);
+                                        });
+                                    }
+
+                                    CFGameTimeMonitoring.StopMonitoring();
+                                    CallDispatcher!.Trigger("EXEV_GameTimeMonitoringStopped");
+                                }
+
+                                CFGameStarter.DeactivateProfileSettings(t1profi.PFID);
+
+                                CallDispatcher!.Trigger("EXEV_GameClosed");
+
+                                _currentProfileRunning = new CurrentProfileRunning();
+                            }
+
+                        }
                     }
                 }
             }

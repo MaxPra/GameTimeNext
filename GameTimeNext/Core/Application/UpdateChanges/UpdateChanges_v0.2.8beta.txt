@@ -1,0 +1,11 @@
+﻿=============================================
+  GameTimeNext  |  Version 0.2.8 Beta
+=============================================
+
+  BUG FIXES
+  _________
+
+  * fixed a bug where duplicate executables (same name) were not filtered out in executable selection
+  * fixed a bug where automatic running executables detection would not work
+
+=============================================
