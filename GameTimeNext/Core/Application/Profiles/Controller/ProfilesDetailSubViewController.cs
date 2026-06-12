@@ -428,7 +428,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         public async void EV_btnLaunchGame()
         {
-            CFSteamGameStarter.StartSteamGame(_dataWrapper!.GetTypedTableObject().SAID.ToString(), _dataWrapper!.GetTypedTableObject().PFID, GetApp());
+            FnSteam.StartSteamGame(_dataWrapper!.GetTypedTableObject().SAID.ToString(), _dataWrapper!.GetTypedTableObject().PFID, GetApp());
             GetView().btnLaunchGame.Content = "Launching...";
             GetView().btnLaunchGame.IsEnabled = false;
 

@@ -3,11 +3,12 @@ using GameTimeNext.Core.Application.Profiles.Components;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.Utils;
+using System.Diagnostics;
 using UIX.ViewController.Engine.Runnables;
 
 namespace GameTimeNext.Core.Framework.LauncherIntegration
 {
-    public class CFSteamGameStarter
+    public class FnSteam
     {
         /// <summary>
         /// Startet ein Steam-Spiel anhand der ID
@@ -40,6 +41,19 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
                 CFMBOX cfmbox = app.GetApplication<CFMBOX>();
                 cfmbox.Show("Info", "Steam could not be found!", CFMBOXResult.Ok, CFMBOXIcon.Info);
             }
+        }
+
+        /// <summary>
+        /// Opens the steam library page and selects the game with the given appID.
+        /// </summary>
+        /// <param name="steamAppID"></param>
+        public static void OpenSteamLibrary(long steamAppID)
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = $"steam://nav/games/details/{steamAppID}",
+                UseShellExecute = true
+            });
         }
     }
 }

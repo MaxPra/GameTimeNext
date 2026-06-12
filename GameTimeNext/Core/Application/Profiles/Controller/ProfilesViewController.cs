@@ -8,6 +8,7 @@ using GameTimeNext.Core.Application.Profiles.Views;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Application.TimeMonitoring;
 using GameTimeNext.Core.Framework;
+using GameTimeNext.Core.Framework.LauncherIntegration;
 using GameTimeNext.Core.Framework.UI;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.Utils;
@@ -348,46 +349,28 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         private void BuildContextMenu(ListBoxItem lbi, T1PROFI t1profi)
         {
-            Style contextMenuItemStyle = (Style)System.Windows.Application.Current.FindResource("ModernContextMenuItemStyle");
-            Style contextMenuStyle = (Style)System.Windows.Application.Current.FindResource("ModernContextMenuStyle");
-            Style contextMenuSeparatorStyle = (Style)System.Windows.Application.Current.FindResource("ModernContextMenuSeparatorStyle");
-
             ContextMenuBuilder contextBuilder = UIXContextMenuFactory.Create("ProfilesListBoxContextMenu");
-            contextBuilder.SetStyle(contextMenuStyle);
+            contextBuilder.SetStyle(ProfilesContextMenuBuilder.contextMenuStyle);
 
             // Prinzipiell immer Edit und Delete
-            contextBuilder.AddItem("ctxtEdit", "Edit", icon: UIXContextMenuFactory.CreateMdlIcon("\uE70F"), itemStyle: contextMenuItemStyle);
-            contextBuilder.AddItem("ctxtDelete", "Delete", icon: UIXContextMenuFactory.CreateMdlIcon("\uE74D"), itemStyle: contextMenuItemStyle);
+            contextBuilder.AddItem("ctxtEdit", "Edit", icon: UIXContextMenuFactory.CreateMdlIcon("\uE70F"), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
+            contextBuilder.AddItem("ctxtDelete", "Delete", icon: UIXContextMenuFactory.CreateMdlIcon("\uE74D"), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
 
-            contextBuilder.AddSeparator(contextMenuSeparatorStyle);
+            // Playthrough
+            ProfilesContextMenuBuilder.BuildContextPlayhtrougths(contextBuilder, t1profi);
 
-            // Wenn Profil noch nicht als durchgespielt markiert oder gecancelt
-            T1PLTHR currentPlaythrough = TFPLTHR.GetCurrentPlaythrough(t1profi.PFID);
+            // Steam
+            ProfilesContextMenuBuilder.BuildContextSteam(contextBuilder, t1profi);
 
-            if (currentPlaythrough != null && !currentPlaythrough.PTCO && !currentPlaythrough.PTCA)
-            {
-                contextBuilder.AddItem("ctxtCompleteProfile", "Current playthrough completed", icon: UIXContextMenuFactory.CreateMdlIcon("\uE930"), itemStyle: contextMenuItemStyle);
-                contextBuilder.AddItem("ctxtCancelPlaythrough", "Cancel current playthrough", icon: UIXContextMenuFactory.CreateMdlIcon("\uE711"), itemStyle: contextMenuItemStyle);
-            }
-            else
-            {
-                contextBuilder.AddItem("ctxtStartNewPlaythrough", "Start new playthrough", icon: UIXContextMenuFactory.CreateMdlIcon("\uE72C"), itemStyle: contextMenuItemStyle);
-            }
-
-            contextBuilder.AddSeparator(contextMenuSeparatorStyle);
-
-            // Archivieren hinzufügen
-            if (t1profi.ARCH)
-                contextBuilder.AddItem("ctxtUnarchiveProfile", "Unarchive profile", icon: UIXContextMenuFactory.CreateMdlIcon("\uE8B7"), itemStyle: contextMenuItemStyle);
-
-            else
-                contextBuilder.AddItem("ctxtArchiveProfile", "Archive profile", icon: UIXContextMenuFactory.CreateMdlIcon("\uE8B7"), itemStyle: contextMenuItemStyle);
+            // Archivieren
+            ProfilesContextMenuBuilder.BuildContextArchive(contextBuilder, t1profi);
 
 
             if (contextBuilder.HasItems())
                 lbi.ContextMenu = contextBuilder.Build();
             else
                 lbi.ContextMenu = null;
+
         }
         #endregion
 
@@ -566,6 +549,16 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 return;
 
             BuildContextMenu(listBoxItem, profi);
+        }
+
+        /// <summary>
+        /// Steam Bibliothek öffnen
+        /// </summary>
+        protected void EV_ctxtOpenSteamLibrary()
+        {
+            T1PROFI t1profi = _profilesSubGridViewModel!.SelectedT1Profi;
+
+            FnSteam.OpenSteamLibrary(t1profi.SAID);
         }
 
         protected void EV_ctxtEdit()
