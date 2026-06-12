@@ -7,7 +7,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/status-beta-orange" />
-  <img src="https://img.shields.io/badge/version-0.2.9-blue" />
+  <img src="https://img.shields.io/badge/version-0.3.0-blue" />
   <img src="https://img.shields.io/badge/platform-Windows-informational" />
   <img src="https://img.shields.io/badge/.NET-WPF-purple" />
 </p>
@@ -16,7 +16,7 @@
 
 ## 📥 Download
 
-👉 [Download Installer (v0.2.9 Beta)](https://github.com/MaxPra/GameTimeNext/releases/download/GameTimeNext_v0.2.9beta/GameTimeNext_v0.2.8betaInstaller.msi)
+👉 [Download Installer (v0.3.0 Beta)](https://github.com/MaxPra/GameTimeNext/releases/download/GameTimeNext_v0.3.0beta/GameTimeNext_v0.3.0betaInstaller.msi)
 
 ---
 
