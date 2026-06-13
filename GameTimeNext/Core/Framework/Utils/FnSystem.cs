@@ -113,6 +113,7 @@ namespace GameTimeNext.Core.Framework.Utils
         /// <returns>true if a debugger is attached or if the process is running inside Visual Studio; otherwise, false.</returns>
         public static bool IsDebug()
         {
+#if DEBUG
             try
             {
                 if (Debugger.IsAttached)
@@ -125,6 +126,7 @@ namespace GameTimeNext.Core.Framework.Utils
             catch
             {
             }
+#endif
 
             return false;
         }

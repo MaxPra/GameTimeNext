@@ -1,0 +1,22 @@
+﻿=============================================
+  GameTimeNext  |  Version 0.3.0 Beta
+=============================================
+
+  IMPROVEMENTS
+  ____________
+
+  * Grouped context menu items into submenus for better organization and easier navigation.
+
+
+  NEW FEATURES
+  ____________
+
+  * NONE *
+
+
+  BUG FIXES
+  _________
+
+  * NONE *
+
+=============================================
