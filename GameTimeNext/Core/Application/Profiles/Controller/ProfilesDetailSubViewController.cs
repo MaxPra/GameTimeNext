@@ -7,6 +7,7 @@ using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Application.TimeMonitoring;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.LauncherIntegration;
+using GameTimeNext.Core.Framework.UI;
 using System.IO;
 using System.Text;
 using System.Windows;
@@ -456,6 +457,14 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             if (!CFProfilesApp.AskForNewPlaythroughCreationIfNotActive(_dataWrapper!.GetTypedTableObject().PFID, GetApp()))
                 return;
+
+            if (AppEnvironment.GetAppConfig().AppSettings.ShowMonitoringIndicator)
+            {
+                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                {
+                    CFMonitoringIndicator.ToggleIndicator(System.Windows.Application.Current.MainWindow);
+                });
+            }
 
             if (CFGameTimeMonitoring.IsMonitoring)
             {

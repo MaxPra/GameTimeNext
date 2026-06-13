@@ -76,6 +76,14 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
                                         });
                                     }
 
+                                    if (AppEnvironment.GetAppConfig().AppSettings.ShowMonitoringIndicator)
+                                    {
+                                        System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                                        {
+                                            CFMonitoringIndicator.ToggleIndicator(System.Windows.Application.Current.MainWindow);
+                                        });
+                                    }
+
                                     CFGameTimeMonitoring.StopMonitoring();
                                     CallDispatcher!.Trigger("EXEV_GameTimeMonitoringStopped");
                                 }

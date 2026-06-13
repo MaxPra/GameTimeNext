@@ -45,6 +45,7 @@
                 <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Views/ToastWindowStyles.xaml" />
                 <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Views/ProfilesCropImageViewStyles.xaml" />
                 <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Views/SplashScreenStyles.xaml" />
+                <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Views/MonitoringIndicatorWindowStyle.xaml" />
 
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
