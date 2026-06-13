@@ -71,10 +71,10 @@
                                 <TextBlock
                                     x:Name="ArrowGlyph"
                                     Grid.Column="2"
-                                    FontFamily="Segoe MDL2 Assets"
-                                    FontSize="10"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
+                                    FontFamily="Segoe MDL2 Assets"
+                                    FontSize="10"
                                     Foreground="{TemplateBinding Foreground}"
                                     Text="&#xE76C;"
                                     Visibility="Collapsed" />
@@ -87,8 +87,8 @@
                             Focusable="False"
                             IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}"
                             Placement="Right"
-                            VerticalOffset="-6"
-                            PopupAnimation="{DynamicResource {x:Static SystemParameters.MenuPopupAnimationKey}}">
+                            PopupAnimation="{DynamicResource {x:Static SystemParameters.MenuPopupAnimationKey}}"
+                            VerticalOffset="-6">
                             <Border
                                 Padding="6"
                                 Background="{StaticResource Brush.Surface}"

@@ -20,7 +20,7 @@
         <Setter Property="FontSize" Value="13" />
         <Setter Property="FontWeight" Value="SemiBold" />
 
-        <!-- match TextBox height for a consistent control size -->
+        <!--  match TextBox height for a consistent control size  -->
         <Setter Property="MinHeight" Value="32" />
         <Setter Property="Height" Value="32" />
         <Setter Property="Padding" Value="0,0,12,0" />
@@ -156,7 +156,7 @@
         <Setter Property="FontSize" Value="13" />
         <Setter Property="FontWeight" Value="SemiBold" />
 
-        <!-- match TextBox height for a consistent control size -->
+        <!--  match TextBox height for a consistent control size  -->
         <Setter Property="MinHeight" Value="32" />
         <Setter Property="Height" Value="32" />
         <Setter Property="Padding" Value="12,0,0,0" />
