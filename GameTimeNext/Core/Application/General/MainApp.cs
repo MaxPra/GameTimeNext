@@ -41,7 +41,7 @@ namespace GameTimeNext.Core.Application.General
 
         public void Start(UIXApplication hostApplication, ContentPresenter presenter)
         {
-            _mainWindowController.Show(false);
+            _mainWindowController!.Show(false, true);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using GameTimeNext.Core.Application.General.UserSettings;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 using UIX.ViewController.Engine.FrameworkElements;
 using UIX.ViewController.Engine.Runnables;
 using static UIX.ViewController.Engine.FrameworkElements.UIXContextMenuFactory;
@@ -53,6 +54,10 @@ namespace GameTimeNext.Core.Framework
 
             this.TabControl.Items.Add(tabItem);
             this.TabControl.SelectedItem = tabItem;
+
+            host.MainView.Dispatcher.Invoke(
+        DispatcherPriority.Background,
+        new Action(() => { }));
 
             // Wenn derzeitige gestartete App in den Favoriten "primary start" aktiviert hat, dann zurückgeben
             FavoriteApplication favoriteApplication = FnUserSettings.GetFavoriteApplication(AppEnvironment.GetAppConfig().UserSettings.FavApps, type.FullName);

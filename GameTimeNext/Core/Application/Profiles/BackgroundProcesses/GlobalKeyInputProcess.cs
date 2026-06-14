@@ -70,8 +70,10 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
             if (!pressed)
                 return;
 
-            if (!AppEnvironment.IsApplicationRunning(typeof(ProfilesApp).FullName!))
+            if (!AppEnvironment.IsApplicationRunning(typeof(ProfilesApp).FullName!) || !AppEnvironment.IsApplicationInitialized(typeof(ProfilesApp).FullName!))
                 return;
+
+            CallDispatcher!.Trigger("EXEV_SwitchToApplication", typeof(ProfilesApp).FullName!);
 
             if (CFGameTimeMonitoring.IsMonitoring)
             {

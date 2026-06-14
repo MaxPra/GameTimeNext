@@ -59,6 +59,8 @@ namespace GameTimeNext.Core.Application.Profiles
             this.ProfilesFilterView.ViewController = new ProfilesFilterViewController(this);
             this.ProfilesFilterView.ContentPresenter = ProfilesView.CPFilter;
             this.ProfilesFilterView.Popup = ProfilesView.PopFilter;
+
+
         }
 
         public override bool CanClose()

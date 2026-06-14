@@ -46,17 +46,38 @@
                     Text="Overview of your playtime and statistics" />
             </StackPanel>
 
-            <ComboBox
-                x:Name="CmbTimeRange"
-                Grid.Column="1"
-                Width="190"
-                Height="36"
-                VerticalAlignment="Center"
-                SelectedIndex="0">
-                <ComboBoxItem Content="Last 30 Days" />
-                <ComboBoxItem Content="Last 365 Days" />
-                <ComboBoxItem Content="All Time" />
-            </ComboBox>
+            <Grid Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <ComboBox
+                    x:Name="CmbTimeRange"
+                    Grid.Column="0"
+                    Width="190"
+                    Height="36"
+                    VerticalAlignment="Center"
+                    SelectedIndex="0">
+                    <ComboBoxItem Content="Last 30 Days" />
+                    <ComboBoxItem Content="Last 365 Days" />
+                    <ComboBoxItem Content="All Time" />
+                </ComboBox>
+
+                <Button
+                    x:Name="BtnRefresh"
+                    Grid.Column="2"
+                    Width="36"
+                    Height="36"
+                    VerticalAlignment="Center"
+                    ToolTip="Refresh">
+                    <TextBlock
+                        FontFamily="Segoe MDL2 Assets"
+                        FontSize="14"
+                        Text="&#xE72C;" />
+                </Button>
+            </Grid>
         </Grid>
 
         <!--  ===== Top Row: Meist gespielt + Zuletzt gespielt =====  -->

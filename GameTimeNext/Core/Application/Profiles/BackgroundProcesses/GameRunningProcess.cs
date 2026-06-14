@@ -34,18 +34,23 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
 
                 foreach (var t1profi in t1profis)
                 {
-                    if (FnString.IsNullEmptyOrWhitespace(t1profi.EXGF))
+                    if (FnString.IsNullEmptyOrWhitespace(t1profi.EXGF) || FnString.IsNullEmptyOrWhitespace(t1profi.EXEC))
                         continue;
 
                     foreach (string executable in ExecutablesToSearch[t1profi.PFID])
                     {
-                        if (FnSystem.IsProcessRunningWithPathPart(executable, t1profi.EXGF) && AppEnvironment.IsApplicationRunning(typeof(ProfilesApp).FullName!))
+                        if (FnSystem.IsProcessRunningWithPathPart(executable, t1profi.EXGF) && AppEnvironment.IsApplicationRunning(typeof(ProfilesApp).FullName!) && AppEnvironment.IsApplicationInitialized(typeof(ProfilesApp).FullName!))
                         {
-                            if (_currentProfileRunning.pfid == 0 && !t1profi.ARCH)
+                            if (_currentProfileRunning!.pfid == 0 && !t1profi.ARCH)
                             {
+                                // Zu Profil-Anwendung wechseln
+                                // MainWindowController
+                                CallDispatcher!.Trigger("EXEV_SwitchToApplication", typeof(ProfilesApp).FullName!);
+
                                 // Hier Profil wechseln
                                 AppEnvironment.CurrentPfid = t1profi.PFID;
 
+                                // ProfilesViewController
                                 CallDispatcher!.Trigger("EXEV_SwitchProfile");
                                 CallDispatcher.Trigger("EXEV_GameLaunched");
 

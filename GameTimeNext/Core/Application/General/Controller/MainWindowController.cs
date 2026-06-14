@@ -33,6 +33,8 @@ namespace GameTimeNext.Core.Application.General.Controller
         protected override void Init()
         {
             GetApp().RootController = this;
+
+            GetApp().CallDispatcher.Register(this, nameof(EXEV_SwitchToApplication));
         }
 
         protected override void BuildFirst()
@@ -56,13 +58,19 @@ namespace GameTimeNext.Core.Application.General.Controller
             // Hintergrundprozesse starten
             AppEnvironment.StartBackgroundProcesses(GetApp());
 
+
+
             // Warten bis alle ausstehenden Render-Operationen (Prio 7) abgearbeitet
             // sind, bevor modale Dialoge gezeigt werden. Background-Prio (4) ist
             // niedriger als Render (7) → Render läuft zuerst durch.
             await System.Windows.Application.Current.Dispatcher.InvokeAsync(() => { }, DispatcherPriority.Background);
 
+            FnControls.SetVisible(GetWindow(), true);
+
             // Fehler anzeigen, die vor MainWindow passiert sind (Appstart)
             ShowErrorsFromErrorList();
+
+
         }
 
         protected override void Build()
@@ -131,17 +139,10 @@ namespace GameTimeNext.Core.Application.General.Controller
         /// <param name="e"></param>
         private void Event_TabChanged(TabControl source)
         {
-            if (source.SelectedItem is TabItem ti && ti.Name == "Tab_Profiles")
+            if (source.SelectedItem is TabItem ti)
             {
-
-                //T1GROUP t1group = new TXGROUP().CreateNew();
-                //t1group.GRID = 15;
-                //t1group.IsSelected = true;
-
-                //GetApp().ProfilesApp.FilterCache.SelectedTags.Clear();
-                //GetApp().ProfilesApp.FilterCache.SelectedTags.Add(t1group);
-
-                GetApp().ProfilesApp.ProfilesView.ViewController.Show(true);
+                if (ti.Tag.ToString() != null && AppEnvironment.StartedApplications.ContainsKey(ti.Tag.ToString()!))
+                    AppEnvironment.StartedApplications[ti.Tag.ToString()!].OnFocus();
             }
 
         }
@@ -286,6 +287,14 @@ namespace GameTimeNext.Core.Application.General.Controller
             });
 
             favAppsReorderApp.Reorder();
+        }
+
+        protected void EXEV_SwitchToApplication(string applicationFullName)
+        {
+            if (!AppEnvironment.IsApplicationRunning(applicationFullName))
+                return;
+
+            GetWindow().MainTabControl.SelectedItem = GetWindow().MainTabControl.Items.Cast<TabItem>().FirstOrDefault(t => t.Tag?.ToString() == applicationFullName);
         }
 
         private void ReorderTabsByFavApps()

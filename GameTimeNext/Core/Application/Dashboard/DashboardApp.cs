@@ -30,5 +30,10 @@ namespace GameTimeNext.Core.Application.Dashboard
         {
             return true;
         }
+
+        public override void OnFocus()
+        {
+            DashboardView.ViewController.Open(true);
+        }
     }
 }

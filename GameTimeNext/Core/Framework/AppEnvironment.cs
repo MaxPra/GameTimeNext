@@ -74,6 +74,20 @@ namespace GameTimeNext.Core.Framework
             return _startedApplications.ContainsKey(fullName);
         }
 
+        public static UIXApplication? GetRunningApplication(string fullName)
+        {
+            if (IsApplicationRunning(fullName))
+                return _startedApplications[fullName];
+            return null;
+        }
+
+        public static bool IsApplicationInitialized(string fullName)
+        {
+            if (IsApplicationRunning(fullName))
+                return _startedApplications[fullName].IsInitialized;
+            return false;
+        }
+
         public static void SaveAppConfig()
         {
             var options = new JsonSerializerOptions

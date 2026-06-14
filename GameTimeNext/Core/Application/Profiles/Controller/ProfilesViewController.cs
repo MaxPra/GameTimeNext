@@ -69,6 +69,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                                             "Preparing countless hours of gameplay...",
                                             "Consulting the archives of your adventures..."
                                             );
+
+            GetApp().IsInitialized = true;
+
         }
 
         protected override void TriggeredEvent(FrameworkElement source, string eventName)

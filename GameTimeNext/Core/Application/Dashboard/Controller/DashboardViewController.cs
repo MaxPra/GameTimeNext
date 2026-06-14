@@ -170,7 +170,7 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
             GetView().imgMostPlayedCover.Source = t1profiMostPlayed.CoverImage;
             GetView().txtMostPlayedPlaytime.Text = CFDashboardApp.FormatTime(TFPROFI.GetTotalGameTimeInMinutes(t1profiMostPlayed.PFID));
 
-            int daysPlayed = (int)(TFPROFI.GetTotalGameTimeInMinutes(t1profiMostPlayed.PFID) / 60 / 24);
+            int daysPlayed = TFSESSI.GetPlayedDays(t1profiMostPlayed.PFID, timeSpanDays);
             GetView().txtMostPlayedDays.Text = daysPlayed.ToString();
         }
 
@@ -196,7 +196,8 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
             double overallPlayTimeMinutes = GetTotalPlaytimeMinutes();
 
             GetView().txtTotalPlaytime.Text = CFDashboardApp.FormatTime(overallPlayTimeMinutes);
-            int daysPlayed = (int)(overallPlayTimeMinutes / 60 / 24);
+
+            int daysPlayed = TFSESSI.GetPlayedDays(timeSpanDays);
             GetView().txtDaysPlayed.Text = daysPlayed.ToString();
 
             GetView().txtGamesPlayed.Text = GetTotalPlayedGames().ToString();
@@ -494,6 +495,11 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
             }
 
             return null!;
+        }
+
+        protected void EV_BtnRefresh()
+        {
+            Open(true);
         }
     }
 }
