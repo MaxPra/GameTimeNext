@@ -8,5 +8,10 @@
     "Code": "SE",
     "Name": "Settings",
     "ClassName": "GameTimeNext.Core.Application.Settings.SettingsApp"
+  },
+  {
+    "Code": "DA",
+    "Name": "Dashboard",
+    "ClassName": "GameTimeNext.Core.Application.Dashboard.DashboardApp"
   }
 ]

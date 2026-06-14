@@ -66,6 +66,18 @@ namespace GameTimeNext.Core.Application.General.UserSettings
             AppEnvironment.SaveAppConfig();
         }
 
+        public static void UnsetAsPrimaryStart(FavoriteApplication favApplication)
+        {
+            List<FavoriteApplication> favoriteApplications = AppEnvironment.GetAppConfig().UserSettings.FavApps;
+
+            if (!ContainsApplication(favoriteApplications, favApplication.FullName))
+                return;
+
+            FavoriteApplication favoriteApplicationFromList = GetFavoriteApplication(favoriteApplications, favApplication.FullName);
+            favoriteApplicationFromList.PrimaryStart = false;
+            AppEnvironment.SaveAppConfig();
+        }
+
         public static bool IsPrimaryStartSet()
         {
             List<FavoriteApplication> favoriteApplications = AppEnvironment.GetAppConfig().UserSettings.FavApps;

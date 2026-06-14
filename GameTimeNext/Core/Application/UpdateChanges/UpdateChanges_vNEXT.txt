@@ -1,22 +1,22 @@
 ﻿=============================================
-  GameTimeNext  |  Version 0.3.0 Beta
+  GameTimeNext  |  Version 0.3.1 Beta
 =============================================
 
   IMPROVEMENTS
   ____________
 
   * Grouped context menu items into submenus for better organization and easier navigation.
-
+  
 
   NEW FEATURES
   ____________
 
-  * NONE *
+  * Added Dashboard-Application
 
 
   BUG FIXES
   _________
 
-  * NONE *
+  * Fixed a bug where primary favorite applications could not be deactivated
 
 =============================================
