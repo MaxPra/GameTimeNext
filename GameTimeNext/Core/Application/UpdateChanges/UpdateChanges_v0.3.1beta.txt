@@ -1,22 +1,23 @@
 ﻿=============================================
-  GameTimeNext  |  Version 0.3.2 Beta
+  GameTimeNext  |  Version 0.3.1 Beta
 =============================================
 
   IMPROVEMENTS
   ____________
 
-  
+  * NONE *
   
 
   NEW FEATURES
   ____________
 
- 
+  * Added Dashboard-Application
+  * Added Basic Monitoring-Indicator
 
 
   BUG FIXES
   _________
 
-  
+  * Fixed a bug where primary favorite applications could not be deactivated
 
 =============================================

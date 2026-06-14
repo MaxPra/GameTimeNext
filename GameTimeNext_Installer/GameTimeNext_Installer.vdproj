@@ -198,15 +198,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:GameTimeNext"
-        "ProductCode" = "8:{58E8C46C-4225-41DC-9D78-2C5854041E8A}"
-        "PackageCode" = "8:{DFA70DB1-0B1F-493C-9A36-C7C3A08438F0}"
+        "ProductCode" = "8:{AA642EDE-2EA3-4C94-8325-0E112FA8FBF5}"
+        "PackageCode" = "8:{F3C361CB-F154-44A5-90A9-A4235325E814}"
         "UpgradeCode" = "8:{B6D12BF9-6933-4610-BB15-68F30712EEAD}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:0.3.0"
+        "ProductVersion" = "8:0.3.1"
         "Manufacturer" = "8:maxpra"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -748,7 +748,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_33B075D218AF48D191AA9B6D69A7EA4E"
             {
-            "SourcePath" = "8:..\\GameTimeNext\\obj\\Debug\\net10.0-windows\\apphost.exe"
+            "SourcePath" = "8:..\\GameTimeNext\\obj\\Release\\net10.0-windows\\apphost.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_F3573923E98D4B04813A6129989D73C0"
