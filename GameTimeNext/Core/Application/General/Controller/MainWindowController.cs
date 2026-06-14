@@ -261,6 +261,18 @@ namespace GameTimeNext.Core.Application.General.Controller
             FnUserSettings.SetAsPrimaryStart(favApp);
         }
 
+        protected void EV_ctxtUnsetAsPrimaryStart(FrameworkElement target)
+        {
+            TabItem tab = (TabItem)target;
+
+            if (tab == null)
+                return;
+
+            FavoriteApplication favApp = FnUserSettings.GetFavoriteApplication(AppEnvironment.GetAppConfig().UserSettings.FavApps, tab.Tag.ToString());
+
+            FnUserSettings.UnsetAsPrimaryStart(favApp);
+        }
+
         protected void EV_ctxtEditOrder()
         {
             FavAppsReorderApp? favAppsReorderApp = GetApp().GetApplication<FavAppsReorderApp>();

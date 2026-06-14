@@ -3,5 +3,6 @@
     public class UserSettings
     {
         public List<FavoriteApplication> FavApps { get; set; } = new List<FavoriteApplication>();
+        public short SelectedDashboardMode { get; set; } = 2;
     }
 }

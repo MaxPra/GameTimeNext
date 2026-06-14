@@ -136,6 +136,25 @@ namespace GameTimeNext.Core.Application.DataManagers
             return playedMinutesToday;
         }
 
+        public static double GetTotalGameTimeInMinutes(long pfid)
+        {
+            UIXQuery query = new UIXQuery(K1SESSI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
+            query.AddField(K1SESSI.Name, K1SESSI.Fields.PLTI);
+            query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PFID, QueryCompareType.EQUALS, pfid);
+
+            double totalPlayedMinutes = 0;
+
+            using (var reader = query.Execute())
+            {
+                while (reader.Read())
+                {
+                    double plti = UIXQuery.GetDouble(reader, K1SESSI.Name, K1SESSI.Fields.PLTI);
+                    totalPlayedMinutes += plti;
+                }
+            }
+            return totalPlayedMinutes;
+        }
+
         private static void DeleteAllLinkedT1GRPPOs(T1PROFI t1profi)
         {
             // Zugehörige Daten löschen

@@ -10,9 +10,9 @@
   </PropertyGroup>
 
 	<PropertyGroup>
-		<Version>0.3.0</Version>
+		<Version>0.3.1</Version>
 		<VersionTag>beta</VersionTag>
-		<BuildDate>2026-06-12</BuildDate>
+		<BuildDate>2026-06-14</BuildDate>
 
 		<InformationalVersion>$(Version)-$(VersionTag)+$(BuildDate)</InformationalVersion>
 
@@ -83,7 +83,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Core\Application\Dashboard\Controller\" />
     <Folder Include="Core\Application\Settings\Viewmodels\" />
     <Folder Include="Core\Framework\ErrorHandling\" />
     <Folder Include="Core\Framework\UI\AttachedProperties\" />

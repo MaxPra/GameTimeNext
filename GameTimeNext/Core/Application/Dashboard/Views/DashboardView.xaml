@@ -13,122 +13,111 @@
     d:DesignWidth="1150"
     mc:Ignorable="d">
 
-    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+    <Grid Margin="28,20,28,28">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="18" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="18" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
 
-        <Grid Margin="28,20,28,28">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="20" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="16" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
+        <!--  ===== Header =====  -->
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
 
-            <!--  ===== Header =====  -->
-            <Grid Grid.Row="0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
+            <StackPanel
+                Grid.Column="0"
+                VerticalAlignment="Center"
+                Orientation="Vertical">
+                <TextBlock
+                    FontSize="26"
+                    FontWeight="Bold"
+                    Foreground="{DynamicResource Brush.TextPrimary}"
+                    Text="Dashboard" />
+                <TextBlock
+                    Margin="0,2,0,0"
+                    FontSize="13"
+                    FontWeight="Normal"
+                    Foreground="{DynamicResource Brush.TextSecondary}"
+                    Text="Overview of your playtime and statistics" />
+            </StackPanel>
 
-                <StackPanel
-                    Grid.Column="0"
-                    VerticalAlignment="Center"
-                    Orientation="Vertical">
-                    <TextBlock
-                        FontSize="26"
-                        FontWeight="Bold"
-                        Foreground="{DynamicResource Brush.TextPrimary}"
-                        Text="Dashboard" />
-                    <TextBlock
-                        Margin="0,2,0,0"
-                        FontSize="13"
-                        FontWeight="Normal"
-                        Foreground="{DynamicResource Brush.TextSecondary}"
-                        Text="Übersicht deiner Spielzeit und Statistiken" />
-                </StackPanel>
+            <ComboBox
+                x:Name="CmbTimeRange"
+                Grid.Column="1"
+                Width="190"
+                Height="36"
+                VerticalAlignment="Center"
+                SelectedIndex="0">
+                <ComboBoxItem Content="Last 30 Days" />
+                <ComboBoxItem Content="Last 365 Days" />
+                <ComboBoxItem Content="All Time" />
+            </ComboBox>
+        </Grid>
 
-                <Button
-                    x:Name="BtnTimePeriod"
-                    Grid.Column="1"
-                    Height="36"
-                    Padding="14,0"
-                    VerticalAlignment="Center">
-                    <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+        <!--  ===== Top Row: Meist gespielt + Zuletzt gespielt =====  -->
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1.2*" MinWidth="380" />
+                <ColumnDefinition Width="20" />
+                <ColumnDefinition Width="1*" MinWidth="320" />
+            </Grid.ColumnDefinitions>
+
+            <!--  Meist gespielt  -->
+            <Border
+                x:Name="MostPlayedCard"
+                Grid.Column="0"
+                Background="{DynamicResource Brush.Surface}"
+                BorderBrush="{DynamicResource Brush.Border}"
+                BorderThickness="1"
+                CornerRadius="{StaticResource DefaultCornerRadius}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <!--  Card header  -->
+                    <StackPanel
+                        Grid.Row="0"
+                        Margin="16,14,16,0"
+                        Orientation="Horizontal">
                         <TextBlock
                             Margin="0,0,8,0"
                             VerticalAlignment="Center"
                             FontFamily="Segoe MDL2 Assets"
-                            FontSize="14"
+                            FontSize="16"
                             FontWeight="Normal"
-                            Text="&#xE787;" />
+                            Foreground="{DynamicResource Brush.Accent}"
+                            Text="&#xE7FC;" />
                         <TextBlock
-                            x:Name="txtTimePeriodLabel"
                             VerticalAlignment="Center"
-                            FontSize="13"
+                            FontSize="14"
                             FontWeight="SemiBold"
-                            Text="Zeitraum: Letzte 30 Tage" />
+                            Foreground="{DynamicResource Brush.TextPrimary}"
+                            Text="Most Played" />
                     </StackPanel>
-                </Button>
-            </Grid>
 
-            <!--  ===== Top Row: Meist gespielt + Zuletzt gespielt =====  -->
-            <Grid Grid.Row="2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" MinWidth="340" />
-                    <ColumnDefinition Width="16" />
-                    <ColumnDefinition Width="*" MinWidth="320" />
-                </Grid.ColumnDefinitions>
+                    <!--  Game image + info  -->
+                    <Grid Grid.Row="1" Margin="16,12,16,16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="16" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
 
-                <!--  Meist gespielt  -->
-                <Border
-                    Grid.Column="0"
-                    Background="{DynamicResource Brush.Surface}"
-                    BorderBrush="{DynamicResource Brush.Border}"
-                    BorderThickness="1"
-                    CornerRadius="{StaticResource DefaultCornerRadius}">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-
-                        <!--  Card header  -->
-                        <StackPanel
-                            Grid.Row="0"
-                            Margin="16,14,16,0"
-                            Orientation="Horizontal">
-                            <TextBlock
-                                Margin="0,0,8,0"
-                                VerticalAlignment="Center"
-                                FontFamily="Segoe MDL2 Assets"
-                                FontSize="16"
-                                FontWeight="Normal"
-                                Foreground="{DynamicResource Brush.Accent}"
-                                Text="&#xE7FC;" />
-                            <TextBlock
-                                VerticalAlignment="Center"
-                                FontSize="14"
-                                FontWeight="SemiBold"
-                                Foreground="{DynamicResource Brush.TextPrimary}"
-                                Text="Meist gespielt" />
-                        </StackPanel>
-
-                        <!--  Game image + info  -->
-                        <Grid Grid.Row="1" Margin="16,12,16,12">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="200" />
-                                <RowDefinition Height="14" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="4" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="14" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-
-                            <!--  Cover image with rank badge  -->
-                            <Grid Grid.Row="0">
+                        <!--  Portrait cover image (2:3 ratio – 600x900)  -->
+                        <Viewbox
+                            Grid.Column="0"
+                            MaxWidth="280"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Stretch="Uniform">
+                            <Grid Width="600" Height="900">
                                 <Border
                                     Background="{DynamicResource Brush.Background}"
                                     ClipToBounds="True"
@@ -143,7 +132,7 @@
                                 <Border ClipToBounds="True" CornerRadius="{StaticResource DefaultCornerRadius}">
                                     <Border.Background>
                                         <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                            <GradientStop Offset="0.5" Color="Transparent" />
+                                            <GradientStop Offset="0.6" Color="Transparent" />
                                             <GradientStop Offset="1" Color="#CC000000" />
                                         </LinearGradientBrush>
                                     </Border.Background>
@@ -164,228 +153,316 @@
                                         Text="#1" />
                                 </Border>
                             </Grid>
+                        </Viewbox>
 
-                            <!--  Game title + developer  -->
+                        <!--  Game info on the right  -->
+                        <Grid Grid.Column="2" VerticalAlignment="Stretch">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="12" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <!--  Game title  -->
                             <TextBlock
                                 x:Name="txtMostPlayedTitle"
+                                Grid.Row="0"
+                                Margin="0,0,0,8"
+                                FontSize="28"
+                                FontWeight="Bold"
+                                Foreground="{DynamicResource Brush.TextPrimary}"
+                                Text="n.A."
+                                TextTrimming="CharacterEllipsis"
+                                TextWrapping="Wrap" />
+
+                            <!--  Stats row  -->
+                            <Border
                                 Grid.Row="2"
+                                Padding="10,8"
+                                HorizontalAlignment="Left"
+                                Background="{DynamicResource Brush.Background}"
+                                BorderBrush="{DynamicResource Brush.Border}"
+                                BorderThickness="1"
+                                CornerRadius="10">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="16" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <!--  Spielzeit  -->
+                                    <StackPanel Grid.Column="0" Orientation="Vertical">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock
+                                                Margin="0,0,6,0"
+                                                VerticalAlignment="Center"
+                                                FontFamily="Segoe MDL2 Assets"
+                                                FontSize="14"
+                                                FontWeight="Normal"
+                                                Foreground="{DynamicResource Brush.Accent}"
+                                                Text="&#xE823;" />
+                                            <TextBlock
+                                                x:Name="txtMostPlayedPlaytime"
+                                                VerticalAlignment="Center"
+                                                FontSize="15"
+                                                FontWeight="Bold"
+                                                Foreground="{DynamicResource Brush.TextPrimary}"
+                                                Text="n.A." />
+                                        </StackPanel>
+                                        <TextBlock
+                                            FontSize="11"
+                                            FontWeight="Normal"
+                                            Foreground="{DynamicResource Brush.TextSecondary}"
+                                            Text="Playtime" />
+                                    </StackPanel>
+
+                                    <!--  Tage gespielt  -->
+                                    <StackPanel Grid.Column="2" Orientation="Vertical">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock
+                                                Margin="0,0,6,0"
+                                                VerticalAlignment="Center"
+                                                FontFamily="Segoe MDL2 Assets"
+                                                FontSize="14"
+                                                FontWeight="Normal"
+                                                Foreground="{DynamicResource Brush.Accent}"
+                                                Text="&#xE787;" />
+                                            <TextBlock
+                                                x:Name="txtMostPlayedDays"
+                                                VerticalAlignment="Center"
+                                                FontSize="15"
+                                                FontWeight="Bold"
+                                                Foreground="{DynamicResource Brush.TextPrimary}"
+                                                Text="n.A." />
+                                        </StackPanel>
+                                        <TextBlock
+                                            FontSize="11"
+                                            FontWeight="Normal"
+                                            Foreground="{DynamicResource Brush.TextSecondary}"
+                                            Text="Days Played" />
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </Grid>
+
+                </Grid>
+            </Border>
+
+            <!--  Zuletzt gespielt  -->
+            <Border
+                Grid.Column="2"
+                Height="{Binding ElementName=MostPlayedCard, Path=ActualHeight}"
+                Background="{DynamicResource Brush.Surface}"
+                BorderBrush="{DynamicResource Brush.Border}"
+                BorderThickness="1"
+                CornerRadius="{StaticResource DefaultCornerRadius}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <!--  Card header  -->
+                    <StackPanel
+                        Grid.Row="0"
+                        Margin="16,14,16,0"
+                        Orientation="Horizontal">
+                        <TextBlock
+                            Margin="0,0,8,0"
+                            VerticalAlignment="Center"
+                            FontFamily="Segoe MDL2 Assets"
+                            FontSize="16"
+                            FontWeight="Normal"
+                            Foreground="{DynamicResource Brush.Accent}"
+                            Text="&#xE7FC;" />
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            FontSize="14"
+                            FontWeight="SemiBold"
+                            Foreground="{DynamicResource Brush.TextPrimary}"
+                            Text="Last Played Game" />
+                    </StackPanel>
+
+                    <Grid
+                        Grid.Row="1"
+                        Margin="16,12,16,16"
+                        VerticalAlignment="Top">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="16" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!--  Portrait cover image (2:3 ratio – 600x900)  -->
+                        <Viewbox
+                            Grid.Column="0"
+                            MaxWidth="280"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Stretch="Uniform">
+                            <Grid Width="600" Height="900">
+                                <Border
+                                    Background="{DynamicResource Brush.Background}"
+                                    ClipToBounds="True"
+                                    CornerRadius="{StaticResource DefaultCornerRadius}">
+                                    <Image
+                                        x:Name="imgLastPlayedCover"
+                                        SnapsToDevicePixels="True"
+                                        Stretch="UniformToFill" />
+                                </Border>
+                            </Grid>
+                        </Viewbox>
+
+                        <!--  Game info on the right  -->
+                        <Grid Grid.Column="2" VerticalAlignment="Stretch">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="10" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="8" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock
+                                x:Name="txtLastPlayedTitle"
+                                Grid.Row="0"
                                 FontSize="18"
                                 FontWeight="Bold"
                                 Foreground="{DynamicResource Brush.TextPrimary}"
-                                Text="The Witcher 3: Wild Hunt"
-                                TextTrimming="CharacterEllipsis" />
-                            <TextBlock
-                                x:Name="txtMostPlayedDeveloper"
+                                Text="n.A."
+                                TextTrimming="CharacterEllipsis"
+                                TextWrapping="Wrap" />
+
+                            <Border
+                                Grid.Row="2"
+                                Padding="8,4"
+                                HorizontalAlignment="Left"
+                                Background="{DynamicResource Brush.Background}"
+                                BorderBrush="{DynamicResource Brush.Border}"
+                                BorderThickness="1"
+                                CornerRadius="8">
+                                <TextBlock
+                                    x:Name="txtLastPlayedDate"
+                                    FontSize="11"
+                                    FontWeight="Normal"
+                                    Foreground="{DynamicResource Brush.TextSecondary}"
+                                    Text="n.A." />
+                            </Border>
+
+                            <Border
                                 Grid.Row="4"
-                                FontSize="12"
-                                FontWeight="Normal"
-                                Foreground="{DynamicResource Brush.TextSecondary}"
-                                Text="CD PROJEKT RED" />
-
-                            <!--  Stats row  -->
-                            <Grid Grid.Row="6">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-
-                                <!--  Spielzeit  -->
-                                <StackPanel Grid.Column="0" Orientation="Vertical">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock
-                                            Margin="0,0,6,0"
-                                            VerticalAlignment="Center"
-                                            FontFamily="Segoe MDL2 Assets"
-                                            FontSize="14"
-                                            FontWeight="Normal"
-                                            Foreground="{DynamicResource Brush.Accent}"
-                                            Text="&#xE823;" />
-                                        <TextBlock
-                                            x:Name="txtMostPlayedPlaytime"
-                                            VerticalAlignment="Center"
-                                            FontSize="15"
-                                            FontWeight="Bold"
-                                            Foreground="{DynamicResource Brush.TextPrimary}"
-                                            Text="62h 45m" />
-                                    </StackPanel>
+                                Padding="8,6"
+                                HorizontalAlignment="Left"
+                                Background="{DynamicResource Brush.Background}"
+                                BorderBrush="{DynamicResource Brush.Border}"
+                                BorderThickness="1"
+                                CornerRadius="8">
+                                <StackPanel Orientation="Horizontal">
                                     <TextBlock
-                                        FontSize="11"
-                                        FontWeight="Normal"
-                                        Foreground="{DynamicResource Brush.TextSecondary}"
-                                        Text="Spielzeit" />
-                                </StackPanel>
-
-                                <!--  Tage gespielt  -->
-                                <StackPanel Grid.Column="1" Orientation="Vertical">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock
-                                            Margin="0,0,6,0"
-                                            VerticalAlignment="Center"
-                                            FontFamily="Segoe MDL2 Assets"
-                                            FontSize="14"
-                                            FontWeight="Normal"
-                                            Foreground="{DynamicResource Brush.Accent}"
-                                            Text="&#xE787;" />
-                                        <TextBlock
-                                            x:Name="txtMostPlayedDays"
-                                            VerticalAlignment="Center"
-                                            FontSize="15"
-                                            FontWeight="Bold"
-                                            Foreground="{DynamicResource Brush.TextPrimary}"
-                                            Text="18" />
-                                    </StackPanel>
-                                    <TextBlock
-                                        FontSize="11"
-                                        FontWeight="Normal"
-                                        Foreground="{DynamicResource Brush.TextSecondary}"
-                                        Text="Tage gespielt" />
-                                </StackPanel>
-
-                                <!--  Completion  -->
-                                <StackPanel Grid.Column="2" Orientation="Vertical">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock
-                                            Margin="0,0,6,0"
-                                            VerticalAlignment="Center"
-                                            FontFamily="Segoe MDL2 Assets"
-                                            FontSize="14"
-                                            FontWeight="Normal"
-                                            Foreground="{DynamicResource Brush.Accent}"
-                                            Text="&#xE930;" />
-                                        <TextBlock
-                                            x:Name="txtMostPlayedCompletion"
-                                            VerticalAlignment="Center"
-                                            FontSize="15"
-                                            FontWeight="Bold"
-                                            Foreground="{DynamicResource Brush.TextPrimary}"
-                                            Text="78%" />
-                                    </StackPanel>
-                                    <TextBlock
-                                        FontSize="11"
-                                        FontWeight="Normal"
-                                        Foreground="{DynamicResource Brush.TextSecondary}"
-                                        Text="Completion" />
-                                </StackPanel>
-                            </Grid>
-                        </Grid>
-
-                        <!--  Buttons  -->
-                        <Grid Grid.Row="2" Margin="16,0,16,16">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="10" />
-                                <ColumnDefinition Width="40" />
-                            </Grid.ColumnDefinitions>
-
-                            <Button
-                                x:Name="BtnStartGame"
-                                Grid.Column="0"
-                                Height="36"
-                                Style="{StaticResource Button.Secondary}">
-                                <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-                                    <TextBlock
-                                        Margin="0,0,8,0"
+                                        Margin="0,0,6,0"
                                         VerticalAlignment="Center"
                                         FontFamily="Segoe MDL2 Assets"
-                                        FontSize="12"
+                                        FontSize="14"
                                         FontWeight="Normal"
-                                        Text="&#xE768;" />
+                                        Foreground="{DynamicResource Brush.Accent}"
+                                        Text="&#xE823;" />
                                     <TextBlock
+                                        x:Name="txtLastPlayedTime"
                                         VerticalAlignment="Center"
                                         FontSize="13"
                                         FontWeight="SemiBold"
-                                        Text="Spiel starten" />
+                                        Foreground="{DynamicResource Brush.TextPrimary}"
+                                        Text="n.A." />
                                 </StackPanel>
-                            </Button>
-
-                            <Button
-                                x:Name="BtnMostPlayedOptions"
-                                Grid.Column="2"
-                                Width="40"
-                                Height="36"
-                                Padding="0">
-                                <TextBlock
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center"
-                                    FontFamily="Segoe MDL2 Assets"
-                                    FontSize="16"
-                                    FontWeight="Normal"
-                                    Text="&#xE712;" />
-                            </Button>
+                            </Border>
                         </Grid>
                     </Grid>
-                </Border>
 
-                <!--  Zuletzt gespielt  -->
-                <Border
-                    Grid.Column="2"
-                    Background="{DynamicResource Brush.Surface}"
-                    BorderBrush="{DynamicResource Brush.Border}"
-                    BorderThickness="1"
-                    CornerRadius="{StaticResource DefaultCornerRadius}">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
 
-                        <!--  Card header  -->
-                        <StackPanel
-                            Grid.Row="0"
-                            Margin="16,14,16,0"
-                            Orientation="Horizontal">
-                            <TextBlock
-                                Margin="0,0,8,0"
-                                VerticalAlignment="Center"
-                                FontFamily="Segoe MDL2 Assets"
-                                FontSize="16"
-                                FontWeight="Normal"
-                                Foreground="{DynamicResource Brush.Accent}"
-                                Text="&#xE823;" />
-                            <TextBlock
-                                VerticalAlignment="Center"
-                                FontSize="14"
-                                FontWeight="SemiBold"
-                                Foreground="{DynamicResource Brush.TextPrimary}"
-                                Text="Zuletzt gespielt" />
-                        </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
 
-                        <!--  Recent game list  -->
-                        <ListView
-                            x:Name="ListViewRecentGames"
-                            Grid.Row="1"
-                            Margin="0,8,0,0"
-                            Background="Transparent"
-                            BorderThickness="0"
-                            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                            ScrollViewer.VerticalScrollBarVisibility="Disabled"
-                            SelectionMode="Single">
+        <!--  ===== Bottom Row: 3 cards =====  -->
+        <Grid Grid.Row="4" MinHeight="220">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1.2*" />
+                <ColumnDefinition Width="20" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="20" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
 
-                            <ListView.ItemContainerStyle>
-                                <Style BasedOn="{StaticResource ListViewItem.Default}" TargetType="{x:Type ListViewItem}">
-                                    <Setter Property="Padding" Value="16,8" />
-                                    <Setter Property="Margin" Value="0" />
-                                    <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
-                                    <Setter Property="BorderThickness" Value="0,0,0,1" />
-                                </Style>
-                            </ListView.ItemContainerStyle>
+            <!--  Zuletzt gespielt  -->
+            <Border
+                Grid.Column="0"
+                Background="{DynamicResource Brush.Surface}"
+                BorderBrush="{DynamicResource Brush.Border}"
+                BorderThickness="1"
+                CornerRadius="{StaticResource DefaultCornerRadius}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
 
-                            <ListView.ItemTemplate>
-                                <DataTemplate>
+                    <StackPanel
+                        Grid.Row="0"
+                        Margin="16,14,16,0"
+                        Orientation="Horizontal">
+                        <TextBlock
+                            Margin="0,0,8,0"
+                            VerticalAlignment="Center"
+                            FontFamily="Segoe MDL2 Assets"
+                            FontSize="16"
+                            FontWeight="Normal"
+                            Foreground="{DynamicResource Brush.Accent}"
+                            Text="&#xE823;" />
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            FontSize="14"
+                            FontWeight="SemiBold"
+                            Foreground="{DynamicResource Brush.TextPrimary}"
+                            Text="Recently Played" />
+                    </StackPanel>
+
+                    <!--  Recent game list  -->
+                    <ListView
+                        x:Name="ListViewRecentGames"
+                        Grid.Row="1"
+                        Margin="16,12,16,16"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Focusable="False"
+                        ItemContainerStyle="{StaticResource DashboardRecentGamesItemStyle}"
+                        ItemsSource="{Binding T1Profis}"
+                        ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                        ScrollViewer.VerticalScrollBarVisibility="Auto"
+                        SelectionMode="Single">
+
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Border
+                                    Padding="10,8"
+                                    Background="{DynamicResource Brush.Background}"
+                                    BorderBrush="{DynamicResource Brush.Border}"
+                                    BorderThickness="1"
+                                    CornerRadius="10">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="72" />
                                             <ColumnDefinition Width="10" />
                                             <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="52" />
                                         </Grid.ColumnDefinitions>
 
                                         <Border
                                             Grid.Column="0"
                                             Height="46"
-                                            Background="{DynamicResource Brush.Background}"
+                                            Background="{DynamicResource Brush.Surface}"
                                             ClipToBounds="True"
                                             CornerRadius="{StaticResource DefaultCornerRadius}">
                                             <Image
@@ -402,623 +479,284 @@
                                                 FontSize="13"
                                                 FontWeight="SemiBold"
                                                 Foreground="{DynamicResource Brush.TextPrimary}"
-                                                Text="{Binding GameName}"
+                                                Text="{Binding GANA}"
                                                 TextTrimming="CharacterEllipsis" />
                                             <TextBlock
-                                                Margin="0,2,0,4"
+                                                Margin="0,2,0,0"
                                                 FontSize="11"
                                                 FontWeight="Normal"
                                                 Foreground="{DynamicResource Brush.TextSecondary}"
-                                                Text="{Binding LastPlayedDate}" />
-                                            <ProgressBar
-                                                Height="3"
-                                                Background="{DynamicResource Brush.Border}"
-                                                BorderThickness="0"
-                                                Foreground="{DynamicResource Brush.Accent}"
-                                                Maximum="100"
-                                                Value="{Binding CompletionPercent}" />
+                                                Text="{Binding LAPL, StringFormat={}{0:dd.MM.yyyy HH:mm}}" />
                                         </StackPanel>
-
-                                        <TextBlock
-                                            Grid.Column="3"
-                                            HorizontalAlignment="Right"
-                                            VerticalAlignment="Center"
-                                            FontSize="13"
-                                            FontWeight="SemiBold"
-                                            Foreground="{DynamicResource Brush.TextPrimary}"
-                                            Text="{Binding PlayTimeFormatted}" />
                                     </Grid>
-                                </DataTemplate>
-                            </ListView.ItemTemplate>
-                        </ListView>
+                                </Border>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
 
-                        <!--  "Alle Aktivitäten anzeigen" button  -->
-                        <Button
-                            x:Name="BtnAllActivities"
-                            Grid.Row="2"
-                            Height="40"
-                            Margin="0"
-                            Padding="16,0"
-                            HorizontalContentAlignment="Stretch">
-                            <Grid>
-                                <TextBlock
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Center"
-                                    FontSize="13"
-                                    FontWeight="SemiBold"
-                                    Foreground="{DynamicResource Brush.TextSecondary}"
-                                    Text="Alle Aktivitäten anzeigen" />
-                                <TextBlock
-                                    HorizontalAlignment="Right"
-                                    VerticalAlignment="Center"
-                                    FontFamily="Segoe MDL2 Assets"
-                                    FontSize="12"
-                                    FontWeight="Normal"
-                                    Foreground="{DynamicResource Brush.TextSecondary}"
-                                    Text="&#xE76C;" />
-                            </Grid>
-                        </Button>
-                    </Grid>
-                </Border>
-            </Grid>
+                </Grid>
+            </Border>
 
-            <!--  ===== Bottom Row: 3 cards =====  -->
-            <Grid Grid.Row="4">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="16" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="16" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
+            <!--  Spielzeit Übersicht  -->
+            <Border
+                Grid.Column="2"
+                Background="{DynamicResource Brush.Surface}"
+                BorderBrush="{DynamicResource Brush.Border}"
+                BorderThickness="1"
+                CornerRadius="{StaticResource DefaultCornerRadius}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
 
-                <!--  Letztes gespieltes Spiel  -->
-                <Border
-                    Grid.Column="0"
-                    Background="{DynamicResource Brush.Surface}"
-                    BorderBrush="{DynamicResource Brush.Border}"
-                    BorderThickness="1"
-                    CornerRadius="{StaticResource DefaultCornerRadius}">
-                    <Grid>
+                    <StackPanel
+                        Grid.Row="0"
+                        Margin="16,14,16,0"
+                        Orientation="Horizontal">
+                        <TextBlock
+                            Margin="0,0,8,0"
+                            VerticalAlignment="Center"
+                            FontFamily="Segoe MDL2 Assets"
+                            FontSize="16"
+                            FontWeight="Normal"
+                            Foreground="{DynamicResource Brush.Accent}"
+                            Text="&#xE823;" />
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            FontSize="14"
+                            FontWeight="SemiBold"
+                            Foreground="{DynamicResource Brush.TextPrimary}"
+                            Text="Playtime Overview" />
+                    </StackPanel>
+
+                    <!--  2x2 stat grid  -->
+                    <Grid Grid.Row="1" Margin="16,12,16,16">
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
-                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="12" />
+                            <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="12" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
 
-                        <StackPanel
+                        <!--  Gesamtspielzeit  -->
+                        <Border
                             Grid.Row="0"
-                            Margin="16,14,16,0"
-                            Orientation="Horizontal">
-                            <TextBlock
-                                Margin="0,0,8,0"
-                                VerticalAlignment="Center"
-                                FontFamily="Segoe MDL2 Assets"
-                                FontSize="16"
-                                FontWeight="Normal"
-                                Foreground="{DynamicResource Brush.Accent}"
-                                Text="&#xE7FC;" />
-                            <TextBlock
-                                VerticalAlignment="Center"
-                                FontSize="14"
-                                FontWeight="SemiBold"
-                                Foreground="{DynamicResource Brush.TextPrimary}"
-                                Text="Letztes gespieltes Spiel" />
-                        </StackPanel>
-
-                        <Grid Grid.Row="1" Margin="16,12,16,12">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="130" />
-                                <RowDefinition Height="12" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="4" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="8" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-
-                            <Border
-                                Grid.Row="0"
-                                Background="{DynamicResource Brush.Background}"
-                                ClipToBounds="True"
-                                CornerRadius="{StaticResource DefaultCornerRadius}">
-                                <Image
-                                    x:Name="imgLastPlayedCover"
-                                    SnapsToDevicePixels="True"
-                                    Stretch="UniformToFill" />
-                            </Border>
-
-                            <TextBlock
-                                x:Name="txtLastPlayedTitle"
-                                Grid.Row="2"
-                                FontSize="16"
-                                FontWeight="Bold"
-                                Foreground="{DynamicResource Brush.TextPrimary}"
-                                Text="Elden Ring"
-                                TextTrimming="CharacterEllipsis" />
-
-                            <TextBlock
-                                x:Name="txtLastPlayedDate"
-                                Grid.Row="4"
-                                FontSize="12"
-                                FontWeight="Normal"
-                                Foreground="{DynamicResource Brush.TextSecondary}"
-                                Text="Zuletzt gespielt: Gestern" />
-
-                            <StackPanel Grid.Row="6" Orientation="Horizontal">
-                                <TextBlock
-                                    Margin="0,0,6,0"
-                                    VerticalAlignment="Center"
-                                    FontFamily="Segoe MDL2 Assets"
-                                    FontSize="14"
-                                    FontWeight="Normal"
-                                    Foreground="{DynamicResource Brush.TextSecondary}"
-                                    Text="&#xE823;" />
-                                <TextBlock
-                                    x:Name="txtLastPlayedTime"
-                                    VerticalAlignment="Center"
-                                    FontSize="13"
-                                    FontWeight="SemiBold"
-                                    Foreground="{DynamicResource Brush.TextSecondary}"
-                                    Text="1h 40m" />
-                            </StackPanel>
-                        </Grid>
-
-                        <Grid Grid.Row="2" Margin="16,0,16,16">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="10" />
-                                <ColumnDefinition Width="40" />
-                            </Grid.ColumnDefinitions>
-
-                            <Button
-                                x:Name="BtnContinuePlaying"
-                                Grid.Column="0"
-                                Height="36"
-                                Style="{StaticResource Button.Secondary}">
-                                <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                            Grid.Column="0"
+                            Padding="14,12"
+                            Background="{DynamicResource Brush.Background}"
+                            BorderBrush="{DynamicResource Brush.Border}"
+                            BorderThickness="1"
+                            CornerRadius="{StaticResource DefaultCornerRadius}">
+                            <StackPanel Orientation="Vertical">
+                                <StackPanel Orientation="Horizontal">
                                     <TextBlock
                                         Margin="0,0,8,0"
                                         VerticalAlignment="Center"
                                         FontFamily="Segoe MDL2 Assets"
-                                        FontSize="12"
+                                        FontSize="18"
                                         FontWeight="Normal"
-                                        Text="&#xE768;" />
+                                        Foreground="{DynamicResource Brush.Accent}"
+                                        Text="&#xE823;" />
                                     <TextBlock
+                                        x:Name="txtTotalPlaytime"
                                         VerticalAlignment="Center"
-                                        FontSize="13"
-                                        FontWeight="SemiBold"
-                                        Text="Weiter spielen" />
+                                        FontSize="20"
+                                        FontWeight="Bold"
+                                        Foreground="{DynamicResource Brush.TextPrimary}"
+                                        Text="n.A." />
                                 </StackPanel>
-                            </Button>
-
-                            <Button
-                                x:Name="BtnLastPlayedOptions"
-                                Grid.Column="2"
-                                Width="40"
-                                Height="36"
-                                Padding="0">
                                 <TextBlock
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center"
-                                    FontFamily="Segoe MDL2 Assets"
-                                    FontSize="16"
+                                    Margin="0,4,0,0"
+                                    FontSize="11"
                                     FontWeight="Normal"
-                                    Text="&#xE712;" />
-                            </Button>
-                        </Grid>
-                    </Grid>
-                </Border>
+                                    Foreground="{DynamicResource Brush.TextSecondary}"
+                                    Text="Total Playtime" />
+                            </StackPanel>
+                        </Border>
 
-                <!--  Spielzeit Übersicht  -->
-                <Border
-                    Grid.Column="2"
-                    Background="{DynamicResource Brush.Surface}"
-                    BorderBrush="{DynamicResource Brush.Border}"
-                    BorderThickness="1"
-                    CornerRadius="{StaticResource DefaultCornerRadius}">
-                    <Grid>
+                        <!--  Tage gespielt  -->
+                        <Border
+                            Grid.Row="0"
+                            Grid.Column="2"
+                            Padding="14,12"
+                            Background="{DynamicResource Brush.Background}"
+                            BorderBrush="{DynamicResource Brush.Border}"
+                            BorderThickness="1"
+                            CornerRadius="{StaticResource DefaultCornerRadius}">
+                            <StackPanel Orientation="Vertical">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock
+                                        Margin="0,0,8,0"
+                                        VerticalAlignment="Center"
+                                        FontFamily="Segoe MDL2 Assets"
+                                        FontSize="18"
+                                        FontWeight="Normal"
+                                        Foreground="{DynamicResource Brush.Accent}"
+                                        Text="&#xE787;" />
+                                    <TextBlock
+                                        x:Name="txtDaysPlayed"
+                                        VerticalAlignment="Center"
+                                        FontSize="20"
+                                        FontWeight="Bold"
+                                        Foreground="{DynamicResource Brush.TextPrimary}"
+                                        Text="n.A." />
+                                </StackPanel>
+                                <TextBlock
+                                    Margin="0,4,0,0"
+                                    FontSize="11"
+                                    FontWeight="Normal"
+                                    Foreground="{DynamicResource Brush.TextSecondary}"
+                                    Text="Days Played" />
+                            </StackPanel>
+                        </Border>
+
+                        <!--  Spiele gespielt  -->
+                        <Border
+                            Grid.Row="2"
+                            Grid.Column="0"
+                            Grid.ColumnSpan="3"
+                            Padding="14,12"
+                            Background="{DynamicResource Brush.Background}"
+                            BorderBrush="{DynamicResource Brush.Border}"
+                            BorderThickness="1"
+                            CornerRadius="{StaticResource DefaultCornerRadius}">
+                            <StackPanel Orientation="Vertical">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock
+                                        Margin="0,0,8,0"
+                                        VerticalAlignment="Center"
+                                        FontFamily="Segoe MDL2 Assets"
+                                        FontSize="18"
+                                        FontWeight="Normal"
+                                        Foreground="{DynamicResource Brush.Accent}"
+                                        Text="&#xE7FC;" />
+                                    <TextBlock
+                                        x:Name="txtGamesPlayed"
+                                        VerticalAlignment="Center"
+                                        FontSize="20"
+                                        FontWeight="Bold"
+                                        Foreground="{DynamicResource Brush.TextPrimary}"
+                                        Text="n.A." />
+                                </StackPanel>
+                                <TextBlock
+                                    Margin="0,4,0,0"
+                                    FontSize="11"
+                                    FontWeight="Normal"
+                                    Foreground="{DynamicResource Brush.TextSecondary}"
+                                    Text="Games Played" />
+                            </StackPanel>
+                        </Border>
+
+                        <!--  Achievements  -->
+
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <!--  Gesamtstatistiken  -->
+            <Border
+                Grid.Column="4"
+                Background="{DynamicResource Brush.Surface}"
+                BorderBrush="{DynamicResource Brush.Border}"
+                BorderThickness="1"
+                CornerRadius="{StaticResource DefaultCornerRadius}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel
+                        Grid.Row="0"
+                        Margin="16,14,16,0"
+                        Orientation="Horizontal">
+                        <TextBlock
+                            Margin="0,0,8,0"
+                            VerticalAlignment="Center"
+                            FontFamily="Segoe MDL2 Assets"
+                            FontSize="16"
+                            FontWeight="Normal"
+                            Foreground="{DynamicResource Brush.Accent}"
+                            Text="&#xE9D9;" />
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            FontSize="14"
+                            FontWeight="SemiBold"
+                            Foreground="{DynamicResource Brush.TextPrimary}"
+                            Text="Overall Statistics" />
+                    </StackPanel>
+
+                    <Grid Grid.Row="1" Margin="16,12,16,16">
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="10" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
 
-                        <StackPanel
+                        <Border
                             Grid.Row="0"
-                            Margin="16,14,16,0"
-                            Orientation="Horizontal">
-                            <TextBlock
-                                Margin="0,0,8,0"
-                                VerticalAlignment="Center"
-                                FontFamily="Segoe MDL2 Assets"
-                                FontSize="16"
-                                FontWeight="Normal"
-                                Foreground="{DynamicResource Brush.Accent}"
-                                Text="&#xE823;" />
-                            <TextBlock
-                                VerticalAlignment="Center"
-                                FontSize="14"
-                                FontWeight="SemiBold"
-                                Foreground="{DynamicResource Brush.TextPrimary}"
-                                Text="Spielzeit Übersicht" />
-                        </StackPanel>
+                            Padding="12,10"
+                            Background="{DynamicResource Brush.Background}"
+                            BorderBrush="{DynamicResource Brush.Border}"
+                            BorderThickness="1"
+                            CornerRadius="10">
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock
+                                    FontSize="11"
+                                    FontWeight="Normal"
+                                    Foreground="{DynamicResource Brush.TextSecondary}"
+                                    Text="Played today" />
+                                <TextBlock
+                                    x:Name="txtStatPlayedToday"
+                                    Margin="0,4,0,0"
+                                    FontSize="19"
+                                    FontWeight="Bold"
+                                    Foreground="{DynamicResource Brush.TextPrimary}"
+                                    Text="n.A." />
+                            </StackPanel>
+                        </Border>
 
-                        <!--  2x2 stat grid  -->
-                        <Grid Grid.Row="1" Margin="16,12,16,16">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="*" />
-                                <RowDefinition Height="12" />
-                                <RowDefinition Height="*" />
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="12" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-
-                            <!--  Gesamtspielzeit  -->
-                            <Border
-                                Grid.Row="0"
-                                Grid.Column="0"
-                                Padding="14,12"
-                                Background="{DynamicResource Brush.Background}"
-                                BorderBrush="{DynamicResource Brush.Border}"
-                                BorderThickness="1"
-                                CornerRadius="{StaticResource DefaultCornerRadius}">
-                                <StackPanel Orientation="Vertical">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock
-                                            Margin="0,0,8,0"
-                                            VerticalAlignment="Center"
-                                            FontFamily="Segoe MDL2 Assets"
-                                            FontSize="18"
-                                            FontWeight="Normal"
-                                            Foreground="{DynamicResource Brush.Accent}"
-                                            Text="&#xE823;" />
-                                        <TextBlock
-                                            x:Name="txtTotalPlaytime"
-                                            VerticalAlignment="Center"
-                                            FontSize="20"
-                                            FontWeight="Bold"
-                                            Foreground="{DynamicResource Brush.TextPrimary}"
-                                            Text="89h 35m" />
-                                    </StackPanel>
-                                    <TextBlock
-                                        Margin="0,4,0,0"
-                                        FontSize="11"
-                                        FontWeight="Normal"
-                                        Foreground="{DynamicResource Brush.TextSecondary}"
-                                        Text="Gesamtspielzeit" />
-                                    <TextBlock
-                                        x:Name="txtTotalPlaytimeChange"
-                                        Margin="0,2,0,0"
-                                        FontSize="11"
-                                        FontWeight="SemiBold"
-                                        Foreground="{DynamicResource Brush.Success}"
-                                        Text="+12% zum Vormonat" />
-                                </StackPanel>
-                            </Border>
-
-                            <!--  Tage gespielt  -->
-                            <Border
-                                Grid.Row="0"
-                                Grid.Column="2"
-                                Padding="14,12"
-                                Background="{DynamicResource Brush.Background}"
-                                BorderBrush="{DynamicResource Brush.Border}"
-                                BorderThickness="1"
-                                CornerRadius="{StaticResource DefaultCornerRadius}">
-                                <StackPanel Orientation="Vertical">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock
-                                            Margin="0,0,8,0"
-                                            VerticalAlignment="Center"
-                                            FontFamily="Segoe MDL2 Assets"
-                                            FontSize="18"
-                                            FontWeight="Normal"
-                                            Foreground="#FF5EA3E0"
-                                            Text="&#xE787;" />
-                                        <TextBlock
-                                            x:Name="txtDaysPlayed"
-                                            VerticalAlignment="Center"
-                                            FontSize="20"
-                                            FontWeight="Bold"
-                                            Foreground="{DynamicResource Brush.TextPrimary}"
-                                            Text="23" />
-                                    </StackPanel>
-                                    <TextBlock
-                                        Margin="0,4,0,0"
-                                        FontSize="11"
-                                        FontWeight="Normal"
-                                        Foreground="{DynamicResource Brush.TextSecondary}"
-                                        Text="Tage gespielt" />
-                                    <TextBlock
-                                        x:Name="txtDaysPlayedChange"
-                                        Margin="0,2,0,0"
-                                        FontSize="11"
-                                        FontWeight="SemiBold"
-                                        Foreground="{DynamicResource Brush.Success}"
-                                        Text="+4 zum Vormonat" />
-                                </StackPanel>
-                            </Border>
-
-                            <!--  Spiele gespielt  -->
-                            <Border
-                                Grid.Row="2"
-                                Grid.Column="0"
-                                Padding="14,12"
-                                Background="{DynamicResource Brush.Background}"
-                                BorderBrush="{DynamicResource Brush.Border}"
-                                BorderThickness="1"
-                                CornerRadius="{StaticResource DefaultCornerRadius}">
-                                <StackPanel Orientation="Vertical">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock
-                                            Margin="0,0,8,0"
-                                            VerticalAlignment="Center"
-                                            FontFamily="Segoe MDL2 Assets"
-                                            FontSize="18"
-                                            FontWeight="Normal"
-                                            Foreground="{DynamicResource Brush.Accent}"
-                                            Text="&#xE7FC;" />
-                                        <TextBlock
-                                            x:Name="txtGamesPlayed"
-                                            VerticalAlignment="Center"
-                                            FontSize="20"
-                                            FontWeight="Bold"
-                                            Foreground="{DynamicResource Brush.TextPrimary}"
-                                            Text="12" />
-                                    </StackPanel>
-                                    <TextBlock
-                                        Margin="0,4,0,0"
-                                        FontSize="11"
-                                        FontWeight="Normal"
-                                        Foreground="{DynamicResource Brush.TextSecondary}"
-                                        Text="Spiele gespielt" />
-                                    <TextBlock
-                                        x:Name="txtGamesPlayedChange"
-                                        Margin="0,2,0,0"
-                                        FontSize="11"
-                                        FontWeight="SemiBold"
-                                        Foreground="{DynamicResource Brush.Success}"
-                                        Text="+3 zum Vormonat" />
-                                </StackPanel>
-                            </Border>
-
-                            <!--  Achievements  -->
-                            <Border
-                                Grid.Row="2"
-                                Grid.Column="2"
-                                Padding="14,12"
-                                Background="{DynamicResource Brush.Background}"
-                                BorderBrush="{DynamicResource Brush.Border}"
-                                BorderThickness="1"
-                                CornerRadius="{StaticResource DefaultCornerRadius}">
-                                <StackPanel Orientation="Vertical">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock
-                                            Margin="0,0,8,0"
-                                            VerticalAlignment="Center"
-                                            FontFamily="Segoe MDL2 Assets"
-                                            FontSize="18"
-                                            FontWeight="Normal"
-                                            Foreground="{DynamicResource Brush.Warning}"
-                                            Text="&#xE74F;" />
-                                        <TextBlock
-                                            x:Name="txtAchievements"
-                                            VerticalAlignment="Center"
-                                            FontSize="20"
-                                            FontWeight="Bold"
-                                            Foreground="{DynamicResource Brush.TextPrimary}"
-                                            Text="156" />
-                                    </StackPanel>
-                                    <TextBlock
-                                        Margin="0,4,0,0"
-                                        FontSize="11"
-                                        FontWeight="Normal"
-                                        Foreground="{DynamicResource Brush.TextSecondary}"
-                                        Text="Achievements" />
-                                    <TextBlock
-                                        x:Name="txtAchievementsChange"
-                                        Margin="0,2,0,0"
-                                        FontSize="11"
-                                        FontWeight="SemiBold"
-                                        Foreground="{DynamicResource Brush.Success}"
-                                        Text="+18 zum Vormonat" />
-                                </StackPanel>
-                            </Border>
-                        </Grid>
+                        <Border
+                            Grid.Row="2"
+                            Padding="12,10"
+                            Background="{DynamicResource Brush.Background}"
+                            BorderBrush="{DynamicResource Brush.Border}"
+                            BorderThickness="1"
+                            CornerRadius="10">
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock
+                                    FontSize="11"
+                                    FontWeight="Normal"
+                                    Foreground="{DynamicResource Brush.TextSecondary}"
+                                    Text="Longest session" />
+                                <TextBlock
+                                    x:Name="txtStatLongestSession"
+                                    Margin="0,4,0,0"
+                                    FontSize="19"
+                                    FontWeight="Bold"
+                                    Foreground="{DynamicResource Brush.TextPrimary}"
+                                    Text="n.A." />
+                                <TextBlock
+                                    x:Name="txtStatLongestSessionDate"
+                                    Margin="0,2,0,0"
+                                    FontSize="11"
+                                    FontWeight="Normal"
+                                    Foreground="{DynamicResource Brush.TextSecondary}"
+                                    Text="(n.A.)" />
+                            </StackPanel>
+                        </Border>
                     </Grid>
-                </Border>
-
-                <!--  Gesamtstatistiken  -->
-                <Border
-                    Grid.Column="4"
-                    Background="{DynamicResource Brush.Surface}"
-                    BorderBrush="{DynamicResource Brush.Border}"
-                    BorderThickness="1"
-                    CornerRadius="{StaticResource DefaultCornerRadius}">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-
-                        <StackPanel
-                            Grid.Row="0"
-                            Margin="16,14,16,0"
-                            Orientation="Horizontal">
-                            <TextBlock
-                                Margin="0,0,8,0"
-                                VerticalAlignment="Center"
-                                FontFamily="Segoe MDL2 Assets"
-                                FontSize="16"
-                                FontWeight="Normal"
-                                Foreground="{DynamicResource Brush.Accent}"
-                                Text="&#xE9D9;" />
-                            <TextBlock
-                                VerticalAlignment="Center"
-                                FontSize="14"
-                                FontWeight="SemiBold"
-                                Foreground="{DynamicResource Brush.TextPrimary}"
-                                Text="Gesamtstatistiken" />
-                        </StackPanel>
-
-                        <StackPanel
-                            Grid.Row="1"
-                            Margin="16,12,16,16"
-                            Orientation="Vertical">
-
-                            <!--  Total monitored hours  -->
-                            <Grid Margin="0,0,0,14">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="28" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <TextBlock
-                                    Grid.Column="0"
-                                    VerticalAlignment="Top"
-                                    FontFamily="Segoe MDL2 Assets"
-                                    FontSize="16"
-                                    FontWeight="Normal"
-                                    Foreground="{DynamicResource Brush.TextSecondary}"
-                                    Text="&#xE823;" />
-                                <StackPanel Grid.Column="1" Orientation="Vertical">
-                                    <TextBlock
-                                        FontSize="11"
-                                        FontWeight="Normal"
-                                        Foreground="{DynamicResource Brush.TextSecondary}"
-                                        Text="Total monitored hours:" />
-                                    <TextBlock
-                                        x:Name="txtStatTotalHours"
-                                        FontSize="16"
-                                        FontWeight="Bold"
-                                        Foreground="{DynamicResource Brush.TextPrimary}"
-                                        Text="89h 35m" />
-                                </StackPanel>
-                            </Grid>
-
-                            <Border
-                                Height="1"
-                                Margin="0,0,0,14"
-                                Background="{DynamicResource Brush.Border}"
-                                Opacity="0.5" />
-
-                            <!--  Durchschnitt pro Tag  -->
-                            <Grid Margin="0,0,0,14">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="28" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <TextBlock
-                                    Grid.Column="0"
-                                    VerticalAlignment="Top"
-                                    FontFamily="Segoe MDL2 Assets"
-                                    FontSize="16"
-                                    FontWeight="Normal"
-                                    Foreground="{DynamicResource Brush.TextSecondary}"
-                                    Text="&#xE787;" />
-                                <StackPanel Grid.Column="1" Orientation="Vertical">
-                                    <TextBlock
-                                        FontSize="11"
-                                        FontWeight="Normal"
-                                        Foreground="{DynamicResource Brush.TextSecondary}"
-                                        Text="Durchschnitt pro Tag:" />
-                                    <TextBlock
-                                        x:Name="txtStatDailyAvg"
-                                        FontSize="16"
-                                        FontWeight="Bold"
-                                        Foreground="{DynamicResource Brush.TextPrimary}"
-                                        Text="2h 59m" />
-                                </StackPanel>
-                            </Grid>
-
-                            <Border
-                                Height="1"
-                                Margin="0,0,0,14"
-                                Background="{DynamicResource Brush.Border}"
-                                Opacity="0.5" />
-
-                            <!--  Längste Sitzung  -->
-                            <Grid Margin="0,0,0,14">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="28" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <TextBlock
-                                    Grid.Column="0"
-                                    VerticalAlignment="Top"
-                                    FontFamily="Segoe MDL2 Assets"
-                                    FontSize="16"
-                                    FontWeight="Normal"
-                                    Foreground="{DynamicResource Brush.TextSecondary}"
-                                    Text="&#xE823;" />
-                                <StackPanel Grid.Column="1" Orientation="Vertical">
-                                    <TextBlock
-                                        FontSize="11"
-                                        FontWeight="Normal"
-                                        Foreground="{DynamicResource Brush.TextSecondary}"
-                                        Text="Längste Sitzung:" />
-                                    <TextBlock
-                                        x:Name="txtStatLongestSession"
-                                        FontSize="16"
-                                        FontWeight="Bold"
-                                        Foreground="{DynamicResource Brush.TextPrimary}"
-                                        Text="6h 45m" />
-                                    <TextBlock
-                                        FontSize="11"
-                                        FontWeight="Normal"
-                                        Foreground="{DynamicResource Brush.TextSecondary}"
-                                        Text="(18. Mai 2024)" />
-                                </StackPanel>
-                            </Grid>
-
-                            <Border
-                                Height="1"
-                                Margin="0,0,0,14"
-                                Background="{DynamicResource Brush.Border}"
-                                Opacity="0.5" />
-
-                            <!--  Aktueller Streak  -->
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="28" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <TextBlock
-                                    Grid.Column="0"
-                                    VerticalAlignment="Top"
-                                    FontFamily="Segoe MDL2 Assets"
-                                    FontSize="16"
-                                    FontWeight="Normal"
-                                    Foreground="{DynamicResource Brush.TextSecondary}"
-                                    Text="&#xE73E;" />
-                                <StackPanel Grid.Column="1" Orientation="Vertical">
-                                    <TextBlock
-                                        FontSize="11"
-                                        FontWeight="Normal"
-                                        Foreground="{DynamicResource Brush.TextSecondary}"
-                                        Text="Aktueller Streak:" />
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock
-                                            x:Name="txtStatCurrentStreak"
-                                            Margin="0,0,6,0"
-                                            FontSize="16"
-                                            FontWeight="Bold"
-                                            Foreground="{DynamicResource Brush.TextPrimary}"
-                                            Text="7 Tage" />
-                                        <TextBlock
-                                            FontSize="16"
-                                            FontWeight="Normal"
-                                            Text="🔥" />
-                                    </StackPanel>
-                                </StackPanel>
-                            </Grid>
-                        </StackPanel>
-                    </Grid>
-                </Border>
-            </Grid>
+                </Grid>
+            </Border>
         </Grid>
-    </ScrollViewer>
+    </Grid>
 
 </uix:UIXUserControlBase>

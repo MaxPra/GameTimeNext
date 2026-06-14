@@ -176,7 +176,7 @@ namespace GameTimeNext.Core.Application.General.AppSearch.Controller
                 return;
 
             if (!AppEnvironment.StartedApplications.ContainsKey(selected.ClassName))
-                AppEnvironment.AppLauncher.LaunchApplication(selected.ClassName, GetApp(), selected.Name);
+                AppEnvironment.AppLauncher.LaunchApplication(selected.ClassName, GetApp().HostApplication, selected.Name);
 
             Exit(true);
         }

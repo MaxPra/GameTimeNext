@@ -128,6 +128,8 @@ namespace GameTimeNext.Core.Framework
 
                 if (!favApp.PrimaryStart && !FnUserSettings.IsPrimaryStartSet())
                     contextBuilder.AddItem("ctxtSetAsPrimaryStart", "Set as primary start", icon: UIXContextMenuFactory.CreateMdlIcon("\uE840"), itemStyle: contextMenuItemStyle);
+                else if (favApp.PrimaryStart)
+                    contextBuilder.AddItem("ctxtUnsetAsPrimaryStart", "Unset as primary start", icon: UIXContextMenuFactory.CreateMdlIcon("\uE840"), itemStyle: contextMenuItemStyle);
             }
 
             var favApps = AppEnvironment.GetAppConfig().UserSettings.FavApps.OrderBy(a => a.Order).ToList();
