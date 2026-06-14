@@ -84,7 +84,10 @@ Right-click any application:
 
 ### 🖼️ Visuals
 - SteamGridDB integration  
-- Cover previews  
+- Cover previews
+
+### Analytics
+- Statistics dashboard  
 
 ---
 
@@ -99,9 +102,6 @@ Right-click any application:
 
 ### Personalization
 - Local game rating system  
-
-### Analytics
-- Statistics dashboard  
 
 ---
 
