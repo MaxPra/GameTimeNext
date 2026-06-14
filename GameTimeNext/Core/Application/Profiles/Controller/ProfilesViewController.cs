@@ -425,6 +425,14 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
             GetView().MonitoringOverlay.Visibility = Visibility.Visible;
 
+            if (AppEnvironment.GetAppConfig().AppSettings.ShowMonitoringIndicator)
+            {
+                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                {
+                    CFMonitoringIndicator.ToggleIndicator(System.Windows.Application.Current.MainWindow);
+                });
+            }
+
             ProfilesDetailSubViewController profileDetailViewController = (ProfilesDetailSubViewController)GetApp().ProfilesDetailView.ViewController;
             profileDetailViewController.UpdateUIMonitoringStarted();
         }
@@ -434,6 +442,14 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             CFGameTimeMonitoring.UpdateTableObject();
 
             GetView().MonitoringOverlay.Visibility = Visibility.Hidden;
+
+            if (AppEnvironment.GetAppConfig().AppSettings.ShowMonitoringIndicator)
+            {
+                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                {
+                    CFMonitoringIndicator.ToggleIndicator(System.Windows.Application.Current.MainWindow);
+                });
+            }
 
             await BuildProfilesListBoxAsync(AppEnvironment.CurrentPfid);
 

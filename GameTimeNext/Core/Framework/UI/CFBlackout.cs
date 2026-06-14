@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using GameTimeNext.Core.Framework.Utils;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
 
@@ -29,9 +30,9 @@ namespace GameTimeNext.Core.Framework.UI
             }
 
             CreateWindowsForMonitors(owner, monitor => true);
-            CFDisplay.MoveMouseToVirtualBottomRight();
-            CFDisplay.HideMouseCursorGlobally();
-            CFDisplay.ClipMouseToVirtualBottomRightPixel();
+            FnDisplay.MoveMouseToVirtualBottomRight();
+            FnDisplay.HideMouseCursorGlobally();
+            FnDisplay.ClipMouseToVirtualBottomRightPixel();
 
             isActive = true;
         }
@@ -47,9 +48,9 @@ namespace GameTimeNext.Core.Framework.UI
 
             if (manageCursor)
             {
-                CFDisplay.MoveMouseToVirtualBottomRight();
-                CFDisplay.HideMouseCursorGlobally();
-                CFDisplay.ClipMouseToVirtualBottomRightPixel();
+                FnDisplay.MoveMouseToVirtualBottomRight();
+                FnDisplay.HideMouseCursorGlobally();
+                FnDisplay.ClipMouseToVirtualBottomRightPixel();
             }
 
             isActive = true;
@@ -71,8 +72,8 @@ namespace GameTimeNext.Core.Framework.UI
                 dispatcher.Invoke(CloseAllWindows);
             }
 
-            CFDisplay.UnclipMouse();
-            CFDisplay.ShowMouseCursorGlobally();
+            FnDisplay.UnclipMouse();
+            FnDisplay.ShowMouseCursorGlobally();
 
             isActive = false;
         }
@@ -94,9 +95,9 @@ namespace GameTimeNext.Core.Framework.UI
             return isActive;
         }
 
-        private static void CreateWindowsForMonitors(Window owner, Func<CFDisplay.MonitorInfoData, bool> predicate)
+        private static void CreateWindowsForMonitors(Window owner, Func<FnDisplay.MonitorInfoData, bool> predicate)
         {
-            foreach (var monitor in CFDisplay.GetAllMonitors().Where(predicate))
+            foreach (var monitor in FnDisplay.GetAllMonitors().Where(predicate))
             {
                 var wnd = BuildBlackoutWindow(owner, monitor);
                 blackoutWindows.Add(wnd);
@@ -120,7 +121,7 @@ namespace GameTimeNext.Core.Framework.UI
             blackoutWindows.Clear();
         }
 
-        private static Window BuildBlackoutWindow(Window owner, CFDisplay.MonitorInfoData monitor)
+        private static Window BuildBlackoutWindow(Window owner, FnDisplay.MonitorInfoData monitor)
         {
             var source = PresentationSource.FromVisual(owner);
             double leftDip = monitor.Bounds.Left;

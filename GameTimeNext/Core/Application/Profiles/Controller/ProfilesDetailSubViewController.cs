@@ -458,14 +458,6 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             if (!CFProfilesApp.AskForNewPlaythroughCreationIfNotActive(_dataWrapper!.GetTypedTableObject().PFID, GetApp()))
                 return;
 
-            if (AppEnvironment.GetAppConfig().AppSettings.ShowMonitoringIndicator)
-            {
-                System.Windows.Application.Current.Dispatcher.Invoke(() =>
-                {
-                    CFMonitoringIndicator.ToggleIndicator(System.Windows.Application.Current.MainWindow);
-                });
-            }
-
             if (CFGameTimeMonitoring.IsMonitoring)
             {
                 CFGameTimeMonitoring.StopMonitoring();

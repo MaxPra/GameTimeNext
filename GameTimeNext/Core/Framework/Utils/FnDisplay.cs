@@ -1,8 +1,8 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace GameTimeNext.Core.Framework.UI
+namespace GameTimeNext.Core.Framework.Utils
 {
-    internal static class CFDisplay
+    internal static class FnDisplay
     {
         private static bool cursorClipped = false;
         private static bool mouseHidden = false;

@@ -1,4 +1,5 @@
 ﻿using GameTimeNext.Core.Application.TimeMonitoring.Views;
+using GameTimeNext.Core.Framework.Utils;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -22,7 +23,7 @@ namespace GameTimeNext.Core.Framework.UI
         {
             if (isActive) return;
 
-            CFDisplay.MonitorInfoData monitor = CFDisplay.GetAllMonitors().Where(monitor => monitor.IsPrimary).First();
+            FnDisplay.MonitorInfoData monitor = FnDisplay.GetAllMonitors().Where(monitor => monitor.IsPrimary).First();
             indicatorWindow = BuildWindow(owner, monitor);
             indicatorWindow.Show();
 
@@ -42,7 +43,7 @@ namespace GameTimeNext.Core.Framework.UI
             isActive = false;
         }
 
-        private static MonitoringIndicator BuildWindow(Window owner, CFDisplay.MonitorInfoData targetMonitor)
+        private static MonitoringIndicator BuildWindow(Window owner, FnDisplay.MonitorInfoData targetMonitor)
         {
             MonitoringIndicator window = new MonitoringIndicator
             {

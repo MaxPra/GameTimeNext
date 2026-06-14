@@ -84,14 +84,6 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
                     });
                 }
 
-                if (AppEnvironment.GetAppConfig().AppSettings.ShowMonitoringIndicator)
-                {
-                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        CFMonitoringIndicator.ToggleIndicator(System.Windows.Application.Current.MainWindow);
-                    });
-                }
-
                 if (AppEnvironment.GetAppConfig().AppSettings.ShowToastNotification)
                 {
                     System.Windows.Application.Current.Dispatcher.Invoke(() =>
@@ -117,14 +109,6 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
                     System.Windows.Application.Current.Dispatcher.Invoke(() =>
                     {
                         CFBlackout.ToggleSecondaryBlackout(System.Windows.Application.Current.MainWindow);
-                    });
-                }
-
-                if (AppEnvironment.GetAppConfig().AppSettings.ShowMonitoringIndicator)
-                {
-                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        CFMonitoringIndicator.ToggleIndicator(System.Windows.Application.Current.MainWindow);
                     });
                 }
 
