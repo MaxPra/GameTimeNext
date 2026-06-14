@@ -698,10 +698,13 @@
                                 Foreground="{DynamicResource Brush.TextSecondary}"
                                 Text="Some icons used in this application are provided by Icons8." />
 
-                            <TextBlock
-                                Grid.Row="4"
-                                Foreground="{DynamicResource Brush.TextSecondary}"
-                                Text="Thanks to all services and tools used during development." />
+                            <TextBlock Grid.Row="4" Foreground="{DynamicResource Brush.TextSecondary}">
+                                <Run Text="Developed by " />
+                                <Hyperlink NavigateUri="https://github.com/MaxPra" RequestNavigate="OnDeveloperLinkRequestNavigate">@MaxPra</Hyperlink>
+                                <Run Text=" and " />
+                                <Hyperlink NavigateUri="https://github.com/OliverFida" RequestNavigate="OnDeveloperLinkRequestNavigate">@OliverFida</Hyperlink>
+                                <Run Text=" on GitHub." />
+                            </TextBlock>
                         </Grid>
                     </StackPanel>
                 </ScrollViewer>

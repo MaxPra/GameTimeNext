@@ -1,4 +1,6 @@
-﻿using UIX.ViewController.Engine.FrameworkElements.UserControls;
+﻿using System.Diagnostics;
+using System.Windows.Navigation;
+using UIX.ViewController.Engine.FrameworkElements.UserControls;
 
 namespace GameTimeNext.Core.Application.Settings.Views
 {
@@ -10,6 +12,16 @@ namespace GameTimeNext.Core.Application.Settings.Views
         public SettingsView()
         {
             InitializeComponent();
+        }
+
+        private void OnDeveloperLinkRequestNavigate(object sender, RequestNavigateEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri)
+            {
+                UseShellExecute = true
+            });
+
+            e.Handled = true;
         }
     }
 }
