@@ -5,13 +5,14 @@
   IMPROVEMENTS
   ____________
 
-  * Grouped context menu items into submenus for better organization and easier navigation.
+  * NONE *
   
 
   NEW FEATURES
   ____________
 
   * Added Dashboard-Application
+  * Added Basic Monitoring-Indicator
 
 
   BUG FIXES
