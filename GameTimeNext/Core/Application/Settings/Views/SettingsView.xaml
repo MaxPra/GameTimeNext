@@ -565,10 +565,7 @@
                                         VerticalAlignment="Center"
                                         Foreground="{DynamicResource Brush.TextSecondary}"
                                         Text="Show monitoring indicator" />
-                                    <CheckBox
-                                        x:Name="cbShowMonitoringIndicator"
-                                        Grid.Column="2"
-                                        IsEnabled="False" />
+                                    <CheckBox x:Name="cbShowMonitoringIndicator" Grid.Column="2" />
                                 </Grid>
 
                                 <Grid Grid.Row="2" Grid.Column="1">
