@@ -1,5 +1,6 @@
 ﻿using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.TableObjects;
+using System.IO;
 using System.Windows;
 using UIX.ViewController.Engine.FrameworkElements;
 using static UIX.ViewController.Engine.FrameworkElements.UIXContextMenuFactory;
@@ -61,6 +62,16 @@ namespace GameTimeNext.Core.Application.Profiles
             contextBuilder.AddSubMenu(steamSubMenu);
 
             contextBuilder.AddSeparator(ProfilesContextMenuBuilder.contextMenuSeparatorStyle);
+        }
+
+        public static void BuildContextShowGameFolder(ContextMenuBuilder contextBuilder, T1PROFI t1profi)
+        {
+            if (!Directory.Exists(t1profi.EXGF))
+                return;
+
+            contextBuilder.AddSeparator(contextMenuSeparatorStyle);
+
+            contextBuilder.AddItem("ctxtOpenGameFolder", "Open Gamefolder", icon: UIXContextMenuFactory.CreateMdlIcon("\uE838"), itemStyle: contextMenuItemStyle);
         }
     }
 }
