@@ -11,7 +11,7 @@
   NEW FEATURES
   ____________
 
- 
+ * added new contextfunction "Open gamefolder" to profiles
 
 
   BUG FIXES
