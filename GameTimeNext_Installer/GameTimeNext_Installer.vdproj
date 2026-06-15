@@ -21,7 +21,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_94653770127F4D258429F2144DB94053"
+        "MsmKey" = "8:_A6C29ED48E6647ADBCF10E86382A2428"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -122,9 +122,9 @@
         }
         "File"
         {
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_94653770127F4D258429F2144DB94053"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A6C29ED48E6647ADBCF10E86382A2428"
             {
-            "SourcePath" = "8:..\\..\\..\\Gimp\\GameTimeNext\\GTN_APP_ICON.ico"
+            "SourcePath" = "8:..\\GameTimeNext\\UI\\Ressources\\GTN_APP_ICON.ico"
             "TargetName" = "8:GTN_APP_ICON.ico"
             "Tag" = "8:"
             "Folder" = "8:_F3573923E98D4B04813A6129989D73C0"
@@ -330,7 +330,7 @@
             "Target" = "8:_33B075D218AF48D191AA9B6D69A7EA4E"
             "Folder" = "8:_FDDB36AFE07B4F25B09BC77879BAEB79"
             "WorkingFolder" = "8:_F3573923E98D4B04813A6129989D73C0"
-            "Icon" = "8:_94653770127F4D258429F2144DB94053"
+            "Icon" = "8:_A6C29ED48E6647ADBCF10E86382A2428"
             "Feature" = "8:"
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_F9E8A5FEF0C04768AFB60ECC8D06BC7B"
@@ -344,7 +344,7 @@
             "Target" = "8:_33B075D218AF48D191AA9B6D69A7EA4E"
             "Folder" = "8:_9D215AC80B964619B4DD93C99214F07A"
             "WorkingFolder" = "8:_F3573923E98D4B04813A6129989D73C0"
-            "Icon" = "8:_94653770127F4D258429F2144DB94053"
+            "Icon" = "8:_A6C29ED48E6647ADBCF10E86382A2428"
             "Feature" = "8:"
             }
         }
@@ -748,7 +748,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_33B075D218AF48D191AA9B6D69A7EA4E"
             {
-            "SourcePath" = "8:..\\GameTimeNext\\obj\\Release\\net10.0-windows\\apphost.exe"
+            "SourcePath" = "8:..\\GameTimeNext\\obj\\Debug\\net10.0-windows\\apphost.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_F3573923E98D4B04813A6129989D73C0"
