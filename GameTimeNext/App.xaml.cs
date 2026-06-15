@@ -23,6 +23,7 @@ namespace GameTimeNext
 
             ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
+            AppEnvironment.AppVersion.Get();
             Core.Application.General.SplashScreen splash = new Core.Application.General.SplashScreen();
             splash.Show();
 

@@ -106,8 +106,6 @@ namespace GameTimeNext.Core.Framework
 
             LoadAppConfig();
 
-            AppVersion.Get();
-
             HandleBackup();
 
             CheckShowChangeLog();
