@@ -13,5 +13,10 @@
     "Code": "DA",
     "Name": "Dashboard",
     "ClassName": "GameTimeNext.Core.Application.Dashboard.DashboardApp"
+  },
+  {
+    "Code": "CT",
+    "Name": "Codetables",
+    "ClassName": "GameTimeNext.Core.Application.Codetables.CodetablesApp"
   }
 ]

@@ -138,6 +138,12 @@ namespace GameTimeNext.Core.Framework.DataBase
 
             // -- T1PLTHR (Tabelle für Playthroughs)
             CreateTableT1PLTHR();
+
+            // -- T1CTABH (Tabelle für Codetabellen-Köpfe)
+            CreateTableT1CTABH();
+
+            // -- T1CTABD (Tabelle für Codetabellen-Einträge)
+            CreateTableT1CTABD();
         }
 
         private void InsertDefaultValuesT1GROUPConditions()
@@ -335,6 +341,43 @@ namespace GameTimeNext.Core.Framework.DataBase
             command.ExecuteNonQuery();
         }
 
+        private void CreateTableT1CTABH()
+        {
+            var sql = @"
+                CREATE TABLE IF NOT EXISTS T1CTABD (
+                    TXTYP VARCHAR(200) PRIMARY KEY,
+                    DESCR VARCHAR(200),
+                    PERMI VARCHAR(200),
+                    CRAT DATETIME,
+                    CHAT DATETIME
+                );";
 
+            if (_connection == null)
+                return;
+
+            using var command = _connection.CreateCommand();
+            command.CommandText = sql;
+            command.ExecuteNonQuery();
+        }
+
+        private void CreateTableT1CTABD()
+        {
+            var sql = @"
+                    CREATE TABLE IF NOT EXISTS T1CTABD (
+                        TXTYP VARCHAR(200) NOT NULL,
+                        TXNUM VARCHAR(50) NOT NULL,
+                        DESCR VARCHAR(200),
+                        CRAT DATETIME,
+                        CHAT DATETIME,
+                        PRIMARY KEY (TXTYP, TXNUM)
+                    );";
+
+            if (_connection == null)
+                return;
+
+            using var command = _connection.CreateCommand();
+            command.CommandText = sql;
+            command.ExecuteNonQuery();
+        }
     }
 }
