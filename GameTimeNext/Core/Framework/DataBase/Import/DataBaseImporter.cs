@@ -24,7 +24,12 @@ namespace GameTimeNext.Core.Framework.DataBase.Import
             //if (FnSystem.IsDebug())
             //    return;
 
-            string[] files = Directory.GetFiles(AppEnvironment.GetAppConfig().AppDataLocalPath + Path.DirectorySeparatorChar + "Import", "*.zip");
+            string importDirectory = AppEnvironment.GetAppConfig().AppDataLocalPath + Path.DirectorySeparatorChar + "Import";
+
+            if (!Directory.Exists(importDirectory))
+                Directory.CreateDirectory(importDirectory);
+
+            string[] files = Directory.GetFiles(importDirectory, "*.zip");
 
             foreach (string file in files)
             {

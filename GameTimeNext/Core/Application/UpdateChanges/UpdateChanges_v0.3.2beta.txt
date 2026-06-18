@@ -1,0 +1,24 @@
+﻿=============================================
+  GameTimeNext  |  Version 0.3.2 Beta
+=============================================
+
+  IMPROVEMENTS
+  ____________
+
+  * migrated to InnoSetup installer
+  
+
+  NEW FEATURES
+  ____________
+
+  * added new contextfunction "Open gamefolder" to profiles
+  * added codetable application
+  * added importer for codetables and upcoming data
+
+
+  BUG FIXES
+  _________
+
+  * minor bugfixes regarding ui
+
+=============================================
