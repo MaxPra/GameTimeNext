@@ -45,7 +45,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
             else if (GetWnd().ViewIndicator.Contains("ED"))
                 GetWnd().TxbDescription.Focus();
 
-            FnControls.SetEnabled(GetWnd().BtnSave, GetWnd().ViewIndicator.Count == 0);
+            FnControls.SetVisible(GetWnd().BtnSave, GetWnd().ViewIndicator.Count != 0);
         }
 
         protected override void BuildImpl()

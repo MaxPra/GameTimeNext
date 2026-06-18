@@ -76,7 +76,8 @@
                     FontSize="14"
                     Foreground="#FF8B0000"
                     Text="Developmentpaths active!" />
-                s
+
+
             </StackPanel>
 
             <!--  Footer  -->

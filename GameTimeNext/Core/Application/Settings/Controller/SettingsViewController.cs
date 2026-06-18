@@ -32,6 +32,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
         protected override void Init()
         {
             _appSettings = AppEnvironment.GetAppConfig().AppSettings;
+            _appSettings.ResetChangeTracking();
             _appSettings.AcceptChanges();
         }
 
@@ -90,8 +91,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             FillDBOTags();
             FillDBOAbout();
 
-            if (_appSettings.HasFieldDataChanged("TwitchIGDBClientID") || _appSettings.HasFieldDataChanged("TwitchIGDBClientSecret"))
-                _hasIGDBChanged = true;
+
         }
 
         protected override void FillViewImpl()
@@ -337,7 +337,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             if (GetView().cbAllowProfileSpecificStyleChanges.IsChecked == false)
                 FnTheme.ApplyDefaultTheme();
 
-            if (_hasIGDBChanged)
+            if (_appSettings!.HasFieldDataChanged("TwitchIGDBClientID") || _appSettings.HasFieldDataChanged("TwitchIGDBClientSecret"))
             {
                 GetApp().GetApplication<CFMBOX>().Show("Attention", "Settings for IGDB have changed.\nRestart required!\nGameTimeNext will restart now!", CFMBOXResult.Ok, CFMBOXIcon.Info);
                 AppEnvironment.RestartGTNApplication();

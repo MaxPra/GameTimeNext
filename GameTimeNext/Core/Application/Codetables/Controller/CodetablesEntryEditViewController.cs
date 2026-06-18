@@ -46,7 +46,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
                 GetWnd().TxbTextNumber.Focus();
 
             FnControls.SetEnabled(GetWnd().TxbTextNumber, GetWnd().ViewIndicator.Contains("CN"));
-            FnControls.SetEnabled(GetWnd().BtnSave, GetWnd().ViewIndicator.Count == 0);
+            FnControls.SetVisible(GetWnd().BtnSave, GetWnd().ViewIndicator.Count != 0);
 
             _parmControls = ControlParameterVisibility();
             BuildManuelCodetableParameters();
