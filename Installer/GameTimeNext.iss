@@ -42,10 +42,13 @@ Source: "{#BinDirectory}\{#AppExeName}"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BinDirectory}\*.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BinDirectory}\*.runtimeconfig.json"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BinDirectory}\*.deps.json"; DestDir: "{app}"; Flags: ignoreversion
+
 ;Runtime DLLs
 Source: "{#BinDirectory}\runtimes\win-x64\*.dll"; DestDir: "{app}\runtimes\win-x64"; Flags: ignoreversion recursesubdirs
+
 ;App Specific
-Source: "{#BinDirectory}\Core\*.*"; DestDir: "{app}\Core"; Flags: ignoreversion recursesubdirs; Excludes: "*\UpdateChanges_vNEXT.txt"
+Source: "{#BinDirectory}\Core\ImportPackages\*.*"; DestDir: "{localappdata}\GameTimeNext\Import"; Flags: ignoreversion recursesubdirs
+Source: "{#BinDirectory}\Core\*.*"; DestDir: "{app}\Core"; Flags: ignoreversion recursesubdirs; Excludes: "*\UpdateChanges_vNEXT.txt,ImportPackages\*"
 Source: "{#BinDirectory}\UI\*.*"; DestDir: "{app}\UI"; Flags: ignoreversion recursesubdirs
 
 [Tasks]
