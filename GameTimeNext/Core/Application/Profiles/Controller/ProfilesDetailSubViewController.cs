@@ -67,12 +67,12 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             AddIdentifier("T1PROFI", _dataWrapper.GetTypedTableObject());
         }
 
-        protected override void Build()
+        protected override void BuildImpl()
         {
 
         }
 
-        protected override void BuildFirst()
+        protected override void BuildFirstImpl()
         {
             ResetView();
 

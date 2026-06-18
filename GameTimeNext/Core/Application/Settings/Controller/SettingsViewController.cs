@@ -35,12 +35,12 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             _appSettings.AcceptChanges();
         }
 
-        protected override void BuildFirst()
+        protected override void BuildFirstImpl()
         {
 
         }
 
-        protected override void Build()
+        protected override void BuildImpl()
         {
             FnControls.SetEnabled(GetView().txbBreakReminderHours, GetView().cbRemindTakeBreak.IsChecked == true);
 

@@ -18,7 +18,11 @@ namespace GameTimeNext.Core.Application.Codetables
         {
             HostApplication = hostApplication;
             CodetablesView!.ContentPresenter = presenter;
+
+            CodetablesView.ViewIndicator.Clear();
+            CodetablesView.ViewIndicator.Add("ED");
             CodetablesView.ViewController.Show(false);
+
             Loader = hostApplication.Loader;
             CallDispatcher = hostApplication.CallDispatcher;
         }

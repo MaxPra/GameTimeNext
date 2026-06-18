@@ -31,6 +31,8 @@ namespace GameTimeNext.Core.Application.DataManagers
             copy.TXTYP = source.TXTYP;
             copy.TXNUM = source.TXNUM;
             copy.DESCR = source.DESCR;
+            copy.PARM1 = source.PARM1;
+            copy.PARM2 = source.PARM2;
 
             DateTime now = DateTime.Now;
             copy.CRAT = now;
@@ -92,11 +94,15 @@ namespace GameTimeNext.Core.Application.DataManagers
         {
             SQLiteConnection connection = AppEnvironment.GetDataBaseManager().GetConnection();
             EnsureOpen(connection);
+
             using SQLiteCommand cmd = connection.CreateCommand();
+
             cmd.CommandText =
                 "DELETE FROM T1CTABD " +
                 "WHERE TXTYP = @TXTYP;";
+
             cmd.Parameters.AddWithValue("@TXTYP", txtyp);
+
             cmd.ExecuteNonQuery();
         }
 
@@ -108,7 +114,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             using SQLiteCommand cmd = connection.CreateCommand();
 
             cmd.CommandText =
-                "SELECT TXTYP, TXNUM, DESCR, CRAT, CHAT " +
+                "SELECT TXTYP, TXNUM, DESCR, PARM1, PARM2, CRAT, CHAT " +
                 "FROM T1CTABD " +
                 "WHERE TXTYP = @TXTYP " +
                 "AND TXNUM = @TXNUM;";
@@ -137,7 +143,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             using SQLiteCommand cmd = connection.CreateCommand();
 
             cmd.CommandText =
-                "SELECT TXTYP, TXNUM, DESCR, CRAT, CHAT " +
+                "SELECT TXTYP, TXNUM, DESCR, PARM1, PARM2, CRAT, CHAT " +
                 "FROM T1CTABD " +
                 "ORDER BY TXTYP, TXNUM;";
 
@@ -158,21 +164,29 @@ namespace GameTimeNext.Core.Application.DataManagers
         {
             SQLiteConnection connection = AppEnvironment.GetDataBaseManager().GetConnection();
             EnsureOpen(connection);
+
             List<T1CTABD> list = new List<T1CTABD>();
+
             using SQLiteCommand cmd = connection.CreateCommand();
+
             cmd.CommandText =
-                "SELECT TXTYP, TXNUM, DESCR, CRAT, CHAT " +
+                "SELECT TXTYP, TXNUM, DESCR, PARM1, PARM2, CRAT, CHAT " +
                 "FROM T1CTABD " +
                 "WHERE TXTYP = @TXTYP " +
                 "ORDER BY TXNUM;";
+
             cmd.Parameters.AddWithValue("@TXTYP", txtyp);
+
             using SQLiteDataReader reader = cmd.ExecuteReader();
+
             while (reader.Read())
             {
                 T1CTABD obj = Map(reader);
                 obj.AcceptChanges();
+
                 list.Add(obj);
             }
+
             return list;
         }
 
@@ -182,13 +196,15 @@ namespace GameTimeNext.Core.Application.DataManagers
 
             cmd.CommandText =
                 "INSERT INTO T1CTABD " +
-                "(TXTYP, TXNUM, DESCR, CRAT, CHAT) " +
+                "(TXTYP, TXNUM, DESCR, PARM1, PARM2, CRAT, CHAT) " +
                 "VALUES " +
-                "(@TXTYP, @TXNUM, @DESCR, @CRAT, @CHAT);";
+                "(@TXTYP, @TXNUM, @DESCR, @PARM1, @PARM2, @CRAT, @CHAT);";
 
             cmd.Parameters.AddWithValue("@TXTYP", obj.TXTYP);
             cmd.Parameters.AddWithValue("@TXNUM", obj.TXNUM);
             cmd.Parameters.AddWithValue("@DESCR", obj.DESCR);
+            cmd.Parameters.AddWithValue("@PARM1", obj.PARM1);
+            cmd.Parameters.AddWithValue("@PARM2", obj.PARM2);
             cmd.Parameters.AddWithValue("@CRAT", ToDbDateTime(obj.CRAT));
             cmd.Parameters.AddWithValue("@CHAT", ToDbDateTime(obj.CHAT));
 
@@ -202,6 +218,8 @@ namespace GameTimeNext.Core.Application.DataManagers
             cmd.CommandText =
                 "UPDATE T1CTABD SET " +
                 "DESCR = @DESCR, " +
+                "PARM1 = @PARM1, " +
+                "PARM2 = @PARM2, " +
                 "CHAT = @CHAT " +
                 "WHERE TXTYP = @TXTYP " +
                 "AND TXNUM = @TXNUM;";
@@ -209,6 +227,8 @@ namespace GameTimeNext.Core.Application.DataManagers
             cmd.Parameters.AddWithValue("@TXTYP", obj.TXTYP);
             cmd.Parameters.AddWithValue("@TXNUM", obj.TXNUM);
             cmd.Parameters.AddWithValue("@DESCR", obj.DESCR);
+            cmd.Parameters.AddWithValue("@PARM1", obj.PARM1);
+            cmd.Parameters.AddWithValue("@PARM2", obj.PARM2);
             cmd.Parameters.AddWithValue("@CHAT", ToDbDateTime(obj.CHAT));
 
             cmd.ExecuteNonQuery();
@@ -237,9 +257,11 @@ namespace GameTimeNext.Core.Application.DataManagers
             obj.TXTYP = reader.IsDBNull(0) ? string.Empty : reader.GetString(0);
             obj.TXNUM = reader.IsDBNull(1) ? string.Empty : reader.GetString(1);
             obj.DESCR = reader.IsDBNull(2) ? string.Empty : reader.GetString(2);
+            obj.PARM1 = reader.IsDBNull(3) ? string.Empty : reader.GetString(3);
+            obj.PARM2 = reader.IsDBNull(4) ? string.Empty : reader.GetString(4);
 
-            obj.CRAT = ParseDbDateTime(reader.IsDBNull(3) ? null : reader.GetString(3));
-            obj.CHAT = ParseDbDateTime(reader.IsDBNull(4) ? null : reader.GetString(4));
+            obj.CRAT = ParseDbDateTime(reader.IsDBNull(5) ? null : reader.GetString(5));
+            obj.CHAT = ParseDbDateTime(reader.IsDBNull(6) ? null : reader.GetString(6));
 
             obj.State = UIXTableObjectState.Available;
 

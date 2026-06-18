@@ -82,7 +82,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             AddIdentifier("T1PROFI", GetApp().T1Profi);
         }
 
-        protected override void BuildFirst()
+        protected override void BuildFirstImpl()
         {
             BuildTagGrid(GetApp().T1Profi.PFID);
 
@@ -93,7 +93,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             FnControls.SetEnabled(GetWnd().cmbEstimatedTimeType, isIGDBLinkedCorrectly);
         }
 
-        protected override void Build()
+        protected override void BuildImpl()
         {
             BuildSteamRelatedSettings();
             BuildSteamLinkSection();

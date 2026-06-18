@@ -38,21 +38,21 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
         {
         }
 
-        protected override void BuildFirst()
+        protected override void BuildFirstImpl()
         {
             // Hinzufügenbutton nur bei Debug / Developmentmodus anzeigen
             FnControls.SetVisible(GetView().BtnAddCodetable, FnSystem.IsDebug());
         }
 
-        protected override async Task BuildFirstAsync()
+        protected override async Task BuildFirstImplAsync()
         {
 
         }
-        protected override void Build()
+        protected override void BuildImpl()
         {
         }
 
-        protected override async Task BuildAsync()
+        protected override async Task BuildImplAsync()
         {
 
         }
@@ -216,7 +216,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
             row.ContextMenu.IsOpen = true;
         }
 
-        protected void EV_ctxtDelete()
+        protected async Task EV_ctxtDelete()
         {
             CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>();
 
@@ -226,6 +226,8 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
             {
                 T1CTABH selectedT1ctabh = (T1CTABH)_viewModel!.SelectedRow!.RowObject!;
                 TFCTABH.DeleteCodetableAndEntries(selectedT1ctabh);
+
+                await EV_BtnRefresh();
             }
         }
 
@@ -235,7 +237,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
             CodetablesEditApp codetablesEditApp = GetApp().GetApplication<CodetablesEditApp>();
             codetablesEditApp.Properties(async (result) =>
             {
-                if (result.Canceled)
+                if (!result.HasChanged)
                     return;
 
                 await EV_BtnRefresh();
@@ -246,13 +248,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
         {
             T1CTABH selectedT1ctabh = (T1CTABH)_viewModel!.SelectedRow!.RowObject!;
             CodetablesEntrysApp codetablesEntrysEditApp = GetApp().GetApplication<CodetablesEntrysApp>();
-            codetablesEntrysEditApp.Edit(async (result) =>
-            {
-                if (result.Canceled)
-                    return;
-                await EV_BtnRefresh();
-
-            }, selectedT1ctabh);
+            codetablesEntrysEditApp.Edit(selectedT1ctabh);
         }
 
         protected void EV_ctxtView()

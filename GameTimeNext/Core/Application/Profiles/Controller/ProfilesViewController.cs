@@ -78,16 +78,16 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
         }
 
-        protected override void BuildFirst()
+        protected override void BuildFirstImpl()
         {
         }
 
-        protected override async Task BuildFirstAsync()
+        protected override async Task BuildFirstImplAsync()
         {
             await BuildProfilesListBoxAsync(AppEnvironment.CurrentPfid);
         }
 
-        protected override void Build()
+        protected override void BuildImpl()
         {
 
         }

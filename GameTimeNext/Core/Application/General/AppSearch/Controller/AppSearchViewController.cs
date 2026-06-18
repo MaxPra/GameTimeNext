@@ -28,7 +28,7 @@ namespace GameTimeNext.Core.Application.General.AppSearch.Controller
             AllowOnlyEnterInTextBox = false;
         }
 
-        protected override void BuildFirst()
+        protected override void BuildFirstImpl()
         {
             BuildSearchableApplicationsListBox();
 
@@ -36,7 +36,7 @@ namespace GameTimeNext.Core.Application.General.AppSearch.Controller
 
         }
 
-        protected override void Build()
+        protected override void BuildImpl()
         {
         }
 

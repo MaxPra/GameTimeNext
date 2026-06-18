@@ -20,7 +20,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
     public class CodetablesEntrysViewController : UIXWindowControllerBase
     {
 
-        private CodetablesEntrysViewModel _viewModel;
+        private CodetablesEntrysViewModel? _viewModel;
 
         public CodetablesEntrysViewController(UIXApplication app) : base(app)
         {
@@ -38,17 +38,17 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
             AddIdentifier("T1CTABH", GetApp().T1CTABH!);
         }
 
-        protected override void BuildFirst()
+        protected override void BuildFirstImpl()
         {
         }
 
-        protected override async Task BuildFirstAsync()
+        protected override async Task BuildFirstImplAsync()
         {
             FnControls.SetVisible(GetWnd().BtnAdd, GetWnd().ViewIndicator.Contains("ED"));
             await BuildDG();
         }
 
-        protected override void Build()
+        protected override void BuildImpl()
         {
         }
 
@@ -198,6 +198,42 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
             row.ContextMenu.Placement = PlacementMode.MousePoint;
             row.ContextMenu.IsOpen = true;
         }
+
+        protected void EV_ctxtEdit()
+        {
+            CodetableEntryDataGridRow row = _viewModel!.SelectedRow!;
+
+            CodetablesEntryEditApp app = GetApp().GetApplication<CodetablesEntryEditApp>();
+            app.Edit(async (result) =>
+            {
+                if (!result.HasChanged)
+                    return;
+
+                await BuildDG();
+
+            }, (T1CTABD)(row.RowObject!));
+        }
+
+        protected void EV_ctxtView()
+        {
+            CodetableEntryDataGridRow row = _viewModel!.SelectedRow!;
+            CodetablesEntryEditApp app = GetApp().GetApplication<CodetablesEntryEditApp>();
+            app.View((T1CTABD)(row.RowObject!));
+        }
+
+        protected void EV_BtnAdd()
+        {
+            CodetablesEntryEditApp app = GetApp().GetApplication<CodetablesEntryEditApp>();
+            app.CreateNew(async (result) =>
+            {
+                if (!result.HasChanged)
+                    return;
+
+                await BuildDG();
+            }, GetApp().T1CTABH!.TXTYP);
+
+        }
+
 
         protected async Task EV_BtnRefresh()
         {

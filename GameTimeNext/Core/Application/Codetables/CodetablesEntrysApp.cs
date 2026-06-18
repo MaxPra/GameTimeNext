@@ -19,13 +19,12 @@ namespace GameTimeNext.Core.Application.Codetables
             CodetablesEntrysView.WndController = CodetablesEntrysEditViewController;
         }
 
-        public void Edit(Action<CodetablesEntrysViewController.CodetablesEntrysViewReturn> callback, T1CTABH t1ctabh)
+        public void Edit(T1CTABH t1ctabh)
         {
             T1CTABH = t1ctabh;
 
             CodetablesEntrysView!.ViewIndicator.Add("ED");
             CodetablesEntrysView!.Title = "Codetable Entrys";
-            CodetablesEntrysEditViewController!.SetResultCallback(callback);
             CodetablesEntrysEditViewController!.Show(true);
         }
 

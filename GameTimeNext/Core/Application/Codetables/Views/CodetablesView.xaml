@@ -89,9 +89,9 @@
                         Height="36"
                         VerticalAlignment="Center"
                         uixprops:UIXAttachedProperty.AdditionalEntry="(All)"
-                        uixprops:UIXAttachedProperty.Path="T1CTABH.PERM"
                         uixprops:UIXAttachedProperty.Source="From=T1CTABD;Where=TXTYP:cP;Text=DESCR;Value=TXNUM"
                         SelectedIndex="0"
+                        SelectedValue=""
                         SelectedValuePath="Tag" />
                 </Grid>
 

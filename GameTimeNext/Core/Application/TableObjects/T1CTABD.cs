@@ -15,9 +15,15 @@ namespace GameTimeNext.Core.Application.TableObjects
         public string DESCR { get; set; }
 
         [UIXSignatureField(3)]
-        public DateTime CRAT { get; set; }
+        public string PARM1 { get; set; }
 
         [UIXSignatureField(4)]
+        public string PARM2 { get; set; }
+
+        [UIXSignatureField(5)]
+        public DateTime CRAT { get; set; }
+
+        [UIXSignatureField(6)]
         public DateTime CHAT { get; set; }
 
         public T1CTABD()
@@ -25,6 +31,8 @@ namespace GameTimeNext.Core.Application.TableObjects
             TXTYP = string.Empty;
             TXNUM = string.Empty;
             DESCR = string.Empty;
+            PARM1 = string.Empty;
+            PARM2 = string.Empty;
 
             CRAT = DateTime.MinValue;
             CHAT = DateTime.MinValue;

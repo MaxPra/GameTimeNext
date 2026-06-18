@@ -36,11 +36,11 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             ViewReturn = new ProfilesManualEstTimesEditViewReturn();
         }
 
-        protected override void BuildFirst()
+        protected override void BuildFirstImpl()
         {
         }
 
-        protected override void Build()
+        protected override void BuildImpl()
         {
         }
 

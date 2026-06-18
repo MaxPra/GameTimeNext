@@ -27,12 +27,12 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             ViewReturn = new ProfilesPlaythroughEditViewReturn();
         }
 
-        protected override void BuildFirst()
+        protected override void BuildFirstImpl()
         {
             FillCmbTypes();
         }
 
-        protected override void Build()
+        protected override void BuildImpl()
         {
 
         }

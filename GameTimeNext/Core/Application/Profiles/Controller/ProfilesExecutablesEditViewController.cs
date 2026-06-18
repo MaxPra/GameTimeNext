@@ -28,12 +28,12 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
             ViewReturn = new ProfilesExecutablesEditViewReturn();
         }
-        protected override void BuildFirst()
+        protected override void BuildFirstImpl()
         {
             BuildExecutablesList();
         }
 
-        protected override void Build()
+        protected override void BuildImpl()
         {
         }
 
