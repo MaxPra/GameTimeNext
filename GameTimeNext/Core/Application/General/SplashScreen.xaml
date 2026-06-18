@@ -75,7 +75,7 @@
                     Grid.Column="1"
                     FontSize="12"
                     Foreground="{DynamicResource Brush.TextDisabled}"
-                    Text="v0.3.1" />
+                    Text="{Binding AppVersion, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
             </Grid>
 
         </Grid>
