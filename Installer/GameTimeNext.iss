@@ -16,7 +16,7 @@
 #define BinDirectory "..\GameTimeNext\bin\Release\net10.0-windows"
 
 [Setup]
-AppId={{B6D12BF9-6933-4610-BB15-68F30712EEAD}}
+AppId={{AA642EDE-2EA3-4C94-8325-0E112FA8FBF5}}
 AppName={#AppName}
 AppVersion={#AppVersion}
 VersionInfoVersion={#AppVersionSemantic}
@@ -34,7 +34,7 @@ OutputBaseFilename={#AppName}_v{#AppVersion}_Installer
 SetupIconFile=..\GameTimeNext\UI\Ressources\GTN_APP_ICON.ico
 Compression=lzma2
 SolidCompression=yes
-WizardStyle=modern
+WizardStyle=dynamic
 
 [Files]
 ;General files
@@ -57,3 +57,51 @@ Name: "{autodesktop}\{#AppShortcutName}"; Filename: "{app}\{#AppExeName}"; Tasks
 
 [Run]
 Filename: "{app}\{#AppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(AppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+
+[Code]
+
+const OldProductCode = '{AA642EDE-2EA3-4C94-8325-0E112FA8FBF5}';
+
+function InitializeSetup(): Boolean;
+var
+  ResultCode: Integer;
+  UninstallOK: Boolean;
+begin
+  Result := True;
+  UninstallOK := False;
+
+  if RegKeyExists(HKLM, 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\' + OldProductCode) or
+     RegKeyExists(HKLM, 'SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\' + OldProductCode) then
+  begin
+    if MsgBox(
+      'A previous MSI version of GameTimeNext was found.' + #13#10 +
+      'It must be removed before continuing installation.' + #13#10#13#10 +
+      'Uninstall it now?',
+      mbConfirmation, MB_YESNO
+    ) = IDYES then
+    begin
+      UninstallOK :=
+        Exec(
+          ExpandConstant('{sys}\msiexec.exe'),
+          '/x ' + OldProductCode + ' /passive /norestart',
+          '',
+          SW_SHOW,
+          ewWaitUntilTerminated,
+          ResultCode
+        );
+
+      if (not UninstallOK) or (ResultCode <> 0) then
+      begin
+        MsgBox('Uninstall failed. Setup will abort.', mbError, MB_OK);
+        Result := False;
+        Exit;
+      end;
+    end
+    else
+    begin
+      MsgBox('Setup cannot continue while the old version is installed.', mbInformation, MB_OK);
+      Result := False;
+      Exit;
+    end;
+  end;
+end;
