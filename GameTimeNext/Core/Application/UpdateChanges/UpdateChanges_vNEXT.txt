@@ -5,13 +5,13 @@
   IMPROVEMENTS
   ____________
 
-  
+  * migrated to InnoSetup installer
   
 
   NEW FEATURES
   ____________
 
- * added new contextfunction "Open gamefolder" to profiles
+  * added new contextfunction "Open gamefolder" to profiles
 
 
   BUG FIXES

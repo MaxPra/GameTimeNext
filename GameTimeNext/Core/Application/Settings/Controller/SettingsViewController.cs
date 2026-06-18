@@ -171,7 +171,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
 
         private void FillTabAbout()
         {
-            GetView().txVersion.Text = AppEnvironment.AppVersion.InformationalVersion;
+            GetView().txVersion.Text = $"v{AppEnvironment.AppVersion.InformationalVersion}";
         }
 
         protected override void SaveDBOImpl()
