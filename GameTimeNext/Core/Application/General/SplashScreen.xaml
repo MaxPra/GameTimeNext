@@ -9,6 +9,7 @@
     Height="360"
     AllowsTransparency="True"
     Background="Transparent"
+    Loaded="Window_Loaded"
     ResizeMode="NoResize"
     ShowInTaskbar="False"
     WindowStartupLocation="CenterScreen"
@@ -49,6 +50,19 @@
                             Foreground="{DynamicResource Brush.TextPrimary}"
                             Text="BETA" />
                     </Border>
+
+                    <Border
+                        x:Name="DevBadge"
+                        Margin="6,0,0,0"
+                        Padding="8,2"
+                        Background="#FF8B0000"
+                        CornerRadius="{StaticResource DefaultCornerRadius}">
+                        <TextBlock
+                            FontSize="11"
+                            FontWeight="Bold"
+                            Foreground="White"
+                            Text="DEV-Mode" />
+                    </Border>
                 </StackPanel>
 
                 <TextBlock
@@ -56,7 +70,13 @@
                     FontSize="14"
                     Foreground="{DynamicResource Brush.TextSecondary}"
                     Text="Advanced game time monitoring" />
-
+                <TextBlock
+                    x:Name="txtDevelopmentPathActive"
+                    Margin="0,12,0,0"
+                    FontSize="14"
+                    Foreground="#FF8B0000"
+                    Text="Developmentpaths active!" />
+                s
             </StackPanel>
 
             <!--  Footer  -->

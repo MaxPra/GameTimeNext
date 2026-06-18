@@ -1,5 +1,7 @@
 ﻿using GameTimeNext.Core.Framework;
+using GameTimeNext.Core.Framework.Utils;
 using System.Windows;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.General
 {
@@ -21,6 +23,12 @@ namespace GameTimeNext.Core.Application.General
         {
             DataContext = this;
             InitializeComponent();
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            FnControls.SetVisible(DevBadge, FnSystem.IsDebug());
+            FnControls.SetVisible(txtDevelopmentPathActive, FnSystem.IsDebug());
         }
     }
 }
