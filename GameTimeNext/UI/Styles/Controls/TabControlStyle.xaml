@@ -167,4 +167,118 @@
         </Setter>
     </Style>
 
+    <Style x:Key="DefaultTabItemStyle" TargetType="{x:Type TabItem}">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="12,8" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TabItem}">
+                    <Border
+                        x:Name="RootBorder"
+                        Padding="{TemplateBinding Padding}"
+                        Background="Transparent"
+                        CornerRadius="6,6,0,0">
+                        <Grid>
+                            <ContentPresenter
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                ContentSource="Header"
+                                RecognizesAccessKey="True"
+                                TextElement.FontSize="{TemplateBinding FontSize}"
+                                TextElement.FontWeight="{TemplateBinding FontWeight}"
+                                TextElement.Foreground="{TemplateBinding Foreground}" />
+                            <Border
+                                x:Name="SelectionIndicator"
+                                Height="2"
+                                Margin="0,0,0,-1"
+                                VerticalAlignment="Bottom"
+                                Background="{DynamicResource Brush.Accent}"
+                                Opacity="0" />
+                        </Grid>
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="RootBorder" Property="Background" Value="#12FFFFFF" />
+                            <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+                        </Trigger>
+
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="RootBorder" Property="Background" Value="#16FFFFFF" />
+                            <Setter TargetName="SelectionIndicator" Property="Opacity" Value="1" />
+                            <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+                            <Setter Property="FontWeight" Value="SemiBold" />
+                        </Trigger>
+
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="{DynamicResource Brush.TextDisabled}" />
+                            <Setter TargetName="RootBorder" Property="Opacity" Value="0.6" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="DefaultTabControlStyle" TargetType="{x:Type TabControl}">
+        <Setter Property="Background" Value="{DynamicResource Brush.Surface}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="ItemContainerStyle" Value="{StaticResource DefaultTabItemStyle}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TabControl}">
+                    <Border
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="{StaticResource DefaultCornerRadius}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <Border
+                                Grid.Row="0"
+                                Padding="12,8,14,0"
+                                Background="Transparent"
+                                BorderBrush="{DynamicResource Brush.Border}"
+                                BorderThickness="0,0,0,1">
+                                <TabPanel
+                                    Margin="0,0,6,0"
+                                    HorizontalAlignment="Left"
+                                    Background="Transparent"
+                                    ClipToBounds="False"
+                                    IsItemsHost="True"
+                                    KeyboardNavigation.TabIndex="1" />
+                            </Border>
+
+                            <ContentPresenter
+                                x:Name="PART_SelectedContentHost"
+                                Grid.Row="1"
+                                Margin="12"
+                                ContentSource="SelectedContent" />
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style BasedOn="{StaticResource DefaultTabItemStyle}" TargetType="{x:Type TabItem}" />
+
+    <Style BasedOn="{StaticResource DefaultTabControlStyle}" TargetType="{x:Type TabControl}" />
+
 </ResourceDictionary>

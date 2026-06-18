@@ -32,12 +32,12 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             ViewReturn = new ProfileFilterViewReturn();
         }
 
-        protected override void Build()
+        protected override void BuildImpl()
         {
 
         }
 
-        protected override void BuildFirst()
+        protected override void BuildFirstImpl()
         {
             // Gruppen-Liste (Tags u. States) befüllen
             BuildGroupList(string.Empty);

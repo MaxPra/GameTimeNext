@@ -80,11 +80,11 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
             //GetWnd().HeaderRoot.MouseLeftButtonDown += HeaderRoot_MouseLeftButtonDown;
         }
 
-        protected override void BuildFirst()
+        protected override void BuildFirstImpl()
         {
         }
 
-        protected override void Build()
+        protected override void BuildImpl()
         {
         }
 

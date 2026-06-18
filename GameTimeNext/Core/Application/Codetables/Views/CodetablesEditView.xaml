@@ -1,0 +1,258 @@
+﻿<ui:GTNWindow
+    x:Class="GameTimeNext.Core.Application.Codetables.Views.CodetablesEditView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI.Base"
+    xmlns:uixprops="clr-namespace:UIX.ViewController.Engine.AttachedProperties;assembly=UIX.ViewController.Engine"
+    Title="Codetable"
+    Width="800"
+    Height="500"
+    ResizeMode="NoResize"
+    ShowMaximizeButton="False"
+    ShowMinimizeButton="False"
+    Style="{StaticResource GTNWindowStyle}"
+    WindowStartupLocation="CenterOwner"
+    mc:Ignorable="d">
+
+    <Grid Margin="18">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="16" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="16" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TabControl x:Name="tabControl" Grid.Row="2">
+            <TabItem Header="General">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="10" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="10" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="130" />
+                        <ColumnDefinition Width="14" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        VerticalAlignment="Center"
+                        Opacity="0.8"
+                        Text="Text type" />
+
+                    <TextBox
+                        x:Name="TxbTextType"
+                        Grid.Row="0"
+                        Grid.Column="2"
+                        Width="100"
+                        Height="36"
+                        HorizontalAlignment="Left"
+                        VerticalContentAlignment="Center"
+                        uixprops:UIXAttachedProperty.Path="T1CTABH.TXTYP" />
+
+                    <TextBlock
+                        Grid.Row="2"
+                        Grid.Column="0"
+                        VerticalAlignment="Center"
+                        Opacity="0.8"
+                        Text="Description" />
+
+                    <TextBox
+                        x:Name="TxbDescription"
+                        Grid.Row="2"
+                        Grid.Column="2"
+                        Height="36"
+                        VerticalContentAlignment="Center"
+                        uixprops:UIXAttachedProperty.Path="T1CTABH.DESCR" />
+
+                    <ComboBox
+                        x:Name="CmbPermission"
+                        Grid.Row="4"
+                        Grid.Column="2"
+                        Height="36"
+                        VerticalAlignment="Center"
+                        uixprops:UIXAttachedProperty.AdditionalEntry="(None)"
+                        uixprops:UIXAttachedProperty.Path="T1CTABH.PERMI"
+                        uixprops:UIXAttachedProperty.Source="From=T1CTABD;Where=TXTYP:cP;Text=DESCR;Value=TXNUM"
+                        SelectedIndex="0"
+                        SelectedValue=""
+                        SelectedValuePath="Tag" />
+
+                    <TextBlock
+                        Grid.Row="4"
+                        Grid.Column="0"
+                        VerticalAlignment="Center"
+                        Opacity="0.8"
+                        Text="Permission" />
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Parameters">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="12" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="10" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        VerticalAlignment="Center"
+                        Opacity="0.8"
+                        Text="Active" />
+                    <TextBlock
+                        Grid.Row="0"
+                        Grid.Column="2"
+                        VerticalAlignment="Center"
+                        Opacity="0.8"
+                        Text="Description" />
+                    <TextBlock
+                        Grid.Row="0"
+                        Grid.Column="4"
+                        VerticalAlignment="Center"
+                        Opacity="0.8"
+                        Text="Required Field" />
+                    <TextBlock
+                        Grid.Row="0"
+                        Grid.Column="6"
+                        VerticalAlignment="Center"
+                        Opacity="0.8"
+                        Text="Control-Type" />
+                    <TextBlock
+                        x:Name="LblParamCodetable"
+                        Grid.Row="0"
+                        Grid.Column="8"
+                        VerticalAlignment="Center"
+                        Opacity="0.8"
+                        Text="Codetable" />
+
+                    <CheckBox
+                        x:Name="ChbParam1Active"
+                        Grid.Row="2"
+                        Grid.Column="0"
+                        VerticalAlignment="Center"
+                        uixprops:UIXAttachedProperty.Path="T1CTABH.PAAC1" />
+                    <TextBox
+                        x:Name="TxbParam1Description"
+                        Grid.Row="2"
+                        Grid.Column="2"
+                        Height="36"
+                        VerticalContentAlignment="Center"
+                        uixprops:UIXAttachedProperty.Path="T1CTABH.PADE1" />
+                    <CheckBox
+                        x:Name="ChbParam1Required"
+                        Grid.Row="2"
+                        Grid.Column="4"
+                        VerticalAlignment="Center"
+                        uixprops:UIXAttachedProperty.Path="T1CTABH.PARF1" />
+                    <ComboBox
+                        x:Name="CmbParam1ControlType"
+                        Grid.Row="2"
+                        Grid.Column="6"
+                        Height="36"
+                        VerticalAlignment="Center"
+                        uixprops:UIXAttachedProperty.AdditionalEntry="(None)"
+                        uixprops:UIXAttachedProperty.Path="T1CTABH.PACO1"
+                        uixprops:UIXAttachedProperty.Source="From=T1CTABD;Where=TXTYP:cO;Text=DESCR;Value=TXNUM"
+                        SelectedIndex="0"
+                        SelectedValue=""
+                        SelectedValuePath="Tag" />
+                    <ComboBox
+                        x:Name="CmbParam1Codetable"
+                        Grid.Row="2"
+                        Grid.Column="8"
+                        Height="36"
+                        VerticalAlignment="Center"
+                        uixprops:UIXAttachedProperty.AdditionalEntry="(None)"
+                        uixprops:UIXAttachedProperty.Path="T1CTABH.PACT1"
+                        uixprops:UIXAttachedProperty.Source="From=T1CTABH;Text=DESCR;Value=TXTYP"
+                        SelectedIndex="0"
+                        SelectedValue=""
+                        SelectedValuePath="Tag" />
+                    <CheckBox
+                        x:Name="ChbParam2Active"
+                        Grid.Row="4"
+                        Grid.Column="0"
+                        VerticalAlignment="Center"
+                        uixprops:UIXAttachedProperty.Path="T1CTABH.PAAC2" />
+                    <TextBox
+                        x:Name="TxbParam2Description"
+                        Grid.Row="4"
+                        Grid.Column="2"
+                        Height="36"
+                        VerticalContentAlignment="Center"
+                        uixprops:UIXAttachedProperty.Path="T1CTABH.PADE2" />
+                    <CheckBox
+                        x:Name="ChbParam2Required"
+                        Grid.Row="4"
+                        Grid.Column="4"
+                        VerticalAlignment="Center"
+                        uixprops:UIXAttachedProperty.Path="T1CTABH.PARF2" />
+                    <ComboBox
+                        x:Name="CmbParam2ControlType"
+                        Grid.Row="4"
+                        Grid.Column="6"
+                        Height="36"
+                        VerticalAlignment="Center"
+                        uixprops:UIXAttachedProperty.AdditionalEntry="(None)"
+                        uixprops:UIXAttachedProperty.Path="T1CTABH.PACO2"
+                        uixprops:UIXAttachedProperty.Source="From=T1CTABD;Where=TXTYP:cO;Text=DESCR;Value=TXNUM"
+                        SelectedIndex="0"
+                        SelectedValue=""
+                        SelectedValuePath="Tag" />
+                    <ComboBox
+                        x:Name="CmbParam2Codetable"
+                        Grid.Row="4"
+                        Grid.Column="8"
+                        Height="36"
+                        VerticalAlignment="Center"
+                        uixprops:UIXAttachedProperty.AdditionalEntry="(None)"
+                        uixprops:UIXAttachedProperty.Path="T1CTABH.PACT2"
+                        uixprops:UIXAttachedProperty.Source="From=T1CTABH;Text=DESCR;Value=TXTYP"
+                        SelectedIndex="0"
+                        SelectedValue=""
+                        SelectedValuePath="Tag" />
+                </Grid>
+            </TabItem>
+        </TabControl>
+
+        <Grid Grid.Row="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Button
+                x:Name="BtnSave"
+                Grid.Column="1"
+                Width="140"
+                Height="36"
+                Content="Save"
+                IsDefault="True" />
+        </Grid>
+    </Grid>
+</ui:GTNWindow>

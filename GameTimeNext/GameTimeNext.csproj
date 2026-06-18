@@ -10,9 +10,9 @@
   </PropertyGroup>
 
 	<PropertyGroup>
-		<Version>0.3.1</Version>
+		<Version>0.3.2</Version>
 		<VersionTag>beta</VersionTag>
-		<BuildDate>2026-06-14</BuildDate>
+		<BuildDate>2026-06-18</BuildDate>
 
 		<InformationalVersion>$(Version)-$(VersionTag)+$(BuildDate)</InformationalVersion>
 
@@ -86,15 +86,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Core\Application\CreateImportPackage\ViewModels\" />
     <Folder Include="Core\Application\Settings\Viewmodels\" />
     <Folder Include="Core\Framework\ErrorHandling\" />
     <Folder Include="Core\Framework\UI\AttachedProperties\" />
-    <Folder Include="ImportPackages\" />
   </ItemGroup>
 
   <ItemGroup>
     <None Update="Core\Application\StartableApps.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="ImportPackages\Import_Package_95e5ead4f42b46219e4052cadf709738.zip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

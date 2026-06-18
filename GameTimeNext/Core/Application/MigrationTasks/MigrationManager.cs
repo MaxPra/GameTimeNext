@@ -24,6 +24,8 @@ namespace GameTimeNext.Core.Application.MigrationTasks
 
             HandleMigrationVersion026b(versionOldRaw, currentVersion);
 
+            HandleMigrationVersion032b(versionOldRaw, currentVersion);
+
         }
 
         public static void HandleMigrationVersion017b(string versionOldRaw, AppVersion currentVersion)
@@ -68,6 +70,15 @@ namespace GameTimeNext.Core.Application.MigrationTasks
             if (currentVersion.NeedsMigrationFrom(versionOldRaw, "0.2.6"))
             {
                 MigTask_026b_005.Execute();
+            }
+        }
+
+        public static void HandleMigrationVersion032b(string versionOldRaw, AppVersion currentVersion)
+        {
+            // Ab Version 0.3.2
+            if (currentVersion.NeedsMigrationFrom(versionOldRaw, "0.3.2"))
+            {
+                MigTask_032b_006.Execute();
             }
         }
     }

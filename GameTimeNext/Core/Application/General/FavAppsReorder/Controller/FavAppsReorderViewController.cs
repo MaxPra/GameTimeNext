@@ -38,14 +38,14 @@ namespace GameTimeNext.Core.Application.General.FavAppsReorder.Controller
             _favAppsReorderViewModel = new FavAppsReorderViewModel();
         }
 
-        protected override void BuildFirst()
+        protected override void BuildFirstImpl()
         {
             BuildFavoriteApplicationsList();
             RegisterDragDropEvents();
             GetWnd().lvFavAppsReorder.Focus();
         }
 
-        protected override void Build()
+        protected override void BuildImpl()
         {
         }
 

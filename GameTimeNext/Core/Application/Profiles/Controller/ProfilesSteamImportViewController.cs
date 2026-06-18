@@ -28,14 +28,14 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             ViewReturn = new ProfilesSteamImportViewRetrun();
         }
 
-        protected override void Build()
+        protected override void BuildImpl()
         {
             // Sichtbarkeitssteuerung Import-Button
             GetView().BtnImport.IsEnabled = _profilesSteamImportViewModel != null && _profilesSteamImportViewModel.SteamGames.Count > 0
                                                 && _profilesSteamImportViewModel.SelectedSteamGame != null;
         }
 
-        protected override void BuildFirst()
+        protected override void BuildFirstImpl()
         {
             BuildSteamGameGrid();
         }

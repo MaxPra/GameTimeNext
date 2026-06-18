@@ -37,12 +37,12 @@ namespace GameTimeNext.Core.Application.General.Controller
             GetApp().CallDispatcher.Register(this, nameof(EXEV_SwitchToApplication));
         }
 
-        protected override void BuildFirst()
+        protected override void BuildFirstImpl()
         {
 
         }
 
-        protected override async Task BuildFirstAsync()
+        protected override async Task BuildFirstImplAsync()
         {
             // Für Applauncher Tab Control setzen
             AppEnvironment.AppLauncher.TabControl = GetWindow().MainTabControl;
@@ -73,7 +73,7 @@ namespace GameTimeNext.Core.Application.General.Controller
 
         }
 
-        protected override void Build()
+        protected override void BuildImpl()
         {
             FnControls.SetVisible(GetWindow().txtEmptyTabMessage, GetWindow().MainTabControl.Items.Count == 0);
         }

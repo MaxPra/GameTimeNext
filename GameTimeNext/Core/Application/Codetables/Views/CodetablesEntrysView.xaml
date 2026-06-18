@@ -1,0 +1,160 @@
+﻿<ui:GTNWindow
+    x:Class="GameTimeNext.Core.Application.Codetables.Views.CodetablesEntrysView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI.Base"
+    xmlns:uixprops="clr-namespace:UIX.ViewController.Engine.AttachedProperties;assembly=UIX.ViewController.Engine"
+    xmlns:uixsel="clr-namespace:UIX.ViewController.Engine.FrameworkElements.Selectors;assembly=UIX.ViewController.Engine"
+    Title="Codetable entries"
+    Width="1100"
+    Height="700"
+    MinWidth="900"
+    MinHeight="600"
+    d:DesignHeight="700"
+    d:DesignWidth="1100"
+    ResizeMode="CanResize"
+    ShowMaximizeButton="False"
+    ShowMinimizeButton="False"
+    Style="{StaticResource GTNWindowStyle}"
+    WindowStartupLocation="CenterOwner"
+    mc:Ignorable="d">
+
+    <Grid Margin="20,16,20,20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="16" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Border
+            Grid.Row="0"
+            Padding="16"
+            Background="{DynamicResource Brush.Surface}"
+            BorderBrush="{DynamicResource Brush.Border}"
+            BorderThickness="1"
+            CornerRadius="{StaticResource DefaultCornerRadius}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="130" />
+                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="240" />
+                    <ColumnDefinition Width="24" />
+                    <ColumnDefinition Width="130" />
+                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock
+                    Grid.Column="0"
+                    VerticalAlignment="Center"
+                    Foreground="{DynamicResource Brush.TextSecondary}"
+                    Text="Text type" />
+
+                <TextBox
+                    x:Name="TxbTextType"
+                    Grid.Column="2"
+                    Height="36"
+                    VerticalAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    uixprops:UIXAttachedProperty.Path="T1CTABH.TXTYP"
+                    IsReadOnly="True" />
+
+                <TextBlock
+                    Grid.Column="4"
+                    VerticalAlignment="Center"
+                    Foreground="{DynamicResource Brush.TextSecondary}"
+                    Text="Description" />
+
+                <TextBox
+                    x:Name="TxbDescription"
+                    Grid.Column="6"
+                    Height="36"
+                    VerticalAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    uixprops:UIXAttachedProperty.Path="T1CTABH.DESCR"
+                    IsReadOnly="True" />
+            </Grid>
+        </Border>
+
+        <Border
+            Grid.Row="2"
+            Padding="16"
+            Background="{DynamicResource Brush.Surface}"
+            BorderBrush="{DynamicResource Brush.Border}"
+            BorderThickness="1"
+            CornerRadius="{StaticResource DefaultCornerRadius}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="12" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="8" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <Button
+                        x:Name="BtnAdd"
+                        Grid.Column="1"
+                        Width="38"
+                        Height="36"
+                        ToolTip="Add entry">
+                        <TextBlock
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            FontFamily="Segoe MDL2 Assets"
+                            FontSize="14"
+                            Text="&#xE710;" />
+                    </Button>
+
+                    <Button
+                        x:Name="BtnRefresh"
+                        Grid.Column="3"
+                        Width="38"
+                        Height="36"
+                        IsDefault="True"
+                        ToolTip="Refresh entries">
+                        <TextBlock
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            FontFamily="Segoe MDL2 Assets"
+                            FontSize="14"
+                            Text="&#xE72C;" />
+                    </Button>
+                </Grid>
+
+                <uixsel:UIXDataGrid
+                    x:Name="DgCodetableEntrys"
+                    Grid.Row="2"
+                    AutoGenerateColumns="False"
+                    CanUserAddRows="False"
+                    CanUserDeleteRows="False"
+                    CanUserResizeRows="False"
+                    HeadersVisibility="Column"
+                    IsReadOnly="True"
+                    ItemsSource="{Binding CodetableEntryDataGridRows}"
+                    SelectedItem="{Binding SelectedRow, Mode=TwoWay}"
+                    SelectionMode="Single"
+                    SelectionUnit="FullRow">
+                    <uixsel:UIXDataGrid.Columns>
+                        <DataGridTextColumn
+                            Width="0.15*"
+                            Binding="{Binding COTXNUM}"
+                            Header="Textnumber" />
+                        <DataGridTextColumn
+                            Width="*"
+                            Binding="{Binding CODESCR}"
+                            Header="Description" />
+                    </uixsel:UIXDataGrid.Columns>
+                </uixsel:UIXDataGrid>
+            </Grid>
+        </Border>
+    </Grid>
+</ui:GTNWindow>

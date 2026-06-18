@@ -34,11 +34,11 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             public string SelectedImagePath { get; set; }
         }
 
-        protected override void BuildFirst()
+        protected override void BuildFirstImpl()
         {
         }
 
-        protected override async Task BuildFirstAsync()
+        protected override async Task BuildFirstImplAsync()
         {
             GetApp().Loader.Begin();
 
@@ -159,7 +159,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             );
         }
 
-        protected override void Build()
+        protected override void BuildImpl()
         {
             FnControls.SetEnabled(GetWnd().btnPreviousPage, _currentPage > 0);
             FnControls.SetEnabled(GetWnd().btnNextPage, _currentPage < _sgdbPages.Count - 1);

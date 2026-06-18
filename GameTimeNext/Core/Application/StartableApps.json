@@ -1,17 +1,27 @@
 [
   {
-    "Code": "P",
+    "Code": "PRO",
     "Name": "Profiles",
     "ClassName": "GameTimeNext.Core.Application.Profiles.ProfilesApp"
   },
   {
-    "Code": "SE",
+    "Code": "SET",
     "Name": "Settings",
     "ClassName": "GameTimeNext.Core.Application.Settings.SettingsApp"
   },
   {
-    "Code": "DA",
+    "Code": "DAS",
     "Name": "Dashboard",
     "ClassName": "GameTimeNext.Core.Application.Dashboard.DashboardApp"
+  },
+  {
+    "Code": "CTA",
+    "Name": "Codetables",
+    "ClassName": "GameTimeNext.Core.Application.Codetables.CodetablesApp"
+  },
+  {
+    "Code": "CIP",
+    "Name": "Create Import Package",
+    "ClassName": "GameTimeNext.Core.Application.CreateImportPackage.CreateImportPackageApp"
   }
 ]

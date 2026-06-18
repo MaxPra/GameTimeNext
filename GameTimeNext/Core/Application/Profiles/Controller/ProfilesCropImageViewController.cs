@@ -51,7 +51,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             ViewReturn = new ProfilesCropImageViewReturn();
         }
 
-        protected override void BuildFirst()
+        protected override void BuildFirstImpl()
         {
             GetWnd().thbMove.DragDelta += ThbMove_DragDelta;
             GetWnd().thbTopLeft.DragDelta += ThbTopLeft_DragDelta;
@@ -69,7 +69,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             _isInitialized = true;
         }
 
-        protected override void Build()
+        protected override void BuildImpl()
         {
         }
 
