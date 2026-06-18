@@ -5,8 +5,10 @@ using GameTimeNext.Core.Application.Settings;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.DataBase;
+using GameTimeNext.Core.Framework.DataBase.Import;
 using GameTimeNext.Core.Framework.Files;
 using GameTimeNext.Core.Framework.Igdb;
+using GameTimeNext.Core.Framework.Logging;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.Utils;
 using GameTimeNext.Core.Framework.Versioning;
@@ -106,11 +108,15 @@ namespace GameTimeNext.Core.Framework
 
             LoadAppConfig();
 
+            FnLog.Configure(GetAppConfig().LogFilePath);
+
             HandleBackup();
 
             CheckShowChangeLog();
 
             MigrationManager.MigrateIfNeeded();
+
+            DataBaseImporter.Import();
 
             InitializeIGDBAuthTokenAndExternalGameSources();
 

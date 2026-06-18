@@ -34,8 +34,8 @@ namespace GameTimeNext.Core.Application.CreateImportPackage
             List<T1CTABH> t1ctabhs = new TXCTABH().ReadAll();
             List<T1CTABD> t1ctabds = new TXCTABD().ReadAll();
 
-            string filenameT1CTABH = "T1CTABH.txt";
-            string filenameT1CTABD = "T1CTABD.txt";
+            string filenameT1CTABH = "01_T1CTABH.txt";
+            string filenameT1CTABD = "02_T1CTABD.txt";
 
             string exportPath = outputPath;
 

@@ -1,6 +1,6 @@
 #define AppName "GameTimeNext"
 #define AppExeName AppName + ".exe"
-#define AppVersionSemantic "0.3.1"
+#define AppVersionSemantic "0.3.2"
 #define AppVersionSuffix "beta"
 #define AppPublisher "MaxPra"
 
@@ -47,7 +47,7 @@ Source: "{#BinDirectory}\*.deps.json"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BinDirectory}\runtimes\win-x64\*.dll"; DestDir: "{app}\runtimes\win-x64"; Flags: ignoreversion recursesubdirs
 
 ;App Specific
-Source: "{#BinDirectory}\Core\ImportPackages\*.*"; DestDir: "{localappdata}\GameTimeNext\Import"; Flags: ignoreversion recursesubdirs
+Source: "{#BinDirectory}\ImportPackages\*.*"; DestDir: "{localappdata}\GameTimeNext\Import"; Flags: ignoreversion recursesubdirs
 Source: "{#BinDirectory}\Core\*.*"; DestDir: "{app}\Core"; Flags: ignoreversion recursesubdirs; Excludes: "*\UpdateChanges_vNEXT.txt,ImportPackages\*"
 Source: "{#BinDirectory}\UI\*.*"; DestDir: "{app}\UI"; Flags: ignoreversion recursesubdirs
 

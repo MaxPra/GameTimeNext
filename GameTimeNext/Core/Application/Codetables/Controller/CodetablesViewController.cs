@@ -184,10 +184,11 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
             contextBuilder.AddItem("ctxtView", "View", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.View), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
 
-            contextBuilder.AddItem("ctxtProperties", "Properties", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Info), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
+            if (FnSystem.IsDebug())
+                contextBuilder.AddItem("ctxtProperties", "Properties", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Info), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
 
             // Nur im Debugmodus dürfen Development-CTs gelöscht werden
-            if (t1ctabh.PERMI == "D" && FnSystem.IsDebug() || t1ctabh.PERMI == "U")
+            if (t1ctabh.PERMI == "D" && FnSystem.IsDebug())
                 contextBuilder.AddItem("ctxtDelete", "Delete", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Delete), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
 
             if (contextBuilder.HasItems())
@@ -241,7 +242,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
                     return;
 
                 await EV_BtnRefresh();
-            }, selectedT1ctabh, (FnSystem.IsDebug() && selectedT1ctabh.PERMI == "D") || selectedT1ctabh.PERMI == "U");
+            }, selectedT1ctabh, (FnSystem.IsDebug() && selectedT1ctabh.PERMI == "D"));
         }
 
         protected void EV_ctxtEdit()

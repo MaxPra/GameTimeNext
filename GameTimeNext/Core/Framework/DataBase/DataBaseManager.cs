@@ -382,6 +382,8 @@ namespace GameTimeNext.Core.Framework.DataBase
                         DESCR TEXT,
                         CRAT  TEXT,
                         CHAT  TEXT,
+                        PARM1 TEXT,
+                        PARM2 TEXT,
                         PRIMARY KEY (TXTYP, TXNUM)
                     );";
 

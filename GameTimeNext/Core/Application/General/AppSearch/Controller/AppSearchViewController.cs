@@ -1,6 +1,8 @@
-﻿using GameTimeNext.Core.Application.General.AppSearch.ViewModels;
+﻿using GameTimeNext.Core.Application.CreateImportPackage;
+using GameTimeNext.Core.Application.General.AppSearch.ViewModels;
 using GameTimeNext.Core.Application.General.AppSearch.Views;
 using GameTimeNext.Core.Framework;
+using GameTimeNext.Core.Framework.Utils;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
@@ -145,6 +147,9 @@ namespace GameTimeNext.Core.Application.General.AppSearch.Controller
             {
                 List<SearchableApplication> searchableApplications = GetSearchableApplications(searchText);
 
+                // Aussortieren von Anwendungen, welche nicht für alle User sichtbar sein sollen
+                searchableApplications = SortOutSearchableApplications(searchableApplications);
+
                 View.Dispatcher.Invoke(() =>
                 {
                     _appSearchViewModel = new AppSearchViewModel();
@@ -166,6 +171,26 @@ namespace GameTimeNext.Core.Application.General.AppSearch.Controller
             return AppEnvironment.AvailableApplications
                 .Where(a => a.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase))
                 .ToList();
+        }
+
+        private List<SearchableApplication> SortOutSearchableApplications(List<SearchableApplication> applications)
+        {
+
+            List<SearchableApplication> sortedApplications = new List<SearchableApplication>();
+
+            if (applications == null)
+                return new List<SearchableApplication>();
+
+            foreach (var app in applications)
+            {
+                // CreateImportPackage wird ausgenommen (außer wenn in Debug-/Dev-Modus)
+                if (app.ClassName != typeof(CreateImportPackageApp).FullName! || FnSystem.IsDebug())
+                {
+                    sortedApplications.Add(app);
+                }
+            }
+
+            return sortedApplications;
         }
 
         private void LaunchSelectedApplication()

@@ -40,6 +40,17 @@ namespace GameTimeNext.Core.Framework.Config
         }
 
         [JsonIgnore]
+        public string LogFilePath
+        {
+            get
+            {
+                string logFilePath = AppFolderPathNormal + Path.DirectorySeparatorChar + $"ApplicationLog_{DateTime.Now:yyyy-MM-dd}.log";
+
+                return logFilePath;
+            }
+        }
+
+        [JsonIgnore]
         public string AppFolderPathNormal
         {
             get => RootFolderPath + Path.DirectorySeparatorChar + "GameTimeNXT";
