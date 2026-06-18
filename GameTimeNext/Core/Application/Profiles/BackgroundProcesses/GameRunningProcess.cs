@@ -35,7 +35,10 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
                 foreach (var t1profi in t1profis)
                 {
                     if (FnString.IsNullEmptyOrWhitespace(t1profi.EXGF) || FnString.IsNullEmptyOrWhitespace(t1profi.EXEC))
+                    {
                         continue;
+                    }
+
 
                     foreach (string executable in ExecutablesToSearch[t1profi.PFID])
                     {

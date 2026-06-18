@@ -359,6 +359,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             contextBuilder.AddItem("ctxtEdit", "Edit", icon: UIXContextMenuFactory.CreateMdlIcon("\uE70F"), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
             contextBuilder.AddItem("ctxtDelete", "Delete", icon: UIXContextMenuFactory.CreateMdlIcon("\uE74D"), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
 
+            // Game Folder
+            ProfilesContextMenuBuilder.BuildContextShowGameFolder(contextBuilder, t1profi);
+
             // Playthrough
             ProfilesContextMenuBuilder.BuildContextPlayhtrougths(contextBuilder, t1profi);
 
@@ -620,6 +623,27 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
                 await BuildProfilesListBoxAsync(0);
             }
+        }
+
+        protected void EV_ctxtOpenGameFolder()
+        {
+            T1PROFI t1profi = _profilesSubGridViewModel!.SelectedT1Profi;
+
+            if (FnString.IsNullEmptyOrWhitespace(t1profi.EXGF))
+            {
+                CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>();
+                cfmbox.Show("Information", "No game folder set for this profile.", CFMBOXResult.Ok, CFMBOXIcon.Info);
+                return;
+            }
+
+            if (!Directory.Exists(t1profi.EXGF))
+            {
+                CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>();
+                cfmbox.Show("Information", "The specified game folder does not exist.", CFMBOXResult.Ok, CFMBOXIcon.Info);
+                return;
+            }
+
+            FnOpSys.OpenExplorer(t1profi.EXGF);
         }
 
         protected void EV_ctxtCompleteProfile()
