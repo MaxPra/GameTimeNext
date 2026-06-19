@@ -93,6 +93,7 @@
     <Folder Include="Core\Application\Settings\Viewmodels\" />
     <Folder Include="Core\Framework\ErrorHandling\" />
     <Folder Include="Core\Framework\UI\AttachedProperties\" />
+    <Folder Include="ImportPackages\" />
   </ItemGroup>
 
   <ItemGroup>
