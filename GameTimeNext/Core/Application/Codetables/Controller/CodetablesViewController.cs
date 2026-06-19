@@ -188,7 +188,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
                 contextBuilder.AddItem("ctxtProperties", "Properties", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Info), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
 
             // Nur im Debugmodus dürfen Development-CTs gelöscht werden
-            if (t1ctabh.PERMI == "D" && FnSystem.IsDebug())
+            if (FnSystem.IsDebug())
                 contextBuilder.AddItem("ctxtDelete", "Delete", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Delete), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
 
             if (contextBuilder.HasItems())

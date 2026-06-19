@@ -4,6 +4,7 @@ using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Profiles;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
+using GameTimeNext.Core.Framework.UI.Dialogs;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -219,6 +220,24 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
             CodetableEntryDataGridRow row = _viewModel!.SelectedRow!;
             CodetablesEntryEditApp app = GetApp().GetApplication<CodetablesEntryEditApp>();
             app.View((T1CTABD)(row.RowObject!));
+        }
+
+        protected async Task EV_ctxtDelete()
+        {
+            CodetableEntryDataGridRow row = _viewModel!.SelectedRow!;
+            T1CTABD t1ctabd = (T1CTABD)(row.RowObject!);
+
+            CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>();
+
+            CFMBOXResult result = cfmbox.Show("Are you sure you want to delete this entry?", CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
+
+            if (result == CFMBOXResult.Yes)
+            {
+                new TXCTABD().Delete(t1ctabd.TXTYP, t1ctabd.TXNUM);
+
+                await BuildDG();
+            }
+
         }
 
         protected void EV_BtnAdd()
