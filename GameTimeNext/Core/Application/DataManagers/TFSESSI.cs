@@ -65,6 +65,35 @@ namespace GameTimeNext.Core.Application.DataManagers
             return GetPlayedDays(0, timeSpan);
         }
 
+        public static int GetInvalidSessionsCount()
+        {
+            UIXQuery query = BuildInvalidSessionsCountQuery();
+
+            int count = 0;
+            using (var reader = query.Execute())
+            {
+                reader.Read();
+                count = UIXQuery.GetInt32(reader, "Count");
+            }
+
+            return count;
+        }
+
+        public static void CleanupInvalidSessions()
+        {
+            UIXQuery query = BuildInvalidSessionsQuery();
+
+            using (var reader = query.Execute())
+            {
+                TXSESSI txSessi = new TXSESSI();
+                while(reader.Read())
+                {
+                    int seid = UIXQuery.GetInt32(reader, K1SESSI.Name, K1SESSI.Fields.SEID);
+                    txSessi.Delete(seid);
+                }
+            }
+        }
+
         private static UIXQuery BuildPlayedDaysQuery(long pfid, long timeSpan)
         {
             UIXQuery query = new UIXQuery(K1SESSI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
@@ -103,6 +132,33 @@ namespace GameTimeNext.Core.Application.DataManagers
             query.AddOrderBy(K1SESSI.Name, K1SESSI.Fields.PLTO, OrderDirection.DESC);
 
             return query;
+        }
+
+        private static UIXQuery BuildInvalidSessionsCountQuery()
+        {
+            UIXQuery query = new UIXQuery(K1SESSI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
+
+            query.AddCountAll("Count");
+
+            AddWhereInvalidSesssions(ref query);
+
+            return query;
+        }
+
+        private static UIXQuery BuildInvalidSessionsQuery()
+        {
+            UIXQuery query = new UIXQuery(K1SESSI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
+
+            query.AddField(K1SESSI.Name, K1SESSI.Fields.SEID);
+
+            AddWhereInvalidSesssions(ref query);
+
+            return query;
+        }
+
+        private static void AddWhereInvalidSesssions(ref UIXQuery query)
+        {
+            query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PLTI, QueryCompareType.LESS_THAN, 0.5);
         }
     }
 }

@@ -48,6 +48,8 @@ namespace GameTimeNext.Core.Application.DataManagers
 
         public void Save(T1SESSI obj)
         {
+            if (obj.PLTI < 1) return;
+
             Save(obj, false);
         }
 
