@@ -1,5 +1,6 @@
 ﻿using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
+using GameTimeNext.Core.Framework.DataBase.DevSync;
 using System.Data.SQLite;
 using System.Globalization;
 using UIX.ViewController.Engine.DataBaseObjects;
@@ -68,6 +69,8 @@ namespace GameTimeNext.Core.Application.DataManagers
             obj.State = UIXTableObjectState.Available;
 
             obj.AcceptChanges();
+
+            DevSyncCsvSyncService.ExportTableFor(obj);
         }
 
         public void Delete(long grid)
