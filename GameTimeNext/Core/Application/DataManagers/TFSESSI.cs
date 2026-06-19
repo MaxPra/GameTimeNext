@@ -100,7 +100,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PFID, QueryCompareType.EQUALS, pfid);
 
             // Order by
-            query.AddOrderBy(K1SESSI.Name, K1SESSI.Fields.SEID, OrderDirection.DESC);
+            query.AddOrderBy(K1SESSI.Name, K1SESSI.Fields.PLTO, OrderDirection.DESC);
 
             return query;
         }
