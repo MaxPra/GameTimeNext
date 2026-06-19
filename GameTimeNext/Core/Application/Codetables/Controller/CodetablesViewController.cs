@@ -204,10 +204,15 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
             if (row == null)
                 return;
 
-            if (row.DataContext is not CodetableDataGridRow)
+            if (row.DataContext is not CodetableDataGridRow codetableRow)
                 return;
 
-            BuildContextMenu(row, (CodetableDataGridRow)row.DataContext);
+            if (_viewModel != null)
+                _viewModel.SelectedRow = codetableRow;
+
+            GetView().DgCodetables.SelectedItem = codetableRow;
+
+            BuildContextMenu(row, codetableRow);
 
             if (row.ContextMenu == null)
                 return;
@@ -219,13 +224,15 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
         protected async Task EV_ctxtDelete()
         {
+            if (_viewModel?.SelectedRow?.RowObject is not T1CTABH selectedT1ctabh)
+                return;
+
             CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>();
 
             CFMBOXResult result = cfmbox.Show("Are you sure you want to delete this codetable?", CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
 
             if (result == CFMBOXResult.Yes)
             {
-                T1CTABH selectedT1ctabh = (T1CTABH)_viewModel!.SelectedRow!.RowObject!;
                 TFCTABH.DeleteCodetableAndEntries(selectedT1ctabh);
 
                 await EV_BtnRefresh();
@@ -234,7 +241,9 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
         protected void EV_ctxtProperties()
         {
-            T1CTABH selectedT1ctabh = (T1CTABH)_viewModel!.SelectedRow!.RowObject!;
+            if (_viewModel?.SelectedRow?.RowObject is not T1CTABH selectedT1ctabh)
+                return;
+
             CodetablesEditApp codetablesEditApp = GetApp().GetApplication<CodetablesEditApp>();
             codetablesEditApp.Properties(async (result) =>
             {
@@ -247,14 +256,18 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
         protected void EV_ctxtEdit()
         {
-            T1CTABH selectedT1ctabh = (T1CTABH)_viewModel!.SelectedRow!.RowObject!;
+            if (_viewModel?.SelectedRow?.RowObject is not T1CTABH selectedT1ctabh)
+                return;
+
             CodetablesEntrysApp codetablesEntrysEditApp = GetApp().GetApplication<CodetablesEntrysApp>();
             codetablesEntrysEditApp.Edit(selectedT1ctabh);
         }
 
         protected void EV_ctxtView()
         {
-            T1CTABH selectedT1ctabh = (T1CTABH)_viewModel!.SelectedRow!.RowObject!;
+            if (_viewModel?.SelectedRow?.RowObject is not T1CTABH selectedT1ctabh)
+                return;
+
             CodetablesEntrysApp codetablesEntrysEditApp = GetApp().GetApplication<CodetablesEntrysApp>();
             codetablesEntrysEditApp.View(selectedT1ctabh);
         }

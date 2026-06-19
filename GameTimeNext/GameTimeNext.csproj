@@ -90,6 +90,7 @@
 
   <ItemGroup>
     <Folder Include="Core\Application\CreateImportPackage\ViewModels\" />
+    <Folder Include="Core\Application\Metadata\ViewModel\" />
     <Folder Include="Core\Application\Settings\Viewmodels\" />
     <Folder Include="Core\Framework\ErrorHandling\" />
     <Folder Include="Core\Framework\UI\AttachedProperties\" />

@@ -1,0 +1,251 @@
+﻿<ui:GTNWindow
+    x:Class="GameTimeNext.Core.Application.Metadata.Views.MetadataEditView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI.Base"
+    xmlns:uixprops="clr-namespace:UIX.ViewController.Engine.AttachedProperties;assembly=UIX.ViewController.Engine"
+    xmlns:uixsel="clr-namespace:UIX.ViewController.Engine.FrameworkElements.Selectors;assembly=UIX.ViewController.Engine"
+    Title="Metadata"
+    Width="1000"
+    Height="900"
+    MinWidth="900"
+    MinHeight="900"
+    ResizeMode="CanResize"
+    ShowMaximizeButton="False"
+    ShowMinimizeButton="False"
+    Style="{StaticResource GTNWindowStyle}"
+    WindowStartupLocation="CenterOwner"
+    mc:Ignorable="d">
+
+    <Grid Margin="20,16,20,20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="16" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="16" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Border
+            Grid.Row="0"
+            Padding="16"
+            Background="{DynamicResource Brush.Surface}"
+            BorderBrush="{DynamicResource Brush.Border}"
+            BorderThickness="1"
+            CornerRadius="{StaticResource DefaultCornerRadius}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="12" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="130" />
+                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="250" />
+                    <ColumnDefinition Width="24" />
+                    <ColumnDefinition Width="130" />
+                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock
+                    Grid.Row="2"
+                    Grid.Column="0"
+                    VerticalAlignment="Center"
+                    Foreground="{DynamicResource Brush.TextSecondary}"
+                    Text="Type" />
+
+                <ComboBox
+                    x:Name="CmbType"
+                    Grid.Row="2"
+                    Grid.Column="2"
+                    Height="36"
+                    VerticalAlignment="Center"
+                    uixprops:UIXAttachedProperty.AdditionalEntry="(All)"
+                    uixprops:UIXAttachedProperty.Path="T1METAH.MTYPE"
+                    uixprops:UIXAttachedProperty.Source="From=T1CTABD;Where=TXTYP:mT;Text=DESCR;Value=TXNUM"
+                    SelectedIndex="0"
+                    SelectedValue=""
+                    SelectedValuePath="Tag" />
+
+                <TextBlock
+                    Grid.Row="2"
+                    Grid.Column="4"
+                    VerticalAlignment="Center"
+                    Foreground="{DynamicResource Brush.TextSecondary}"
+                    Text="Dev sync" />
+
+                <CheckBox
+                    x:Name="ChbDevSync"
+                    Grid.Row="2"
+                    Grid.Column="6"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    uixprops:UIXAttachedProperty.Path="T1METAH.DSYNC" />
+
+                <TextBlock
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    VerticalAlignment="Center"
+                    Foreground="{DynamicResource Brush.TextSecondary}"
+                    Text="Table Object" />
+
+                <TextBox
+                    x:Name="TxbTableObject"
+                    Grid.Row="0"
+                    Grid.Column="2"
+                    Height="36"
+                    VerticalAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    uixprops:UIXAttachedProperty.Path="T1METAH.MENAM" />
+
+                <TextBlock
+                    Grid.Row="0"
+                    Grid.Column="4"
+                    VerticalAlignment="Center"
+                    Foreground="{DynamicResource Brush.TextSecondary}"
+                    Text="Description" />
+
+                <TextBox
+                    x:Name="TxbDescription"
+                    Grid.Row="0"
+                    Grid.Column="6"
+                    Height="36"
+                    VerticalAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    uixprops:UIXAttachedProperty.Path="T1METAH.DESCR" />
+            </Grid>
+        </Border>
+
+        <TabControl x:Name="tabControl" Grid.Row="2">
+            <TabItem Header="Fields">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="12" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBox
+                            x:Name="TxbFieldSearch"
+                            Grid.Column="0"
+                            Width="300"
+                            Height="36"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            VerticalContentAlignment="Center" />
+
+                        <Button
+                            x:Name="BtnAdd"
+                            Grid.Column="1"
+                            Width="38"
+                            Height="36"
+                            ToolTip="Add field">
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                FontFamily="Segoe MDL2 Assets"
+                                FontSize="14"
+                                Text="&#xE710;" />
+                        </Button>
+
+                        <Button
+                            x:Name="BtnRefresh"
+                            Grid.Column="5"
+                            Width="38"
+                            Height="36"
+                            IsDefault="True"
+                            ToolTip="Refresh fields">
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                FontFamily="Segoe MDL2 Assets"
+                                FontSize="14"
+                                Text="&#xE72C;" />
+                        </Button>
+
+                        <Button
+                            x:Name="BtnGenerate"
+                            Grid.Column="3"
+                            Width="38"
+                            Height="36"
+                            ToolTip="Generate fields">
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                FontFamily="Segoe MDL2 Assets"
+                                FontSize="14"
+                                Text="&#xE8B8;" />
+                        </Button>
+                    </Grid>
+
+                    <uixsel:UIXDataGrid
+                        x:Name="DgFields"
+                        Grid.Row="2"
+                        AutoGenerateColumns="False"
+                        CanUserAddRows="False"
+                        CanUserDeleteRows="False"
+                        CanUserResizeRows="False"
+                        HeadersVisibility="Column"
+                        IsReadOnly="True"
+                        ItemsSource="{Binding MetadataPositionDataGridRows}"
+                        SelectedItem="{Binding SelectedRow, Mode=TwoWay}"
+                        SelectionMode="Single"
+                        SelectionUnit="FullRow">
+                        <uixsel:UIXDataGrid.Columns>
+                            <DataGridTextColumn
+                                Width="0.2*"
+                                Binding="{Binding COPONAM}"
+                                Header="Field" />
+                            <DataGridTextColumn
+                                Width="0.45*"
+                                Binding="{Binding CODESCR}"
+                                Header="Description" />
+                            <DataGridTextColumn
+                                Width="0.2*"
+                                Binding="{Binding CODATYP}"
+                                Header="Data type" />
+                            <DataGridCheckBoxColumn
+                                Width="0.15*"
+                                Binding="{Binding COPRIMK}"
+                                Header="Primary key" />
+                            <DataGridTextColumn
+                                Width="0.15*"
+                                Binding="{Binding CODALEN}"
+                                Header="Length" />
+                        </uixsel:UIXDataGrid.Columns>
+                    </uixsel:UIXDataGrid>
+                </Grid>
+            </TabItem>
+        </TabControl>
+
+        <Grid Grid.Row="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Button
+                x:Name="BtnSave"
+                Grid.Column="1"
+                Width="140"
+                Height="36"
+                Content="Save"
+                IsDefault="True" />
+        </Grid>
+    </Grid>
+</ui:GTNWindow>
