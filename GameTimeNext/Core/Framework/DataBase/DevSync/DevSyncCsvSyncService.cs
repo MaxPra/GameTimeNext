@@ -3,6 +3,8 @@ using System.Data.SQLite;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using GameTimeNext.Core.Application.Metadata;
+using GameTimeNext.Core.Application.Metadata.Data;
 using UIX.ViewController.Engine.DataBaseObjects;
 
 namespace GameTimeNext.Core.Framework.DataBase.DevSync
@@ -86,8 +88,38 @@ namespace GameTimeNext.Core.Framework.DataBase.DevSync
             EnsureOpen(connection);
 
             string[] files = Directory.GetFiles(devSyncDirectory, "*.csv", SearchOption.TopDirectoryOnly);
-            foreach (string file in files)
+
+            List<string> orderedFiles = files
+                .OrderBy(f =>
+                {
+                    string tableName = Path.GetFileNameWithoutExtension(f);
+                    if (string.Equals(tableName, "T1METAH", StringComparison.OrdinalIgnoreCase))
+                        return 0;
+                    if (string.Equals(tableName, "T1METAP", StringComparison.OrdinalIgnoreCase))
+                        return 1;
+                    return 2;
+                })
+                .ToList();
+
+            foreach (string file in orderedFiles)
             {
+                string tableName = Path.GetFileNameWithoutExtension(file);
+                if (!string.Equals(tableName, "T1METAH", StringComparison.OrdinalIgnoreCase) &&
+                    !string.Equals(tableName, "T1METAP", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                ImportTable(file, connection);
+            }
+
+            EnsureMetadataTablesFromImportedMetadata();
+
+            foreach (string file in orderedFiles)
+            {
+                string tableName = Path.GetFileNameWithoutExtension(file);
+                if (string.Equals(tableName, "T1METAH", StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(tableName, "T1METAP", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
                 ImportTable(file, connection);
             }
         }
@@ -98,9 +130,6 @@ namespace GameTimeNext.Core.Framework.DataBase.DevSync
             if (string.IsNullOrWhiteSpace(tableName))
                 return;
 
-            if (!TableExists(connection, tableName))
-                return;
-
             string csvText = File.ReadAllText(csvPath, Encoding.UTF8);
             List<List<string>> rows = ParseCsv(csvText);
             if (rows.Count == 0)
@@ -109,6 +138,8 @@ namespace GameTimeNext.Core.Framework.DataBase.DevSync
             List<string> headers = rows[0];
             if (headers.Count == 0)
                 return;
+
+            EnsureTableSchemaForCsv(connection, tableName, headers, rows);
 
             Dictionary<string, string> tableColumnTypes = GetTableColumnTypes(connection, tableName);
             List<string> validColumns = headers.Where(h => tableColumnTypes.ContainsKey(h)).ToList();
@@ -152,6 +183,100 @@ namespace GameTimeNext.Core.Framework.DataBase.DevSync
             }
 
             transaction.Commit();
+        }
+
+        private static void EnsureMetadataTablesFromImportedMetadata()
+        {
+            TXMETAH txmetah = new TXMETAH();
+            TXMETAP txmetap = new TXMETAP();
+            CFMetadataTableGenerator generator = new CFMetadataTableGenerator();
+
+            HashSet<string> menamsWithPositions = txmetap
+                .ReadAll()
+                .Select(x => x.MENAM)
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            foreach (T1METAH header in txmetah.ReadAll())
+            {
+                if (!menamsWithPositions.Contains(header.MENAM))
+                    continue;
+
+                generator.EnsureTableFor(header);
+            }
+        }
+
+        private static void EnsureTableSchemaForCsv(SQLiteConnection connection, string tableName, List<string> headers, List<List<string>> rows)
+        {
+            Dictionary<string, string> inferredTypes = InferColumnTypes(headers, rows);
+
+            if (!TableExists(connection, tableName))
+            {
+                string createColumns = string.Join(", ", headers.Select(h => $"{QuoteIdentifier(h)} {inferredTypes[h]}"));
+                string createSql = $"CREATE TABLE IF NOT EXISTS {QuoteIdentifier(tableName)} ({createColumns});";
+                using SQLiteCommand createCmd = connection.CreateCommand();
+                createCmd.CommandText = createSql;
+                createCmd.ExecuteNonQuery();
+                return;
+            }
+
+            Dictionary<string, string> existingColumns = GetTableColumnTypes(connection, tableName);
+            foreach (string header in headers)
+            {
+                if (existingColumns.ContainsKey(header))
+                    continue;
+
+                string alterSql = $"ALTER TABLE {QuoteIdentifier(tableName)} ADD COLUMN {QuoteIdentifier(header)} {inferredTypes[header]};";
+                using SQLiteCommand alterCmd = connection.CreateCommand();
+                alterCmd.CommandText = alterSql;
+                alterCmd.ExecuteNonQuery();
+            }
+        }
+
+        private static Dictionary<string, string> InferColumnTypes(List<string> headers, List<List<string>> rows)
+        {
+            Dictionary<string, string> result = headers.ToDictionary(x => x, _ => "TEXT", StringComparer.OrdinalIgnoreCase);
+
+            for (int colIndex = 0; colIndex < headers.Count; colIndex++)
+            {
+                string header = headers[colIndex];
+                string type = "TEXT";
+
+                foreach (List<string> row in rows.Skip(1))
+                {
+                    if (colIndex >= row.Count)
+                        continue;
+
+                    string value = row[colIndex];
+                    if (string.IsNullOrWhiteSpace(value))
+                        continue;
+
+                    if (long.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out _))
+                    {
+                        type = "INTEGER";
+                        continue;
+                    }
+
+                    if (double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out _))
+                    {
+                        type = "REAL";
+                        continue;
+                    }
+
+                    if (DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces, out _))
+                    {
+                        type = "TEXT";
+                        continue;
+                    }
+
+                    type = "TEXT";
+                    break;
+                }
+
+                result[header] = type;
+            }
+
+            return result;
         }
 
         private static object ConvertToDbValue(string rawValue, string sqliteType)

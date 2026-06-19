@@ -4,6 +4,7 @@ using GameTimeNext.Core.Application.Metadata.Viewmodels;
 using GameTimeNext.Core.Application.Metadata.Views;
 using GameTimeNext.Core.Application.Profiles;
 using GameTimeNext.Core.Framework;
+using GameTimeNext.Core.Framework.UI.Dialogs;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -131,6 +132,26 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
             MetadataEditApp metadataEditApp = GetApp().GetApplication<MetadataEditApp>();
             metadataEditApp.Edit(selectedT1metah);
+        }
+
+        protected async Task EV_ctxtDelete()
+        {
+            if (_viewModel?.SelectedRow?.RowObject is not T1METAH selectedT1metah)
+                return;
+
+            CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>();
+
+            CFMBOXResult result = cfmbox.Show(
+                "Delete metadata and generated table?",
+                CFMBOXResult.Yes | CFMBOXResult.No,
+                CFMBOXIcon.Question);
+
+            if (result != CFMBOXResult.Yes)
+                return;
+
+            TFMETAH.DeleteMetadataAndLinkedData(selectedT1metah, deleteTable: true);
+
+            await EV_BtnRefresh();
         }
 
         private async Task BuildDG()

@@ -51,6 +51,18 @@ namespace GameTimeNext.Core.Framework.Config
         }
 
         [JsonIgnore]
+        public string DevGeneratedFilesPath
+        {
+            get
+            {
+                string devGeneratedFilesPath = AppDataLocalPath + Path.DirectorySeparatorChar + $"genClass";
+
+
+                return devGeneratedFilesPath;
+            }
+        }
+
+        [JsonIgnore]
         public string AppFolderPathNormal
         {
             get => RootFolderPath + Path.DirectorySeparatorChar + "GameTimeNXT";

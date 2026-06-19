@@ -5,6 +5,8 @@ namespace GameTimeNext.Core.Application.Metadata.Data
 {
     public class T1METAH : UIXTableObjectBase
     {
+        public override bool IsDevSynced => true;
+
         private DateTime _crat;
         private DateTime _chat;
 

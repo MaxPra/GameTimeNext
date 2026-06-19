@@ -4,6 +4,7 @@ using GameTimeNext.Core.Application.Metadata.Viewmodels;
 using GameTimeNext.Core.Application.Metadata.Views;
 using GameTimeNext.Core.Application.Profiles;
 using GameTimeNext.Core.Framework;
+using GameTimeNext.Core.Framework.UI.Dialogs;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -261,6 +262,33 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
         protected async Task EV_BtnGenerate()
         {
+            if (GetApp().T1METAH == null)
+                return;
+
+            try
+            {
+                GetApp().Loader.Begin();
+
+                await Task.Run(() =>
+                {
+                    CFMetadataClassGenerator classGenerator = new CFMetadataClassGenerator();
+                    classGenerator.GenerateFor(GetApp().T1METAH!, AppEnvironment.GetAppConfig().DevGeneratedFilesPath);
+
+                    CFMetadataTableGenerator tableGenerator = new CFMetadataTableGenerator();
+                    tableGenerator.EnsureTableFor(GetApp().T1METAH!);
+                });
+
+                GetApp().GetApplication<CFMBOX>().Show("Generation completed.", CFMBOXResult.Ok, CFMBOXIcon.Success);
+            }
+            catch (Exception ex)
+            {
+                GetApp().GetApplication<CFMBOX>().Show("Generation failed", ex.Message, CFMBOXResult.Ok, CFMBOXIcon.Error);
+            }
+            finally
+            {
+                GetApp().Loader.Stop();
+            }
+
             await BuildDG();
         }
 
