@@ -5,6 +5,7 @@ using GameTimeNext.Core.Application.Settings;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.DataBase;
+using GameTimeNext.Core.Framework.DataBase.DevSync;
 using GameTimeNext.Core.Framework.DataBase.Import;
 using GameTimeNext.Core.Framework.Files;
 using GameTimeNext.Core.Framework.Igdb;
@@ -117,6 +118,9 @@ namespace GameTimeNext.Core.Framework
             MigrationManager.MigrateIfNeeded();
 
             DataBaseImporter.Import();
+
+            if (FnSystem.IsDebug())
+                DevSyncCsvSyncService.ImportAllFromCsv();
 
             InitializeIGDBAuthTokenAndExternalGameSources();
 

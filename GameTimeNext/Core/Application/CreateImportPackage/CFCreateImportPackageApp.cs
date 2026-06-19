@@ -3,6 +3,7 @@ using GameTimeNext.Core.Application.TableObjects;
 using System.IO;
 using System.IO.Compression;
 using System.Reflection;
+using System.Globalization;
 using UIX.ViewController.Engine.DataBaseObjects;
 
 namespace GameTimeNext.Core.Application.CreateImportPackage
@@ -85,10 +86,42 @@ namespace GameTimeNext.Core.Application.CreateImportPackage
 
                 foreach (T item in data)
                 {
-                    string line = string.Join(";", properties.Select(p => p.GetValue(item)?.ToString() ?? string.Empty));
+                    string line = string.Join(";", properties.Select(p => EscapeCsv(SerializeForCsv(p.GetValue(item)))));
                     writer.WriteLine(line);
                 }
             }
+        }
+
+        private static string SerializeForCsv(object? value)
+        {
+            if (value == null)
+                return string.Empty;
+
+            if (value is DateTime dateTime)
+                return dateTime.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+
+            if (value is DateTimeOffset dateTimeOffset)
+                return dateTimeOffset.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+
+            if (value is bool boolValue)
+                return boolValue ? "1" : "0";
+
+            if (value is IFormattable formattable)
+                return formattable.ToString(null, CultureInfo.InvariantCulture);
+
+            return value.ToString() ?? string.Empty;
+        }
+
+        private static string EscapeCsv(string value)
+        {
+            if (value == null)
+                return string.Empty;
+
+            bool mustQuote = value.Contains(';') || value.Contains('"') || value.Contains('\n') || value.Contains('\r');
+            if (!mustQuote)
+                return value;
+
+            return '"' + value.Replace("\"", "\"\"") + '"';
         }
 
         public class ExportTypes

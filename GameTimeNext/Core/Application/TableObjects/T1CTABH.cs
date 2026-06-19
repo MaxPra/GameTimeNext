@@ -5,6 +5,8 @@ namespace GameTimeNext.Core.Application.TableObjects
 {
     public class T1CTABH : UIXTableObjectBase
     {
+        public override bool IsDevSynced => true;
+
         [UIXSignatureField(0)]
         public string TXTYP { get; set; }
 
