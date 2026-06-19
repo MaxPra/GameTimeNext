@@ -99,6 +99,8 @@ namespace GameTimeNext.Core.Application.DataManagers
             cmd.Parameters.AddWithValue("@TXTYP", txtyp);
 
             cmd.ExecuteNonQuery();
+
+            DevSyncCsvSyncService.ExportTable("T1CTABH");
         }
 
         public T1CTABH Read(string txtyp)

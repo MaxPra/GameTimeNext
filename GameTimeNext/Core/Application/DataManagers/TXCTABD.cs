@@ -91,6 +91,8 @@ namespace GameTimeNext.Core.Application.DataManagers
             cmd.Parameters.AddWithValue("@TXNUM", txnum);
 
             cmd.ExecuteNonQuery();
+
+            DevSyncCsvSyncService.ExportTable("T1CTABD");
         }
 
         public void DeleteAllEntries(string txtyp)
@@ -107,6 +109,8 @@ namespace GameTimeNext.Core.Application.DataManagers
             cmd.Parameters.AddWithValue("@TXTYP", txtyp);
 
             cmd.ExecuteNonQuery();
+
+            DevSyncCsvSyncService.ExportTable("T1CTABD");
         }
 
         public T1CTABD Read(string txtyp, string txnum)
