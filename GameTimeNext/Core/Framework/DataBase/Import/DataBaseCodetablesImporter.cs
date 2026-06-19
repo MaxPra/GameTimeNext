@@ -77,12 +77,8 @@ namespace GameTimeNext.Core.Framework.DataBase.Import
                 }
 
                 string s = uixStatement.PreviewStatement();
-                string pref = string.Empty;
 
-                if (checkIfExists)
-                    pref = "|E| ";
-
-                FnLog.AddInfo(null, pref + s);
+                FnLog.AddInfo(null, s);
 
                 uixStatement.ExecuteNonQuery();
             }
