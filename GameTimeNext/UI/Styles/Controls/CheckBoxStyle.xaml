@@ -2,6 +2,100 @@
 
     <Geometry x:Key="Geometry.CheckBox.Tick">M 3 8 L 7 12 L 14 4</Geometry>
 
+    <Style x:Key="CheckBox.Switch" TargetType="{x:Type CheckBox}">
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Focusable" Value="True" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+        <Setter Property="Width" Value="54" />
+        <Setter Property="Height" Value="30" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type CheckBox}">
+                    <Grid Background="Transparent">
+                        <Border
+                            x:Name="Track"
+                            Width="54"
+                            Height="30"
+                            Background="#2E2E38"
+                            BorderBrush="#3D3D48"
+                            BorderThickness="1"
+                            CornerRadius="15" />
+
+                        <Ellipse
+                            x:Name="Knob"
+                            Width="24"
+                            Height="24"
+                            Margin="3,0,0,0"
+                            HorizontalAlignment="Left"
+                            Fill="#F0F0F0">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform x:Name="KnobShift" X="0" />
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="Track" Property="Background" Value="{DynamicResource Brush.Accent}" />
+                            <Setter TargetName="Track" Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="KnobShift"
+                                            Storyboard.TargetProperty="X"
+                                            To="24"
+                                            Duration="0:0:0.14">
+                                            <DoubleAnimation.EasingFunction>
+                                                <CubicEase EasingMode="EaseOut" />
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="KnobShift"
+                                            Storyboard.TargetProperty="X"
+                                            To="0"
+                                            Duration="0:0:0.14">
+                                            <DoubleAnimation.EasingFunction>
+                                                <CubicEase EasingMode="EaseOut" />
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Track" Property="BorderBrush" Value="#585865" />
+                        </Trigger>
+
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsChecked" Value="True" />
+                                <Condition Property="IsMouseOver" Value="True" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="Track" Property="BorderBrush" Value="{DynamicResource Brush.AccentHover}" />
+                        </MultiTrigger>
+
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Track" Property="Opacity" Value="0.55" />
+                            <Setter TargetName="Knob" Property="Opacity" Value="0.55" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!--  Default (global): Checkbox rechts  -->
     <Style TargetType="{x:Type CheckBox}">
 
@@ -15,16 +109,16 @@
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
         <Setter Property="Background" Value="{DynamicResource Brush.Surface}" />
         <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
-        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderThickness" Value="1.5" />
 
         <Setter Property="FontSize" Value="13" />
         <Setter Property="FontWeight" Value="SemiBold" />
 
         <!--  match TextBox height for a consistent control size  -->
-        <Setter Property="MinHeight" Value="32" />
-        <Setter Property="Height" Value="32" />
+        <Setter Property="MinHeight" Value="38" />
+        <Setter Property="Height" Value="38" />
         <Setter Property="Padding" Value="0,0,12,0" />
-        <Setter Property="MinWidth" Value="32" />
+        <Setter Property="MinWidth" Value="36" />
 
         <Setter Property="Template">
             <Setter.Value>
@@ -151,16 +245,16 @@
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
         <Setter Property="Background" Value="{DynamicResource Brush.Surface}" />
         <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
-        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderThickness" Value="1.5" />
 
         <Setter Property="FontSize" Value="13" />
         <Setter Property="FontWeight" Value="SemiBold" />
 
         <!--  match TextBox height for a consistent control size  -->
-        <Setter Property="MinHeight" Value="32" />
-        <Setter Property="Height" Value="32" />
+        <Setter Property="MinHeight" Value="38" />
+        <Setter Property="Height" Value="38" />
         <Setter Property="Padding" Value="12,0,0,0" />
-        <Setter Property="MinWidth" Value="32" />
+        <Setter Property="MinWidth" Value="36" />
 
         <Setter Property="Template">
             <Setter.Value>
