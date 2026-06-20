@@ -56,28 +56,5 @@ namespace GameTimeNext.Core.Application.TableObjects
         {
             new TXCTABH().Save(this);
         }
-
-        public T? GetValue<T>(string fieldName)
-        {
-            if (string.IsNullOrWhiteSpace(fieldName))
-                return default;
-
-            var pi = GetType().GetProperty(fieldName,
-                System.Reflection.BindingFlags.Instance |
-                System.Reflection.BindingFlags.Public |
-                System.Reflection.BindingFlags.IgnoreCase);
-
-            if (pi == null)
-                return default;
-
-            var value = pi.GetValue(this);
-            if (value == null)
-                return default;
-
-            if (value is T typed)
-                return typed;
-
-            return (T)Convert.ChangeType(value, typeof(T));
-        }
     }
 }

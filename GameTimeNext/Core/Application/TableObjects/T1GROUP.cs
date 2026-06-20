@@ -21,7 +21,7 @@ namespace GameTimeNext.Core.Application.TableObjects
 
         [UIXSignatureField(4)]
         public DateTime CHAT { get; set; } = DateTime.MinValue;
-        public bool? IsSelected { get; set; } = false;
+
         public override void Save()
         {
             new TXGROUP().Save(this);

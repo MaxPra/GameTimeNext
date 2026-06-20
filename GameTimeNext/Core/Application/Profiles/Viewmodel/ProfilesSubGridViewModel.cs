@@ -8,10 +8,10 @@ namespace GameTimeNext.Core.Application.Profiles.Viewmodel
 {
     public class ProfilesSubGridViewModel : GTNViewModelBase
     {
-        public ObservableCollection<T1PROFI> T1Profis { get; set; }
+        public ObservableCollection<ProfilesListBoxItem> T1Profis { get; set; }
 
-        private T1PROFI _selectedProfile;
-        public T1PROFI SelectedT1Profi
+        private ProfilesListBoxItem _selectedProfile;
+        public ProfilesListBoxItem SelectedT1Profi
         {
             get => _selectedProfile;
             set => SetProperty(ref _selectedProfile, value, OnSelectedProfileChanged);
@@ -19,16 +19,16 @@ namespace GameTimeNext.Core.Application.Profiles.Viewmodel
 
         public ProfilesSubGridViewModel()
         {
-            T1Profis = new ObservableCollection<T1PROFI>();
+            T1Profis = new ObservableCollection<ProfilesListBoxItem>();
         }
 
 
-        private void OnSelectedProfileChanged(T1PROFI value)
+        private void OnSelectedProfileChanged(ProfilesListBoxItem value)
         {
             if (value == null)
                 return;
 
-            AppEnvironment.SetCurrentProfile(value);
+            AppEnvironment.SetCurrentProfile(value.ItemObject as T1PROFI);
         }
 
 
