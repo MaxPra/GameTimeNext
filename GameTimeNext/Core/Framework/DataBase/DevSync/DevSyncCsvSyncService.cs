@@ -1,10 +1,11 @@
+using GameTimeNext.Core.Application.Metadata;
+using GameTimeNext.Core.Application.Metadata.Data;
+using GameTimeNext.Core.Framework.Utils;
 using System.Data;
 using System.Data.SQLite;
 using System.Globalization;
 using System.IO;
 using System.Text;
-using GameTimeNext.Core.Application.Metadata;
-using GameTimeNext.Core.Application.Metadata.Data;
 using UIX.ViewController.Engine.DataBaseObjects;
 
 namespace GameTimeNext.Core.Framework.DataBase.DevSync
@@ -15,6 +16,10 @@ namespace GameTimeNext.Core.Framework.DataBase.DevSync
 
         public static void ExportTableFor(UIXTableObjectBase obj)
         {
+
+            if (!FnSystem.IsDebug())
+                return;
+
             if (obj == null || !obj.IsDevSynced)
                 return;
 
@@ -24,6 +29,9 @@ namespace GameTimeNext.Core.Framework.DataBase.DevSync
 
         public static void ExportTable(string tableName)
         {
+            if (!FnSystem.IsDebug())
+                return;
+
             if (string.IsNullOrWhiteSpace(tableName))
                 return;
 
@@ -80,6 +88,10 @@ namespace GameTimeNext.Core.Framework.DataBase.DevSync
 
         public static void ImportAllFromCsv()
         {
+
+            if (!FnSystem.IsDebug())
+                return;
+
             string devSyncDirectory = GetDevSyncDirectory();
             if (!Directory.Exists(devSyncDirectory))
                 return;

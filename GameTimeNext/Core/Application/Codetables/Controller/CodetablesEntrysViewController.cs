@@ -102,7 +102,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
             {
                 List<CodetableEntryDataGridRow> rows = BuildRowsCodetableEntrys();
 
-                GetWnd().DgCodetableEntrys.Dispatcher.Invoke(() =>
+                View.Dispatcher.Invoke(() =>
                 {
                     _viewModel = new CodetablesEntrysViewModel();
                     _viewModel.CodetableEntryDataGridRows = new System.Collections.ObjectModel.ObservableCollection<CodetableEntryDataGridRow>(rows);
