@@ -14,7 +14,6 @@
             public const string PLTI = "PLTI";
             public const string CRAT = "CRAT";
             public const string CHAT = "CHAT";
-            public const string TESTE = "TESTE";
         }
     }
 }

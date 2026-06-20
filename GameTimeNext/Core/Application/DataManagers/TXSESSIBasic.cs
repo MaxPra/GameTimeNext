@@ -58,7 +58,6 @@ namespace GameTimeNext.Core.Application.DataManagers
             query.AddField(K1SESSI.Name, K1SESSI.Fields.PLTI);
             query.AddField(K1SESSI.Name, K1SESSI.Fields.CRAT);
             query.AddField(K1SESSI.Name, K1SESSI.Fields.CHAT);
-            query.AddField(K1SESSI.Name, K1SESSI.Fields.TESTE);
             query.AddWhere(K1SESSI.Name, K1SESSI.Fields.SEID, QueryCompareType.EQUALS, sEID);
 
             using var reader = query.Execute();
@@ -81,7 +80,6 @@ namespace GameTimeNext.Core.Application.DataManagers
             query.AddField(K1SESSI.Name, K1SESSI.Fields.PLTI);
             query.AddField(K1SESSI.Name, K1SESSI.Fields.CRAT);
             query.AddField(K1SESSI.Name, K1SESSI.Fields.CHAT);
-            query.AddField(K1SESSI.Name, K1SESSI.Fields.TESTE);
             query.AddOrderBy(K1SESSI.Name, K1SESSI.Fields.SEID, OrderDirection.ASC);
 
             List<T1SESSI> list = new List<T1SESSI>();
@@ -99,7 +97,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         private void Insert(SQLiteConnection connection, T1SESSI obj)
         {
             using SQLiteCommand cmd = connection.CreateCommand();
-            cmd.CommandText = "INSERT INTO T1SESSI (SEID, PFID, PTID, PLFR, PLTO, PLTI, CRAT, CHAT, TESTE) VALUES (@SEID, @PFID, @PTID, @PLFR, @PLTO, @PLTI, @CRAT, @CHAT, @TESTE)";
+            cmd.CommandText = "INSERT INTO T1SESSI (SEID, PFID, PTID, PLFR, PLTO, PLTI, CRAT, CHAT) VALUES (@SEID, @PFID, @PTID, @PLFR, @PLTO, @PLTI, @CRAT, @CHAT)";
             cmd.Parameters.AddWithValue("@SEID", ToDbValue(obj.SEID));
             cmd.Parameters.AddWithValue("@PFID", ToDbValue(obj.PFID));
             cmd.Parameters.AddWithValue("@PTID", ToDbValue(obj.PTID));
@@ -108,14 +106,13 @@ namespace GameTimeNext.Core.Application.DataManagers
             cmd.Parameters.AddWithValue("@PLTI", ToDbValue(obj.PLTI));
             cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
             cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
-            cmd.Parameters.AddWithValue("@TESTE", ToDbValue(obj.TESTE));
             cmd.ExecuteNonQuery();
         }
 
         private void Update(SQLiteConnection connection, T1SESSI obj)
         {
             using SQLiteCommand cmd = connection.CreateCommand();
-            cmd.CommandText = "UPDATE T1SESSI SET PFID = @PFID, PTID = @PTID, PLFR = @PLFR, PLTO = @PLTO, PLTI = @PLTI, CRAT = @CRAT, CHAT = @CHAT, TESTE = @TESTE WHERE SEID = @SEID";
+            cmd.CommandText = "UPDATE T1SESSI SET PFID = @PFID, PTID = @PTID, PLFR = @PLFR, PLTO = @PLTO, PLTI = @PLTI, CRAT = @CRAT, CHAT = @CHAT WHERE SEID = @SEID";
             cmd.Parameters.AddWithValue("@SEID", ToDbValue(obj.SEID));
             cmd.Parameters.AddWithValue("@PFID", ToDbValue(obj.PFID));
             cmd.Parameters.AddWithValue("@PTID", ToDbValue(obj.PTID));
@@ -124,7 +121,6 @@ namespace GameTimeNext.Core.Application.DataManagers
             cmd.Parameters.AddWithValue("@PLTI", ToDbValue(obj.PLTI));
             cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
             cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
-            cmd.Parameters.AddWithValue("@TESTE", ToDbValue(obj.TESTE));
             cmd.ExecuteNonQuery();
         }
 
@@ -139,15 +135,14 @@ namespace GameTimeNext.Core.Application.DataManagers
         protected static T1SESSI Map(SQLiteDataReader reader)
         {
             T1SESSI obj = new T1SESSI();
-            obj.SEID = reader.IsDBNull(0) ? 0L : Convert.ToInt64(reader.GetValue(0));
-            obj.PFID = reader.IsDBNull(1) ? 0L : Convert.ToInt64(reader.GetValue(1));
-            obj.PTID = reader.IsDBNull(2) ? 0L : Convert.ToInt64(reader.GetValue(2));
+            obj.SEID = reader.IsDBNull(0) ? 0 : Convert.ToInt64(reader.GetValue(0));
+            obj.PFID = reader.IsDBNull(1) ? 0 : Convert.ToInt64(reader.GetValue(1));
+            obj.PTID = reader.IsDBNull(2) ? 0 : Convert.ToInt64(reader.GetValue(2));
             obj.PLFR = ParseDbDateTime(reader.GetValue(3));
             obj.PLTO = ParseDbDateTime(reader.GetValue(4));
             obj.PLTI = reader.IsDBNull(5) ? 0d : Convert.ToDouble(reader.GetValue(5), CultureInfo.InvariantCulture);
             obj.CRAT = ParseDbDateTime(reader.GetValue(6));
             obj.CHAT = ParseDbDateTime(reader.GetValue(7));
-            obj.TESTE = !reader.IsDBNull(8) && Convert.ToInt32(reader.GetValue(8)) == 1;
             obj.State = UIXTableObjectState.Available;
             return obj;
         }

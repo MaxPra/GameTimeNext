@@ -31,9 +31,6 @@ namespace GameTimeNext.Core.Application.TableObjects
         [UIXSignatureField(7)]
         public DateTime CHAT { get; set; } = DateTime.MinValue;
 
-        [UIXSignatureField(8)]
-        public bool TESTE { get; set; } = false;
-
         public override void Save()
         {
             new TXSESSI().Save(this);
