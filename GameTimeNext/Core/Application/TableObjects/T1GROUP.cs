@@ -5,40 +5,29 @@ namespace GameTimeNext.Core.Application.TableObjects
 {
     public class T1GROUP : UIXTableObjectBase
     {
+        public override bool IsDevSynced => false;
+
         [UIXSignatureField(0)]
-        public long GRID { get; set; }
+        public int GRID { get; set; }
 
         [UIXSignatureField(1)]
-        public string GRNA { get; set; }
+        public string GRNA { get; set; } = string.Empty;
 
         [UIXSignatureField(2)]
-        public DateTime CRAT { get; set; }
+        public string GTYP { get; set; } = string.Empty;
 
         [UIXSignatureField(3)]
-        public DateTime CHAT { get; set; }
+        public string CRAT { get; set; } = string.Empty;
 
         [UIXSignatureField(4)]
-        public string GTYP { get; set; }
+        public string CHAT { get; set; } = string.Empty;
 
         public bool? IsSelected { get; set; } = false;
 
-        public T1GROUP()
-        {
-            GRID = 0;
-
-            GRNA = string.Empty;
-            GTYP = string.Empty;
-
-            CRAT = DateTime.MinValue;
-            CHAT = DateTime.MinValue;
-
-            AcceptChanges();
-        }
 
         public override void Save()
         {
-            TXGROUP tblmGroup = new TXGROUP();
-            tblmGroup.Save(this);
+            new TXGROUP().Save(this);
         }
     }
 }

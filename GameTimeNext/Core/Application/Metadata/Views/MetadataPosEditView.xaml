@@ -141,7 +141,6 @@
                     HorizontalAlignment="Left"
                     VerticalAlignment="Center"
                     uixprops:UIXAttachedProperty.Path="T1METAP.DATYP"
-                    uixprops:UIXAttachedProperty.Source="From=T1CTABD;Where=TXTYP:dT;Text=DESCR;Value=TXNUM"
                     SelectedIndex="0"
                     SelectedValue=""
                     SelectedValuePath="Tag" />

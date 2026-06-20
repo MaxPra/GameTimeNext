@@ -1,4 +1,3 @@
-using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Metadata.Data;
 using GameTimeNext.Core.Application.Metadata.Viewmodels;
 using GameTimeNext.Core.Application.Metadata.Views;
@@ -33,12 +32,12 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
         protected override void Init()
         {
-            AddSource("T1CTABD", new TXCTABD());
             AddIdentifier("T1METAH", GetApp().T1METAH!);
         }
 
         protected override void BuildFirstImpl()
         {
+            InitializeMetadataTypeCombo();
         }
 
         protected override async Task BuildFirstImplAsync()
@@ -149,7 +148,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
                     MetadataPosDataGridRow row = GetWnd().DgFields.CreateNewRow<MetadataPosDataGridRow>();
                     row.COPONAM = t1metap.PONAM;
                     row.COMENAM = t1metap.MENAM;
-                    row.CODATYP = TFCTABD.GetDescription("dT", t1metap.DATYP);
+                    row.CODATYP = UIXSQLiteDataTypes.NormalizeCSharpType(t1metap.DATYP);
                     row.CODESCR = t1metap.DESCR;
                     row.COPRIMK = t1metap.PRIMK;
                     row.CODALEN = t1metap.DALEN;
@@ -190,6 +189,23 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
             query.AddOrderBy(K1METAP.Name, K1METAP.Fields.PORDE, OrderDirection.ASC);
 
             return query;
+        }
+
+        private void InitializeMetadataTypeCombo()
+        {
+            GetWnd().CmbType.Items.Clear();
+
+            foreach (MetadataObjectTypes.Entry entry in MetadataObjectTypes.GetEntries())
+            {
+                GetWnd().CmbType.Items.Add(new ComboBoxItem
+                {
+                    Content = entry.Text,
+                    Tag = entry.Key
+                });
+            }
+
+            if (GetWnd().CmbType.Items.Count > 0)
+                GetWnd().CmbType.SelectedIndex = 0;
         }
 
         protected void EV_DgFields_CtxtOpening(FrameworkElement target)

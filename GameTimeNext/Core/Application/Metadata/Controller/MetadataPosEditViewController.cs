@@ -1,4 +1,3 @@
-using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Metadata.Data;
 using GameTimeNext.Core.Application.Metadata.Views;
 using System.Windows;
@@ -26,7 +25,6 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
             ViewReturn = new MetadataPosEditViewReturn();
 
-            AddSource("T1CTABD", new TXCTABD());
             AddIdentifier("T1METAP", GetApp().T1METAP!);
         }
 
@@ -39,6 +37,17 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
         protected override async Task BuildFirstImplAsync()
         {
+            // Datentypen Combobox füllen
+            IReadOnlyList<UIXSQLiteDataTypes.DataTypeDefinition> dataTypes = UIXSQLiteDataTypes.GetDefinitions();
+
+            UIXManualCodetable codetable = new UIXManualCodetable();
+
+            foreach (var dataType in dataTypes)
+            {
+                codetable.AddEntry(dataType.Key, dataType.Text);
+            }
+
+            codetable.ApplyTo(GetWnd().CmbDataType);
         }
 
         protected override void BuildImpl()

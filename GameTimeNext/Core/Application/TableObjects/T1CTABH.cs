@@ -8,72 +8,53 @@ namespace GameTimeNext.Core.Application.TableObjects
         public override bool IsDevSynced => true;
 
         [UIXSignatureField(0)]
-        public string TXTYP { get; set; }
+        public string TXTYP { get; set; } = string.Empty;
 
         [UIXSignatureField(1)]
-        public string DESCR { get; set; }
+        public string DESCR { get; set; } = string.Empty;
 
         [UIXSignatureField(2)]
-        public string PERMI { get; set; }
+        public string PERMI { get; set; } = string.Empty;
 
         [UIXSignatureField(3)]
-        public DateTime CRAT { get; set; }
+        public bool PAAC1 { get; set; } = false;
 
         [UIXSignatureField(4)]
-        public DateTime CHAT { get; set; }
+        public string PADE1 { get; set; } = string.Empty;
 
         [UIXSignatureField(5)]
-        public bool PAAC1 { get; set; }
+        public bool PARF1 { get; set; } = false;
 
         [UIXSignatureField(6)]
-        public string PADE1 { get; set; }
+        public string PACO1 { get; set; } = string.Empty;
 
         [UIXSignatureField(7)]
-        public bool PARF1 { get; set; }
+        public string PACT1 { get; set; } = string.Empty;
 
         [UIXSignatureField(8)]
-        public string PACO1 { get; set; }
+        public bool PAAC2 { get; set; } = false;
 
         [UIXSignatureField(9)]
-        public string PACT1 { get; set; }
+        public string PADE2 { get; set; } = string.Empty;
 
         [UIXSignatureField(10)]
-        public bool PAAC2 { get; set; }
+        public bool PARF2 { get; set; } = false;
 
         [UIXSignatureField(11)]
-        public string PADE2 { get; set; }
+        public string PACO2 { get; set; } = string.Empty;
 
         [UIXSignatureField(12)]
-        public bool PARF2 { get; set; }
+        public string PACT2 { get; set; } = string.Empty;
 
         [UIXSignatureField(13)]
-        public string PACO2 { get; set; }
+        public DateTime CRAT { get; set; } = DateTime.MinValue;
 
         [UIXSignatureField(14)]
-        public string PACT2 { get; set; }
+        public DateTime CHAT { get; set; } = DateTime.MinValue;
 
-        public T1CTABH()
+        public override void Save()
         {
-            TXTYP = string.Empty;
-            DESCR = string.Empty;
-            PERMI = string.Empty;
-
-            CRAT = DateTime.MinValue;
-            CHAT = DateTime.MinValue;
-
-            PAAC1 = false;
-            PADE1 = string.Empty;
-            PARF1 = false;
-            PACO1 = string.Empty;
-            PACT1 = string.Empty;
-
-            PAAC2 = false;
-            PADE2 = string.Empty;
-            PARF2 = false;
-            PACO2 = string.Empty;
-            PACT2 = string.Empty;
-
-            AcceptChanges();
+            new TXCTABH().Save(this);
         }
 
         public T? GetValue<T>(string fieldName)
@@ -97,12 +78,6 @@ namespace GameTimeNext.Core.Application.TableObjects
                 return typed;
 
             return (T)Convert.ChangeType(value, typeof(T));
-        }
-
-        public override void Save()
-        {
-            TXCTABH tblmCtabh = new TXCTABH();
-            tblmCtabh.Save(this);
         }
     }
 }

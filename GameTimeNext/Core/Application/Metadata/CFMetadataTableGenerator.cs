@@ -1,8 +1,7 @@
-using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Metadata.Data;
-using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
 using System.Data.SQLite;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Metadata
 {
@@ -170,13 +169,10 @@ namespace GameTimeNext.Core.Application.Metadata
 
         private static List<TableColumnDefinition> BuildColumns(List<T1METAP> positions)
         {
-            TXCTABD txctabd = new TXCTABD();
-
             List<TableColumnDefinition> columns = new List<TableColumnDefinition>();
             foreach (T1METAP position in positions)
             {
-                T1CTABD? datyp = txctabd.Read("dT", position.DATYP);
-                string sqliteType = NormalizeSqliteType(datyp?.PARM1);
+                string sqliteType = NormalizeSqliteType(UIXSQLiteDataTypes.FromCSharp(position.DATYP));
 
                 if (sqliteType == "TEXT" && position.DALEN > 0)
                     sqliteType = $"VARCHAR({position.DALEN})";

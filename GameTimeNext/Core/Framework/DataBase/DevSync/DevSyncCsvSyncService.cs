@@ -92,7 +92,7 @@ namespace GameTimeNext.Core.Framework.DataBase.DevSync
             List<string> orderedFiles = files
                 .OrderBy(f =>
                 {
-                    string tableName = Path.GetFileNameWithoutExtension(f);
+                    string tableName = ResolveTableNameFromSyncFile(f);
                     if (string.Equals(tableName, "T1METAH", StringComparison.OrdinalIgnoreCase))
                         return 0;
                     if (string.Equals(tableName, "T1METAP", StringComparison.OrdinalIgnoreCase))
@@ -103,30 +103,29 @@ namespace GameTimeNext.Core.Framework.DataBase.DevSync
 
             foreach (string file in orderedFiles)
             {
-                string tableName = Path.GetFileNameWithoutExtension(file);
+                string tableName = ResolveTableNameFromSyncFile(file);
                 if (!string.Equals(tableName, "T1METAH", StringComparison.OrdinalIgnoreCase) &&
                     !string.Equals(tableName, "T1METAP", StringComparison.OrdinalIgnoreCase))
                     continue;
 
-                ImportTable(file, connection);
+                ImportTable(file, connection, tableName);
             }
 
             EnsureMetadataTablesFromImportedMetadata();
 
             foreach (string file in orderedFiles)
             {
-                string tableName = Path.GetFileNameWithoutExtension(file);
+                string tableName = ResolveTableNameFromSyncFile(file);
                 if (string.Equals(tableName, "T1METAH", StringComparison.OrdinalIgnoreCase) ||
                     string.Equals(tableName, "T1METAP", StringComparison.OrdinalIgnoreCase))
                     continue;
 
-                ImportTable(file, connection);
+                ImportTable(file, connection, tableName);
             }
         }
 
-        private static void ImportTable(string csvPath, SQLiteConnection connection)
+        private static void ImportTable(string csvPath, SQLiteConnection connection, string tableName)
         {
-            string tableName = Path.GetFileNameWithoutExtension(csvPath);
             if (string.IsNullOrWhiteSpace(tableName))
                 return;
 
@@ -183,6 +182,23 @@ namespace GameTimeNext.Core.Framework.DataBase.DevSync
             }
 
             transaction.Commit();
+        }
+
+        private static string ResolveTableNameFromSyncFile(string filePath)
+        {
+            string rawName = Path.GetFileNameWithoutExtension(filePath);
+            if (string.IsNullOrWhiteSpace(rawName))
+                return string.Empty;
+
+            int separatorIndex = rawName.IndexOf('_');
+            if (separatorIndex > 0)
+            {
+                string prefix = rawName.Substring(0, separatorIndex);
+                if (prefix.All(char.IsDigit) && separatorIndex + 1 < rawName.Length)
+                    return rawName.Substring(separatorIndex + 1);
+            }
+
+            return rawName;
         }
 
         private static void EnsureMetadataTablesFromImportedMetadata()

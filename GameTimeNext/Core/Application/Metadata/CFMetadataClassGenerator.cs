@@ -1,6 +1,4 @@
-using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Metadata.Data;
-using GameTimeNext.Core.Application.TableObjects;
 using System.IO;
 using UIX.ViewController.Engine.Utils;
 
@@ -59,19 +57,20 @@ namespace GameTimeNext.Core.Application.Metadata
 
         private static List<GeneratedField> BuildFields(List<T1METAP> positions)
         {
-            TXCTABD txctabd = new TXCTABD();
-
             List<GeneratedField> fields = new List<GeneratedField>();
             foreach (T1METAP position in positions)
             {
-                T1CTABD? datyp = txctabd.Read("dT", position.DATYP);
-                string sqliteType = datyp?.PARM1 ?? "TEXT";
+                string csharpType = UIXSQLiteDataTypes.NormalizeCSharpType(position.DATYP);
+                string sqliteType = UIXSQLiteDataTypes.FromCSharp(position.DATYP);
+
+                if (sqliteType == UIXSQLiteDataTypes.Text && position.DALEN > 0)
+                    sqliteType = $"VARCHAR({position.DALEN})";
 
                 fields.Add(new GeneratedField
                 {
                     Metadata = position,
                     SqliteType = sqliteType,
-                    CSharpType = MapToCSharpType(sqliteType),
+                    CSharpType = csharpType,
                     IsPrimaryKey = position.PRIMK
                 });
             }
@@ -387,25 +386,6 @@ namespace GameTimeNext.Core.Application.Metadata
                 string name = NormalizeName(x.Metadata.PONAM);
                 return $"{name} = {prefix}{name}";
             }));
-        }
-
-        private static string MapToCSharpType(string sqliteType)
-        {
-            string type = sqliteType.ToUpperInvariant();
-
-            if (type.Contains("INT"))
-                return "long";
-
-            if (type.Contains("REAL") || type.Contains("FLOA") || type.Contains("DOUB") || type.Contains("DEC"))
-                return "double";
-
-            if (type.Contains("BOOL"))
-                return "bool";
-
-            if (type.Contains("DATE") || type.Contains("TIME"))
-                return "DateTime";
-
-            return "string";
         }
 
         private static string GetDefaultValue(string csharpType)
