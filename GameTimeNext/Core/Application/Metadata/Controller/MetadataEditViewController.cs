@@ -148,7 +148,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
                     MetadataPosDataGridRow row = GetWnd().DgFields.CreateNewRow<MetadataPosDataGridRow>();
                     row.COPONAM = t1metap.PONAM;
                     row.COMENAM = t1metap.MENAM;
-                    row.CODATYP = UIXSQLiteDataTypes.NormalizeCSharpType(t1metap.DATYP);
+                    row.CODATYP = UIXSQLiteDataTypes.GetDefinitionByKey(t1metap.DATYP)?.Text ?? UIXSQLiteDataTypes.Text;
                     row.CODESCR = t1metap.DESCR;
                     row.COPRIMK = t1metap.PRIMK;
                     row.CODALEN = t1metap.DALEN;

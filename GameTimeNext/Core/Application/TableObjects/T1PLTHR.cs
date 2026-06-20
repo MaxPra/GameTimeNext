@@ -5,51 +5,35 @@ namespace GameTimeNext.Core.Application.TableObjects
 {
     public class T1PLTHR : UIXTableObjectBase
     {
+        public override bool IsDevSynced => true;
+
         [UIXSignatureField(0)]
-        public long PTID { get; set; }
+        public long PTID { get; set; } = 0;
 
         [UIXSignatureField(1)]
-        public long PFID { get; set; }
+        public long PFID { get; set; } = 0;
 
         [UIXSignatureField(2)]
-        public string PTTY { get; set; }
+        public string PTTY { get; set; } = string.Empty;
 
         [UIXSignatureField(3)]
-        public string PTDE { get; set; }
+        public string PTDE { get; set; } = string.Empty;
 
         [UIXSignatureField(4)]
-        public bool PTCO { get; set; }
+        public bool PTCO { get; set; } = false;
 
         [UIXSignatureField(5)]
-        public bool PTCA { get; set; }
+        public DateTime CRAT { get; set; } = DateTime.MinValue;
 
         [UIXSignatureField(6)]
-        public DateTime CRAT { get; set; }
+        public DateTime CHAT { get; set; } = DateTime.MinValue;
 
         [UIXSignatureField(7)]
-        public DateTime CHAT { get; set; }
-
-        public T1PLTHR()
-        {
-            PTID = 0;
-            PFID = 0;
-
-            PTTY = string.Empty;
-            PTDE = string.Empty;
-
-            PTCO = false;
-            PTCA = false;
-
-            CRAT = DateTime.MinValue;
-            CHAT = DateTime.MinValue;
-
-            AcceptChanges();
-        }
+        public bool PTCA { get; set; } = false;
 
         public override void Save()
         {
-            TXPLTHR tblmPlthr = new TXPLTHR();
-            tblmPlthr.Save(this);
+            new TXPLTHR().Save(this);
         }
     }
 }

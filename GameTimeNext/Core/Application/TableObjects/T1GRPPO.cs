@@ -3,40 +3,28 @@ using UIX.ViewController.Engine.DataBaseObjects;
 
 namespace GameTimeNext.Core.Application.TableObjects
 {
-    internal class T1GRPPO : UIXTableObjectBase
+    public class T1GRPPO : UIXTableObjectBase
     {
+        public override bool IsDevSynced => true;
+
         [UIXSignatureField(0)]
-        public long GPID { get; set; }
+        public long GPID { get; set; } = 0;
 
         [UIXSignatureField(1)]
-        public long GRID { get; set; }
+        public long GRID { get; set; } = 0;
 
         [UIXSignatureField(2)]
-        public long PFID { get; set; }
+        public long PFID { get; set; } = 0;
 
         [UIXSignatureField(3)]
-        public DateTime CRAT { get; set; }
+        public DateTime CRAT { get; set; } = DateTime.MinValue;
 
         [UIXSignatureField(4)]
-        public DateTime CHAT { get; set; }
-
-        public T1GRPPO()
-        {
-            GPID = 0;
-
-            GRID = 0;
-            PFID = 0;
-
-            CRAT = DateTime.MinValue;
-            CHAT = DateTime.MinValue;
-
-            AcceptChanges();
-        }
+        public DateTime CHAT { get; set; } = DateTime.MinValue;
 
         public override void Save()
         {
-            TXGRPPO tblmGrppo = new TXGRPPO();
-            tblmGrppo.Save(this);
+            new TXGRPPO().Save(this);
         }
     }
 }

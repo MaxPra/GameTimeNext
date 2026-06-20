@@ -176,8 +176,8 @@ namespace GameTimeNext.Core.Application.DataManagers
             obj.PARF2 = !reader.IsDBNull(10) && Convert.ToInt32(reader.GetValue(10)) == 1;
             obj.PACO2 = reader.IsDBNull(11) ? string.Empty : reader.GetString(11);
             obj.PACT2 = reader.IsDBNull(12) ? string.Empty : reader.GetString(12);
-            obj.CRAT = reader.IsDBNull(13) ? DateTime.MinValue : DateTime.Parse(reader.GetValue(13).ToString()!, CultureInfo.InvariantCulture);
-            obj.CHAT = reader.IsDBNull(14) ? DateTime.MinValue : DateTime.Parse(reader.GetValue(14).ToString()!, CultureInfo.InvariantCulture);
+            obj.CRAT = ParseDbDateTime(reader.GetValue(13));
+            obj.CHAT = ParseDbDateTime(reader.GetValue(14));
             obj.State = UIXTableObjectState.Available;
             return obj;
         }
@@ -189,6 +189,30 @@ namespace GameTimeNext.Core.Application.DataManagers
             if (value is DateTime dt)
                 return dt.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
             return value ?? DBNull.Value;
+        }
+
+        private static DateTime ParseDbDateTime(object? value)
+        {
+            if (value == null || value == DBNull.Value)
+                return DateTime.MinValue;
+
+            string raw = value.ToString() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(raw))
+                return DateTime.MinValue;
+
+            if (DateTime.TryParseExact(raw, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsed))
+                return parsed;
+
+            if (DateTime.TryParseExact(raw, "dd.MM.yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsed))
+                return parsed;
+
+            if (DateTime.TryParse(raw, CultureInfo.CurrentCulture, DateTimeStyles.None, out parsed))
+                return parsed;
+
+            if (DateTime.TryParse(raw, CultureInfo.InvariantCulture, DateTimeStyles.None, out parsed))
+                return parsed;
+
+            return DateTime.MinValue;
         }
 
         private static void EnsureOpen(SQLiteConnection connection)

@@ -293,7 +293,7 @@ namespace GameTimeNext.Core.Application.Metadata
             code.EndBlock();
             code.AppendEmptyLine();
 
-            code.BeginBlock($"private static {t1ClassName} Map(SQLiteDataReader reader)");
+            code.BeginBlock($"protected static {t1ClassName} Map(SQLiteDataReader reader)");
             code.AppendLine($"{t1ClassName} obj = new {t1ClassName}();");
             for (int i = 0; i < fields.Count; i++)
             {
@@ -315,7 +315,28 @@ namespace GameTimeNext.Core.Application.Metadata
             code.EndBlock();
             code.AppendEmptyLine();
 
-            code.BeginBlock("private static void EnsureOpen(SQLiteConnection connection)");
+            code.BeginBlock("private static DateTime ParseDbDateTime(object? value)");
+            code.AppendLine("if (value == null || value == DBNull.Value)");
+            code.AppendLine("    return DateTime.MinValue;");
+            code.AppendEmptyLine();
+            code.AppendLine("string raw = value.ToString() ?? string.Empty;");
+            code.AppendLine("if (string.IsNullOrWhiteSpace(raw))");
+            code.AppendLine("    return DateTime.MinValue;");
+            code.AppendEmptyLine();
+            code.AppendLine("if (DateTime.TryParseExact(raw, \"yyyy-MM-dd HH:mm:ss\", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsed))");
+            code.AppendLine("    return parsed;");
+            code.AppendLine("if (DateTime.TryParseExact(raw, \"dd.MM.yyyy HH:mm:ss\", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsed))");
+            code.AppendLine("    return parsed;");
+            code.AppendLine("if (DateTime.TryParse(raw, CultureInfo.CurrentCulture, DateTimeStyles.None, out parsed))");
+            code.AppendLine("    return parsed;");
+            code.AppendLine("if (DateTime.TryParse(raw, CultureInfo.InvariantCulture, DateTimeStyles.None, out parsed))");
+            code.AppendLine("    return parsed;");
+            code.AppendEmptyLine();
+            code.AppendLine("return DateTime.MinValue;");
+            code.EndBlock();
+            code.AppendEmptyLine();
+
+            code.BeginBlock("protected static void EnsureOpen(SQLiteConnection connection)");
             code.AppendLine("if (connection.State != System.Data.ConnectionState.Open)");
             code.AppendLine("    connection.Open();");
             code.EndBlock();
@@ -354,7 +375,7 @@ namespace GameTimeNext.Core.Application.Metadata
                 return $"!reader.IsDBNull({index}) && Convert.ToInt32(reader.GetValue({index})) == 1";
 
             if (csharpType == "DateTime")
-                return $"reader.IsDBNull({index}) ? DateTime.MinValue : DateTime.Parse(reader.GetValue({index}).ToString()!, CultureInfo.InvariantCulture)";
+                return $"ParseDbDateTime(reader.GetValue({index}))";
 
             if (csharpType == "long")
                 return $"reader.IsDBNull({index}) ? 0 : Convert.ToInt64(reader.GetValue({index}))";

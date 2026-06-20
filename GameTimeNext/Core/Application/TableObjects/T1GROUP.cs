@@ -5,10 +5,10 @@ namespace GameTimeNext.Core.Application.TableObjects
 {
     public class T1GROUP : UIXTableObjectBase
     {
-        public override bool IsDevSynced => false;
+        public override bool IsDevSynced => true;
 
         [UIXSignatureField(0)]
-        public int GRID { get; set; }
+        public long GRID { get; set; } = 0;
 
         [UIXSignatureField(1)]
         public string GRNA { get; set; } = string.Empty;
@@ -17,14 +17,11 @@ namespace GameTimeNext.Core.Application.TableObjects
         public string GTYP { get; set; } = string.Empty;
 
         [UIXSignatureField(3)]
-        public string CRAT { get; set; } = string.Empty;
+        public DateTime CRAT { get; set; } = DateTime.MinValue;
 
         [UIXSignatureField(4)]
-        public string CHAT { get; set; } = string.Empty;
-
+        public DateTime CHAT { get; set; } = DateTime.MinValue;
         public bool? IsSelected { get; set; } = false;
-
-
         public override void Save()
         {
             new TXGROUP().Save(this);

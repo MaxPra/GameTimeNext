@@ -137,8 +137,8 @@ namespace GameTimeNext.Core.Application.DataManagers
             obj.TXTYP = reader.IsDBNull(0) ? string.Empty : reader.GetString(0);
             obj.TXNUM = reader.IsDBNull(1) ? string.Empty : reader.GetString(1);
             obj.DESCR = reader.IsDBNull(2) ? string.Empty : reader.GetString(2);
-            obj.CRAT = reader.IsDBNull(3) ? DateTime.MinValue : DateTime.Parse(reader.GetValue(3).ToString()!, CultureInfo.InvariantCulture);
-            obj.CHAT = reader.IsDBNull(4) ? DateTime.MinValue : DateTime.Parse(reader.GetValue(4).ToString()!, CultureInfo.InvariantCulture);
+            obj.CRAT = ParseDbDateTime(reader.GetValue(3));
+            obj.CHAT = ParseDbDateTime(reader.GetValue(4));
             obj.PARM1 = reader.IsDBNull(5) ? string.Empty : reader.GetString(5);
             obj.PARM2 = reader.IsDBNull(6) ? string.Empty : reader.GetString(6);
             obj.State = UIXTableObjectState.Available;
@@ -152,6 +152,30 @@ namespace GameTimeNext.Core.Application.DataManagers
             if (value is DateTime dt)
                 return dt.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
             return value ?? DBNull.Value;
+        }
+
+        private static DateTime ParseDbDateTime(object? value)
+        {
+            if (value == null || value == DBNull.Value)
+                return DateTime.MinValue;
+
+            string raw = value.ToString() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(raw))
+                return DateTime.MinValue;
+
+            if (DateTime.TryParseExact(raw, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsed))
+                return parsed;
+
+            if (DateTime.TryParseExact(raw, "dd.MM.yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsed))
+                return parsed;
+
+            if (DateTime.TryParse(raw, CultureInfo.CurrentCulture, DateTimeStyles.None, out parsed))
+                return parsed;
+
+            if (DateTime.TryParse(raw, CultureInfo.InvariantCulture, DateTimeStyles.None, out parsed))
+                return parsed;
+
+            return DateTime.MinValue;
         }
 
         protected static void EnsureOpen(SQLiteConnection connection)

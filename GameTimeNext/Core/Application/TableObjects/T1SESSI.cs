@@ -5,51 +5,35 @@ namespace GameTimeNext.Core.Application.TableObjects
 {
     public class T1SESSI : UIXTableObjectBase
     {
+        public override bool IsDevSynced => true;
+
         [UIXSignatureField(0)]
-        public long SEID { get; set; }
+        public long SEID { get; set; } = 0;
 
         [UIXSignatureField(1)]
-        public long PFID { get; set; }
+        public long PFID { get; set; } = 0;
 
         [UIXSignatureField(2)]
-        public long PTID { get; set; }
+        public long PTID { get; set; } = 0;
 
         [UIXSignatureField(3)]
-        public DateTime PLFR { get; set; }
+        public DateTime PLFR { get; set; } = DateTime.MinValue;
 
         [UIXSignatureField(4)]
-        public DateTime PLTO { get; set; }
+        public DateTime PLTO { get; set; } = DateTime.MinValue;
 
         [UIXSignatureField(5)]
-        public double PLTI { get; set; }
+        public double PLTI { get; set; } = 0d;
 
         [UIXSignatureField(6)]
-        public DateTime CRAT { get; set; }
+        public DateTime CRAT { get; set; } = DateTime.MinValue;
 
         [UIXSignatureField(7)]
-        public DateTime CHAT { get; set; }
-
-        public T1SESSI()
-        {
-            SEID = 0;
-            PFID = 0;
-            PTID = 0;
-
-            PLFR = DateTime.MinValue;
-            PLTO = DateTime.MinValue;
-
-            PLTI = 0.0;
-
-            CRAT = DateTime.MinValue;
-            CHAT = DateTime.MinValue;
-
-            AcceptChanges();
-        }
+        public DateTime CHAT { get; set; } = DateTime.MinValue;
 
         public override void Save()
         {
-            TXSESSI tblmSessi = new TXSESSI();
-            tblmSessi.Save(this);
+            new TXSESSI().Save(this);
         }
     }
 }
