@@ -23,6 +23,9 @@ namespace GameTimeNext.Core.Application.Metadata.Data
         public bool DSYNC { get; set; }
 
         [UIXSignatureField(4)]
+        public bool GENER { get; set; }
+
+        [UIXSignatureField(5)]
         public DateTime CRAT
         {
             get => _crat;
@@ -36,10 +39,10 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             }
         }
 
-        [UIXSignatureField(5)]
+        [UIXSignatureField(6)]
         public string CRUS { get; set; }
 
-        [UIXSignatureField(6)]
+        [UIXSignatureField(7)]
         public DateTime CHAT
         {
             get => _chat;
@@ -53,7 +56,7 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             }
         }
 
-        [UIXSignatureField(7)]
+        [UIXSignatureField(8)]
         public string CHUS { get; set; }
 
         public T1METAH()
@@ -62,6 +65,7 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             DESCR = string.Empty;
             MTYPE = string.Empty;
             DSYNC = false;
+            GENER = false;
             CRAT = DateTime.MinValue;
             CRUS = string.Empty;
             CHAT = DateTime.MinValue;

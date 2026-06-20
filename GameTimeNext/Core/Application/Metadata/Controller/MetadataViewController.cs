@@ -17,6 +17,13 @@ using static UIX.ViewController.Engine.FrameworkElements.UIXContextMenuFactory;
 
 namespace GameTimeNext.Core.Application.Metadata.Controller
 {
+
+    /************ TODO **************/
+    // - T1METAH und T1METAP nicht in Metdaten übernehmnen (Systemtabellen werden immer noch händisch erzeugt / wird sowieso nicht so viel daran geändert)
+    // - Danach alle bisherigen manuellen Tabellen in Metadaten übenehmen
+
+
+
     public class MetadataViewController : UIXViewControllerBase
     {
         private MetadataViewModel? _viewModel;
@@ -114,8 +121,6 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
             T1METAH t1metah = (T1METAH)mdRow.RowObject!;
 
             contextBuilder.AddItem("ctxtEdit", "Edit", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Edit), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
-
-            contextBuilder.AddItem("ctxtView", "View", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.View), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
 
             contextBuilder.AddItem("ctxtDelete", "Delete", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Delete), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
 

@@ -1,9 +1,10 @@
 ﻿using GameTimeNext.Core.Application.DataManagers;
+using GameTimeNext.Core.Application.Metadata.Data;
 using GameTimeNext.Core.Application.TableObjects;
+using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Reflection;
-using System.Globalization;
 using UIX.ViewController.Engine.DataBaseObjects;
 
 namespace GameTimeNext.Core.Application.CreateImportPackage
@@ -21,45 +22,22 @@ namespace GameTimeNext.Core.Application.CreateImportPackage
         /// <returns></returns>
         public static void CreateImportPackage(string outputPath, string exportType)
         {
-            switch (exportType)
-            {
-                case ExportTypes.Codetables:
-                    CreateImportPackageCodetables(outputPath);
-                    break;
-            }
-        }
-
-        private static void CreateImportPackageCodetables(string outputPath)
-        {
-            // Daten sammeln
-            List<T1CTABH> t1ctabhs = new TXCTABH().ReadAll();
-            List<T1CTABD> t1ctabds = new TXCTABD().ReadAll();
-
-            string filenameT1CTABH = "01_T1CTABH.txt";
-            string filenameT1CTABD = "02_T1CTABD.txt";
-
-            string exportPath = outputPath;
-
-            if (Directory.Exists(outputPath) || string.IsNullOrWhiteSpace(Path.GetExtension(outputPath)))
-            {
-                exportPath = Path.Combine(outputPath, $"Import_Package_{Guid.NewGuid():N}.zip");
-            }
-            else
-            {
-                string? exportDirectory = Path.GetDirectoryName(exportPath);
-
-                if (!string.IsNullOrWhiteSpace(exportDirectory) && !Directory.Exists(exportDirectory))
-                    Directory.CreateDirectory(exportDirectory);
-            }
-
-            string tempDirectory = Path.Combine(outputPath, $"GTN_Codetables_{Guid.NewGuid():N}");
+            string exportPath = ResolveExportPath(outputPath);
+            string tempDirectory = Path.Combine(Path.GetDirectoryName(exportPath)!, $"GTN_ImportPackage_{Guid.NewGuid():N}");
             Directory.CreateDirectory(tempDirectory);
 
             try
             {
-                // Daten in temporäre Dateien schreiben
-                WriteToFile(Path.Combine(tempDirectory, filenameT1CTABH), t1ctabhs);
-                WriteToFile(Path.Combine(tempDirectory, filenameT1CTABD), t1ctabds);
+                switch (exportType)
+                {
+                    case "":
+                        CreateImportPackageAll(tempDirectory);
+                        break;
+
+                    case ExportTypes.Codetables:
+                        CreateImportPackageCodetables(tempDirectory);
+                        break;
+                }
 
                 if (File.Exists(exportPath))
                     File.Delete(exportPath);
@@ -71,6 +49,54 @@ namespace GameTimeNext.Core.Application.CreateImportPackage
                 if (Directory.Exists(tempDirectory))
                     Directory.Delete(tempDirectory, true);
             }
+        }
+
+        private static void CreateImportPackageAll(string tempDirectory)
+        {
+            CreateImportPackageMetadata(tempDirectory);
+            CreateImportPackageCodetables(tempDirectory);
+        }
+
+        private static void CreateImportPackageCodetables(string tempDirectory)
+        {
+            List<T1CTABH> t1ctabhs = new TXCTABH().ReadAll();
+            List<T1CTABD> t1ctabds = new TXCTABD().ReadAll();
+
+            string filenameT1CTABH = "03_T1CTABH.txt";
+            string filenameT1CTABD = "04_T1CTABD.txt";
+
+            WriteToFile(Path.Combine(tempDirectory, filenameT1CTABH), t1ctabhs);
+            WriteToFile(Path.Combine(tempDirectory, filenameT1CTABD), t1ctabds);
+        }
+
+        private static void CreateImportPackageMetadata(string tempDirectory)
+        {
+            List<T1METAH> t1metahs = new TXMETAH().ReadAll();
+            List<T1METAP> t1metaps = new TXMETAP().ReadAll();
+
+            string filenameT1METAH = "01_T1METAH.txt";
+            string filenameT1METAP = "02_T1METAP.txt";
+
+            WriteToFile(Path.Combine(tempDirectory, filenameT1METAH), t1metahs);
+            WriteToFile(Path.Combine(tempDirectory, filenameT1METAP), t1metaps);
+        }
+
+        private static string ResolveExportPath(string outputPath)
+        {
+            if (Directory.Exists(outputPath) || string.IsNullOrWhiteSpace(Path.GetExtension(outputPath)))
+            {
+                if (!Directory.Exists(outputPath))
+                    Directory.CreateDirectory(outputPath);
+
+                return Path.Combine(outputPath, $"Import_Package_{Guid.NewGuid():N}.zip");
+            }
+
+            string? exportDirectory = Path.GetDirectoryName(outputPath);
+
+            if (!string.IsNullOrWhiteSpace(exportDirectory) && !Directory.Exists(exportDirectory))
+                Directory.CreateDirectory(exportDirectory);
+
+            return outputPath;
         }
         private static void WriteToFile<T>(string filePath, List<T> data) where T : UIXTableObjectBase
         {

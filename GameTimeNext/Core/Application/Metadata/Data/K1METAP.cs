@@ -13,6 +13,7 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             public const string DALEN = "DALEN";
             public const string PORDE = "PORDE";
             public const string PRIMK = "PRIMK";
+            public const string AUTOI = "AUTOI";
             public const string CRAT = "CRAT";
             public const string CRUS = "CRUS";
             public const string CHAT = "CHAT";

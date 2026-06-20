@@ -70,56 +70,5 @@ namespace GameTimeNext.Core.Application.MigrationTasks
             command.CommandText = sql;
             command.ExecuteNonQuery();
         }
-
-        private static void CreateTableT1METAH()
-        {
-            var sql = @"
-                    CREATE TABLE IF NOT EXISTS T1METAH
-                    (
-                        MENAM TEXT PRIMARY KEY,
-                        DESCR TEXT,
-                        MTYPE TEXT,
-                        DSYNC INTEGER,
-                        CRAT  TEXT,
-                        CRUS  TEXT,
-                        CHAT  TEXT,
-                        CHUS  TEXT
-                    );";
-
-            if (_connection == null)
-                return;
-
-            using var command = _connection.CreateCommand();
-            command.CommandText = sql;
-            command.ExecuteNonQuery();
-        }
-
-        private static void CreateTableT1METAP()
-        {
-            var sql = @"
-                    CREATE TABLE IF NOT EXISTS T1METAP
-                    (
-                        MENAM TEXT NOT NULL,
-                        PONAM TEXT NOT NULL,
-                        DESCR TEXT,
-                        DATYP TEXT,
-                        DALEN INTEGER,
-                        PORDE INTEGER,
-                        PRIMK INTEGER,
-                        CRAT  TEXT,
-                        CRUS  TEXT,
-                        CHAT  TEXT,
-                        CHUS  TEXT,
-                        PRIMARY KEY (MENAM, PONAM)
-                    );";
-
-            if (_connection == null)
-                return;
-
-            using var command = _connection.CreateCommand();
-            command.CommandText = sql;
-            command.ExecuteNonQuery();
-        }
-
     }
 }

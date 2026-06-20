@@ -32,6 +32,9 @@ namespace GameTimeNext.Core.Application.Metadata.Data
         public bool PRIMK { get; set; }
 
         [UIXSignatureField(7)]
+        public bool AUTOI { get; set; }
+
+        [UIXSignatureField(8)]
         public DateTime CRAT
         {
             get => _crat;
@@ -45,10 +48,10 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             }
         }
 
-        [UIXSignatureField(8)]
+        [UIXSignatureField(9)]
         public string CRUS { get; set; }
 
-        [UIXSignatureField(9)]
+        [UIXSignatureField(10)]
         public DateTime CHAT
         {
             get => _chat;
@@ -62,7 +65,7 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             }
         }
 
-        [UIXSignatureField(10)]
+        [UIXSignatureField(11)]
         public string CHUS { get; set; }
 
         public T1METAP()
@@ -74,6 +77,7 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             DALEN = 0;
             PORDE = 0;
             PRIMK = false;
+            AUTOI = false;
             CRAT = DateTime.MinValue;
             CRUS = string.Empty;
             CHAT = DateTime.MinValue;

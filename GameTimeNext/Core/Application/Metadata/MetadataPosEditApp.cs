@@ -31,13 +31,14 @@ namespace GameTimeNext.Core.Application.Metadata
             MetadataPosEditViewController!.Show(true);
         }
 
-        public void Edit(T1METAP t1metap)
+        public void Edit(Action<MetadataPosEditViewController.MetadataPosEditViewReturn> callback, T1METAP t1metap)
         {
             T1METAP = t1metap;
             MetadataPosEditView?.ViewIndicator.Clear();
             MetadataPosEditView?.ViewIndicator.Add("ED");
 
             MetadataPosEditView!.Title = "Edit Metadata Field";
+            MetadataPosEditViewController!.SetResultCallback(callback);
             MetadataPosEditViewController!.Show(true);
         }
     }

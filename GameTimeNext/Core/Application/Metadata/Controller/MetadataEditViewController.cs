@@ -53,6 +53,8 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
 
             FnControls.SetVisible(GetWnd().tabControl, GetWnd().ViewIndicator.Contains("ED"));
+
+            FnControls.SetVisible(GetWnd().lblGenerationRequired, !GetApp().T1METAH!.GENER);
         }
 
 
@@ -224,8 +226,6 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
             contextBuilder.AddItem("ctxtEdit", "Edit", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Edit), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
 
-            contextBuilder.AddItem("ctxtView", "View", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.View), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
-
             contextBuilder.AddItem("ctxtDelete", "Delete", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Delete), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
 
             if (contextBuilder.HasItems())
@@ -240,14 +240,47 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
                 return;
 
             MetadataPosEditApp metadataEditApp = GetApp().GetApplication<MetadataPosEditApp>();
-            metadataEditApp.Edit(selectedT1empo);
+            metadataEditApp.Edit(async (result) =>
+            {
+                if (result.HasChanged)
+                {
+                    await BuildDG();
+
+                    GetApp().T1METAH!.GENER = false;
+                    new TXMETAH().Save(GetApp().T1METAH!);
+
+                    Build();
+                }
+
+            }, selectedT1empo);
+        }
+
+        protected void EV_ctxtDelete()
+        {
+            if (_viewModel?.SelectedRow?.RowObject is not T1METAP selectedT1empo)
+                return;
+
+            CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>();
+
+            CFMBOXResult result = cfmbox.Show("Are you sure you want to delete this metadata position?", CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
+
+            if (result == CFMBOXResult.Yes)
+            {
+                new TXMETAP().Delete(selectedT1empo.MENAM, selectedT1empo.PONAM);
+
+                GetApp().T1METAH!.GENER = false;
+                new TXMETAH().Save(GetApp().T1METAH!);
+            }
+
         }
 
         protected void EV_BtnSave()
         {
-
             if (HasViewErrors())
                 return;
+
+            if (GetWnd().ViewIndicator.Contains("ED"))
+                Exit(true);
 
             GetWnd().ViewIndicator.Clear();
             GetWnd().ViewIndicator.Add("ED");
@@ -278,6 +311,9 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
                     tableGenerator.EnsureTableFor(GetApp().T1METAH!);
                 });
 
+                GetApp().T1METAH!.GENER = true;
+                new TXMETAH().Save(GetApp().T1METAH!);
+
                 GetApp().GetApplication<CFMBOX>().Show("Generation completed.", CFMBOXResult.Ok, CFMBOXIcon.Success);
             }
             catch (Exception ex)
@@ -292,10 +328,17 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
             await BuildDG();
         }
 
-        protected void EV_BtnAdd()
+        protected async Task EV_BtnAdd()
         {
             MetadataPosEditApp metadataPosEditApp = GetApp().GetApplication<MetadataPosEditApp>();
             metadataPosEditApp.CreateNew(GetApp().T1METAH!);
+
+            await BuildDG();
+
+            GetApp().T1METAH!.GENER = false;
+            new TXMETAH().Save(GetApp().T1METAH!);
+
+            Build();
         }
 
         private MetadataEditApp GetApp()

@@ -33,6 +33,7 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             copy.DESCR = source.DESCR;
             copy.MTYPE = source.MTYPE;
             copy.DSYNC = source.DSYNC;
+            copy.GENER = source.GENER;
             copy.CRUS = FnOpSys.GetCurrentUserName();
             copy.CHUS = FnOpSys.GetCurrentUserName();
 
@@ -102,7 +103,7 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             using SQLiteCommand cmd = connection.CreateCommand();
 
             cmd.CommandText =
-                "SELECT MENAM, DESCR, MTYPE, DSYNC, CRAT, CRUS, CHAT, CHUS " +
+                "SELECT MENAM, DESCR, MTYPE, DSYNC, GENER, CRAT, CRUS, CHAT, CHUS " +
                 "FROM T1METAH " +
                 "WHERE MENAM = @MENAM;";
 
@@ -129,7 +130,7 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             using SQLiteCommand cmd = connection.CreateCommand();
 
             cmd.CommandText =
-                "SELECT MENAM, DESCR, MTYPE, DSYNC, CRAT, CRUS, CHAT, CHUS " +
+                "SELECT MENAM, DESCR, MTYPE, DSYNC, GENER, CRAT, CRUS, CHAT, CHUS " +
                 "FROM T1METAH " +
                 "ORDER BY MENAM;";
 
@@ -152,9 +153,9 @@ namespace GameTimeNext.Core.Application.Metadata.Data
 
             cmd.CommandText =
                 "INSERT INTO T1METAH " +
-                "(MENAM, DESCR, MTYPE, DSYNC, CRAT, CRUS, CHAT, CHUS) " +
+                "(MENAM, DESCR, MTYPE, DSYNC, GENER, CRAT, CRUS, CHAT, CHUS) " +
                 "VALUES " +
-                "(@MENAM, @DESCR, @MTYPE, @DSYNC, @CRAT, @CRUS, @CHAT, @CHUS);";
+                "(@MENAM, @DESCR, @MTYPE, @DSYNC, @GENER, @CRAT, @CRUS, @CHAT, @CHUS);";
 
             AddParameters(cmd, obj);
 
@@ -170,6 +171,7 @@ namespace GameTimeNext.Core.Application.Metadata.Data
                 "DESCR = @DESCR, " +
                 "MTYPE = @MTYPE, " +
                 "DSYNC = @DSYNC, " +
+                "GENER = @GENER, " +
                 "CRAT = @CRAT, " +
                 "CRUS = @CRUS, " +
                 "CHAT = @CHAT, " +
@@ -201,6 +203,7 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             cmd.Parameters.AddWithValue("@DESCR", obj.DESCR);
             cmd.Parameters.AddWithValue("@MTYPE", obj.MTYPE);
             cmd.Parameters.AddWithValue("@DSYNC", obj.DSYNC ? 1 : 0);
+            cmd.Parameters.AddWithValue("@GENER", obj.GENER ? 1 : 0);
             cmd.Parameters.AddWithValue("@CRAT", ToDbDateTime(obj.CRAT));
             cmd.Parameters.AddWithValue("@CRUS", obj.CRUS);
             cmd.Parameters.AddWithValue("@CHAT", ToDbDateTime(obj.CHAT));
@@ -215,11 +218,12 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             obj.DESCR = reader.IsDBNull(1) ? string.Empty : reader.GetString(1);
             obj.MTYPE = reader.IsDBNull(2) ? string.Empty : reader.GetString(2);
             obj.DSYNC = !reader.IsDBNull(3) && Convert.ToInt32(reader.GetValue(3)) == 1;
+            obj.GENER = !reader.IsDBNull(4) && Convert.ToInt32(reader.GetValue(4)) == 1;
 
-            obj.CRAT = ParseDbDateTime(reader.IsDBNull(4) ? null : reader.GetString(4));
-            obj.CRUS = reader.IsDBNull(5) ? string.Empty : reader.GetString(5);
-            obj.CHAT = ParseDbDateTime(reader.IsDBNull(6) ? null : reader.GetString(6));
-            obj.CHUS = reader.IsDBNull(7) ? string.Empty : reader.GetString(7);
+            obj.CRAT = ParseDbDateTime(reader.IsDBNull(5) ? null : reader.GetString(5));
+            obj.CRUS = reader.IsDBNull(6) ? string.Empty : reader.GetString(6);
+            obj.CHAT = ParseDbDateTime(reader.IsDBNull(7) ? null : reader.GetString(7));
+            obj.CHUS = reader.IsDBNull(8) ? string.Empty : reader.GetString(8);
 
             obj.State = UIXTableObjectState.Available;
 

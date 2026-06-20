@@ -35,6 +35,7 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             copy.DALEN = source.DALEN;
             copy.PORDE = source.PORDE;
             copy.PRIMK = source.PRIMK;
+            copy.AUTOI = source.AUTOI;
             copy.CRUS = source.CRUS;
             copy.CHUS = source.CHUS;
 
@@ -105,7 +106,7 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             using SQLiteCommand cmd = connection.CreateCommand();
 
             cmd.CommandText =
-                "SELECT MENAM, PONAM, DESCR, DATYP, DALEN, PORDE, PRIMK, CRAT, CRUS, CHAT, CHUS " +
+                "SELECT MENAM, PONAM, DESCR, DATYP, DALEN, PORDE, PRIMK, AUTOI, CRAT, CRUS, CHAT, CHUS " +
                 "FROM T1METAP " +
                 "WHERE MENAM = @MENAM AND PONAM = @PONAM;";
 
@@ -133,7 +134,7 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             using SQLiteCommand cmd = connection.CreateCommand();
 
             cmd.CommandText =
-                "SELECT MENAM, PONAM, DESCR, DATYP, DALEN, PORDE, PRIMK, CRAT, CRUS, CHAT, CHUS " +
+                "SELECT MENAM, PONAM, DESCR, DATYP, DALEN, PORDE, PRIMK, AUTOI, CRAT, CRUS, CHAT, CHUS " +
                 "FROM T1METAP " +
                 "ORDER BY MENAM, PORDE, PONAM;";
 
@@ -156,9 +157,9 @@ namespace GameTimeNext.Core.Application.Metadata.Data
 
             cmd.CommandText =
                 "INSERT INTO T1METAP " +
-                "(MENAM, PONAM, DESCR, DATYP, DALEN, PORDE, PRIMK, CRAT, CRUS, CHAT, CHUS) " +
+                "(MENAM, PONAM, DESCR, DATYP, DALEN, PORDE, PRIMK, AUTOI, CRAT, CRUS, CHAT, CHUS) " +
                 "VALUES " +
-                "(@MENAM, @PONAM, @DESCR, @DATYP, @DALEN, @PORDE, @PRIMK, @CRAT, @CRUS, @CHAT, @CHUS);";
+                "(@MENAM, @PONAM, @DESCR, @DATYP, @DALEN, @PORDE, @PRIMK, @AUTOI, @CRAT, @CRUS, @CHAT, @CHUS);";
 
             AddParameters(cmd, obj);
 
@@ -176,6 +177,7 @@ namespace GameTimeNext.Core.Application.Metadata.Data
                 "DALEN = @DALEN, " +
                 "PORDE = @PORDE, " +
                 "PRIMK = @PRIMK, " +
+                "AUTOI = @AUTOI, " +
                 "CRAT = @CRAT, " +
                 "CRUS = @CRUS, " +
                 "CHAT = @CHAT, " +
@@ -211,6 +213,7 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             cmd.Parameters.AddWithValue("@DALEN", obj.DALEN);
             cmd.Parameters.AddWithValue("@PORDE", obj.PORDE);
             cmd.Parameters.AddWithValue("@PRIMK", obj.PRIMK ? 1 : 0);
+            cmd.Parameters.AddWithValue("@AUTOI", obj.AUTOI ? 1 : 0);
             cmd.Parameters.AddWithValue("@CRAT", ToDbDateTime(obj.CRAT));
             cmd.Parameters.AddWithValue("@CRUS", obj.CRUS);
             cmd.Parameters.AddWithValue("@CHAT", ToDbDateTime(obj.CHAT));
@@ -228,11 +231,12 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             obj.DALEN = reader.IsDBNull(4) ? 0 : Convert.ToInt32(reader.GetValue(4));
             obj.PORDE = reader.IsDBNull(5) ? 0 : Convert.ToInt32(reader.GetValue(5));
             obj.PRIMK = !reader.IsDBNull(6) && Convert.ToInt32(reader.GetValue(6)) == 1;
+            obj.AUTOI = !reader.IsDBNull(7) && Convert.ToInt32(reader.GetValue(7)) == 1;
 
-            obj.CRAT = ParseDbDateTime(reader.IsDBNull(7) ? null : reader.GetString(7));
-            obj.CRUS = reader.IsDBNull(8) ? string.Empty : reader.GetString(8);
-            obj.CHAT = ParseDbDateTime(reader.IsDBNull(9) ? null : reader.GetString(9));
-            obj.CHUS = reader.IsDBNull(10) ? string.Empty : reader.GetString(10);
+            obj.CRAT = ParseDbDateTime(reader.IsDBNull(8) ? null : reader.GetString(8));
+            obj.CRUS = reader.IsDBNull(9) ? string.Empty : reader.GetString(9);
+            obj.CHAT = ParseDbDateTime(reader.IsDBNull(10) ? null : reader.GetString(10));
+            obj.CHUS = reader.IsDBNull(11) ? string.Empty : reader.GetString(11);
 
             obj.State = UIXTableObjectState.Available;
 
@@ -263,5 +267,6 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             if (connection.State != System.Data.ConnectionState.Open)
                 connection.Open();
         }
+
     }
 }

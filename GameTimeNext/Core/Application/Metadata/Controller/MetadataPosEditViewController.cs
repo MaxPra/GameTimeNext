@@ -18,10 +18,14 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
         public class MetadataPosEditViewReturn : UIXViewReturn
         {
+            public bool HasChanged { get; set; } = false;
         }
 
         protected override void Init()
         {
+
+            ViewReturn = new MetadataPosEditViewReturn();
+
             AddSource("T1CTABD", new TXCTABD());
             AddIdentifier("T1METAP", GetApp().T1METAP!);
         }
@@ -30,6 +34,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
         {
             FnControls.SetEnabled(GetWnd().TxbField, GetWnd().ViewIndicator.Contains("CN"));
             FnControls.SetEnabled(GetWnd().ChbPrimaryKey, GetWnd().ViewIndicator.Contains("CN"));
+            FnControls.SetEnabled(GetWnd().ChbAutoIncrement, GetWnd().ViewIndicator.Contains("CN"));
         }
 
         protected override async Task BuildFirstImplAsync()
@@ -40,6 +45,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
         {
             FnControls.SetVisible(GetWnd().TxbLength, "01".Equals(GetWnd().CmbDataType.SelectedValue.ToString()!));
             FnControls.SetVisible(GetWnd().LblLength, "01".Equals(GetWnd().CmbDataType.SelectedValue.ToString()!));
+            FnControls.SetVisible(GetWnd().ChbAutoIncrement, GetWnd().ChbPrimaryKey.IsChecked == true);
         }
 
         protected override void Check()
@@ -96,6 +102,9 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
         protected void EV_BtnSave()
         {
+
+            GetViewReturn<MetadataPosEditViewReturn>().HasChanged = GetApp().T1METAP!.HasChanged();
+
             Exit(true);
         }
 

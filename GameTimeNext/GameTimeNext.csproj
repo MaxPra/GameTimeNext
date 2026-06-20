@@ -10,9 +10,9 @@
   </PropertyGroup>
 
 	<PropertyGroup>
-		<Version>0.3.2</Version>
+		<Version>0.3.3</Version>
 		<VersionTag>beta</VersionTag>
-		<BuildDate>2026-06-18</BuildDate>
+		<BuildDate>2026-06-20</BuildDate>
 
 		<InformationalVersion>$(Version)-$(VersionTag)+$(BuildDate)</InformationalVersion>
 

@@ -39,8 +39,6 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="10" />
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="22" />
-                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="10" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
@@ -56,45 +54,11 @@
                     Grid.Column="0"
                     VerticalAlignment="Center"
                     Foreground="{DynamicResource Brush.TextSecondary}"
-                    Text="Field" />
-
-                <TextBox
-                    x:Name="TxbField"
-                    Grid.Row="0"
-                    Grid.Column="2"
-                    Width="200"
-                    Height="36"
-                    HorizontalAlignment="Left"
-                    VerticalContentAlignment="Center"
-                    uixprops:UIXAttachedProperty.Path="T1METAP.PONAM" />
-
-                <TextBlock
-                    Grid.Row="2"
-                    Grid.Column="0"
-                    VerticalAlignment="Center"
-                    Foreground="{DynamicResource Brush.TextSecondary}"
-                    Text="Description" />
-
-                <TextBox
-                    x:Name="TxbDescription"
-                    Grid.Row="2"
-                    Grid.Column="2"
-                    Width="300"
-                    Height="36"
-                    HorizontalAlignment="Left"
-                    VerticalContentAlignment="Center"
-                    uixprops:UIXAttachedProperty.Path="T1METAP.DESCR" />
-
-                <TextBlock
-                    Grid.Row="4"
-                    Grid.Column="0"
-                    VerticalAlignment="Center"
-                    Foreground="{DynamicResource Brush.TextSecondary}"
                     Text="Order" />
 
                 <TextBox
                     x:Name="TxbOrder"
-                    Grid.Row="4"
+                    Grid.Row="0"
                     Grid.Column="2"
                     Width="120"
                     Height="36"
@@ -103,23 +67,66 @@
                     uixprops:UIXAttachedProperty.Path="T1METAP.PORDE" />
 
                 <TextBlock
-                    Grid.Row="6"
+                    Grid.Row="2"
                     Grid.Column="0"
                     VerticalAlignment="Center"
                     Foreground="{DynamicResource Brush.TextSecondary}"
-                    Text="Primary Key" />
+                    Text="Field" />
 
-                <CheckBox
-                    x:Name="ChbPrimaryKey"
-                    Grid.Row="6"
+                <Grid
+                    Grid.Row="2"
                     Grid.Column="2"
-                    Padding="0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Center"
-                    uixprops:UIXAttachedProperty.Path="T1METAP.PRIMK" />
+                    HorizontalAlignment="Left">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBox
+                        x:Name="TxbField"
+                        Grid.Column="0"
+                        Width="200"
+                        Height="36"
+                        VerticalContentAlignment="Center"
+                        uixprops:UIXAttachedProperty.Path="T1METAP.PONAM" />
+
+                    <CheckBox
+                        x:Name="ChbPrimaryKey"
+                        Grid.Column="2"
+                        VerticalAlignment="Center"
+                        uixprops:UIXAttachedProperty.Path="T1METAP.PRIMK"
+                        Content="Primary Key" />
+
+                    <CheckBox
+                        x:Name="ChbAutoIncrement"
+                        Grid.Column="4"
+                        VerticalAlignment="Center"
+                        uixprops:UIXAttachedProperty.Path="T1METAP.AUTOI"
+                        Content="Autoincrement" />
+                </Grid>
 
                 <TextBlock
-                    Grid.Row="8"
+                    Grid.Row="4"
+                    Grid.Column="0"
+                    VerticalAlignment="Center"
+                    Foreground="{DynamicResource Brush.TextSecondary}"
+                    Text="Description" />
+
+                <TextBox
+                    x:Name="TxbDescription"
+                    Grid.Row="4"
+                    Grid.Column="2"
+                    Width="300"
+                    Height="36"
+                    HorizontalAlignment="Left"
+                    VerticalContentAlignment="Center"
+                    uixprops:UIXAttachedProperty.Path="T1METAP.DESCR" />
+
+                <TextBlock
+                    Grid.Row="6"
                     Grid.Column="0"
                     VerticalAlignment="Center"
                     Foreground="{DynamicResource Brush.TextSecondary}"
@@ -127,7 +134,7 @@
 
                 <ComboBox
                     x:Name="CmbDataType"
-                    Grid.Row="8"
+                    Grid.Row="6"
                     Grid.Column="2"
                     Width="300"
                     Height="36"
@@ -141,7 +148,7 @@
 
                 <TextBlock
                     x:Name="LblLength"
-                    Grid.Row="10"
+                    Grid.Row="8"
                     Grid.Column="0"
                     VerticalAlignment="Center"
                     Foreground="{DynamicResource Brush.TextSecondary}"
@@ -149,7 +156,7 @@
 
                 <TextBox
                     x:Name="TxbLength"
-                    Grid.Row="10"
+                    Grid.Row="8"
                     Grid.Column="2"
                     Width="120"
                     Height="36"

@@ -181,11 +181,15 @@ namespace GameTimeNext.Core.Application.Metadata
                 if (sqliteType == "TEXT" && position.DALEN > 0)
                     sqliteType = $"VARCHAR({position.DALEN})";
 
+                if (position.AUTOI)
+                    sqliteType = "INTEGER";
+
                 columns.Add(new TableColumnDefinition
                 {
                     Name = NormalizeIdentifier(position.PONAM),
                     SqliteType = sqliteType,
-                    IsPrimaryKey = position.PRIMK
+                    IsPrimaryKey = position.PRIMK,
+                    IsAutoIncrement = position.AUTOI
                 });
             }
 
@@ -194,9 +198,26 @@ namespace GameTimeNext.Core.Application.Metadata
 
         private static string BuildCreateTableSql(string tableName, List<TableColumnDefinition> columns)
         {
+            int autoIncrementIndex = columns.FindIndex(x => x.IsAutoIncrement);
+            if (autoIncrementIndex >= 0 && columns.Count(x => x.IsAutoIncrement) > 1)
+                throw new InvalidOperationException("Only one AUTOINCREMENT column is allowed.");
+
             List<string> columnDefinitions = columns
                 .Select(column => BuildColumnSql(column, includePrimaryKey: false))
                 .ToList();
+
+            if (autoIncrementIndex >= 0)
+            {
+                bool hasAdditionalPrimaryKeys = columns
+                    .Where((x, index) => index != autoIncrementIndex)
+                    .Any(x => x.IsPrimaryKey);
+
+                if (hasAdditionalPrimaryKeys)
+                    throw new InvalidOperationException("AUTOINCREMENT cannot be combined with additional primary keys.");
+
+                columnDefinitions[autoIncrementIndex] += " PRIMARY KEY AUTOINCREMENT";
+                return $"CREATE TABLE IF NOT EXISTS {QuoteIdentifier(tableName)} ({string.Join(", ", columnDefinitions)});";
+            }
 
             List<string> primaryKeys = columns
                 .Where(x => x.IsPrimaryKey)
@@ -301,6 +322,7 @@ namespace GameTimeNext.Core.Application.Metadata
             public string Name { get; set; } = string.Empty;
             public string SqliteType { get; set; } = "TEXT";
             public bool IsPrimaryKey { get; set; }
+            public bool IsAutoIncrement { get; set; }
         }
     }
 }
