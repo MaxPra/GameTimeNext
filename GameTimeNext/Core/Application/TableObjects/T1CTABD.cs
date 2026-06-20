@@ -8,44 +8,29 @@ namespace GameTimeNext.Core.Application.TableObjects
         public override bool IsDevSynced => true;
 
         [UIXSignatureField(0)]
-        public string TXTYP { get; set; }
+        public string TXTYP { get; set; } = string.Empty;
 
         [UIXSignatureField(1)]
-        public string TXNUM { get; set; }
+        public string TXNUM { get; set; } = string.Empty;
 
         [UIXSignatureField(2)]
-        public string DESCR { get; set; }
+        public string DESCR { get; set; } = string.Empty;
 
         [UIXSignatureField(3)]
-        public string PARM1 { get; set; }
+        public DateTime CRAT { get; set; } = DateTime.MinValue;
 
         [UIXSignatureField(4)]
-        public string PARM2 { get; set; }
+        public DateTime CHAT { get; set; } = DateTime.MinValue;
 
         [UIXSignatureField(5)]
-        public DateTime CRAT { get; set; }
+        public string PARM1 { get; set; } = string.Empty;
 
         [UIXSignatureField(6)]
-        public DateTime CHAT { get; set; }
-
-        public T1CTABD()
-        {
-            TXTYP = string.Empty;
-            TXNUM = string.Empty;
-            DESCR = string.Empty;
-            PARM1 = string.Empty;
-            PARM2 = string.Empty;
-
-            CRAT = DateTime.MinValue;
-            CHAT = DateTime.MinValue;
-
-            AcceptChanges();
-        }
+        public string PARM2 { get; set; } = string.Empty;
 
         public override void Save()
         {
-            TXCTABD tblmCtabd = new TXCTABD();
-            tblmCtabd.Save(this);
+            new TXCTABD().Save(this);
         }
     }
 }

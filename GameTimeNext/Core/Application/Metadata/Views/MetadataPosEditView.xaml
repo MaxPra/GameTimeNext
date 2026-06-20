@@ -1,0 +1,183 @@
+﻿<ui:GTNWindow
+    x:Class="GameTimeNext.Core.Application.Metadata.Views.MetadataPosEditView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI.Base"
+    xmlns:uixprops="clr-namespace:UIX.ViewController.Engine.AttachedProperties;assembly=UIX.ViewController.Engine"
+    Title="Metadata Field"
+    Width="840"
+    Height="520"
+    ResizeMode="NoResize"
+    ShowMaximizeButton="False"
+    ShowMinimizeButton="False"
+    Style="{StaticResource GTNWindowStyle}"
+    WindowStartupLocation="CenterOwner"
+    mc:Ignorable="d">
+
+    <Grid Margin="20,16,20,20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="16" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Border
+            Grid.Row="0"
+            Padding="16"
+            Background="{DynamicResource Brush.Surface}"
+            BorderBrush="{DynamicResource Brush.Border}"
+            BorderThickness="1"
+            CornerRadius="{StaticResource DefaultCornerRadius}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="10" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="10" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="10" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="10" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="120" />
+                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    VerticalAlignment="Center"
+                    Foreground="{DynamicResource Brush.TextSecondary}"
+                    Text="Order" />
+
+                <TextBox
+                    x:Name="TxbOrder"
+                    Grid.Row="0"
+                    Grid.Column="2"
+                    Width="120"
+                    Height="36"
+                    HorizontalAlignment="Left"
+                    VerticalContentAlignment="Center"
+                    uixprops:UIXAttachedProperty.Path="T1METAP.PORDE" />
+
+                <TextBlock
+                    Grid.Row="2"
+                    Grid.Column="0"
+                    VerticalAlignment="Center"
+                    Foreground="{DynamicResource Brush.TextSecondary}"
+                    Text="Field" />
+
+                <Grid
+                    Grid.Row="2"
+                    Grid.Column="2"
+                    HorizontalAlignment="Left">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBox
+                        x:Name="TxbField"
+                        Grid.Column="0"
+                        Width="200"
+                        Height="36"
+                        VerticalContentAlignment="Center"
+                        uixprops:UIXAttachedProperty.Path="T1METAP.PONAM" />
+
+                    <CheckBox
+                        x:Name="ChbPrimaryKey"
+                        Grid.Column="2"
+                        VerticalAlignment="Center"
+                        uixprops:UIXAttachedProperty.Path="T1METAP.PRIMK"
+                        Content="Primary Key" />
+
+                    <CheckBox
+                        x:Name="ChbAutoIncrement"
+                        Grid.Column="4"
+                        VerticalAlignment="Center"
+                        uixprops:UIXAttachedProperty.Path="T1METAP.AUTOI"
+                        Content="Autoincrement" />
+                </Grid>
+
+                <TextBlock
+                    Grid.Row="4"
+                    Grid.Column="0"
+                    VerticalAlignment="Center"
+                    Foreground="{DynamicResource Brush.TextSecondary}"
+                    Text="Description" />
+
+                <TextBox
+                    x:Name="TxbDescription"
+                    Grid.Row="4"
+                    Grid.Column="2"
+                    Width="300"
+                    Height="36"
+                    HorizontalAlignment="Left"
+                    VerticalContentAlignment="Center"
+                    uixprops:UIXAttachedProperty.Path="T1METAP.DESCR" />
+
+                <TextBlock
+                    Grid.Row="6"
+                    Grid.Column="0"
+                    VerticalAlignment="Center"
+                    Foreground="{DynamicResource Brush.TextSecondary}"
+                    Text="Datatype" />
+
+                <ComboBox
+                    x:Name="CmbDataType"
+                    Grid.Row="6"
+                    Grid.Column="2"
+                    Width="300"
+                    Height="36"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    uixprops:UIXAttachedProperty.Path="T1METAP.DATYP"
+                    SelectedIndex="0"
+                    SelectedValue=""
+                    SelectedValuePath="Tag" />
+
+                <TextBlock
+                    x:Name="LblLength"
+                    Grid.Row="8"
+                    Grid.Column="0"
+                    VerticalAlignment="Center"
+                    Foreground="{DynamicResource Brush.TextSecondary}"
+                    Text="Length" />
+
+                <TextBox
+                    x:Name="TxbLength"
+                    Grid.Row="8"
+                    Grid.Column="2"
+                    Width="120"
+                    Height="36"
+                    HorizontalAlignment="Left"
+                    VerticalContentAlignment="Center"
+                    uixprops:UIXAttachedProperty.Path="T1METAP.DALEN" />
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Button
+                x:Name="BtnSave"
+                Grid.Column="1"
+                Width="140"
+                Height="36"
+                Content="Save"
+                IsDefault="True" />
+        </Grid>
+    </Grid>
+</ui:GTNWindow>

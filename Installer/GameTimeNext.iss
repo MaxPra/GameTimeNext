@@ -1,6 +1,6 @@
 #define AppName "GameTimeNext"
 #define AppExeName AppName + ".exe"
-#define AppVersionSemantic "0.3.2"
+#define AppVersionSemantic "0.3.3"
 #define AppVersionSuffix "beta"
 #define AppPublisher "MaxPra"
 

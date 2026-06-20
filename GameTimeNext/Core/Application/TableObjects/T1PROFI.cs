@@ -6,116 +6,76 @@ namespace GameTimeNext.Core.Application.TableObjects
 {
     public class T1PROFI : UIXTableObjectBase
     {
+        public override bool IsDevSynced => false;
+
         [UIXSignatureField(0)]
         public long PFID { get; set; } = 0;
 
         [UIXSignatureField(1)]
-        public string GANA { get; set; }
+        public string GANA { get; set; } = string.Empty;
 
         [UIXSignatureField(2)]
-        public DateTime FIPL { get; set; }
+        public DateTime FIPL { get; set; } = DateTime.MinValue;
 
         [UIXSignatureField(3)]
-        public DateTime LAPL { get; set; }
+        public DateTime LAPL { get; set; } = DateTime.MinValue;
 
         [UIXSignatureField(4)]
-        public string PPFN { get; set; }
+        public string PPFN { get; set; } = string.Empty;
 
         [UIXSignatureField(5)]
-        public string EXGF { get; set; }
+        public string EXGF { get; set; } = string.Empty;
 
         [UIXSignatureField(6)]
-        public long SAID { get; set; }
+        public long SAID { get; set; } = 0;
 
         [UIXSignatureField(7)]
-        public string PRSE { get; set; }
+        public string PRSE { get; set; } = string.Empty;
 
         [UIXSignatureField(8)]
-        public string EXEC { get; set; }
+        public string EXEC { get; set; } = string.Empty;
 
         [UIXSignatureField(9)]
-        public DateTime CRAT { get; set; }
+        public DateTime CRAT { get; set; } = DateTime.MinValue;
 
         [UIXSignatureField(10)]
-        public DateTime CHAT { get; set; }
+        public DateTime CHAT { get; set; } = DateTime.MinValue;
 
         [UIXSignatureField(11)]
-        public string ACCO { get; set; }
+        public string ACCO { get; set; } = string.Empty;
 
         [UIXSignatureField(12)]
-        public string ACIN { get; set; }
+        public string ACIN { get; set; } = string.Empty;
 
         [UIXSignatureField(13)]
-        public bool ACAC { get; set; }
+        public bool ACAC { get; set; } = false;
 
         [UIXSignatureField(14)]
-        public long CUPT { get; set; }
+        public long CUPT { get; set; } = 0;
 
         [UIXSignatureField(15)]
-        public double ETMA { get; set; }
+        public double ETMA { get; set; } = 0d;
 
         [UIXSignatureField(16)]
-        public double ETME { get; set; }
+        public double ETME { get; set; } = 0d;
 
         [UIXSignatureField(17)]
-        public double ETCO { get; set; }
+        public double ETCO { get; set; } = 0d;
 
         [UIXSignatureField(18)]
-        public string ETTY { get; set; }
+        public string ETTY { get; set; } = string.Empty;
 
         [UIXSignatureField(19)]
-        public bool ETML { get; set; }
+        public bool ETML { get; set; } = false;
 
         [UIXSignatureField(20)]
-        public bool ARCH { get; set; }
-
+        public bool ARCH { get; set; } = false;
         public BitmapImage CoverImage { get; set; }
 
         public bool IsPlayable { get; set; } = false;
-
-        public T1PROFI()
-        {
-            PFID = 0;
-
-            GANA = string.Empty;
-            FIPL = DateTime.MinValue;
-            LAPL = DateTime.MinValue;
-
-            PPFN = string.Empty;
-            EXGF = string.Empty;
-
-            SAID = 0;
-
-            PRSE = string.Empty;
-            EXEC = string.Empty;
-
-            CRAT = DateTime.MinValue;
-            CHAT = DateTime.MinValue;
-
-            ACCO = string.Empty;
-            ACIN = string.Empty;
-
-            ACAC = false;
-
-            CUPT = 0;
-
-            ETMA = 0;
-            ETME = 0;
-            ETCO = 0;
-
-            ETTY = string.Empty;
-
-            ETML = false;
-
-            ARCH = false;
-
-            AcceptChanges();
-        }
-
         public override void Save()
         {
-            TXPROFI tblmProfi = new TXPROFI();
-            tblmProfi.Save(this);
+            new TXPROFI().Save(this);
         }
     }
 }

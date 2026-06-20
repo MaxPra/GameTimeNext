@@ -68,6 +68,7 @@
                     Grid.Column="2"
                     Height="36"
                     VerticalAlignment="Center"
+                    uixprops:UIXAttachedProperty.AdditionalEntry="(All)"
                     uixprops:UIXAttachedProperty.Source="From=T1CTABD;Where=TXTYP:eT;Text=DESCR;Value=TXNUM"
                     SelectedIndex="0"
                     SelectedValue=""
