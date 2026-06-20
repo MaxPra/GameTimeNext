@@ -1,5 +1,4 @@
 ﻿using GameTimeNext.Core.Application.DataManagers;
-using System.Windows.Media.Imaging;
 using UIX.ViewController.Engine.DataBaseObjects;
 
 namespace GameTimeNext.Core.Application.TableObjects
@@ -70,9 +69,6 @@ namespace GameTimeNext.Core.Application.TableObjects
 
         [UIXSignatureField(20)]
         public bool ARCH { get; set; } = false;
-        public BitmapImage CoverImage { get; set; }
-
-        public bool IsPlayable { get; set; } = false;
         public override void Save()
         {
             new TXPROFI().Save(this);

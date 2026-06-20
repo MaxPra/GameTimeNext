@@ -6,11 +6,11 @@ namespace GameTimeNext.Core.Application.Profiles.Viewmodel
 {
     public class ProfilesEditViewModel : GTNViewModelBase
     {
-        public ObservableCollection<T1GROUP> T1GROUPs { get; set; }
+        public ObservableCollection<ProfilesGroupListBoxItem> T1GROUPs { get; set; }
 
-        private T1GROUP _selectedT1GROUP;
+        private ProfilesGroupListBoxItem _selectedT1GROUP;
 
-        public T1GROUP SelectedTBLGROUP
+        public ProfilesGroupListBoxItem SelectedTBLGROUP
         {
             get => _selectedT1GROUP;
             set => SetProperty(ref _selectedT1GROUP, value);
@@ -18,7 +18,7 @@ namespace GameTimeNext.Core.Application.Profiles.Viewmodel
 
         public ProfilesEditViewModel()
         {
-            T1GROUPs = new ObservableCollection<T1GROUP>();
+            T1GROUPs = new ObservableCollection<ProfilesGroupListBoxItem>();
 
         }
     }

@@ -110,25 +110,26 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected override void DataWrapperSelectionChangedImpl(Selector source)
         {
-            T1PROFI selectedProfi = source.SelectedItem as T1PROFI;
+            ProfilesListBoxItem selectedProfi = source.SelectedItem as ProfilesListBoxItem;
+            T1PROFI selectedTableObject = selectedProfi?.ItemObject as T1PROFI;
 
-            if (selectedProfi == null)
+            if (selectedProfi == null || selectedTableObject == null)
                 return;
 
-            AppEnvironment.CurrentPfid = selectedProfi.PFID;
+            AppEnvironment.CurrentPfid = selectedTableObject.PFID;
 
             GetView().ListBoxProfiles.ScrollIntoView(selectedProfi);
 
-            if (!selectedProfi.ACAC)
+            if (!selectedTableObject.ACAC)
                 return;
 
-            if (FnString.IsNullEmptyOrWhitespace(selectedProfi.ACCO))
+            if (FnString.IsNullEmptyOrWhitespace(selectedTableObject.ACCO))
                 return;
 
             if (!AppEnvironment.GetAppConfig().AppSettings.AllowProfileSpecificStyleChanges)
                 return;
 
-            FnTheme.ApplyThemeColors(new CAccentColors(selectedProfi.ACCO).Dezerialize().AccentColors);
+            FnTheme.ApplyThemeColors(new CAccentColors(selectedTableObject.ACCO).Dezerialize().AccentColors);
         }
         #endregion
 
@@ -139,27 +140,25 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             await Task.Run(() =>
             {
-                TXPROFI TXPROFI = new TXPROFI();
                 List<T1PROFI> T1PROFIs = GetAllFilteredProfis();
-
-                FillProfileCover(T1PROFIs);
+                List<ProfilesListBoxItem> profileItems = BuildProfileListBoxItems(T1PROFIs);
 
                 //Thread.Sleep(3000);
 
                 View.Dispatcher.Invoke(() =>
                 {
                     _profilesSubGridViewModel = new ProfilesSubGridViewModel();
-                    _profilesSubGridViewModel.T1Profis = new System.Collections.ObjectModel.ObservableCollection<T1PROFI>(T1PROFIs);
+                    _profilesSubGridViewModel.T1Profis = new System.Collections.ObjectModel.ObservableCollection<ProfilesListBoxItem>(profileItems);
 
-                    if (T1PROFIs.Count > 0)
+                    if (profileItems.Count > 0)
                     {
                         _profilesSubGridViewModel.SelectedT1Profi =
-                            T1PROFIs.FirstOrDefault(p => p.PFID == pfid)
-                            ?? T1PROFIs.FirstOrDefault()!;
+                            profileItems.FirstOrDefault(p => (p.ItemObject as T1PROFI)?.PFID == pfid)
+                            ?? profileItems.FirstOrDefault()!;
                     }
 
 
-                    _dataWrapper!.TableObject = _profilesSubGridViewModel.SelectedT1Profi;
+                    _dataWrapper!.TableObject = _profilesSubGridViewModel.SelectedT1Profi?.ItemObject as T1PROFI;
 
                     View.DataContext = _profilesSubGridViewModel;
 
@@ -172,7 +171,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                     else
                     {
                         GetApp().ProfilesDetailView.Visibility = Visibility.Visible;
-                        AppEnvironment.CurrentPfid = _profilesSubGridViewModel.SelectedT1Profi.PFID;
+                        AppEnvironment.CurrentPfid = (_profilesSubGridViewModel.SelectedT1Profi?.ItemObject as T1PROFI)?.PFID ?? 0;
                     }
 
 
@@ -380,14 +379,14 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         }
         #endregion
 
-        private void FillProfileCover(List<T1PROFI> T1PROFIs)
+        private List<ProfilesListBoxItem> BuildProfileListBoxItems(List<T1PROFI> t1profiles)
         {
-            foreach (T1PROFI prof in T1PROFIs)
+            return t1profiles.Select(prof => new ProfilesListBoxItem
             {
-                string coverPath = Path.Combine(AppEnvironment.GetAppConfig().CoverFolderPath ?? string.Empty, prof.PPFN);
-                prof.CoverImage = FnImage.LoadImageWithoutLock(coverPath, 300, 450);
-                prof.IsPlayable = FnSystem.IsExeFoundInPath(prof.EXGF);
-            }
+                ItemObject = prof,
+                COCOVIM = FnImage.LoadImageWithoutLock(Path.Combine(AppEnvironment.GetAppConfig().CoverFolderPath ?? string.Empty, prof.PPFN), 300, 450),
+                COISPLA = FnSystem.IsExeFoundInPath(prof.EXGF)
+            }).ToList();
         }
 
         private async Task AdjustFiltersToStartedGameProfile(long pfid)
@@ -405,11 +404,6 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             // Alle States bereinigen
             GetApp().FilterCache.SelectedStates = new List<T1GROUP>();
-
-            foreach (var tag in tags)
-            {
-                tag.IsSelected = true;
-            }
 
             await BuildProfilesListBoxAsync(pfid);
         }
@@ -468,14 +462,14 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             if (_profilesSubGridViewModel == null)
                 return;
 
-            List<T1PROFI> currentProfis = _profilesSubGridViewModel.T1Profis.Where(p => p.PFID == AppEnvironment.CurrentPfid).ToList();
+            List<ProfilesListBoxItem> currentProfis = _profilesSubGridViewModel.T1Profis.Where(p => (p.ItemObject as T1PROFI)?.PFID == AppEnvironment.CurrentPfid).ToList();
 
             if (currentProfis == null || currentProfis.Count == 0)
                 await AdjustFiltersToStartedGameProfile(AppEnvironment.CurrentPfid);
 
-            _profilesSubGridViewModel.SelectedT1Profi = _profilesSubGridViewModel.T1Profis.Where(p => p.PFID == AppEnvironment.CurrentPfid).ToList()[0];
+            _profilesSubGridViewModel.SelectedT1Profi = _profilesSubGridViewModel.T1Profis.Where(p => (p.ItemObject as T1PROFI)?.PFID == AppEnvironment.CurrentPfid).ToList()[0];
 
-            ToastMessage tm = new ToastMessage("Switched profile...", _profilesSubGridViewModel!.SelectedT1Profi.GANA);
+            ToastMessage tm = new ToastMessage("Switched profile...", (_profilesSubGridViewModel!.SelectedT1Profi.ItemObject as T1PROFI)?.GANA ?? string.Empty);
             tm.Show();
         }
 
@@ -567,10 +561,10 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             if (listBoxItem == null)
                 return;
 
-            if (listBoxItem.DataContext is not T1PROFI profi)
+            if (listBoxItem.DataContext is not ProfilesListBoxItem profi)
                 return;
 
-            BuildContextMenu(listBoxItem, profi);
+            BuildContextMenu(listBoxItem, profi.ItemObject as T1PROFI);
         }
 
         /// <summary>
@@ -578,14 +572,14 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         /// </summary>
         protected void EV_ctxtOpenSteamLibrary()
         {
-            T1PROFI t1profi = _profilesSubGridViewModel!.SelectedT1Profi;
+            T1PROFI t1profi = GetSelectedProfile();
 
             FnSteam.OpenSteamLibrary(t1profi.SAID);
         }
 
         protected void EV_ctxtEdit()
         {
-            T1PROFI t1profi = _profilesSubGridViewModel!.SelectedT1Profi;
+            T1PROFI t1profi = GetSelectedProfile();
 
             ProfilesEditApp app = GetApp().GetApplication<ProfilesEditApp>();
             app.Edit(t1profi, async r =>
@@ -610,7 +604,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             if (result == CFMBOXResult.Yes)
             {
-                T1PROFI selectedT1profi = _profilesSubGridViewModel!.SelectedT1Profi;
+                T1PROFI selectedT1profi = GetSelectedProfile();
 
                 string coverPath = Path.Combine(AppEnvironment.GetAppConfig().CoverFolderPath ?? string.Empty, selectedT1profi.PPFN);
                 File.Delete(coverPath);
@@ -627,7 +621,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected void EV_ctxtOpenGameFolder()
         {
-            T1PROFI t1profi = _profilesSubGridViewModel!.SelectedT1Profi;
+            T1PROFI t1profi = GetSelectedProfile();
 
             if (FnString.IsNullEmptyOrWhitespace(t1profi.EXGF))
             {
@@ -648,7 +642,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected void EV_ctxtCompleteProfile()
         {
-            T1PROFI t1profi = _profilesSubGridViewModel!.SelectedT1Profi;
+            T1PROFI t1profi = GetSelectedProfile();
 
             T1PLTHR t1plthr = TFPLTHR.GetCurrentPlaythrough(t1profi.PFID);
 
@@ -662,7 +656,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected void EV_ctxtStartNewPlaythrough()
         {
-            T1PROFI t1profi = _profilesSubGridViewModel!.SelectedT1Profi;
+            T1PROFI t1profi = GetSelectedProfile();
 
             ProfilesPlaythroughEditApp app = GetApp().GetApplication<ProfilesPlaythroughEditApp>();
             app.CreateNew(t1profi, r =>
@@ -677,7 +671,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected void EV_ctxtCancelPlaythrough()
         {
-            T1PROFI t1profi = _profilesSubGridViewModel!.SelectedT1Profi;
+            T1PROFI t1profi = GetSelectedProfile();
 
             T1PLTHR t1plthr = TFPLTHR.GetCurrentPlaythrough(t1profi.PFID);
 
@@ -697,7 +691,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected async Task EV_ctxtArchiveProfile()
         {
-            T1PROFI t1profi = _profilesSubGridViewModel!.SelectedT1Profi;
+            T1PROFI t1profi = GetSelectedProfile();
 
             t1profi.ARCH = true;
 
@@ -708,7 +702,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected async Task EV_ctxtUnarchiveProfile()
         {
-            T1PROFI t1profi = _profilesSubGridViewModel!.SelectedT1Profi;
+            T1PROFI t1profi = GetSelectedProfile();
 
             t1profi.ARCH = false;
 
@@ -719,6 +713,12 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
 
         #endregion
+
+        private T1PROFI GetSelectedProfile()
+        {
+            return _profilesSubGridViewModel?.SelectedT1Profi?.ItemObject as T1PROFI
+                ?? throw new InvalidOperationException("No profile is currently selected.");
+        }
 
         /// <summary>
         /// Filter Cache (Hier werden die Selektionen des Filters gespeichert)

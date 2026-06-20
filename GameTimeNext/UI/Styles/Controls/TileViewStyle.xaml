@@ -336,7 +336,7 @@
                                                     CornerRadius="{StaticResource TileImageCornerRadius}">
                                                     <Image
                                                         RenderOptions.BitmapScalingMode="HighQuality"
-                                                        Source="{Binding CoverImage}"
+                                                        Source="{Binding COCOVIM}"
                                                         Stretch="UniformToFill" />
                                                 </Border>
 
@@ -384,7 +384,7 @@
                                                                 FontSize="14"
                                                                 FontWeight="SemiBold"
                                                                 Foreground="{DynamicResource Brush.TileForeground}"
-                                                                Text="{Binding GANA}"
+                                                                Text="{Binding ItemObject.GANA}"
                                                                 TextTrimming="CharacterEllipsis" />
 
                                                             <Image
@@ -394,7 +394,7 @@
                                                                 Margin="0"
                                                                 VerticalAlignment="Center"
                                                                 Source="/UI/Ressources/GTN_ICON_PLAYABLE.png"
-                                                                Visibility="{Binding IsPlayable, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                                                Visibility="{Binding COISPLA, Converter={StaticResource BoolToVisibilityConverter}}" />
                                                         </Grid>
                                                     </Grid>
                                                 </Border>
