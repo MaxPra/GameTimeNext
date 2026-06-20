@@ -5,7 +5,7 @@ namespace GameTimeNext.Core.Application.TableObjects
 {
     public class T1SESSI : UIXTableObjectBase
     {
-        public override bool IsDevSynced => true;
+        public override bool IsDevSynced => false;
 
         [UIXSignatureField(0)]
         public long SEID { get; set; } = 0;

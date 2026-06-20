@@ -6,7 +6,7 @@ namespace GameTimeNext.Core.Application.TableObjects
 {
     public class T1PROFI : UIXTableObjectBase
     {
-        public override bool IsDevSynced => true;
+        public override bool IsDevSynced => false;
 
         [UIXSignatureField(0)]
         public long PFID { get; set; } = 0;
@@ -70,7 +70,6 @@ namespace GameTimeNext.Core.Application.TableObjects
 
         [UIXSignatureField(20)]
         public bool ARCH { get; set; } = false;
-
         public BitmapImage CoverImage { get; set; }
 
         public bool IsPlayable { get; set; } = false;

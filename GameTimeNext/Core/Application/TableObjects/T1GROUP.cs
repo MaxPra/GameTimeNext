@@ -5,7 +5,7 @@ namespace GameTimeNext.Core.Application.TableObjects
 {
     public class T1GROUP : UIXTableObjectBase
     {
-        public override bool IsDevSynced => true;
+        public override bool IsDevSynced => false;
 
         [UIXSignatureField(0)]
         public long GRID { get; set; } = 0;

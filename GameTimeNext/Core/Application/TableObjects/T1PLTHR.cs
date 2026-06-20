@@ -5,7 +5,7 @@ namespace GameTimeNext.Core.Application.TableObjects
 {
     public class T1PLTHR : UIXTableObjectBase
     {
-        public override bool IsDevSynced => true;
+        public override bool IsDevSynced => false;
 
         [UIXSignatureField(0)]
         public long PTID { get; set; } = 0;

@@ -34,6 +34,10 @@ namespace GameTimeNext.Core.Application.CreateImportPackage
                         CreateImportPackageAll(tempDirectory);
                         break;
 
+                    case ExportTypes.Metadata:
+                        CreateImportPackageMetadata(tempDirectory);
+                        break;
+
                     case ExportTypes.Codetables:
                         CreateImportPackageCodetables(tempDirectory);
                         break;
@@ -98,11 +102,19 @@ namespace GameTimeNext.Core.Application.CreateImportPackage
 
             return outputPath;
         }
+        private static readonly HashSet<string> IgnoredProperties =
+                                                    [
+                                                        "IsDevSynced"
+                                                    ];
+
         private static void WriteToFile<T>(string filePath, List<T> data) where T : UIXTableObjectBase
         {
             PropertyInfo[] properties = typeof(T)
                 .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly)
-                .Where(p => p.CanRead && p.GetIndexParameters().Length == 0)
+                .Where(p =>
+                    p.CanRead &&
+                    p.GetIndexParameters().Length == 0 &&
+                    !IgnoredProperties.Contains(p.Name))
                 .ToArray();
 
             using (StreamWriter writer = new StreamWriter(filePath))
@@ -112,7 +124,9 @@ namespace GameTimeNext.Core.Application.CreateImportPackage
 
                 foreach (T item in data)
                 {
-                    string line = string.Join(";", properties.Select(p => EscapeCsv(SerializeForCsv(p.GetValue(item)))));
+                    string line = string.Join(";",
+                        properties.Select(p => EscapeCsv(SerializeForCsv(p.GetValue(item)))));
+
                     writer.WriteLine(line);
                 }
             }
@@ -153,6 +167,7 @@ namespace GameTimeNext.Core.Application.CreateImportPackage
         public class ExportTypes
         {
             public const string Codetables = "cT";
+            public const string Metadata = "mE";
         }
     }
 }
