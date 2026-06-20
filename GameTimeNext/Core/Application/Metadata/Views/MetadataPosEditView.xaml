@@ -141,8 +141,6 @@
                     HorizontalAlignment="Left"
                     VerticalAlignment="Center"
                     uixprops:UIXAttachedProperty.Path="T1METAP.DATYP"
-                    SelectedIndex="0"
-                    SelectedValue=""
                     SelectedValuePath="Tag" />
 
                 <TextBlock
