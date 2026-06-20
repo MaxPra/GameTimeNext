@@ -42,8 +42,8 @@ namespace GameTimeNext.Core.Application.DataManagers
 
             using SQLiteCommand cmd = connection.CreateCommand();
             cmd.CommandText = "DELETE FROM T1CTABD WHERE TXTYP = @TXTYP AND TXNUM = @TXNUM";
-            cmd.Parameters.AddWithValue("@TXTYP", tXTYP);
-            cmd.Parameters.AddWithValue("@TXNUM", tXNUM);
+            cmd.Parameters.AddWithValue("@TXTYP", tXTYP); 
+            cmd.Parameters.AddWithValue("@TXNUM", tXNUM); 
             cmd.ExecuteNonQuery();
             DevSyncCsvSyncService.ExportTable("T1CTABD");
         }
@@ -165,13 +165,10 @@ namespace GameTimeNext.Core.Application.DataManagers
 
             if (DateTime.TryParseExact(raw, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsed))
                 return parsed;
-
             if (DateTime.TryParseExact(raw, "dd.MM.yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsed))
                 return parsed;
-
             if (DateTime.TryParse(raw, CultureInfo.CurrentCulture, DateTimeStyles.None, out parsed))
                 return parsed;
-
             if (DateTime.TryParse(raw, CultureInfo.InvariantCulture, DateTimeStyles.None, out parsed))
                 return parsed;
 

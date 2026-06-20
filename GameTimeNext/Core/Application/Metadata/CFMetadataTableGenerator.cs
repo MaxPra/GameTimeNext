@@ -53,7 +53,7 @@ namespace GameTimeNext.Core.Application.Metadata
                 return result;
             }
 
-            Dictionary<string, string> existingColumns = GetExistingColumns(connection, tableName);
+            Dictionary<string, ExistingColumnDefinition> existingColumns = GetExistingColumns(connection, tableName);
             HashSet<string> targetColumnNames = columns
                 .Select(x => x.Name)
                 .ToHashSet(StringComparer.OrdinalIgnoreCase);
@@ -67,6 +67,16 @@ namespace GameTimeNext.Core.Application.Metadata
             {
                 RebuildTable(connection, tableName, columns, existingColumns, result);
                 result.RemovedColumns.AddRange(columnsToRemove);
+                return result;
+            }
+
+            bool hasTypeChanges = columns.Any(column =>
+                existingColumns.TryGetValue(column.Name, out ExistingColumnDefinition? existing) &&
+                !AreSqliteTypesEquivalent(existing.SqliteType, column.SqliteType));
+
+            if (hasTypeChanges)
+            {
+                RebuildTable(connection, tableName, columns, existingColumns, result);
                 return result;
             }
 
@@ -113,7 +123,7 @@ namespace GameTimeNext.Core.Application.Metadata
             SQLiteConnection connection,
             string tableName,
             List<TableColumnDefinition> targetColumns,
-            Dictionary<string, string> existingColumns,
+            Dictionary<string, ExistingColumnDefinition> existingColumns,
             TableGenerationResult result)
         {
             string tempTableName = tableName + "__OLD_" + Guid.NewGuid().ToString("N").Substring(0, 8).ToUpperInvariant();
@@ -240,9 +250,9 @@ namespace GameTimeNext.Core.Application.Metadata
             return $"{QuoteIdentifier(column.Name)} {column.SqliteType}{primaryKeySuffix}";
         }
 
-        private static Dictionary<string, string> GetExistingColumns(SQLiteConnection connection, string tableName)
+        private static Dictionary<string, ExistingColumnDefinition> GetExistingColumns(SQLiteConnection connection, string tableName)
         {
-            Dictionary<string, string> columns = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            Dictionary<string, ExistingColumnDefinition> columns = new Dictionary<string, ExistingColumnDefinition>(StringComparer.OrdinalIgnoreCase);
 
             using SQLiteCommand cmd = connection.CreateCommand();
             cmd.CommandText = $"PRAGMA table_info({QuoteIdentifier(tableName)});";
@@ -254,10 +264,54 @@ namespace GameTimeNext.Core.Application.Metadata
                 string type = reader["type"]?.ToString() ?? string.Empty;
 
                 if (!string.IsNullOrWhiteSpace(name))
-                    columns[name] = type;
+                    columns[name] = new ExistingColumnDefinition
+                    {
+                        Name = name,
+                        SqliteType = type
+                    };
             }
 
             return columns;
+        }
+
+        private static bool AreSqliteTypesEquivalent(string existingType, string targetType)
+        {
+            string normalizedExisting = NormalizeTypeForComparison(existingType);
+            string normalizedTarget = NormalizeTypeForComparison(targetType);
+
+            if (string.Equals(normalizedExisting, normalizedTarget, StringComparison.OrdinalIgnoreCase))
+                return true;
+
+            return string.Equals(GetSqliteAffinity(normalizedExisting), GetSqliteAffinity(normalizedTarget), StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static string NormalizeTypeForComparison(string? type)
+        {
+            if (string.IsNullOrWhiteSpace(type))
+                return "TEXT";
+
+            return type.Trim().ToUpperInvariant().Replace(" ", string.Empty);
+        }
+
+        private static string GetSqliteAffinity(string normalizedType)
+        {
+            if (normalizedType.Contains("INT", StringComparison.Ordinal))
+                return "INTEGER";
+
+            if (normalizedType.Contains("CHAR", StringComparison.Ordinal) ||
+                normalizedType.Contains("CLOB", StringComparison.Ordinal) ||
+                normalizedType.Contains("TEXT", StringComparison.Ordinal))
+                return "TEXT";
+
+            if (normalizedType.Contains("BLOB", StringComparison.Ordinal) || string.IsNullOrWhiteSpace(normalizedType))
+                return "BLOB";
+
+            if (normalizedType.Contains("REAL", StringComparison.Ordinal) ||
+                normalizedType.Contains("FLOA", StringComparison.Ordinal) ||
+                normalizedType.Contains("DOUB", StringComparison.Ordinal))
+                return "REAL";
+
+            return "NUMERIC";
         }
 
         private static string NormalizeSqliteType(string? input)
@@ -319,6 +373,12 @@ namespace GameTimeNext.Core.Application.Metadata
             public string SqliteType { get; set; } = "TEXT";
             public bool IsPrimaryKey { get; set; }
             public bool IsAutoIncrement { get; set; }
+        }
+
+        private sealed class ExistingColumnDefinition
+        {
+            public string Name { get; set; } = string.Empty;
+            public string SqliteType { get; set; } = "TEXT";
         }
     }
 }

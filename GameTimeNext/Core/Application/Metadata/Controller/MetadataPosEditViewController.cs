@@ -48,27 +48,49 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
             }
 
             codetable.ApplyTo(GetWnd().CmbDataType);
+
+            T1METAP? metadataPosition = GetApp().T1METAP;
+            if (metadataPosition != null)
+            {
+                UIXSQLiteDataTypes.DataTypeDefinition? matchingDefinition = dataTypes.FirstOrDefault(x =>
+                    string.Equals(x.Key, metadataPosition.DATYP, StringComparison.OrdinalIgnoreCase));
+
+                if (matchingDefinition == null)
+                {
+                    matchingDefinition = dataTypes.FirstOrDefault(x =>
+                        string.Equals(x.Text, metadataPosition.DATYP, StringComparison.OrdinalIgnoreCase));
+                }
+
+                if (matchingDefinition != null && !string.Equals(metadataPosition.DATYP, matchingDefinition.Key, StringComparison.OrdinalIgnoreCase))
+                {
+                    metadataPosition.DATYP = matchingDefinition.Key;
+                }
+            }
         }
 
         protected override void BuildImpl()
         {
-            FnControls.SetVisible(GetWnd().TxbLength, "01".Equals(GetWnd().CmbDataType.SelectedValue.ToString()!));
-            FnControls.SetVisible(GetWnd().LblLength, "01".Equals(GetWnd().CmbDataType.SelectedValue.ToString()!));
+            string selectedDataType = GetWnd().CmbDataType.SelectedValue?.ToString() ?? string.Empty;
+
+            FnControls.SetVisible(GetWnd().TxbLength, "01".Equals(selectedDataType));
+            FnControls.SetVisible(GetWnd().LblLength, "01".Equals(selectedDataType));
             FnControls.SetVisible(GetWnd().ChbAutoIncrement, GetWnd().ChbPrimaryKey.IsChecked == true);
         }
 
         protected override void Check()
         {
+            string selectedDataType = GetWnd().CmbDataType.SelectedValue?.ToString() ?? string.Empty;
+
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().TxbField.Text))
                 AddViewError(GetWnd().TxbField, "Field name cannot be empty.");
 
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().TxbDescription.Text))
                 AddViewError(GetWnd().TxbDescription, "Description cannot be empty.");
 
-            if (FnString.IsNullEmptyOrWhitespace(GetWnd().TxbLength.Text) && "01".Equals(GetWnd().CmbDataType.SelectedValue.ToString()!))
+            if (FnString.IsNullEmptyOrWhitespace(GetWnd().TxbLength.Text) && "01".Equals(selectedDataType))
                 AddViewError(GetWnd().TxbLength, "Length cannot be empty.");
 
-            if (FnString.IsNullEmptyOrWhitespace(GetWnd().CmbDataType.SelectedValue.ToString()!))
+            if (FnString.IsNullEmptyOrWhitespace(selectedDataType))
                 AddViewError(GetWnd().CmbDataType, "Data type cannot be empty.");
 
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().TxbOrder.Text))

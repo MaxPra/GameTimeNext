@@ -160,7 +160,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             return Convert.ToInt64(cmd.ExecuteScalar()) > 0;
         }
 
-        private static T1CTABH Map(SQLiteDataReader reader)
+        protected static T1CTABH Map(SQLiteDataReader reader)
         {
             T1CTABH obj = new T1CTABH();
             obj.TXTYP = reader.IsDBNull(0) ? string.Empty : reader.GetString(0);
@@ -202,20 +202,17 @@ namespace GameTimeNext.Core.Application.DataManagers
 
             if (DateTime.TryParseExact(raw, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsed))
                 return parsed;
-
             if (DateTime.TryParseExact(raw, "dd.MM.yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsed))
                 return parsed;
-
             if (DateTime.TryParse(raw, CultureInfo.CurrentCulture, DateTimeStyles.None, out parsed))
                 return parsed;
-
             if (DateTime.TryParse(raw, CultureInfo.InvariantCulture, DateTimeStyles.None, out parsed))
                 return parsed;
 
             return DateTime.MinValue;
         }
 
-        private static void EnsureOpen(SQLiteConnection connection)
+        protected static void EnsureOpen(SQLiteConnection connection)
         {
             if (connection.State != System.Data.ConnectionState.Open)
                 connection.Open();
