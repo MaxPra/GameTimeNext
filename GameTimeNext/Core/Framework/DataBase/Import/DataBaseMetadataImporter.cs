@@ -2,6 +2,7 @@ using GameTimeNext.Core.Application.Metadata;
 using GameTimeNext.Core.Application.Metadata.Data;
 using GameTimeNext.Core.Framework.DataBase.Import.Base;
 using UIX.ViewController.Engine.Querying;
+using UIX.ViewController.Engine.Utils;
 using static GameTimeNext.Core.Framework.DataBase.Import.DataBaseImporter;
 
 namespace GameTimeNext.Core.Framework.DataBase.Import
@@ -46,7 +47,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Import
 
                 for (int i = 0; i < importFile.Header.Count && i < row.Count; i++)
                 {
-                    string columnName = importFile.Header[i];
+                    string columnName = importFile.Header[i].Trim();
                     string value = row[i];
                     statement.AddValue(columnName, value);
 
@@ -76,7 +77,9 @@ namespace GameTimeNext.Core.Framework.DataBase.Import
 
                 for (int i = 0; i < importFile.Header.Count && i < row.Count; i++)
                 {
-                    statement.AddValue(importFile.Header[i], row[i]);
+                    string columnName = importFile.Header[i].Trim();
+                    string value = NormalizeMetadataValue(columnName, row[i]);
+                    statement.AddValue(columnName, value);
                 }
 
                 statement.ExecuteNonQuery();
@@ -112,6 +115,29 @@ namespace GameTimeNext.Core.Framework.DataBase.Import
             UIXStatement statement = new UIXStatement(tableName, AppEnvironment.GetDataBaseManager().GetConnection());
             statement.SetStatementType(UIXStatement.StatementType.DELETE);
             statement.ExecuteNonQuery();
+        }
+
+        private static string NormalizeMetadataValue(string columnName, string rawValue)
+        {
+            if (!string.Equals(columnName, K1METAP.Fields.DATYP, StringComparison.OrdinalIgnoreCase))
+                return rawValue;
+
+            if (string.IsNullOrWhiteSpace(rawValue))
+                return rawValue;
+
+            string normalized = rawValue.Trim();
+
+            UIXSQLiteDataTypes.DataTypeDefinition? byKey = UIXSQLiteDataTypes.GetDefinitionByKey(normalized);
+            if (byKey != null)
+                return byKey.Key;
+
+            UIXSQLiteDataTypes.DataTypeDefinition? byTextOrType = UIXSQLiteDataTypes
+                .GetDefinitions()
+                .FirstOrDefault(x =>
+                    string.Equals(x.Text, normalized, StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(x.CSharpType, normalized, StringComparison.OrdinalIgnoreCase));
+
+            return byTextOrType?.Key ?? normalized;
         }
     }
 }

@@ -2,7 +2,7 @@
 using System.IO;
 using System.IO.Compression;
 using System.Reflection;
-using UIX.ViewController.Engine.Utils;
+using System.Text;
 
 namespace GameTimeNext.Core.Framework.DataBase.Import
 {
@@ -127,14 +127,76 @@ namespace GameTimeNext.Core.Framework.DataBase.Import
             importFile.TableName = Path.GetFileNameWithoutExtension(filePath).Split('_', 2).Last();
             importFile.Content = File.ReadAllText(filePath);
 
-            UIXCSVReader csvReader = new UIXCSVReader(";");
+            List<List<string>> csvRows = ParseCsv(importFile.Content, ';');
 
-            UIXCSVReader.CSVData csvData = csvReader.ReadCSV(importFile.Content);
-
-            importFile.Header = csvData.Headers;
-            importFile.Rows = csvData.Rows;
+            if (csvRows.Count > 0)
+            {
+                importFile.Header = csvRows[0];
+                importFile.Rows = csvRows.Skip(1).ToList();
+            }
 
             return importFile;
+        }
+
+        private static List<List<string>> ParseCsv(string text, char separator)
+        {
+            List<List<string>> rows = new List<List<string>>();
+            List<string> row = new List<string>();
+            StringBuilder field = new StringBuilder();
+            bool inQuotes = false;
+
+            for (int i = 0; i < text.Length; i++)
+            {
+                char c = text[i];
+
+                if (c == '"')
+                {
+                    if (inQuotes && i + 1 < text.Length && text[i + 1] == '"')
+                    {
+                        field.Append('"');
+                        i++;
+                    }
+                    else
+                    {
+                        inQuotes = !inQuotes;
+                    }
+
+                    continue;
+                }
+
+                if (!inQuotes && c == separator)
+                {
+                    row.Add(field.ToString());
+                    field.Clear();
+                    continue;
+                }
+
+                if (!inQuotes && (c == '\n' || c == '\r'))
+                {
+                    if (c == '\r' && i + 1 < text.Length && text[i + 1] == '\n')
+                        i++;
+
+                    row.Add(field.ToString());
+                    field.Clear();
+
+                    if (row.Count > 1 || (row.Count == 1 && row[0].Length > 0))
+                        rows.Add(row);
+
+                    row = new List<string>();
+                    continue;
+                }
+
+                field.Append(c);
+            }
+
+            if (field.Length > 0 || row.Count > 0)
+            {
+                row.Add(field.ToString());
+                if (row.Count > 1 || (row.Count == 1 && row[0].Length > 0))
+                    rows.Add(row);
+            }
+
+            return rows;
         }
 
         public class ImportPackage
