@@ -36,7 +36,7 @@
     <sys:Double x:Key="TileAccentStrokeOpacityNormal">0.00</sys:Double>
     <sys:Double x:Key="TileAccentStrokeOpacitySelected">1.00</sys:Double>
 
-    <sys:Double x:Key="TileTiltAngleHover">0</sys:Double>
+    <sys:Double x:Key="TileTiltAngleHover">-8</sys:Double>
     <sys:Double x:Key="TileAccentGlowOpacityHover">0.95</sys:Double>
 
     <LinearGradientBrush x:Key="Brush.TileGlassFx" StartPoint="0,0" EndPoint="1,1">

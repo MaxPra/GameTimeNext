@@ -71,7 +71,8 @@ namespace GameTimeNext.Core.Application.Metadata
                     Metadata = position,
                     SqliteType = sqliteType,
                     CSharpType = csharpType,
-                    IsPrimaryKey = position.PRIMK
+                    IsPrimaryKey = position.PRIMK,
+                    IsAutoIncrement = position.AUTOI
                 });
             }
 
@@ -159,6 +160,10 @@ namespace GameTimeNext.Core.Application.Metadata
 
             List<GeneratedField> primaryKeys = fields.Where(x => x.IsPrimaryKey).ToList();
             List<GeneratedField> nonPrimary = fields.Where(x => !x.IsPrimaryKey).ToList();
+            GeneratedField? autoIncrementPrimaryKey = fields.FirstOrDefault(x => x.IsPrimaryKey && x.IsAutoIncrement);
+            List<GeneratedField> insertFields = autoIncrementPrimaryKey == null
+                ? fields
+                : fields.Where(x => !ReferenceEquals(x, autoIncrementPrimaryKey)).ToList();
 
             UIXCodeGenerator code = new UIXCodeGenerator();
             code.AppendLine("using GameTimeNext.Core.Application.TableObjects;");
@@ -259,13 +264,22 @@ namespace GameTimeNext.Core.Application.Metadata
 
             code.BeginBlock($"private void Insert(SQLiteConnection connection, {t1ClassName} obj)");
             code.AppendLine("using SQLiteCommand cmd = connection.CreateCommand();");
-            code.AppendLine($"cmd.CommandText = \"INSERT INTO {tableName} ({string.Join(", ", fields.Select(x => NormalizeName(x.Metadata.PONAM)))}) VALUES ({string.Join(", ", fields.Select(x => "@" + NormalizeName(x.Metadata.PONAM)))})\";");
-            foreach (GeneratedField field in fields)
+            code.AppendLine($"cmd.CommandText = \"INSERT INTO {tableName} ({string.Join(", ", insertFields.Select(x => NormalizeName(x.Metadata.PONAM)))}) VALUES ({string.Join(", ", insertFields.Select(x => "@" + NormalizeName(x.Metadata.PONAM)))})\";");
+            foreach (GeneratedField field in insertFields)
             {
                 string name = NormalizeName(field.Metadata.PONAM);
                 code.AppendLine($"cmd.Parameters.AddWithValue(\"@{name}\", ToDbValue(obj.{name}));");
             }
             code.AppendLine("cmd.ExecuteNonQuery();");
+
+            if (autoIncrementPrimaryKey != null)
+            {
+                string autoIncrementPkName = NormalizeName(autoIncrementPrimaryKey.Metadata.PONAM);
+                code.AppendLine("using SQLiteCommand idCmd = connection.CreateCommand();");
+                code.AppendLine("idCmd.CommandText = \"SELECT last_insert_rowid();\";");
+                code.AppendLine($"obj.{autoIncrementPkName} = {BuildIdentityAssignmentExpression(autoIncrementPrimaryKey.CSharpType)};");
+            }
+
             code.EndBlock();
             code.AppendEmptyLine();
 
@@ -429,6 +443,17 @@ namespace GameTimeNext.Core.Application.Metadata
             return "default!";
         }
 
+        private static string BuildIdentityAssignmentExpression(string csharpType)
+        {
+            if (csharpType == "int")
+                return "Convert.ToInt32(idCmd.ExecuteScalar())";
+
+            if (csharpType == "long")
+                return "Convert.ToInt64(idCmd.ExecuteScalar())";
+
+            return $"({csharpType})Convert.ChangeType(idCmd.ExecuteScalar(), typeof({csharpType}), CultureInfo.InvariantCulture)";
+        }
+
         private static string NormalizeName(string input)
         {
             if (string.IsNullOrWhiteSpace(input))
@@ -466,6 +491,7 @@ namespace GameTimeNext.Core.Application.Metadata
             public string SqliteType { get; set; } = string.Empty;
             public string CSharpType { get; set; } = "string";
             public bool IsPrimaryKey { get; set; }
+            public bool IsAutoIncrement { get; set; }
         }
     }
 }

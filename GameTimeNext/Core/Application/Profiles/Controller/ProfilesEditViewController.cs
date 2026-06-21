@@ -374,13 +374,10 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             foreach (ProfilesGroupListBoxItem grp in selectedGroups)
             {
-                T1GROUP t1group = grp.ItemObject as T1GROUP;
-
-                if (t1group == null)
-                    continue;
+                T1GROUP t1group = (T1GROUP)grp.ItemObject!;
 
                 T1GRPPO tblGrppo = tblmGrppo.CreateNew();
-                tblGrppo.GRID = t1group.GRID;
+                tblGrppo.GRID = t1group!.GRID;
                 tblGrppo.PFID = GetApp().T1Profi.PFID;
                 tblmGrppo.Save(tblGrppo);
             }
@@ -549,6 +546,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             List<ProfilesGroupListBoxItem> t1groups = new List<ProfilesGroupListBoxItem>();
 
             UIXQuery query = BuildTagGridQuery(pfid);
+
+            string s = query.PreviewQuery();
 
             using (var reader = query.Execute())
             {

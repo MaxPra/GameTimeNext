@@ -69,6 +69,7 @@ namespace GameTimeNext.Core.Application.TableObjects
 
         [UIXSignatureField(20)]
         public bool ARCH { get; set; } = false;
+
         public override void Save()
         {
             new TXPROFI().Save(this);

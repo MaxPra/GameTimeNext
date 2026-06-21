@@ -5,6 +5,7 @@ using System.Data;
 using System.Data.SQLite;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using UIX.ViewController.Engine.DataBaseObjects;
 
@@ -33,6 +34,9 @@ namespace GameTimeNext.Core.Framework.DataBase.DevSync
                 return;
 
             if (string.IsNullOrWhiteSpace(tableName))
+                return;
+
+            if (!IsDevSyncEnabledForTable(tableName))
                 return;
 
             SQLiteConnection connection = AppEnvironment.GetDataBaseManager().GetConnection();
@@ -84,6 +88,40 @@ namespace GameTimeNext.Core.Framework.DataBase.DevSync
 
             string filePath = Path.Combine(devSyncDirectory, tableName + ".csv");
             File.WriteAllText(filePath, sb.ToString(), Encoding.UTF8);
+        }
+
+        private static bool IsDevSyncEnabledForTable(string tableName)
+        {
+            if (string.Equals(tableName, "T1METAH", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(tableName, "T1METAP", StringComparison.OrdinalIgnoreCase))
+                return true;
+
+            Type? tableType = AppDomain.CurrentDomain
+                .GetAssemblies()
+                .SelectMany(assembly =>
+                {
+                    try
+                    {
+                        return assembly.GetTypes();
+                    }
+                    catch (ReflectionTypeLoadException ex)
+                    {
+                        return ex.Types.Where(t => t != null)!;
+                    }
+                })
+                .FirstOrDefault(type =>
+                    type != null &&
+                    !type.IsAbstract &&
+                    typeof(UIXTableObjectBase).IsAssignableFrom(type) &&
+                    string.Equals(type.Name, tableName, StringComparison.OrdinalIgnoreCase));
+
+            if (tableType == null)
+                return true;
+
+            if (Activator.CreateInstance(tableType) is not UIXTableObjectBase instance)
+                return true;
+
+            return instance.IsDevSynced;
         }
 
         public static void ImportAllFromCsv()
