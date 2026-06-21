@@ -123,8 +123,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         private void Insert(SQLiteConnection connection, T1PROFI obj)
         {
             using SQLiteCommand cmd = connection.CreateCommand();
-            cmd.CommandText = "INSERT INTO T1PROFI (PFID, GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, CRAT, CHAT, ACCO, ACIN, ACAC, CUPT, ETMA, ETME, ETCO, ETTY, ETML, ARCH) VALUES (@PFID, @GANA, @FIPL, @LAPL, @PPFN, @EXGF, @SAID, @PRSE, @EXEC, @CRAT, @CHAT, @ACCO, @ACIN, @ACAC, @CUPT, @ETMA, @ETME, @ETCO, @ETTY, @ETML, @ARCH)";
-            cmd.Parameters.AddWithValue("@PFID", ToDbValue(obj.PFID));
+            cmd.CommandText = "INSERT INTO T1PROFI (GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, CRAT, CHAT, ACCO, ACIN, ACAC, CUPT, ETMA, ETME, ETCO, ETTY, ETML, ARCH) VALUES (@GANA, @FIPL, @LAPL, @PPFN, @EXGF, @SAID, @PRSE, @EXEC, @CRAT, @CHAT, @ACCO, @ACIN, @ACAC, @CUPT, @ETMA, @ETME, @ETCO, @ETTY, @ETML, @ARCH)";
             cmd.Parameters.AddWithValue("@GANA", ToDbValue(obj.GANA));
             cmd.Parameters.AddWithValue("@FIPL", ToDbValue(obj.FIPL));
             cmd.Parameters.AddWithValue("@LAPL", ToDbValue(obj.LAPL));
@@ -146,6 +145,9 @@ namespace GameTimeNext.Core.Application.DataManagers
             cmd.Parameters.AddWithValue("@ETML", ToDbValue(obj.ETML));
             cmd.Parameters.AddWithValue("@ARCH", ToDbValue(obj.ARCH));
             cmd.ExecuteNonQuery();
+            using SQLiteCommand idCmd = connection.CreateCommand();
+            idCmd.CommandText = "SELECT last_insert_rowid();";
+            obj.PFID = Convert.ToInt64(idCmd.ExecuteScalar());
         }
 
         private void Update(SQLiteConnection connection, T1PROFI obj)

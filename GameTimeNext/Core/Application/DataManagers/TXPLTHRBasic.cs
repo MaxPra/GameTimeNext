@@ -97,8 +97,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         private void Insert(SQLiteConnection connection, T1PLTHR obj)
         {
             using SQLiteCommand cmd = connection.CreateCommand();
-            cmd.CommandText = "INSERT INTO T1PLTHR (PTID, PFID, PTTY, PTDE, PTCO, CRAT, CHAT, PTCA) VALUES (@PTID, @PFID, @PTTY, @PTDE, @PTCO, @CRAT, @CHAT, @PTCA)";
-            cmd.Parameters.AddWithValue("@PTID", ToDbValue(obj.PTID));
+            cmd.CommandText = "INSERT INTO T1PLTHR (PFID, PTTY, PTDE, PTCO, CRAT, CHAT, PTCA) VALUES (@PFID, @PTTY, @PTDE, @PTCO, @CRAT, @CHAT, @PTCA)";
             cmd.Parameters.AddWithValue("@PFID", ToDbValue(obj.PFID));
             cmd.Parameters.AddWithValue("@PTTY", ToDbValue(obj.PTTY));
             cmd.Parameters.AddWithValue("@PTDE", ToDbValue(obj.PTDE));
@@ -107,6 +106,9 @@ namespace GameTimeNext.Core.Application.DataManagers
             cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
             cmd.Parameters.AddWithValue("@PTCA", ToDbValue(obj.PTCA));
             cmd.ExecuteNonQuery();
+            using SQLiteCommand idCmd = connection.CreateCommand();
+            idCmd.CommandText = "SELECT last_insert_rowid();";
+            obj.PTID = Convert.ToInt64(idCmd.ExecuteScalar());
         }
 
         private void Update(SQLiteConnection connection, T1PLTHR obj)

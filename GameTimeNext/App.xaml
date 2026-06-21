@@ -36,6 +36,7 @@
                 <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Controls/MonitoringOverlayStyles.xaml" />
                 <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Controls/LaunchingOverlayStyles.xaml" />
                 <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Controls/ComboBoxStyles.xaml" />
+                <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Controls/SliderStyle.xaml" />
 
                 <!--  View Styles  -->
                 <ResourceDictionary Source="/GameTimeNext;component/UI/Styles/Views/WindowStyle.xaml" />

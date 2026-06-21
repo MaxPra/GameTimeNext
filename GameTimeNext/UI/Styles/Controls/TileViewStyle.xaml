@@ -36,7 +36,7 @@
     <sys:Double x:Key="TileAccentStrokeOpacityNormal">0.00</sys:Double>
     <sys:Double x:Key="TileAccentStrokeOpacitySelected">1.00</sys:Double>
 
-    <sys:Double x:Key="TileTiltAngleHover">-7.5</sys:Double>
+    <sys:Double x:Key="TileTiltAngleHover">-8</sys:Double>
     <sys:Double x:Key="TileAccentGlowOpacityHover">0.95</sys:Double>
 
     <LinearGradientBrush x:Key="Brush.TileGlassFx" StartPoint="0,0" EndPoint="1,1">
@@ -322,6 +322,7 @@
                                             Height="{StaticResource TileHeight}"
                                             Background="{DynamicResource Brush.TileBackground}"
                                             BorderThickness="0"
+                                            ClipToBounds="True"
                                             CornerRadius="{StaticResource TileCornerRadius}"
                                             SnapsToDevicePixels="True">
                                             <Grid ClipToBounds="True">
@@ -337,20 +338,28 @@
                                                     <Image
                                                         RenderOptions.BitmapScalingMode="HighQuality"
                                                         Source="{Binding COCOVIM}"
-                                                        Stretch="UniformToFill" />
+                                                        Stretch="UniformToFill">
+                                                        <Image.Clip>
+                                                            <RectangleGeometry
+                                                                RadiusX="2"
+                                                                RadiusY="2"
+                                                                Rect="0,0,210,248" />
+                                                        </Image.Clip>
+                                                    </Image>
                                                 </Border>
 
-                                                <Rectangle
+                                                <Border
                                                     Grid.Row="0"
+                                                    CornerRadius="{StaticResource TileImageCornerRadius}"
                                                     IsHitTestVisible="False"
                                                     Opacity="0.82">
-                                                    <Rectangle.Fill>
+                                                    <Border.Background>
                                                         <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                                                             <GradientStop Offset="0" Color="#2C000000" />
                                                             <GradientStop Offset="0.28" Color="#00000000" />
                                                         </LinearGradientBrush>
-                                                    </Rectangle.Fill>
-                                                </Rectangle>
+                                                    </Border.Background>
+                                                </Border>
 
                                                 <Border
                                                     x:Name="TitleHost"
@@ -399,17 +408,19 @@
                                                     </Grid>
                                                 </Border>
 
-                                                <Rectangle
+                                                <Border
                                                     x:Name="Glass"
                                                     Grid.RowSpan="2"
-                                                    Fill="{StaticResource Brush.TileGlassFx}"
+                                                    Background="{StaticResource Brush.TileGlassFx}"
+                                                    CornerRadius="{StaticResource TileCornerRadius}"
                                                     IsHitTestVisible="False"
                                                     Opacity="{StaticResource TileGlassOpacityNormal}" />
 
-                                                <Rectangle
+                                                <Border
                                                     x:Name="Sheen"
                                                     Grid.Row="0"
-                                                    Fill="{StaticResource Brush.TileSheenFx}"
+                                                    Background="{StaticResource Brush.TileSheenFx}"
+                                                    CornerRadius="{StaticResource TileImageCornerRadius}"
                                                     IsHitTestVisible="False"
                                                     Opacity="{StaticResource TileSheenOpacityNormal}" />
 

@@ -146,7 +146,14 @@
                                     <Image
                                         x:Name="imgMostPlayedCover"
                                         SnapsToDevicePixels="True"
-                                        Stretch="UniformToFill" />
+                                        Stretch="UniformToFill">
+                                        <Image.Clip>
+                                            <RectangleGeometry
+                                                RadiusX="8"
+                                                RadiusY="8"
+                                                Rect="0,0,600,900" />
+                                        </Image.Clip>
+                                    </Image>
                                 </Border>
 
                                 <!--  Gradient overlay at bottom  -->
@@ -332,7 +339,14 @@
                                     <Image
                                         x:Name="imgLastPlayedCover"
                                         SnapsToDevicePixels="True"
-                                        Stretch="UniformToFill" />
+                                        Stretch="UniformToFill">
+                                        <Image.Clip>
+                                            <RectangleGeometry
+                                                RadiusX="8"
+                                                RadiusY="8"
+                                                Rect="0,0,600,900" />
+                                        </Image.Clip>
+                                    </Image>
                                 </Border>
                             </Grid>
                         </Viewbox>

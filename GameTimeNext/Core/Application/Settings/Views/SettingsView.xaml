@@ -30,14 +30,18 @@
             Style="{StaticResource VerticalSettingsTabControlStyle}"
             TabStripPlacement="Left">
 
+            <TabControl.Resources>
+                <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource CheckBox.Switch}" />
+            </TabControl.Resources>
+
             <TabItem Header="General" Style="{StaticResource VerticalSettingsTabItemStyle}">
                 <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                    <StackPanel Margin="30,10,24,0">
+                    <StackPanel Margin="12,8,12,0">
 
                         <TextBlock Style="{StaticResource SettingsPageTitleStyle}" Text="General" />
 
                         <TextBlock
-                            Margin="0,4,0,28"
+                            Margin="0,4,0,18"
                             Style="{StaticResource SettingsPageSubtitleStyle}"
                             Text="General application settings and appearance behavior." />
 
@@ -60,7 +64,7 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="220" />
                                     <ColumnDefinition Width="16" />
-                                    <ColumnDefinition Width="32" />
+                                    <ColumnDefinition Width="54" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
 
@@ -83,7 +87,7 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="220" />
                                     <ColumnDefinition Width="16" />
-                                    <ColumnDefinition Width="32" />
+                                    <ColumnDefinition Width="54" />
                                     <ColumnDefinition Width="8" />
                                     <ColumnDefinition Width="80" />
                                     <ColumnDefinition Width="30" />
@@ -159,7 +163,7 @@
                                     x:Name="btnOpenSteamGridDB"
                                     Grid.Column="3"
                                     Width="36"
-                                    Height="34"
+                                    Height="36"
                                     ToolTip="Open Steam Grid DB and get your API key.">
                                     <TextBlock
                                         HorizontalAlignment="Center"
@@ -218,7 +222,7 @@
                                     x:Name="btnOpenIgdbClientId"
                                     Grid.Column="3"
                                     Width="36"
-                                    Height="34"
+                                    Height="36"
                                     ToolTip="Open Twitch Developer Portal to get your client ID.">
                                     <TextBlock
                                         HorizontalAlignment="Center"
@@ -254,7 +258,7 @@
                                     x:Name="btnOpenIgdbClientSecret"
                                     Grid.Column="3"
                                     Width="36"
-                                    Height="34"
+                                    Height="36"
                                     ToolTip="Open Twitch Developer Portal to get your client secret.">
                                     <TextBlock
                                         HorizontalAlignment="Center"
@@ -289,7 +293,7 @@
                                     <ColumnDefinition Width="200" />
                                     <ColumnDefinition Width="10" />
                                     <ColumnDefinition Width="16" />
-                                    <ColumnDefinition Width="32" />
+                                    <ColumnDefinition Width="54" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
 
@@ -352,7 +356,7 @@
                                     x:Name="btnBrowseBackupExportPath"
                                     Grid.Column="4"
                                     Width="36"
-                                    Height="34"
+                                    Height="36"
                                     ToolTip="Select a backup export path.">
                                     <TextBlock
                                         HorizontalAlignment="Center"
@@ -366,7 +370,7 @@
                                     x:Name="btnCreateBackup"
                                     Grid.Column="6"
                                     Width="130"
-                                    Height="34"
+                                    Height="36"
                                     Content="Create backup"
                                     ToolTip="Create a backup at the selected export path." />
                             </Grid>
@@ -375,11 +379,11 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="220" />
                                     <ColumnDefinition Width="16" />
-                                    <ColumnDefinition Width="32" />
+                                    <ColumnDefinition Width="54" />
                                     <ColumnDefinition Width="18" />
                                     <ColumnDefinition Width="100" />
                                     <ColumnDefinition Width="20" />
-                                    <ColumnDefinition Width="32" />
+                                    <ColumnDefinition Width="54" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
 
@@ -439,7 +443,7 @@
                                     x:Name="btnBrowseBackupImportPath"
                                     Grid.Column="4"
                                     Width="36"
-                                    Height="34"
+                                    Height="36"
                                     ToolTip="Select a backup import file.">
                                     <TextBlock
                                         HorizontalAlignment="Center"
@@ -453,7 +457,7 @@
                                     x:Name="btnImportBackup"
                                     Grid.Column="6"
                                     Width="130"
-                                    Height="34"
+                                    Height="36"
                                     Content="Import backup"
                                     ToolTip="Import a backup from the selected path." />
                             </Grid>
@@ -465,12 +469,12 @@
 
             <TabItem Header="Monitoring" Style="{StaticResource VerticalSettingsTabItemStyle}">
                 <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                    <StackPanel Margin="30,10,24,0">
+                    <StackPanel Margin="12,8,12,0">
 
                         <TextBlock Style="{StaticResource SettingsPageTitleStyle}" Text="Monitoring" />
 
                         <TextBlock
-                            Margin="0,4,0,28"
+                            Margin="0,4,0,18"
                             Style="{StaticResource SettingsPageSubtitleStyle}"
                             Text="Configure game monitoring behavior and blackout handling." />
 
@@ -506,7 +510,7 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="170" />
                                         <ColumnDefinition Width="16" />
-                                        <ColumnDefinition Width="32" />
+                                        <ColumnDefinition Width="54" />
                                     </Grid.ColumnDefinitions>
 
                                     <TextBlock
@@ -521,7 +525,7 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="170" />
                                         <ColumnDefinition Width="16" />
-                                        <ColumnDefinition Width="32" />
+                                        <ColumnDefinition Width="54" />
                                     </Grid.ColumnDefinitions>
 
                                     <TextBlock
@@ -542,7 +546,7 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="160" />
                                         <ColumnDefinition Width="16" />
-                                        <ColumnDefinition Width="32" />
+                                        <ColumnDefinition Width="54" />
                                     </Grid.ColumnDefinitions>
 
                                     <TextBlock
@@ -557,7 +561,7 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="170" />
                                         <ColumnDefinition Width="16" />
-                                        <ColumnDefinition Width="32" />
+                                        <ColumnDefinition Width="54" />
                                     </Grid.ColumnDefinitions>
 
                                     <TextBlock
@@ -572,7 +576,7 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="160" />
                                         <ColumnDefinition Width="16" />
-                                        <ColumnDefinition Width="32" />
+                                        <ColumnDefinition Width="54" />
                                     </Grid.ColumnDefinitions>
 
                                     <TextBlock
@@ -615,7 +619,7 @@
                                     x:Name="btnCaptureMonitoringKey"
                                     Grid.Column="2"
                                     Width="36"
-                                    Height="34">
+                                    Height="36">
                                     <Image
                                         Width="16"
                                         Height="16"
@@ -634,7 +638,7 @@
             </TabItem>
 
             <TabItem Header="Tags" Style="{StaticResource VerticalSettingsTabItemStyle}">
-                <StackPanel Margin="30,10,24,0">
+                <StackPanel Margin="12,8,12,0">
                     <TextBlock Style="{StaticResource SettingsPageTitleStyle}" Text="Tags" />
                     <TextBlock Style="{StaticResource SettingsPageSubtitleStyle}" Text="Tag-related settings will be available here later." />
                 </StackPanel>
@@ -642,12 +646,12 @@
 
             <TabItem Header="About" Style="{StaticResource VerticalSettingsTabItemStyle}">
                 <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                    <StackPanel Margin="30,10,24,0">
+                    <StackPanel Margin="12,8,12,0">
 
                         <TextBlock Style="{StaticResource SettingsPageTitleStyle}" Text="About" />
 
                         <TextBlock
-                            Margin="0,4,0,28"
+                            Margin="0,4,0,18"
                             Style="{StaticResource SettingsPageSubtitleStyle}"
                             Text="Application information, version details and credits." />
 

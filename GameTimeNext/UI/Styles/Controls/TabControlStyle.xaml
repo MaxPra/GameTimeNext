@@ -4,7 +4,7 @@
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Padding" Value="16,7" />
+        <Setter Property="Padding" Value="18,9" />
         <Setter Property="Margin" Value="0" />
         <Setter Property="FontSize" Value="13" />
         <Setter Property="FontWeight" Value="SemiBold" />
@@ -19,29 +19,18 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type TabItem}">
                     <Grid x:Name="Root" SnapsToDevicePixels="True">
-
-                        <!--  Selected: raised pill  -->
                         <Border
                             x:Name="SelectedBg"
-                            Background="{DynamicResource Brush.Surface}"
-                            BorderBrush="{DynamicResource Brush.Border}"
+                            Background="{DynamicResource Brush.Accent}"
+                            BorderBrush="{DynamicResource Brush.Accent}"
                             BorderThickness="1"
-                            CornerRadius="{StaticResource DefaultCornerRadius}"
+                            CornerRadius="3"
                             Opacity="0" />
 
-                        <!--  Hover overlay  -->
                         <Border
                             x:Name="HoverBg"
-                            Background="#12FFFFFF"
-                            CornerRadius="{StaticResource DefaultCornerRadius}"
-                            IsHitTestVisible="False"
-                            Opacity="0" />
-
-                        <!--  Accent tint for selected state  -->
-                        <Border
-                            x:Name="AccentTint"
-                            Background="{DynamicResource Brush.Accent}"
-                            CornerRadius="{StaticResource DefaultCornerRadius}"
+                            Background="{DynamicResource Brush.Surface}"
+                            CornerRadius="3"
                             IsHitTestVisible="False"
                             Opacity="0" />
 
@@ -58,37 +47,15 @@
                     </Grid>
 
                     <ControlTemplate.Triggers>
-
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Trigger.EnterActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation
-                                            Storyboard.TargetName="HoverBg"
-                                            Storyboard.TargetProperty="Opacity"
-                                            To="1"
-                                            Duration="0:0:0.12" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </Trigger.EnterActions>
-                            <Trigger.ExitActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation
-                                            Storyboard.TargetName="HoverBg"
-                                            Storyboard.TargetProperty="Opacity"
-                                            To="0"
-                                            Duration="0:0:0.18" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </Trigger.ExitActions>
+                            <Setter TargetName="HoverBg" Property="Opacity" Value="1" />
                             <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
                         </Trigger>
 
                         <Trigger Property="IsSelected" Value="True">
                             <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
                             <Setter TargetName="SelectedBg" Property="Opacity" Value="1" />
-                            <Setter TargetName="AccentTint" Property="Opacity" Value="0.8" />
+                            <Setter TargetName="HoverBg" Property="Opacity" Value="0" />
                         </Trigger>
 
                         <Trigger Property="IsEnabled" Value="False">
@@ -104,7 +71,7 @@
 
 
     <Style x:Key="ModernTabControlStyle" TargetType="{x:Type TabControl}">
-        <Setter Property="Background" Value="{DynamicResource Brush.Surface}" />
+        <Setter Property="Background" Value="{DynamicResource Brush.Background}" />
         <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Padding" Value="0" />
@@ -141,19 +108,19 @@
                             <!--  Segmented tab track  -->
                             <Border
                                 Grid.Row="0"
-                                Margin="10,10,10,0"
-                                Padding="3"
-                                Background="{DynamicResource Brush.Background}"
+                                Margin="12,12,12,0"
+                                Padding="0"
+                                Background="Transparent"
                                 BorderBrush="{DynamicResource Brush.Border}"
                                 BorderThickness="1"
-                                CornerRadius="{StaticResource DefaultCornerRadius}">
+                                CornerRadius="3">
                                 <ItemsPresenter />
                             </Border>
 
                             <!--  Tab content  -->
                             <ContentControl
                                 Grid.Row="1"
-                                Margin="0,10,12,12"
+                                Margin="0,12,12,12"
                                 HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
                                 VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
                                 Content="{TemplateBinding SelectedContent}"
@@ -172,7 +139,7 @@
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Padding" Value="12,8" />
+        <Setter Property="Padding" Value="14,9" />
         <Setter Property="Margin" Value="0" />
         <Setter Property="FontSize" Value="13" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
@@ -185,7 +152,7 @@
                         x:Name="RootBorder"
                         Padding="{TemplateBinding Padding}"
                         Background="Transparent"
-                        CornerRadius="6,6,0,0">
+                        CornerRadius="3">
                         <Grid>
                             <ContentPresenter
                                 HorizontalAlignment="Center"
@@ -195,25 +162,19 @@
                                 TextElement.FontSize="{TemplateBinding FontSize}"
                                 TextElement.FontWeight="{TemplateBinding FontWeight}"
                                 TextElement.Foreground="{TemplateBinding Foreground}" />
-                            <Border
-                                x:Name="SelectionIndicator"
-                                Height="2"
-                                Margin="0,0,0,-1"
-                                VerticalAlignment="Bottom"
-                                Background="{DynamicResource Brush.Accent}"
-                                Opacity="0" />
                         </Grid>
                     </Border>
 
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="RootBorder" Property="Background" Value="#12FFFFFF" />
+                            <Setter TargetName="RootBorder" Property="Background" Value="{DynamicResource Brush.Surface}" />
                             <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
                         </Trigger>
 
                         <Trigger Property="IsSelected" Value="True">
-                            <Setter TargetName="RootBorder" Property="Background" Value="#16FFFFFF" />
-                            <Setter TargetName="SelectionIndicator" Property="Opacity" Value="1" />
+                            <Setter TargetName="RootBorder" Property="Background" Value="{DynamicResource Brush.Accent}" />
+                            <Setter TargetName="RootBorder" Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
+                            <Setter TargetName="RootBorder" Property="BorderThickness" Value="1" />
                             <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
                             <Setter Property="FontWeight" Value="SemiBold" />
                         </Trigger>
@@ -229,7 +190,7 @@
     </Style>
 
     <Style x:Key="DefaultTabControlStyle" TargetType="{x:Type TabControl}">
-        <Setter Property="Background" Value="{DynamicResource Brush.Surface}" />
+        <Setter Property="Background" Value="{DynamicResource Brush.Background}" />
         <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Padding" Value="0" />
@@ -252,7 +213,7 @@
 
                             <Border
                                 Grid.Row="0"
-                                Padding="12,8,14,0"
+                                Padding="12,10,14,0"
                                 Background="Transparent"
                                 BorderBrush="{DynamicResource Brush.Border}"
                                 BorderThickness="0,0,0,1">
@@ -268,7 +229,7 @@
                             <ContentPresenter
                                 x:Name="PART_SelectedContentHost"
                                 Grid.Row="1"
-                                Margin="12"
+                                Margin="12,14,12,12"
                                 ContentSource="SelectedContent" />
                         </Grid>
                     </Border>

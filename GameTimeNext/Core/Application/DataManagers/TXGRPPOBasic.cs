@@ -91,13 +91,15 @@ namespace GameTimeNext.Core.Application.DataManagers
         private void Insert(SQLiteConnection connection, T1GRPPO obj)
         {
             using SQLiteCommand cmd = connection.CreateCommand();
-            cmd.CommandText = "INSERT INTO T1GRPPO (GPID, GRID, PFID, CRAT, CHAT) VALUES (@GPID, @GRID, @PFID, @CRAT, @CHAT)";
-            cmd.Parameters.AddWithValue("@GPID", ToDbValue(obj.GPID));
+            cmd.CommandText = "INSERT INTO T1GRPPO (GRID, PFID, CRAT, CHAT) VALUES (@GRID, @PFID, @CRAT, @CHAT)";
             cmd.Parameters.AddWithValue("@GRID", ToDbValue(obj.GRID));
             cmd.Parameters.AddWithValue("@PFID", ToDbValue(obj.PFID));
             cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
             cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
             cmd.ExecuteNonQuery();
+            using SQLiteCommand idCmd = connection.CreateCommand();
+            idCmd.CommandText = "SELECT last_insert_rowid();";
+            obj.GPID = Convert.ToInt64(idCmd.ExecuteScalar());
         }
 
         private void Update(SQLiteConnection connection, T1GRPPO obj)

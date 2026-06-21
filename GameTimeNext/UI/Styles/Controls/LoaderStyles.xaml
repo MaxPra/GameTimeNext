@@ -19,43 +19,31 @@
                         Background="#7A000000"
                         IsHitTestVisible="True">
 
-                        <Border
-                            Height="3"
-                            Margin="18,56,18,0"
-                            VerticalAlignment="Top"
-                            Background="#22000000"
-                            ClipToBounds="True"
-                            CornerRadius="2">
+                        <Grid
+                            Width="72"
+                            Height="72"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            RenderTransformOrigin="0.5,0.5">
+                            <Grid.RenderTransform>
+                                <RotateTransform x:Name="SpinnerRotate" Angle="0" />
+                            </Grid.RenderTransform>
 
-                            <Grid>
-                                <Border
-                                    Width="160"
-                                    HorizontalAlignment="Left"
-                                    CornerRadius="2">
-                                    <Border.Background>
-                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                                            <GradientStop Offset="0" Color="#00FFFFFF" />
-                                            <GradientStop Offset="0.35" Color="{DynamicResource Color.AccentHover}" />
-                                            <GradientStop Offset="0.5" Color="{DynamicResource Color.Accent}" />
-                                            <GradientStop Offset="0.65" Color="{DynamicResource Color.AccentHover}" />
-                                            <GradientStop Offset="1" Color="#00FFFFFF" />
-                                        </LinearGradientBrush>
-                                    </Border.Background>
-
-                                    <Border.Effect>
-                                        <DropShadowEffect
-                                            BlurRadius="18"
-                                            Opacity="0.85"
-                                            ShadowDepth="0"
-                                            Color="{DynamicResource Color.Accent}" />
-                                    </Border.Effect>
-
-                                    <Border.RenderTransform>
-                                        <TranslateTransform x:Name="GlowTranslate" X="-220" />
-                                    </Border.RenderTransform>
-                                </Border>
-                            </Grid>
-                        </Border>
+                            <Path
+                                Data="M 12,36 A 24,24 0 0 1 60,36"
+                                Stroke="{DynamicResource Brush.Accent}"
+                                StrokeStartLineCap="Round"
+                                StrokeEndLineCap="Round"
+                                StrokeThickness="4">
+                                <Path.Effect>
+                                    <DropShadowEffect
+                                        BlurRadius="8"
+                                        Opacity="0.45"
+                                        ShadowDepth="0"
+                                        Color="{DynamicResource Color.Accent}" />
+                                </Path.Effect>
+                            </Path>
+                        </Grid>
                     </Grid>
 
                     <ControlTemplate.Triggers>
@@ -64,11 +52,11 @@
                                 <BeginStoryboard x:Name="LoaderStoryboard">
                                     <Storyboard RepeatBehavior="Forever">
                                         <DoubleAnimation
-                                            Storyboard.TargetName="GlowTranslate"
-                                            Storyboard.TargetProperty="X"
-                                            From="-220"
-                                            To="1800"
-                                            Duration="0:0:1.10" />
+                                            Storyboard.TargetName="SpinnerRotate"
+                                            Storyboard.TargetProperty="Angle"
+                                            From="0"
+                                            To="360"
+                                            Duration="0:0:0.9" />
                                     </Storyboard>
                                 </BeginStoryboard>
                             </Trigger.EnterActions>
