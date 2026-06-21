@@ -1,0 +1,22 @@
+﻿=============================================
+  GameTimeNext  |  Version 0.4.0 Beta
+=============================================
+
+  IMPROVEMENTS
+  ____________
+
+  * complete UI redesign
+  
+
+  NEW FEATURES
+  ____________
+
+  * -
+
+
+  BUG FIXES
+  _________
+
+  * minor bugfixes regarding data saving and loading
+
+=============================================
