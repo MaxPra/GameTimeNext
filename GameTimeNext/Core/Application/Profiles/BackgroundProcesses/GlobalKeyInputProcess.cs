@@ -185,11 +185,6 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
         {
         }
 
-        protected override void OnStop()
-        {
-
-        }
-
         public enum StartType
         {
             MONITORE_KEY,

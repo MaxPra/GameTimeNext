@@ -234,11 +234,6 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
         {
         }
 
-        protected override void OnStop()
-        {
-
-        }
-
         private class CurrentProfileRunning
         {
             public long pfid = 0;

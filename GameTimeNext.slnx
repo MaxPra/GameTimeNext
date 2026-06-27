@@ -1,5 +1,5 @@
 <Solution>
   <Project Path="../UIX.ViewController.Engine/UIX.ViewController.Engine.csproj" />
   <Project Path="GameTimeNext/GameTimeNext.csproj" />
-  <Project Path="RemoteMonitoring/RemoteMonitoring.csproj" Id="4fdb98b4-e90f-418f-b974-5ab62ff50014" />
+  <Project Path="RemoteMonitoring/RemoteMonitoring.csproj" Id="7bbd818e-890a-4719-aa34-1be63cd66d13" />
 </Solution>

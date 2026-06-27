@@ -196,7 +196,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
 
         protected void EXEV_remoteMonitoringPortChanged(int port)
         {
-            GetView().txtRemoteMonitoringPort.Text = $"Web-App accessible on port {port}.";
+            GetView().txtRemoteMonitoringPort.Text = $"Web-App accessible via port {port}.";
         }
 
         protected void EV_btnCaptureMonitoringKey()

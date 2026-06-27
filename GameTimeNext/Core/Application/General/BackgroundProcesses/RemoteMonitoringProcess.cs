@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Sockets;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Logging;
+using GameTimeNext.Core.Framework.Utils;
 using UIX.ViewController.Engine.Runnables;
 
 namespace GameTimeNext.Core.Application.General.BackgroundProcesses
@@ -11,6 +12,7 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
     public class RemoteMonitoringProcess : UIXBackgroundProcess
     {
         private Process? _blazorProcess;
+        private RemoteMonitoringSocketServer? _socketServerProcess;
         
         public override void Logic()
         {
@@ -31,10 +33,11 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
             // Start blazorProcess
             FnLog.AddInfo(this, "Starting...");
 
-            int port;
+            int port, portSocket;
             try
             {
                 port = GetFreePort();
+                portSocket = GetFreePort();
             }
             catch (Exception ex)
             {
@@ -44,6 +47,11 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
 
             string baseDir = AppDomain.CurrentDomain.BaseDirectory;
             string? exePath = Directory.GetFiles(baseDir, "*RemoteMonitoring*.exe", SearchOption.AllDirectories).FirstOrDefault();
+            if (exePath is null && FnSystem.IsDebug())
+            {
+                baseDir = Path.Combine(baseDir, @"..\..\..\..\RemoteMonitoring\bin\Release\net10.0\publish");
+                exePath = Directory.GetFiles(baseDir, "*RemoteMonitoring*.exe", SearchOption.AllDirectories).FirstOrDefault();
+            }
 
             if (exePath is null)
             {
@@ -60,11 +68,18 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
                     CreateNoWindow = true,
                     WorkingDirectory = Path.GetDirectoryName(exePath) ?? baseDir
                 };
-                psi.Environment["ASPNETCORE_URLS"] = $"http://localhost:{port}";
+                psi.Environment["ASPNETCORE_URLS"] = $"http://0.0.0.0:{port}";
+
+                // Run socket server
+                _socketServerProcess = GetBackgroundProcess<RemoteMonitoringSocketServer>();
+                _socketServerProcess.CallDispatcher = CallDispatcher;
+                _socketServerProcess.Port = portSocket;
+                _socketServerProcess.Start(1000, runAsync: true);
+                AppEnvironment.StartedBackgroundProcesses.Add(typeof(RemoteMonitoringSocketServer).FullName!, _socketServerProcess);
 
                 _blazorProcess = Process.Start(psi);
                 FnLog.AddInfo(this, $"Started blazorProcess on port {port}.");
-                CallDispatcher!.Trigger("EXEV_remoteMonitoringPortChanged", port);
+                CallDispatcher!.Trigger("EXEV_remoteMonitoringPortChanged", port); // SettingsViewController
             }
             catch (Exception ex)
             {
@@ -88,20 +103,26 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
 
         protected override void OnStop()
         {
-            if (_blazorProcess is null) return;
-
-            try
+            if (_blazorProcess is not null)
             {
-                _blazorProcess.Kill();
-                _blazorProcess.WaitForExit(1000);
-                _blazorProcess.Dispose();
-                _blazorProcess = null;
+                try
+                {
+                    _blazorProcess.Kill();
+                    _blazorProcess.WaitForExit(1000);
+                    _blazorProcess.Dispose();
+                    _blazorProcess = null;
 
-                FnLog.AddInfo(this, $"Stopped blazorProcess.");
+                    FnLog.AddInfo(this, $"Stopped blazorProcess.");
+                }
+                catch (Exception ex)
+                {
+                    FnLog.AddError(this, $"Stopping blazorProcess failed.", ex);
+                }
             }
-            catch (Exception ex)
+
+            if (_socketServerProcess is not null)
             {
-                FnLog.AddError(this, $"Stopping blazorProcess failed.", ex);
+                _socketServerProcess.Stop();
             }
         }
 
