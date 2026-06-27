@@ -91,6 +91,9 @@ namespace GameTimeNext.Core.Application.DataManagers
         private void Insert(SQLiteConnection connection, T1GRPPO obj)
         {
             using SQLiteCommand cmd = connection.CreateCommand();
+            DateTime now = DateTime.Now;
+            obj.CRAT = now;
+            obj.CHAT = now;
             cmd.CommandText = "INSERT INTO T1GRPPO (GRID, PFID, CRAT, CHAT) VALUES (@GRID, @PFID, @CRAT, @CHAT)";
             cmd.Parameters.AddWithValue("@GRID", ToDbValue(obj.GRID));
             cmd.Parameters.AddWithValue("@PFID", ToDbValue(obj.PFID));
@@ -105,6 +108,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         private void Update(SQLiteConnection connection, T1GRPPO obj)
         {
             using SQLiteCommand cmd = connection.CreateCommand();
+            obj.CHAT = DateTime.Now;
             cmd.CommandText = "UPDATE T1GRPPO SET GRID = @GRID, PFID = @PFID, CRAT = @CRAT, CHAT = @CHAT WHERE GPID = @GPID";
             cmd.Parameters.AddWithValue("@GPID", ToDbValue(obj.GPID));
             cmd.Parameters.AddWithValue("@GRID", ToDbValue(obj.GRID));

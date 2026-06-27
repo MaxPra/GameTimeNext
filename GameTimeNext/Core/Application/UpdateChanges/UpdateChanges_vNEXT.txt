@@ -1,5 +1,5 @@
 ﻿=============================================
-  GameTimeNext  |  Version 0.3.4 Beta
+  GameTimeNext  |  Version 0.4.1 Beta
 =============================================
 
   IMPROVEMENTS
@@ -17,6 +17,8 @@
   BUG FIXES
   _________
 
-  * -
+  * Fixed a bug, where Timestamps were not being updated correctly when data was saved.
+  * Fixed a bug regarding detection of currently running games, where the application was not able 
+	to detect some games that were running in the background.
 
 =============================================

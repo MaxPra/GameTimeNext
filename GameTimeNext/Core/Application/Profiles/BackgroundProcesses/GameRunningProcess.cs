@@ -101,6 +101,10 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
             }
         }
 
+        protected override void OnStop()
+        {
+        }
+
         public void Initialize(List<T1PROFI> profiles)
         {
             // Neuinitialisierung

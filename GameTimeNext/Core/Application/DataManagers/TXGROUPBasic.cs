@@ -42,7 +42,7 @@ namespace GameTimeNext.Core.Application.DataManagers
 
             using SQLiteCommand cmd = connection.CreateCommand();
             cmd.CommandText = "DELETE FROM T1GROUP WHERE GRID = @GRID";
-            cmd.Parameters.AddWithValue("@GRID", gRID); 
+            cmd.Parameters.AddWithValue("@GRID", gRID);
             cmd.ExecuteNonQuery();
             DevSyncCsvSyncService.ExportTable("T1GROUP");
         }
@@ -91,6 +91,9 @@ namespace GameTimeNext.Core.Application.DataManagers
         private void Insert(SQLiteConnection connection, T1GROUP obj)
         {
             using SQLiteCommand cmd = connection.CreateCommand();
+            DateTime now = DateTime.Now;
+            obj.CRAT = now;
+            obj.CHAT = now;
             cmd.CommandText = "INSERT INTO T1GROUP (GRNA, GTYP, CRAT, CHAT) VALUES (@GRNA, @GTYP, @CRAT, @CHAT)";
             cmd.Parameters.AddWithValue("@GRNA", ToDbValue(obj.GRNA));
             cmd.Parameters.AddWithValue("@GTYP", ToDbValue(obj.GTYP));
@@ -105,6 +108,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         private void Update(SQLiteConnection connection, T1GROUP obj)
         {
             using SQLiteCommand cmd = connection.CreateCommand();
+            obj.CHAT = DateTime.Now;
             cmd.CommandText = "UPDATE T1GROUP SET GRNA = @GRNA, GTYP = @GTYP, CRAT = @CRAT, CHAT = @CHAT WHERE GRID = @GRID";
             cmd.Parameters.AddWithValue("@GRID", ToDbValue(obj.GRID));
             cmd.Parameters.AddWithValue("@GRNA", ToDbValue(obj.GRNA));

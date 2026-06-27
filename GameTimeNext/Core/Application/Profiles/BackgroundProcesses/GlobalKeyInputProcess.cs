@@ -34,6 +34,10 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
             }
         }
 
+        protected override void OnStop()
+        {
+        }
+
         private void ProcessNormal()
         {
             ProcessNormalGameTimeMonitoring();

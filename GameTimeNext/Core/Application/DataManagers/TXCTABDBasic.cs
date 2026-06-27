@@ -97,6 +97,9 @@ namespace GameTimeNext.Core.Application.DataManagers
         private void Insert(SQLiteConnection connection, T1CTABD obj)
         {
             using SQLiteCommand cmd = connection.CreateCommand();
+            DateTime now = DateTime.Now;
+            obj.CRAT = now;
+            obj.CHAT = now;
             cmd.CommandText = "INSERT INTO T1CTABD (TXTYP, TXNUM, DESCR, CRAT, CHAT, PARM1, PARM2) VALUES (@TXTYP, @TXNUM, @DESCR, @CRAT, @CHAT, @PARM1, @PARM2)";
             cmd.Parameters.AddWithValue("@TXTYP", ToDbValue(obj.TXTYP));
             cmd.Parameters.AddWithValue("@TXNUM", ToDbValue(obj.TXNUM));
@@ -111,6 +114,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         private void Update(SQLiteConnection connection, T1CTABD obj)
         {
             using SQLiteCommand cmd = connection.CreateCommand();
+            obj.CHAT = DateTime.Now;
             cmd.CommandText = "UPDATE T1CTABD SET DESCR = @DESCR, CRAT = @CRAT, CHAT = @CHAT, PARM1 = @PARM1, PARM2 = @PARM2 WHERE TXTYP = @TXTYP AND TXNUM = @TXNUM";
             cmd.Parameters.AddWithValue("@TXTYP", ToDbValue(obj.TXTYP));
             cmd.Parameters.AddWithValue("@TXNUM", ToDbValue(obj.TXNUM));
