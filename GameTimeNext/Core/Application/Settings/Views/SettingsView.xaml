@@ -589,7 +589,7 @@
                             </Grid>
                         </Grid>
 
-                        <Grid x:Name="pnlMonitoringKey">
+                        <Grid x:Name="pnlMonitoringKey" Margin="0,0,0,32">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="16" />
@@ -631,6 +631,37 @@
                                 Grid.Row="4"
                                 Foreground="{DynamicResource Brush.TextSecondary}"
                                 Text="Press the button to listen for a new hotkey." />
+                        </Grid>
+
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="16" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="12" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock
+                                Grid.Row="0"
+                                Foreground="{DynamicResource Brush.TextPrimary}"
+                                Style="{StaticResource SettingsGroupTitleStyle}"
+                                Text="Remote Monitoring" />
+
+                            <Grid Grid.Row="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="170" />
+                                    <ColumnDefinition Width="16" />
+                                    <ColumnDefinition Width="54" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock
+                                        Grid.Column="0"
+                                        VerticalAlignment="Center"
+                                        Foreground="{DynamicResource Brush.TextSecondary}"
+                                        Text="Remote Monitoring active" />
+                                <CheckBox x:Name="cbRemoteMonitoringActive" Grid.Column="2" />
+                            </Grid>
                         </Grid>
 
                     </StackPanel>

@@ -124,6 +124,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
         private void FillTabMonitoring()
         {
             GetView().cbMonitoringKeyActive.IsChecked = _appSettings!.MonitoringKeyActive;
+            GetView().cbRemoteMonitoringActive.IsChecked = _appSettings!.RemoteMonitoring;
             GetView().cbShowToastNotification.IsChecked = _appSettings!.ShowToastNotification;
             GetView().cbShowMonitoringIndicator.IsChecked = _appSettings!.ShowMonitoringIndicator;
             GetView().cbBlackoutSideMonitors.IsChecked = _appSettings!.BlackoutSideMonitors;
@@ -153,6 +154,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             _appSettings!.ShowMonitoringIndicator = GetView().cbShowMonitoringIndicator.IsChecked == true;
             _appSettings!.BlackoutSideMonitors = GetView().cbBlackoutSideMonitors.IsChecked == true;
             _appSettings!.MonitoringKeyActive = GetView().cbMonitoringKeyActive.IsChecked == true;
+            _appSettings!.RemoteMonitoring = GetView().cbRemoteMonitoringActive.IsChecked == true;
             _appSettings!.MonitoringKey = GetView().txbMonitoringKey.Text;
             _appSettings!.EnableSessionTimeQuery = GetView().cbEnableSessionTimeQuery.IsChecked == true;
         }

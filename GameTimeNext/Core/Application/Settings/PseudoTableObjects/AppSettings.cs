@@ -69,6 +69,9 @@ namespace GameTimeNext.Core.Application.TableObjects
         [UIXSignatureField(18)]
         public double BreakReminderHrs { get; set; }
 
+        [UIXSignatureField(19)]
+        public bool RemoteMonitoring { get; set; }
+
 
 
         public AppSettings()
@@ -83,6 +86,7 @@ namespace GameTimeNext.Core.Application.TableObjects
             BlackoutSideMonitors = false;
             EnableSessionTimeQuery = false;
             MonitoringKey = KeyInput.virtualKeyMap[KeyInput.VirtualKey.VK_NONE];
+            RemoteMonitoring = false;
             SteamGridDbKey = string.Empty;
             TwitchIGDBClientID = string.Empty;
             TwitchIGDBClientSecret = string.Empty;
