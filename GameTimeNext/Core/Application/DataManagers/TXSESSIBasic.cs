@@ -97,6 +97,9 @@ namespace GameTimeNext.Core.Application.DataManagers
         private void Insert(SQLiteConnection connection, T1SESSI obj)
         {
             using SQLiteCommand cmd = connection.CreateCommand();
+            DateTime now = DateTime.Now;
+            obj.CRAT = now;
+            obj.CHAT = now;
             cmd.CommandText = "INSERT INTO T1SESSI (PFID, PTID, PLFR, PLTO, PLTI, CRAT, CHAT) VALUES (@PFID, @PTID, @PLFR, @PLTO, @PLTI, @CRAT, @CHAT)";
             cmd.Parameters.AddWithValue("@PFID", ToDbValue(obj.PFID));
             cmd.Parameters.AddWithValue("@PTID", ToDbValue(obj.PTID));
@@ -114,6 +117,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         private void Update(SQLiteConnection connection, T1SESSI obj)
         {
             using SQLiteCommand cmd = connection.CreateCommand();
+            obj.CHAT = DateTime.Now;
             cmd.CommandText = "UPDATE T1SESSI SET PFID = @PFID, PTID = @PTID, PLFR = @PLFR, PLTO = @PLTO, PLTI = @PLTI, CRAT = @CRAT, CHAT = @CHAT WHERE SEID = @SEID";
             cmd.Parameters.AddWithValue("@SEID", ToDbValue(obj.SEID));
             cmd.Parameters.AddWithValue("@PFID", ToDbValue(obj.PFID));
