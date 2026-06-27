@@ -58,7 +58,7 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
 
         protected override void OnStop()
         {
-            _listener?.Stop();
+            _listener?.Stop(); 
         }
 
         public override void InitializeApplicationOutput()
