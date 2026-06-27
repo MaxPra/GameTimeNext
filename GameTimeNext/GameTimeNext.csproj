@@ -71,6 +71,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\UIX.ViewController.Engine\UIX.ViewController.Engine.csproj" />
+    <ProjectReference Include="..\RemoteMonitoring\RemoteMonitoring.csproj" />
   </ItemGroup>
 
   <ItemGroup>

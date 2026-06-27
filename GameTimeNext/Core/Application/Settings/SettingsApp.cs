@@ -24,6 +24,7 @@ namespace GameTimeNext.Core.Application.Settings
         public void Start(UIXApplication hostApplication, ContentPresenter presenter)
         {
             this.HostApplication = hostApplication;
+            this.CallDispatcher = hostApplication.CallDispatcher;
             this.SettingsView.ContentPresenter = presenter;
             this.SettingsView.ViewController.Show(false);
             Loader = hostApplication.Loader;

@@ -638,6 +638,8 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="16" />
                                 <RowDefinition Height="Auto" />
+                                <RowDefinition Height="8" />
+                                <RowDefinition Height="Auto" />
                                 <RowDefinition Height="12" />
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
@@ -662,6 +664,11 @@
                                         Text="Remote Monitoring active" />
                                 <CheckBox x:Name="cbRemoteMonitoringActive" Grid.Column="2" />
                             </Grid>
+
+                            <TextBlock
+                                x:Name="txtRemoteMonitoringPort"
+                                Grid.Row="4"
+                                Foreground="{DynamicResource Brush.Success}" />
                         </Grid>
 
                     </StackPanel>

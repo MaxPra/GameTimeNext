@@ -34,6 +34,8 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             _appSettings = AppEnvironment.GetAppConfig().AppSettings;
             _appSettings.ResetChangeTracking();
             _appSettings.AcceptChanges();
+
+            GetApp().CallDispatcher.Register(this, nameof(EXEV_remoteMonitoringPortChanged));
         }
 
         protected override void BuildFirstImpl()
@@ -190,6 +192,11 @@ namespace GameTimeNext.Core.Application.Settings.Controller
         private SettingsApp GetApp()
         {
             return (SettingsApp)App;
+        }
+
+        protected void EXEV_remoteMonitoringPortChanged(int port)
+        {
+            GetView().txtRemoteMonitoringPort.Text = $"Web-App accessible on port {port}.";
         }
 
         protected void EV_btnCaptureMonitoringKey()
