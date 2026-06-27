@@ -133,22 +133,24 @@ namespace GameTimeNext.Core.Framework.Utils
 
         public static bool IsProcessRunning(string exeName)
         {
-            // Hole alle laufenden Prozesse
-            Process[] processes = Process.GetProcesses();
+            string targetName = System.IO.Path.GetFileNameWithoutExtension(exeName);
 
-            foreach (Process process in processes)
+            foreach (Process process in Process.GetProcesses())
             {
                 try
                 {
-                    // Überprüfe, ob der Prozess den Namen der EXE-Datei enthält
-                    if (process.ProcessName.Equals(System.IO.Path.GetFileNameWithoutExtension(exeName), StringComparison.OrdinalIgnoreCase))
+                    if (process.ProcessName.Equals(targetName, StringComparison.OrdinalIgnoreCase))
                     {
                         return true;
                     }
                 }
-                catch (Exception ex)
+                catch
                 {
-                    return false;
+                    continue;
+                }
+                finally
+                {
+                    try { process.Dispose(); } catch { }
                 }
             }
 
@@ -158,6 +160,7 @@ namespace GameTimeNext.Core.Framework.Utils
         public static bool IsProcessRunningWithPathPart(string exeName, string partialPath)
         {
             var nameNoExt = Path.GetFileNameWithoutExtension(exeName);
+            var normalizedPartialPath = Path.GetFullPath(partialPath).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
 
             foreach (var p in Process.GetProcesses())
             {
@@ -170,12 +173,14 @@ namespace GameTimeNext.Core.Framework.Utils
                     if (string.IsNullOrEmpty(procPath))
                         continue;
 
-                    if (procPath.IndexOf(partialPath, StringComparison.OrdinalIgnoreCase) >= 0)
+                    var normalizedProcPath = Path.GetFullPath(procPath);
+
+                    if (normalizedProcPath.IndexOf(normalizedPartialPath, StringComparison.OrdinalIgnoreCase) >= 0)
                         return true;
                 }
                 catch
                 {
-                    return IsProcessRunning(exeName);
+                    continue;
                 }
                 finally
                 {

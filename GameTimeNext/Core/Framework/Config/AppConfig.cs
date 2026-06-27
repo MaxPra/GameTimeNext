@@ -44,7 +44,7 @@ namespace GameTimeNext.Core.Framework.Config
         {
             get
             {
-                string logFilePath = AppFolderPathNormal + Path.DirectorySeparatorChar + $"ApplicationLog_{DateTime.Now:yyyy-MM-dd}.log";
+                string logFilePath = AppFolderPath + Path.DirectorySeparatorChar + $"ApplicationLog_{DateTime.Now:yyyy-MM-dd}.log";
 
                 return logFilePath;
             }
