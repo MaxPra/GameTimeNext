@@ -161,6 +161,12 @@ namespace GameTimeNext.Core.Application.Metadata
             List<GeneratedField> primaryKeys = fields.Where(x => x.IsPrimaryKey).ToList();
             List<GeneratedField> nonPrimary = fields.Where(x => !x.IsPrimaryKey).ToList();
             GeneratedField? autoIncrementPrimaryKey = fields.FirstOrDefault(x => x.IsPrimaryKey && x.IsAutoIncrement);
+            GeneratedField? createdAtField = fields.FirstOrDefault(x =>
+                string.Equals(NormalizeName(x.Metadata.PONAM), "CRAT", StringComparison.OrdinalIgnoreCase) &&
+                x.CSharpType == "DateTime");
+            GeneratedField? changedAtField = fields.FirstOrDefault(x =>
+                string.Equals(NormalizeName(x.Metadata.PONAM), "CHAT", StringComparison.OrdinalIgnoreCase) &&
+                x.CSharpType == "DateTime");
             List<GeneratedField> insertFields = autoIncrementPrimaryKey == null
                 ? fields
                 : fields.Where(x => !ReferenceEquals(x, autoIncrementPrimaryKey)).ToList();
@@ -264,6 +270,28 @@ namespace GameTimeNext.Core.Application.Metadata
 
             code.BeginBlock($"private void Insert(SQLiteConnection connection, {t1ClassName} obj)");
             code.AppendLine("using SQLiteCommand cmd = connection.CreateCommand();");
+            if (createdAtField != null && changedAtField != null)
+            {
+                string createdAtName = NormalizeName(createdAtField.Metadata.PONAM);
+                string changedAtName = NormalizeName(changedAtField.Metadata.PONAM);
+                code.AppendLine("DateTime now = DateTime.Now;");
+                code.AppendLine($"obj.{createdAtName} = now;");
+                code.AppendLine($"obj.{changedAtName} = now;");
+            }
+            else
+            {
+                if (createdAtField != null)
+                {
+                    string createdAtName = NormalizeName(createdAtField.Metadata.PONAM);
+                    code.AppendLine($"obj.{createdAtName} = DateTime.Now;");
+                }
+
+                if (changedAtField != null)
+                {
+                    string changedAtName = NormalizeName(changedAtField.Metadata.PONAM);
+                    code.AppendLine($"obj.{changedAtName} = DateTime.Now;");
+                }
+            }
             code.AppendLine($"cmd.CommandText = \"INSERT INTO {tableName} ({string.Join(", ", insertFields.Select(x => NormalizeName(x.Metadata.PONAM)))}) VALUES ({string.Join(", ", insertFields.Select(x => "@" + NormalizeName(x.Metadata.PONAM)))})\";");
             foreach (GeneratedField field in insertFields)
             {
@@ -285,6 +313,11 @@ namespace GameTimeNext.Core.Application.Metadata
 
             code.BeginBlock($"private void Update(SQLiteConnection connection, {t1ClassName} obj)");
             code.AppendLine("using SQLiteCommand cmd = connection.CreateCommand();");
+            if (changedAtField != null)
+            {
+                string changedAtName = NormalizeName(changedAtField.Metadata.PONAM);
+                code.AppendLine($"obj.{changedAtName} = DateTime.Now;");
+            }
             code.AppendLine($"cmd.CommandText = \"UPDATE {tableName} SET {string.Join(", ", nonPrimary.Select(x => NormalizeName(x.Metadata.PONAM) + " = @" + NormalizeName(x.Metadata.PONAM)))} WHERE {BuildWhereClause(primaryKeys, "@")}\";");
             foreach (GeneratedField field in fields)
             {
