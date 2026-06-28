@@ -457,17 +457,17 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             profileDetailViewController.UpdateUIMonitoringStopped();
         }
 
-        protected async Task EXEV_SwitchProfile()
+        protected async Task EXEV_SwitchProfile(long pfid)
         {
             if (_profilesSubGridViewModel == null)
                 return;
 
-            List<ProfilesListBoxItem> currentProfis = _profilesSubGridViewModel.T1Profis.Where(p => (p.ItemObject as T1PROFI)?.PFID == AppEnvironment.CurrentPfid).ToList();
+            List<ProfilesListBoxItem> currentProfis = _profilesSubGridViewModel.T1Profis.Where(p => (p.ItemObject as T1PROFI)?.PFID == pfid).ToList();
 
             if (currentProfis == null || currentProfis.Count == 0)
-                await AdjustFiltersToStartedGameProfile(AppEnvironment.CurrentPfid);
+                await AdjustFiltersToStartedGameProfile(pfid);
 
-            _profilesSubGridViewModel.SelectedT1Profi = _profilesSubGridViewModel.T1Profis.Where(p => (p.ItemObject as T1PROFI)?.PFID == AppEnvironment.CurrentPfid).ToList()[0];
+            _profilesSubGridViewModel.SelectedT1Profi = _profilesSubGridViewModel.T1Profis.Where(p => (p.ItemObject as T1PROFI)?.PFID == pfid).ToList()[0];
 
             ToastMessage tm = new ToastMessage("Switched profile...", (_profilesSubGridViewModel!.SelectedT1Profi.ItemObject as T1PROFI)?.GANA ?? string.Empty);
             tm.Show();
