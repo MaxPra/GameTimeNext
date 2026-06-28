@@ -1,4 +1,5 @@
-﻿using GameTimeNext.Core.Application.Profiles.Controller;
+﻿using GameTimeNext.Core.Application.Profiles.Batch;
+using GameTimeNext.Core.Application.Profiles.Controller;
 using GameTimeNext.Core.Application.Profiles.DataWrapper;
 using GameTimeNext.Core.Application.Profiles.Views;
 using GameTimeNext.Core.Application.TimeMonitoring;
@@ -25,6 +26,8 @@ namespace GameTimeNext.Core.Application.Profiles
         public ProfilesDetailView ProfilesDetailView { get; set; }
         public FilterCache FilterCache { get => _filterCache; set => _filterCache = value; }
 
+        public ProfilesBatchApp? ProfilesBatchApp { get; set; } = null;
+
         public void Start(UIXApplication hostApplication, ContentPresenter presenter)
         {
             this.HostApplication = hostApplication;
@@ -32,6 +35,10 @@ namespace GameTimeNext.Core.Application.Profiles
             this.ProfilesView.ViewController.Show(false);
             Loader = hostApplication.Loader;
             CallDispatcher = hostApplication.CallDispatcher;
+
+            // BatchApp mitstarten, um Hintergrundprozesse zu ermöglichen
+            ProfilesBatchApp = hostApplication.GetApplication<ProfilesBatchApp>();
+            ProfilesBatchApp.Start(this);
         }
 
         public override void InitializeApplicationOutput()

@@ -1,4 +1,6 @@
-﻿using GameTimeNext.Core.Framework.Logging;
+﻿using GameTimeNext.Core.Application.Profiles.Batch;
+using GameTimeNext.Core.Framework;
+using GameTimeNext.Core.Framework.Logging;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -56,13 +58,16 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
 
                 FnLog.AddInfo(this, $"Received: {message}");
 
+                // WP
+                //ProfilesBatchApp profilesBatchApp = GetProfilesBatchApp();
+
                 await writer.WriteLineAsync(message);
             }
         }
 
         protected override void OnStop()
         {
-            _listener?.Stop(); 
+            _listener?.Stop();
         }
 
         public override void InitializeApplicationOutput()
@@ -73,6 +78,15 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
         protected override void InitializeInfos()
         {
 
+        }
+
+        private ProfilesBatchApp GetProfilesBatchApp()
+        {
+            if (AppEnvironment.StartedApplications.ContainsKey(typeof(ProfilesBatchApp).FullName!)
+                && AppEnvironment.StartedApplications[typeof(ProfilesBatchApp).FullName!] is ProfilesBatchApp profilesBatchApp)
+                return profilesBatchApp;
+
+            return null!;
         }
     }
 }
