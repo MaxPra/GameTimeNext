@@ -10,7 +10,6 @@ using GameTimeNext.Core.Framework.DataBase.DevSync;
 using GameTimeNext.Core.Framework.DataBase.Import;
 using GameTimeNext.Core.Framework.Files;
 using GameTimeNext.Core.Framework.Igdb;
-using GameTimeNext.Core.Framework.Logging;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.Utils;
 using GameTimeNext.Core.Framework.Versioning;
@@ -107,10 +106,6 @@ namespace GameTimeNext.Core.Framework
         public static void Initalize()
         {
             InitializeStartableApps();
-
-            LoadAppConfig();
-
-            FnLog.Configure(GetAppConfig().LogFilePath);
 
             HandleBackup();
 
@@ -320,7 +315,7 @@ namespace GameTimeNext.Core.Framework
             }
         }
 
-        private static void LoadAppConfig()
+        public static void LoadAppConfig()
         {
             string appConfigText = File.ReadAllText(new AppConfig().AppConfigPath);
 

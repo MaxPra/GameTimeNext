@@ -4,6 +4,7 @@ using GameTimeNext.Core.Application.General.UserSettings;
 using GameTimeNext.Core.Application.General.ViewModels;
 using GameTimeNext.Core.Application.GTXMigration;
 using GameTimeNext.Core.Framework;
+using GameTimeNext.Core.Framework.Logging;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.Utils;
 using System.IO;
@@ -51,26 +52,46 @@ namespace GameTimeNext.Core.Application.General.Controller
 
             BuildBetaTag();
 
-            await CheckGTXMigration();
 
+            FnLog.AddInfo("MainApp", "Starting favorites...");
             AppEnvironment.AppLauncher.StartFavorites(GetApp());
 
+            FnLog.AddInfo("MainApp", "Starting background processes...");
             // Hintergrundprozesse starten
             AppEnvironment.StartBackgroundProcesses(GetApp());
-
-
 
             // Warten bis alle ausstehenden Render-Operationen (Prio 7) abgearbeitet
             // sind, bevor modale Dialoge gezeigt werden. Background-Prio (4) ist
             // niedriger als Render (7) → Render läuft zuerst durch.
             await System.Windows.Application.Current.Dispatcher.InvokeAsync(() => { }, DispatcherPriority.Background);
 
+            if (GetApp().SplashScreen is not null)
+            {
+                GetApp().SplashScreen?.Close();
+
+                if (ReferenceEquals(System.Windows.Application.Current.MainWindow, GetApp().SplashScreen))
+                    System.Windows.Application.Current.MainWindow = null;
+            }
+
             FnControls.SetVisible(GetWindow(), true);
+
+            // WindowState setzen
+            _ = GetWindow().Dispatcher.BeginInvoke(() =>
+            {
+                GetWindow().WindowState = GetApp().StartMinimized
+                    ? WindowState.Minimized
+                    : WindowState.Maximized;
+            }, DispatcherPriority.ApplicationIdle);
+
+            System.Windows.Application.Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
 
             // Fehler anzeigen, die vor MainWindow passiert sind (Appstart)
             ShowErrorsFromErrorList();
 
+            await CheckGTXMigration();
 
+
+            FnLog.AddInfo("MainApp", "*** Application started ***");
         }
 
         protected override void BuildImpl()
@@ -97,7 +118,10 @@ namespace GameTimeNext.Core.Application.General.Controller
                 case UIXEventNames.Selector.SelectionChanged:
 
                     if (source is TabControl)
+                    {
+                        FnControls.SetVisible(GetWindow().txtEmptyTabMessage, GetWindow().MainTabControl.Items.Count == 0);
                         Event_TabChanged((TabControl)source);
+                    }
                     break;
             }
         }
@@ -154,13 +178,18 @@ namespace GameTimeNext.Core.Application.General.Controller
 
             if (Directory.Exists(_gtxPath) && gtnFiles.Length == 0)
             {
+                FnLog.AddInfo("MainApp", "GameTimeX installation found. Prompting user for migration.");
+
                 CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>();
                 string msg = "A GameTimeX-Installation was found.\nDo you want to migrate your profiles to GameTimeNXT?";
                 CFMBOXResult result = cfmbox.Show("Start GameTimeX migration?", msg, CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
 
                 if (result == CFMBOXResult.Yes)
                 {
+                    FnLog.AddInfo("MainApp", "User accepted migration. Starting migration process.");
                     GetApp().Loader.Begin(loaderTextStart);
+
+                    bool hasError = false;
 
                     await Task.Run(() =>
                     {
@@ -171,9 +200,13 @@ namespace GameTimeNext.Core.Application.General.Controller
                         }
                         catch (Exception ex)
                         {
+                            hasError = true;
+                            FnLog.AddError("MainApp", "Error during GTX migration", ex);
+                            GetApp().GetApplication<CFMBOX>().Show("Migration Error", "An error occurred during migration:\n" + ex.Message, CFMBOXResult.Ok, CFMBOXIcon.Error);
                         }
                         finally
                         {
+                            FnLog.AddInfo("MainApp", $"GTX migration process completed {(hasError ? "with errors" : "successfully")}.");
                             GetApp().Loader.Stop();
                         }
                     });

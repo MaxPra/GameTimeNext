@@ -31,7 +31,7 @@
             TabStripPlacement="Left">
 
             <TabControl.Resources>
-                <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource CheckBox.Switch}" />
+                <Style BasedOn="{StaticResource CheckBox.Switch}" TargetType="{x:Type CheckBox}" />
             </TabControl.Resources>
 
             <TabItem Header="General" Style="{StaticResource VerticalSettingsTabItemStyle}">
@@ -49,6 +49,8 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="16" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="12" />
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="12" />
                                 <RowDefinition Height="Auto" />
@@ -82,8 +84,30 @@
                                     ToolTip="Blacks out all screens to help protect OLED displays (Ctrl + B)." />
                             </Grid>
 
-                            <!--  New: remind to take a break option  -->
                             <Grid Grid.Row="4" HorizontalAlignment="Left">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="220" />
+                                    <ColumnDefinition Width="16" />
+                                    <ColumnDefinition Width="54" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock
+                                    Grid.Column="0"
+                                    VerticalAlignment="Center"
+                                    Foreground="{DynamicResource Brush.TextSecondary}"
+                                    Text="Automatic start (minimized)" />
+
+                                <CheckBox
+                                    x:Name="cbAutoStartMinimized"
+                                    Grid.Column="2"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    ToolTip="Starts the application minimized when launched automatically." />
+                            </Grid>
+
+                            <!--  New: remind to take a break option  -->
+                            <Grid Grid.Row="6" HorizontalAlignment="Left">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="220" />
                                     <ColumnDefinition Width="16" />
