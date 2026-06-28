@@ -1,8 +1,13 @@
 #define AppName "GameTimeNext"
 #define AppExeName AppName + ".exe"
-#define AppVersionSemantic "0.4.0"
+#define AppVersionSemantic "0.4.1"
 #define AppVersionSuffix "beta"
 #define AppPublisher "MaxPra"
+
+;Old Setups
+#define OldPublisher "MaxPra"
+#define OldMsiProductCode "{AA642EDE-2EA3-4C94-8325-0E112FA8FBF5}"
+#define OldInnoAppId "{B6D12BF9-6933-4610-BB15-68F30712EEAD}"
 
 #if AppVersionSuffix != ""
   #define AppVersion AppVersionSemantic + "-" + AppVersionSuffix
@@ -16,7 +21,7 @@
 #define BinDirectory "..\GameTimeNext\bin\Release\net10.0-windows"
 
 [Setup]
-AppId={{AA642EDE-2EA3-4C94-8325-0E112FA8FBF5}}
+AppId={{D4A9F2C1-7E11-4A7B-9C2D-9C6A1B2F77AA}}
 AppName={#AppName}
 AppVersion={#AppVersion}
 VersionInfoVersion={#AppVersionSemantic}
@@ -63,48 +68,79 @@ Filename: "{app}\{#AppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(
 
 [Code]
 
-const OldProductCode = '{AA642EDE-2EA3-4C94-8325-0E112FA8FBF5}';
-
-function InitializeSetup(): Boolean;
+function UninstallMSI(): Boolean;
 var
   ResultCode: Integer;
-  UninstallOK: Boolean;
+begin
+  Result :=
+    Exec(
+      ExpandConstant('{sys}\msiexec.exe'),
+      '/x {#OldMsiProductCode} /passive /norestart',
+      '',
+      SW_HIDE,
+      ewWaitUntilTerminated,
+      ResultCode
+    );
+
+  Result := Result and (ResultCode = 0);
+end;
+
+function UninstallOldInno(): Boolean;
+var
+  UninstallPath: string;
+  ResultCode: Integer;
+begin
+  Result := False;
+
+  if RegQueryStringValue(
+    HKLM,
+    'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{#OldInnoAppId}_is1',
+    'UninstallString',
+    UninstallPath
+  ) then
+  begin
+    Exec(RemoveQuotes(UninstallPath), '', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+    Result := (ResultCode = 0);
+  end
+  else
+    Result := True; // not installed is fine
+end;
+
+procedure RemoveOldFolders();
+begin
+  DelTree(ExpandConstant('{autopf}\{#OldPublisher}\{#AppName}'), True, True, True);
+end;
+
+function InitializeSetup(): Boolean;
 begin
   Result := True;
-  UninstallOK := False;
 
-  if RegKeyExists(HKLM, 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\' + OldProductCode) or
-     RegKeyExists(HKLM, 'SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\' + OldProductCode) then
+  // 1. MSI uninstall
+  if RegKeyExists(HKLM,
+    'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{#OldMsiProductCode}') then
   begin
-    if MsgBox(
-      'A previous MSI version of GameTimeNext was found.' + #13#10 +
-      'It must be removed before continuing installation.' + #13#10#13#10 +
-      'Uninstall it now?',
-      mbConfirmation, MB_YESNO
-    ) = IDYES then
+    if MsgBox('Old MSI version detected. Uninstall it?', mbConfirmation, MB_YESNO) = IDYES then
     begin
-      UninstallOK :=
-        Exec(
-          ExpandConstant('{sys}\msiexec.exe'),
-          '/x ' + OldProductCode + ' /passive /norestart',
-          '',
-          SW_SHOW,
-          ewWaitUntilTerminated,
-          ResultCode
-        );
-
-      if (not UninstallOK) or (ResultCode <> 0) then
+      if not UninstallMSI() then
       begin
-        MsgBox('Uninstall failed. Setup will abort.', mbError, MB_OK);
+        MsgBox('MSI uninstall failed. Setup aborted.', mbError, MB_OK);
         Result := False;
         Exit;
       end;
     end
     else
     begin
-      MsgBox('Setup cannot continue while the old version is installed.', mbInformation, MB_OK);
       Result := False;
       Exit;
     end;
   end;
+
+  // 2. Old Inno uninstall
+  if MsgBox('Check for old Inno version (MaxPra)?', mbConfirmation, MB_YESNO) = IDYES then
+  begin
+    UninstallOldInno();
+  end;
+
+  // 3. Cleanup leftovers
+  RemoveOldFolders();
 end;
