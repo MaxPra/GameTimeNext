@@ -1,0 +1,22 @@
+﻿<div class="flex aspect-2/3 h-auto flex-1 flex-col overflow-clip rounded-lg bg-slate-900">
+    <div class="relative flex-1 overflow-hidden bg-white/5">
+        @if (!string.IsNullOrWhiteSpace(ImageUrl))
+        {
+            <img src="@ImageUrl"
+                 alt="@Title"
+                 class="absolute inset-0 h-full w-full object-cover object-top" />
+        }
+    </div>
+    <div class="flex h-15 items-center justify-center border-t-1 border-white/15">
+        <p class="text-center text-lg font-semibold">@Title</p>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string Title { get; set; } = "Profile...";
+    [Parameter]
+    public string ImageUrl { get; set; } = string.Empty;
+    [Parameter]
+    public string AccentColor { get; set; } = "00FFFF";
+}

@@ -18,6 +18,37 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
         {
             if (!AppEnvironment.GetAppConfig().AppSettings.RemoteMonitoring) return;
 
+            HandleSocket();
+            //HandleBlazor();
+        }
+
+        private void HandleSocket()
+        {
+            if (_socketServerProcess is not null) return;
+
+            FnLog.AddInfo(this, "Starting socketServerProcess...");
+            int port = 5050; // OFODI: Make dynamic again before PR
+            //try
+            //{
+            //    port = GetFreePort();
+            //}
+            //catch (Exception ex)
+            //{
+            //    FnLog.AddError(this, "Could not get free port.", ex);
+            //    return;
+            //}
+
+            // Run socket server
+            _socketServerProcess = GetBackgroundProcess<RemoteMonitoringSocketServer>();
+            _socketServerProcess.CallDispatcher = CallDispatcher;
+            _socketServerProcess.Port = port;
+            _socketServerProcess.Start(1000, runAsync: true);
+            AppEnvironment.StartedBackgroundProcesses.Add(typeof(RemoteMonitoringSocketServer).FullName!, _socketServerProcess);
+            FnLog.AddInfo(this, $"Started socketServerProcess on port {port}.");
+        }
+
+        private void HandleBlazor()
+        {
             // CleanUp, when balzorProcess has exited
             if (_blazorProcess is not null && _blazorProcess.HasExited)
             {
@@ -31,13 +62,12 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
                 return;
 
             // Start blazorProcess
-            FnLog.AddInfo(this, "Starting...");
+            FnLog.AddInfo(this, "Starting blazorProcess...");
 
-            int port, portSocket;
+            int port;
             try
             {
                 port = GetFreePort();
-                portSocket = GetFreePort();
             }
             catch (Exception ex)
             {
@@ -69,13 +99,6 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
                     WorkingDirectory = Path.GetDirectoryName(exePath) ?? baseDir
                 };
                 psi.Environment["ASPNETCORE_URLS"] = $"http://0.0.0.0:{port}";
-
-                // Run socket server
-                _socketServerProcess = GetBackgroundProcess<RemoteMonitoringSocketServer>();
-                _socketServerProcess.CallDispatcher = CallDispatcher;
-                _socketServerProcess.Port = portSocket;
-                _socketServerProcess.Start(1000, runAsync: true);
-                AppEnvironment.StartedBackgroundProcesses.Add(typeof(RemoteMonitoringSocketServer).FullName!, _socketServerProcess);
 
                 _blazorProcess = Process.Start(psi);
                 FnLog.AddInfo(this, $"Started blazorProcess on port {port}.");

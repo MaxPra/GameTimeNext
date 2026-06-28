@@ -1,6 +1,7 @@
 ﻿using GameTimeNext.Core.Application.Profiles.Batch;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Logging;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -15,7 +16,7 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
 
         public int Port { get; set; }
 
-        public RemoteMonitoringSocketServer() : base()
+        public override void Init()
         {
             _listener = new TcpListener(IPAddress.Loopback, Port);
             _listener.Start();
@@ -57,12 +58,19 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
                     break;
 
                 FnLog.AddInfo(this, $"Received: {message}");
-
-                // WP
-                //ProfilesBatchApp profilesBatchApp = GetProfilesBatchApp();
-
-                await writer.WriteLineAsync(message);
+                Debug.WriteLine($"Received: {message}");
+                await HandleResponse(writer, message);
             }
+        }
+
+        private async Task HandleResponse(StreamWriter writer, string request)
+        {
+            if (request.Equals("Ping"))
+                writer.WriteLine("Pong");
+            else if (request.Equals("AllProfiles"))
+                writer.WriteLine("Guckst du");
+
+            // ProfilesBatchApp profilesBatchApp = GetProfilesBatchApp();
         }
 
         protected override void OnStop()

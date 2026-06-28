@@ -1,7 +1,87 @@
 ﻿@page "/"
+@rendermode InteractiveServer
+@inject SocketClient Socket
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Profiles</PageTitle>
 
-<h1>Hello, world!</h1>
+<div class="flex flex-col gap-5 p-5">
+    <h1 class="text-2xl font-bold">Profiles</h1>
 
-Welcome to your new app.
+    <button @onclick="HandleClickRefresh">Refresh</button>
+
+    <div class="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-5 2xl:grid-cols-7">
+        @foreach (Profile profile in Profiles)
+        {
+            <Profile Title="@profile.Title" ImageUrl="@profile.ImageUrl" />
+        }
+    </div>
+</div>
+
+@code {
+    class Profile
+    {
+        public string Title { get; set; } = "Profile...";
+        public string? ImageUrl { get; set; }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Socket.ConnectAsync();
+    }
+
+    private async Task HandleClickRefresh()
+    {
+        string? response = await Socket.SendAsync("AllProfiles");
+        Console.WriteLine(response);
+    }
+
+    List<Profile> Profiles { get; } = new List<Profile>
+    {
+        new Profile
+        {
+            Title = "over the hill Demo",
+            ImageUrl = "https://cdn2.steamgriddb.com/thumb/02410847e3dabcc0a3c4889f1abaf025.jpg"
+        },
+        new Profile
+        {
+            Title = "Euro Truck Simulator 2",
+            ImageUrl = "https://cdn2.steamgriddb.com/thumb/8227c2ce0e9af9745a927e89d6107994.jpg"
+        },
+        new Profile
+        {
+            Title = "Palworld"
+        },
+        new Profile
+        {
+            Title = "BioShock Remastered"
+        },
+        new Profile
+        {
+            Title = "Paralives"
+        },
+        new Profile
+        {
+            Title = "Minecraft (1.2.5)"
+        },
+        new Profile
+        {
+            Title = "Portal Reloaded"
+        },
+        new Profile
+        {
+            Title = "Red Dead Redemption 2"
+        },
+        new Profile
+        {
+            Title = "Portal Stories: Mel"
+        },
+        new Profile
+        {
+            Title = "Thinking with Time Machine"
+        },
+        new Profile
+        {
+            Title = "Portal 2: Community Edition"
+        }
+    };
+}
