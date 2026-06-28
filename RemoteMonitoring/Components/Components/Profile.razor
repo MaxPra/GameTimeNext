@@ -7,7 +7,8 @@
                  class="absolute inset-0 h-full w-full object-cover object-top" />
         }
     </div>
-    <div class="flex h-15 items-center justify-center border-t-1 border-white/15">
+    <div class="flex h-15 items-center justify-center border-t-1 border-white/15"
+         style="background-color: @(IsHighlighted ? $"#{AccentColor}" : "transparent")">
         <p class="text-center text-lg font-semibold">@Title</p>
     </div>
 </div>
@@ -19,4 +20,6 @@
     public string ImageUrl { get; set; } = string.Empty;
     [Parameter]
     public string AccentColor { get; set; } = "00FFFF";
+    [Parameter]
+    public bool IsHighlighted { get; set; } = false;
 }

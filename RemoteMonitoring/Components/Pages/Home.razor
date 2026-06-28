@@ -7,76 +7,40 @@
 <div class="flex flex-col gap-5 p-5">
     <h1 class="text-2xl font-bold">Profiles</h1>
 
-    <button @onclick="HandleClickRefresh">Refresh</button>
-
     <div class="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-5 2xl:grid-cols-7">
-        @foreach (Profile profile in Profiles)
+        @foreach (OlisProfileDTO profile in Profiles)
         {
-            <Profile Title="@profile.Title" ImageUrl="@profile.ImageUrl" />
+            <div @onclick="() => SelectProfile(profile)">
+                <Profile Title="@profile.Title" AccentColor="@profile.AccentColorHex" IsHighlighted="IsSelected(profile)" />
+            </div>
         }
     </div>
 </div>
 
 @code {
-    class Profile
+    private OlisProfileDTO? SelectedProfile;
+    private List<OlisProfileDTO> Profiles { get; } = new();
+
+    protected override async Task OnInitializedAsync()
     {
-        public string Title { get; set; } = "Profile...";
-        public string? ImageUrl { get; set; }
+        await RefreshProfiles();
     }
 
-    private async Task HandleClickRefresh()
+    private async Task RefreshProfiles()
     {
-        string? response = await Socket.SendAsync("AllProfiles");
-        FnLog.AddInfo(this, response ?? "null");
+        ApiService service = new ApiService(Socket);
+        Profiles.Clear();
+        List<OlisProfileDTO> profiles = await service.GetAllProfiles();
+        Profiles.AddRange(profiles);
     }
 
-    List<Profile> Profiles { get; } = new List<Profile>
+    private void SelectProfile(OlisProfileDTO profile)
     {
-        new Profile
-        {
-            Title = "over the hill Demo",
-            ImageUrl = "https://cdn2.steamgriddb.com/thumb/02410847e3dabcc0a3c4889f1abaf025.jpg"
-        },
-        new Profile
-        {
-            Title = "Euro Truck Simulator 2",
-            ImageUrl = "https://cdn2.steamgriddb.com/thumb/8227c2ce0e9af9745a927e89d6107994.jpg"
-        },
-        new Profile
-        {
-            Title = "Palworld"
-        },
-        new Profile
-        {
-            Title = "BioShock Remastered"
-        },
-        new Profile
-        {
-            Title = "Paralives"
-        },
-        new Profile
-        {
-            Title = "Minecraft (1.2.5)"
-        },
-        new Profile
-        {
-            Title = "Portal Reloaded"
-        },
-        new Profile
-        {
-            Title = "Red Dead Redemption 2"
-        },
-        new Profile
-        {
-            Title = "Portal Stories: Mel"
-        },
-        new Profile
-        {
-            Title = "Thinking with Time Machine"
-        },
-        new Profile
-        {
-            Title = "Portal 2: Community Edition"
-        }
-    };
+        SelectedProfile = profile;
+    }
+
+    private bool IsSelected(OlisProfileDTO profile)
+    {
+        return SelectedProfile?.Id == profile.Id;
+    }
 }
