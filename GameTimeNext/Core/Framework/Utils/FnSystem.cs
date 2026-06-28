@@ -1,5 +1,6 @@
 ﻿using GameTimeNext.Core.Application.Profiles;
 using GameTimeNext.Core.Application.Profiles.Viewmodel;
+using Microsoft.Win32;
 using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -11,6 +12,41 @@ namespace GameTimeNext.Core.Framework.Utils
 {
     public class FnSystem
     {
+        public static bool SetAutoStart(bool enabled, bool startMinimized = false)
+        {
+            try
+            {
+                const string runKeyPath = @"Software\Microsoft\Windows\CurrentVersion\Run";
+                const string runValueName = "GameTimeNext";
+
+                using RegistryKey? runKey = Registry.CurrentUser.OpenSubKey(runKeyPath, true) ?? Registry.CurrentUser.CreateSubKey(runKeyPath);
+                if (runKey == null)
+                    return false;
+
+                if (!enabled)
+                {
+                    runKey.DeleteValue(runValueName, false);
+                    return true;
+                }
+
+                string? exePath = Process.GetCurrentProcess().MainModule?.FileName;
+                if (string.IsNullOrWhiteSpace(exePath))
+                    exePath = Environment.ProcessPath;
+
+                if (string.IsNullOrWhiteSpace(exePath) || !File.Exists(exePath))
+                    return false;
+
+                string args = startMinimized ? " --minimized" : string.Empty;
+                runKey.SetValue(runValueName, $"\"{exePath}\"{args}", RegistryValueKind.String);
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public static List<Executable> FindExecutables(string path)
         {
             List<Executable> foundExecutables = new List<Executable>();
