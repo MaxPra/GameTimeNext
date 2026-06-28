@@ -32,6 +32,10 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
             {
                 // expected on shutdown
             }
+            catch (Exception ex)
+            {
+                FnLog.AddError(this, "Error in LogicAsync", ex);
+            }
         }
 
         private async Task HandleClient(TcpClient client)
