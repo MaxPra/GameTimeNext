@@ -7,4 +7,8 @@
     <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\GameTimeNext.Shared\GameTimeNext.Shared.csproj" />
+  </ItemGroup>
+
 </Project>

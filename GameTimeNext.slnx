@@ -1,5 +1,6 @@
 <Solution>
   <Project Path="../UIX.ViewController.Engine/UIX.ViewController.Engine.csproj" />
+  <Project Path="GameTimeNext.Shared/GameTimeNext.Shared.csproj" Id="856e9025-3b4a-4942-9fea-798a64c9df5f" />
   <Project Path="GameTimeNext/GameTimeNext.csproj" />
   <Project Path="RemoteMonitoring/RemoteMonitoring.csproj" Id="7bbd818e-890a-4719-aa34-1be63cd66d13" />
 </Solution>
