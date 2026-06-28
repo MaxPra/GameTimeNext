@@ -1,0 +1,49 @@
+﻿@inject SocketClient Socket
+@rendermode InteractiveServer
+@implements IDisposable
+
+@if (!connectionState.Equals(ConnectionState.Connected))
+{
+    <div class="bg-red-600 text-white p-2 font-bold">@connectionStateMessage</div>
+}
+
+
+@code {
+    ConnectionState connectionState = ConnectionState.NeverConnected;
+    string connectionStateMessage = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        connectionState = Socket.State;
+        OnConnectionStateChanged(this, connectionState);
+        Socket.ConnectionStateChanged += OnConnectionStateChanged;
+    }
+
+    private void OnConnectionStateChanged(object? sender, ConnectionState state)
+    {
+        connectionState = state;
+
+        switch (connectionState)
+        {
+            case ConnectionState.NeverConnected:
+                connectionStateMessage = "Connecting...";
+                break;
+            case ConnectionState.Reconnecting:
+                connectionStateMessage = "Connection lost. Reconnecting...";
+                break;
+            case ConnectionState.Disconnected:
+                connectionStateMessage = "Connection lost. Please refresh...";
+                break;
+            default:
+                connectionStateMessage = string.Empty;
+                break;
+        }
+
+        _ = InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        Socket.ConnectionStateChanged -= OnConnectionStateChanged;
+    }
+}

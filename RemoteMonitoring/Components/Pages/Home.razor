@@ -24,15 +24,10 @@
         public string? ImageUrl { get; set; }
     }
 
-    protected override async Task OnInitializedAsync()
-    {
-        await Socket.ConnectAsync();
-    }
-
     private async Task HandleClickRefresh()
     {
         string? response = await Socket.SendAsync("AllProfiles");
-        Console.WriteLine(response);
+        FnLog.AddInfo(this, response ?? "null");
     }
 
     List<Profile> Profiles { get; } = new List<Profile>

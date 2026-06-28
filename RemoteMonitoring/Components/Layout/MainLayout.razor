@@ -1,9 +1,13 @@
 ﻿@inherits LayoutComponentBase
 
 <div class="page">
-    <main>
-        @Body
-    </main>
+    <div class="flex w-full flex-col">
+        <ConnectionBanner />
+
+        <main>
+            @Body
+        </main>
+    </div>
 </div>
 
 <div id="blazor-error-ui" data-nosnippet>
