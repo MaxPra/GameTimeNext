@@ -1,0 +1,22 @@
+﻿=============================================
+  GameTimeNext  |  Version 0.3.3 Beta
+=============================================
+
+  IMPROVEMENTS
+  ____________
+
+  * -
+  
+
+  NEW FEATURES
+  ____________
+
+  * Added metadata application (developer-related)
+
+
+  BUG FIXES
+  _________
+
+  * Minor bug fixes
+
+=============================================

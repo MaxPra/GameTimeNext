@@ -1,5 +1,6 @@
 ﻿using GameTimeNext.Core.Application.Profiles;
 using GameTimeNext.Core.Application.Profiles.Viewmodel;
+using Microsoft.Win32;
 using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -11,6 +12,41 @@ namespace GameTimeNext.Core.Framework.Utils
 {
     public class FnSystem
     {
+        public static bool SetAutoStart(bool enabled, bool startMinimized = false)
+        {
+            try
+            {
+                const string runKeyPath = @"Software\Microsoft\Windows\CurrentVersion\Run";
+                const string runValueName = "GameTimeNext";
+
+                using RegistryKey? runKey = Registry.CurrentUser.OpenSubKey(runKeyPath, true) ?? Registry.CurrentUser.CreateSubKey(runKeyPath);
+                if (runKey == null)
+                    return false;
+
+                if (!enabled)
+                {
+                    runKey.DeleteValue(runValueName, false);
+                    return true;
+                }
+
+                string? exePath = Process.GetCurrentProcess().MainModule?.FileName;
+                if (string.IsNullOrWhiteSpace(exePath))
+                    exePath = Environment.ProcessPath;
+
+                if (string.IsNullOrWhiteSpace(exePath) || !File.Exists(exePath))
+                    return false;
+
+                string args = startMinimized ? " --minimized" : string.Empty;
+                runKey.SetValue(runValueName, $"\"{exePath}\"{args}", RegistryValueKind.String);
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public static List<Executable> FindExecutables(string path)
         {
             List<Executable> foundExecutables = new List<Executable>();
@@ -133,22 +169,24 @@ namespace GameTimeNext.Core.Framework.Utils
 
         public static bool IsProcessRunning(string exeName)
         {
-            // Hole alle laufenden Prozesse
-            Process[] processes = Process.GetProcesses();
+            string targetName = System.IO.Path.GetFileNameWithoutExtension(exeName);
 
-            foreach (Process process in processes)
+            foreach (Process process in Process.GetProcesses())
             {
                 try
                 {
-                    // Überprüfe, ob der Prozess den Namen der EXE-Datei enthält
-                    if (process.ProcessName.Equals(System.IO.Path.GetFileNameWithoutExtension(exeName), StringComparison.OrdinalIgnoreCase))
+                    if (process.ProcessName.Equals(targetName, StringComparison.OrdinalIgnoreCase))
                     {
                         return true;
                     }
                 }
-                catch (Exception ex)
+                catch
                 {
-                    return false;
+                    continue;
+                }
+                finally
+                {
+                    try { process.Dispose(); } catch { }
                 }
             }
 
@@ -158,6 +196,7 @@ namespace GameTimeNext.Core.Framework.Utils
         public static bool IsProcessRunningWithPathPart(string exeName, string partialPath)
         {
             var nameNoExt = Path.GetFileNameWithoutExtension(exeName);
+            var normalizedPartialPath = Path.GetFullPath(partialPath).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
 
             foreach (var p in Process.GetProcesses())
             {
@@ -170,12 +209,14 @@ namespace GameTimeNext.Core.Framework.Utils
                     if (string.IsNullOrEmpty(procPath))
                         continue;
 
-                    if (procPath.IndexOf(partialPath, StringComparison.OrdinalIgnoreCase) >= 0)
+                    var normalizedProcPath = Path.GetFullPath(procPath);
+
+                    if (normalizedProcPath.IndexOf(normalizedPartialPath, StringComparison.OrdinalIgnoreCase) >= 0)
                         return true;
                 }
                 catch
                 {
-                    return IsProcessRunning(exeName);
+                    continue;
                 }
                 finally
                 {

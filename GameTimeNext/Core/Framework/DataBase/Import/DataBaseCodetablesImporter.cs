@@ -60,18 +60,22 @@ namespace GameTimeNext.Core.Framework.DataBase.Import
                 UIXStatement uixStatement = new UIXStatement("T1CTABD", AppEnvironment.GetDataBaseManager().GetConnection());
                 uixStatement.SetStatementType(UIXStatement.StatementType.INSERT);
 
-                string txtyp = row[txtypIndex];
-                string txnum = row[txnumIndex];
-                string permission = GetPermission(txtyp);
-                bool checkIfExists = permission == "U";
+                string txtyp = row[txtypIndex].Trim();
+                string txnum = row[txnumIndex].Trim();
+                string permission = (GetPermission(txtyp) ?? string.Empty).Trim();
+                bool isUpdateOnlyPermission = string.Equals(permission, "U", StringComparison.OrdinalIgnoreCase);
+                bool isDeveloperPermission = string.Equals(permission, "D", StringComparison.OrdinalIgnoreCase);
 
-                if (permission == "D" && !_resetDeveloperTxtyps.Contains(txtyp))
+                if (isUpdateOnlyPermission && ExistsEntryByTxtypT1CTABD(txtyp))
+                    continue;
+
+                if (isDeveloperPermission && !_resetDeveloperTxtyps.Contains(txtyp))
                 {
                     DeleteAllDeveloperEntrysT1CTABD(txtyp);
                     _resetDeveloperTxtyps.Add(txtyp);
                 }
 
-                if (permission == "D")
+                if (isDeveloperPermission)
                     DeleteEntryT1CTABD(txtyp, txnum);
 
                 for (int i = 0; i < header.Count; i++)
@@ -79,24 +83,51 @@ namespace GameTimeNext.Core.Framework.DataBase.Import
                     string columnName = header[i];
                     string value = row[i];
 
+                    if (string.Equals(columnName, "TXTYP", StringComparison.OrdinalIgnoreCase))
+                        value = txtyp;
+
+                    if (string.Equals(columnName, "TXNUM", StringComparison.OrdinalIgnoreCase))
+                        value = txnum;
+
                     if (IsDateColumn(columnName))
                         value = NormalizeDateToSqlite(value);
 
                     uixStatement.AddValue(columnName, value);
                 }
 
-                if (checkIfExists)
-                {
-                    uixStatement.SetInsertOnlyIfNotExists(true);
-                    uixStatement.AddExistsWhere("TXTYP", QueryCompareType.EQUALS, txtyp);
-                    uixStatement.AddExistsWhere("TXNUM", QueryCompareType.EQUALS, txnum);
-                }
+                if (ExistsEntryT1CTABD(txtyp, txnum))
+                    continue;
 
                 string s = uixStatement.PreviewStatement();
 
                 FnLog.AddInfo(null, s);
 
                 uixStatement.ExecuteNonQuery();
+            }
+        }
+
+        private bool ExistsEntryByTxtypT1CTABD(string txtyp)
+        {
+            UIXQuery query = new UIXQuery("T1CTABD", AppEnvironment.GetDataBaseManager().GetConnection());
+            query.AddField("T1CTABD", "TXTYP");
+            query.AddWhere("T1CTABD", "TXTYP", QueryCompareType.EQUALS, txtyp);
+
+            using (var reader = query.Execute())
+            {
+                return reader.Read();
+            }
+        }
+
+        private bool ExistsEntryT1CTABD(string txtyp, string txnum)
+        {
+            UIXQuery query = new UIXQuery("T1CTABD", AppEnvironment.GetDataBaseManager().GetConnection());
+            query.AddField("T1CTABD", "TXTYP");
+            query.AddWhere("T1CTABD", "TXTYP", QueryCompareType.EQUALS, txtyp);
+            query.AddWhere("T1CTABD", "TXNUM", QueryCompareType.EQUALS, txnum);
+
+            using (var reader = query.Execute())
+            {
+                return reader.Read();
             }
         }
 

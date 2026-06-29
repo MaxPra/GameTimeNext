@@ -23,5 +23,10 @@
     "Code": "CIP",
     "Name": "Create Import Package",
     "ClassName": "GameTimeNext.Core.Application.CreateImportPackage.CreateImportPackageApp"
+  },
+  {
+    "Code": "MET",
+    "Name": "Metadata",
+    "ClassName": "GameTimeNext.Core.Application.Metadata.MetadataApp"
   }
 ]

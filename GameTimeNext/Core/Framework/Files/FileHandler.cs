@@ -46,6 +46,11 @@ namespace GameTimeNext.Core.Framework.Files
             {
                 File.Create(AppEnvironment.GetAppConfig().LogFilePath).Close();
             }
+
+            if (!Directory.Exists(AppEnvironment.GetAppConfig().DevGeneratedFilesPath))
+            {
+                Directory.CreateDirectory(AppEnvironment.GetAppConfig().DevGeneratedFilesPath);
+            }
         }
 
         public static void CopyDirectory(string sourceDirectory, string targetDirectory, bool overwriteFiles)

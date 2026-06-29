@@ -69,6 +69,9 @@ namespace GameTimeNext.Core.Application.TableObjects
         [UIXSignatureField(18)]
         public double BreakReminderHrs { get; set; }
 
+        [UIXSignatureField(19)]
+        public bool AutoStartMinimized { get; set; }
+
 
 
         public AppSettings()
@@ -95,6 +98,8 @@ namespace GameTimeNext.Core.Application.TableObjects
 
             BreakReminder = false;
             BreakReminderHrs = 0.0;
+
+            AutoStartMinimized = false;
 
             AcceptChanges();
         }

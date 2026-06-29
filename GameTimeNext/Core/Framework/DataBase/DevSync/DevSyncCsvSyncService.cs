@@ -1,7 +1,11 @@
+using GameTimeNext.Core.Application.Metadata;
+using GameTimeNext.Core.Application.Metadata.Data;
+using GameTimeNext.Core.Framework.Utils;
 using System.Data;
 using System.Data.SQLite;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using UIX.ViewController.Engine.DataBaseObjects;
 
@@ -13,6 +17,10 @@ namespace GameTimeNext.Core.Framework.DataBase.DevSync
 
         public static void ExportTableFor(UIXTableObjectBase obj)
         {
+
+            if (!FnSystem.IsDebug())
+                return;
+
             if (obj == null || !obj.IsDevSynced)
                 return;
 
@@ -22,7 +30,13 @@ namespace GameTimeNext.Core.Framework.DataBase.DevSync
 
         public static void ExportTable(string tableName)
         {
+            if (!FnSystem.IsDebug())
+                return;
+
             if (string.IsNullOrWhiteSpace(tableName))
+                return;
+
+            if (!IsDevSyncEnabledForTable(tableName))
                 return;
 
             SQLiteConnection connection = AppEnvironment.GetDataBaseManager().GetConnection();
@@ -76,8 +90,46 @@ namespace GameTimeNext.Core.Framework.DataBase.DevSync
             File.WriteAllText(filePath, sb.ToString(), Encoding.UTF8);
         }
 
+        private static bool IsDevSyncEnabledForTable(string tableName)
+        {
+            if (string.Equals(tableName, "T1METAH", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(tableName, "T1METAP", StringComparison.OrdinalIgnoreCase))
+                return true;
+
+            Type? tableType = AppDomain.CurrentDomain
+                .GetAssemblies()
+                .SelectMany(assembly =>
+                {
+                    try
+                    {
+                        return assembly.GetTypes();
+                    }
+                    catch (ReflectionTypeLoadException ex)
+                    {
+                        return ex.Types.Where(t => t != null)!;
+                    }
+                })
+                .FirstOrDefault(type =>
+                    type != null &&
+                    !type.IsAbstract &&
+                    typeof(UIXTableObjectBase).IsAssignableFrom(type) &&
+                    string.Equals(type.Name, tableName, StringComparison.OrdinalIgnoreCase));
+
+            if (tableType == null)
+                return true;
+
+            if (Activator.CreateInstance(tableType) is not UIXTableObjectBase instance)
+                return true;
+
+            return instance.IsDevSynced;
+        }
+
         public static void ImportAllFromCsv()
         {
+
+            if (!FnSystem.IsDebug())
+                return;
+
             string devSyncDirectory = GetDevSyncDirectory();
             if (!Directory.Exists(devSyncDirectory))
                 return;
@@ -86,19 +138,45 @@ namespace GameTimeNext.Core.Framework.DataBase.DevSync
             EnsureOpen(connection);
 
             string[] files = Directory.GetFiles(devSyncDirectory, "*.csv", SearchOption.TopDirectoryOnly);
-            foreach (string file in files)
+
+            List<string> orderedFiles = files
+                .OrderBy(f =>
+                {
+                    string tableName = ResolveTableNameFromSyncFile(f);
+                    if (string.Equals(tableName, "T1METAH", StringComparison.OrdinalIgnoreCase))
+                        return 0;
+                    if (string.Equals(tableName, "T1METAP", StringComparison.OrdinalIgnoreCase))
+                        return 1;
+                    return 2;
+                })
+                .ToList();
+
+            foreach (string file in orderedFiles)
             {
-                ImportTable(file, connection);
+                string tableName = ResolveTableNameFromSyncFile(file);
+                if (!string.Equals(tableName, "T1METAH", StringComparison.OrdinalIgnoreCase) &&
+                    !string.Equals(tableName, "T1METAP", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                ImportTable(file, connection, tableName);
+            }
+
+            EnsureMetadataTablesFromImportedMetadata();
+
+            foreach (string file in orderedFiles)
+            {
+                string tableName = ResolveTableNameFromSyncFile(file);
+                if (string.Equals(tableName, "T1METAH", StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(tableName, "T1METAP", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                ImportTable(file, connection, tableName);
             }
         }
 
-        private static void ImportTable(string csvPath, SQLiteConnection connection)
+        private static void ImportTable(string csvPath, SQLiteConnection connection, string tableName)
         {
-            string tableName = Path.GetFileNameWithoutExtension(csvPath);
             if (string.IsNullOrWhiteSpace(tableName))
-                return;
-
-            if (!TableExists(connection, tableName))
                 return;
 
             string csvText = File.ReadAllText(csvPath, Encoding.UTF8);
@@ -109,6 +187,8 @@ namespace GameTimeNext.Core.Framework.DataBase.DevSync
             List<string> headers = rows[0];
             if (headers.Count == 0)
                 return;
+
+            EnsureTableSchemaForCsv(connection, tableName, headers, rows);
 
             Dictionary<string, string> tableColumnTypes = GetTableColumnTypes(connection, tableName);
             List<string> validColumns = headers.Where(h => tableColumnTypes.ContainsKey(h)).ToList();
@@ -152,6 +232,120 @@ namespace GameTimeNext.Core.Framework.DataBase.DevSync
             }
 
             transaction.Commit();
+        }
+
+        private static string ResolveTableNameFromSyncFile(string filePath)
+        {
+            string rawName = Path.GetFileNameWithoutExtension(filePath);
+            if (string.IsNullOrWhiteSpace(rawName))
+                return string.Empty;
+
+            int separatorIndex = rawName.IndexOf('_');
+            if (separatorIndex > 0)
+            {
+                string prefix = rawName.Substring(0, separatorIndex);
+                if (prefix.All(char.IsDigit) && separatorIndex + 1 < rawName.Length)
+                    return rawName.Substring(separatorIndex + 1);
+            }
+
+            return rawName;
+        }
+
+        private static void EnsureMetadataTablesFromImportedMetadata()
+        {
+            TXMETAH txmetah = new TXMETAH();
+            TXMETAP txmetap = new TXMETAP();
+            CFMetadataTableGenerator generator = new CFMetadataTableGenerator();
+
+            HashSet<string> menamsWithPositions = txmetap
+                .ReadAll()
+                .Select(x => x.MENAM)
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            foreach (T1METAH header in txmetah.ReadAll())
+            {
+                if (!header.GENER)
+                    continue;
+
+                if (!menamsWithPositions.Contains(header.MENAM))
+                    continue;
+
+                generator.EnsureTableFor(header);
+            }
+        }
+
+        private static void EnsureTableSchemaForCsv(SQLiteConnection connection, string tableName, List<string> headers, List<List<string>> rows)
+        {
+            Dictionary<string, string> inferredTypes = InferColumnTypes(headers, rows);
+
+            if (!TableExists(connection, tableName))
+            {
+                string createColumns = string.Join(", ", headers.Select(h => $"{QuoteIdentifier(h)} {inferredTypes[h]}"));
+                string createSql = $"CREATE TABLE IF NOT EXISTS {QuoteIdentifier(tableName)} ({createColumns});";
+                using SQLiteCommand createCmd = connection.CreateCommand();
+                createCmd.CommandText = createSql;
+                createCmd.ExecuteNonQuery();
+                return;
+            }
+
+            Dictionary<string, string> existingColumns = GetTableColumnTypes(connection, tableName);
+            foreach (string header in headers)
+            {
+                if (existingColumns.ContainsKey(header))
+                    continue;
+
+                string alterSql = $"ALTER TABLE {QuoteIdentifier(tableName)} ADD COLUMN {QuoteIdentifier(header)} {inferredTypes[header]};";
+                using SQLiteCommand alterCmd = connection.CreateCommand();
+                alterCmd.CommandText = alterSql;
+                alterCmd.ExecuteNonQuery();
+            }
+        }
+
+        private static Dictionary<string, string> InferColumnTypes(List<string> headers, List<List<string>> rows)
+        {
+            Dictionary<string, string> result = headers.ToDictionary(x => x, _ => "TEXT", StringComparer.OrdinalIgnoreCase);
+
+            for (int colIndex = 0; colIndex < headers.Count; colIndex++)
+            {
+                string header = headers[colIndex];
+                string type = "TEXT";
+
+                foreach (List<string> row in rows.Skip(1))
+                {
+                    if (colIndex >= row.Count)
+                        continue;
+
+                    string value = row[colIndex];
+                    if (string.IsNullOrWhiteSpace(value))
+                        continue;
+
+                    if (long.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out _))
+                    {
+                        type = "INTEGER";
+                        continue;
+                    }
+
+                    if (double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out _))
+                    {
+                        type = "REAL";
+                        continue;
+                    }
+
+                    if (DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces, out _))
+                    {
+                        type = "TEXT";
+                        continue;
+                    }
+
+                    type = "TEXT";
+                    break;
+                }
+
+                result[header] = type;
+            }
+
+            return result;
         }
 
         private static object ConvertToDbValue(string rawValue, string sqliteType)

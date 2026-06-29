@@ -196,7 +196,7 @@
 
         <Border
             Grid.Column="2"
-            Padding="16"
+            Padding="0"
             Background="Transparent">
             <ContentPresenter x:Name="CPProfileDetailView" />
         </Border>

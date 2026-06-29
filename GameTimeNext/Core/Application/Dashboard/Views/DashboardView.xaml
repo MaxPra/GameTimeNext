@@ -146,7 +146,14 @@
                                     <Image
                                         x:Name="imgMostPlayedCover"
                                         SnapsToDevicePixels="True"
-                                        Stretch="UniformToFill" />
+                                        Stretch="UniformToFill">
+                                        <Image.Clip>
+                                            <RectangleGeometry
+                                                RadiusX="8"
+                                                RadiusY="8"
+                                                Rect="0,0,600,900" />
+                                        </Image.Clip>
+                                    </Image>
                                 </Border>
 
                                 <!--  Gradient overlay at bottom  -->
@@ -332,7 +339,14 @@
                                     <Image
                                         x:Name="imgLastPlayedCover"
                                         SnapsToDevicePixels="True"
-                                        Stretch="UniformToFill" />
+                                        Stretch="UniformToFill">
+                                        <Image.Clip>
+                                            <RectangleGeometry
+                                                RadiusX="8"
+                                                RadiusY="8"
+                                                Rect="0,0,600,900" />
+                                        </Image.Clip>
+                                    </Image>
                                 </Border>
                             </Grid>
                         </Viewbox>
@@ -488,7 +502,7 @@
                                             CornerRadius="{StaticResource DefaultCornerRadius}">
                                             <Image
                                                 SnapsToDevicePixels="True"
-                                                Source="{Binding CoverImage}"
+                                                Source="{Binding COCOVIM}"
                                                 Stretch="UniformToFill" />
                                         </Border>
 
@@ -500,14 +514,14 @@
                                                 FontSize="13"
                                                 FontWeight="SemiBold"
                                                 Foreground="{DynamicResource Brush.TextPrimary}"
-                                                Text="{Binding GANA}"
+                                                Text="{Binding ItemObject.GANA}"
                                                 TextTrimming="CharacterEllipsis" />
                                             <TextBlock
                                                 Margin="0,2,0,0"
                                                 FontSize="11"
                                                 FontWeight="Normal"
                                                 Foreground="{DynamicResource Brush.TextSecondary}"
-                                                Text="{Binding LAPL, StringFormat={}{0:dd.MM.yyyy HH:mm}}" />
+                                                Text="{Binding ItemObject.LAPL, StringFormat={}{0:dd.MM.yyyy HH:mm}}" />
                                         </StackPanel>
                                     </Grid>
                                 </Border>

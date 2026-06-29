@@ -366,16 +366,18 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         private void FillDBOTags()
         {
             // selektierte Gruppen auslesen
-            List<T1GROUP> selectedGroups = _profilesEditViewModel!.T1GROUPs.Where(t => t.IsSelected == true).ToList();
+            List<ProfilesGroupListBoxItem> selectedGroups = _profilesEditViewModel!.T1GROUPs.Where(t => t.COISSEL).ToList();
 
             // Alle bisherigen für dieses Profil löschen
             TXGRPPO tblmGrppo = new TXGRPPO();
             tblmGrppo.DeleteAllWherePFID(GetApp().T1Profi.PFID);
 
-            foreach (T1GROUP grp in selectedGroups)
+            foreach (ProfilesGroupListBoxItem grp in selectedGroups)
             {
+                T1GROUP t1group = (T1GROUP)grp.ItemObject!;
+
                 T1GRPPO tblGrppo = tblmGrppo.CreateNew();
-                tblGrppo.GRID = grp.GRID;
+                tblGrppo.GRID = t1group!.GRID;
                 tblGrppo.PFID = GetApp().T1Profi.PFID;
                 tblmGrppo.Save(tblGrppo);
             }
@@ -541,11 +543,11 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         private void BuildTagGrid(long pfid)
         {
-            TXGROUP TXGROUP = new TXGROUP();
-
-            List<T1GROUP> t1groups = new List<T1GROUP>();
+            List<ProfilesGroupListBoxItem> t1groups = new List<ProfilesGroupListBoxItem>();
 
             UIXQuery query = BuildTagGridQuery(pfid);
+
+            string s = query.PreviewQuery();
 
             using (var reader = query.Execute())
             {
@@ -556,24 +558,25 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                     long gpid = UIXQuery.GetInt64(reader, K1GRPPO.Name, K1GRPPO.Fields.GPID);
 
                     T1GROUP t1group = new TXGROUP().Read(grid);
-
-                    if (gpid > 0)
-                        t1group.IsSelected = true;
-
-                    t1groups.Add(t1group);
+                    t1groups.Add(new ProfilesGroupListBoxItem
+                    {
+                        ItemObject = t1group,
+                        COGRPID = gpid,
+                        COISSEL = gpid > 0
+                    });
                 }
             }
 
             // Filtern
-            t1groups = t1groups.Where(s => s.GTYP == GroupType.Tag).ToList();
+            t1groups = t1groups.Where(s => (s.ItemObject as T1GROUP)?.GTYP == GroupType.Tag).ToList();
 
             // Viewmodel befüllen
             _profilesEditViewModel = new ProfilesEditViewModel();
-            _profilesEditViewModel.T1GROUPs = new System.Collections.ObjectModel.ObservableCollection<T1GROUP>(t1groups);
+            _profilesEditViewModel.T1GROUPs = new System.Collections.ObjectModel.ObservableCollection<ProfilesGroupListBoxItem>(t1groups);
 
 
             if (t1groups != null && t1groups.Count > 0)
-                _profilesEditViewModel.SelectedTBLGROUP = t1groups.FirstOrDefault(p => p.IsSelected == true);
+                _profilesEditViewModel.SelectedTBLGROUP = t1groups.FirstOrDefault(p => p.COISSEL);
 
             View.DataContext = _profilesEditViewModel;
         }

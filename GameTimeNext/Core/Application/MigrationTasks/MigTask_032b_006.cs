@@ -13,6 +13,8 @@ namespace GameTimeNext.Core.Application.MigrationTasks
         {
             CreateTableT1CTABH();
             CreateTableT1CTABD();
+            //CreateTableT1METAH();
+            //CreateTableT1METAP();
         }
 
         private static void CreateTableT1CTABH()
@@ -68,6 +70,5 @@ namespace GameTimeNext.Core.Application.MigrationTasks
             command.CommandText = sql;
             command.ExecuteNonQuery();
         }
-
     }
 }

@@ -23,7 +23,6 @@
     Style="{StaticResource GTNWindowStyle}"
     Subtitle="BETA"
     WindowStartupLocation="CenterScreen"
-    WindowState="Maximized"
     mc:Ignorable="d">
 
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">

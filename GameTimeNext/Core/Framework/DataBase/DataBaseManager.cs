@@ -144,6 +144,12 @@ namespace GameTimeNext.Core.Framework.DataBase
 
             // -- T1CTABD (Tabelle für Codetabellen-Einträge)
             CreateTableT1CTABD();
+
+            // -- T1METAH (Tabelle für Metadaten-Köpfe)
+            CreateTableT1METAH();
+
+            // -- T1METAP (Tabelle für Metadaten-Parameter)
+            CreateTableT1METAP();
         }
 
         private void InsertDefaultValuesT1GROUPConditions()
@@ -385,6 +391,58 @@ namespace GameTimeNext.Core.Framework.DataBase
                         PARM1 TEXT,
                         PARM2 TEXT,
                         PRIMARY KEY (TXTYP, TXNUM)
+                    );";
+
+            if (_connection == null)
+                return;
+
+            using var command = _connection.CreateCommand();
+            command.CommandText = sql;
+            command.ExecuteNonQuery();
+        }
+
+        private void CreateTableT1METAH()
+        {
+            var sql = @"
+                    CREATE TABLE IF NOT EXISTS T1METAH
+                    (
+                        MENAM TEXT PRIMARY KEY,
+                        DESCR TEXT,
+                        MTYPE TEXT,
+                        DSYNC INTEGER,
+                        GENER INTEGER,
+                        CRAT  TEXT,
+                        CRUS  TEXT,
+                        CHAT  TEXT,
+                        CHUS  TEXT
+                    );";
+
+            if (_connection == null)
+                return;
+
+            using var command = _connection.CreateCommand();
+            command.CommandText = sql;
+            command.ExecuteNonQuery();
+        }
+
+        private void CreateTableT1METAP()
+        {
+            var sql = @"
+                    CREATE TABLE IF NOT EXISTS T1METAP
+                    (
+                        MENAM TEXT NOT NULL,
+                        PONAM TEXT NOT NULL,
+                        DESCR TEXT,
+                        DATYP TEXT,
+                        DALEN INTEGER,
+                        PORDE INTEGER,
+                        PRIMK INTEGER,
+                        AUTOI INTEGER,
+                        CRAT  TEXT,
+                        CRUS  TEXT,
+                        CHAT  TEXT,
+                        CHUS  TEXT,
+                        PRIMARY KEY (MENAM, PONAM)
                     );";
 
             if (_connection == null)

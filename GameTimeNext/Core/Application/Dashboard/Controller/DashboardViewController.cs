@@ -1,6 +1,7 @@
 ﻿using GameTimeNext.Core.Application.Dashboard.ViewModels;
 using GameTimeNext.Core.Application.Dashboard.Views;
 using GameTimeNext.Core.Application.DataManagers;
+using GameTimeNext.Core.Application.Profiles.Viewmodel;
 using GameTimeNext.Core.Application.Profiles;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
@@ -142,13 +143,12 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
             await Task.Run(() =>
             {
                 List<T1PROFI> t1profis = GetRecentlyPlayedProfiles();
-
-                FillProfileCover(t1profis);
+                List<ProfilesListBoxItem> profileItems = BuildProfileListItems(t1profis);
 
                 View.Dispatcher.Invoke(() =>
                 {
                     viewModel = new DashboardViewModel();
-                    viewModel!.T1Profis = new System.Collections.ObjectModel.ObservableCollection<T1PROFI>(t1profis);
+                    viewModel!.T1Profis = new System.Collections.ObjectModel.ObservableCollection<ProfilesListBoxItem>(profileItems);
                     GetView().DataContext = viewModel;
 
                     GetApp().Loader.Stop();
@@ -164,10 +164,10 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
                 return;
 
             string coverPath = Path.Combine(AppEnvironment.GetAppConfig().CoverFolderPath ?? string.Empty, t1profiMostPlayed.PPFN);
-            t1profiMostPlayed.CoverImage = FnImage.LoadImageWithoutLock(coverPath, 300, 450);
+            var coverImage = FnImage.LoadImageWithoutLock(coverPath, 300, 450);
 
             GetView().txtMostPlayedTitle.Text = t1profiMostPlayed.GANA;
-            GetView().imgMostPlayedCover.Source = t1profiMostPlayed.CoverImage;
+            GetView().imgMostPlayedCover.Source = coverImage;
             GetView().txtMostPlayedPlaytime.Text = CFDashboardApp.FormatTime(TFPROFI.GetTotalGameTimeInMinutes(t1profiMostPlayed.PFID));
 
             int daysPlayed = TFSESSI.GetPlayedDays(t1profiMostPlayed.PFID, timeSpanDays);
@@ -186,9 +186,9 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
             GetView().txtLastPlayedTime.Text = CFDashboardApp.FormatTime(TFPROFI.GetTotalGameTimeInMinutes(t1profiLastPlayed.PFID));
 
             string coverPath = Path.Combine(AppEnvironment.GetAppConfig().CoverFolderPath ?? string.Empty, t1profiLastPlayed.PPFN);
-            t1profiLastPlayed.CoverImage = FnImage.LoadImageWithoutLock(coverPath, 300, 450);
+            var coverImage = FnImage.LoadImageWithoutLock(coverPath, 300, 450);
 
-            GetView().imgLastPlayedCover.Source = t1profiLastPlayed.CoverImage;
+            GetView().imgLastPlayedCover.Source = coverImage;
         }
 
         private void FillPlaytimeOverviewSection()
@@ -443,14 +443,14 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
             return query;
         }
 
-        private void FillProfileCover(List<T1PROFI> T1PROFIs)
+        private List<ProfilesListBoxItem> BuildProfileListItems(List<T1PROFI> t1profiles)
         {
-            foreach (T1PROFI prof in T1PROFIs)
+            return t1profiles.Select(prof => new ProfilesListBoxItem
             {
-                string coverPath = Path.Combine(AppEnvironment.GetAppConfig().CoverFolderPath ?? string.Empty, prof.PPFN);
-                prof.CoverImage = FnImage.LoadImageWithoutLock(coverPath, 300, 450);
-                prof.IsPlayable = FnSystem.IsExeFoundInPath(prof.EXGF);
-            }
+                ItemObject = prof,
+                COCOVIM = FnImage.LoadImageWithoutLock(Path.Combine(AppEnvironment.GetAppConfig().CoverFolderPath ?? string.Empty, prof.PPFN), 300, 450),
+                COISPLA = FnSystem.IsExeFoundInPath(prof.EXGF)
+            }).ToList();
         }
 
         private void ChangeTimeSpanDays()

@@ -74,8 +74,19 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
 
             // View Return setzen
-            GetViewReturn<ProfileFilterViewReturn>().TblGroups = _profilesFilterViewModel.T1GROUPs.Where(g => (bool)g.IsSelected).ToList();
-            GetViewReturn<ProfileFilterViewReturn>().States = _profilesFilterViewModel.States.Where(g => (bool)g.IsSelected).ToList();
+            GetViewReturn<ProfileFilterViewReturn>().TblGroups = _profilesFilterViewModel.T1GROUPs
+                .Where(g => g.COISSEL)
+                .Select(g => g.ItemObject as T1GROUP)
+                .Where(g => g != null)
+                .Cast<T1GROUP>()
+                .ToList();
+
+            GetViewReturn<ProfileFilterViewReturn>().States = _profilesFilterViewModel.States
+                .Where(g => g.COISSEL)
+                .Select(g => g.ItemObject as T1GROUP)
+                .Where(g => g != null)
+                .Cast<T1GROUP>()
+                .ToList();
             GetViewReturn<ProfileFilterViewReturn>().Applied = true;
 
             Exit(true);
@@ -115,15 +126,6 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             states = T1GROUPs.Where(s => s.GTYP == GroupType.Condition).ToList();
             T1GROUPs = T1GROUPs.Where(s => s.GTYP == GroupType.Tag).ToList();
 
-            SelectTags(T1GROUPs);
-            SelectStates(states);
-
-            if (disableAll)
-            {
-                foreach (T1GROUP group in T1GROUPs)
-                    group.IsSelected = false;
-            }
-
             if (!string.IsNullOrWhiteSpace(searchText))
             {
                 T1GROUPs = T1GROUPs.Where(st => st.GRNA.Contains(searchText, StringComparison.OrdinalIgnoreCase)).ToList();
@@ -131,52 +133,38 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             // Viewmodel befüllen
             _profilesFilterViewModel = new ProfilesFilterViewModel();
-            _profilesFilterViewModel.T1GROUPs = new System.Collections.ObjectModel.ObservableCollection<T1GROUP>(T1GROUPs);
-            _profilesFilterViewModel.States = new System.Collections.ObjectModel.ObservableCollection<T1GROUP>(states);
+            List<ProfilesGroupListBoxItem> groupItems = BuildGroupItems(T1GROUPs, GetApp().FilterCache.SelectedTags);
+            List<ProfilesGroupListBoxItem> stateItems = BuildGroupItems(states, GetApp().FilterCache.SelectedStates);
+
+            if (disableAll)
+            {
+                foreach (var item in groupItems)
+                    item.COISSEL = false;
+            }
+
+            _profilesFilterViewModel.T1GROUPs = new System.Collections.ObjectModel.ObservableCollection<ProfilesGroupListBoxItem>(groupItems);
+            _profilesFilterViewModel.States = new System.Collections.ObjectModel.ObservableCollection<ProfilesGroupListBoxItem>(stateItems);
 
 
             if (T1GROUPs != null && T1GROUPs.Count > 0)
-                _profilesFilterViewModel.SelectedT1GROUP = T1GROUPs.FirstOrDefault(p => p.IsSelected == true);
+                _profilesFilterViewModel.SelectedT1GROUP = _profilesFilterViewModel.T1GROUPs.FirstOrDefault(p => p.COISSEL);
 
-            _profilesFilterViewModel.SelectedState = states.FirstOrDefault(s => s.IsSelected == true);
+            _profilesFilterViewModel.SelectedState = _profilesFilterViewModel.States.FirstOrDefault(s => s.COISSEL);
 
             View.DataContext = _profilesFilterViewModel;
         }
 
-        private void SelectStates(List<T1GROUP> states)
+        private List<ProfilesGroupListBoxItem> BuildGroupItems(List<T1GROUP> source, List<T1GROUP> selected)
         {
-            if (GetApp().FilterCache.SelectedStates == null)
-                return;
+            HashSet<long> selectedKeys = selected == null
+                ? new HashSet<long>()
+                : selected.Select(s => s.GRID).ToHashSet();
 
-            foreach (var state in states)
+            return source.Select(group => new ProfilesGroupListBoxItem
             {
-                foreach (var stateCached in GetApp().FilterCache.SelectedStates)
-                {
-                    if (state.GRID != stateCached.GRID)
-                        continue;
-
-                    state.IsSelected = stateCached.IsSelected == true;
-                }
-            }
-        }
-
-        private void SelectTags(List<T1GROUP> tags)
-        {
-
-            if (GetApp().FilterCache.SelectedTags == null)
-                return;
-
-            foreach (var tag in tags)
-            {
-                foreach (var tagCached in GetApp().FilterCache.SelectedTags)
-                {
-
-                    if (tag.GRID != tagCached.GRID)
-                        continue;
-
-                    tag.IsSelected = tagCached.IsSelected == true;
-                }
-            }
+                ItemObject = group,
+                COISSEL = selectedKeys.Contains(group.GRID)
+            }).ToList();
         }
 
         private ProfilesApp GetApp()

@@ -176,9 +176,10 @@
                 <ControlTemplate TargetType="{x:Type DataGridRow}">
                     <Border
                         x:Name="RowBorder"
+                        Margin="0"
                         Background="{TemplateBinding Background}"
-                        BorderBrush="Transparent"
-                        BorderThickness="0"
+                        BorderBrush="#26FFFFFF"
+                        BorderThickness="0,0,0,1"
                         SnapsToDevicePixels="True">
                         <Grid>
                             <DataGridCellsPresenter />
