@@ -23,16 +23,16 @@ namespace GameTimeNext.Core.Framework.Logging
             _logFilePath = logFilePath;
         }
 
-        public static void AddInfo(UIXApplication? application, string message, Exception? exception = null)
-            => Add(LogType.Info, application, message, exception);
+        public static void AddInfo(object? source, string message, Exception? exception = null)
+            => Add(LogType.Info, source, message, exception);
 
-        public static void AddWarning(UIXApplication? application, string message, Exception? exception = null)
-            => Add(LogType.Warning, application, message, exception);
+        public static void AddWarning(object? source, string message, Exception? exception = null)
+            => Add(LogType.Warning, source, message, exception);
 
-        public static void AddError(UIXApplication? application, string message, Exception? exception = null)
-            => Add(LogType.Error, application, message, exception);
+        public static void AddError(object? source, string message, Exception? exception = null)
+            => Add(LogType.Error, source, message, exception);
 
-        public static void Add(LogType logType, UIXApplication? application, string message, Exception? exception = null)
+        public static void Add(LogType logType, object? source, string message, Exception? exception = null)
         {
             if (string.IsNullOrWhiteSpace(_logFilePath))
                 throw new InvalidOperationException("FnLog is not configured. Call Configure(...) first.");
@@ -41,9 +41,11 @@ namespace GameTimeNext.Core.Framework.Logging
                 throw new ArgumentException("Message cannot be empty.", nameof(message));
 
             string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-            string formattedMessage = application == null
+            string? sourceName = GetSourceName(source);
+
+            string formattedMessage = string.IsNullOrWhiteSpace(sourceName)
                 ? $"{timestamp} - {logType} - {message}"
-                : $"{timestamp} - {logType} - [{application.GetType().Name}] {message}";
+                : $"{timestamp} - {logType} - [{sourceName}] {message}";
 
             if (exception != null)
                 formattedMessage = $"{formattedMessage}{Environment.NewLine}{exception}";
@@ -56,6 +58,20 @@ namespace GameTimeNext.Core.Framework.Logging
             {
                 File.AppendAllText(_logFilePath, $"{formattedMessage}{Environment.NewLine}");
             }
+        }
+
+        private static string? GetSourceName(object? source)
+        {
+            if (source == null)
+                return null;
+
+            if (source is string sourceName)
+                return string.IsNullOrWhiteSpace(sourceName) ? null : sourceName;
+
+            if (source is UIXApplication application)
+                return application.GetType().Name;
+
+            return source.GetType().Name;
         }
 
     }

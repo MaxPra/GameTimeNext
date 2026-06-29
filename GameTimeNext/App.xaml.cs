@@ -3,6 +3,7 @@ using GameTimeNext.Core.Application.Settings;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Files;
 using GameTimeNext.Core.Framework.GitHub;
+using GameTimeNext.Core.Framework.Logging;
 using GameTimeNext.Core.Framework.Utils;
 using Microsoft.VisualBasic.FileIO;
 using System.Diagnostics;
@@ -21,41 +22,58 @@ namespace GameTimeNext
         {
             base.OnStartup(e);
 
+            bool startMinimized = e.Args.Contains("--minimized");
+
             ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
             AppEnvironment.AppVersion.Get();
-            Core.Application.General.SplashScreen splash = new Core.Application.General.SplashScreen();
-            splash.Show();
+            Core.Application.General.SplashScreen? splash = null;
+
+            if (!startMinimized)
+            {
+                splash = new Core.Application.General.SplashScreen();
+                splash.Show();
+            }
 
             InitializeApp();
 
-            splash.Close();
-
             Dispatcher.CurrentDispatcher.Invoke(() => { }, DispatcherPriority.Background);
-
-            ShutdownMode = ShutdownMode.OnMainWindowClose;
 
             // Erst danach Fenster öffnen
             MainApp mainApp = new MainApp();
-            mainApp.Start(null, null);
+            mainApp.SplashScreen = splash;
+            mainApp.StartMinimized = startMinimized;
+            mainApp.Start(null!, null!);
         }
 
         private void InitializeApp()
         {
+
             // Ordner erstellen
             FileHandler.CreateApplicationFoldersAndFiles();
 
+            AppEnvironment.LoadAppConfig();
+
+            FnLog.Configure(AppEnvironment.GetAppConfig().LogFilePath);
+
+            FnLog.AddInfo("MainApp", "*** Initializing Application... ***");
+
+            FnLog.AddInfo("MainApp", "Initiating Databasemanager...");
             AppEnvironment.InitiateDataBaseManager();
 
+            FnLog.AddInfo("MainApp", "Initializing database...");
             // Datenbank initialisieren
             AppEnvironment.GetDataBaseManager().Initialize();
 
+            FnLog.AddInfo("MainApp", "Initializing application environment...");
             // AppEnvironment initialisieren
             AppEnvironment.Initalize();
 
+            FnLog.AddInfo("MainApp", "Deleting old backups...");
             // Alte Backups löschen
             FileHandler.DeleteOldBackupFiles();
 
+            FnLog.AddInfo("MainApp", "Checking for new version (Github)...");
             // Auf neue Version (Github) prüfen
             CheckForNewVersion();
         }
@@ -68,6 +86,9 @@ namespace GameTimeNext
             //    return;
             //}
 
+            FnLog.AddInfo(null, "*** Shutdown initiated ***");
+
+            FnLog.AddInfo(null, "Stopping background processes...");
             AppEnvironment.StopBackgroundProcesses();
 
             if (AppEnvironment.GetAppConfig().AppSettings.AutoBackup)
@@ -82,12 +103,16 @@ namespace GameTimeNext
                         Directory.CreateDirectory(backupPath);
                 }
 
+                FnLog.AddInfo(null, "Creating backup at: " + backupPath);
+
                 FnBackup.CreateBackupSync(backupPath, BackupType.APP_CLOSED_BACKUP);
             }
 
-
+            FnLog.AddInfo(null, "Closing database connection...");
             if (AppEnvironment.GetDataBaseManager().GetConnection() != null)
                 AppEnvironment.GetDataBaseManager().GetConnection().Close();
+
+            FnLog.AddInfo(null, "*** Shutdown completed ***");
         }
 
         private bool CanCloseApplication()

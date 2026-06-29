@@ -40,7 +40,15 @@ namespace GameTimeNext.Core.Application.Settings.Controller
 
         protected override void BuildFirstImpl()
         {
+            if (FnSystem.IsDebug())
+            {
+                GetView().cbAutoStartMinimized.IsChecked = false;
+                _appSettings!.AutoStartMinimized = false;
+                _appSettings!.ResetChangeTracking();
+                _appSettings!.AcceptChanges();
+            }
 
+            FnControls.SetEnabled(GetView().cbAutoStartMinimized, !FnSystem.IsDebug());
         }
 
         protected override void BuildImpl()
@@ -107,6 +115,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
         private void FillTabGeneral()
         {
             GetView().cbActivateBlackoutKeyCombination.IsChecked = _appSettings!.ActivateBlackoutKeyCombination;
+            GetView().cbAutoStartMinimized.IsChecked = _appSettings.AutoStartMinimized;
             GetView().cbAllowProfileSpecificStyleChanges.IsChecked = _appSettings!.AllowProfileSpecificStyleChanges;
             GetView().txbSteamGridDbApiKey.Text = _appSettings!.SteamGridDbKey;
 
@@ -137,6 +146,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
         private void FillDBOGeneral()
         {
             _appSettings!.ActivateBlackoutKeyCombination = GetView().cbActivateBlackoutKeyCombination.IsChecked == true;
+            _appSettings!.AutoStartMinimized = GetView().cbAutoStartMinimized.IsChecked == true;
             _appSettings!.AllowProfileSpecificStyleChanges = GetView().cbAllowProfileSpecificStyleChanges.IsChecked == true;
             _appSettings!.SteamGridDbKey = GetView().txbSteamGridDbApiKey.Text;
             _appSettings!.BackupExportPath = GetView().txbBackupExportPath.Text;
@@ -182,6 +192,8 @@ namespace GameTimeNext.Core.Application.Settings.Controller
         {
             AppEnvironment.SaveAppConfig();
             _appSettings!.AcceptChanges();
+
+            FnSystem.SetAutoStart(_appSettings!.AutoStartMinimized && !FnSystem.IsDebug(), true);
         }
 
         private SettingsView GetView()
