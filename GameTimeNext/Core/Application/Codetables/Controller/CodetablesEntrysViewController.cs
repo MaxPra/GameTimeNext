@@ -5,6 +5,7 @@ using GameTimeNext.Core.Application.Profiles;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.UI.Dialogs;
+using GameTimeNext.Core.Framework.Utils;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -171,7 +172,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
             contextBuilder.AddItem("ctxtView", "View", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.View), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
 
             // Nur im Debugmodus dürfen Development-CTs gelöscht werden
-            if (GetWnd().ViewIndicator.Contains("ED"))
+            if (GetWnd().ViewIndicator.Contains("ED") && (!GetApp().T1CTABH!.NRANA && !t1ctabd.TXNUM.StartsWith("D_") || FnSystem.IsDebug()))
                 contextBuilder.AddItem("ctxtDelete", "Delete", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Delete), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
 
             if (contextBuilder.HasItems())
