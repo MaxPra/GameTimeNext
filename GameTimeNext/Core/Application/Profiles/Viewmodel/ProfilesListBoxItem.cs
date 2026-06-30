@@ -7,5 +7,7 @@ namespace GameTimeNext.Core.Application.Profiles.Viewmodel
     {
         public BitmapImage? COCOVIM { get; set; }
         public bool COISPLA { get; set; }
+
+        public BitmapImage? COPLFPA { get; set; }
     }
 }

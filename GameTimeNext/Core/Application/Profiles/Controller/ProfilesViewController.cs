@@ -9,6 +9,7 @@ using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Application.TimeMonitoring;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.LauncherIntegration;
+using GameTimeNext.Core.Framework.Logging;
 using GameTimeNext.Core.Framework.UI;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.Utils;
@@ -381,12 +382,44 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         private List<ProfilesListBoxItem> BuildProfileListBoxItems(List<T1PROFI> t1profiles)
         {
-            return t1profiles.Select(prof => new ProfilesListBoxItem
+            List<ProfilesListBoxItem> result = new List<ProfilesListBoxItem>(t1profiles.Count);
+            TXCTABD txctabd = new TXCTABD();
+
+            for (int i = 0; i < t1profiles.Count; i++)
             {
-                ItemObject = prof,
-                COCOVIM = FnImage.LoadImageWithoutLock(Path.Combine(AppEnvironment.GetAppConfig().CoverFolderPath ?? string.Empty, prof.PPFN), 300, 450),
-                COISPLA = FnSystem.IsExeFoundInPath(prof.EXGF)
-            }).ToList();
+                T1PROFI prof = t1profiles[i];
+                try
+                {
+                    T1CTABD? t1ctabdPf = txctabd.Read("pF", prof.PLAFO);
+                    T1CTABD? t1ctabdIm = t1ctabdPf == null
+                        ? null
+                        : txctabd.Read("iM", t1ctabdPf.PARM2);
+
+                    string platformSymbolFile = t1ctabdIm?.PARM1 ?? string.Empty;
+                    string platformSymbolFullPath =
+                        AppEnvironment.GetAppConfig().ImagesSymbolsPath +
+                        platformSymbolFile;
+
+                    ProfilesListBoxItem item = new ProfilesListBoxItem
+                    {
+                        ItemObject = prof,
+                        COCOVIM = FnImage.LoadImageWithoutLock(
+                            Path.Combine(AppEnvironment.GetAppConfig().CoverFolderPath ?? string.Empty, prof.PPFN),
+                            300,
+                            450),
+                        COISPLA = FnSystem.IsExeFoundInPath(prof.EXGF),
+                        COPLFPA = File.Exists(platformSymbolFullPath) ? FnImage.LoadImageWithoutLock(platformSymbolFullPath, 50, 50) : null
+                    };
+
+                    result.Add(item);
+                }
+                catch (Exception ex)
+                {
+                    FnLog.AddError(GetApp(), $"Error while building profile list box item {prof.GANA}. Continued with next item", ex);
+                }
+            }
+
+            return result;
         }
 
         private async Task AdjustFiltersToStartedGameProfile(long pfid)
