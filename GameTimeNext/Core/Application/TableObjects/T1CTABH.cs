@@ -52,6 +52,9 @@ namespace GameTimeNext.Core.Application.TableObjects
         [UIXSignatureField(14)]
         public DateTime CHAT { get; set; } = DateTime.MinValue;
 
+        [UIXSignatureField(15)]
+        public bool NRANA { get; set; } = false;
+
         public override void Save()
         {
             new TXCTABH().Save(this);

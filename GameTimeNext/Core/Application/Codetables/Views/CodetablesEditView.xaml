@@ -34,12 +34,14 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="10" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="10" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="130" />
-                        <ColumnDefinition Width="14" />
-                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
                     </Grid.ColumnDefinitions>
 
                     <TextBlock
@@ -93,6 +95,21 @@
                         VerticalAlignment="Center"
                         Opacity="0.8"
                         Text="Permission" />
+
+                    <TextBlock
+                        Grid.Row="6"
+                        Grid.Column="0"
+                        VerticalAlignment="Center"
+                        Opacity="0.8"
+                        Text="Number Range active" />
+
+                    <CheckBox
+                        x:Name="ChbNumberRangeActive"
+                        Grid.Row="6"
+                        Grid.Column="2"
+                        Padding="0"
+                        VerticalAlignment="Center"
+                        uixprops:UIXAttachedProperty.Path="T1CTABH.NRANA" />
                 </Grid>
             </TabItem>
 

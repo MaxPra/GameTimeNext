@@ -21,6 +21,7 @@
             public const string PACT2 = "PACT2";
             public const string CRAT = "CRAT";
             public const string CHAT = "CHAT";
+            public const string NRANA = "NRANA";
         }
     }
 }

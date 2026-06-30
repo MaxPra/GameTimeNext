@@ -87,6 +87,15 @@ namespace GameTimeNext.Core.Framework.Config
         }
 
         [JsonIgnore]
+        public string ImagesSymbolsPath
+        {
+            get
+            {
+                return AppFolderPath + Path.DirectorySeparatorChar + "images_and_symbols";
+            }
+        }
+
+        [JsonIgnore]
         public string CoverFolderTempPath
         {
             get
