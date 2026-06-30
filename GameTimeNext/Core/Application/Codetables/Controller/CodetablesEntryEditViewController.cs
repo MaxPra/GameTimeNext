@@ -1,6 +1,7 @@
 using GameTimeNext.Core.Application.Codetables.Views;
 using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.TableObjects;
+using GameTimeNext.Core.Framework.Utils;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -59,7 +60,11 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
         protected override void Check()
         {
             CheckParameterRequired();
+
+            CheckTextNumber();
         }
+
+
 
         protected override void FillViewImpl()
         {
@@ -187,6 +192,26 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
             }
 
             return paramControls;
+        }
+
+        private void CheckTextNumber()
+        {
+            T1CTABH t1ctabh = new TXCTABH().Read(GetApp().T1CTABD!.TXTYP);
+
+            if (FnString.IsNullEmptyOrWhitespace(GetWnd().TxbTextNumber.Text))
+            {
+                AddViewError(GetWnd().TxbTextNumber, "Text Number is required.");
+            }
+
+            if (GetWnd().TxbTextNumber.Text.StartsWith("D_") && !FnSystem.IsDebug() && t1ctabh!.NRANA)
+            {
+                AddViewError(GetWnd().TxbTextNumber, "Text Number must not start with D_ (only for developer-entrys)");
+            }
+
+            //if (!GetWnd().TxbTextNumber.Text.StartsWith("D_") && FnSystem.IsDebug() && t1ctabh!.NRANA)
+            //{
+            //    AddViewError(GetWnd().TxbTextNumber, "Text Number must start with D_");
+            //}
         }
 
         /// <summary>
