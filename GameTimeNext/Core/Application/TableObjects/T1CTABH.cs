@@ -55,6 +55,9 @@ namespace GameTimeNext.Core.Application.TableObjects
         [UIXSignatureField(15)]
         public bool NRANA { get; set; } = false;
 
+        [UIXSignatureField(16)]
+        public bool EXPRT { get; set; } = false;
+
         public override void Save()
         {
             new TXCTABH().Save(this);

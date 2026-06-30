@@ -9,6 +9,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Import
     public class DataBaseCodetablesImporter : DataBaseImporterBase
     {
         private readonly HashSet<string> _resetDeveloperTxtyps = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        private readonly HashSet<string> _resetNumberRangeTxtyps = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
         public override List<string> GetValidTables()
         {
@@ -63,15 +64,27 @@ namespace GameTimeNext.Core.Framework.DataBase.Import
                 string txtyp = row[txtypIndex].Trim();
                 string txnum = row[txnumIndex].Trim();
                 string permission = (GetPermission(txtyp) ?? string.Empty).Trim();
+                bool isNumberRangeActive = IsNumberRangeActive(txtyp);
+                bool isDeveloperNumberRangeEntry = txnum.StartsWith("D_", StringComparison.OrdinalIgnoreCase);
                 bool isUpdateOnlyPermission = string.Equals(permission, "U", StringComparison.OrdinalIgnoreCase);
                 bool isDeveloperPermission = string.Equals(permission, "D", StringComparison.OrdinalIgnoreCase);
 
-                if (isUpdateOnlyPermission && ExistsEntryByTxtypT1CTABD(txtyp))
+                if (isNumberRangeActive && !_resetNumberRangeTxtyps.Contains(txtyp))
+                {
+                    DeleteAllNumberRangeEntrysT1CTABD(txtyp);
+                    _resetNumberRangeTxtyps.Add(txtyp);
+                }
+
+                if (isNumberRangeActive && !isDeveloperNumberRangeEntry)
+                    continue;
+
+                if (isUpdateOnlyPermission && !isNumberRangeActive && ExistsEntryByTxtypT1CTABD(txtyp))
                     continue;
 
                 if (isDeveloperPermission && !_resetDeveloperTxtyps.Contains(txtyp))
                 {
                     DeleteAllDeveloperEntrysT1CTABD(txtyp);
+
                     _resetDeveloperTxtyps.Add(txtyp);
                 }
 
@@ -143,6 +156,20 @@ namespace GameTimeNext.Core.Framework.DataBase.Import
             FnLog.AddInfo(null, s);
 
             uixStatement.ExecuteNonQuery();
+        }
+
+        private void DeleteAllNumberRangeEntrysT1CTABD(string txtyp)
+        {
+            using var command = AppEnvironment.GetDataBaseManager().GetConnection().CreateCommand();
+            command.CommandText = "DELETE FROM T1CTABD WHERE TXTYP = @TXTYP AND substr(TXNUM, 1, 2) = 'D_'";
+            var txtypParameter = command.CreateParameter();
+            txtypParameter.ParameterName = "@TXTYP";
+            txtypParameter.Value = txtyp;
+            command.Parameters.Add(txtypParameter);
+
+            FnLog.AddInfo(null, $"DELETE FROM T1CTABD WHERE TXTYP = '{txtyp}' AND substr(TXNUM, 1, 2) = 'D_'");
+
+            command.ExecuteNonQuery();
         }
 
         private void ImportT1CTABHEntrys(ImportFile importFile)
@@ -221,6 +248,26 @@ namespace GameTimeNext.Core.Framework.DataBase.Import
             }
 
             return null!;
+        }
+
+        private bool IsNumberRangeActive(string txtyp)
+        {
+            UIXQuery query = new UIXQuery("T1CTABH", AppEnvironment.GetDataBaseManager().GetConnection());
+            query.AddField("T1CTABH", "NRANA");
+            query.AddWhere("T1CTABH", "TXTYP", QueryCompareType.EQUALS, txtyp);
+
+            using (var reader = query.Execute())
+            {
+                if (reader.Read())
+                {
+                    string nranaRaw = UIXQuery.GetString(reader, "T1CTABH", "NRANA", "0");
+                    int.TryParse(nranaRaw, out int nrana);
+
+                    return nrana == 1;
+                }
+            }
+
+            return false;
         }
 
         private static bool IsDateColumn(string columnName)

@@ -66,6 +66,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             query.AddField(K1CTABH.Name, K1CTABH.Fields.CRAT);
             query.AddField(K1CTABH.Name, K1CTABH.Fields.CHAT);
             query.AddField(K1CTABH.Name, K1CTABH.Fields.NRANA);
+            query.AddField(K1CTABH.Name, K1CTABH.Fields.EXPRT);
             query.AddWhere(K1CTABH.Name, K1CTABH.Fields.TXTYP, QueryCompareType.EQUALS, tXTYP);
 
             using var reader = query.Execute();
@@ -96,6 +97,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             query.AddField(K1CTABH.Name, K1CTABH.Fields.CRAT);
             query.AddField(K1CTABH.Name, K1CTABH.Fields.CHAT);
             query.AddField(K1CTABH.Name, K1CTABH.Fields.NRANA);
+            query.AddField(K1CTABH.Name, K1CTABH.Fields.EXPRT);
             query.AddOrderBy(K1CTABH.Name, K1CTABH.Fields.TXTYP, OrderDirection.ASC);
 
             List<T1CTABH> list = new List<T1CTABH>();
@@ -116,7 +118,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             DateTime now = DateTime.Now;
             obj.CRAT = now;
             obj.CHAT = now;
-            cmd.CommandText = "INSERT INTO T1CTABH (TXTYP, DESCR, PERMI, PAAC1, PADE1, PARF1, PACO1, PACT1, PAAC2, PADE2, PARF2, PACO2, PACT2, CRAT, CHAT, NRANA) VALUES (@TXTYP, @DESCR, @PERMI, @PAAC1, @PADE1, @PARF1, @PACO1, @PACT1, @PAAC2, @PADE2, @PARF2, @PACO2, @PACT2, @CRAT, @CHAT, @NRANA)";
+            cmd.CommandText = "INSERT INTO T1CTABH (TXTYP, DESCR, PERMI, PAAC1, PADE1, PARF1, PACO1, PACT1, PAAC2, PADE2, PARF2, PACO2, PACT2, CRAT, CHAT, NRANA, EXPRT) VALUES (@TXTYP, @DESCR, @PERMI, @PAAC1, @PADE1, @PARF1, @PACO1, @PACT1, @PAAC2, @PADE2, @PARF2, @PACO2, @PACT2, @CRAT, @CHAT, @NRANA, @EXPRT)";
             cmd.Parameters.AddWithValue("@TXTYP", ToDbValue(obj.TXTYP));
             cmd.Parameters.AddWithValue("@DESCR", ToDbValue(obj.DESCR));
             cmd.Parameters.AddWithValue("@PERMI", ToDbValue(obj.PERMI));
@@ -133,6 +135,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
             cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
             cmd.Parameters.AddWithValue("@NRANA", ToDbValue(obj.NRANA));
+            cmd.Parameters.AddWithValue("@EXPRT", ToDbValue(obj.EXPRT));
             cmd.ExecuteNonQuery();
         }
 
@@ -140,7 +143,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         {
             using SQLiteCommand cmd = connection.CreateCommand();
             obj.CHAT = DateTime.Now;
-            cmd.CommandText = "UPDATE T1CTABH SET DESCR = @DESCR, PERMI = @PERMI, PAAC1 = @PAAC1, PADE1 = @PADE1, PARF1 = @PARF1, PACO1 = @PACO1, PACT1 = @PACT1, PAAC2 = @PAAC2, PADE2 = @PADE2, PARF2 = @PARF2, PACO2 = @PACO2, PACT2 = @PACT2, CRAT = @CRAT, CHAT = @CHAT, NRANA = @NRANA WHERE TXTYP = @TXTYP";
+            cmd.CommandText = "UPDATE T1CTABH SET DESCR = @DESCR, PERMI = @PERMI, PAAC1 = @PAAC1, PADE1 = @PADE1, PARF1 = @PARF1, PACO1 = @PACO1, PACT1 = @PACT1, PAAC2 = @PAAC2, PADE2 = @PADE2, PARF2 = @PARF2, PACO2 = @PACO2, PACT2 = @PACT2, CRAT = @CRAT, CHAT = @CHAT, NRANA = @NRANA, EXPRT = @EXPRT WHERE TXTYP = @TXTYP";
             cmd.Parameters.AddWithValue("@TXTYP", ToDbValue(obj.TXTYP));
             cmd.Parameters.AddWithValue("@DESCR", ToDbValue(obj.DESCR));
             cmd.Parameters.AddWithValue("@PERMI", ToDbValue(obj.PERMI));
@@ -157,6 +160,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
             cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
             cmd.Parameters.AddWithValue("@NRANA", ToDbValue(obj.NRANA));
+            cmd.Parameters.AddWithValue("@EXPRT", ToDbValue(obj.EXPRT));
             cmd.ExecuteNonQuery();
         }
 
@@ -187,6 +191,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             obj.CRAT = ParseDbDateTime(reader.GetValue(13));
             obj.CHAT = ParseDbDateTime(reader.GetValue(14));
             obj.NRANA = !reader.IsDBNull(15) && Convert.ToInt32(reader.GetValue(15)) == 1;
+            obj.EXPRT = !reader.IsDBNull(16) && Convert.ToInt32(reader.GetValue(16)) == 1;
             obj.State = UIXTableObjectState.Available;
             return obj;
         }

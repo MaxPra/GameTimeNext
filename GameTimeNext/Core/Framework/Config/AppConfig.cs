@@ -96,6 +96,24 @@ namespace GameTimeNext.Core.Framework.Config
         }
 
         [JsonIgnore]
+        public string ImagesSymbolsPathDefault
+        {
+            get
+            {
+                return ImagesSymbolsPath + Path.DirectorySeparatorChar + "default";
+            }
+        }
+
+        [JsonIgnore]
+        public string ImagesSymbolsPathUser
+        {
+            get
+            {
+                return ImagesSymbolsPath + Path.DirectorySeparatorChar + "user";
+            }
+        }
+
+        [JsonIgnore]
         public string CoverFolderTempPath
         {
             get

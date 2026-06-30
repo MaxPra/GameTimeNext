@@ -208,10 +208,10 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
                 AddViewError(GetWnd().TxbTextNumber, "Text Number must not start with D_ (only for developer-entrys)");
             }
 
-            if (!GetWnd().TxbTextNumber.Text.StartsWith("D_") && FnSystem.IsDebug() && t1ctabh!.NRANA)
-            {
-                AddViewError(GetWnd().TxbTextNumber, "Text Number must start with D_");
-            }
+            //if (!GetWnd().TxbTextNumber.Text.StartsWith("D_") && FnSystem.IsDebug() && t1ctabh!.NRANA)
+            //{
+            //    AddViewError(GetWnd().TxbTextNumber, "Text Number must start with D_");
+            //}
         }
 
         /// <summary>
