@@ -158,7 +158,7 @@ namespace GameTimeNext.Core.Application.DataManagers
 
         private static void AddWhereInvalidSesssions(ref UIXQuery query)
         {
-            query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PLTI, QueryCompareType.LESS_THAN, 0.5);
+            query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PLTI, QueryCompareType.LESS_THAN, AppEnvironment.GetAppConfig().AppSettings.SessionCleanupSeconds / 60);
         }
     }
 }

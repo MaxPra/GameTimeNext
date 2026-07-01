@@ -1,4 +1,5 @@
 ﻿using GameTimeNext.Core.Application.TableObjects;
+using GameTimeNext.Core.Framework;
 
 namespace GameTimeNext.Core.Application.DataManagers
 {
@@ -6,7 +7,7 @@ namespace GameTimeNext.Core.Application.DataManagers
     {
         public override void Save(T1SESSI obj)
         {
-            if (obj.PLTI < 1) return;
+            if (AppEnvironment.GetAppConfig().AppSettings.EnableSessionCleanup && obj.PLTI < (AppEnvironment.GetAppConfig().AppSettings.SessionCleanupSeconds / 60)) return;
 
             base.Save(obj);
         }

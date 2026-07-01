@@ -121,7 +121,8 @@ namespace GameTimeNext.Core.Framework
 
             AppVersion.SetAppVersionInConfig();
 
-            InitializeCleanup();
+            if (GetAppConfig().AppSettings.EnableSessionCleanup)
+                InitializeCleanup();
         }
 
 
