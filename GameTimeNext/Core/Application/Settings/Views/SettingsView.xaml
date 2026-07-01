@@ -67,6 +67,10 @@
                                     <ColumnDefinition Width="220" />
                                     <ColumnDefinition Width="16" />
                                     <ColumnDefinition Width="54" />
+                                    <ColumnDefinition Width="24" />
+                                    <ColumnDefinition Width="170" />
+                                    <ColumnDefinition Width="16" />
+                                    <ColumnDefinition Width="54" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
 
@@ -82,6 +86,19 @@
                                     HorizontalAlignment="Left"
                                     VerticalAlignment="Center"
                                     ToolTip="Blacks out all screens to help protect OLED displays (Ctrl + B)." />
+
+                                <TextBlock
+                                    Grid.Column="4"
+                                    VerticalAlignment="Center"
+                                    Foreground="{DynamicResource Brush.TextSecondary}"
+                                    Text="Show text on blackout" />
+
+                                <CheckBox
+                                    x:Name="cbShowTextOnBlackout"
+                                    Grid.Column="6"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    ToolTip="Shows moving text when all monitors are blacked out." />
                             </Grid>
 
                             <Grid Grid.Row="4" HorizontalAlignment="Left">

@@ -66,6 +66,13 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             FnControls.SetEnabled(GetView().btnImportBackup, !FnString.IsNullEmptyOrWhitespace(GetView().txbBackupImportPath.Text));
             FnControls.SetEnabled(GetView().btnCreateBackup, !FnString.IsNullEmptyOrWhitespace(GetView().txbBackupExportPath.Text));
 
+            FnControls.SetEnabled(GetView().cbShowTextOnBlackout, GetView().cbActivateBlackoutKeyCombination.IsChecked == true);
+            if (!GetView().cbActivateBlackoutKeyCombination.IsChecked == true)
+            {
+                GetView().cbShowTextOnBlackout.IsChecked = false;
+            }
+
+
             bool hasBackupExportPath = !FnString.IsNullEmptyOrWhitespace(GetView().txbBackupExportPath.Text);
             bool autoBackupEnabled = GetView().cbAutoBackup.IsChecked == true;
 
@@ -118,6 +125,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
         private void FillTabGeneral()
         {
             GetView().cbActivateBlackoutKeyCombination.IsChecked = _appSettings!.ActivateBlackoutKeyCombination;
+            GetView().cbShowTextOnBlackout.IsChecked = _appSettings.EnableFullBlackoutText;
             GetView().cbAutoStartMinimized.IsChecked = _appSettings.AutoStartMinimized;
             GetView().cbAllowProfileSpecificStyleChanges.IsChecked = _appSettings!.AllowProfileSpecificStyleChanges;
             GetView().txbSteamGridDbApiKey.Text = _appSettings!.SteamGridDbKey;
@@ -150,6 +158,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
         private void FillDBOGeneral()
         {
             _appSettings!.ActivateBlackoutKeyCombination = GetView().cbActivateBlackoutKeyCombination.IsChecked == true;
+            _appSettings!.EnableFullBlackoutText = GetView().cbShowTextOnBlackout.IsChecked == true;
             _appSettings!.AutoStartMinimized = GetView().cbAutoStartMinimized.IsChecked == true;
             _appSettings!.AllowProfileSpecificStyleChanges = GetView().cbAllowProfileSpecificStyleChanges.IsChecked == true;
             _appSettings!.SteamGridDbKey = GetView().txbSteamGridDbApiKey.Text;

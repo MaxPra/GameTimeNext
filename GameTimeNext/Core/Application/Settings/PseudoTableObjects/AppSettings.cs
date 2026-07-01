@@ -78,12 +78,16 @@ namespace GameTimeNext.Core.Application.TableObjects
         [UIXSignatureField(21)]
         public double SessionCleanupSeconds { get; set; }
 
+        [UIXSignatureField(22)]
+        public bool EnableFullBlackoutText { get; set; }
+
 
 
         public AppSettings()
         {
             AutomaticGameProfileSwitching = false;
             ActivateBlackoutKeyCombination = false;
+            EnableFullBlackoutText = true;
             AllowProfileSpecificStyleChanges = false;
 
             MonitoringKeyActive = false;
