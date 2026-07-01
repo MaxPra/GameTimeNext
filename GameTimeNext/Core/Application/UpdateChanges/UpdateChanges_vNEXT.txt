@@ -16,7 +16,8 @@
   NEW FEATURES
   ____________
 
-  * -
+  * Session Cleanup lets you clean out sessions, that took less than a specified amount of time.
+    This is useful for cleaning out sessions that were created by accident or by testing.
 
 
   BUG FIXES
