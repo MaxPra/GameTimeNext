@@ -82,6 +82,11 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             {
                 AddViewError(GetView().txbBreakReminderHours, "Only numeric values allowed!");
             }
+
+            if (!FnControls.ContainsOnlyNumericValue(GetView().txbSessionCleanupSeconds))
+            {
+                AddViewError(GetView().txbSessionCleanupSeconds, "Only numeric values allowed!");
+            }
         }
 
         protected override void DataWrapperSelectionChangedImpl(Selector source)
@@ -138,6 +143,8 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             GetView().cbBlackoutSideMonitors.IsChecked = _appSettings!.BlackoutSideMonitors;
             GetView().txbMonitoringKey.Text = _appSettings!.MonitoringKey;
             GetView().cbEnableSessionTimeQuery.IsChecked = _appSettings!.EnableSessionTimeQuery;
+            GetView().cbEnableSessionCleanup.IsChecked = _appSettings!.EnableSessionCleanup;
+            GetView().txbSessionCleanupSeconds.Text = _appSettings!.SessionCleanupSeconds.ToString();
         }
 
         private void FillDBOGeneral()
@@ -165,6 +172,8 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             _appSettings!.MonitoringKeyActive = GetView().cbMonitoringKeyActive.IsChecked == true;
             _appSettings!.MonitoringKey = GetView().txbMonitoringKey.Text;
             _appSettings!.EnableSessionTimeQuery = GetView().cbEnableSessionTimeQuery.IsChecked == true;
+            _appSettings!.EnableSessionCleanup = GetView().cbEnableSessionCleanup.IsChecked == true;
+            _appSettings!.SessionCleanupSeconds = FnConvert.ToDouble(GetView().txbSessionCleanupSeconds.Text);
         }
 
         private void FillDBOTags()

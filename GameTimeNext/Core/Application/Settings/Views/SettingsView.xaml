@@ -613,7 +613,7 @@
                             </Grid>
                         </Grid>
 
-                        <Grid x:Name="pnlMonitoringKey">
+                        <Grid x:Name="pnlMonitoringKey" Margin="0,0,0,32">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="16" />
@@ -655,6 +655,65 @@
                                 Grid.Row="4"
                                 Foreground="{DynamicResource Brush.TextSecondary}"
                                 Text="Press the button to listen for a new hotkey." />
+                        </Grid>
+
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="12" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="12" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock
+                                Grid.Row="0"
+                                Foreground="{DynamicResource Brush.TextPrimary}"
+                                Style="{StaticResource SettingsGroupTitleStyle}"
+                                Text="Session Cleanup" />
+
+                            <Grid Grid.Row="2" HorizontalAlignment="Left">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="170" />
+                                    <ColumnDefinition Width="16" />
+                                    <ColumnDefinition Width="54" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock
+                                    Grid.Column="0"
+                                    VerticalAlignment="Center"
+                                    Foreground="{DynamicResource Brush.TextSecondary}"
+                                    Text="Enable Cleanup" />
+
+                                <CheckBox
+                                    x:Name="cbEnableSessionCleanup"
+                                    Grid.Column="2"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center" />
+                            </Grid>
+
+                            <Grid Grid.Row="4" HorizontalAlignment="Left">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="170" />
+                                    <ColumnDefinition Width="16" />
+                                    <ColumnDefinition Width="80" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock
+                                    Grid.Column="0"
+                                    VerticalAlignment="Center"
+                                    Foreground="{DynamicResource Brush.TextSecondary}"
+                                    Text="Minimum Seconds" />
+
+                                <TextBox
+                                    x:Name="txbSessionCleanupSeconds"
+                                    Grid.Column="2"
+                                    Width="80"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    ToolTip="Minimum playtime in seconds for a session to be valid." />
+                            </Grid>
                         </Grid>
 
                     </StackPanel>
