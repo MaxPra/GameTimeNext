@@ -88,6 +88,46 @@ namespace GameTimeNext.Core.Framework.DataBase.DevSync
 
             string filePath = Path.Combine(devSyncDirectory, tableName + ".csv");
             File.WriteAllText(filePath, sb.ToString(), Encoding.UTF8);
+
+            if (IsCodetableTable(tableName))
+                ExportCodetableDefaultFiles();
+        }
+
+        private static bool IsCodetableTable(string tableName)
+        {
+            return string.Equals(tableName, "T1CTABD", StringComparison.OrdinalIgnoreCase) ||
+                   string.Equals(tableName, "T1CTABH", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static void ExportCodetableDefaultFiles()
+        {
+            string sourceDirectory = AppEnvironment.GetAppConfig().ImagesSymbolsPathDefault;
+            string destinationDirectory = Path.Combine(GetDevSyncDirectory(), "files", "default");
+
+            if (Directory.Exists(destinationDirectory))
+                Directory.Delete(destinationDirectory, true);
+
+            if (!Directory.Exists(sourceDirectory))
+                return;
+
+            CopyDirectory(sourceDirectory, destinationDirectory);
+        }
+
+        private static void CopyDirectory(string sourceDirectory, string destinationDirectory)
+        {
+            Directory.CreateDirectory(destinationDirectory);
+
+            foreach (string filePath in Directory.GetFiles(sourceDirectory))
+            {
+                string destinationFilePath = Path.Combine(destinationDirectory, Path.GetFileName(filePath));
+                File.Copy(filePath, destinationFilePath, true);
+            }
+
+            foreach (string directoryPath in Directory.GetDirectories(sourceDirectory))
+            {
+                string destinationSubDirectory = Path.Combine(destinationDirectory, Path.GetFileName(directoryPath));
+                CopyDirectory(directoryPath, destinationSubDirectory);
+            }
         }
 
         private static bool IsDevSyncEnabledForTable(string tableName)

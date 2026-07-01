@@ -71,6 +71,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             query.AddField(K1PROFI.Name, K1PROFI.Fields.ETTY);
             query.AddField(K1PROFI.Name, K1PROFI.Fields.ETML);
             query.AddField(K1PROFI.Name, K1PROFI.Fields.ARCH);
+            query.AddField(K1PROFI.Name, K1PROFI.Fields.PLAFO);
             query.AddWhere(K1PROFI.Name, K1PROFI.Fields.PFID, QueryCompareType.EQUALS, pFID);
 
             using var reader = query.Execute();
@@ -106,6 +107,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             query.AddField(K1PROFI.Name, K1PROFI.Fields.ETTY);
             query.AddField(K1PROFI.Name, K1PROFI.Fields.ETML);
             query.AddField(K1PROFI.Name, K1PROFI.Fields.ARCH);
+            query.AddField(K1PROFI.Name, K1PROFI.Fields.PLAFO);
             query.AddOrderBy(K1PROFI.Name, K1PROFI.Fields.PFID, OrderDirection.ASC);
 
             List<T1PROFI> list = new List<T1PROFI>();
@@ -126,7 +128,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             DateTime now = DateTime.Now;
             obj.CRAT = now;
             obj.CHAT = now;
-            cmd.CommandText = "INSERT INTO T1PROFI (GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, CRAT, CHAT, ACCO, ACIN, ACAC, CUPT, ETMA, ETME, ETCO, ETTY, ETML, ARCH) VALUES (@GANA, @FIPL, @LAPL, @PPFN, @EXGF, @SAID, @PRSE, @EXEC, @CRAT, @CHAT, @ACCO, @ACIN, @ACAC, @CUPT, @ETMA, @ETME, @ETCO, @ETTY, @ETML, @ARCH)";
+            cmd.CommandText = "INSERT INTO T1PROFI (GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, CRAT, CHAT, ACCO, ACIN, ACAC, CUPT, ETMA, ETME, ETCO, ETTY, ETML, ARCH, PLAFO) VALUES (@GANA, @FIPL, @LAPL, @PPFN, @EXGF, @SAID, @PRSE, @EXEC, @CRAT, @CHAT, @ACCO, @ACIN, @ACAC, @CUPT, @ETMA, @ETME, @ETCO, @ETTY, @ETML, @ARCH, @PLAFO)";
             cmd.Parameters.AddWithValue("@GANA", ToDbValue(obj.GANA));
             cmd.Parameters.AddWithValue("@FIPL", ToDbValue(obj.FIPL));
             cmd.Parameters.AddWithValue("@LAPL", ToDbValue(obj.LAPL));
@@ -147,6 +149,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             cmd.Parameters.AddWithValue("@ETTY", ToDbValue(obj.ETTY));
             cmd.Parameters.AddWithValue("@ETML", ToDbValue(obj.ETML));
             cmd.Parameters.AddWithValue("@ARCH", ToDbValue(obj.ARCH));
+            cmd.Parameters.AddWithValue("@PLAFO", ToDbValue(obj.PLAFO));
             cmd.ExecuteNonQuery();
             using SQLiteCommand idCmd = connection.CreateCommand();
             idCmd.CommandText = "SELECT last_insert_rowid();";
@@ -157,7 +160,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         {
             using SQLiteCommand cmd = connection.CreateCommand();
             obj.CHAT = DateTime.Now;
-            cmd.CommandText = "UPDATE T1PROFI SET GANA = @GANA, FIPL = @FIPL, LAPL = @LAPL, PPFN = @PPFN, EXGF = @EXGF, SAID = @SAID, PRSE = @PRSE, EXEC = @EXEC, CRAT = @CRAT, CHAT = @CHAT, ACCO = @ACCO, ACIN = @ACIN, ACAC = @ACAC, CUPT = @CUPT, ETMA = @ETMA, ETME = @ETME, ETCO = @ETCO, ETTY = @ETTY, ETML = @ETML, ARCH = @ARCH WHERE PFID = @PFID";
+            cmd.CommandText = "UPDATE T1PROFI SET GANA = @GANA, FIPL = @FIPL, LAPL = @LAPL, PPFN = @PPFN, EXGF = @EXGF, SAID = @SAID, PRSE = @PRSE, EXEC = @EXEC, CRAT = @CRAT, CHAT = @CHAT, ACCO = @ACCO, ACIN = @ACIN, ACAC = @ACAC, CUPT = @CUPT, ETMA = @ETMA, ETME = @ETME, ETCO = @ETCO, ETTY = @ETTY, ETML = @ETML, ARCH = @ARCH, PLAFO = @PLAFO WHERE PFID = @PFID";
             cmd.Parameters.AddWithValue("@PFID", ToDbValue(obj.PFID));
             cmd.Parameters.AddWithValue("@GANA", ToDbValue(obj.GANA));
             cmd.Parameters.AddWithValue("@FIPL", ToDbValue(obj.FIPL));
@@ -179,6 +182,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             cmd.Parameters.AddWithValue("@ETTY", ToDbValue(obj.ETTY));
             cmd.Parameters.AddWithValue("@ETML", ToDbValue(obj.ETML));
             cmd.Parameters.AddWithValue("@ARCH", ToDbValue(obj.ARCH));
+            cmd.Parameters.AddWithValue("@PLAFO", ToDbValue(obj.PLAFO));
             cmd.ExecuteNonQuery();
         }
 
@@ -214,6 +218,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             obj.ETTY = reader.IsDBNull(18) ? string.Empty : reader.GetString(18);
             obj.ETML = !reader.IsDBNull(19) && Convert.ToInt32(reader.GetValue(19)) == 1;
             obj.ARCH = !reader.IsDBNull(20) && Convert.ToInt32(reader.GetValue(20)) == 1;
+            obj.PLAFO = reader.IsDBNull(21) ? string.Empty : reader.GetString(21);
             obj.State = UIXTableObjectState.Available;
             return obj;
         }

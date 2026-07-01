@@ -80,6 +80,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             GetApp().ManualEstTimesCache.estTimeCompletionist = GetApp().T1Profi.ETCO / 60;
 
             AddIdentifier("T1PROFI", GetApp().T1Profi);
+            AddSource("T1CTABD", new TXCTABD());
         }
 
         protected override void BuildFirstImpl()
@@ -118,6 +119,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             if (GetWnd().cbUseProfileAccentColors.IsChecked == false
                 && (GetWnd().tglAccent1.IsChecked == true || GetWnd().tglAccent2.IsChecked == true || GetWnd().tglAccent3.IsChecked == true))
                 AddViewError(GetWnd().cbUseProfileAccentColors, "Invalid input: Accent colors are disabled, but a color was specified.");
+
+            if (FnString.IsNullEmptyOrWhitespace(GetWnd().cmbPlatform.SelectedValue.ToString()!))
+                AddViewError(GetWnd().cmbPlatform, "Invalid input: Platform is required.");
         }
 
         protected override void DataWrapperSelectionChangedImpl(Selector source)
