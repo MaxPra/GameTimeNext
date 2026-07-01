@@ -21,6 +21,8 @@
 
   * Added a new option to override the global blackout setting (side monitors while monitoring) on profile layer.
 
+  * Added a feature that allows displaying animated text when all monitors are blacked out.
+
 
   BUG FIXES
   _________
