@@ -1,4 +1,6 @@
-﻿using GameTimeNext.Core.Framework.Utils;
+﻿using GameTimeNext.Core.Application.DataManagers;
+using GameTimeNext.Core.Application.TableObjects;
+using GameTimeNext.Core.Framework.Utils;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
@@ -21,6 +23,7 @@ namespace GameTimeNext.Core.Framework.UI
                 Enable(owner);
             }
         }
+
 
         public static void Enable(Window owner)
         {
@@ -76,6 +79,20 @@ namespace GameTimeNext.Core.Framework.UI
             FnDisplay.ShowMouseCursorGlobally();
 
             isActive = false;
+        }
+
+        public static bool AllowedToToggleBlackout(T1PROFI t1profi)
+        {
+            if (TFPROFI.BlackoutOverridenAndActive(t1profi))
+                return true;
+
+            if (TFPROFI.BlackoutOverridenAndInactive(t1profi))
+                return false;
+
+            if (AppEnvironment.GetAppConfig().AppSettings.BlackoutSideMonitors)
+                return true;
+
+            return false;
         }
 
         public static void ToggleSecondaryBlackout(Window owner, bool manageCursor = false)

@@ -66,6 +66,10 @@
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="8" />
                                         <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="12" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="8" />
+                                        <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
 
                                     <TextBlock
@@ -151,6 +155,24 @@
                                         SelectedIndex="0"
                                         SelectedValue=""
                                         SelectedValuePath="Tag" />
+
+                                    <Grid Grid.Row="16">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="24" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <CheckBox
+                                            x:Name="cbOverrideGlobalBlackout"
+                                            Grid.Column="0"
+                                            Content="override global blackout" />
+
+                                        <CheckBox
+                                            x:Name="cbBlackoutSideMonitors"
+                                            Grid.Column="2"
+                                            Content="blackout side monitors" />
+                                    </Grid>
                                 </Grid>
                             </Border>
 
