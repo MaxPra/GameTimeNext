@@ -2,6 +2,11 @@
   GameTimeNext  |  Version 0.4.1 Beta
 =============================================
 
+  IMPORTANT:
+  Please iterate through every profile you've added and choose an platform (this is now a required field).
+  If you don't have any platforms available, then open the application "Codetables" an add Entrys to "pF - Platforms".
+
+
   IMPROVEMENTS
   ____________
 

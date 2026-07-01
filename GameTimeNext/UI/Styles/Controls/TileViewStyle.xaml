@@ -362,6 +362,34 @@
                                                 </Border>
 
                                                 <Border
+                                                    Grid.Row="0"
+                                                    Margin="0,8,8,0"
+                                                    Padding="10,6"
+                                                    HorizontalAlignment="Right"
+                                                    VerticalAlignment="Top"
+                                                    Panel.ZIndex="4"
+                                                    CornerRadius="3"
+                                                    IsHitTestVisible="False">
+                                                    <Border.Background>
+                                                        <SolidColorBrush Opacity="0.78" Color="{DynamicResource Color.Accent}" />
+                                                    </Border.Background>
+                                                    <Border.Style>
+                                                        <Style TargetType="Border">
+                                                            <Setter Property="Visibility" Value="Visible" />
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding COPLFPA}" Value="{x:Null}">
+                                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Border.Style>
+                                                    <Image
+                                                        Width="26"
+                                                        Height="26"
+                                                        Source="{Binding COPLFPA}" />
+                                                </Border>
+
+                                                <Border
                                                     x:Name="TitleHost"
                                                     Grid.Row="1"
                                                     Background="{DynamicResource Brush.TileTitleBackground}"

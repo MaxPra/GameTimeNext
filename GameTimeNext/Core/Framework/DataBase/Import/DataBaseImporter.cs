@@ -1,4 +1,5 @@
 ﻿using GameTimeNext.Core.Framework.DataBase.Import.Base;
+using GameTimeNext.Core.Framework.Logging;
 using System.IO;
 using System.IO.Compression;
 using System.Reflection;
@@ -63,6 +64,9 @@ namespace GameTimeNext.Core.Framework.DataBase.Import
 
                 // Importieren der Daten
                 ImportFilesData(importPackage);
+
+                // Importieren von mitgelieferten Dateien
+                ImportPackageFiles(tempDirectory);
             }
             finally
             {
@@ -84,9 +88,11 @@ namespace GameTimeNext.Core.Framework.DataBase.Import
             ImportPackage importPackage = new ImportPackage();
             importPackage.Name = new DirectoryInfo(packageDirectory).Name;
 
-            string[] files = Directory.GetFiles(packageDirectory)
-                                        .OrderBy(f => int.Parse(Path.GetFileName(f).Split('_')[0]))
-                                        .ToArray();
+            string[] files = Directory
+                .GetFiles(packageDirectory, "*.txt", SearchOption.TopDirectoryOnly)
+                .Where(f => int.TryParse(Path.GetFileName(f).Split('_')[0], out _))
+                .OrderBy(f => int.Parse(Path.GetFileName(f).Split('_')[0]))
+                .ToArray();
 
             List<ImportFile> importFiles = new List<ImportFile>();
 
@@ -100,6 +106,9 @@ namespace GameTimeNext.Core.Framework.DataBase.Import
 
         private static void ImportFilesData(ImportPackage importPackage)
         {
+
+            FnLog.AddInfo("DataBaseImporter", $"Importing data...");
+
             foreach (ImportFile importFile in importPackage.ImportFiles)
             {
                 if (importFile == null)
@@ -197,6 +206,39 @@ namespace GameTimeNext.Core.Framework.DataBase.Import
             }
 
             return rows;
+        }
+
+        private static void ImportPackageFiles(string packageDirectory)
+        {
+            FnLog.AddInfo("DataBaseImporter", "Importing files...");
+            string packageDefaultDirectory = Path.Combine(packageDirectory, "files", "default");
+
+            if (!Directory.Exists(packageDefaultDirectory))
+                return;
+
+            string targetDirectory = Path.Combine(AppEnvironment.GetAppConfig().ImagesSymbolsPath, "default");
+
+            if (Directory.Exists(targetDirectory))
+                Directory.Delete(targetDirectory, true);
+
+            CopyDirectory(packageDefaultDirectory, targetDirectory);
+        }
+
+        private static void CopyDirectory(string sourceDirectory, string destinationDirectory)
+        {
+            Directory.CreateDirectory(destinationDirectory);
+
+            foreach (string filePath in Directory.GetFiles(sourceDirectory))
+            {
+                string destinationFilePath = Path.Combine(destinationDirectory, Path.GetFileName(filePath));
+                File.Copy(filePath, destinationFilePath, true);
+            }
+
+            foreach (string directoryPath in Directory.GetDirectories(sourceDirectory))
+            {
+                string destinationSubDirectory = Path.Combine(destinationDirectory, Path.GetFileName(directoryPath));
+                CopyDirectory(directoryPath, destinationSubDirectory);
+            }
         }
 
         public class ImportPackage
