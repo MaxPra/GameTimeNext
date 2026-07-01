@@ -82,6 +82,11 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             {
                 AddViewError(GetView().txbBreakReminderHours, "Only numeric values allowed!");
             }
+
+            if (!FnControls.ContainsOnlyNumericValue(GetView().txbSessionCleanupSeconds))
+            {
+                AddViewError(GetView().txbSessionCleanupSeconds, "Only numeric values allowed!");
+            }
         }
 
         protected override void DataWrapperSelectionChangedImpl(Selector source)
