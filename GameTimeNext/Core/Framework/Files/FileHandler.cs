@@ -51,6 +51,21 @@ namespace GameTimeNext.Core.Framework.Files
             {
                 Directory.CreateDirectory(AppEnvironment.GetAppConfig().DevGeneratedFilesPath);
             }
+
+            if (!Directory.Exists(AppEnvironment.GetAppConfig().ImagesSymbolsPath))
+            {
+                Directory.CreateDirectory(AppEnvironment.GetAppConfig().ImagesSymbolsPath);
+            }
+
+            if (!Directory.Exists(AppEnvironment.GetAppConfig().ImagesSymbolsPathDefault))
+            {
+                Directory.CreateDirectory(AppEnvironment.GetAppConfig().ImagesSymbolsPathDefault);
+            }
+
+            if (!Directory.Exists(AppEnvironment.GetAppConfig().ImagesSymbolsPathUser))
+            {
+                Directory.CreateDirectory(AppEnvironment.GetAppConfig().ImagesSymbolsPathUser);
+            }
         }
 
         public static void CopyDirectory(string sourceDirectory, string targetDirectory, bool overwriteFiles)

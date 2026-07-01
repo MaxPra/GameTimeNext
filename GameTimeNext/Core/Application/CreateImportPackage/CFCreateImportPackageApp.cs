@@ -1,6 +1,7 @@
 ﻿using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Metadata.Data;
 using GameTimeNext.Core.Application.TableObjects;
+using GameTimeNext.Core.Framework;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
@@ -64,13 +65,53 @@ namespace GameTimeNext.Core.Application.CreateImportPackage
         private static void CreateImportPackageCodetables(string tempDirectory)
         {
             List<T1CTABH> t1ctabhs = new TXCTABH().ReadAll();
-            List<T1CTABD> t1ctabds = new TXCTABD().ReadAll();
+            HashSet<string> exportableTxtyps = t1ctabhs
+                .Where(p => p.EXPRT)
+                .Select(p => p.TXTYP)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            List<T1CTABD> t1ctabds = new TXCTABD()
+                .ReadAll()
+                .Where(p => exportableTxtyps.Contains(p.TXTYP))
+                .ToList();
 
             string filenameT1CTABH = "03_T1CTABH.txt";
             string filenameT1CTABD = "04_T1CTABD.txt";
 
             WriteToFile(Path.Combine(tempDirectory, filenameT1CTABH), t1ctabhs);
             WriteToFile(Path.Combine(tempDirectory, filenameT1CTABD), t1ctabds);
+
+            CreateImportPackageCodetablesFiles(tempDirectory);
+        }
+
+        private static void CreateImportPackageCodetablesFiles(string tempDirectory)
+        {
+            string sourceDefaultPath = AppEnvironment.GetAppConfig().ImagesSymbolsPathDefault;
+
+            if (!Directory.Exists(sourceDefaultPath))
+                return;
+
+            string filesDirectory = Path.Combine(tempDirectory, "files");
+            string destinationDefaultPath = Path.Combine(filesDirectory, "default");
+
+            CopyDirectory(sourceDefaultPath, destinationDefaultPath);
+        }
+
+        private static void CopyDirectory(string sourceDirectory, string destinationDirectory)
+        {
+            Directory.CreateDirectory(destinationDirectory);
+
+            foreach (string filePath in Directory.GetFiles(sourceDirectory))
+            {
+                string destinationFilePath = Path.Combine(destinationDirectory, Path.GetFileName(filePath));
+                File.Copy(filePath, destinationFilePath, true);
+            }
+
+            foreach (string directoryPath in Directory.GetDirectories(sourceDirectory))
+            {
+                string destinationSubDirectory = Path.Combine(destinationDirectory, Path.GetFileName(directoryPath));
+                CopyDirectory(directoryPath, destinationSubDirectory);
+            }
         }
 
         private static void CreateImportPackageMetadata(string tempDirectory)
