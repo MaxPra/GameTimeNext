@@ -201,8 +201,22 @@ namespace GameTimeNext.Core.Application.General.AppSearch.Controller
             if (selected == null)
                 return;
 
-            if (!AppEnvironment.StartedApplications.ContainsKey(selected.ClassName))
-                AppEnvironment.AppLauncher.LaunchApplication(selected.ClassName, GetApp().HostApplication, selected.Name);
+            string className = selected.ClassName;
+            string appName = selected.Name;
+            UIXApplication hostApplication = GetApp().HostApplication;
+
+            void LaunchAfterClose(object? sender, EventArgs args)
+            {
+                GetWnd().Closed -= LaunchAfterClose;
+
+                hostApplication.MainView.Dispatcher.BeginInvoke(() =>
+                {
+                    if (!AppEnvironment.StartedApplications.ContainsKey(className))
+                        AppEnvironment.AppLauncher.LaunchApplication(className, hostApplication, appName);
+                }, DispatcherPriority.ApplicationIdle);
+            }
+
+            GetWnd().Closed += LaunchAfterClose;
 
             Exit(true);
         }
