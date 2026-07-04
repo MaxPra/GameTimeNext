@@ -2,6 +2,7 @@
 using GameTimeNext.Core.Application.Codetables.Views;
 using System.Windows.Controls;
 using UIX.ViewController.Engine.Runnables;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Codetables
 {
@@ -32,6 +33,8 @@ namespace GameTimeNext.Core.Application.Codetables
             CodetablesView = new CodetablesView();
             MainView = CodetablesView;
             CodetablesView.ViewController = new CodetablesViewController(this);
+
+            Icon = UIXMdlIcons.BulletList;
         }
 
         public override bool CanClose()

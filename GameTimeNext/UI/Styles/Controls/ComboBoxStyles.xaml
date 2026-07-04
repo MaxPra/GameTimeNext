@@ -15,7 +15,7 @@
     <Style TargetType="{x:Type ComboBoxItem}">
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Padding" Value="10,7" />
+        <Setter Property="Padding" Value="10,6" />
         <Setter Property="HorizontalContentAlignment" Value="Left" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
@@ -45,8 +45,8 @@
                         </Trigger>
 
                         <Trigger Property="IsSelected" Value="True">
-                            <Setter TargetName="ItemBorder" Property="Background" Value="{DynamicResource Brush.Accent}" />
-                            <Setter Property="Foreground" Value="White" />
+                            <Setter TargetName="ItemBorder" Property="Background" Value="{StaticResource Brush.ComboBox.ItemSelected}" />
+                            <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
                         </Trigger>
 
                         <MultiTrigger>
@@ -54,8 +54,8 @@
                                 <Condition Property="IsSelected" Value="True" />
                                 <Condition Property="IsHighlighted" Value="True" />
                             </MultiTrigger.Conditions>
-                            <Setter TargetName="ItemBorder" Property="Background" Value="{DynamicResource Brush.AccentHover}" />
-                            <Setter Property="Foreground" Value="White" />
+                            <Setter TargetName="ItemBorder" Property="Background" Value="{StaticResource Brush.ComboBox.BorderHover}" />
+                            <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
                         </MultiTrigger>
 
                         <Trigger Property="IsEnabled" Value="False">
@@ -151,7 +151,7 @@
                                     Background="{StaticResource Brush.ComboBox.PopupBackground}"
                                     BorderBrush="{StaticResource Brush.ComboBox.Border}"
                                     BorderThickness="1"
-                                    CornerRadius="4">
+                                    CornerRadius="{StaticResource DefaultCornerRadius}">
                                     <ScrollViewer
                                         Margin="2"
                                         CanContentScroll="True"

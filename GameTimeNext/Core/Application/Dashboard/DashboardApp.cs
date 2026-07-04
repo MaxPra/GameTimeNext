@@ -2,6 +2,7 @@
 using GameTimeNext.Core.Application.Dashboard.Views;
 using System.Windows.Controls;
 using UIX.ViewController.Engine.Runnables;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Dashboard
 {
@@ -24,6 +25,8 @@ namespace GameTimeNext.Core.Application.Dashboard
             this.DashboardView = new DashboardView();
             this.MainView = DashboardView;
             this.DashboardView.ViewController = new DashboardViewController(this);
+
+            Icon = UIXMdlIcons.Dashboard;
         }
 
         public override bool CanClose()
