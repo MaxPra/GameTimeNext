@@ -1,4 +1,5 @@
-﻿using GameTimeNext.Core.Application.DataManagers;
+﻿using GameTimeNext.Core.Application.Codetables;
+using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.General;
 using GameTimeNext.Core.Application.Profiles.Components;
 using GameTimeNext.Core.Application.Profiles.Types;
@@ -526,6 +527,21 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         }
 
+        private void FillComboboxPlatformsManual()
+        {
+            UIXManualCodetable uIXManualCodetable = new UIXManualCodetable();
+
+            TXCTABD txctabd = new TXCTABD();
+            List<T1CTABD> entrys = txctabd.GetEntries("pF");
+
+            foreach (T1CTABD entry in entrys)
+            {
+                uIXManualCodetable.AddEntry(entry.TXNUM, entry.DESCR);
+            }
+
+            uIXManualCodetable.ApplyTo(GetWnd().cmbPlatform);
+        }
+
         private void BuildSteamLinkSection()
         {
             // Sichtbarkeitssteuerung Steam Linked Sektion
@@ -867,6 +883,36 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 CFProfilesEditApp.OpenHowLongToBeatForGame(GetWnd().txbProfileName.Text);
 
             ShowManualEstTimesEditView();
+        }
+
+        protected void EV_btnAddPlatformWizard()
+        {
+            CodetablesEntryEditApp entryeditAppImages = GetApp().GetApplication<CodetablesEntryEditApp>("Create new image with wizard");
+            entryeditAppImages.RunParameters.OverrideSaveButtonText = "Next";
+            entryeditAppImages.RunParameters.ShowSkipButton = true;
+
+            entryeditAppImages.CreateNew(r =>
+            {
+                if (r.Canceled)
+                    return;
+
+                CodetablesEntryEditApp entryEditAppPlatforms = GetApp().GetApplication<CodetablesEntryEditApp>("Create new platform with wizard");
+                entryEditAppPlatforms.RunParameters.ShowSkipButton = true;
+                entryEditAppPlatforms.CreateNew(r =>
+                {
+                    if (r.Canceled || r.Skipped)
+                        return;
+
+                    using (SuppressRunEventPipeline())
+                    {
+                        FillComboboxPlatformsManual();
+
+                        if (GetWnd().cmbPlatform.Items.Count > 0)
+                            GetWnd().cmbPlatform.SelectedValue = r.Platform;
+                    }
+                }, "pF");
+
+            }, "iM");
         }
 
         protected void EV_btnSave()

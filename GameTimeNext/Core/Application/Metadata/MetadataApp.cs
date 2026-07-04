@@ -26,7 +26,7 @@ namespace GameTimeNext.Core.Application.Metadata
             MainView = MetadataView;
             MetadataView.ViewController = new MetadataViewController(this);
 
-            Icon = UIXMdlIcons.MetaData;
+            Icon = UIXMdlIcons.DataBase;
         }
 
         public override bool CanClose()
