@@ -2,6 +2,7 @@ using GameTimeNext.Core.Application.Metadata.Controller;
 using GameTimeNext.Core.Application.Metadata.Views;
 using System.Windows.Controls;
 using UIX.ViewController.Engine.Runnables;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Metadata
 {
@@ -24,6 +25,8 @@ namespace GameTimeNext.Core.Application.Metadata
             MetadataView = new MetadataView();
             MainView = MetadataView;
             MetadataView.ViewController = new MetadataViewController(this);
+
+            Icon = UIXMdlIcons.MetaData;
         }
 
         public override bool CanClose()

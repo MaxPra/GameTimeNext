@@ -2,6 +2,7 @@
 using GameTimeNext.Core.Application.Settings.Views;
 using System.Windows.Controls;
 using UIX.ViewController.Engine.Runnables;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Settings
 {
@@ -19,6 +20,8 @@ namespace GameTimeNext.Core.Application.Settings
 
             _settingsViewController = new SettingsViewController(this);
             _settingsView.ViewController = _settingsViewController;
+
+            Icon = UIXMdlIcons.Settings;
         }
 
         public void Start(UIXApplication hostApplication, ContentPresenter presenter)

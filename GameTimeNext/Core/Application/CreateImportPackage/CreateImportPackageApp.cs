@@ -2,6 +2,7 @@ using GameTimeNext.Core.Application.CreateImportPackage.Controller;
 using GameTimeNext.Core.Application.CreateImportPackage.Views;
 using System.Windows.Controls;
 using UIX.ViewController.Engine.Runnables;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.CreateImportPackage
 {
@@ -18,6 +19,8 @@ namespace GameTimeNext.Core.Application.CreateImportPackage
 
             CreateImportPackageViewController = new CreateImportPackageViewController(this);
             CreateImportPackageView.ViewController = CreateImportPackageViewController;
+
+            Icon = UIXMdlIcons.Folder;
         }
 
         public void Start(UIXApplication hostApplication, ContentPresenter presenter)
