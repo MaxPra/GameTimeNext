@@ -1,4 +1,4 @@
-﻿using GameTimeNext.Core.Application.DataManagers;
+using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Profiles.Views;
 using GameTimeNext.Core.Application.TableObjects;
 using System.Windows;
@@ -12,7 +12,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Profiles.Controller
 {
-    public class ProfilesPlaythroughEditViewController : UIXWindowControllerBase
+    public class ProfilesPlaythroughEditViewController : UIXViewControllerBase
     {
         public ProfilesPlaythroughEditViewController(UIXApplication app) : base(app)
         {

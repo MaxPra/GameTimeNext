@@ -1,4 +1,4 @@
-﻿using GameTimeNext.Core.Application.Profiles.Viewmodel;
+using GameTimeNext.Core.Application.Profiles.Viewmodel;
 using GameTimeNext.Core.Application.Profiles.Views;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.Utils;
@@ -10,7 +10,7 @@ using UIX.ViewController.Engine.Runnables;
 
 namespace GameTimeNext.Core.Application.Profiles.Controller
 {
-    public class ProfilesExecutablesEditViewController : UIXWindowControllerBase
+    public class ProfilesExecutablesEditViewController : UIXViewControllerBase
     {
 
         ProfilesExecutablesEditViewModel? _profilesExecutablesEditViewModel = null;
@@ -99,7 +99,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         private void ShowExitWarning()
         {
-            CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>();
+            CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
 
             CFMBOXResult result = cfmbox.Show("Question", "Cancel selection of valid executables?\nSome GameTimeNext features may not be available for this profile afterward.", CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
 

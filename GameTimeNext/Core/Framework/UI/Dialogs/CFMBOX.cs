@@ -70,5 +70,9 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
                 _ => string.Empty,
             };
         }
+
+        public override void SetWindowProperties(UIXApplicationStartOptions options)
+        {
+        }
     }
 }

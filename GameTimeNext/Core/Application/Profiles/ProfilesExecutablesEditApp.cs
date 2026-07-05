@@ -18,7 +18,7 @@ namespace GameTimeNext.Core.Application.Profiles
             MainView = _profilesEditExecutablesView;
 
             _profilesEditExecutablesViewController = new ProfilesExecutablesEditViewController(this);
-            _profilesEditExecutablesView.WndController = _profilesEditExecutablesViewController;
+            _profilesEditExecutablesView.ViewController = _profilesEditExecutablesViewController;
         }
 
         public void Search(string gameFolder, Action<ProfilesExecutablesEditViewController.ProfilesExecutablesEditViewReturn> callback)
@@ -29,7 +29,12 @@ namespace GameTimeNext.Core.Application.Profiles
             _profilesEditExecutablesView!.ViewIndicator.Add("ED");
             _profilesEditExecutablesViewController!.SetResultCallback(callback);
 
-            _profilesEditExecutablesViewController!.Show(true);
+            _profilesEditExecutablesViewController.Show();
+        }
+
+        public override void SetWindowProperties(UIXApplicationStartOptions options)
+        {
+            options.Dialog = true;
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿// ProfilesCropImageViewController.cs
+// ProfilesCropImageViewController.cs
 using GameTimeNext.Core.Application.Profiles.Views;
 using System.IO;
 using System.Windows;
@@ -13,7 +13,7 @@ using UIX.ViewController.Engine.Runnables;
 
 namespace GameTimeNext.Core.Application.Profiles.Controller
 {
-    public class ProfilesCropImageViewController : UIXWindowControllerBase
+    public class ProfilesCropImageViewController : UIXViewControllerBase
     {
         private const double CROP_RATIO = 600.0 / 900.0;
         private const double MIN_CROP_WIDTH = 90.0;

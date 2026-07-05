@@ -19,7 +19,7 @@ namespace GameTimeNext.Core.Application.Profiles
             MainView = _profilesPlaythroughEditView;
 
             _profilesPlaythroughEditViewController = new ProfilesPlaythroughEditViewController(this);
-            _profilesPlaythroughEditView.WndController = _profilesPlaythroughEditViewController;
+            _profilesPlaythroughEditView.ViewController = _profilesPlaythroughEditViewController;
         }
 
         public void CreateNew(T1PROFI t1profi, Action<ProfilesPlaythroughEditViewController.ProfilesPlaythroughEditViewReturn> callback)
@@ -28,7 +28,13 @@ namespace GameTimeNext.Core.Application.Profiles
 
             _profilesPlaythroughEditView!.ViewIndicator.Add("CN");
             _profilesPlaythroughEditViewController.SetResultCallback(callback);
-            _profilesPlaythroughEditViewController!.Show(true);
+
+            _profilesPlaythroughEditViewController.Show();
+        }
+
+        public override void SetWindowProperties(UIXApplicationStartOptions options)
+        {
+            options.Dialog = true;
         }
     }
 }
