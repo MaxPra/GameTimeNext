@@ -13,7 +13,7 @@ using UIX.ViewController.Engine.Runnables;
 
 namespace GameTimeNext.Core.Application.General.FavAppsReorder.Controller
 {
-    public class FavAppsReorderViewController : UIXWindowControllerBase
+    public class FavAppsReorderViewController : UIXViewControllerBase
     {
         private FavAppsReorderViewModel? _favAppsReorderViewModel;
         private object? _draggedItem;

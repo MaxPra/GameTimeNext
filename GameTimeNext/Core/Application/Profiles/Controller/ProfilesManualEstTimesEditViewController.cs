@@ -1,4 +1,4 @@
-﻿using GameTimeNext.Core.Application.Profiles.Views;
+using GameTimeNext.Core.Application.Profiles.Views;
 using GameTimeNext.Core.Framework.Utils;
 using System.Windows;
 using System.Windows.Controls.Primitives;
@@ -9,7 +9,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Profiles.Controller
 {
-    public class ProfilesManualEstTimesEditViewController : UIXWindowControllerBase
+    public class ProfilesManualEstTimesEditViewController : UIXViewControllerBase
     {
         public ProfilesManualEstTimesEditViewController(UIXApplication app) : base(app)
         {

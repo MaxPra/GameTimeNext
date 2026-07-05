@@ -45,11 +45,11 @@ namespace GameTimeNext.Core.Application.Profiles
             MainView = _profilesEditView;
 
             _profilesEditViewController = new ProfilesEditViewController(this);
-            _profilesEditView.WndController = _profilesEditViewController;
+            _profilesEditView.ViewController = _profilesEditViewController;
 
             _profilesManualEstTimesEditView = new ProfilesManualEstTimesEditView();
             _profilesManualEstTimesEditViewController = new ProfilesManualEstTimesEditViewController(this);
-            _profilesManualEstTimesEditView.WndController = _profilesManualEstTimesEditViewController;
+            _profilesManualEstTimesEditView.ViewController = _profilesManualEstTimesEditViewController;
         }
 
         public void CreateNew(Action<ProfilesEditViewController.ProfilesEditViewReturn> callback)
@@ -58,7 +58,8 @@ namespace GameTimeNext.Core.Application.Profiles
 
             _profilesEditView!.ViewIndicator.Add("CN");
             _profilesEditViewController!.SetResultCallback(callback);
-            _profilesEditViewController.Show(true);
+
+            _profilesEditViewController.Show();
         }
 
         public void Edit(T1PROFI t1profi, Action<ProfilesEditViewController.ProfilesEditViewReturn> callback)
@@ -67,7 +68,13 @@ namespace GameTimeNext.Core.Application.Profiles
 
             _profilesEditView!.ViewIndicator.Add("ED");
             _profilesEditViewController!.SetResultCallback(callback);
-            _profilesEditViewController.Show(true);
+
+            _profilesEditViewController.Show();
+        }
+
+        public override void SetWindowProperties(UIXApplicationStartOptions options)
+        {
+            options.Dialog = true;
         }
     }
 }

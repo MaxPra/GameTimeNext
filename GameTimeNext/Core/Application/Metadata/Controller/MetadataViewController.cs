@@ -134,7 +134,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
             if (_viewModel?.SelectedRow?.RowObject is not T1METAH selectedT1metah)
                 return;
 
-            MetadataEditApp metadataEditApp = GetApp().GetApplication<MetadataEditApp>();
+            MetadataEditApp metadataEditApp = GetApp().GetApplication<MetadataEditApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
             metadataEditApp.Edit(selectedT1metah);
         }
 
@@ -143,7 +143,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
             if (_viewModel?.SelectedRow?.RowObject is not T1METAH selectedT1metah)
                 return;
 
-            CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>();
+            CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
 
             CFMBOXResult result = cfmbox.Show(
                 "Delete metadata and generated table?",
@@ -253,7 +253,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
         protected void EV_BtnAdd()
         {
-            MetadataEditApp metadataEditApp = GetApp().GetApplication<MetadataEditApp>();
+            MetadataEditApp metadataEditApp = GetApp().GetApplication<MetadataEditApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
             metadataEditApp.CreateNew();
 
         }

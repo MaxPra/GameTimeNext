@@ -2,7 +2,7 @@
 
 namespace GameTimeNext.Core.Application.Codetables.Views
 {
-    public partial class CodetablesEntrysView : GTNWindow
+    public partial class CodetablesEntrysView : GTNWindowView
     {
         public CodetablesEntrysView()
         {

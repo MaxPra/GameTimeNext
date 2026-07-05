@@ -227,7 +227,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
             if (_viewModel?.SelectedRow?.RowObject is not T1CTABH selectedT1ctabh)
                 return;
 
-            CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>();
+            CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
 
             CFMBOXResult result = cfmbox.Show("Are you sure you want to delete this codetable?", CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
 
@@ -244,7 +244,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
             if (_viewModel?.SelectedRow?.RowObject is not T1CTABH selectedT1ctabh)
                 return;
 
-            CodetablesEditApp codetablesEditApp = GetApp().GetApplication<CodetablesEditApp>();
+            CodetablesEditApp codetablesEditApp = GetApp().GetApplication<CodetablesEditApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
             codetablesEditApp.Properties(async (result) =>
             {
                 if (!result.HasChanged)
@@ -259,7 +259,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
             if (_viewModel?.SelectedRow?.RowObject is not T1CTABH selectedT1ctabh)
                 return;
 
-            CodetablesEntrysApp codetablesEntrysEditApp = GetApp().GetApplication<CodetablesEntrysApp>();
+            CodetablesEntrysApp codetablesEntrysEditApp = GetApp().GetApplication<CodetablesEntrysApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
             codetablesEntrysEditApp.Edit(selectedT1ctabh);
         }
 
@@ -268,13 +268,13 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
             if (_viewModel?.SelectedRow?.RowObject is not T1CTABH selectedT1ctabh)
                 return;
 
-            CodetablesEntrysApp codetablesEntrysEditApp = GetApp().GetApplication<CodetablesEntrysApp>();
+            CodetablesEntrysApp codetablesEntrysEditApp = GetApp().GetApplication<CodetablesEntrysApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
             codetablesEntrysEditApp.View(selectedT1ctabh);
         }
 
         protected async Task EV_BtnAddCodetable()
         {
-            CodetablesEditApp codetablesEditApp = GetApp().GetApplication<CodetablesEditApp>();
+            CodetablesEditApp codetablesEditApp = GetApp().GetApplication<CodetablesEditApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
             codetablesEditApp.CreateNew(async (result) =>
             {
                 if (result.Canceled)

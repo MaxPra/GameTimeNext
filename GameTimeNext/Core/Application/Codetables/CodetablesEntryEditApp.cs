@@ -22,7 +22,7 @@ namespace GameTimeNext.Core.Application.Codetables
             MainView = CodetablesEntryEditView;
 
             CodetablesEntryEditViewController = new CodetablesEntryEditViewController(this);
-            CodetablesEntryEditView.WndController = CodetablesEntryEditViewController;
+            CodetablesEntryEditView.ViewController = CodetablesEntryEditViewController;
         }
 
         public void CreateNew(Action<CodetablesEntryEditViewController.CodetablesEntryEditViewReturn> callback, string txtyp)
@@ -39,7 +39,8 @@ namespace GameTimeNext.Core.Application.Codetables
                 CodetablesEntryEditView.Title = OverrideTitle;
 
             CodetablesEntryEditViewController!.SetResultCallback(callback);
-            CodetablesEntryEditViewController.Show(true);
+
+            CodetablesEntryEditViewController.Show();
         }
 
         public void Edit(Action<CodetablesEntryEditViewController.CodetablesEntryEditViewReturn> callback, T1CTABD t1ctabd)
@@ -55,7 +56,7 @@ namespace GameTimeNext.Core.Application.Codetables
                 CodetablesEntryEditView.Title = OverrideTitle;
 
             CodetablesEntryEditViewController!.SetResultCallback(callback);
-            CodetablesEntryEditViewController.Show(true);
+            CodetablesEntryEditViewController.Show();
         }
 
         public void View(T1CTABD t1ctabd)
@@ -69,7 +70,7 @@ namespace GameTimeNext.Core.Application.Codetables
             else
                 CodetablesEntryEditView.Title = OverrideTitle;
 
-            CodetablesEntryEditViewController!.Show(true);
+            CodetablesEntryEditViewController!.Show();
         }
 
         public sealed class ParameterControl
@@ -102,6 +103,11 @@ namespace GameTimeNext.Core.Application.Codetables
                     [TextBox.Code] = TextBox,
                     [CheckBox.Code] = CheckBox
                 };
+        }
+
+        public override void SetWindowProperties(UIXApplicationStartOptions options)
+        {
+            options.Dialog = true;
         }
     }
 }

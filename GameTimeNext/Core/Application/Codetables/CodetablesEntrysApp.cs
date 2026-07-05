@@ -16,7 +16,7 @@ namespace GameTimeNext.Core.Application.Codetables
             CodetablesEntrysView = new CodetablesEntrysView();
             MainView = CodetablesEntrysView;
             CodetablesEntrysEditViewController = new CodetablesEntrysViewController(this);
-            CodetablesEntrysView.WndController = CodetablesEntrysEditViewController;
+            CodetablesEntrysView.ViewController = CodetablesEntrysEditViewController;
         }
 
         public void Edit(T1CTABH t1ctabh)
@@ -25,7 +25,8 @@ namespace GameTimeNext.Core.Application.Codetables
 
             CodetablesEntrysView!.ViewIndicator.Add("ED");
             CodetablesEntrysView!.Title = "Codetable Entrys";
-            CodetablesEntrysEditViewController!.Show(true);
+
+            CodetablesEntrysEditViewController!.Show();
         }
 
         public void View(T1CTABH t1ctabh)
@@ -33,7 +34,13 @@ namespace GameTimeNext.Core.Application.Codetables
             T1CTABH = t1ctabh;
             CodetablesEntrysView!.ViewIndicator.Clear();
             CodetablesEntrysView!.Title = "Codetable Entrys";
-            CodetablesEntrysEditViewController!.Show(true);
+
+            CodetablesEntrysEditViewController!.Show();
+        }
+
+        public override void SetWindowProperties(UIXApplicationStartOptions options)
+        {
+            options.Dialog = true;
         }
     }
 }

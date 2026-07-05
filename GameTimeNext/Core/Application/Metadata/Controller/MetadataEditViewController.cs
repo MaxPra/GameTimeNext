@@ -17,7 +17,7 @@ using static UIX.ViewController.Engine.FrameworkElements.UIXContextMenuFactory;
 
 namespace GameTimeNext.Core.Application.Metadata.Controller
 {
-    public class MetadataEditViewController : UIXWindowControllerBase
+    public class MetadataEditViewController : UIXViewControllerBase
     {
 
         MetadataEditViewModel? _viewModel;
@@ -255,7 +255,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
             if (_viewModel?.SelectedRow?.RowObject is not T1METAP selectedT1empo)
                 return;
 
-            MetadataPosEditApp metadataEditApp = GetApp().GetApplication<MetadataPosEditApp>();
+            MetadataPosEditApp metadataEditApp = GetApp().GetApplication<MetadataPosEditApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
             metadataEditApp.Edit(async (result) =>
             {
                 if (result.HasChanged)
@@ -276,7 +276,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
             if (_viewModel?.SelectedRow?.RowObject is not T1METAP selectedT1empo)
                 return;
 
-            CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>();
+            CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
 
             CFMBOXResult result = cfmbox.Show("Are you sure you want to delete this metadata position?", CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
 
@@ -330,11 +330,11 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
                 GetApp().T1METAH!.GENER = true;
                 new TXMETAH().Save(GetApp().T1METAH!);
 
-                GetApp().GetApplication<CFMBOX>().Show("Generation completed.", CFMBOXResult.Ok, CFMBOXIcon.Success);
+                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Generation completed.", CFMBOXResult.Ok, CFMBOXIcon.Success);
             }
             catch (Exception ex)
             {
-                GetApp().GetApplication<CFMBOX>().Show("Generation failed", ex.Message, CFMBOXResult.Ok, CFMBOXIcon.Error);
+                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Generation failed", ex.Message, CFMBOXResult.Ok, CFMBOXIcon.Error);
             }
             finally
             {
@@ -346,7 +346,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
         protected async Task EV_BtnAdd()
         {
-            MetadataPosEditApp metadataPosEditApp = GetApp().GetApplication<MetadataPosEditApp>();
+            MetadataPosEditApp metadataPosEditApp = GetApp().GetApplication<MetadataPosEditApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
             metadataPosEditApp.CreateNew(GetApp().T1METAH!);
 
             await BuildDG();

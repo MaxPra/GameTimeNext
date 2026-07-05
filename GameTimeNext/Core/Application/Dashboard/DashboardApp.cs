@@ -13,11 +13,20 @@ namespace GameTimeNext.Core.Application.Dashboard
 
         public void Start(UIXApplication hostApplication, ContentPresenter presenter)
         {
-            this.HostApplication = hostApplication;
-            this.DashboardView.ContentPresenter = presenter;
-            this.DashboardView.ViewController.Show(false);
+            Start(hostApplication, new UIXApplicationStartOptions
+            {
+                Target = UIXApplicationStartTarget.ContentPresenter,
+                Presenter = presenter
+            });
+        }
+
+        public void Start(UIXApplication hostApplication, UIXApplicationStartOptions options)
+        {
+            HostApplication = hostApplication;
             Loader = hostApplication.Loader;
             CallDispatcher = hostApplication.CallDispatcher;
+
+            DashboardView.ViewController.Show(options);
         }
 
         public override void InitializeApplicationOutput()
@@ -37,6 +46,10 @@ namespace GameTimeNext.Core.Application.Dashboard
         public override void OnFocus()
         {
             DashboardView.ViewController.Open(true);
+        }
+
+        public override void SetWindowProperties(UIXApplicationStartOptions options)
+        {
         }
     }
 }
