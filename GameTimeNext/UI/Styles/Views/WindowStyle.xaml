@@ -57,7 +57,12 @@
                                         x:Name="PART_TitleBar"
                                         Height="36"
                                         HorizontalAlignment="Stretch"
+                                        Opacity="0"
+                                        RenderTransformOrigin="0.5,0.5"
                                         shell:WindowChrome.IsHitTestVisibleInChrome="True">
+                                        <Grid.RenderTransform>
+                                            <TranslateTransform x:Name="TitleBarTranslateTransform" Y="-6" />
+                                        </Grid.RenderTransform>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*" />
                                             <ColumnDefinition Width="Auto" />
@@ -225,6 +230,25 @@
                     </AdornerDecorator>
 
                     <ControlTemplate.Triggers>
+                        <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation
+                                        Storyboard.TargetName="PART_TitleBar"
+                                        Storyboard.TargetProperty="Opacity"
+                                        From="0"
+                                        To="1"
+                                        Duration="0:0:0.24" />
+                                    <DoubleAnimation
+                                        Storyboard.TargetName="TitleBarTranslateTransform"
+                                        Storyboard.TargetProperty="Y"
+                                        From="-6"
+                                        To="0"
+                                        Duration="0:0:0.24" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+
                         <Trigger Property="ShowMinimizeButton" Value="False">
                             <Setter TargetName="PART_MinButton" Property="Visibility" Value="Collapsed" />
                         </Trigger>

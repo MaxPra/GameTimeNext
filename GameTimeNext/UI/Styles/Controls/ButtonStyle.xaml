@@ -31,14 +31,33 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
-                    <Border
-                        x:Name="Chrome"
-                        Width="{TemplateBinding Width}"
-                        Height="{TemplateBinding Height}"
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}"
-                        CornerRadius="4">
+                    <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
+                        <Border
+                            x:Name="Chrome"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="4"
+                            RenderTransformOrigin="0.5,0.5">
+                            <Border.RenderTransform>
+                                <TranslateTransform Y="0" />
+                            </Border.RenderTransform>
+                        </Border>
+
+                        <Border
+                            x:Name="HoverOverlay"
+                            Background="{DynamicResource Brush.TitleBarButton.Hover}"
+                            CornerRadius="4"
+                            IsHitTestVisible="False"
+                            Opacity="0" />
+
+                        <Border
+                            x:Name="PressedOverlay"
+                            Background="{DynamicResource Brush.TitleBarButton.Pressed}"
+                            CornerRadius="4"
+                            IsHitTestVisible="False"
+                            Opacity="0" />
+
                         <ContentPresenter
                             x:Name="IconPresenter"
                             HorizontalAlignment="Center"
@@ -46,18 +65,49 @@
                             Margin="0"
                             Opacity="0.92"
                             TextElement.Foreground="{TemplateBinding Foreground}" />
-                    </Border>
+                    </Grid>
 
                     <ControlTemplate.Triggers>
 
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource Brush.TitleBarButton.Hover}" />
                             <Setter TargetName="Chrome" Property="BorderBrush" Value="#4B4B5B" />
                             <Setter TargetName="IconPresenter" Property="Opacity" Value="1" />
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="HoverOverlay"
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="1"
+                                            Duration="0:0:0.14" />
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="Chrome"
+                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                                            To="-0.75"
+                                            Duration="0:0:0.14" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="HoverOverlay"
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="0"
+                                            Duration="0:0:0.18" />
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="Chrome"
+                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                                            To="0"
+                                            Duration="0:0:0.18" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
                         </Trigger>
 
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource Brush.TitleBarButton.Pressed}" />
+                            <Setter TargetName="PressedOverlay" Property="Opacity" Value="1" />
                             <Setter TargetName="IconPresenter" Property="Opacity" Value="1" />
                         </Trigger>
 
@@ -97,33 +147,83 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
-                    <Border
-                        x:Name="Chrome"
-                        Width="{TemplateBinding Width}"
-                        Height="{TemplateBinding Height}"
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}"
-                        CornerRadius="4">
+                    <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
+                        <Border
+                            x:Name="Chrome"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="4"
+                            RenderTransformOrigin="0.5,0.5">
+                            <Border.RenderTransform>
+                                <TranslateTransform Y="0" />
+                            </Border.RenderTransform>
+                        </Border>
+
+                        <Border
+                            x:Name="CloseHoverOverlay"
+                            Background="#4A2222"
+                            CornerRadius="4"
+                            IsHitTestVisible="False"
+                            Opacity="0" />
+
+                        <Border
+                            x:Name="ClosePressedOverlay"
+                            Background="#3A1A1A"
+                            CornerRadius="4"
+                            IsHitTestVisible="False"
+                            Opacity="0" />
+
                         <ContentPresenter
                             x:Name="IconPresenter"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
                             Opacity="0.92"
                             TextElement.Foreground="{TemplateBinding Foreground}" />
-                    </Border>
+                    </Grid>
 
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Chrome" Property="Background" Value="#4A2222" />
                             <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource Brush.TitleBarButton.Close}" />
                             <Setter TargetName="IconPresenter" Property="Opacity" Value="1" />
                             <Setter Property="Foreground" Value="#FFE6E6E8" />
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="CloseHoverOverlay"
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="1"
+                                            Duration="0:0:0.14" />
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="Chrome"
+                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                                            To="-0.75"
+                                            Duration="0:0:0.14" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="CloseHoverOverlay"
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="0"
+                                            Duration="0:0:0.18" />
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="Chrome"
+                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                                            To="0"
+                                            Duration="0:0:0.18" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
                         </Trigger>
 
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="Chrome" Property="Background" Value="#3A1A1A" />
                             <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource Brush.TitleBarButton.Close}" />
+                            <Setter TargetName="ClosePressedOverlay" Property="Opacity" Value="1" />
                         </Trigger>
 
                         <Trigger Property="IsEnabled" Value="False">
