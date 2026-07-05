@@ -4,6 +4,7 @@ using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.TableObjects;
 using System.Windows;
 using UIX.ViewController.Engine.Runnables;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Codetables
 {
@@ -12,6 +13,8 @@ namespace GameTimeNext.Core.Application.Codetables
         public CodetablesEntryEditView? CodetablesEntryEditView { get; set; }
         public CodetablesEntryEditViewController? CodetablesEntryEditViewController { get; set; }
         public T1CTABD? T1CTABD { get; set; }
+
+        public CodetablesEntryEditAppRunParameters RunParameters { get; set; } = new CodetablesEntryEditAppRunParameters();
 
         public override void InitializeApplicationOutput()
         {
@@ -30,7 +33,11 @@ namespace GameTimeNext.Core.Application.Codetables
             CodetablesEntryEditView!.ViewIndicator.Clear();
             CodetablesEntryEditView!.ViewIndicator.Add("CN");
 
-            CodetablesEntryEditView.Title = "Add codetable entry";
+            if (FnString.IsNullEmptyOrWhitespace(OverrideTitle))
+                CodetablesEntryEditView.Title = "Add codetable entry";
+            else
+                CodetablesEntryEditView.Title = OverrideTitle;
+
             CodetablesEntryEditViewController!.SetResultCallback(callback);
             CodetablesEntryEditViewController.Show(true);
         }
@@ -42,7 +49,11 @@ namespace GameTimeNext.Core.Application.Codetables
             CodetablesEntryEditView!.ViewIndicator.Clear();
             CodetablesEntryEditView!.ViewIndicator.Add("ED");
 
-            CodetablesEntryEditView.Title = "Edit codetable entry";
+            if (FnString.IsNullEmptyOrWhitespace(OverrideTitle))
+                CodetablesEntryEditView.Title = "Edit codetable entry";
+            else
+                CodetablesEntryEditView.Title = OverrideTitle;
+
             CodetablesEntryEditViewController!.SetResultCallback(callback);
             CodetablesEntryEditViewController.Show(true);
         }
@@ -53,7 +64,11 @@ namespace GameTimeNext.Core.Application.Codetables
 
             CodetablesEntryEditView!.ViewIndicator.Clear();
 
-            CodetablesEntryEditView.Title = "View codetable entry";
+            if (FnString.IsNullEmptyOrWhitespace(OverrideTitle))
+                CodetablesEntryEditView.Title = "View codetable entry";
+            else
+                CodetablesEntryEditView.Title = OverrideTitle;
+
             CodetablesEntryEditViewController!.Show(true);
         }
 

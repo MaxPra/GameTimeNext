@@ -35,14 +35,33 @@
                             Opacity="0" />
 
                         <Border Padding="{TemplateBinding Padding}" Background="Transparent">
-                            <ContentPresenter
+                            <StackPanel
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
-                                Content="{TemplateBinding Header}"
-                                ContentTemplate="{TemplateBinding HeaderTemplate}"
-                                TextElement.FontSize="{TemplateBinding FontSize}"
-                                TextElement.FontWeight="{TemplateBinding FontWeight}"
-                                TextElement.Foreground="{TemplateBinding Foreground}" />
+                                Orientation="Horizontal">
+                                <Border
+                                    x:Name="IconHost"
+                                    Margin="0,0,7,0"
+                                    Background="Transparent"
+                                    Visibility="Visible">
+                                    <TextBlock
+                                        x:Name="IconText"
+                                        VerticalAlignment="Center"
+                                        FontFamily="Segoe MDL2 Assets"
+                                        FontSize="20"
+                                        Foreground="{DynamicResource Brush.TextSecondary}"
+                                        Text="{TemplateBinding Uid}" />
+                                </Border>
+
+                                <ContentPresenter
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Content="{TemplateBinding Header}"
+                                    ContentTemplate="{TemplateBinding HeaderTemplate}"
+                                    TextElement.FontSize="{TemplateBinding FontSize}"
+                                    TextElement.FontWeight="{TemplateBinding FontWeight}"
+                                    TextElement.Foreground="{TemplateBinding Foreground}" />
+                            </StackPanel>
                         </Border>
                     </Grid>
 
@@ -56,11 +75,21 @@
                             <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
                             <Setter TargetName="SelectedBg" Property="Opacity" Value="1" />
                             <Setter TargetName="HoverBg" Property="Opacity" Value="0" />
+                            <Setter TargetName="IconText" Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
                         </Trigger>
 
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Foreground" Value="{DynamicResource Brush.TextDisabled}" />
                             <Setter TargetName="Root" Property="Opacity" Value="0.5" />
+                            <Setter TargetName="IconText" Property="Foreground" Value="{DynamicResource Brush.TextDisabled}" />
+                        </Trigger>
+
+                        <Trigger Property="Uid" Value="{x:Null}">
+                            <Setter TargetName="IconHost" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+
+                        <Trigger Property="Uid" Value="">
+                            <Setter TargetName="IconHost" Property="Visibility" Value="Collapsed" />
                         </Trigger>
 
                     </ControlTemplate.Triggers>
@@ -153,7 +182,24 @@
                         Padding="{TemplateBinding Padding}"
                         Background="Transparent"
                         CornerRadius="3">
-                        <Grid>
+                        <StackPanel
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal">
+                            <Border
+                                x:Name="DefaultIconHost"
+                                Margin="0,0,7,0"
+                                Background="Transparent"
+                                Visibility="Visible">
+                                <TextBlock
+                                    x:Name="DefaultIconText"
+                                    VerticalAlignment="Center"
+                                    FontFamily="Segoe MDL2 Assets"
+                                    FontSize="14"
+                                    Foreground="{DynamicResource Brush.TextSecondary}"
+                                    Text="{TemplateBinding Uid}" />
+                            </Border>
+
                             <ContentPresenter
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
@@ -162,7 +208,7 @@
                                 TextElement.FontSize="{TemplateBinding FontSize}"
                                 TextElement.FontWeight="{TemplateBinding FontWeight}"
                                 TextElement.Foreground="{TemplateBinding Foreground}" />
-                        </Grid>
+                        </StackPanel>
                     </Border>
 
                     <ControlTemplate.Triggers>
@@ -177,11 +223,21 @@
                             <Setter TargetName="RootBorder" Property="BorderThickness" Value="1" />
                             <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
                             <Setter Property="FontWeight" Value="SemiBold" />
+                            <Setter TargetName="DefaultIconText" Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
                         </Trigger>
 
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Foreground" Value="{DynamicResource Brush.TextDisabled}" />
                             <Setter TargetName="RootBorder" Property="Opacity" Value="0.6" />
+                            <Setter TargetName="DefaultIconText" Property="Foreground" Value="{DynamicResource Brush.TextDisabled}" />
+                        </Trigger>
+
+                        <Trigger Property="Uid" Value="{x:Null}">
+                            <Setter TargetName="DefaultIconHost" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+
+                        <Trigger Property="Uid" Value="">
+                            <Setter TargetName="DefaultIconHost" Property="Visibility" Value="Collapsed" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

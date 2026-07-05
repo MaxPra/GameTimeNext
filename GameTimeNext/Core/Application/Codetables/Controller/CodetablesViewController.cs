@@ -251,7 +251,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
                     return;
 
                 await EV_BtnRefresh();
-            }, selectedT1ctabh, (FnSystem.IsDebug() && selectedT1ctabh.PERMI == "D"));
+            }, selectedT1ctabh, (FnSystem.IsDebug()));
         }
 
         protected void EV_ctxtEdit()

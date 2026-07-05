@@ -120,6 +120,9 @@ namespace GameTimeNext.Core.Framework
             InitializeIGDBAuthTokenAndExternalGameSources();
 
             AppVersion.SetAppVersionInConfig();
+
+            if (GetAppConfig().AppSettings.EnableSessionCleanup)
+                InitializeCleanup();
         }
 
 
@@ -349,6 +352,13 @@ namespace GameTimeNext.Core.Framework
             {
                 InformationList.Add(new InformationListItem(CFMBOXIcon.Error, $"Error loading StartableApps.json: {ex.Message}"));
             }
+        }
+
+        private static void InitializeCleanup()
+        {
+            int invalidSessions = TFSESSI.GetInvalidSessionsCount();
+            if (invalidSessions > 0)
+                TFSESSI.CleanupInvalidSessions();
         }
     }
 }

@@ -23,6 +23,8 @@
             public const string CHAT = "CHAT";
             public const string NRANA = "NRANA";
             public const string EXPRT = "EXPRT";
+            public const string PTOL1 = "PTOL1";
+            public const string PTOL2 = "PTOL2";
         }
     }
 }

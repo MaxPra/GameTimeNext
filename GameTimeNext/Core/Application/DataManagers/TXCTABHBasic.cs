@@ -42,7 +42,7 @@ namespace GameTimeNext.Core.Application.DataManagers
 
             using SQLiteCommand cmd = connection.CreateCommand();
             cmd.CommandText = "DELETE FROM T1CTABH WHERE TXTYP = @TXTYP";
-            cmd.Parameters.AddWithValue("@TXTYP", tXTYP); 
+            cmd.Parameters.AddWithValue("@TXTYP", tXTYP);
             cmd.ExecuteNonQuery();
             DevSyncCsvSyncService.ExportTable("T1CTABH");
         }
@@ -67,6 +67,8 @@ namespace GameTimeNext.Core.Application.DataManagers
             query.AddField(K1CTABH.Name, K1CTABH.Fields.CHAT);
             query.AddField(K1CTABH.Name, K1CTABH.Fields.NRANA);
             query.AddField(K1CTABH.Name, K1CTABH.Fields.EXPRT);
+            query.AddField(K1CTABH.Name, K1CTABH.Fields.PTOL1);
+            query.AddField(K1CTABH.Name, K1CTABH.Fields.PTOL2);
             query.AddWhere(K1CTABH.Name, K1CTABH.Fields.TXTYP, QueryCompareType.EQUALS, tXTYP);
 
             using var reader = query.Execute();
@@ -98,6 +100,8 @@ namespace GameTimeNext.Core.Application.DataManagers
             query.AddField(K1CTABH.Name, K1CTABH.Fields.CHAT);
             query.AddField(K1CTABH.Name, K1CTABH.Fields.NRANA);
             query.AddField(K1CTABH.Name, K1CTABH.Fields.EXPRT);
+            query.AddField(K1CTABH.Name, K1CTABH.Fields.PTOL1);
+            query.AddField(K1CTABH.Name, K1CTABH.Fields.PTOL2);
             query.AddOrderBy(K1CTABH.Name, K1CTABH.Fields.TXTYP, OrderDirection.ASC);
 
             List<T1CTABH> list = new List<T1CTABH>();
@@ -118,7 +122,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             DateTime now = DateTime.Now;
             obj.CRAT = now;
             obj.CHAT = now;
-            cmd.CommandText = "INSERT INTO T1CTABH (TXTYP, DESCR, PERMI, PAAC1, PADE1, PARF1, PACO1, PACT1, PAAC2, PADE2, PARF2, PACO2, PACT2, CRAT, CHAT, NRANA, EXPRT) VALUES (@TXTYP, @DESCR, @PERMI, @PAAC1, @PADE1, @PARF1, @PACO1, @PACT1, @PAAC2, @PADE2, @PARF2, @PACO2, @PACT2, @CRAT, @CHAT, @NRANA, @EXPRT)";
+            cmd.CommandText = "INSERT INTO T1CTABH (TXTYP, DESCR, PERMI, PAAC1, PADE1, PARF1, PACO1, PACT1, PAAC2, PADE2, PARF2, PACO2, PACT2, CRAT, CHAT, NRANA, EXPRT, PTOL1, PTOL2) VALUES (@TXTYP, @DESCR, @PERMI, @PAAC1, @PADE1, @PARF1, @PACO1, @PACT1, @PAAC2, @PADE2, @PARF2, @PACO2, @PACT2, @CRAT, @CHAT, @NRANA, @EXPRT, @PTOL1, @PTOL2)";
             cmd.Parameters.AddWithValue("@TXTYP", ToDbValue(obj.TXTYP));
             cmd.Parameters.AddWithValue("@DESCR", ToDbValue(obj.DESCR));
             cmd.Parameters.AddWithValue("@PERMI", ToDbValue(obj.PERMI));
@@ -136,6 +140,8 @@ namespace GameTimeNext.Core.Application.DataManagers
             cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
             cmd.Parameters.AddWithValue("@NRANA", ToDbValue(obj.NRANA));
             cmd.Parameters.AddWithValue("@EXPRT", ToDbValue(obj.EXPRT));
+            cmd.Parameters.AddWithValue("@PTOL1", ToDbValue(obj.PTOL1));
+            cmd.Parameters.AddWithValue("@PTOL2", ToDbValue(obj.PTOL2));
             cmd.ExecuteNonQuery();
         }
 
@@ -143,7 +149,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         {
             using SQLiteCommand cmd = connection.CreateCommand();
             obj.CHAT = DateTime.Now;
-            cmd.CommandText = "UPDATE T1CTABH SET DESCR = @DESCR, PERMI = @PERMI, PAAC1 = @PAAC1, PADE1 = @PADE1, PARF1 = @PARF1, PACO1 = @PACO1, PACT1 = @PACT1, PAAC2 = @PAAC2, PADE2 = @PADE2, PARF2 = @PARF2, PACO2 = @PACO2, PACT2 = @PACT2, CRAT = @CRAT, CHAT = @CHAT, NRANA = @NRANA, EXPRT = @EXPRT WHERE TXTYP = @TXTYP";
+            cmd.CommandText = "UPDATE T1CTABH SET DESCR = @DESCR, PERMI = @PERMI, PAAC1 = @PAAC1, PADE1 = @PADE1, PARF1 = @PARF1, PACO1 = @PACO1, PACT1 = @PACT1, PAAC2 = @PAAC2, PADE2 = @PADE2, PARF2 = @PARF2, PACO2 = @PACO2, PACT2 = @PACT2, CRAT = @CRAT, CHAT = @CHAT, NRANA = @NRANA, EXPRT = @EXPRT, PTOL1 = @PTOL1, PTOL2 = @PTOL2 WHERE TXTYP = @TXTYP";
             cmd.Parameters.AddWithValue("@TXTYP", ToDbValue(obj.TXTYP));
             cmd.Parameters.AddWithValue("@DESCR", ToDbValue(obj.DESCR));
             cmd.Parameters.AddWithValue("@PERMI", ToDbValue(obj.PERMI));
@@ -161,6 +167,8 @@ namespace GameTimeNext.Core.Application.DataManagers
             cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
             cmd.Parameters.AddWithValue("@NRANA", ToDbValue(obj.NRANA));
             cmd.Parameters.AddWithValue("@EXPRT", ToDbValue(obj.EXPRT));
+            cmd.Parameters.AddWithValue("@PTOL1", ToDbValue(obj.PTOL1));
+            cmd.Parameters.AddWithValue("@PTOL2", ToDbValue(obj.PTOL2));
             cmd.ExecuteNonQuery();
         }
 
@@ -192,6 +200,8 @@ namespace GameTimeNext.Core.Application.DataManagers
             obj.CHAT = ParseDbDateTime(reader.GetValue(14));
             obj.NRANA = !reader.IsDBNull(15) && Convert.ToInt32(reader.GetValue(15)) == 1;
             obj.EXPRT = !reader.IsDBNull(16) && Convert.ToInt32(reader.GetValue(16)) == 1;
+            obj.PTOL1 = reader.IsDBNull(17) ? string.Empty : reader.GetString(17);
+            obj.PTOL2 = reader.IsDBNull(18) ? string.Empty : reader.GetString(18);
             obj.State = UIXTableObjectState.Available;
             return obj;
         }

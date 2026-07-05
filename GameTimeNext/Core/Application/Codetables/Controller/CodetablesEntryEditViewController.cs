@@ -28,6 +28,8 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
         public class CodetablesEntryEditViewReturn : UIXViewReturn
         {
             public bool HasChanged { get; set; } = false;
+            public string Platform { get; set; } = string.Empty;
+            public bool Skipped { get; set; } = false;
         }
 
         protected override void Init()
@@ -40,6 +42,8 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
         protected override void BuildFirstImpl()
         {
+
+            ApplyRunParameters();
 
             if (GetWnd().ViewIndicator.Contains("ED"))
                 GetWnd().TxbDescription.Focus();
@@ -89,7 +93,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
         protected override void Event_Closing()
         {
-            GetViewReturn<CodetablesEntryEditViewReturn>().Canceled = true;
+
         }
 
         protected override void Event_Minimize()
@@ -102,7 +106,19 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
         protected void EV_BtnSave()
         {
+            GetViewReturn<CodetablesEntryEditViewReturn>().Canceled = false;
             GetViewReturn<CodetablesEntryEditViewReturn>().HasChanged = GetApp().T1CTABD!.HasChanged();
+            GetViewReturn<CodetablesEntryEditViewReturn>().Platform = GetWnd().TxbTextNumber.Text;
+
+            Exit(true);
+        }
+
+        protected void EV_BtnSkip()
+        {
+            GetViewReturn<CodetablesEntryEditViewReturn>().Canceled = false;
+            GetViewReturn<CodetablesEntryEditViewReturn>().HasChanged = false;
+            GetViewReturn<CodetablesEntryEditViewReturn>().Skipped = true;
+            GetViewReturn<CodetablesEntryEditViewReturn>().Platform = GetWnd().TxbTextNumber.Text;
 
             Exit(true);
         }
@@ -117,6 +133,18 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
             return (CodetablesEntryEditView)View;
         }
 
+        private void ApplyRunParameters()
+        {
+            CodetablesEntryEditAppRunParameters runParameters = GetApp().RunParameters;
+
+            // Override Save Button Text
+            if (!FnString.IsNullEmptyOrWhitespace(runParameters.OverrideSaveButtonText))
+                GetWnd().BtnSave.Content = runParameters.OverrideSaveButtonText;
+
+            // Show Skipbutton
+            FnControls.SetVisible(GetWnd().BtnSkip, runParameters.ShowSkipButton);
+        }
+
         private void BuildManuelCodetableParameters()
         {
             TXCTABD txctabd = new TXCTABD();
@@ -127,6 +155,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
             {
                 string codetableParm = t1ctabh.GetValue<string>($"PACT{i}")!;
                 string controlType = t1ctabh.GetValue<string>($"PACO{i}")!;
+                string controlTooltip = t1ctabh.GetValue<string>($"PTOL{i}")!;
 
                 if (FnString.IsNullEmptyOrWhitespace(codetableParm) || controlType != ControlType.ComboBox.Code)
                     continue;
@@ -148,6 +177,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
                 }
 
                 manualCodetable.ApplyTo(paramCombobox);
+                paramCombobox.ToolTip = controlTooltip;
             }
         }
 
@@ -170,6 +200,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
                     continue;
 
                 string controlType = t1ctabh.GetValue<string>($"PACO{i}")!;
+                string tooltip = t1ctabh.GetValue<string>($"PTOL{i}")!;
 
                 FrameworkElement control = (FrameworkElement)GetWnd().FindName($"{ControlType.ByCode[controlType].XamlPrefix}Param{i}");
                 TextBlock label = (TextBlock)GetWnd().FindName($"LblParam{i}");
@@ -182,6 +213,8 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
                 label.Text = t1ctabh.GetValue<string>($"PADE{i}");
 
                 FnControls.SetVisible(label, true);
+
+                control.ToolTip = tooltip;
 
                 paramControls.Add(control.Name, new ParameterControl
                 {

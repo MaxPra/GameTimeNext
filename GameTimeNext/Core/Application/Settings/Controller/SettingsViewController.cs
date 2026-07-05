@@ -66,6 +66,13 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             FnControls.SetEnabled(GetView().btnImportBackup, !FnString.IsNullEmptyOrWhitespace(GetView().txbBackupImportPath.Text));
             FnControls.SetEnabled(GetView().btnCreateBackup, !FnString.IsNullEmptyOrWhitespace(GetView().txbBackupExportPath.Text));
 
+            FnControls.SetEnabled(GetView().cbShowTextOnBlackout, GetView().cbActivateBlackoutKeyCombination.IsChecked == true);
+            if (!GetView().cbActivateBlackoutKeyCombination.IsChecked == true)
+            {
+                GetView().cbShowTextOnBlackout.IsChecked = false;
+            }
+
+
             bool hasBackupExportPath = !FnString.IsNullEmptyOrWhitespace(GetView().txbBackupExportPath.Text);
             bool autoBackupEnabled = GetView().cbAutoBackup.IsChecked == true;
 
@@ -81,6 +88,11 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             if (!FnControls.ContainsOnlyNumericValue(GetView().txbBreakReminderHours))
             {
                 AddViewError(GetView().txbBreakReminderHours, "Only numeric values allowed!");
+            }
+
+            if (!FnControls.ContainsOnlyNumericValue(GetView().txbSessionCleanupSeconds))
+            {
+                AddViewError(GetView().txbSessionCleanupSeconds, "Only numeric values allowed!");
             }
         }
 
@@ -113,6 +125,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
         private void FillTabGeneral()
         {
             GetView().cbActivateBlackoutKeyCombination.IsChecked = _appSettings!.ActivateBlackoutKeyCombination;
+            GetView().cbShowTextOnBlackout.IsChecked = _appSettings.EnableFullBlackoutText;
             GetView().cbAutoStartMinimized.IsChecked = _appSettings.AutoStartMinimized;
             GetView().cbAllowProfileSpecificStyleChanges.IsChecked = _appSettings!.AllowProfileSpecificStyleChanges;
             GetView().txbSteamGridDbApiKey.Text = _appSettings!.SteamGridDbKey;
@@ -138,11 +151,14 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             GetView().cbBlackoutSideMonitors.IsChecked = _appSettings!.BlackoutSideMonitors;
             GetView().txbMonitoringKey.Text = _appSettings!.MonitoringKey;
             GetView().cbEnableSessionTimeQuery.IsChecked = _appSettings!.EnableSessionTimeQuery;
+            GetView().cbEnableSessionCleanup.IsChecked = _appSettings!.EnableSessionCleanup;
+            GetView().txbSessionCleanupSeconds.Text = _appSettings!.SessionCleanupSeconds.ToString();
         }
 
         private void FillDBOGeneral()
         {
             _appSettings!.ActivateBlackoutKeyCombination = GetView().cbActivateBlackoutKeyCombination.IsChecked == true;
+            _appSettings!.EnableFullBlackoutText = GetView().cbShowTextOnBlackout.IsChecked == true;
             _appSettings!.AutoStartMinimized = GetView().cbAutoStartMinimized.IsChecked == true;
             _appSettings!.AllowProfileSpecificStyleChanges = GetView().cbAllowProfileSpecificStyleChanges.IsChecked == true;
             _appSettings!.SteamGridDbKey = GetView().txbSteamGridDbApiKey.Text;
@@ -165,6 +181,8 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             _appSettings!.MonitoringKeyActive = GetView().cbMonitoringKeyActive.IsChecked == true;
             _appSettings!.MonitoringKey = GetView().txbMonitoringKey.Text;
             _appSettings!.EnableSessionTimeQuery = GetView().cbEnableSessionTimeQuery.IsChecked == true;
+            _appSettings!.EnableSessionCleanup = GetView().cbEnableSessionCleanup.IsChecked == true;
+            _appSettings!.SessionCleanupSeconds = FnConvert.ToDouble(GetView().txbSessionCleanupSeconds.Text);
         }
 
         private void FillDBOTags()

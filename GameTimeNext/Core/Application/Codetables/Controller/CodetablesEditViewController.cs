@@ -30,6 +30,8 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
             AddIdentifier("T1CTABH", GetApp().T1CTABH!);
             AddSource("T1CTABD", new TXCTABD());
             AddSource("T1CTABH", new TXCTABH());
+
+            Console.WriteLine(GetApp().T1CTABH!.PTOL1);
         }
 
         protected override void BuildFirstImpl()
@@ -44,6 +46,11 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
                 GetWnd().TxbTextType.Focus();
             else if (GetWnd().ViewIndicator.Contains("ED"))
                 GetWnd().TxbDescription.Focus();
+
+            FnControls.SetEnabled(GetWnd().CmbPermission, GetWnd().ViewIndicator.Contains("CN"));
+            FnControls.SetEnabled(GetWnd().TxbTextType, GetWnd().ViewIndicator.Contains("CN"));
+            FnControls.SetEnabled(GetWnd().ChbExportIntoImportPackage, GetWnd().ViewIndicator.Contains("CN"));
+            FnControls.SetEnabled(GetWnd().ChbNumberRangeActive, GetWnd().ViewIndicator.Contains("CN"));
 
             FnControls.SetVisible(GetWnd().BtnSave, GetWnd().ViewIndicator.Count != 0);
         }

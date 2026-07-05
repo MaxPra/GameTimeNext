@@ -181,11 +181,20 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="10" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
             <Button
-                x:Name="BtnSave"
+                x:Name="BtnSkip"
                 Grid.Column="1"
+                Width="140"
+                Height="36"
+                Content="Skip" />
+
+            <Button
+                x:Name="BtnSave"
+                Grid.Column="3"
                 Width="140"
                 Height="36"
                 Content="Save"

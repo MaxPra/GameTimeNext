@@ -1,4 +1,5 @@
-﻿using GameTimeNext.Core.Application.DataManagers;
+﻿using GameTimeNext.Core.Application.Codetables;
+using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.General;
 using GameTimeNext.Core.Application.Profiles.Components;
 using GameTimeNext.Core.Application.Profiles.Types;
@@ -85,17 +86,23 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected override void BuildFirstImpl()
         {
-            BuildTagGrid(GetApp().T1Profi.PFID);
+            using (SuppressRunEventPipeline())
+            {
+                BuildTagGrid(GetApp().T1Profi.PFID);
 
-            // Enabled Steuerung Combobox IGDB Estimated Time
-            bool isIGDBLinkedCorrectly = !FnString.IsNullEmptyOrWhitespace(AppEnvironment.GetAppConfig().AppSettings.TwitchIGDBClientID) &&
-                !FnString.IsNullEmptyOrWhitespace(AppEnvironment.GetAppConfig().AppSettings.TwitchIGDBClientSecret);
+                // Enabled Steuerung Combobox IGDB Estimated Time
+                bool isIGDBLinkedCorrectly = !FnString.IsNullEmptyOrWhitespace(AppEnvironment.GetAppConfig().AppSettings.TwitchIGDBClientID) &&
+                    !FnString.IsNullEmptyOrWhitespace(AppEnvironment.GetAppConfig().AppSettings.TwitchIGDBClientSecret);
 
-            FnControls.SetEnabled(GetWnd().cmbEstimatedTimeType, isIGDBLinkedCorrectly);
+                FnControls.SetEnabled(GetWnd().cmbEstimatedTimeType, isIGDBLinkedCorrectly);
+            }
+
         }
 
         protected override void BuildImpl()
         {
+            ControlBlackoutCheckboxProtection();
+
             BuildSteamRelatedSettings();
             BuildSteamLinkSection();
             BuildAccentColorSection();
@@ -171,14 +178,17 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected override void FillViewImpl()
         {
-            if (GetWnd().ViewIndicator.Contains("ED"))
-                FillViewSteamImport(null!);
+            using (SuppressRunEventPipeline())
+            {
+                if (GetWnd().ViewIndicator.Contains("ED"))
+                    FillViewSteamImport(null!);
 
-            FillComboboxPlayTypes();
+                FillComboboxPlayTypes();
 
-            FillViewProfileSettings();
+                FillViewProfileSettings();
 
-            FillViewAccentColors();
+                FillViewAccentColors();
+            }
         }
 
         private void FillComboboxPlayTypes()
@@ -259,6 +269,14 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             CProfileSettings cProfileSettings = new CProfileSettings(GetApp().T1Profi.PRSE).Dezerialize();
 
             GetWnd().cbEnableHdrOnStart.IsChecked = cProfileSettings.HDREnabled == true;
+
+            using (SuppressRunEventPipeline())
+            {
+                GetWnd().cbOverrideGlobalBlackout.IsChecked = cProfileSettings.OverrideGlobalBlackout == true;
+                GetWnd().cbBlackoutSideMonitors.IsChecked = cProfileSettings.BlackoutSideMonitors == true;
+            }
+
+            ControlBlackoutCheckboxProtection();
 
             GetWnd().txbSteamArgs.Text = cProfileSettings.SteamGameArgs.Replace(";", " ");
         }
@@ -394,6 +412,11 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             cProfileSettings.HDREnabled = GetWnd().cbEnableHdrOnStart.IsChecked == true;
             cProfileSettings.SteamGameArgs = GetWnd().txbSteamArgs.Text.Replace(" ", ";");
 
+            cProfileSettings.OverrideGlobalBlackout = GetWnd().cbOverrideGlobalBlackout.IsChecked == true;
+            cProfileSettings.BlackoutSideMonitors =
+                cProfileSettings.OverrideGlobalBlackout &&
+                GetWnd().cbBlackoutSideMonitors.IsChecked == true;
+
             GetApp().T1Profi.PRSE = cProfileSettings.Serialize();
         }
 
@@ -502,6 +525,21 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             return true;
 
+        }
+
+        private void FillComboboxPlatformsManual()
+        {
+            UIXManualCodetable uIXManualCodetable = new UIXManualCodetable();
+
+            TXCTABD txctabd = new TXCTABD();
+            List<T1CTABD> entrys = txctabd.GetEntries("pF");
+
+            foreach (T1CTABD entry in entrys)
+            {
+                uIXManualCodetable.AddEntry(entry.TXNUM, entry.DESCR);
+            }
+
+            uIXManualCodetable.ApplyTo(GetWnd().cmbPlatform);
         }
 
         private void BuildSteamLinkSection()
@@ -666,6 +704,18 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             }
         }
 
+        private void ControlBlackoutCheckboxProtection()
+        {
+            using (SuppressRunEventPipeline())
+            {
+                bool isOverrideEnabled = GetWnd().cbOverrideGlobalBlackout.IsChecked == true;
+
+                FnControls.SetEnabled(GetWnd().cbBlackoutSideMonitors, isOverrideEnabled);
+                if (!isOverrideEnabled)
+                    GetWnd().cbBlackoutSideMonitors.IsChecked = false;
+            }
+        }
+
         private void ResetPlaytypes()
         {
             GetWnd().cmbEstimatedTimeType.SelectedIndex = 0;
@@ -726,7 +776,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
                     });
 
-                    FillViewSteamImport(r.SteamGame!);
+                    using (SuppressRunEventPipeline())
+                        FillViewSteamImport(r.SteamGame!);
+
                     Build();
                 }
             });
@@ -780,7 +832,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 {
                     Task.Run(async () =>
                     {
-                        await FillViewCoverChanged(r.SelectedImagePath);
+                        using (SuppressRunEventPipeline())
+                            await FillViewCoverChanged(r.SelectedImagePath);
                     });
 
 
@@ -813,7 +866,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                         {
                             tuple = await FnSystem.SaveCroppedImageTempPath(r.CroppedImage!, GetApp().Loader);
 
-                            await FillViewCoverChanged(tuple.path);
+                            using (SuppressRunEventPipeline())
+                                await FillViewCoverChanged(tuple.path);
                         });
 
                         RunEventPipelineSync(View, string.Empty);
@@ -829,6 +883,36 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 CFProfilesEditApp.OpenHowLongToBeatForGame(GetWnd().txbProfileName.Text);
 
             ShowManualEstTimesEditView();
+        }
+
+        protected void EV_btnAddPlatformWizard()
+        {
+            CodetablesEntryEditApp entryeditAppImages = GetApp().GetApplication<CodetablesEntryEditApp>("Create new image with wizard");
+            entryeditAppImages.RunParameters.OverrideSaveButtonText = "Next";
+            entryeditAppImages.RunParameters.ShowSkipButton = true;
+
+            entryeditAppImages.CreateNew(r =>
+            {
+                if (r.Canceled)
+                    return;
+
+                CodetablesEntryEditApp entryEditAppPlatforms = GetApp().GetApplication<CodetablesEntryEditApp>("Create new platform with wizard");
+                entryEditAppPlatforms.RunParameters.ShowSkipButton = true;
+                entryEditAppPlatforms.CreateNew(r =>
+                {
+                    if (r.Canceled || r.Skipped)
+                        return;
+
+                    using (SuppressRunEventPipeline())
+                    {
+                        FillComboboxPlatformsManual();
+
+                        if (GetWnd().cmbPlatform.Items.Count > 0)
+                            GetWnd().cmbPlatform.SelectedValue = r.Platform;
+                    }
+                }, "pF");
+
+            }, "iM");
         }
 
         protected void EV_btnSave()

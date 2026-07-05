@@ -5,6 +5,7 @@ using GameTimeNext.Core.Application.TimeMonitoring;
 using GameTimeNext.Core.Framework;
 using System.Windows.Controls;
 using UIX.ViewController.Engine.Runnables;
+using UIX.ViewController.Engine.Utils;
 using static GameTimeNext.Core.Application.Profiles.Controller.ProfilesViewController;
 
 namespace GameTimeNext.Core.Application.Profiles
@@ -60,6 +61,7 @@ namespace GameTimeNext.Core.Application.Profiles
             this.ProfilesFilterView.ContentPresenter = ProfilesView.CPFilter;
             this.ProfilesFilterView.Popup = ProfilesView.PopFilter;
 
+            Icon = UIXMdlIcons.GameProfile;
 
         }
 
