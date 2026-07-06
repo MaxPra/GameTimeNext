@@ -32,8 +32,8 @@
                             <Path
                                 Data="M 12,36 A 24,24 0 0 1 60,36"
                                 Stroke="{DynamicResource Brush.Accent}"
-                                StrokeStartLineCap="Round"
                                 StrokeEndLineCap="Round"
+                                StrokeStartLineCap="Round"
                                 StrokeThickness="4">
                                 <Path.Effect>
                                     <DropShadowEffect

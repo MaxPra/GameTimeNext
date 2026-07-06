@@ -93,25 +93,31 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
         {
             GetApp().Loader.Begin();
 
-            await Task.Run(() =>
+            try
             {
-                List<CodetableDataGridRow> codetableDataGridRows = BuildRowsCodetables();
-
-                View.Dispatcher.Invoke(() =>
+                await Task.Run(() =>
                 {
-                    _viewModel = new CodetablesViewModel();
-                    _viewModel!.CodetableDataGridRows = new System.Collections.ObjectModel.ObservableCollection<CodetableDataGridRow>(codetableDataGridRows);
+                    List<CodetableDataGridRow> codetableDataGridRows = BuildRowsCodetables();
 
-                    GetView().DataContext = _viewModel;
+                    View.Dispatcher.Invoke(() =>
+                    {
+                        _viewModel = new CodetablesViewModel();
+                        _viewModel!.CodetableDataGridRows = new System.Collections.ObjectModel.ObservableCollection<CodetableDataGridRow>(codetableDataGridRows);
 
-                    GetApp().Loader.Stop();
+                        GetView().DataContext = _viewModel;
+
+                    });
+
                 });
-            });
+            }
+            finally
+            {
+                GetApp().Loader.Stop();
+            }
         }
 
         private List<CodetableDataGridRow> BuildRowsCodetables()
         {
-
             List<CodetableDataGridRow> rows = new List<CodetableDataGridRow>();
 
             UIXQuery query = BuildQueryCodetables();

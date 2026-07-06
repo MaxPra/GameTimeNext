@@ -1,5 +1,6 @@
 ﻿using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.General;
+using GameTimeNext.Core.Application.Playthroughs;
 using GameTimeNext.Core.Application.Profiles.BackgroundProcesses;
 using GameTimeNext.Core.Application.Profiles.Components;
 using GameTimeNext.Core.Application.Profiles.DataWrapper;
@@ -743,6 +744,19 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             new TXPROFI().Save(t1profi);
 
             await BuildProfilesListBoxAsync(0);
+        }
+
+        protected void EV_ctxtShowPlaythroughs()
+        {
+            T1PROFI t1profi = GetSelectedProfile();
+            PlaythroughsApp app = GetApp().GetApplication<PlaythroughsApp>();
+            app.AppRunSelections = new PlaythroughAppRunSelections
+            {
+                Pfid = t1profi.PFID,
+                Gana = t1profi.GANA
+            };
+
+            app.ShowWindow();
         }
 
 
