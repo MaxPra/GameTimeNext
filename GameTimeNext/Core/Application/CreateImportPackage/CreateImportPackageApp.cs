@@ -25,17 +25,29 @@ namespace GameTimeNext.Core.Application.CreateImportPackage
 
         public void Start(UIXApplication hostApplication, ContentPresenter presenter)
         {
-            HostApplication = hostApplication;
-            CreateImportPackageView!.ContentPresenter = presenter;
-            CreateImportPackageView.ViewController.Show(false);
+            Start(hostApplication, new UIXApplicationStartOptions
+            {
+                Target = UIXApplicationStartTarget.ContentPresenter,
+                Presenter = presenter
+            });
+        }
 
+        public void Start(UIXApplication hostApplication, UIXApplicationStartOptions options)
+        {
+            HostApplication = hostApplication;
             Loader = hostApplication.Loader;
             CallDispatcher = hostApplication.CallDispatcher;
+
+            CreateImportPackageView!.ViewController.Show(options);
         }
 
         public override bool CanClose()
         {
             return true;
+        }
+
+        public override void SetWindowProperties(UIXApplicationStartOptions options)
+        {
         }
     }
 }

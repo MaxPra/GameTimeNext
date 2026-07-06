@@ -1,4 +1,4 @@
-ï»¿using GameTimeNext.Core.Application.Codetables;
+using GameTimeNext.Core.Application.Codetables;
 using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.General;
 using GameTimeNext.Core.Application.Profiles.Components;
@@ -27,7 +27,7 @@ using static GameTimeNext.Core.Application.Profiles.Controller.ProfilesManualEst
 
 namespace GameTimeNext.Core.Application.Profiles.Controller
 {
-    public class ProfilesEditViewController : UIXWindowControllerBase
+    public class ProfilesEditViewController : UIXViewControllerBase
     {
 
         private ProfilesEditViewModel? _profilesEditViewModel;
@@ -332,7 +332,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 }
                 catch (Exception ex)
                 {
-                    // SpÃ¤ter hier Logausgabe und so weiter
+                    // Später hier Logausgabe und so weiter
                 }
                 finally
                 {
@@ -345,7 +345,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
                 GetWnd().Dispatcher.Invoke(() =>
                 {
-                    // Accent Farben befÃ¼llen
+                    // Accent Farben befüllen
                     Color color1 = Color.FromArgb(255, accentColors[0].R, accentColors[0].G, accentColors[0].B);
                     Color color2 = Color.FromArgb(255, accentColors[1].R, accentColors[1].G, accentColors[1].B);
                     Color color3 = Color.FromArgb(255, accentColors[2].R, accentColors[2].G, accentColors[2].B);
@@ -361,7 +361,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 });
             }
 
-            // Pfad fÃ¼r spÃ¤teres Kopieren merken
+            // Pfad für späteres Kopieren merken
             _coverAppDataPath = path;
         }
 
@@ -390,7 +390,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             // selektierte Gruppen auslesen
             List<ProfilesGroupListBoxItem> selectedGroups = _profilesEditViewModel!.T1GROUPs.Where(t => t.COISSEL).ToList();
 
-            // Alle bisherigen fÃ¼r dieses Profil lÃ¶schen
+            // Alle bisherigen für dieses Profil löschen
             TXGRPPO tblmGrppo = new TXGRPPO();
             tblmGrppo.DeleteAllWherePFID(GetApp().T1Profi.PFID);
 
@@ -442,7 +442,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             if (GetApp().T1Profi.SAID == 0 && FnString.IsNullEmptyOrWhitespace(GetWnd().txbProfileName.Text) || combItem.Tag.ToString() == EstimatedTimeTypes.EST_TIME_NONE)
             {
-                // -- BefÃ¼llung
+                // -- Befüllung
                 GetApp().T1Profi.ETMA = 0;
                 GetApp().T1Profi.ETME = 0;
                 GetApp().T1Profi.ETCO = 0;
@@ -476,7 +476,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             {
                 GetWnd().Dispatcher.Invoke(() =>
                 {
-                    GetApp().GetApplication<CFMBOX>().Show("Warning", "Could not find game on IGDB.", CFMBOXResult.Ok, CFMBOXIcon.Warning);
+                    GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Warning", "Could not find game on IGDB.", CFMBOXResult.Ok, CFMBOXIcon.Warning);
                 });
 
                 ResetPlaytypes();
@@ -492,7 +492,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             {
                 GetWnd().Dispatcher.Invoke(() =>
                 {
-                    GetApp().GetApplication<CFMBOX>().Show("Warning", "Could not query time to beat.", CFMBOXResult.Ok, CFMBOXIcon.Warning);
+                    GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Warning", "Could not query time to beat.", CFMBOXResult.Ok, CFMBOXIcon.Warning);
                 });
 
                 ResetPlaytypes();
@@ -505,7 +505,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             {
                 GetWnd().Dispatcher.Invoke(() =>
                 {
-                    GetApp().GetApplication<CFMBOX>().Show("Warning", "Could not query time to beat.", CFMBOXResult.Ok, CFMBOXIcon.Warning);
+                    GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Warning", "Could not query time to beat.", CFMBOXResult.Ok, CFMBOXIcon.Warning);
                 });
 
                 ResetPlaytypes();
@@ -514,7 +514,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 return false;
             }
 
-            // -- BefÃ¼llung
+            // -- Befüllung
             GetApp().T1Profi.ETMA = ((double)timeToBeat.Hastily!) / 60;
             GetApp().T1Profi.ETME = ((double)timeToBeat.Normally!) / 60;
             GetApp().T1Profi.ETCO = ((double)timeToBeat.Completely!) / 60;
@@ -612,7 +612,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             // Filtern
             t1groups = t1groups.Where(s => (s.ItemObject as T1GROUP)?.GTYP == GroupType.Tag).ToList();
 
-            // Viewmodel befÃ¼llen
+            // Viewmodel befüllen
             _profilesEditViewModel = new ProfilesEditViewModel();
             _profilesEditViewModel.T1GROUPs = new System.Collections.ObjectModel.ObservableCollection<ProfilesGroupListBoxItem>(t1groups);
 
@@ -653,7 +653,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             if (GetWnd().cbUseProfileAccentColors.IsChecked == false)
                 return;
 
-            // -- Akzent farben (korrespondierend aus der gewÃ¤hlten)
+            // -- Akzent farben (korrespondierend aus der gewählten)
             string[] accentColorsCalculated = FnTheme.CalculateAccentStateColors(CFProfilesEditApp.GetSelectedToggleButton(GetWnd()).Tag.ToString());
 
             Dictionary<string, string> accentColorsDic = new Dictionary<string, string>();
@@ -728,9 +728,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             GetApp().ManualEstTimesCache.ProfileName = GetWnd().txbProfileName.Text;
 
             GetApp().ProfilesManualEstTimesEditView = new ProfilesManualEstTimesEditView();
-            GetApp().ProfilesManualEstTimesEditView.WndController = new ProfilesManualEstTimesEditViewController(GetApp());
+            GetApp().ProfilesManualEstTimesEditView.ViewController = new ProfilesManualEstTimesEditViewController(GetApp());
 
-            GetApp().ProfilesManualEstTimesEditView.WndController.SetResultCallback<ProfilesManualEstTimesEditViewReturn>(r =>
+            GetApp().ProfilesManualEstTimesEditView.ViewController.SetResultCallback<ProfilesManualEstTimesEditViewReturn>(r =>
             {
                 if (!r.Canceled)
                 {
@@ -742,7 +742,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 }
             });
 
-            GetApp().ProfilesManualEstTimesEditView.WndController.Show(true);
+            GetApp().ProfilesManualEstTimesEditView.ViewController.Show();
         }
 
         public ProfilesEditApp GetApp()
@@ -757,7 +757,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected void EV_BtnSteamImport()
         {
-            ProfilesSteamImportApp app = GetApp().GetApplication<ProfilesSteamImportApp>();
+            ProfilesSteamImportApp app = GetApp().GetApplication<ProfilesSteamImportApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
             app.Search(r =>
             {
                 if (!r.Canceled)
@@ -765,8 +765,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
                     FillDBOSteamImport(r.SteamGame!);
 
-                    // Exe auswÃ¤hlen
-                    ProfilesExecutablesEditApp profilesExecutablesEditApp = GetApp().GetApplication<ProfilesExecutablesEditApp>();
+                    // Exe auswählen
+                    ProfilesExecutablesEditApp profilesExecutablesEditApp = GetApp().GetApplication<ProfilesExecutablesEditApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
                     profilesExecutablesEditApp.Search(SteamManifestHelper.ResolveInstallPath(r.SteamGame!), r =>
                     {
                         if (!r.Canceled)
@@ -792,8 +792,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             if (!FnString.IsNullEmptyOrWhitespace(gameFolderPath))
             {
-                // Exe auswÃ¤hlen
-                ProfilesExecutablesEditApp profilesExecutablesEditApp = GetApp().GetApplication<ProfilesExecutablesEditApp>();
+                // Exe auswählen
+                ProfilesExecutablesEditApp profilesExecutablesEditApp = GetApp().GetApplication<ProfilesExecutablesEditApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
                 profilesExecutablesEditApp.Search(gameFolderPath, r =>
                 {
                     if (!r.Canceled)
@@ -809,23 +809,23 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected async Task EV_btnSteamGridDb()
         {
-            // SteamGridDb API Key prÃ¼fen
+            // SteamGridDb API Key prüfen
             if (FnString.IsNullEmptyOrWhitespace(AppEnvironment.GetAppConfig().AppSettings.SteamGridDbKey))
             {
-                CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>();
+                CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
                 cfmbox.Show("No API Key found!", "No API key was found.\nPlease make sure that the API key is stored in the settings.", CFMBOXResult.Ok, CFMBOXIcon.Info);
                 return;
             }
 
-            // SteamprofilverknÃ¼pfung oder Spielnamen prÃ¼fen
+            // Steamprofilverknüpfung oder Spielnamen prüfen
             if (GetApp().T1Profi.SAID == 0 && FnString.IsNullEmptyOrWhitespace(GetWnd().txbProfileName.Text))
             {
-                CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>();
+                CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
                 cfmbox.Show("Attention!", "Please note that the SteamGridDB search is only available if a profile name is provided or the profile is linked to a Steam game.", CFMBOXResult.Ok, CFMBOXIcon.Info);
                 return;
             }
 
-            ProfilesSteamGridDBApp app = GetApp().GetApplication<ProfilesSteamGridDBApp>();
+            ProfilesSteamGridDBApp app = GetApp().GetApplication<ProfilesSteamGridDBApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
             app.Search(GetApp(), GetApp().T1Profi.SAID, GetWnd().txbProfileName.Text, r =>
             {
                 if (!r.Canceled)
@@ -834,11 +834,11 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                     {
                         using (SuppressRunEventPipeline())
                             await FillViewCoverChanged(r.SelectedImagePath);
+
+                        GetWnd().Dispatcher.Invoke(() =>
+                        { RunEventPipelineSync(View, string.Empty); });
+
                     });
-
-
-                    RunEventPipelineSync(View, string.Empty);
-
                 }
             });
         }
@@ -855,7 +855,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             {
                 BitmapImage chosenImage = FnImage.LoadImageWithoutLock(filePath);
 
-                ProfilesCropImageApp app = GetApp().GetApplication<ProfilesCropImageApp>();
+                ProfilesCropImageApp app = GetApp().GetApplication<ProfilesCropImageApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
                 app.Crop(chosenImage, r =>
                 {
                     if (!r.Canceled)
@@ -887,7 +887,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected void EV_btnAddPlatformWizard()
         {
-            CodetablesEntryEditApp entryeditAppImages = GetApp().GetApplication<CodetablesEntryEditApp>("Create new image with wizard");
+            CodetablesEntryEditApp entryeditAppImages = GetApp().GetApplication<CodetablesEntryEditApp>("Create new image with wizard", UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
             entryeditAppImages.RunParameters.OverrideSaveButtonText = "Next";
             entryeditAppImages.RunParameters.ShowSkipButton = true;
 
@@ -896,7 +896,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 if (r.Canceled)
                     return;
 
-                CodetablesEntryEditApp entryEditAppPlatforms = GetApp().GetApplication<CodetablesEntryEditApp>("Create new platform with wizard");
+                CodetablesEntryEditApp entryEditAppPlatforms = GetApp().GetApplication<CodetablesEntryEditApp>("Create new platform with wizard", UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
                 entryEditAppPlatforms.RunParameters.ShowSkipButton = true;
                 entryEditAppPlatforms.CreateNew(r =>
                 {
@@ -926,7 +926,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
                 try
                 {
-                    // Altes Bild lÃ¶schen
+                    // Altes Bild löschen
                     File.Delete(Path.Combine(AppEnvironment.GetAppConfig().CoverFolderPath, _oldProfileCoverFileName));
                 }
                 catch (Exception)

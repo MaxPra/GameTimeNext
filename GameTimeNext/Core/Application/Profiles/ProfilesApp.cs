@@ -28,11 +28,20 @@ namespace GameTimeNext.Core.Application.Profiles
 
         public void Start(UIXApplication hostApplication, ContentPresenter presenter)
         {
-            this.HostApplication = hostApplication;
-            this.ProfilesView.ContentPresenter = presenter;
-            this.ProfilesView.ViewController.Show(false);
+            Start(hostApplication, new UIXApplicationStartOptions
+            {
+                Target = UIXApplicationStartTarget.ContentPresenter,
+                Presenter = presenter
+            });
+        }
+
+        public void Start(UIXApplication hostApplication, UIXApplicationStartOptions options)
+        {
+            HostApplication = hostApplication;
             Loader = hostApplication.Loader;
             CallDispatcher = hostApplication.CallDispatcher;
+
+            ProfilesView.ViewController.Show(options);
         }
 
         public override void InitializeApplicationOutput()
@@ -68,6 +77,10 @@ namespace GameTimeNext.Core.Application.Profiles
         public override bool CanClose()
         {
             return !CFGameTimeMonitoring.IsMonitoring;
+        }
+
+        public override void SetWindowProperties(UIXApplicationStartOptions options)
+        {
         }
 
 

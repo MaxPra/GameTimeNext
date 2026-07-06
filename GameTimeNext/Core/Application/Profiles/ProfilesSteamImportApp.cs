@@ -17,7 +17,7 @@ namespace GameTimeNext.Core.Application.Profiles
 
             _profilesSteamImportViewController = new ProfilesSteamImportViewController(this);
 
-            _profilesSteamImportView.WndController = _profilesSteamImportViewController;
+            _profilesSteamImportView.ViewController = _profilesSteamImportViewController;
         }
 
         public void Search(Action<ProfilesSteamImportViewController.ProfilesSteamImportViewRetrun> callback)
@@ -25,7 +25,12 @@ namespace GameTimeNext.Core.Application.Profiles
             _profilesSteamImportView!.ViewIndicator.Add("ED");
 
             _profilesSteamImportViewController!.SetResultCallback(callback);
-            _profilesSteamImportViewController!.Show(true);
+            _profilesSteamImportViewController.Show();
+        }
+
+        public override void SetWindowProperties(UIXApplicationStartOptions options)
+        {
+            options.Dialog = true;
         }
 
     }

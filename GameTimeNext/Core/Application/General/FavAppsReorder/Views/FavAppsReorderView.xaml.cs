@@ -5,7 +5,7 @@ namespace GameTimeNext.Core.Application.General.FavAppsReorder.Views
     /// <summary>
     /// Interaction logic for FavAppsReorderView.xaml
     /// </summary>
-    public partial class FavAppsReorderView : GTNWindow
+    public partial class FavAppsReorderView : GTNWindowView
     {
         public FavAppsReorderView()
         {

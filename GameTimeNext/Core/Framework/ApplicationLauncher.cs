@@ -47,7 +47,11 @@ namespace GameTimeNext.Core.Framework
 
 
             if (app is IUIXApplicationStarter starter)
-                starter.Start(host, presenter);
+                starter.Start(host, new UIXApplicationStartOptions
+                {
+                    Target = UIXApplicationStartTarget.ContentPresenter,
+                    Presenter = presenter
+                });
 
             if (type.FullName != null && !AppEnvironment.StartedApplications.ContainsKey(type.FullName))
                 AppEnvironment.StartedApplications.Add(type.FullName, app);

@@ -13,7 +13,7 @@ using static GameTimeNext.Core.Application.Codetables.CodetablesEntryEditApp;
 
 namespace GameTimeNext.Core.Application.Codetables.Controller
 {
-    public class CodetablesEntryEditViewController : UIXWindowControllerBase
+    public class CodetablesEntryEditViewController : UIXViewControllerBase
     {
 
         private const int MAX_PARAM_COUNT = 2;

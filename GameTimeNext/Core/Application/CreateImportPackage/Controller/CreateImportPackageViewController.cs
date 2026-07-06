@@ -70,7 +70,7 @@ namespace GameTimeNext.Core.Application.CreateImportPackage.Controller
             string outputPath = FnSystemDialogs.ShowFolderDialog("Select Output Path", false);
 
             if (FnString.IsNullEmptyOrWhitespace(outputPath))
-                GetApp().GetApplication<CFMBOX>().Show("Select a valid output path!", CFMBOXResult.Ok, CFMBOXIcon.Error);
+                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Select a valid output path!", CFMBOXResult.Ok, CFMBOXIcon.Error);
 
             GetView().TxbOutputPath.Text = outputPath;
         }
@@ -109,11 +109,11 @@ namespace GameTimeNext.Core.Application.CreateImportPackage.Controller
 
             if (error)
             {
-                GetApp().GetApplication<CFMBOX>().Show("An error occured.", CFMBOXResult.Ok, CFMBOXIcon.Error);
+                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("An error occured.", CFMBOXResult.Ok, CFMBOXIcon.Error);
             }
             else
             {
-                GetApp().GetApplication<CFMBOX>().Show("Import package created successfully", CFMBOXResult.Ok, CFMBOXIcon.Success);
+                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Import package created successfully", CFMBOXResult.Ok, CFMBOXIcon.Success);
             }
 
 

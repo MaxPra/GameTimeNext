@@ -11,7 +11,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Codetables.Controller
 {
-    public class CodetablesEditViewController : UIXWindowControllerBase
+    public class CodetablesEditViewController : UIXViewControllerBase
     {
         public CodetablesEditViewController(UIXApplication app) : base(app)
         {

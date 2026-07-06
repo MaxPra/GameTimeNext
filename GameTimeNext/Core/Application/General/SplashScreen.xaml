@@ -17,7 +17,7 @@
     mc:Ignorable="d">
 
     <Border
-        Padding="28"
+        Padding="30"
         Background="{DynamicResource Brush.Surface}"
         BorderBrush="{DynamicResource Brush.Border}"
         BorderThickness="1"
@@ -30,54 +30,69 @@
             </Grid.RowDefinitions>
 
             <!--  Content  -->
-            <StackPanel VerticalAlignment="Center">
+            <StackPanel
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Orientation="Horizontal">
+                <Border
+                    Width="150"
+                    Height="150"
+                    Padding="0"
+                    Background="#14FFFFFF"
+                    BorderBrush="{DynamicResource Brush.Border}"
+                    BorderThickness="0.5"
+                    CornerRadius="{DynamicResource DefaultCornerRadius}">
+                    <Image Source="/UI/Ressources/GTN_CLS_ICON.png" Stretch="Uniform" />
+                </Border>
 
-                <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-                    <TextBlock
-                        FontSize="26"
-                        FontWeight="SemiBold"
-                        Foreground="{DynamicResource Brush.TextPrimary}"
-                        Text="GameTimeNext" />
-
-                    <Border
-                        Margin="10,0,0,0"
-                        Padding="8,2"
-                        Background="{DynamicResource Brush.Accent}"
-                        CornerRadius="{StaticResource DefaultCornerRadius}">
+                <StackPanel Margin="20,0,0,0" VerticalAlignment="Center">
+                    <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
                         <TextBlock
-                            FontSize="11"
-                            FontWeight="Bold"
+                            FontSize="28"
+                            FontWeight="SemiBold"
                             Foreground="{DynamicResource Brush.TextPrimary}"
-                            Text="BETA" />
-                    </Border>
+                            Text="GameTimeNext" />
 
-                    <Border
-                        x:Name="DevBadge"
-                        Margin="6,0,0,0"
-                        Padding="8,2"
-                        Background="#FF8B0000"
-                        CornerRadius="{StaticResource DefaultCornerRadius}">
-                        <TextBlock
-                            FontSize="11"
-                            FontWeight="Bold"
-                            Foreground="White"
-                            Text="DEV-Mode" />
-                    </Border>
+                        <Border
+                            Margin="10,0,0,0"
+                            Padding="8,2"
+                            Background="{DynamicResource Brush.Accent}"
+                            CornerRadius="{StaticResource DefaultCornerRadius}">
+                            <TextBlock
+                                FontSize="11"
+                                FontWeight="Bold"
+                                Foreground="{DynamicResource Brush.TextPrimary}"
+                                Text="BETA" />
+                        </Border>
+
+                        <Border
+                            x:Name="DevBadge"
+                            Margin="6,0,0,0"
+                            Padding="8,2"
+                            Background="#FF8B0000"
+                            CornerRadius="{StaticResource DefaultCornerRadius}">
+                            <TextBlock
+                                FontSize="11"
+                                FontWeight="Bold"
+                                Foreground="White"
+                                Text="DEV-Mode" />
+                        </Border>
+                    </StackPanel>
+
+                    <TextBlock
+                        Margin="0,6,0,0"
+                        FontSize="13"
+                        FontWeight="Medium"
+                        Foreground="{DynamicResource Brush.TextSecondary}"
+                        Text="by CryLoud Studios" />
+
+                    <TextBlock
+                        x:Name="txtDevelopmentPathActive"
+                        Margin="0,10,0,0"
+                        FontSize="14"
+                        Foreground="#FF8B0000"
+                        Text="Developmentpaths active!" />
                 </StackPanel>
-
-                <TextBlock
-                    Margin="0,12,0,0"
-                    FontSize="14"
-                    Foreground="{DynamicResource Brush.TextSecondary}"
-                    Text="Advanced game time monitoring" />
-                <TextBlock
-                    x:Name="txtDevelopmentPathActive"
-                    Margin="0,12,0,0"
-                    FontSize="14"
-                    Foreground="#FF8B0000"
-                    Text="Developmentpaths active!" />
-
-
             </StackPanel>
 
             <!--  Footer  -->

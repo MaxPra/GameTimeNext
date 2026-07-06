@@ -1,4 +1,4 @@
-﻿using GameTimeNext.Core.Application.Profiles.Viewmodel;
+using GameTimeNext.Core.Application.Profiles.Viewmodel;
 using GameTimeNext.Core.Application.Profiles.Views;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.SteamGridDB;
@@ -13,7 +13,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Profiles.Controller
 {
-    public class ProfilesSteamGridDBViewController : UIXWindowControllerBase
+    public class ProfilesSteamGridDBViewController : UIXViewControllerBase
     {
         private ProfilesSteamGridDBViewModel _profilesSteamGridDBViewModel;
 
@@ -55,7 +55,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
                 if (grids == null || grids.Count == 0)
                 {
-                    GetApp().GetApplication<CFMBOX>().Show(
+                    GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(
                         "Attention",
                         "There were no covers found",
                         CFMBOXResult.Ok
@@ -71,7 +71,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
                 if (_sgdbPages.Count == 0)
                 {
-                    GetApp().GetApplication<CFMBOX>().Show(
+                    GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(
                         "Attention",
                         "There were no covers found",
                         CFMBOXResult.Ok
@@ -86,7 +86,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             }
             catch (Exception)
             {
-                GetApp().GetApplication<CFMBOX>().Show(
+                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(
                     "Error",
                     "An error occured!\nTry again later!",
                     CFMBOXResult.Ok,
@@ -257,7 +257,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             }
             catch (Exception)
             {
-                GetApp().GetApplication<CFMBOX>().Show(
+                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(
                     "Error",
                     "An error occured while loading the page.",
                     CFMBOXResult.Ok,

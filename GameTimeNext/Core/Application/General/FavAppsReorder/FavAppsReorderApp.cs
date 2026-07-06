@@ -18,14 +18,19 @@ namespace GameTimeNext.Core.Application.General.FavAppsReorder
 
             FavAppsReorderViewController = new FavAppsReorderViewController(this);
 
-            FavAppsReorderView.WndController = FavAppsReorderViewController;
+            FavAppsReorderView.ViewController = FavAppsReorderViewController;
         }
 
         public void Reorder()
         {
             FavAppsReorderView!.ViewIndicator.Add("ED");
             FavAppsReorderViewController!.SetResultCallback(AppResult!);
-            FavAppsReorderViewController!.Show(true);
+            FavAppsReorderViewController.Show();
+        }
+
+        public override void SetWindowProperties(UIXApplicationStartOptions options)
+        {
+            options.Dialog = true;
         }
     }
 }

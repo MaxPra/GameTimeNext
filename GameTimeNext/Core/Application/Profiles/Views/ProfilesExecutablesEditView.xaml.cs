@@ -5,7 +5,7 @@ namespace GameTimeNext.Core.Application.Profiles.Views
     /// <summary>
     /// Interaction logic for ProfilesEditExecutablesView.xaml
     /// </summary>
-    public partial class ProfilesExecutablesEditView : GTNWindow
+    public partial class ProfilesExecutablesEditView : GTNWindowView
     {
         public ProfilesExecutablesEditView()
         {

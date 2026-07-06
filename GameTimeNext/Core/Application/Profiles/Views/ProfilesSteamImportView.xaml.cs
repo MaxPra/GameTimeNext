@@ -5,7 +5,7 @@ namespace GameTimeNext.Core.Application.Profiles.Views
     /// <summary>
     /// Interaction logic for ProfilesSteamImportView.xaml
     /// </summary>
-    public partial class ProfilesSteamImportView : GTNWindow
+    public partial class ProfilesSteamImportView : GTNWindowView
     {
         public ProfilesSteamImportView()
         {

@@ -17,7 +17,7 @@ namespace GameTimeNext.Core.Application.Metadata
             MainView = MetadataPosEditView;
 
             MetadataPosEditViewController = new MetadataPosEditViewController(this);
-            MetadataPosEditView.WndController = MetadataPosEditViewController;
+            MetadataPosEditView.ViewController = MetadataPosEditViewController;
         }
 
         public void CreateNew(T1METAH t1metah)
@@ -28,7 +28,8 @@ namespace GameTimeNext.Core.Application.Metadata
             MetadataPosEditView!.ViewIndicator.Clear();
             MetadataPosEditView!.ViewIndicator.Add("CN");
             MetadataPosEditView!.Title = "Create Metadata Field";
-            MetadataPosEditViewController!.Show(true);
+
+            MetadataPosEditViewController!.Show();
         }
 
         public void Edit(Action<MetadataPosEditViewController.MetadataPosEditViewReturn> callback, T1METAP t1metap)
@@ -39,7 +40,13 @@ namespace GameTimeNext.Core.Application.Metadata
 
             MetadataPosEditView!.Title = "Edit Metadata Field";
             MetadataPosEditViewController!.SetResultCallback(callback);
-            MetadataPosEditViewController!.Show(true);
+
+            MetadataPosEditViewController!.Show();
+        }
+
+        public override void SetWindowProperties(UIXApplicationStartOptions options)
+        {
+            options.Dialog = true;
         }
     }
 }

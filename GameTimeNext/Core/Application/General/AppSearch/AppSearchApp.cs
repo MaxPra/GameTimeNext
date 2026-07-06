@@ -17,13 +17,18 @@ namespace GameTimeNext.Core.Application.General.AppSearch
 
             AppSearchViewController = new AppSearchViewController(this);
 
-            AppSearchView.WndController = AppSearchViewController;
+            AppSearchView.ViewController = AppSearchViewController;
         }
 
-        public void Search()
+        public void Search(UIXApplicationStartTarget? startTarget = null)
         {
             AppSearchView!.ViewIndicator.Add("ED");
-            AppSearchViewController!.Show(true);
+            AppSearchViewController!.Show();
+        }
+
+        public override void SetWindowProperties(UIXApplicationStartOptions options)
+        {
+            options.Dialog = true;
         }
     }
 }

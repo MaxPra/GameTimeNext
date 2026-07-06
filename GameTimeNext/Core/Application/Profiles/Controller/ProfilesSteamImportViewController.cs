@@ -1,4 +1,4 @@
-ï»¿using GameTimeNext.Core.Application.Profiles.Viewmodel;
+using GameTimeNext.Core.Application.Profiles.Viewmodel;
 using GameTimeNext.Core.Application.Profiles.Views;
 using GameTimeNext.Core.Framework.LauncherIntegration;
 using System.Windows;
@@ -9,7 +9,7 @@ using UIX.ViewController.Engine.Runnables;
 
 namespace GameTimeNext.Core.Application.Profiles.Controller
 {
-    public class ProfilesSteamImportViewController : UIXWindowControllerBase
+    public class ProfilesSteamImportViewController : UIXViewControllerBase
     {
 
         private ProfilesSteamImportViewModel? _profilesSteamImportViewModel;
@@ -106,7 +106,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             steamGames = GetSteamGames();
 
-            // Viewmodel befÃ¼llen
+            // Viewmodel befüllen
             _profilesSteamImportViewModel = new ProfilesSteamImportViewModel();
             _profilesSteamImportViewModel.SteamGames = new System.Collections.ObjectModel.ObservableCollection<SteamGame>(steamGames);
 
@@ -143,7 +143,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                            g.Name?.IndexOf(t, StringComparison.OrdinalIgnoreCase) >= 0))
                 .ToList();
 
-            // Nur vollstÃ¤ndig installierte Spiele (StateFlags == 4)
+            // Nur vollständig installierte Spiele (StateFlags == 4)
             games = games.Where(g => g.StateFlags == 4).ToList();
 
             games = games.Where(g => SteamManifestHelper.ResolveInstallPath(g) != null).ToList();
@@ -152,7 +152,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             if (!string.IsNullOrWhiteSpace(GetView().TxbSearch.Text))
                 games = games.Where(g => g.Name?.IndexOf(GetView().TxbSearch.Text, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
 
-            // Duplikate entfernen (pro AppID ein Eintrag; bevorzugt mit gÃ¼ltigem InstallPath)
+            // Duplikate entfernen (pro AppID ein Eintrag; bevorzugt mit gültigem InstallPath)
             games = games
                 .GroupBy(g => g.AppId)
                 .Select(grp =>

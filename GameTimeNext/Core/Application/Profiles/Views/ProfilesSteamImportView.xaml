@@ -1,4 +1,4 @@
-﻿<ui:GTNWindow
+﻿<ui:GTNWindowView
     x:Class="GameTimeNext.Core.Application.Profiles.Views.ProfilesSteamImportView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -13,7 +13,6 @@
     MinHeight="420"
     ShowMaximizeButton="False"
     ShowMinimizeButton="False"
-    Style="{StaticResource GTNWindowStyle}"
     WindowStartupLocation="CenterOwner"
     mc:Ignorable="d">
 
@@ -99,4 +98,4 @@
                 IsDefault="True" />
         </Grid>
     </Grid>
-</ui:GTNWindow>
+</ui:GTNWindowView>

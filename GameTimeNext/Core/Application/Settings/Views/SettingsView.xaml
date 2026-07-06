@@ -789,6 +789,8 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="10" />
                                 <RowDefinition Height="Auto" />
+                                <RowDefinition Height="8" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
                             <TextBlock
@@ -803,12 +805,54 @@
                                 Text="Some icons used in this application are provided by Icons8." />
 
                             <TextBlock Grid.Row="4" Foreground="{DynamicResource Brush.TextSecondary}">
-                                <Run Text="Developed by " />
-                                <Hyperlink NavigateUri="https://github.com/MaxPra" RequestNavigate="OnDeveloperLinkRequestNavigate">@MaxPra</Hyperlink>
-                                <Run Text=" and " />
-                                <Hyperlink NavigateUri="https://github.com/OliverFida" RequestNavigate="OnDeveloperLinkRequestNavigate">@OliverFida</Hyperlink>
-                                <Run Text=" on GitHub." />
+                                <Run Text="Developed by" />
                             </TextBlock>
+                            <Border
+                                Grid.Row="6"
+                                Padding="14"
+                                HorizontalAlignment="Left"
+                                Background="#12000000"
+                                BorderBrush="{DynamicResource Brush.Border}"
+                                BorderThickness="1"
+                                CornerRadius="12">
+                                <StackPanel>
+                                    <Image
+                                        Width="210"
+                                        Height="210"
+                                        HorizontalAlignment="Center"
+                                        Source="/UI/Ressources/GTN_CLS_ICON.png" />
+
+                                    <StackPanel
+                                        Margin="0,14,0,0"
+                                        HorizontalAlignment="Center"
+                                        Orientation="Horizontal">
+                                        <Border
+                                            Padding="4"
+                                            Background="#0AFFFFFF"
+                                            BorderBrush="{DynamicResource Brush.Border}"
+                                            BorderThickness="1"
+                                            CornerRadius="14">
+                                            <Image
+                                                Width="94"
+                                                Height="94"
+                                                Source="/UI/Ressources/GTN_ICON_CLSMP.png" />
+                                        </Border>
+
+                                        <Border
+                                            Margin="12,0,0,0"
+                                            Padding="4"
+                                            Background="#0AFFFFFF"
+                                            BorderBrush="{DynamicResource Brush.Border}"
+                                            BorderThickness="1"
+                                            CornerRadius="14">
+                                            <Image
+                                                Width="94"
+                                                Height="94"
+                                                Source="/UI/Ressources/GTN_ICON_CLSOF.png" />
+                                        </Border>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
                         </Grid>
                     </StackPanel>
                 </ScrollViewer>
