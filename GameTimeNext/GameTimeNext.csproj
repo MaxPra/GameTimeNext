@@ -119,7 +119,7 @@
     <None Update="Core\Application\StartableApps.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="ImportPackages\Import_Package_7afe1a754e944f6dbaa4553ed7003941.zip">
+    <None Update="ImportPackages\Import_Package_28c8e9c1c0dd4f55a7a312c1e173e1b2.zip">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
