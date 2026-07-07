@@ -283,7 +283,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
             CodetablesEditApp codetablesEditApp = GetApp().GetApplication<CodetablesEditApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
             codetablesEditApp.CreateNew(async (result) =>
             {
-                if (result.Canceled)
+                if (!result.HasChanged)
                     return;
 
                 await EV_BtnRefresh();

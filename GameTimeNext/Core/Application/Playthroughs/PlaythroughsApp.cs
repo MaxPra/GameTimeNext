@@ -29,11 +29,13 @@ namespace GameTimeNext.Core.Application.Playthroughs
             PlaythroughsView!.ViewController.Show(options);
         }
 
-        public void ShowWindow()
+        public void ShowWindow(Action<PlaythroughsViewController.PlaythroughsViewReturn> callback)
         {
             PlaythroughsView!.Title = $"Playthroughs";
             PlaythroughsView.ViewIndicator.Add("ED");
             PlaythroughsView.ViewIndicator.Add("SE");
+
+            PlaythroughsView.ViewController.SetResultCallback(callback);
 
             UIXApplicationStartOptions options = new UIXApplicationStartOptions
             {

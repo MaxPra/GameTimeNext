@@ -693,15 +693,15 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
             T1PROFI t1profi = GetSelectedProfile();
 
-            ProfilesPlaythroughEditApp app = GetApp().GetApplication<ProfilesPlaythroughEditApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
-            app.CreateNew(t1profi, r =>
+            PlaythroughEditApp app = GetApp().GetApplication<PlaythroughEditApp>();
+            app.CreateNew(r =>
             {
-                if (!r.Canceled)
+                if (r.HasChanged)
                 {
                     // Nochmaliges öffnen triggern
                     _dataWrapper!.TargetController.Open(true);
                 }
-            });
+            }, t1profi);
         }
 
         protected void EV_ctxtCancelPlaythrough()
@@ -756,7 +756,14 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 Gana = t1profi.GANA
             };
 
-            app.ShowWindow();
+            app.ShowWindow(r =>
+            {
+                if (r.HasChanged)
+                {
+                    // Nochmaliges öffnen triggern
+                    _dataWrapper!.TargetController.Open(true);
+                }
+            });
         }
 
 

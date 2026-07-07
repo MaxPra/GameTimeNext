@@ -1,15 +1,21 @@
 using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Playthroughs.ViewModel;
 using GameTimeNext.Core.Application.Playthroughs.Views;
+using GameTimeNext.Core.Application.Profiles;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
+using GameTimeNext.Core.Framework.UI.Dialogs;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Threading;
 using UIX.ViewController.Engine.Controller;
+using UIX.ViewController.Engine.FrameworkElements;
+using UIX.ViewController.Engine.FrameworkElements.UserControls;
 using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
+using static UIX.ViewController.Engine.FrameworkElements.UIXContextMenuFactory;
 
 namespace GameTimeNext.Core.Application.Playthroughs.Controller
 {
@@ -22,8 +28,14 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
             _viewModel = new PlaythroughsViewModel();
         }
 
+        public class PlaythroughsViewReturn : UIXViewReturn
+        {
+            public bool HasChanged { get; set; } = false;
+        }
+
         protected override void Init()
         {
+            ViewReturn = new PlaythroughsViewReturn();
         }
 
         protected override void TriggeredEvent(FrameworkElement source, string eventName)
@@ -72,6 +84,11 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
         {
         }
 
+        protected override void Event_Closing()
+        {
+            Exit(true);
+        }
+
         private PlaythroughsApp GetApp()
         {
             return (PlaythroughsApp)App;
@@ -80,6 +97,49 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
         private PlaythroughsView GetView()
         {
             return (PlaythroughsView)View;
+        }
+
+        protected void EV_DgPlaythroughs_CtxtOpening(FrameworkElement target)
+        {
+            DataGridRow row = target as DataGridRow;
+
+            if (row == null)
+                return;
+
+            if (row.DataContext is not PlaythroughDataGridRow ptRow)
+                return;
+
+            if (_viewModel != null)
+                _viewModel.SelectedRow = ptRow;
+
+            GetView().DgPlaythroughs.SelectedItem = ptRow;
+
+            BuildContextMenu(row, ptRow);
+
+            if (row.ContextMenu == null)
+                return;
+
+            row.ContextMenu.PlacementTarget = row;
+            row.ContextMenu.Placement = PlacementMode.MousePoint;
+            row.ContextMenu.IsOpen = true;
+        }
+
+        private void BuildContextMenu(DataGridRow dgRow, PlaythroughDataGridRow ptRow)
+        {
+            ContextMenuBuilder contextBuilder = UIXContextMenuFactory.Create("PlaythroughDataGridContextMenu");
+            contextBuilder.SetStyle(ProfilesContextMenuBuilder.contextMenuStyle);
+
+            T1PLTHR t1plthr = (T1PLTHR)ptRow.RowObject!;
+
+            contextBuilder.AddItem("ctxtEdit", "Edit", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Edit), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
+
+            if (t1plthr.PTTY != PlaythroughType.INITIAL_PLAYTHROUGH)
+                contextBuilder.AddItem("ctxtDelete", "Delete", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Delete), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
+
+            if (contextBuilder.HasItems())
+                dgRow.ContextMenu = contextBuilder.Build();
+            else
+                dgRow.ContextMenu = null;
         }
 
         private async Task BuildDataGridAsync()
@@ -121,7 +181,7 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
                     PlaythroughDataGridRow row = GetView().DgPlaythroughs.CreateNewRow<PlaythroughDataGridRow>();
                     row.COGANA = TFPROFI.GetProfileName(t1plthr.PFID);
                     row.COPTDE = t1plthr.PTDE;
-                    row.COPTTY = t1plthr.PTTY;
+                    row.COPTTY = TFCTABD.GetDescription("pL", t1plthr.PTTY);
                     row.COPTCA = t1plthr.PTCA;
                     row.COPTCO = t1plthr.PTCO;
                     row.RowObject = t1plthr;
@@ -169,6 +229,41 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
             });
 
             return query;
+        }
+
+        protected void EV_ctxtEdit()
+        {
+            if (_viewModel?.SelectedRow?.RowObject is not T1PLTHR selectedT1plthr)
+                return;
+
+            PlaythroughEditApp editApp = GetApp().GetApplication<PlaythroughEditApp>();
+            editApp.Edit(async (r) =>
+            {
+                if (!r.HasChanged)
+                    return;
+
+                await BuildDataGridAsync();
+
+            }, selectedT1plthr);
+        }
+
+        protected async Task EV_ctxtDelete()
+        {
+            if (_viewModel?.SelectedRow?.RowObject is not T1PLTHR selectedT1plthr)
+                return;
+
+            CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window);
+
+            CFMBOXResult result = cfmbox.Show("Delete Playthrough", "Are you sure you want to delete this playthrough?\nAll linked sessions will also be deleted!", CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Warning);
+
+            if (result == CFMBOXResult.Yes)
+            {
+                TFPLTHR.DeletePlaythroughAndSessions(selectedT1plthr.PTID);
+
+                GetViewReturn<PlaythroughsViewReturn>().HasChanged = true;
+
+                await BuildDataGridAsync();
+            }
         }
 
         protected async void EV_BtnRefresh()

@@ -7,3 +7,4 @@ mT;Metdatatypes;D;0;;0;;;0;;0;;;2026-06-19 15:42:29;2026-06-19 15:42:54;;1;;
 iM;Images / Symbols;U;1;Path;1;02;;0;;0;;;2026-06-30 18:30:40;2026-07-04 15:22:13;1;1;Enter the path to the image here (e.g. `/user/myicon.png`). Place your icon in: Documents / GameTimeNext / images_and_symbols / user;
 pT;Platform-Type;D;0;;0;;;0;;0;;;2026-06-30 19:24:00;2026-06-30 19:24:00;0;1;;
 pF;Platform;U;1;Platform-Type;1;01;pT;1;Symbol;1;01;iM;2026-06-30 19:36:45;2026-06-30 19:36:45;0;0;;
+pL;Playthroughtype;D;0;;0;;;0;;0;;;2026-07-07 18:10:05;2026-07-07 18:10:05;0;0;;
