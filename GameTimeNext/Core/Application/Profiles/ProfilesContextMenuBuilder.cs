@@ -26,6 +26,8 @@ namespace GameTimeNext.Core.Application.Profiles
 
             T1PLTHR currentPlaythrough = TFPLTHR.GetCurrentPlaythrough(t1profi.PFID);
 
+            playthroughSubMenu.AddItem("ctxtShowPlaythroughs", "Show playthroughs", icon: null, itemStyle: contextMenuItemStyle);
+
             if (currentPlaythrough != null && !currentPlaythrough.PTCO && !currentPlaythrough.PTCA)
             {
                 playthroughSubMenu.AddItem("ctxtCompleteProfile", "Current playthrough completed", icon: UIXContextMenuFactory.CreateMdlIcon("\uE930"), itemStyle: contextMenuItemStyle);

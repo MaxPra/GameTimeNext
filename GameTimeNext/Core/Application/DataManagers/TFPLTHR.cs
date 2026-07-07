@@ -99,5 +99,43 @@ namespace GameTimeNext.Core.Application.DataManagers
 
         }
 
+        public static List<T1SESSI> GetSessions(long ptid)
+        {
+            List<T1SESSI> sessions = new List<T1SESSI>();
+            UIXQuery query = new UIXQuery(K1SESSI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
+
+            query.AddField(K1SESSI.Name, K1SESSI.Fields.SEID);
+            query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PTID, QueryCompareType.EQUALS, ptid);
+
+            using (var reader = query.Execute())
+            {
+                while (reader.Read())
+                {
+                    long ssid = UIXQuery.GetInt64(reader, K1SESSI.Name, K1SESSI.Fields.SEID);
+
+                    TXSESSI txsessi = new TXSESSI();
+                    T1SESSI t1sessi = txsessi.Read(ssid);
+
+                    sessions.Add(t1sessi);
+                }
+            }
+            return sessions;
+        }
+
+        public static void DeletePlaythroughAndSessions(long ptid)
+        {
+            TXPLTHR txplthr = new TXPLTHR();
+            TXSESSI txsessi = new TXSESSI();
+
+            List<T1SESSI> sessions = GetSessions(ptid);
+
+            foreach (T1SESSI session in sessions)
+            {
+                txsessi.Delete(session.SEID);
+            }
+
+            txplthr.Delete(ptid);
+        }
+
     }
 }

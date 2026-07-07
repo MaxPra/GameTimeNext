@@ -1,5 +1,6 @@
 ﻿using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.General;
+using GameTimeNext.Core.Application.Playthroughs;
 using GameTimeNext.Core.Application.Profiles.BackgroundProcesses;
 using GameTimeNext.Core.Application.Profiles.Components;
 using GameTimeNext.Core.Application.Profiles.DataWrapper;
@@ -692,15 +693,15 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
             T1PROFI t1profi = GetSelectedProfile();
 
-            ProfilesPlaythroughEditApp app = GetApp().GetApplication<ProfilesPlaythroughEditApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
-            app.CreateNew(t1profi, r =>
+            PlaythroughEditApp app = GetApp().GetApplication<PlaythroughEditApp>();
+            app.CreateNew(r =>
             {
-                if (!r.Canceled)
+                if (r.HasChanged)
                 {
                     // Nochmaliges öffnen triggern
                     _dataWrapper!.TargetController.Open(true);
                 }
-            });
+            }, t1profi);
         }
 
         protected void EV_ctxtCancelPlaythrough()
@@ -743,6 +744,26 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             new TXPROFI().Save(t1profi);
 
             await BuildProfilesListBoxAsync(0);
+        }
+
+        protected void EV_ctxtShowPlaythroughs()
+        {
+            T1PROFI t1profi = GetSelectedProfile();
+            PlaythroughsApp app = GetApp().GetApplication<PlaythroughsApp>();
+            app.AppRunSelections = new PlaythroughAppRunSelections
+            {
+                Pfid = t1profi.PFID,
+                Gana = t1profi.GANA
+            };
+
+            app.ShowWindow(r =>
+            {
+                if (r.HasChanged)
+                {
+                    // Nochmaliges öffnen triggern
+                    _dataWrapper!.TargetController.Open(true);
+                }
+            });
         }
 
 

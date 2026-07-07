@@ -25,7 +25,10 @@
                                 <RepeatButton Command="Slider.DecreaseLarge" Focusable="False">
                                     <RepeatButton.Template>
                                         <ControlTemplate TargetType="{x:Type RepeatButton}">
-                                            <Border Height="4" Background="{DynamicResource Brush.Accent}" CornerRadius="2" />
+                                            <Border
+                                                Height="4"
+                                                Background="{DynamicResource Brush.Accent}"
+                                                CornerRadius="2" />
                                         </ControlTemplate>
                                     </RepeatButton.Template>
                                 </RepeatButton>
@@ -37,7 +40,10 @@
                                 <RepeatButton Command="Slider.IncreaseLarge" Focusable="False">
                                     <RepeatButton.Template>
                                         <ControlTemplate TargetType="{x:Type RepeatButton}">
-                                            <Border Height="4" Background="#3A3A44" CornerRadius="2" />
+                                            <Border
+                                                Height="4"
+                                                Background="#3A3A44"
+                                                CornerRadius="2" />
                                         </ControlTemplate>
                                     </RepeatButton.Template>
                                 </RepeatButton>
