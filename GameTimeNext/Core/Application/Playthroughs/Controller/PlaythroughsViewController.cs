@@ -136,6 +136,13 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
             if (t1plthr.PTTY != PlaythroughType.INITIAL_PLAYTHROUGH)
                 contextBuilder.AddItem("ctxtDelete", "Delete", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Delete), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
 
+            if (!t1plthr.PTCO && !t1plthr.PTCA)
+            {
+                contextBuilder.AddItem("ctxtCompletePlaythrough", "Complete Playthrough", icon: UIXContextMenuFactory.CreateMdlIcon("\uE930"), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
+                contextBuilder.AddItem("ctxtCancelPlaythrough", "Cancel Playthrough", icon: UIXContextMenuFactory.CreateMdlIcon("\uE711"), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
+
+            }
+
             if (contextBuilder.HasItems())
                 dgRow.ContextMenu = contextBuilder.Build();
             else
@@ -245,6 +252,43 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
                 await BuildDataGridAsync();
 
             }, selectedT1plthr);
+        }
+
+        protected async Task EV_ctxtCompletePlaythroughAsync()
+        {
+            if (_viewModel?.SelectedRow?.RowObject is not T1PLTHR selectedT1plthr)
+                return;
+
+            // Playthrough als Abgeschlossen markieren
+            selectedT1plthr.PTCO = true;
+
+            new TXPLTHR().Save(selectedT1plthr);
+
+            await BuildDataGridAsync();
+
+            GetViewReturn<PlaythroughsViewReturn>().HasChanged = true;
+
+        }
+
+        protected async Task EV_ctxtCancelPlaythrough()
+        {
+            if (_viewModel?.SelectedRow?.RowObject is not T1PLTHR selectedT1plthr)
+                return;
+
+            string text = "Do you really want to cancel your current playthrough?\nYou won't be able to undo this action!\n\nInformation: The gametime of this playthrough will be added to your overall gametime!";
+            CFMBOXResult result = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Question", text, CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
+
+            if (result == CFMBOXResult.No)
+                return;
+
+            // Playthrough canceln
+            selectedT1plthr.PTCA = true;
+
+            new TXPLTHR().Save(selectedT1plthr);
+
+            await BuildDataGridAsync();
+
+            GetViewReturn<PlaythroughsViewReturn>().HasChanged = true;
         }
 
         protected async Task EV_ctxtDelete()
