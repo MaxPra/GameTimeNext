@@ -1,11 +1,16 @@
 <div align="center">
 
-# 🎮 GameTimeNext
+# GameTimeNext
 
-### Modern game time tracking with automation and structure
+### Your all-in-one companion for gaming — track, launch, and organize your playtime
 
 *Successor to GameTimeX*
 
+<br>
+
+<img width="100%" alt="GameTimeNext Banner" src="https://github.com/user-attachments/assets/9de07a22-b098-499a-8755-e5c1e5ce13f0" />
+
+<br>
 <br>
 
 ![Status](https://img.shields.io/badge/status-beta-orange?style=for-the-badge)
@@ -17,32 +22,100 @@
 
 <br>
 
-## 📥 Download
+## Download
 
 <div align="center">
 
-### [⬇️ Download Installer (v0.4.0 Beta)](https://github.com/MaxPra/GameTimeNext/releases/download/GameTimeNext_v0.4.0beta/GameTimeNext_v0.4.0-beta_Installer.exe)
+### [Download Installer (v0.4.0 Beta)](https://github.com/MaxPra/GameTimeNext/releases/download/GameTimeNext_v0.4.0beta/GameTimeNext_v0.4.0-beta_Installer.exe)
 
 </div>
 
 <br>
 
-## 🧭 Overview
+## Overview
 
-**GameTimeNext** is a modern reimplementation of GameTimeX, offering:
+**GameTimeNext** is more than a playtime tracker — it's built to be the central hub for your gaming library. Launch your games directly from the app, track playtime with precision, and keep every playthrough organized in one clean interface.
 
 | | |
 |---|---|
-| ⏱️ | Automated playtime tracking |
-| 🗂️ | Structured playthrough management |
-| 🎨 | Clean, modern UI |
-| 🧩 | Expandable architecture |
+| Launcher | Start and manage your games directly from GameTimeNext |
+| Tracking | Manual, precise playtime tracking |
+| Automation | Automatic game detection & profile switching |
+| Playthroughs | Structured playthrough management |
+| Parametrization | Fully customizable via code tables |
+| Screen Care | OLED-friendly screen blackout |
 
-> 🔗 **Original project:** [GameTimeX](https://github.com/MaxPra/GameTimeX)
+> Original project: [GameTimeX](https://github.com/MaxPra/GameTimeX)
 
 <br>
 
-## ⚙️ Setup
+## Applications
+
+GameTimeNext is organized into dedicated modules, each accessible from within the app:
+
+| Module | Purpose |
+|---|---|
+| **Dashboard** | Central overview and statistics |
+| **Profiles** | Create and manage game profiles |
+| **Playthroughs** | Manage individual playthroughs per profile |
+| **Codetables** | Extend and customize dropdown values (e.g. platforms) |
+| **Settings** | Configure API keys, monitors, and app behavior |
+
+<br>
+
+## Features
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+### Tracking
+- Manual start/stop system — no automatic time tracking, full control over sessions
+- Precise session control
+- Query currently tracked time since start
+- Automatic game detection with automatic profile switching
+
+### Playthroughs
+- Multiple playthroughs per profile — replay a game and track each run separately
+- Total playtime aggregated across all playthroughs per profile
+
+</td>
+<td width="50%" valign="top">
+
+### Overview & Progress
+- Total playtime per profile
+- Archived profiles
+- Daily tracking
+- Estimated completion progress bar based on HowLongToBeat or Twitch data
+
+### Parametrization
+- **Codetables** module to extend selectable values (e.g. platforms) used throughout the app
+- Fully adaptable dropdowns and categories without code changes
+
+</td>
+</tr>
+</table>
+
+### Visuals
+- SteamGridDB integration — select cover art directly from SteamGridDB when creating a profile
+- Local image support via built-in cropping tool
+- Cover previews across the app
+
+### Screen Blackout (OLED Care)
+- Blackout secondary monitors while tracking — ideal for OLED setups
+- Full blackout of all screens, e.g. while AFK, to protect OLED panels
+
+### Playtime Data Integration
+- **HowLongToBeat** — manual lookup and linking of expected completion time
+- **Twitch** — automatic retrieval of game completion data
+- Displays an estimated completion percentage on the selected profile
+
+### Analytics
+- Statistics dashboard
+
+<br>
+
+## Setup
 
 ### SteamGridDB Integration
 
@@ -52,11 +125,15 @@ To enable cover artwork:
 2. Enter your **SteamGridDB API Key**
 3. Save
 
-> ⚠️ Without an API key, artwork features are disabled in the current beta.
+> Without an API key, artwork features are disabled in the current beta. Local images remain available via the cropping tool.
 
 <br>
 
-## 🚀 Usage
+## Usage
+
+### Quick Launch Menu
+
+Press **Ctrl + M** anywhere in the app to open the quick launch menu — from here you can start any of your configured applications instantly, without navigating through the UI.
 
 ### Navigation
 
@@ -67,63 +144,25 @@ To enable cover artwork:
 
 Right-click any application:
 
-- ⭐ Add to Favorites
-- 🚀 Set as Primary Start Application
+- Add to Favorites
+- Set as Primary Start Application
 
 <br>
 
-## ✨ Features
-
-<table>
-<tr>
-<td width="50%" valign="top">
-
-### ⏱️ Tracking
-- Manual start/stop system
-- Precise session control
-- Query current tracked time since start
-
-### 📊 Overview
-- Total playtime per game
-- Archived profiles
-- Daily tracking
-
-</td>
-<td width="50%" valign="top">
-
-### 🎯 Playthroughs
-- Multiple runs per game
-- Abort current playthrough
-- DLC separation
-
-### 🔄 Automation
-- Detects running games
-- Automatic profile switching
-
-</td>
-</tr>
-</table>
-
-### 🖼️ Visuals
-- SteamGridDB integration
-- Cover previews
-
-### 📈 Analytics
-- Statistics dashboard
-
-<br>
-
-## 🔮 Roadmap
+## Roadmap — v1.0.0
 
 | Area | Planned Features |
 |---|---|
+| **Playthroughs** | Full playthrough management application — rename, complete, and organize playthroughs directly (playthroughs already existed in earlier versions; full management UI arrives in v1.0.0) |
+| **Remote Monitoring** | Manage GameTimeMonitoring remotely via phone — starts a local server, accessible via a website within your home network |
+| **UI/UX** | New UI refinements for a cleaner, more modern look |
 | **Platforms** | Epic Games integration, additional launcher support |
 | **Usability** | Built-in help system |
 | **Personalization** | Local game rating system |
 
 <br>
 
-## 🔄 Migration
+## Migration
 
 - Automatic detection of existing GameTimeX installation
 - Guided migration process
@@ -131,21 +170,21 @@ Right-click any application:
 
 <br>
 
-## ⚠️ Beta Notice
+## Beta Notice
 
 > This release is in beta. Features may change and minor issues are possible. Feedback is always welcome!
 
 <br>
 
-## 🧩 Tech Stack
+## Tech Stack
 
 - **.NET / WPF**
 - Local data storage
-- External API: **SteamGridDB**
+- External APIs: **SteamGridDB**, **HowLongToBeat**, **Twitch**
 
 <br>
 
-## 💬 Feedback
+## Feedback
 
 Found an issue or have a suggestion? [Open an issue on GitHub](https://github.com/MaxPra/GameTimeNext/issues).
 
