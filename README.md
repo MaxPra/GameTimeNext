@@ -152,6 +152,6 @@ Found an issue or have a suggestion? [Open an issue on GitHub](https://github.co
 <div align="center">
 <br>
 
-Made with ❤️ by [MaxPra](https://github.com/MaxPra)
+Made with ❤️ by Cryloud-Studios
 
 </div>
