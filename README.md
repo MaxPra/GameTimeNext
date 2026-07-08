@@ -1,37 +1,46 @@
+<div align="center">
+
 # 🎮 GameTimeNext
 
-<p align="center">
-  <b>Modern game time tracking with automation and structure</b><br>
-  Successor to GameTimeX
-</p>
+### Modern game time tracking with automation and structure
 
-<p align="center">
-  <img src="https://img.shields.io/badge/status-beta-orange" />
-  <img src="https://img.shields.io/badge/version-0.4.0-blue" />
-  <img src="https://img.shields.io/badge/platform-Windows-informational" />
-  <img src="https://img.shields.io/badge/.NET-WPF-purple" />
-</p>
+*Successor to GameTimeX*
 
----
+<br>
+
+![Status](https://img.shields.io/badge/status-beta-orange?style=for-the-badge)
+![Version](https://img.shields.io/badge/version-0.4.0-blue?style=for-the-badge)
+![Platform](https://img.shields.io/badge/platform-Windows-informational?style=for-the-badge)
+![.NET](https://img.shields.io/badge/.NET-WPF-purple?style=for-the-badge)
+
+</div>
+
+<br>
 
 ## 📥 Download
 
-👉 [Download Installer (v0.4.0 Beta)](https://github.com/MaxPra/GameTimeNext/releases/download/GameTimeNext_v0.4.0beta/GameTimeNext_v0.4.0-beta_Installer.exe)
+<div align="center">
 
----
+### [⬇️ Download Installer (v0.4.0 Beta)](https://github.com/MaxPra/GameTimeNext/releases/download/GameTimeNext_v0.4.0beta/GameTimeNext_v0.4.0-beta_Installer.exe)
+
+</div>
+
+<br>
 
 ## 🧭 Overview
 
-GameTimeNext is a modern reimplementation of GameTimeX, designed to provide:
+**GameTimeNext** is a modern reimplementation of GameTimeX, offering:
 
-- Automated playtime tracking  
-- Structured playthrough management  
-- Clean and modern UI  
-- Expandable architecture  
+| | |
+|---|---|
+| ⏱️ | Automated playtime tracking |
+| 🗂️ | Structured playthrough management |
+| 🎨 | Clean, modern UI |
+| 🧩 | Expandable architecture |
 
-🔗 Original Project: https://github.com/MaxPra/GameTimeX
+> 🔗 **Original project:** [GameTimeX](https://github.com/MaxPra/GameTimeX)
 
----
+<br>
 
 ## ⚙️ Setup
 
@@ -39,96 +48,110 @@ GameTimeNext is a modern reimplementation of GameTimeX, designed to provide:
 
 To enable cover artwork:
 
-1. Open **Settings**  
-2. Enter your **SteamGridDB API Key**  
-3. Save  
+1. Open **Settings**
+2. Enter your **SteamGridDB API Key**
+3. Save
 
-> Without an API key, artwork features are disabled in the current beta.
+> ⚠️ Without an API key, artwork features are disabled in the current beta.
 
----
+<br>
 
 ## 🚀 Usage
 
-### Application Navigation
-- Use **Search Application** to find modules  
-- Open directly from results  
+### Navigation
+
+- Use **Search Application** to find modules
+- Open directly from search results
 
 ### Startup Configuration
+
 Right-click any application:
 
-- ⭐ Add to Favorites  
-- 🚀 Set as Primary Start Application  
+- ⭐ Add to Favorites
+- 🚀 Set as Primary Start Application
 
----
+<br>
 
 ## ✨ Features
 
+<table>
+<tr>
+<td width="50%" valign="top">
+
 ### ⏱️ Tracking
-- Manual start/stop system  
+- Manual start/stop system
 - Precise session control
-- Query current monitored time since start
+- Query current tracked time since start
 
 ### 📊 Overview
 - Total playtime per game
-- Archive profiles
-- Daily tracking  
+- Archived profiles
+- Daily tracking
+
+</td>
+<td width="50%" valign="top">
 
 ### 🎯 Playthroughs
 - Multiple runs per game
-- Abort current playthrough 
-- DLC separation  
+- Abort current playthrough
+- DLC separation
 
 ### 🔄 Automation
-- Detects running games  
-- Automatic profile switching  
+- Detects running games
+- Automatic profile switching
+
+</td>
+</tr>
+</table>
 
 ### 🖼️ Visuals
-- SteamGridDB integration  
+- SteamGridDB integration
 - Cover previews
 
-### Analytics
-- Statistics dashboard  
+### 📈 Analytics
+- Statistics dashboard
 
----
+<br>
 
-## 🔮 Roadmap  
+## 🔮 Roadmap
 
-### Platforms
-- Epic Games integration  
-- Additional launcher support  
+| Area | Planned Features |
+|---|---|
+| **Platforms** | Epic Games integration, additional launcher support |
+| **Usability** | Built-in help system |
+| **Personalization** | Local game rating system |
 
-### Usability
-- Built-in help system    
-
-### Personalization
-- Local game rating system  
-
----
+<br>
 
 ## 🔄 Migration
 
-- Detects GameTimeX installation  
-- Guided migration  
-- Automatic data import  
+- Automatic detection of existing GameTimeX installation
+- Guided migration process
+- Automatic data import
 
----
+<br>
 
-## ⚠️ Beta
+## ⚠️ Beta Notice
 
-- Features may change  
-- Minor issues possible  
-- Feedback appreciated  
+> This release is in beta. Features may change and minor issues are possible. Feedback is always welcome!
 
----
+<br>
 
 ## 🧩 Tech Stack
 
-- .NET / WPF  
-- Local data storage  
-- External API (SteamGridDB)  
+- **.NET / WPF**
+- Local data storage
+- External API: **SteamGridDB**
 
----
+<br>
 
 ## 💬 Feedback
 
-Open an issue on GitHub if you encounter problems or have suggestions.
+Found an issue or have a suggestion? [Open an issue on GitHub](https://github.com/MaxPra/GameTimeNext/issues).
+
+<div align="center">
+<br>
+
+Made with ❤️ by [MaxPra](https://github.com/MaxPra)
+
+</div>
