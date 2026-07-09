@@ -93,25 +93,31 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
         {
             GetApp().Loader.Begin();
 
-            await Task.Run(() =>
+            try
             {
-                List<CodetableDataGridRow> codetableDataGridRows = BuildRowsCodetables();
-
-                View.Dispatcher.Invoke(() =>
+                await Task.Run(() =>
                 {
-                    _viewModel = new CodetablesViewModel();
-                    _viewModel!.CodetableDataGridRows = new System.Collections.ObjectModel.ObservableCollection<CodetableDataGridRow>(codetableDataGridRows);
+                    List<CodetableDataGridRow> codetableDataGridRows = BuildRowsCodetables();
 
-                    GetView().DataContext = _viewModel;
+                    View.Dispatcher.Invoke(() =>
+                    {
+                        _viewModel = new CodetablesViewModel();
+                        _viewModel!.CodetableDataGridRows = new System.Collections.ObjectModel.ObservableCollection<CodetableDataGridRow>(codetableDataGridRows);
 
-                    GetApp().Loader.Stop();
+                        GetView().DataContext = _viewModel;
+
+                    });
+
                 });
-            });
+            }
+            finally
+            {
+                GetApp().Loader.Stop();
+            }
         }
 
         private List<CodetableDataGridRow> BuildRowsCodetables()
         {
-
             List<CodetableDataGridRow> rows = new List<CodetableDataGridRow>();
 
             UIXQuery query = BuildQueryCodetables();
@@ -227,7 +233,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
             if (_viewModel?.SelectedRow?.RowObject is not T1CTABH selectedT1ctabh)
                 return;
 
-            CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>();
+            CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
 
             CFMBOXResult result = cfmbox.Show("Are you sure you want to delete this codetable?", CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
 
@@ -244,14 +250,14 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
             if (_viewModel?.SelectedRow?.RowObject is not T1CTABH selectedT1ctabh)
                 return;
 
-            CodetablesEditApp codetablesEditApp = GetApp().GetApplication<CodetablesEditApp>();
+            CodetablesEditApp codetablesEditApp = GetApp().GetApplication<CodetablesEditApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
             codetablesEditApp.Properties(async (result) =>
             {
                 if (!result.HasChanged)
                     return;
 
                 await EV_BtnRefresh();
-            }, selectedT1ctabh, (FnSystem.IsDebug() && selectedT1ctabh.PERMI == "D"));
+            }, selectedT1ctabh, (FnSystem.IsDebug()));
         }
 
         protected void EV_ctxtEdit()
@@ -259,7 +265,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
             if (_viewModel?.SelectedRow?.RowObject is not T1CTABH selectedT1ctabh)
                 return;
 
-            CodetablesEntrysApp codetablesEntrysEditApp = GetApp().GetApplication<CodetablesEntrysApp>();
+            CodetablesEntrysApp codetablesEntrysEditApp = GetApp().GetApplication<CodetablesEntrysApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
             codetablesEntrysEditApp.Edit(selectedT1ctabh);
         }
 
@@ -268,16 +274,16 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
             if (_viewModel?.SelectedRow?.RowObject is not T1CTABH selectedT1ctabh)
                 return;
 
-            CodetablesEntrysApp codetablesEntrysEditApp = GetApp().GetApplication<CodetablesEntrysApp>();
+            CodetablesEntrysApp codetablesEntrysEditApp = GetApp().GetApplication<CodetablesEntrysApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
             codetablesEntrysEditApp.View(selectedT1ctabh);
         }
 
         protected async Task EV_BtnAddCodetable()
         {
-            CodetablesEditApp codetablesEditApp = GetApp().GetApplication<CodetablesEditApp>();
+            CodetablesEditApp codetablesEditApp = GetApp().GetApplication<CodetablesEditApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
             codetablesEditApp.CreateNew(async (result) =>
             {
-                if (result.Canceled)
+                if (!result.HasChanged)
                     return;
 
                 await EV_BtnRefresh();

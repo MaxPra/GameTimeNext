@@ -72,6 +72,14 @@ namespace GameTimeNext.Core.Application.TableObjects
         [UIXSignatureField(19)]
         public bool AutoStartMinimized { get; set; }
 
+        [UIXSignatureField(20)]
+        public bool EnableSessionCleanup { get; set; }
+
+        [UIXSignatureField(21)]
+        public double SessionCleanupSeconds { get; set; }
+
+        [UIXSignatureField(22)]
+        public bool EnableFullBlackoutText { get; set; }
 
         [UIXSignatureField(20)]
         public bool RemoteMonitoring { get; set; }
@@ -81,6 +89,7 @@ namespace GameTimeNext.Core.Application.TableObjects
         {
             AutomaticGameProfileSwitching = false;
             ActivateBlackoutKeyCombination = false;
+            EnableFullBlackoutText = true;
             AllowProfileSpecificStyleChanges = false;
 
             MonitoringKeyActive = false;
@@ -89,6 +98,8 @@ namespace GameTimeNext.Core.Application.TableObjects
             BlackoutSideMonitors = false;
             EnableSessionTimeQuery = false;
             MonitoringKey = KeyInput.virtualKeyMap[KeyInput.VirtualKey.VK_NONE];
+            EnableSessionCleanup = false;
+            SessionCleanupSeconds = 30.0;
             RemoteMonitoring = false;
             SteamGridDbKey = string.Empty;
             TwitchIGDBClientID = string.Empty;

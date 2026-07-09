@@ -4,6 +4,7 @@ using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.TableObjects;
 using System.Windows;
 using UIX.ViewController.Engine.Runnables;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Codetables
 {
@@ -13,13 +14,15 @@ namespace GameTimeNext.Core.Application.Codetables
         public CodetablesEntryEditViewController? CodetablesEntryEditViewController { get; set; }
         public T1CTABD? T1CTABD { get; set; }
 
+        public CodetablesEntryEditAppRunParameters RunParameters { get; set; } = new CodetablesEntryEditAppRunParameters();
+
         public override void InitializeApplicationOutput()
         {
             CodetablesEntryEditView = new CodetablesEntryEditView();
             MainView = CodetablesEntryEditView;
 
             CodetablesEntryEditViewController = new CodetablesEntryEditViewController(this);
-            CodetablesEntryEditView.WndController = CodetablesEntryEditViewController;
+            CodetablesEntryEditView.ViewController = CodetablesEntryEditViewController;
         }
 
         public void CreateNew(Action<CodetablesEntryEditViewController.CodetablesEntryEditViewReturn> callback, string txtyp)
@@ -30,9 +33,14 @@ namespace GameTimeNext.Core.Application.Codetables
             CodetablesEntryEditView!.ViewIndicator.Clear();
             CodetablesEntryEditView!.ViewIndicator.Add("CN");
 
-            CodetablesEntryEditView.Title = "Add codetable entry";
+            if (FnString.IsNullEmptyOrWhitespace(OverrideTitle))
+                CodetablesEntryEditView.Title = "Add codetable entry";
+            else
+                CodetablesEntryEditView.Title = OverrideTitle;
+
             CodetablesEntryEditViewController!.SetResultCallback(callback);
-            CodetablesEntryEditViewController.Show(true);
+
+            CodetablesEntryEditViewController.Show();
         }
 
         public void Edit(Action<CodetablesEntryEditViewController.CodetablesEntryEditViewReturn> callback, T1CTABD t1ctabd)
@@ -42,9 +50,13 @@ namespace GameTimeNext.Core.Application.Codetables
             CodetablesEntryEditView!.ViewIndicator.Clear();
             CodetablesEntryEditView!.ViewIndicator.Add("ED");
 
-            CodetablesEntryEditView.Title = "Edit codetable entry";
+            if (FnString.IsNullEmptyOrWhitespace(OverrideTitle))
+                CodetablesEntryEditView.Title = "Edit codetable entry";
+            else
+                CodetablesEntryEditView.Title = OverrideTitle;
+
             CodetablesEntryEditViewController!.SetResultCallback(callback);
-            CodetablesEntryEditViewController.Show(true);
+            CodetablesEntryEditViewController.Show();
         }
 
         public void View(T1CTABD t1ctabd)
@@ -53,8 +65,12 @@ namespace GameTimeNext.Core.Application.Codetables
 
             CodetablesEntryEditView!.ViewIndicator.Clear();
 
-            CodetablesEntryEditView.Title = "View codetable entry";
-            CodetablesEntryEditViewController!.Show(true);
+            if (FnString.IsNullEmptyOrWhitespace(OverrideTitle))
+                CodetablesEntryEditView.Title = "View codetable entry";
+            else
+                CodetablesEntryEditView.Title = OverrideTitle;
+
+            CodetablesEntryEditViewController!.Show();
         }
 
         public sealed class ParameterControl
@@ -87,6 +103,11 @@ namespace GameTimeNext.Core.Application.Codetables
                     [TextBox.Code] = TextBox,
                     [CheckBox.Code] = CheckBox
                 };
+        }
+
+        public override void SetWindowProperties(UIXApplicationStartOptions options)
+        {
+            options.Dialog = true;
         }
     }
 }

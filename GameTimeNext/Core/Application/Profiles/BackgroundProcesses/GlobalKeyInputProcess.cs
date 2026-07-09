@@ -82,7 +82,7 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
             if (CFGameTimeMonitoring.IsMonitoring)
             {
 
-                if (AppEnvironment.GetAppConfig().AppSettings.BlackoutSideMonitors)
+                if (CFBlackout.AllowedToToggleBlackout(new TXPROFI().Read(AppEnvironment.CurrentPfid)))
                 {
                     System.Windows.Application.Current.Dispatcher.Invoke(() =>
                     {
@@ -110,7 +110,7 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
                 if (!CFProfilesApp.AskForNewPlaythroughCreationIfNotActive(AppEnvironment.CurrentPfid, this))
                     return;
 
-                if (AppEnvironment.GetAppConfig().AppSettings.BlackoutSideMonitors)
+                if (CFBlackout.AllowedToToggleBlackout(new TXPROFI().Read(AppEnvironment.CurrentPfid)))
                 {
                     System.Windows.Application.Current.Dispatcher.Invoke(() =>
                     {

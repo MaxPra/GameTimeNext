@@ -1,4 +1,4 @@
-ï»¿using GameTimeNext.Core.Application.CreateImportPackage;
+using GameTimeNext.Core.Application.CreateImportPackage;
 using GameTimeNext.Core.Application.General.AppSearch.ViewModels;
 using GameTimeNext.Core.Application.General.AppSearch.Views;
 using GameTimeNext.Core.Application.Metadata;
@@ -15,7 +15,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.General.AppSearch.Controller
 {
-    public class AppSearchViewController : UIXWindowControllerBase
+    public class AppSearchViewController : UIXViewControllerBase
     {
 
         private AppSearchViewModel? _appSearchViewModel;
@@ -148,7 +148,7 @@ namespace GameTimeNext.Core.Application.General.AppSearch.Controller
             {
                 List<SearchableApplication> searchableApplications = GetSearchableApplications(searchText);
 
-                // Aussortieren von Anwendungen, welche nicht fÃ¼r alle User sichtbar sein sollen
+                // Aussortieren von Anwendungen, welche nicht für alle User sichtbar sein sollen
                 searchableApplications = SortOutSearchableApplications(searchableApplications);
 
                 View.Dispatcher.Invoke(() =>
@@ -184,7 +184,7 @@ namespace GameTimeNext.Core.Application.General.AppSearch.Controller
 
             foreach (var app in applications)
             {
-                // CreateImportPackage wird ausgenommen (auÃŸer wenn in Debug-/Dev-Modus)
+                // CreateImportPackage wird ausgenommen (außer wenn in Debug-/Dev-Modus)
                 if (app.ClassName != typeof(CreateImportPackageApp).FullName! && app.ClassName != typeof(MetadataApp).FullName! || FnSystem.IsDebug())
                 {
                     sortedApplications.Add(app);
@@ -201,10 +201,30 @@ namespace GameTimeNext.Core.Application.General.AppSearch.Controller
             if (selected == null)
                 return;
 
-            if (!AppEnvironment.StartedApplications.ContainsKey(selected.ClassName))
-                AppEnvironment.AppLauncher.LaunchApplication(selected.ClassName, GetApp().HostApplication, selected.Name);
+            string className = selected.ClassName;
+            string appName = selected.Name;
+            UIXApplication hostApplication = GetApp().HostApplication;
+            Window? hostWindow = Window.GetWindow(GetWnd());
+
+            void LaunchAfterClose(object? sender, EventArgs args)
+            {
+                if (hostWindow != null)
+                    hostWindow.Closed -= LaunchAfterClose;
+
+                hostApplication.MainView.Dispatcher.BeginInvoke(() =>
+                {
+                    if (!AppEnvironment.StartedApplications.ContainsKey(className))
+                        AppEnvironment.AppLauncher.LaunchApplication(className, hostApplication, appName);
+                }, DispatcherPriority.ApplicationIdle);
+            }
+
+            if (hostWindow != null)
+                hostWindow.Closed += LaunchAfterClose;
 
             Exit(true);
+
+            if (hostWindow == null)
+                LaunchAfterClose(null, EventArgs.Empty);
         }
 
         protected async void EV_txbSearch()

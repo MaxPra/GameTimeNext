@@ -1,5 +1,6 @@
 ﻿using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.General;
+using GameTimeNext.Core.Application.Playthroughs;
 using GameTimeNext.Core.Application.Profiles.BackgroundProcesses;
 using GameTimeNext.Core.Application.Profiles.Components;
 using GameTimeNext.Core.Application.Profiles.DataWrapper;
@@ -567,7 +568,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected void EV_BtnAddProfile()
         {
-            ProfilesEditApp app = GetApp().GetApplication<ProfilesEditApp>();
+            ProfilesEditApp app = GetApp().GetApplication<ProfilesEditApp>(UIXApplicationStartTarget.Window);
+
             app.CreateNew(async r =>
             {
                 if (!r.Canceled)
@@ -614,7 +616,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
             T1PROFI t1profi = GetSelectedProfile();
 
-            ProfilesEditApp app = GetApp().GetApplication<ProfilesEditApp>();
+            ProfilesEditApp app = GetApp().GetApplication<ProfilesEditApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
             app.Edit(t1profi, async r =>
             {
                 if (!r.Canceled)
@@ -632,7 +634,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected async Task EV_ctxtDelete()
         {
-            CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>();
+            CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
             CFMBOXResult result = cfmbox.Show("Question", "Are you sure you want to delete this profile?\nAll associated data will also be deleted.", CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
 
             if (result == CFMBOXResult.Yes)
@@ -658,14 +660,14 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             if (FnString.IsNullEmptyOrWhitespace(t1profi.EXGF))
             {
-                CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>();
+                CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
                 cfmbox.Show("Information", "No game folder set for this profile.", CFMBOXResult.Ok, CFMBOXIcon.Info);
                 return;
             }
 
             if (!Directory.Exists(t1profi.EXGF))
             {
-                CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>();
+                CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
                 cfmbox.Show("Information", "The specified game folder does not exist.", CFMBOXResult.Ok, CFMBOXIcon.Info);
                 return;
             }
@@ -691,15 +693,15 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
             T1PROFI t1profi = GetSelectedProfile();
 
-            ProfilesPlaythroughEditApp app = GetApp().GetApplication<ProfilesPlaythroughEditApp>();
-            app.CreateNew(t1profi, r =>
+            PlaythroughEditApp app = GetApp().GetApplication<PlaythroughEditApp>();
+            app.CreateNew(r =>
             {
-                if (!r.Canceled)
+                if (r.HasChanged)
                 {
                     // Nochmaliges öffnen triggern
                     _dataWrapper!.TargetController.Open(true);
                 }
-            });
+            }, t1profi);
         }
 
         protected void EV_ctxtCancelPlaythrough()
@@ -709,7 +711,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             T1PLTHR t1plthr = TFPLTHR.GetCurrentPlaythrough(t1profi.PFID);
 
             string text = "Do you really want to cancel your current playthrough?\nYou won't be able to undo this action!\n\nInformation: The gametime of this playthrough will be added to your overall gametime!";
-            CFMBOXResult result = GetApp().GetApplication<CFMBOX>().Show("Question", text, CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
+            CFMBOXResult result = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Question", text, CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
 
             if (result == CFMBOXResult.No)
                 return;
@@ -742,6 +744,26 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             new TXPROFI().Save(t1profi);
 
             await BuildProfilesListBoxAsync(0);
+        }
+
+        protected void EV_ctxtShowPlaythroughs()
+        {
+            T1PROFI t1profi = GetSelectedProfile();
+            PlaythroughsApp app = GetApp().GetApplication<PlaythroughsApp>();
+            app.AppRunSelections = new PlaythroughAppRunSelections
+            {
+                Pfid = t1profi.PFID,
+                Gana = t1profi.GANA
+            };
+
+            app.ShowWindow(r =>
+            {
+                if (r.HasChanged)
+                {
+                    // Nochmaliges öffnen triggern
+                    _dataWrapper!.TargetController.Open(true);
+                }
+            });
         }
 
 

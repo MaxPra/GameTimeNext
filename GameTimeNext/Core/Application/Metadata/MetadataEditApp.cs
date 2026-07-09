@@ -17,7 +17,7 @@ namespace GameTimeNext.Core.Application.Metadata
             MainView = MetadataEditView;
 
             MetadataEditViewController = new MetadataEditViewController(this);
-            MetadataEditView.WndController = MetadataEditViewController;
+            MetadataEditView.ViewController = MetadataEditViewController;
         }
 
         public void CreateNew()
@@ -26,7 +26,8 @@ namespace GameTimeNext.Core.Application.Metadata
             MetadataEditView!.ViewIndicator.Clear();
             MetadataEditView!.ViewIndicator.Add("CN");
             MetadataEditView!.Title = "Create New Metadata";
-            MetadataEditViewController!.Show(true);
+
+            MetadataEditViewController!.Show();
         }
 
         public void Edit(T1METAH t1metah)
@@ -37,7 +38,13 @@ namespace GameTimeNext.Core.Application.Metadata
             MetadataEditView!.ViewIndicator.Add("ED");
 
             MetadataEditView!.Title = "Edit Metadata";
-            MetadataEditViewController!.Show(true);
+
+            MetadataEditViewController!.Show();
+        }
+
+        public override void SetWindowProperties(UIXApplicationStartOptions options)
+        {
+            options.Dialog = true;
         }
     }
 }

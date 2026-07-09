@@ -70,7 +70,7 @@ namespace GameTimeNext.Core.Application.Profiles
                 ToastMessage tm = new ToastMessage("Attention!", "GameTimeNext needs your attention!");
                 tm.Show();
 
-                CFMBOX cfmbox = app.GetApplication<CFMBOX>();
+                CFMBOX cfmbox = app.GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
                 CFMBOXResult result = cfmbox.Show("Question", "No active playthrough is set for this profile.\nCreate a new playthrough?", CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
 
                 if (result == CFMBOXResult.Yes)

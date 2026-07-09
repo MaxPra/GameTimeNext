@@ -9,7 +9,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Metadata.Controller
 {
-    public class MetadataPosEditViewController : UIXWindowControllerBase
+    public class MetadataPosEditViewController : UIXViewControllerBase
     {
         public MetadataPosEditViewController(UIXApplication app) : base(app)
         {

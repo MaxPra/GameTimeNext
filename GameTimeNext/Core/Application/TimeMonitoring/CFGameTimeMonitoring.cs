@@ -67,6 +67,8 @@ namespace GameTimeNext.Core.Application.TimeMonitoring
 
             txsessi.Save(t1sessi);
 
+            if (AppEnvironment.GetAppConfig().AppSettings.EnableSessionCleanup && t1sessi.PLTI < (AppEnvironment.GetAppConfig().AppSettings.SessionCleanupSeconds / 60)) return;
+
             // -- Profildaten befüllen
             TXPROFI txprofi = new TXPROFI();
             T1PROFI t1profi = txprofi.Read(AppEnvironment.CurrentPfid);

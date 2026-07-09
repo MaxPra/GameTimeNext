@@ -83,6 +83,19 @@ namespace GameTimeNext.Core.Application.DataManagers
             return t1sessis;
         }
 
+        public static bool BlackoutOverridenAndActive(T1PROFI t1profi)
+        {
+            CProfileSettings cProfileSettings = new CProfileSettings(t1profi.PRSE).Dezerialize();
+
+            return cProfileSettings.OverrideGlobalBlackout && cProfileSettings.BlackoutSideMonitors;
+        }
+
+        public static bool BlackoutOverridenAndInactive(T1PROFI t1profi)
+        {
+            CProfileSettings cProfileSettings = new CProfileSettings(t1profi.PRSE).Dezerialize();
+            return cProfileSettings.OverrideGlobalBlackout && !cProfileSettings.BlackoutSideMonitors;
+        }
+
         public static List<T1PLTHR> GetAllPlaythroughs(T1PROFI t1profi)
         {
             List<T1PLTHR> t1plthrs = new List<T1PLTHR>();
@@ -153,6 +166,17 @@ namespace GameTimeNext.Core.Application.DataManagers
                 }
             }
             return totalPlayedMinutes;
+        }
+
+        public static string GetProfileName(long pfid)
+        {
+            TXPROFI txprofi = new TXPROFI();
+            T1PROFI t1profi = txprofi.Read(pfid);
+
+            if (t1profi is null)
+                return string.Empty;
+
+            return t1profi.GANA;
         }
 
         private static void DeleteAllLinkedT1GRPPOs(T1PROFI t1profi)

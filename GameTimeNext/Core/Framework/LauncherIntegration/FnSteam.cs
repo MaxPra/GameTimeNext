@@ -38,7 +38,7 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
             }
             else
             {
-                CFMBOX cfmbox = app.GetApplication<CFMBOX>();
+                CFMBOX cfmbox = app.GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
                 cfmbox.Show("Info", "Steam could not be found!", CFMBOXResult.Ok, CFMBOXIcon.Info);
             }
         }

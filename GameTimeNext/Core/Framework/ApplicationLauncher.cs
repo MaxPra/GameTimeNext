@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Threading;
 using UIX.ViewController.Engine.FrameworkElements;
 using UIX.ViewController.Engine.Runnables;
+using UIX.ViewController.Engine.Utils;
 using static UIX.ViewController.Engine.FrameworkElements.UIXContextMenuFactory;
 
 namespace GameTimeNext.Core.Framework
@@ -20,12 +21,10 @@ namespace GameTimeNext.Core.Framework
 
         public TabItem LaunchApplication(string className, UIXApplication host, string header)
         {
-            Type type = Type.GetType(className);
+            Type type = Type.GetType(className)
+        ?? throw new Exception($"Application type '{className}' not found.");
 
-            if (type == null)
-                throw new Exception($"Application type '{className}' not found.");
-
-            UIXApplication app = (UIXApplication)Activator.CreateInstance(type);
+            UIXApplication app = (UIXApplication)Activator.CreateInstance(type)!;
 
             TabItem tabItem = new TabItem
             {
@@ -35,17 +34,24 @@ namespace GameTimeNext.Core.Framework
                 HorizontalContentAlignment = HorizontalAlignment.Stretch
             };
 
+            tabItem.Uid = app.Icon;
+
             ContentPresenter presenter = new ContentPresenter
             {
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch
             };
 
-            tabItem.Tag = type;
+            tabItem.Tag = type.FullName!; // wichtig für BuildContextMenu/StartedApplications
             tabItem.Content = presenter;
 
+
             if (app is IUIXApplicationStarter starter)
-                starter.Start(host, presenter);
+                starter.Start(host, new UIXApplicationStartOptions
+                {
+                    Target = UIXApplicationStartTarget.ContentPresenter,
+                    Presenter = presenter
+                });
 
             if (type.FullName != null && !AppEnvironment.StartedApplications.ContainsKey(type.FullName))
                 AppEnvironment.StartedApplications.Add(type.FullName, app);

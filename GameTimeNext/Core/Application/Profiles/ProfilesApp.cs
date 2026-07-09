@@ -6,6 +6,7 @@ using GameTimeNext.Core.Application.TimeMonitoring;
 using GameTimeNext.Core.Framework;
 using System.Windows.Controls;
 using UIX.ViewController.Engine.Runnables;
+using UIX.ViewController.Engine.Utils;
 using static GameTimeNext.Core.Application.Profiles.Controller.ProfilesViewController;
 
 namespace GameTimeNext.Core.Application.Profiles
@@ -30,11 +31,20 @@ namespace GameTimeNext.Core.Application.Profiles
 
         public void Start(UIXApplication hostApplication, ContentPresenter presenter)
         {
-            this.HostApplication = hostApplication;
-            this.ProfilesView.ContentPresenter = presenter;
-            this.ProfilesView.ViewController.Show(false);
+            Start(hostApplication, new UIXApplicationStartOptions
+            {
+                Target = UIXApplicationStartTarget.ContentPresenter,
+                Presenter = presenter
+            });
+        }
+
+        public void Start(UIXApplication hostApplication, UIXApplicationStartOptions options)
+        {
+            HostApplication = hostApplication;
             Loader = hostApplication.Loader;
             CallDispatcher = hostApplication.CallDispatcher;
+
+            ProfilesView.ViewController.Show(options);
 
             // BatchApp mitstarten, um Hintergrundprozesse zu ermöglichen
             ProfilesBatchApp = hostApplication.GetApplication<ProfilesBatchApp>();
@@ -67,12 +77,17 @@ namespace GameTimeNext.Core.Application.Profiles
             this.ProfilesFilterView.ContentPresenter = ProfilesView.CPFilter;
             this.ProfilesFilterView.Popup = ProfilesView.PopFilter;
 
+            Icon = UIXMdlIcons.GameProfile;
 
         }
 
         public override bool CanClose()
         {
             return !CFGameTimeMonitoring.IsMonitoring;
+        }
+
+        public override void SetWindowProperties(UIXApplicationStartOptions options)
+        {
         }
 
 
