@@ -30,7 +30,7 @@ namespace GameTimeNext.Core.Application.Profiles
             MainView = _profilesCropImageView;
 
             _profilesCropImageViewController = new ProfilesCropImageViewController(this);
-            _profilesCropImageView.WndController = _profilesCropImageViewController;
+            _profilesCropImageView.ViewController = _profilesCropImageViewController;
         }
 
         public void Crop(BitmapImage image, Action<ProfilesCropImageViewController.ProfilesCropImageViewReturn> callback)
@@ -38,7 +38,12 @@ namespace GameTimeNext.Core.Application.Profiles
             _sourceImage = image;
 
             _profilesCropImageViewController!.SetResultCallback(callback);
-            _profilesCropImageViewController.Show(true);
+            _profilesCropImageViewController.Show();
+        }
+
+        public override void SetWindowProperties(UIXApplicationStartOptions options)
+        {
+            options.Dialog = true;
         }
     }
 }

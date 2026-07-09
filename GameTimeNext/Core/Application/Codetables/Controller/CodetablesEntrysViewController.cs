@@ -19,7 +19,7 @@ using static UIX.ViewController.Engine.FrameworkElements.UIXContextMenuFactory;
 
 namespace GameTimeNext.Core.Application.Codetables.Controller
 {
-    public class CodetablesEntrysViewController : UIXWindowControllerBase
+    public class CodetablesEntrysViewController : UIXViewControllerBase
     {
 
         private CodetablesEntrysViewModel? _viewModel;
@@ -205,7 +205,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
         {
             CodetableEntryDataGridRow row = _viewModel!.SelectedRow!;
 
-            CodetablesEntryEditApp app = GetApp().GetApplication<CodetablesEntryEditApp>();
+            CodetablesEntryEditApp app = GetApp().GetApplication<CodetablesEntryEditApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
             app.Edit(async (result) =>
             {
                 if (!result.HasChanged)
@@ -219,7 +219,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
         protected void EV_ctxtView()
         {
             CodetableEntryDataGridRow row = _viewModel!.SelectedRow!;
-            CodetablesEntryEditApp app = GetApp().GetApplication<CodetablesEntryEditApp>();
+            CodetablesEntryEditApp app = GetApp().GetApplication<CodetablesEntryEditApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
             app.View((T1CTABD)(row.RowObject!));
         }
 
@@ -228,7 +228,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
             CodetableEntryDataGridRow row = _viewModel!.SelectedRow!;
             T1CTABD t1ctabd = (T1CTABD)(row.RowObject!);
 
-            CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>();
+            CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
 
             CFMBOXResult result = cfmbox.Show("Are you sure you want to delete this entry?", CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
 
@@ -243,7 +243,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
         protected void EV_BtnAdd()
         {
-            CodetablesEntryEditApp app = GetApp().GetApplication<CodetablesEntryEditApp>();
+            CodetablesEntryEditApp app = GetApp().GetApplication<CodetablesEntryEditApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
             app.CreateNew(async (result) =>
             {
                 if (!result.HasChanged)

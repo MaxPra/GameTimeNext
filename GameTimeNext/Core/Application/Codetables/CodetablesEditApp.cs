@@ -19,7 +19,7 @@ namespace GameTimeNext.Core.Application.Codetables
             MainView = CodetablesEditView;
 
             CodetablesEditViewController = new CodetablesEditViewController(this);
-            CodetablesEditView.WndController = CodetablesEditViewController;
+            CodetablesEditView.ViewController = CodetablesEditViewController;
         }
 
         public void CreateNew(Action<CodetablesEditViewController.CodetablesEditViewReturn> callback)
@@ -28,7 +28,8 @@ namespace GameTimeNext.Core.Application.Codetables
             CodetablesEditView!.ViewIndicator.Add("CN");
             CodetablesEditView!.Title = "Create New Codetable";
             CodetablesEditViewController!.SetResultCallback(callback);
-            CodetablesEditViewController!.Show(true);
+
+            CodetablesEditViewController.Show();
         }
 
         public void Properties(Action<CodetablesEditViewController.CodetablesEditViewReturn> callback, T1CTABH t1ctabh, bool edit)
@@ -42,7 +43,13 @@ namespace GameTimeNext.Core.Application.Codetables
 
             CodetablesEditView!.Title = edit ? "Edit Codetable" : "View Codetable";
             CodetablesEditViewController!.SetResultCallback(callback);
-            CodetablesEditViewController!.Show(true);
+
+            CodetablesEditViewController.Show();
+        }
+
+        public override void SetWindowProperties(UIXApplicationStartOptions options)
+        {
+            options.Dialog = true;
         }
     }
 }

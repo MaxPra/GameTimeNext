@@ -5,6 +5,11 @@
     "ClassName": "GameTimeNext.Core.Application.Profiles.ProfilesApp"
   },
   {
+    "Code": "PLT",
+    "Name": "Playthroughs",
+    "ClassName": "GameTimeNext.Core.Application.Playthroughs.PlaythroughsApp"
+  },
+  {
     "Code": "SET",
     "Name": "Settings",
     "ClassName": "GameTimeNext.Core.Application.Settings.SettingsApp"

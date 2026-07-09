@@ -58,6 +58,12 @@ namespace GameTimeNext.Core.Application.TableObjects
         [UIXSignatureField(16)]
         public bool EXPRT { get; set; } = false;
 
+        [UIXSignatureField(17)]
+        public string PTOL1 { get; set; } = string.Empty;
+
+        [UIXSignatureField(18)]
+        public string PTOL2 { get; set; } = string.Empty;
+
         public override void Save()
         {
             new TXCTABH().Save(this);

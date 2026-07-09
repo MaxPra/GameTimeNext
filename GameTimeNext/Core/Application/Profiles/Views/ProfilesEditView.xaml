@@ -1,5 +1,5 @@
 ﻿
-<ui:GTNWindow
+<ui:GTNWindowView
     x:Class="GameTimeNext.Core.Application.Profiles.Views.ProfilesEditView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -12,11 +12,10 @@
     Width="980"
     Height="700"
     MinWidth="980"
-    MinHeight="700"
+    MinHeight="750"
     ResizeMode="CanResize"
     ShowMaximizeButton="False"
     ShowMinimizeButton="False"
-    Style="{StaticResource GTNWindowStyle}"
     WindowStartupLocation="CenterOwner"
     mc:Ignorable="d">
 
@@ -53,6 +52,10 @@
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="12" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="12" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="8" />
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="12" />
                                         <RowDefinition Height="Auto" />
@@ -141,16 +144,62 @@
                                         Opacity="0.8"
                                         Text="Platform" />
 
-                                    <ComboBox
-                                        x:Name="cmbPlatform"
-                                        Grid.Row="14"
-                                        Height="36"
-                                        uixprops:UIXAttachedProperty.AdditionalEntry="(None)"
-                                        uixprops:UIXAttachedProperty.Path="T1PROFI.PLAFO"
-                                        uixprops:UIXAttachedProperty.Source="From=T1CTABD;Where=TXTYP:pF;Text=DESCR;Value=TXNUM"
-                                        SelectedIndex="0"
-                                        SelectedValue=""
-                                        SelectedValuePath="Tag" />
+                                    <Grid Grid.Row="14">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="8" />
+                                            <ColumnDefinition Width="36" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <ComboBox
+                                            x:Name="cmbPlatform"
+                                            Grid.Column="0"
+                                            Height="36"
+                                            uixprops:UIXAttachedProperty.AdditionalEntry="(None)"
+                                            uixprops:UIXAttachedProperty.Path="T1PROFI.PLAFO"
+                                            uixprops:UIXAttachedProperty.Source="From=T1CTABD;Where=TXTYP:pF;Text=DESCR;Value=TXNUM"
+                                            SelectedIndex="0"
+                                            SelectedValue=""
+                                            SelectedValuePath="Tag" />
+
+                                        <Button
+                                            x:Name="btnAddPlatformWizard"
+                                            Grid.Column="2"
+                                            Width="36"
+                                            Height="36"
+                                            MinHeight="36"
+                                            Padding="0"
+                                            ToolTip="Add Platform through wizard">
+                                            <Viewbox
+                                                Width="18"
+                                                Height="18"
+                                                Stretch="Uniform">
+                                                <TextBlock
+                                                    VerticalAlignment="Center"
+                                                    FontFamily="Segoe UI Emoji"
+                                                    FontSize="16"
+                                                    Text="🧙" />
+                                            </Viewbox>
+                                        </Button>
+                                    </Grid>
+
+                                    <Grid Grid.Row="16">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="24" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <CheckBox
+                                            x:Name="cbOverrideGlobalBlackout"
+                                            Grid.Column="0"
+                                            Content="override global blackout" />
+
+                                        <CheckBox
+                                            x:Name="cbBlackoutSideMonitors"
+                                            Grid.Column="2"
+                                            Content="blackout side monitors" />
+                                    </Grid>
                                 </Grid>
                             </Border>
 
@@ -471,4 +520,4 @@
                 Content="Save" />
         </Grid>
     </Grid>
-</ui:GTNWindow>
+</ui:GTNWindowView>

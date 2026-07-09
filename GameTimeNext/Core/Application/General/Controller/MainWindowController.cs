@@ -103,8 +103,8 @@ namespace GameTimeNext.Core.Application.General.Controller
         {
             if (e.KeyboardDevice.Modifiers.HasFlag(ModifierKeys.Control) && e.Key == Key.M)
             {
-                AppSearchApp? appSearch = GetApp().GetApplication<AppSearchApp>();
-                appSearch?.AppSearchViewController?.Show(true);
+                AppSearchApp? appSearch = GetApp().GetApplication<AppSearchApp>(UIXApplicationStartTarget.Window);
+                appSearch?.Search();
                 return true;
             }
 
@@ -180,7 +180,7 @@ namespace GameTimeNext.Core.Application.General.Controller
             {
                 FnLog.AddInfo("MainApp", "GameTimeX installation found. Prompting user for migration.");
 
-                CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>();
+                CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
                 string msg = "A GameTimeX-Installation was found.\nDo you want to migrate your profiles to GameTimeNXT?";
                 CFMBOXResult result = cfmbox.Show("Start GameTimeX migration?", msg, CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
 
@@ -202,7 +202,7 @@ namespace GameTimeNext.Core.Application.General.Controller
                         {
                             hasError = true;
                             FnLog.AddError("MainApp", "Error during GTX migration", ex);
-                            GetApp().GetApplication<CFMBOX>().Show("Migration Error", "An error occurred during migration:\n" + ex.Message, CFMBOXResult.Ok, CFMBOXIcon.Error);
+                            GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Migration Error", "An error occurred during migration:\n" + ex.Message, CFMBOXResult.Ok, CFMBOXIcon.Error);
                         }
                         finally
                         {
@@ -234,9 +234,9 @@ namespace GameTimeNext.Core.Application.General.Controller
                 CFMBOXResult result;
 
                 if (informationListItem.MBoxType == CFMBOXType.Default)
-                    result = GetApp().GetApplication<CFMBOX>().Show(informationListItem.Text, informationListItem.Buttons, informationListItem.Icon, informationListItem.MBoxType);
+                    result = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(informationListItem.Text, informationListItem.Buttons, informationListItem.Icon, informationListItem.MBoxType);
                 else
-                    result = GetApp().GetApplication<CFMBOX>().Show(informationListItem.Title, informationListItem.Text, informationListItem.Buttons, informationListItem.Icon, informationListItem.MBoxType);
+                    result = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(informationListItem.Title, informationListItem.Text, informationListItem.Buttons, informationListItem.Icon, informationListItem.MBoxType);
 
                 if (result == CFMBOXResult.Yes)
                     informationListItem.YesAction?.Invoke();
@@ -309,7 +309,7 @@ namespace GameTimeNext.Core.Application.General.Controller
 
         protected void EV_ctxtEditOrder()
         {
-            FavAppsReorderApp? favAppsReorderApp = GetApp().GetApplication<FavAppsReorderApp>();
+            FavAppsReorderApp? favAppsReorderApp = GetApp().GetApplication<FavAppsReorderApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
 
             favAppsReorderApp.AppResult = (result =>
             {

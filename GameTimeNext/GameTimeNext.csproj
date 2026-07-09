@@ -23,6 +23,8 @@
     <None Remove="Core\Application\UpdateChanges\UpdateChanges_v0.2.4beta.txt" />
     <None Remove="UI\Ressources\GTN_APP_ICON.ico" />
     <None Remove="UI\Ressources\GTN_ICON_ADD_PROFILE.png" />
+    <None Remove="UI\Ressources\GTN_ICON_CLSMP.png" />
+    <None Remove="UI\Ressources\GTN_ICON_CLSOF.png" />
     <None Remove="UI\Ressources\GTN_ICON_MONITOR_KEY.png" />
     <None Remove="UI\Ressources\GTN_ICON_PLAYABLE.png" />
     <None Remove="UI\Ressources\ICON_DEBUG.png" />
@@ -59,7 +61,9 @@
     <Content Include="Core\Application\UpdateChanges\UpdateChanges_v0.2.5beta.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="UI\Ressources\GTN_APP_ICON.ico" />
+    <Content Include="UI\Ressources\GTN_APP_ICON.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -78,10 +82,16 @@
     <Content Include="Core\Application\UpdateChanges\UpdateChanges_v0.2.4beta.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="UI\Ressources\GTN_APP_ICON.ico">
+    <Resource Include="UI\Ressources\GTN_APP_ICON.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </Resource>
     <Resource Include="UI\Ressources\GTN_ICON_ADD_PROFILE.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="UI\Ressources\GTN_ICON_CLSMP.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="UI\Ressources\GTN_ICON_CLSOF.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="UI\Ressources\GTN_ICON_MONITOR_KEY.png">
@@ -92,6 +102,9 @@
     </Resource>
     <Resource Include="UI\Ressources\ICON_DEBUG.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="UI\Ressources\GTN_CLS_ICON.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
 
@@ -107,7 +120,7 @@
     <None Update="Core\Application\StartableApps.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="ImportPackages\Import_Package_c41d72f042a744cda3aa1170af5310f3.zip">
+    <None Update="ImportPackages\Import_Package_452c6973071d4ac2b05cc85d76d0dd75.zip">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

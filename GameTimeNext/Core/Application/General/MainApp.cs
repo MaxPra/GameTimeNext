@@ -33,11 +33,36 @@ namespace GameTimeNext.Core.Application.General
 
         public void Start(UIXApplication hostApplication, ContentPresenter presenter)
         {
+            Start(hostApplication, new UIXApplicationStartOptions
+            {
+                Target = UIXApplicationStartTarget.Window,
+                ShowHidden = StartMinimized
+            });
+        }
+
+        public void Start(UIXApplication hostApplication, UIXApplicationStartOptions options)
+        {
+            UIXApplication startupHost = hostApplication ?? this;
+
+            HostApplication = startupHost;
+            Loader = startupHost.Loader;
+            CallDispatcher = startupHost.CallDispatcher;
 
             if (StartMinimized)
                 FnLog.AddInfo(this, "Starting minimized because of parameter '--minimized'");
 
-            _mainWindowController!.Show(false, true);
+            _mainWindowController!.Show(new UIXApplicationStartOptions
+            {
+                Target = UIXApplicationStartTarget.Window,
+                Dialog = options.Dialog,
+                ShowHidden = StartMinimized || options.ShowHidden,
+                Owner = options.Owner,
+                WindowTitle = options.WindowTitle
+            }, showHidden: true);
+        }
+
+        public override void SetWindowProperties(UIXApplicationStartOptions options)
+        {
         }
     }
 }

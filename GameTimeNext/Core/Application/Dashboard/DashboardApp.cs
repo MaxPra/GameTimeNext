@@ -2,6 +2,7 @@
 using GameTimeNext.Core.Application.Dashboard.Views;
 using System.Windows.Controls;
 using UIX.ViewController.Engine.Runnables;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Dashboard
 {
@@ -12,11 +13,20 @@ namespace GameTimeNext.Core.Application.Dashboard
 
         public void Start(UIXApplication hostApplication, ContentPresenter presenter)
         {
-            this.HostApplication = hostApplication;
-            this.DashboardView.ContentPresenter = presenter;
-            this.DashboardView.ViewController.Show(false);
+            Start(hostApplication, new UIXApplicationStartOptions
+            {
+                Target = UIXApplicationStartTarget.ContentPresenter,
+                Presenter = presenter
+            });
+        }
+
+        public void Start(UIXApplication hostApplication, UIXApplicationStartOptions options)
+        {
+            HostApplication = hostApplication;
             Loader = hostApplication.Loader;
             CallDispatcher = hostApplication.CallDispatcher;
+
+            DashboardView.ViewController.Show(options);
         }
 
         public override void InitializeApplicationOutput()
@@ -24,6 +34,8 @@ namespace GameTimeNext.Core.Application.Dashboard
             this.DashboardView = new DashboardView();
             this.MainView = DashboardView;
             this.DashboardView.ViewController = new DashboardViewController(this);
+
+            Icon = UIXMdlIcons.Dashboard;
         }
 
         public override bool CanClose()
@@ -34,6 +46,10 @@ namespace GameTimeNext.Core.Application.Dashboard
         public override void OnFocus()
         {
             DashboardView.ViewController.Open(true);
+        }
+
+        public override void SetWindowProperties(UIXApplicationStartOptions options)
+        {
         }
     }
 }

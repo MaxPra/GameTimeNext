@@ -60,5 +60,10 @@ namespace GameTimeNext.Core.Application.Profiles.Batch
             AppEnvironment.CurrentPfid = pfid;
             CallDispatcher!.Trigger("EXEV_SwitchProfile", pfid);
         }
+
+        public override void SetWindowProperties(UIXApplicationStartOptions options)
+        {
+
+        }
     }
 }

@@ -1,9 +1,10 @@
-﻿TXTYP;DESCR;PERMI;PAAC1;PADE1;PARF1;PACO1;PACT1;PAAC2;PADE2;PARF2;PACO2;PACT2;CRAT;CHAT;NRANA;EXPRT
-cO;Control-Types;D;0;;0;;;0;;0;;;0001-01-01 00:00:00;0001-01-01 00:00:00;;1
-cP;Codetable-Permission;D;0;;0;;;0;;0;;;0001-01-01 00:00:00;0001-01-01 00:00:00;;1
-cT;Controller-Type;U;0;Unicode-Icon;0;02;;0;;0;;;0001-01-01 00:00:00;0001-01-01 00:00:00;;1
-eT;Export-Types;D;0;;0;;;0;;0;;;0001-01-01 00:00:00;0001-01-01 00:00:00;;1
-mT;Metdatatypes;D;0;;0;;;0;;0;;;2026-06-19 15:42:29;2026-06-19 15:42:54;;1
-iM;Images / Symbols;U;1;Path;1;02;;0;;0;;;2026-06-30 18:30:40;2026-06-30 18:30:40;1;1
-pT;Platform-Type;D;0;;0;;;0;;0;;;2026-06-30 19:24:00;2026-06-30 19:24:00;0;1
-pF;Platform;U;1;Platform-Type;1;01;pT;1;Symbol;1;01;iM;2026-06-30 19:36:45;2026-06-30 19:36:45;0;0
+﻿TXTYP;DESCR;PERMI;PAAC1;PADE1;PARF1;PACO1;PACT1;PAAC2;PADE2;PARF2;PACO2;PACT2;CRAT;CHAT;NRANA;EXPRT;PTOL1;PTOL2
+cO;Control-Types;D;0;;0;;;0;;0;;;0001-01-01 00:00:00;0001-01-01 00:00:00;;1;;
+cP;Codetable-Permission;D;0;;0;;;0;;0;;;0001-01-01 00:00:00;0001-01-01 00:00:00;;1;;
+cT;Controller-Type;U;0;Unicode-Icon;0;02;;0;;0;;;0001-01-01 00:00:00;0001-01-01 00:00:00;;1;;
+eT;Export-Types;D;0;;0;;;0;;0;;;0001-01-01 00:00:00;0001-01-01 00:00:00;;1;;
+mT;Metdatatypes;D;0;;0;;;0;;0;;;2026-06-19 15:42:29;2026-06-19 15:42:54;;1;;
+iM;Images / Symbols;U;1;Path;1;02;;0;;0;;;2026-06-30 18:30:40;2026-07-04 15:22:13;1;1;Enter the path to the image here (e.g. `/user/myicon.png`). Place your icon in: Documents / GameTimeNext / images_and_symbols / user;
+pT;Platform-Type;D;0;;0;;;0;;0;;;2026-06-30 19:24:00;2026-06-30 19:24:00;0;1;;
+pF;Platform;U;1;Platform-Type;1;01;pT;1;Symbol;1;01;iM;2026-06-30 19:36:45;2026-06-30 19:36:45;0;0;;
+pL;Playthroughtype;D;0;;0;;;0;;0;;;2026-07-07 18:10:05;2026-07-07 18:10:05;0;1;;

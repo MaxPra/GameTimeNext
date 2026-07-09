@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Threading;
+using UIX.ViewController.Engine.Runnables;
 
 namespace GameTimeNext
 {
@@ -43,7 +44,11 @@ namespace GameTimeNext
             MainApp mainApp = new MainApp();
             mainApp.SplashScreen = splash;
             mainApp.StartMinimized = startMinimized;
-            mainApp.Start(null!, null!);
+            mainApp.Start(mainApp, new UIXApplicationStartOptions
+            {
+                Target = UIXApplicationStartTarget.Window,
+                ShowHidden = startMinimized
+            });
         }
 
         private void InitializeApp()

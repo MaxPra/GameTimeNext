@@ -2,8 +2,8 @@
 {
     public class PlaythroughType
     {
-        public const string DLC = "GTN.DLC";
-        public const string NEW_PLAYTHROUGH = "GTN.NEW_PLAYTHROUGH";
-        public const string INITIAL_PLAYTHROUGH = "GTN.INITIAL_PLAYTHROUGH";
+        public const string DLC = "D";
+        public const string NEW_PLAYTHROUGH = "NP";
+        public const string INITIAL_PLAYTHROUGH = "IN";
     }
 }

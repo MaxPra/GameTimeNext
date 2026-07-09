@@ -75,8 +75,8 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
                             {
                                 if (CFGameTimeMonitoring.IsMonitoring)
                                 {
-                                    // Nebenmonitore ausschwärzen beenden, wenn in Settings aktiviert
-                                    if (AppEnvironment.GetAppConfig().AppSettings.BlackoutSideMonitors)
+                                    // Nebenmonitore ausschwärzen beenden, wenn in Settings aktiviert und Profil dieses erlaubt
+                                    if (CFBlackout.AllowedToToggleBlackout(t1profi))
                                     {
                                         System.Windows.Application.Current.Dispatcher.Invoke(() =>
                                         {
