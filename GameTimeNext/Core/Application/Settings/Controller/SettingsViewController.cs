@@ -83,6 +83,11 @@ namespace GameTimeNext.Core.Application.Settings.Controller
 
             if (!GetView().cbAutoDeleteBackups.IsEnabled)
                 GetView().cbAutoDeleteBackups.IsChecked = false;
+
+            FnControls.SetEnabled(GetView().txbIgdbClientId, GetView().cbEnableIGDBIntegration.IsChecked == true);
+            FnControls.SetEnabled(GetView().btnOpenIgdbClientId, GetView().cbEnableIGDBIntegration.IsChecked == true);
+            FnControls.SetEnabled(GetView().txbIgdbClientSecret, GetView().cbEnableIGDBIntegration.IsChecked == true);
+            FnControls.SetEnabled(GetView().btnOpenIgdbClientSecret, GetView().cbEnableIGDBIntegration.IsChecked == true);
         }
 
         protected override void Check()
@@ -138,6 +143,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             GetView().cbAutoDeleteBackups.IsChecked = _appSettings.AutoDelete == true;
 
             // IGDB
+            GetView().cbEnableIGDBIntegration.IsChecked = _appSettings.EnableTwitchIGDB;
             GetView().txbIgdbClientId.Text = _appSettings.TwitchIGDBClientID;
             GetView().txbIgdbClientSecret.Text = _appSettings.TwitchIGDBClientSecret;
 
@@ -169,6 +175,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             _appSettings!.AutoBackup = GetView().cbAutoBackup.IsChecked == true;
             _appSettings!.AutoDelete = GetView().cbAutoDeleteBackups.IsChecked == true;
 
+            _appSettings!.EnableTwitchIGDB = GetView().cbEnableIGDBIntegration.IsChecked == true;
             _appSettings!.TwitchIGDBClientID = GetView().txbIgdbClientId.Text;
             _appSettings!.TwitchIGDBClientSecret = GetView().txbIgdbClientSecret.Text;
 
@@ -316,7 +323,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
 
             if (FnSystem.IsDebug())
             {
-                exportPath = SpecialDirectories.MyDocuments + @"\GameTimeNext_Backup_dev";
+                exportPath = AppEnvironment.GetAppConfig().DevBackupFolderPath;
 
                 if (!Directory.Exists(exportPath))
                     Directory.CreateDirectory(exportPath);

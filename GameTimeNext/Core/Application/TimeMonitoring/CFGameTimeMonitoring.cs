@@ -1,4 +1,4 @@
-﻿using GameTimeNext.Core.Application.DataManagers;
+using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
 
@@ -59,6 +59,7 @@ namespace GameTimeNext.Core.Application.TimeMonitoring
             t1sessi.PLFR = _startTime;
             t1sessi.PLTO = _endTime;
             t1sessi.PLTI = GetMonitoredTimeInMinutes();
+            if (AppEnvironment.GetAppConfig().AppSettings.EnableSessionCleanup && t1sessi.PLTI < (AppEnvironment.GetAppConfig().AppSettings.SessionCleanupSeconds / 60)) return;
 
             // Derzeitigen Playthrough ermitteln
             long ptid = TFPLTHR.GetCurrentPlaythroughPtid(t1sessi.PFID);
@@ -66,8 +67,6 @@ namespace GameTimeNext.Core.Application.TimeMonitoring
             t1sessi.PTID = ptid;
 
             txsessi.Save(t1sessi);
-
-            if (AppEnvironment.GetAppConfig().AppSettings.EnableSessionCleanup && t1sessi.PLTI < (AppEnvironment.GetAppConfig().AppSettings.SessionCleanupSeconds / 60)) return;
 
             // -- Profildaten befüllen
             TXPROFI txprofi = new TXPROFI();

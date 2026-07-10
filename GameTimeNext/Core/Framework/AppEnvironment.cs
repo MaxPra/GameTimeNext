@@ -38,6 +38,7 @@ namespace GameTimeNext.Core.Framework
         // [------------------ PUBLIC ----------------------]
         // [------------------------------------------------]
 
+        public static Dictionary<string, string?> StartArguments { get; set; } = new Dictionary<string, string?>();
         public static Dictionary<string, UIXApplication> StartedApplications { get => _startedApplications; set => _startedApplications = value; }
         public static List<SearchableApplication> AvailableApplications { get; set; } = new List<SearchableApplication>();
         public static Dictionary<string, UIXBackgroundProcess> StartedBackgroundProcesses { get => _startedBackgroundProcesses; set => _startedBackgroundProcesses = value; }
@@ -190,10 +191,11 @@ namespace GameTimeNext.Core.Framework
         private static void InitializeIGDBAuthTokenAndExternalGameSources()
         {
 
+            bool enabled = GetAppConfig().AppSettings.EnableTwitchIGDB;
             string clientId = GetAppConfig().AppSettings.TwitchIGDBClientID;
             string clientSecret = GetAppConfig().AppSettings.TwitchIGDBClientSecret;
 
-            if (FnString.IsNullEmptyOrWhitespace(clientId) || FnString.IsNullEmptyOrWhitespace(clientSecret))
+            if (!enabled || FnString.IsNullEmptyOrWhitespace(clientId) || FnString.IsNullEmptyOrWhitespace(clientSecret))
                 return;
 
             try
@@ -251,7 +253,7 @@ namespace GameTimeNext.Core.Framework
 
                 if (FnSystem.IsDebug())
                 {
-                    backupPath = SpecialDirectories.MyDocuments + @"\GameTimeNext_Backup_dev";
+                    backupPath = AppEnvironment.GetAppConfig().DevBackupFolderPath;
 
                     if (!Directory.Exists(backupPath))
                         Directory.CreateDirectory(backupPath);

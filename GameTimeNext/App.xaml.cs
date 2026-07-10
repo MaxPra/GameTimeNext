@@ -23,7 +23,8 @@ namespace GameTimeNext
         {
             base.OnStartup(e);
 
-            bool startMinimized = e.Args.Contains("--minimized");
+            FnSystem.ParseStartArguments(e.Args);
+            bool startMinimized = AppEnvironment.StartArguments.ContainsKey("minimized");
 
             ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
@@ -102,7 +103,7 @@ namespace GameTimeNext
 
                 if (FnSystem.IsDebug())
                 {
-                    backupPath = SpecialDirectories.MyDocuments + @"\GameTimeNext_Backup_dev";
+                    backupPath = AppEnvironment.GetAppConfig().DevBackupFolderPath;
 
                     if (!Directory.Exists(backupPath))
                         Directory.CreateDirectory(backupPath);

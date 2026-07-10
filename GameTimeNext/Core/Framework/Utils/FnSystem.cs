@@ -10,7 +10,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Framework.Utils
 {
-    public class FnSystem
+    public partial class FnSystem
     {
         public static bool SetAutoStart(bool enabled, bool startMinimized = false)
         {
@@ -167,63 +167,57 @@ namespace GameTimeNext.Core.Framework.Utils
             return false;
         }
 
-        public static bool IsProcessRunning(string exeName)
+        public static Dictionary<string, List<string>> GetRunningProcessesSnapshot(Dictionary<long, List<string>> executablesToSearch)
         {
-            string targetName = System.IO.Path.GetFileNameWithoutExtension(exeName);
+            var executableNames = executablesToSearch.Values
+                .SelectMany(executables => executables)
+                .Select(Path.GetFileNameWithoutExtension)
+                .Where(name => !string.IsNullOrWhiteSpace(name))
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            var runningProcesses = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
 
             foreach (Process process in Process.GetProcesses())
             {
                 try
                 {
-                    if (process.ProcessName.Equals(targetName, StringComparison.OrdinalIgnoreCase))
+                    if (!executableNames.Contains(process.ProcessName))
+                        continue;
+
+                    string? processPath = process.MainModule?.FileName;
+                    if (string.IsNullOrWhiteSpace(processPath))
+                        continue;
+
+                    if (!runningProcesses.TryGetValue(process.ProcessName, out List<string>? paths))
                     {
-                        return true;
+                        paths = new List<string>();
+                        runningProcesses.Add(process.ProcessName, paths);
                     }
+
+                    paths.Add(Path.GetFullPath(processPath));
                 }
                 catch
                 {
-                    continue;
+                    // Some system and elevated processes do not expose MainModule.
                 }
                 finally
                 {
-                    try { process.Dispose(); } catch { }
+                    process.Dispose();
                 }
             }
 
-            return false;
+            return runningProcesses;
         }
 
-        public static bool IsProcessRunningWithPathPart(string exeName, string partialPath)
+        public static bool IsProcessRunningWithPathPart(IReadOnlyDictionary<string, List<string>> runningProcesses, string executable, string partialPath)
         {
-            var nameNoExt = Path.GetFileNameWithoutExtension(exeName);
-            var normalizedPartialPath = Path.GetFullPath(partialPath).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            string executableName = Path.GetFileNameWithoutExtension(executable);
+            string normalizedPartialPath = Path.GetFullPath(partialPath)
+                .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
 
-            foreach (var p in Process.GetProcesses())
-            {
-                try
-                {
-                    if (!p.ProcessName.Equals(nameNoExt, StringComparison.OrdinalIgnoreCase))
-                        continue;
-
-                    string procPath = p.MainModule?.FileName;
-                    if (string.IsNullOrEmpty(procPath))
-                        continue;
-
-                    var normalizedProcPath = Path.GetFullPath(procPath);
-
-                    if (normalizedProcPath.IndexOf(normalizedPartialPath, StringComparison.OrdinalIgnoreCase) >= 0)
-                        return true;
-                }
-                catch
-                {
-                    continue;
-                }
-                finally
-                {
-                    try { p.Dispose(); } catch { }
-                }
-            }
-            return false;
+            return runningProcesses.TryGetValue(executableName, out List<string>? processPaths) &&
+                processPaths.Any(processPath =>
+                    processPath.IndexOf(normalizedPartialPath, StringComparison.OrdinalIgnoreCase) >= 0);
         }
 
         /// <summary>
