@@ -37,6 +37,7 @@ namespace GameTimeNext.Core.Framework
         // [------------------ PUBLIC ----------------------]
         // [------------------------------------------------]
 
+        public static Dictionary<string, string?> StartArguments { get; set; } = new Dictionary<string, string?>();
         public static Dictionary<string, UIXApplication> StartedApplications { get => _startedApplications; set => _startedApplications = value; }
         public static List<SearchableApplication> AvailableApplications { get; set; } = new List<SearchableApplication>();
         public static Dictionary<string, UIXBackgroundProcess> StartedBackgroundProcesses { get => _startedBackgroundProcesses; set => _startedBackgroundProcesses = value; }

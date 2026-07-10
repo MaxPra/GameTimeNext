@@ -10,7 +10,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Framework.Utils
 {
-    public class FnSystem
+    public partial class FnSystem
     {
         public static bool SetAutoStart(bool enabled, bool startMinimized = false)
         {

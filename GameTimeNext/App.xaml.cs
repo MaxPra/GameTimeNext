@@ -23,7 +23,8 @@ namespace GameTimeNext
         {
             base.OnStartup(e);
 
-            bool startMinimized = e.Args.Contains("--minimized");
+            FnSystem.ParseStartArguments(e.Args);
+            bool startMinimized = AppEnvironment.StartArguments.ContainsKey("minimized");
 
             ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
