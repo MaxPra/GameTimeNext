@@ -246,7 +246,7 @@ namespace GameTimeNext.Core.Framework
 
                 if (FnSystem.IsDebug())
                 {
-                    backupPath = SpecialDirectories.MyDocuments + @"\GameTimeNext_Backup_dev";
+                    backupPath = AppEnvironment.GetAppConfig().DevBackupFolderPath;
 
                     if (!Directory.Exists(backupPath))
                         Directory.CreateDirectory(backupPath);

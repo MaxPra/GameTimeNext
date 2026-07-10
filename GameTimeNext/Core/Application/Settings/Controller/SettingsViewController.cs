@@ -314,7 +314,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
 
             if (FnSystem.IsDebug())
             {
-                exportPath = SpecialDirectories.MyDocuments + @"\GameTimeNext_Backup_dev";
+                exportPath = AppEnvironment.GetAppConfig().DevBackupFolderPath;
 
                 if (!Directory.Exists(exportPath))
                     Directory.CreateDirectory(exportPath);
