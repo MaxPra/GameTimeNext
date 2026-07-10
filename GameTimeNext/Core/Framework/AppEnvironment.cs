@@ -184,10 +184,11 @@ namespace GameTimeNext.Core.Framework
         private static void InitializeIGDBAuthTokenAndExternalGameSources()
         {
 
+            bool enabled = GetAppConfig().AppSettings.EnableTwitchIGDB;
             string clientId = GetAppConfig().AppSettings.TwitchIGDBClientID;
             string clientSecret = GetAppConfig().AppSettings.TwitchIGDBClientSecret;
 
-            if (FnString.IsNullEmptyOrWhitespace(clientId) || FnString.IsNullEmptyOrWhitespace(clientSecret))
+            if (!enabled || FnString.IsNullEmptyOrWhitespace(clientId) || FnString.IsNullEmptyOrWhitespace(clientSecret))
                 return;
 
             try
