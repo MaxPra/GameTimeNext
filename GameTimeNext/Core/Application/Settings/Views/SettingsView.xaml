@@ -228,6 +228,8 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="14" />
                                 <RowDefinition Height="Auto" />
+                                <RowDefinition Height="14" />
+                                <RowDefinition Height="Auto" />
                                 <RowDefinition Height="12" />
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
@@ -239,6 +241,27 @@
                                 Text="IGDB API" />
 
                             <Grid Grid.Row="2" HorizontalAlignment="Left">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="200" />
+                                    <ColumnDefinition Width="10" />
+                                    <ColumnDefinition Width="16" />
+                                    <ColumnDefinition Width="54" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock
+                                    Grid.Column="0"
+                                    Grid.ColumnSpan="2"
+                                    Foreground="{DynamicResource Brush.TextSecondary}"
+                                    Text="Enable Integration" />
+
+                                <CheckBox
+                                    x:Name="cbEnableIGDBIntegration"
+                                    Grid.Column="3"
+                                    Grid.ColumnSpan="2" />
+                            </Grid>
+
+                            <Grid Grid.Row="4" HorizontalAlignment="Left">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="220" />
                                     <ColumnDefinition Width="16" />
@@ -274,7 +297,7 @@
                                 </Button>
                             </Grid>
 
-                            <Grid Grid.Row="4" HorizontalAlignment="Left">
+                            <Grid Grid.Row="6" HorizontalAlignment="Left">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="220" />
                                     <ColumnDefinition Width="16" />
@@ -311,7 +334,7 @@
                             </Grid>
 
                             <TextBlock
-                                Grid.Row="6"
+                                Grid.Row="8"
                                 Foreground="{DynamicResource Brush.TextSecondary}"
                                 Text="Required for IGDB access via Twitch developer credentials." />
                         </Grid>
