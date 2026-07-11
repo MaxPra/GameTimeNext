@@ -1,10 +1,10 @@
-﻿using System.Diagnostics;
+﻿using GameTimeNext.Core.Framework;
+using GameTimeNext.Core.Framework.Logging;
+using GameTimeNext.Core.Framework.Utils;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.Logging;
-using GameTimeNext.Core.Framework.Utils;
 using UIX.ViewController.Engine.Runnables;
 
 namespace GameTimeNext.Core.Application.General.BackgroundProcesses
@@ -13,13 +13,15 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
     {
         private Process? _blazorProcess;
         private RemoteMonitoringSocketServer? _socketServerProcess;
+
+        private int _socketPort = 5050;
         
         public override void Logic()
         {
             if (!AppEnvironment.GetAppConfig().AppSettings.RemoteMonitoring) return;
 
             HandleSocket();
-            //HandleBlazor();
+            HandleBlazor();
         }
 
         private void HandleSocket()
@@ -27,24 +29,23 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
             if (_socketServerProcess is not null) return;
 
             FnLog.AddInfo(this, "Starting socketServerProcess...");
-            int port = 5050; // OFODI: Make dynamic again before PR
-            //try
-            //{
-            //    port = GetFreePort();
-            //}
-            //catch (Exception ex)
-            //{
-            //    FnLog.AddError(this, "Could not get free port.", ex);
-            //    return;
-            //}
+            try
+            {
+                _socketPort = GetFreePort(desiredPort: _socketPort);
+            }
+            catch (Exception ex)
+            {
+                FnLog.AddError(this, "Could not get free port.", ex);
+                return;
+            }
 
             // Run socket server
             _socketServerProcess = GetBackgroundProcess<RemoteMonitoringSocketServer>();
             _socketServerProcess.CallDispatcher = CallDispatcher;
-            _socketServerProcess.Port = port;
+            _socketServerProcess.Port = _socketPort;
             _socketServerProcess.Start(1000, runAsync: true);
             AppEnvironment.StartedBackgroundProcesses.Add(typeof(RemoteMonitoringSocketServer).FullName!, _socketServerProcess);
-            FnLog.AddInfo(this, $"Started socketServerProcess on port {port}.");
+            FnLog.AddInfo(this, $"Started socketServerProcess on port {_socketPort}.");
         }
 
         private void HandleBlazor()
@@ -64,10 +65,11 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
             // Start blazorProcess
             FnLog.AddInfo(this, "Starting blazorProcess...");
 
-            int port;
+            int port = 50505;
             try
             {
-                port = GetFreePort();
+                port = GetFreePort(desiredPort: port, IPAddress.Any);
+                CallDispatcher!.Trigger("EXEV_RemoteMonitoringPortChanged", port); // SettingsViewController
             }
             catch (Exception ex)
             {
@@ -99,10 +101,11 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
                     WorkingDirectory = Path.GetDirectoryName(exePath) ?? baseDir
                 };
                 psi.Environment["ASPNETCORE_URLS"] = $"http://0.0.0.0:{port}";
+                psi.Environment["GTN_SOCKET_PORT"] = $"{_socketPort}";
 
                 _blazorProcess = Process.Start(psi);
                 FnLog.AddInfo(this, $"Started blazorProcess on port {port}.");
-                CallDispatcher!.Trigger("EXEV_remoteMonitoringPortChanged", port); // SettingsViewController
+                CallDispatcher!.Trigger("EXEV_RemoteMonitoringStarted", port); // MainWindowController
             }
             catch (Exception ex)
             {
@@ -111,16 +114,40 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
             }
         }
 
-        private int GetFreePort()
+        private int GetFreePort(int? desiredPort = null, IPAddress? desiredEndpoint = null)
         {
             int port = 0;
-            using (TcpListener l = new TcpListener(IPAddress.Loopback, port))
+            if (desiredEndpoint is null) desiredEndpoint = IPAddress.Loopback;
+
+            // Try get desired port
+            if (desiredPort is not null && desiredPort != 0)
+            {
+                try
+                {
+                    using (TcpListener l = new TcpListener(desiredEndpoint, (int)desiredPort))
+                    {
+                        l.Start();
+                        port = ((IPEndPoint)l.LocalEndpoint).Port;
+                        l.Stop();
+                    }
+
+                    return port;
+                }
+                catch
+                {
+                    // ignored -> Desired port not free
+                }
+            }
+
+            // Get random port
+            using (TcpListener l = new TcpListener(desiredEndpoint, port))
             {
 
                 l.Start();
                 port = ((IPEndPoint)l.LocalEndpoint).Port;
                 l.Stop();
             }
+
             return port;
         }
 
@@ -130,8 +157,8 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
             {
                 try
                 {
-                    _blazorProcess.Kill();
-                    _blazorProcess.WaitForExit(1000);
+                    _blazorProcess.Kill(true);
+                    _blazorProcess.WaitForExit(5000);
                     _blazorProcess.Dispose();
                     _blazorProcess = null;
 

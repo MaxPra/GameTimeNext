@@ -35,7 +35,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             _appSettings.ResetChangeTracking();
             _appSettings.AcceptChanges();
 
-            GetApp().CallDispatcher.Register(this, nameof(EXEV_remoteMonitoringPortChanged));
+            GetApp().CallDispatcher.Register(this, nameof(EXEV_RemoteMonitoringPortChanged));
         }
 
         protected override void BuildFirstImpl()
@@ -231,7 +231,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             return (SettingsApp)App;
         }
 
-        protected void EXEV_remoteMonitoringPortChanged(int port)
+        protected void EXEV_RemoteMonitoringPortChanged(int port)
         {
             GetView().txtRemoteMonitoringPort.Text = $"Web-App accessible via port {port}.";
         }
