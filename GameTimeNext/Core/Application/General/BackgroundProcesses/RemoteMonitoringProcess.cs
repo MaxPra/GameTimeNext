@@ -77,7 +77,7 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
                 return;
             }
 
-            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+            string baseDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "RemoteMonitoring");
             string? exePath = Directory.GetFiles(baseDir, "*RemoteMonitoring*.exe", SearchOption.AllDirectories).FirstOrDefault();
             if (exePath is null && FnSystem.IsDebug())
             {
@@ -88,6 +88,7 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
             if (exePath is null)
             {
                 FnLog.AddError(this, "No executable found in application folder.");
+                FnLog.AddInfo(this, baseDir);
                 return;
             }
 

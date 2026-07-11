@@ -14,6 +14,7 @@
 
 #define BuildDirectory "out"
 #define BinDirectory "..\GameTimeNext\bin\Release\net10.0-windows"
+#define BinDirectoryRemoteMonitoring "..\RemoteMonitoring\bin\Release\net10.0\publish"
 
 [Setup]
 AppId={{AA642EDE-2EA3-4C94-8325-0E112FA8FBF5}}
@@ -50,6 +51,14 @@ Source: "{#BinDirectory}\runtimes\win-x64\*.dll"; DestDir: "{app}\runtimes\win-x
 Source: "{#BinDirectory}\ImportPackages\*.*"; DestDir: "{localappdata}\GameTimeNext\Import"; Flags: ignoreversion recursesubdirs
 Source: "{#BinDirectory}\Core\*.*"; DestDir: "{app}\Core"; Flags: ignoreversion recursesubdirs; Excludes: "*\UpdateChanges_vNEXT.txt,ImportPackages\*"
 Source: "{#BinDirectory}\UI\*.*"; DestDir: "{app}\UI"; Flags: ignoreversion recursesubdirs
+
+;Remote Monitoring
+Source: "{#BinDirectoryRemoteMonitoring}\*.exe"; DestDir: "{app}\RemoteMonitoring"; Flags: ignoreversion
+Source: "{#BinDirectoryRemoteMonitoring}\*.dll"; DestDir: "{app}\RemoteMonitoring"; Flags: ignoreversion
+Source: "{#BinDirectoryRemoteMonitoring}\*.runtimeconfig.json"; DestDir: "{app}\RemoteMonitoring"; Flags: ignoreversion
+Source: "{#BinDirectoryRemoteMonitoring}\*.staticwebassets.endpoints.json"; DestDir: "{app}\RemoteMonitoring"; Flags: ignoreversion
+Source: "{#BinDirectoryRemoteMonitoring}\*.deps.json"; DestDir: "{app}\RemoteMonitoring"; Flags: ignoreversion
+Source: "{#BinDirectoryRemoteMonitoring}\wwwroot\*.*"; DestDir: "{app}\RemoteMonitoring\wwwroot"; Flags: ignoreversion recursesubdirs
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: checkedonce
