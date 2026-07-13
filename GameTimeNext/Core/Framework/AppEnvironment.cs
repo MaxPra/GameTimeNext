@@ -43,10 +43,6 @@ namespace GameTimeNext.Core.Framework
         public static Dictionary<string, UIXBackgroundProcess> StartedBackgroundProcesses { get => _startedBackgroundProcesses; set => _startedBackgroundProcesses = value; }
         public static List<InformationListItem> InformationList { get; set; } = new List<InformationListItem>();
 
-        public static string TwitchAuthenticationToken { get; set; } = string.Empty;
-
-        public static string IgdbExtGameSources { get; set; } = string.Empty;
-
         public static long CurrentPfid { get; set; } = 0;
         public static AppVersion AppVersion { get; set; } = new AppVersion();
 
@@ -118,8 +114,6 @@ namespace GameTimeNext.Core.Framework
             if (FnSystem.IsDebug())
                 DevSyncCsvSyncService.ImportAllFromCsv();
 
-            InitializeIGDBAuthTokenAndExternalGameSources();
-
             AppVersion.SetAppVersionInConfig();
 
             if (GetAppConfig().AppSettings.EnableSessionCleanup)
@@ -181,45 +175,6 @@ namespace GameTimeNext.Core.Framework
         // [------------------------------------------------]
         // [------------------ PRIVATE ---------------------]
         // [------------------------------------------------]
-        private static void InitializeIGDBAuthTokenAndExternalGameSources()
-        {
-
-            bool enabled = GetAppConfig().AppSettings.EnableTwitchIGDB;
-            string clientId = GetAppConfig().AppSettings.TwitchIGDBClientID;
-            string clientSecret = GetAppConfig().AppSettings.TwitchIGDBClientSecret;
-
-            if (!enabled || FnString.IsNullEmptyOrWhitespace(clientId) || FnString.IsNullEmptyOrWhitespace(clientSecret))
-                return;
-
-            try
-            {
-                TwitchAuthenticationToken = FnTwitchAuthentication.GetAccessToken(clientId, clientSecret);
-            }
-            catch (Exception)
-            {
-                TwitchAuthenticationToken = string.Empty;
-            }
-
-            if (FnString.IsNullEmptyOrWhitespace(TwitchAuthenticationToken))
-            {
-                InformationList.Add(new InformationListItem(CFMBOXIcon.Error, "Couldn't get auth-token for IGDB!"));
-                return;
-            }
-
-            try
-            {
-                IgdbExtGameSources = FnTwitchAuthentication.GetExternalGameSources(new System.Net.Http.HttpClient(), clientId, TwitchAuthenticationToken);
-            }
-            catch (Exception)
-            {
-                IgdbExtGameSources = string.Empty;
-            }
-
-
-            if (FnString.IsNullEmptyOrWhitespace(IgdbExtGameSources))
-                InformationList.Add(new InformationListItem(CFMBOXIcon.Error, "Couldn't get external game sources from IGDB!"));
-        }
-
         private static void HandleBackup()
         {
             // Backup hier einspielen

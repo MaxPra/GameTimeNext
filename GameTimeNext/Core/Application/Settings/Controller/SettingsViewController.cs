@@ -7,7 +7,6 @@ using GameTimeNext.Core.Framework.Files;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.UserInput;
 using GameTimeNext.Core.Framework.Utils;
-using Microsoft.VisualBasic.FileIO;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
@@ -373,13 +372,6 @@ namespace GameTimeNext.Core.Application.Settings.Controller
         {
             if (GetView().cbAllowProfileSpecificStyleChanges.IsChecked == false)
                 FnTheme.ApplyDefaultTheme();
-
-            if (_appSettings!.HasFieldDataChanged("TwitchIGDBClientID") || _appSettings.HasFieldDataChanged("TwitchIGDBClientSecret"))
-            {
-                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Attention", "Settings for IGDB have changed.\nRestart required!\nGameTimeNext will restart now!", CFMBOXResult.Ok, CFMBOXIcon.Info);
-                AppEnvironment.RestartGTNApplication();
-            }
-
         }
     }
 }

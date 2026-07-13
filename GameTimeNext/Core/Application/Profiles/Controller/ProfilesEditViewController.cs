@@ -160,12 +160,15 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
             // Akzentfarben
             SaveAccentColors();
-
             // Erwartete Spielzeit speichern (Manuell)
             FillDBOManualEstTimes();
 
-            // Erwartete Spielzeiten speichern
-            _successfullyFilledEstTimes = await FillDBOEstimatedTimesIGDBAsync();
+            if (AppEnvironment.GetAppConfig().AppSettings.EnableTwitchIGDB)
+            {
+
+                // Erwartete Spielzeiten speichern
+                _successfullyFilledEstTimes = await FillDBOEstimatedTimesIGDBAsync();
+            }
 
             // Profileinstellungen
             FillDBOProfileSettings();
@@ -434,97 +437,103 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         private async Task<bool> FillDBOEstimatedTimesIGDBAsync()
         {
-
-            if (!_cmbTargetPlayTypeFilledCompletely || _isEstTimeFilledManual)
-                return false;
-
-            ComboBoxItem combItem = GetWnd().cmbEstimatedTimeType.SelectedItem as ComboBoxItem;
-
-            if (GetApp().T1Profi.SAID == 0 && FnString.IsNullEmptyOrWhitespace(GetWnd().txbProfileName.Text) || combItem.Tag.ToString() == EstimatedTimeTypes.EST_TIME_NONE)
+            try
             {
-                // -- Befüllung
-                GetApp().T1Profi.ETMA = 0;
-                GetApp().T1Profi.ETME = 0;
-                GetApp().T1Profi.ETCO = 0;
+                if (!_cmbTargetPlayTypeFilledCompletely || _isEstTimeFilledManual)
+                    return false;
 
-                GetApp().T1Profi.ETTY = EstimatedTimeTypes.EST_TIME_NONE;
+                ComboBoxItem combItem = GetWnd().cmbEstimatedTimeType.SelectedItem as ComboBoxItem;
+
+                if (GetApp().T1Profi.SAID == 0 && FnString.IsNullEmptyOrWhitespace(GetWnd().txbProfileName.Text) || combItem.Tag.ToString() == EstimatedTimeTypes.EST_TIME_NONE)
+                {
+                    // -- Befüllung
+                    GetApp().T1Profi.ETMA = 0;
+                    GetApp().T1Profi.ETME = 0;
+                    GetApp().T1Profi.ETCO = 0;
+
+                    GetApp().T1Profi.ETTY = EstimatedTimeTypes.EST_TIME_NONE;
+                    return true;
+                }
+
+                GetApp().Loader.Begin();
+
+                string clientId = AppEnvironment.GetAppConfig().AppSettings.TwitchIGDBClientID;
+
+                IgdbService igdbservice = new IgdbService(GetApp(), clientId);
+
+                int? gameId = null;
+
+                if (GetApp().T1Profi.SAID != 0)
+                {
+                    int steamSourceId = igdbservice.GetSteamSourceId();
+                    gameId = await igdbservice.FindGameIdBySteamAppIdAsync(steamSourceId, GetApp().T1Profi.SAID.ToString());
+                }
+
+                if (gameId == null)
+                {
+                    var game = await igdbservice.FindGameByNameAsync(GetApp().T1Profi.GANA);
+
+                    gameId = game?.Id;
+                }
+
+                if (gameId == null)
+                {
+                    GetWnd().Dispatcher.Invoke(() =>
+                    {
+                        GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Warning", "Could not find game on IGDB.", CFMBOXResult.Ok, CFMBOXIcon.Warning);
+                    });
+
+                    ResetPlaytypes();
+
+                    GetApp().Loader.Stop();
+
+                    return false;
+                }
+
+                var timeToBeat = await igdbservice.GetGameTimeToBeatAsync(gameId!.Value);
+
+                if (timeToBeat == null)
+                {
+                    GetWnd().Dispatcher.Invoke(() =>
+                    {
+                        GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Warning", "Could not query time to beat.", CFMBOXResult.Ok, CFMBOXIcon.Warning);
+                    });
+
+                    ResetPlaytypes();
+
+                    GetApp().Loader.Stop();
+                    return false;
+                }
+
+                if (timeToBeat.Hastily == null || timeToBeat.Normally == null || timeToBeat.Completely == null)
+                {
+                    GetWnd().Dispatcher.Invoke(() =>
+                    {
+                        GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Warning", "Could not query time to beat.", CFMBOXResult.Ok, CFMBOXIcon.Warning);
+                    });
+
+                    ResetPlaytypes();
+
+                    GetApp().Loader.Stop();
+                    return false;
+                }
+
+                // -- Befüllung
+                GetApp().T1Profi.ETMA = ((double)timeToBeat.Hastily!) / 60;
+                GetApp().T1Profi.ETME = ((double)timeToBeat.Normally!) / 60;
+                GetApp().T1Profi.ETCO = ((double)timeToBeat.Completely!) / 60;
+
+                GetApp().T1Profi.ETTY = combItem.Tag.ToString();
+
+                GetApp().Loader.Stop();
+
                 return true;
             }
-
-            GetApp().Loader.Begin();
-
-            string clientId = AppEnvironment.GetAppConfig().AppSettings.TwitchIGDBClientID;
-
-            IgdbService igdbservice = new IgdbService(clientId, AppEnvironment.TwitchAuthenticationToken);
-
-            int? gameId = null;
-
-            if (GetApp().T1Profi.SAID != 0)
+            catch (Exception ex)
             {
-                int steamSourceId = igdbservice.GetSteamSourceId();
-                gameId = await igdbservice.FindGameIdBySteamAppIdAsync(steamSourceId, GetApp().T1Profi.SAID.ToString());
-            }
-
-            if (gameId == null)
-            {
-                var game = await igdbservice.FindGameByNameAsync(GetApp().T1Profi.GANA);
-
-                gameId = game?.Id;
-            }
-
-            if (gameId == null)
-            {
-                GetWnd().Dispatcher.Invoke(() =>
-                {
-                    GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Warning", "Could not find game on IGDB.", CFMBOXResult.Ok, CFMBOXIcon.Warning);
-                });
-
-                ResetPlaytypes();
-
-                GetApp().Loader.Stop();
-
+                // ignored
                 return false;
             }
-
-            var timeToBeat = await igdbservice.GetGameTimeToBeatAsync(gameId!.Value);
-
-            if (timeToBeat == null)
-            {
-                GetWnd().Dispatcher.Invoke(() =>
-                {
-                    GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Warning", "Could not query time to beat.", CFMBOXResult.Ok, CFMBOXIcon.Warning);
-                });
-
-                ResetPlaytypes();
-
-                GetApp().Loader.Stop();
-                return false;
-            }
-
-            if (timeToBeat.Hastily == null || timeToBeat.Normally == null || timeToBeat.Completely == null)
-            {
-                GetWnd().Dispatcher.Invoke(() =>
-                {
-                    GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Warning", "Could not query time to beat.", CFMBOXResult.Ok, CFMBOXIcon.Warning);
-                });
-
-                ResetPlaytypes();
-
-                GetApp().Loader.Stop();
-                return false;
-            }
-
-            // -- Befüllung
-            GetApp().T1Profi.ETMA = ((double)timeToBeat.Hastily!) / 60;
-            GetApp().T1Profi.ETME = ((double)timeToBeat.Normally!) / 60;
-            GetApp().T1Profi.ETCO = ((double)timeToBeat.Completely!) / 60;
-
-            GetApp().T1Profi.ETTY = combItem.Tag.ToString();
-
-            GetApp().Loader.Stop();
-
-            return true;
-
         }
 
         private void FillComboboxPlatformsManual()
