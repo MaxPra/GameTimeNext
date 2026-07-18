@@ -877,9 +877,12 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
                             using (SuppressRunEventPipeline())
                                 await FillViewCoverChanged(tuple.path);
+
+                            GetWnd().Dispatcher.Invoke(() =>
+                            { RunEventPipelineSync(View, string.Empty); });
                         });
 
-                        RunEventPipelineSync(View, string.Empty);
+
                     }
                 });
             }
