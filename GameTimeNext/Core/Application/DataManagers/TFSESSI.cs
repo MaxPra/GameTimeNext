@@ -16,7 +16,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         {
             double lastSessionPlaytime = 0;
 
-            UIXQuery query = BuildLastSessionGameTimeQuery(pfid);
+            UIXQuery query = BuildQueryLastSessionGameTime(pfid);
 
             using (var reader = query.Execute())
             {
@@ -31,7 +31,7 @@ namespace GameTimeNext.Core.Application.DataManagers
 
         public static int GetInvalidSessionsCount()
         {
-            UIXQuery query = BuildInvalidSessionsCountQuery();
+            UIXQuery query = BuildQueryInvalidSessionsCount();
 
             int count = 0;
             using (var reader = query.Execute())
@@ -45,7 +45,7 @@ namespace GameTimeNext.Core.Application.DataManagers
 
         public static void CleanupInvalidSessions()
         {
-            UIXQuery query = BuildInvalidSessionsQuery();
+            UIXQuery query = BuildQueryInvalidSessions();
 
             using (var reader = query.Execute())
             {
@@ -58,7 +58,20 @@ namespace GameTimeNext.Core.Application.DataManagers
             }
         }
 
-        private static UIXQuery BuildLastSessionGameTimeQuery(long pfid)
+        public static UIXQuery BuildQuerySessionsInTimeSpanBase(DateTime? start, DateTime end, long? pfid = null)
+        {
+            UIXQuery query = new UIXQuery(K1SESSI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
+
+            if (start is not null)
+                query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PLTO, QueryCompareType.GREATER_OR_EQUAL, start.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
+            query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PLFR, QueryCompareType.LESS_THAN, end.AddDays(1).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
+            if (pfid is not null)
+                query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PFID, QueryCompareType.EQUALS, pfid);
+
+            return query;
+        }
+
+        private static UIXQuery BuildQueryLastSessionGameTime(long pfid)
         {
             UIXQuery query = new UIXQuery(K1SESSI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
 
@@ -77,7 +90,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             return query;
         }
 
-        private static UIXQuery BuildInvalidSessionsCountQuery()
+        private static UIXQuery BuildQueryInvalidSessionsCount()
         {
             UIXQuery query = new UIXQuery(K1SESSI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
 
@@ -88,7 +101,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             return query;
         }
 
-        private static UIXQuery BuildInvalidSessionsQuery()
+        private static UIXQuery BuildQueryInvalidSessions()
         {
             UIXQuery query = new UIXQuery(K1SESSI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
 

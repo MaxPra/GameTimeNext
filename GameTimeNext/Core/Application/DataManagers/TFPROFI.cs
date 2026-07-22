@@ -120,51 +120,20 @@ namespace GameTimeNext.Core.Application.DataManagers
 
         public static double GetTodaysGameTimeInMinutes(long pfid)
         {
-            UIXQuery query = BuildQueryTodaysGameTime(pfid);
-
-            double playedMinutesToday = 0;
-
-            using (var reader = query.Execute())
-            {
-                while (reader.Read())
-                {
-                    DateTime plfr = UIXQuery.GetDateTime(reader, K1SESSI.Name, K1SESSI.Fields.PLFR);
-                    DateTime plto = UIXQuery.GetDateTime(reader, K1SESSI.Name, K1SESSI.Fields.PLTO);
-                    double plti = UIXQuery.GetDouble(reader, K1SESSI.Name, K1SESSI.Fields.PLTI);
-
-                    // Wenn Von gleich gestern
-                    // dann muss die differenz vom letzten Ende der Session zu 00:00 Uhr heute berechnet werden
-                    if (plfr.Date == DateTime.Today.AddDays(-1))
-                    {
-                        playedMinutesToday += ((double)(plto - DateTime.Today).TotalSeconds / 60);
-                    }
-                    else
-                    {
-                        playedMinutesToday += plti;
-                    }
-                }
-            }
-
-            return playedMinutesToday;
+            return GetGameTimeInMinutes(pfid, DateTime.Today.Date, DateTime.Today.Date);
         }
 
-        public static double GetTotalGameTimeInMinutes(long pfid)
+        public static double GetGameTimeInMinutes(long pfid, DateTime? start, DateTime end)
         {
-            UIXQuery query = new UIXQuery(K1SESSI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
+            UIXQuery query = TFSESSI.BuildQuerySessionsInTimeSpanBase(start, end, pfid: pfid);
             query.AddField(K1SESSI.Name, K1SESSI.Fields.PLTI);
-            query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PFID, QueryCompareType.EQUALS, pfid);
-
-            double totalPlayedMinutes = 0;
+            query.AddSum(K1SESSI.Name, K1SESSI.Fields.PLTI, "PLTI");
 
             using (var reader = query.Execute())
-            {
-                while (reader.Read())
-                {
-                    double plti = UIXQuery.GetDouble(reader, K1SESSI.Name, K1SESSI.Fields.PLTI);
-                    totalPlayedMinutes += plti;
-                }
-            }
-            return totalPlayedMinutes;
+                if (reader.Read())
+                    return UIXQuery.GetDouble(reader, "PLTI");
+
+            return 0;
         }
 
         public static string GetProfileName(long pfid)
@@ -226,20 +195,6 @@ namespace GameTimeNext.Core.Application.DataManagers
                 {
                 }
             }
-        }
-
-        private static UIXQuery BuildQueryTodaysGameTime(long pfid)
-        {
-            UIXQuery query = new UIXQuery(K1SESSI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
-
-            query.AddField(K1SESSI.Name, K1SESSI.Fields.PLFR);
-            query.AddField(K1SESSI.Name, K1SESSI.Fields.PLTO);
-            query.AddField(K1SESSI.Name, K1SESSI.Fields.PLTI);
-
-            query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PFID, QueryCompareType.EQUALS, pfid);
-            query.AddWhereDateOnDay(K1SESSI.Name, K1SESSI.Fields.PLTO, DateTime.Today);
-
-            return query;
         }
 
         private static UIXQuery BuildLinkedTagsQuery(long pfid)
