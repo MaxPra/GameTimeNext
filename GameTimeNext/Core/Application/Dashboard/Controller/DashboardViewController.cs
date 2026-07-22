@@ -1,11 +1,12 @@
 ﻿using GameTimeNext.Core.Application.Dashboard.ViewModels;
 using GameTimeNext.Core.Application.Dashboard.Views;
 using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.Profiles.Viewmodel;
 using GameTimeNext.Core.Application.Profiles;
+using GameTimeNext.Core.Application.Profiles.Viewmodel;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Utils;
+using System.Globalization;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -21,7 +22,8 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
     public class DashboardViewController : UIXViewControllerBase
     {
         DashboardViewModel? viewModel = null;
-        int timeSpanDays = 30;
+        DateTime? timeSpanStart = null;
+        DateTime timeSpanEnd = DateTime.Today.AddDays(1).AddTicks(-1);
 
         public DashboardViewController(UIXApplication app) : base(app)
         {
@@ -170,7 +172,7 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
             GetView().imgMostPlayedCover.Source = coverImage;
             GetView().txtMostPlayedPlaytime.Text = CFDashboardApp.FormatTime(TFPROFI.GetTotalGameTimeInMinutes(t1profiMostPlayed.PFID));
 
-            int daysPlayed = TFSESSI.GetPlayedDays(t1profiMostPlayed.PFID, timeSpanDays);
+            int daysPlayed = TFSESSI.GetPlayedDays(t1profiMostPlayed.PFID, timeSpanStart, timeSpanEnd);
             GetView().txtMostPlayedDays.Text = daysPlayed.ToString();
         }
 
@@ -197,7 +199,7 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
 
             GetView().txtTotalPlaytime.Text = CFDashboardApp.FormatTime(overallPlayTimeMinutes);
 
-            int daysPlayed = TFSESSI.GetPlayedDays(timeSpanDays);
+            int daysPlayed = TFSESSI.GetPlayedDays(0, timeSpanStart, timeSpanEnd);
             GetView().txtDaysPlayed.Text = daysPlayed.ToString();
 
             GetView().txtGamesPlayed.Text = GetTotalPlayedGames().ToString();
@@ -266,14 +268,14 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
                 QueryCompareType.EQUALS,
                 K1SESSI.Name, K1SESSI.Fields.PFID);
 
-            if (timeSpanDays != 0)
-            {
-                DateTime limitDate = DateTime.Now.AddDays(-timeSpanDays);
-                query.AddWhere(K1PROFI.Name, K1PROFI.Fields.LAPL, QueryCompareType.GREATER_THAN, limitDate);
-            }
+            if (timeSpanStart is not null)
+                query.AddWhere(K1PROFI.Name, K1PROFI.Fields.LAPL, QueryCompareType.GREATER_OR_EQUAL, timeSpanStart.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
+
+            query.AddWhere(K1PROFI.Name, K1PROFI.Fields.LAPL, QueryCompareType.LESS_OR_EQUAL, timeSpanEnd.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
 
             query.SetDistinct(true);
 
+            string sqlQ = query.PreviewQuery();
             using (var reader = query.Execute())
             {
                 if (reader.Read())
@@ -343,11 +345,10 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
 
             query.AddField(K1SESSI.Name, K1SESSI.Fields.SEID);
 
-            if (timeSpanDays != 0)
-            {
-                DateTime limitDate = DateTime.Now.AddDays(-timeSpanDays);
-                query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PLTO, QueryCompareType.GREATER_THAN, limitDate);
-            }
+            if (timeSpanStart is not null)
+                query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PLFR, QueryCompareType.GREATER_OR_EQUAL, timeSpanStart.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
+
+            query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PLFR, QueryCompareType.LESS_OR_EQUAL, timeSpanEnd.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
 
             query.AddOrderBy(K1SESSI.Name, K1SESSI.Fields.PLTI, OrderDirection.DESC);
 
@@ -363,11 +364,10 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
 
             query.AddField(K1PROFI.Name, K1PROFI.Fields.PFID);
 
-            if (timeSpanDays != 0)
-            {
-                DateTime limitDate = DateTime.Now.AddDays(-timeSpanDays);
-                query.AddWhere(K1PROFI.Name, K1PROFI.Fields.LAPL, QueryCompareType.GREATER_THAN, limitDate);
-            }
+            if (timeSpanStart is not null)
+                query.AddWhere(K1PROFI.Name, K1PROFI.Fields.LAPL, QueryCompareType.GREATER_OR_EQUAL, timeSpanStart.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
+
+            query.AddWhere(K1PROFI.Name, K1PROFI.Fields.LAPL, QueryCompareType.LESS_OR_EQUAL, timeSpanEnd.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
 
             query.AddOrderBy(K1PROFI.Name, K1PROFI.Fields.LAPL, OrderDirection.DESC);
 
@@ -393,11 +393,10 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
 
             query.AddSum(K1SESSI.Name, K1SESSI.Fields.PLTI, "TotalPlaytime");
 
-            if (timeSpanDays != 0)
-            {
-                DateTime limitDate = DateTime.Now.AddDays(-timeSpanDays);
-                query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PLTO, QueryCompareType.GREATER_THAN, limitDate);
-            }
+            if (timeSpanStart is not null)
+                query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PLFR, QueryCompareType.GREATER_OR_EQUAL, timeSpanStart.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
+
+            query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PLFR, QueryCompareType.LESS_OR_EQUAL, timeSpanEnd.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
 
             return query;
         }
@@ -415,11 +414,10 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
                 QueryCompareType.EQUALS,
                 K1SESSI.Name, K1SESSI.Fields.PFID);
 
-            if (timeSpanDays != 0)
-            {
-                DateTime limitDate = DateTime.Now.AddDays(-timeSpanDays);
-                query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PLTO, QueryCompareType.GREATER_THAN, limitDate);
-            }
+            if (timeSpanStart is not null)
+                query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PLFR, QueryCompareType.GREATER_OR_EQUAL, timeSpanStart.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
+
+            query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PLFR, QueryCompareType.LESS_OR_EQUAL, timeSpanEnd.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
 
             query.AddGroupBy(K1PROFI.Name, K1PROFI.Fields.PFID);
 
@@ -455,12 +453,36 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
 
         private void ChangeTimeSpanDays()
         {
-            if (GetView().CmbTimeRange.SelectedIndex == 0)
-                timeSpanDays = 30;
-            else if (GetView().CmbTimeRange.SelectedIndex == 1)
-                timeSpanDays = 365;
-            else
-                timeSpanDays = 0;
+            int selectedIndex = GetView().CmbTimeRange.SelectedIndex;
+
+            switch (selectedIndex)
+            {
+                case 0:
+                    // Last 7 Days
+                    (timeSpanStart, timeSpanEnd) = FnTimeSpan.GetBeginningAndEndDays(7);
+                    break;
+                case 1:
+                    // Last 30 Days
+                    (timeSpanStart, timeSpanEnd) = FnTimeSpan.GetBeginningAndEndDays(30);
+                    break;
+                case 2:
+                    // Last 365 Days
+                    (timeSpanStart, timeSpanEnd) = FnTimeSpan.GetBeginningAndEndDays(365);
+                    break;
+                case 3:
+                    // Week
+                    (timeSpanStart, timeSpanEnd) = FnTimeSpan.GetBeginningAndEnd(FnTimeSpan.TimeSpanType.Week, offset: -1);
+                    break;
+                case 4:
+                    // Month
+                    (timeSpanStart, timeSpanEnd) = FnTimeSpan.GetBeginningAndEnd(FnTimeSpan.TimeSpanType.Month, offset: -1);
+                    break;
+                default:
+                    // All time
+                    timeSpanStart = null;
+                    timeSpanEnd = DateTime.Today.AddDays(1).AddTicks(-1);
+                    break;
+            }
         }
 
         private T1PROFI DetermineMostPlayedProfile()

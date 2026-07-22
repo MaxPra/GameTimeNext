@@ -37,13 +37,11 @@ namespace GameTimeNext.Core.Application.DataManagers
         /// <param name="pfid"></param>
         /// <param name="timeSpan"></param>
         /// <returns></returns>
-        public static int GetPlayedDays(long pfid, long timeSpan)
+        public static int GetPlayedDays(long pfid, DateTime? timeSpanStart, DateTime timeSpanEnd)
         {
             int days = 0;
 
-            UIXQuery query = BuildPlayedDaysQuery(pfid, timeSpan);
-
-            string s = query.PreviewQuery();
+            UIXQuery query = BuildPlayedDaysQuery(pfid, timeSpanStart, timeSpanEnd);
 
             using (var reader = query.Execute())
             {
@@ -54,15 +52,6 @@ namespace GameTimeNext.Core.Application.DataManagers
             }
 
             return days;
-        }
-
-        /// <summary>
-        /// Ermittelt die gespielten Tage über alle Profile hinweg
-        /// </summary>
-        /// <returns></returns>
-        public static int GetPlayedDays(long timeSpan)
-        {
-            return GetPlayedDays(0, timeSpan);
         }
 
         public static int GetInvalidSessionsCount()
@@ -94,7 +83,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             }
         }
 
-        private static UIXQuery BuildPlayedDaysQuery(long pfid, long timeSpan)
+        private static UIXQuery BuildPlayedDaysQuery(long pfid, DateTime? timeSpanStart, DateTime timeSpanEnd)
         {
             UIXQuery query = new UIXQuery(K1SESSI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
 
@@ -103,12 +92,10 @@ namespace GameTimeNext.Core.Application.DataManagers
             if (pfid > 0)
                 query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PFID, QueryCompareType.EQUALS, pfid);
 
-            if (timeSpan != 0)
-            {
-                DateTime limitDate = DateTime.Now.AddDays(-timeSpan);
-                //query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PLFR, QueryCompareType.GREATER_THAN, limitDate);
-                query.AddWhereRaw("DATE(T1SESSI.PLFR) > ?", limitDate.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
-            }
+            if (timeSpanStart is not null)
+                query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PLFR, QueryCompareType.GREATER_OR_EQUAL, timeSpanStart.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
+            
+            query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PLFR, QueryCompareType.LESS_OR_EQUAL, timeSpanEnd.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
 
             query.SetDistinct(true);
 

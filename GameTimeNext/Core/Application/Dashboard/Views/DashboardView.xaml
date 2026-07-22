@@ -60,8 +60,11 @@
                     Height="36"
                     VerticalAlignment="Center"
                     SelectedIndex="0">
+                    <ComboBoxItem Content="Last 7 Days" />
                     <ComboBoxItem Content="Last 30 Days" />
                     <ComboBoxItem Content="Last 365 Days" />
+                    <ComboBoxItem Content="Week" />
+                    <ComboBoxItem Content="Month" />
                     <ComboBoxItem Content="All Time" />
                 </ComboBox>
 
