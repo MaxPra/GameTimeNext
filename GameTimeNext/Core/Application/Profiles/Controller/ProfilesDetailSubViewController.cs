@@ -174,8 +174,6 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
             UIXQuery query = BuildCurrentPlaythroughTimeQuery();
 
-            string sql = query.PreviewQuery();
-
             using (var reader = query.Execute())
             {
                 if (reader.Read())
@@ -235,8 +233,6 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             UIXQuery query = BuildCurrentPlaythroughTimeQuery();
 
-            string sql = query.PreviewQuery();
-
             using (var reader = query.Execute())
             {
                 if (reader.Read())
@@ -259,8 +255,6 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             UIXQuery query = BuildCurrentPlaythroughTimeQuery();
 
-            string sql = query.PreviewQuery();
-
             using (var reader = query.Execute())
             {
                 if (reader.Read())
@@ -282,8 +276,6 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             double totalGameTimeMinutes = 0;
 
             UIXQuery query = BuildCurrentPlaythroughTimeQuery();
-
-            string sql = query.PreviewQuery();
 
             using (var reader = query.Execute())
             {

@@ -598,8 +598,6 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             UIXQuery query = BuildTagGridQuery(pfid);
 
-            string s = query.PreviewQuery();
-
             using (var reader = query.Execute())
             {
                 while (reader.Read())

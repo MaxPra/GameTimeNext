@@ -124,7 +124,6 @@ namespace GameTimeNext.Core.Application.DataManagers
 
             double playedMinutesToday = 0;
 
-            string sql = query.PreviewQuery();
             using (var reader = query.Execute())
             {
                 while (reader.Read())

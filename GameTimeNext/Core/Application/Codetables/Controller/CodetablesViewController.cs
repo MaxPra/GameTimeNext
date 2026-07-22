@@ -122,8 +122,6 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
             UIXQuery query = BuildQueryCodetables();
 
-            string s = query.PreviewQuery();
-
             using (var reader = query.Execute())
             {
                 while (reader.Read())

@@ -18,8 +18,6 @@ namespace GameTimeNext.Core.Application.DataManagers
 
             UIXQuery query = BuildLastSessionGameTimeQuery(pfid);
 
-            string sql = query.PreviewQuery();
-
             using (var reader = query.Execute())
             {
                 if (reader.Read())

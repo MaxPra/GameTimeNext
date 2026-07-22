@@ -835,6 +835,13 @@
                                     Foreground="{DynamicResource Brush.TextPrimary}"
                                     Text="n.A." />
                                 <TextBlock
+                                    x:Name="txtStatLongestSessionGame"
+                                    Margin="0,2,0,0"
+                                    FontSize="11"
+                                    FontWeight="Normal"
+                                    Foreground="{DynamicResource Brush.TextSecondary}"
+                                    Text="(n.A.)" />
+                                <TextBlock
                                     x:Name="txtStatLongestSessionDate"
                                     Margin="0,2,0,0"
                                     FontSize="11"
