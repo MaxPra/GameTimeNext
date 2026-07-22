@@ -51,11 +51,63 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="8" />
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
+                <Grid
+                    x:Name="grdTimeSpanOffset"
+                    Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="8" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="8" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <Button
+                        x:Name="BtnDecreaseTimeSpan"
+                        Grid.Column="0"
+                        Width="36"
+                        Height="36"
+                        VerticalAlignment="Center"
+                        ToolTip="Decrease Time Span">
+                        <Image
+                            Width="16"
+                            Height="16"
+                            Source="/UI/Ressources/GTN_ICON_ADD_PROFILE.png"
+                            Stretch="Uniform" />
+                    </Button>
+
+                    <TextBlock
+                        x:Name="txtTimeSpanOffset"
+                        Grid.Column="2"
+                        Width="36"
+                        TextAlignment="Center"
+                        Text="0"
+                        FontSize="14"
+                        FontWeight="Bold"
+                        Foreground="{DynamicResource Brush.TextPrimary}" />
+
+                    <Button
+                        x:Name="BtnIncreaseTimeSpan"
+                        Grid.Column="4"
+                        Width="36"
+                        Height="36"
+                        VerticalAlignment="Center"
+                        ToolTip="Increase Time Span">
+                        <Image
+                            Width="16"
+                            Height="16"
+                            Source="/UI/Ressources/GTN_ICON_ADD_PROFILE.png"
+                            Stretch="Uniform" />
+                    </Button>
+                </Grid>
+                
                 <ComboBox
                     x:Name="CmbTimeRange"
-                    Grid.Column="0"
+                    Grid.Column="2"
                     Width="190"
                     Height="36"
                     VerticalAlignment="Center"
@@ -70,7 +122,7 @@
 
                 <Button
                     x:Name="BtnRefresh"
-                    Grid.Column="2"
+                    Grid.Column="4"
                     Width="36"
                     Height="36"
                     VerticalAlignment="Center"
@@ -465,7 +517,7 @@
                             FontSize="14"
                             FontWeight="SemiBold"
                             Foreground="{DynamicResource Brush.TextPrimary}"
-                            Text="Recently Played" />
+                            Text="Games Played" />
                     </StackPanel>
 
                     <!--  Recent game list  -->
