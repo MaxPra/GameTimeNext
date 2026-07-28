@@ -101,6 +101,7 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
             FillSectionPlaytimeOverview();
             FillSectionOverallStatistics();
             FillSectionLastPlayed();
+            FillSectionMostPlayed();
         }
 
         protected override void SaveDBOImpl()
@@ -241,6 +242,17 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
             GetView().imgLastPlayedCover.Source = coverImage;
         }
 
+        private void FillSectionMostPlayed()
+        {
+            (string gana, double plti, int days, string ppfn) = GetMostPlayed();
+            GetView().txtMostPlayedTitle.Text = gana;
+            GetView().txtMostPlayedPlaytime.Text = CFDashboardApp.FormatTime(plti);
+            GetView().txtMostPlayedDays.Text = days.ToString();
+
+            var coverImage = FnImage.LoadImageWithoutLock(ppfn, 300, 450);
+            GetView().imgMostPlayedCover.Source = coverImage;
+        }
+
         private List<T1PROFI> GetPlayedProfiles()
         {
             UIXQuery query = BuildQueryPlayedProfiles();
@@ -266,16 +278,16 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
             return 0;
         }
 
-        private double GetPlaytime()
+        private double GetPlaytime(long? pfid = null)
         {
-            UIXQuery query = BuildQueryPlaytime();
+            UIXQuery query = BuildQueryPlaytime(pfid: pfid);
 
             return CalculatePlaytime(query);
         }
 
-        private int GetDaysPlayed()
+        private int GetDaysPlayed(long? pfid = null)
         {
-            string query = BuildQueryDaysPlayed();
+            string query = BuildQueryDaysPlayed(pfid);
 
             using (var reader = UIXQuery.ExecuteCustom(query, AppEnvironment.GetDataBaseManager().GetConnection()))
                 if (reader.Read())
@@ -322,6 +334,22 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
             return ("n.A.", DateTime.MinValue, 0, string.Empty);
         }
 
+        private (string gana, double plti, int days, string ppfn) GetMostPlayed()
+        {
+            UIXQuery query = BuildQueryMostPlayed();
+
+            using (var reader = query.Execute())
+                if (reader.Read())
+                    return (
+                        UIXQuery.GetString(reader, "GANA"),
+                        GetPlaytime(UIXQuery.GetInt64(reader, "PFID")),
+                        GetDaysPlayed(UIXQuery.GetInt64(reader, "PFID")),
+                        Path.Combine(AppEnvironment.GetAppConfig().CoverFolderPath ?? string.Empty, UIXQuery.GetString(reader, "PPFN"))
+                    );
+
+            return ("n.A.", 0, 0, string.Empty);
+        }
+
         private UIXQuery BuildQueryPlayedProfiles()
         {
             UIXQuery query = BuildQuerySessionsInTimeSpanBase();
@@ -343,9 +371,9 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
             return query;
         }
 
-        private UIXQuery BuildQueryPlaytime(bool today = false)
+        private UIXQuery BuildQueryPlaytime(bool today = false, long? pfid = null)
         {
-            UIXQuery query = BuildQuerySessionsInTimeSpanBase(today);
+            UIXQuery query = BuildQuerySessionsInTimeSpanBase(today: today, pfid: pfid);
 
             query.AddField(K1SESSI.Name, K1SESSI.Fields.PLFR, "PLFR");
             query.AddField(K1SESSI.Name, K1SESSI.Fields.PLTO, "PLTO");
@@ -354,14 +382,14 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
             return query;
         }
 
-        private string BuildQueryDaysPlayed()
+        private string BuildQueryDaysPlayed(long? pfid = null)
         {
             string sqlPlfr = "";
             string sqlPlto = "";
 
             {
                 // PLFR
-                UIXQuery query = BuildQuerySessionsInTimeSpanBase();
+                UIXQuery query = BuildQuerySessionsInTimeSpanBase(pfid: pfid);
                 query.AddFieldRaw($"DATE({K1SESSI.Name}.{K1SESSI.Fields.PLFR})", "PLAYDAY");
 
                 sqlPlfr = query.PreviewQuery();
@@ -369,7 +397,7 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
 
             {
                 // PLTO
-                UIXQuery query = BuildQuerySessionsInTimeSpanBase();
+                UIXQuery query = BuildQuerySessionsInTimeSpanBase(pfid: pfid);
                 query.AddFieldRaw($"DATE({K1SESSI.Name}.{K1SESSI.Fields.PLTO})", "PLAYDAY");
 
                 sqlPlto = query.PreviewQuery();
@@ -395,7 +423,7 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
             return query;
         }
 
-        private UIXQuery BuildQuerySessionsInTimeSpanBase(bool today = false)
+        private UIXQuery BuildQuerySessionsInTimeSpanBase(bool today = false, long? pfid = null)
         {
             DateTime? start = timeSpanStart;
             DateTime end = timeSpanEnd;
@@ -405,7 +433,7 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
                 (start, end) = FnTimeSpan.GetBeginningAndEnd(FnTimeSpan.TimeSpanType.Day);
             }
 
-            return TFSESSI.BuildQuerySessionsInTimeSpanBase(start, end);
+            return TFSESSI.BuildQuerySessionsInTimeSpanBase(start, end, pfid: pfid);
         }
 
         private UIXQuery BuildQueryLastPlayed()
@@ -422,6 +450,25 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
             query.AddField(K1SESSI.Name, K1SESSI.Fields.PLTO, "PLTO");
 
             query.AddOrderBy(K1SESSI.Name, K1SESSI.Fields.PLTO, OrderDirection.DESC);
+
+            return query;
+        }
+
+        private UIXQuery BuildQueryMostPlayed()
+        {
+            UIXQuery query = TFSESSI.BuildQuerySessionsInTimeSpanBase(timeSpanStart, timeSpanEnd);
+            query.SetTopX(1);
+
+            UIXQueryTable t1profi = query.AddJoinTable(K1PROFI.Name, JoinType.LEFT);
+            t1profi.AddJoinCondition(K1SESSI.Name, K1SESSI.Fields.PFID, QueryCompareType.EQUALS, K1PROFI.Name, K1PROFI.Fields.PFID);
+
+            query.AddField(K1PROFI.Name, K1PROFI.Fields.PFID, "PFID");
+            query.AddField(K1PROFI.Name, K1PROFI.Fields.GANA, "GANA");
+            query.AddField(K1PROFI.Name, K1PROFI.Fields.PPFN, "PPFN");
+            query.AddSum(K1SESSI.Name, K1SESSI.Fields.PLTI, "PLTI");
+
+            query.AddGroupBy(K1SESSI.Name, K1SESSI.Fields.PFID);
+            query.AddOrderByAlias("PLTI", OrderDirection.DESC);
 
             return query;
         }
