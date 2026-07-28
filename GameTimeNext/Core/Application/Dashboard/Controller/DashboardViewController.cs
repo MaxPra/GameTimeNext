@@ -270,11 +270,7 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
         {
             UIXQuery query = BuildQueryPlaytime();
 
-            using (var reader = query.Execute())
-                if (reader.Read())
-                    return UIXQuery.GetDouble(reader, "TotalPlaytime");
-
-            return 0;
+            return CalculatePlaytime(query);
         }
 
         private int GetDaysPlayed()
@@ -292,11 +288,7 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
         {
             UIXQuery query = BuildQueryPlaytime(today: true);
 
-            using (var reader = query.Execute())
-                if (reader.Read())
-                    return UIXQuery.GetDouble(reader, "TotalPlaytime");
-
-            return 0;
+            return CalculatePlaytime(query);
         }
 
         private (string gana, double plti, DateTime plto) GetLongestSession()
@@ -355,7 +347,9 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
         {
             UIXQuery query = BuildQuerySessionsInTimeSpanBase(today);
 
-            query.AddSum(K1SESSI.Name, K1SESSI.Fields.PLTI, "TotalPlaytime");
+            query.AddField(K1SESSI.Name, K1SESSI.Fields.PLFR, "PLFR");
+            query.AddField(K1SESSI.Name, K1SESSI.Fields.PLTO, "PLTO");
+            query.AddField(K1SESSI.Name, K1SESSI.Fields.PLTI, "PLTI");
 
             return query;
         }
@@ -430,6 +424,36 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
             query.AddOrderBy(K1SESSI.Name, K1SESSI.Fields.PLTO, OrderDirection.DESC);
 
             return query;
+        }
+
+        private double CalculatePlaytime(UIXQuery query)
+        {
+            double playtime = 0;
+
+            using (var reader = query.Execute())
+                while (reader.Read())
+                {
+                    DateTime plfr = UIXQuery.GetDateTime(reader, "PLFR");
+                    DateTime plto = UIXQuery.GetDateTime(reader, "PLTO");
+                    double plti = UIXQuery.GetDouble(reader, "PLTI");
+
+                    if ((timeSpanStart is null || plfr >= timeSpanStart) && plto <= timeSpanEnd)
+                    {
+                        // Same day
+                        playtime += plti;
+                        continue;
+                    }
+                    else if (timeSpanStart is not null && plfr < timeSpanStart)
+                    {
+                        playtime += (plto - (DateTime)timeSpanStart).TotalMinutes;
+                    }
+                    else if (plto > timeSpanEnd)
+                    {
+                        playtime += (timeSpanEnd - plfr).TotalMinutes;
+                    }
+                }
+
+            return playtime;
         }
 
         protected void EV_BtnRefresh()
