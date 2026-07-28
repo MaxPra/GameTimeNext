@@ -134,8 +134,6 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
             UIXQuery query = BuildQueryMetadataPositions();
 
-            string s = query.PreviewQuery();
-
             using (var reader = query.Execute())
             {
                 while (reader.Read())
