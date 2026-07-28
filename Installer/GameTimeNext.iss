@@ -16,25 +16,32 @@
 #define BinDirectory "..\GameTimeNext\bin\Release\net10.0-windows"
 
 [Setup]
-AppId={{AA642EDE-2EA3-4C94-8325-0E112FA8FBF5}}
+AppId={{AA642EDE-2EA3-4C94-8325-0E112FA8FBF5}
 AppName={#AppName}
 AppVersion={#AppVersion}
 VersionInfoVersion={#AppVersionSemantic}
 AppPublisher={#AppPublisher}
-DefaultDirName={autopf}\{#AppPublisher}\{#AppName}
-DisableDirPage=no
+DefaultDirName={localappdata}\Programs\{#AppPublisher}\{#AppName}
+DisableDirPage=yes
+SetupArchitecture=x64
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 UninstallDisplayName={#AppName}
 UninstallDisplayIcon={app}\{#AppExeName},0
 DisableProgramGroupPage=yes
-PrivilegesRequired=admin
+PrivilegesRequired=lowest
+PrivilegesRequiredOverridesAllowed=commandline
 OutputDir={#BuildDirectory}
 OutputBaseFilename={#AppName}_v{#AppVersion}_Installer
 SetupIconFile=..\GameTimeNext\UI\Ressources\GTN_APP_ICON.ico
-Compression=lzma2
+Compression=lzma2/max
 SolidCompression=yes
+LZMANumBlockThreads=8
 WizardStyle=dynamic
+ChangesAssociations=no
+CloseApplications=force
+CloseApplicationsFilter={#AppExeName}
+RestartApplications=no
 
 [Files]
 ;General files
@@ -44,12 +51,12 @@ Source: "{#BinDirectory}\*.runtimeconfig.json"; DestDir: "{app}"; Flags: ignorev
 Source: "{#BinDirectory}\*.deps.json"; DestDir: "{app}"; Flags: ignoreversion
 
 ;Runtime DLLs
-Source: "{#BinDirectory}\runtimes\win-x64\*.dll"; DestDir: "{app}\runtimes\win-x64"; Flags: ignoreversion recursesubdirs
+Source: "{#BinDirectory}\runtimes\win-x64\*.dll"; DestDir: "{app}\runtimes\win-x64"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 ;App Specific
-Source: "{#BinDirectory}\ImportPackages\*.*"; DestDir: "{localappdata}\GameTimeNext\Import"; Flags: ignoreversion recursesubdirs
-Source: "{#BinDirectory}\Core\*.*"; DestDir: "{app}\Core"; Flags: ignoreversion recursesubdirs; Excludes: "*\UpdateChanges_vNEXT.txt,ImportPackages\*"
-Source: "{#BinDirectory}\UI\*.*"; DestDir: "{app}\UI"; Flags: ignoreversion recursesubdirs
+Source: "{#BinDirectory}\ImportPackages\*.*"; DestDir: "{localappdata}\GameTimeNext\Import"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#BinDirectory}\Core\*.*"; DestDir: "{app}\Core"; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "*\UpdateChanges_vNEXT.txt,ImportPackages\*"
+Source: "{#BinDirectory}\UI\*.*"; DestDir: "{app}\UI"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: checkedonce
@@ -62,49 +69,9 @@ Name: "{autodesktop}\{#AppShortcutName}"; Filename: "{app}\{#AppExeName}"; Tasks
 Filename: "{app}\{#AppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(AppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
 
 [Code]
-
-const OldProductCode = '{AA642EDE-2EA3-4C94-8325-0E112FA8FBF5}';
+#include "Includes\GameTimeNext_RemoveOldInstalls.iss"
 
 function InitializeSetup(): Boolean;
-var
-  ResultCode: Integer;
-  UninstallOK: Boolean;
 begin
-  Result := True;
-  UninstallOK := False;
-
-  if RegKeyExists(HKLM, 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\' + OldProductCode) or
-     RegKeyExists(HKLM, 'SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\' + OldProductCode) then
-  begin
-    if MsgBox(
-      'A previous MSI version of GameTimeNext was found.' + #13#10 +
-      'It must be removed before continuing installation.' + #13#10#13#10 +
-      'Uninstall it now?',
-      mbConfirmation, MB_YESNO
-    ) = IDYES then
-    begin
-      UninstallOK :=
-        Exec(
-          ExpandConstant('{sys}\msiexec.exe'),
-          '/x ' + OldProductCode + ' /passive /norestart',
-          '',
-          SW_SHOW,
-          ewWaitUntilTerminated,
-          ResultCode
-        );
-
-      if (not UninstallOK) or (ResultCode <> 0) then
-      begin
-        MsgBox('Uninstall failed. Setup will abort.', mbError, MB_OK);
-        Result := False;
-        Exit;
-      end;
-    end
-    else
-    begin
-      MsgBox('Setup cannot continue while the old version is installed.', mbInformation, MB_OK);
-      Result := False;
-      Exit;
-    end;
-  end;
+  Result := RemoveOldInstalls();
 end;
