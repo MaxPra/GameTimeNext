@@ -7,7 +7,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.DataManagers
 {
-    public class TFPROFI
+    public partial class TFPROFI
     {
         /// <summary>
         /// Löscht das übergebene Profil inkl. der zugehörigen Daten

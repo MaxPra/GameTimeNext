@@ -69,15 +69,14 @@
                     <Button
                         x:Name="BtnDecreaseTimeSpan"
                         Grid.Column="0"
-                        Width="36"
+                        Width="40"
                         Height="36"
                         VerticalAlignment="Center"
                         ToolTip="Decrease Time Span">
-                        <Image
-                            Width="16"
-                            Height="16"
-                            Source="/UI/Ressources/GTN_ICON_ADD_PROFILE.png"
-                            Stretch="Uniform" />
+                        <TextBlock
+                            FontFamily="Segoe MDL2 Assets"
+                            FontSize="9"
+                            Text="&#xE738;" />
                     </Button>
 
                     <TextBlock
@@ -93,15 +92,14 @@
                     <Button
                         x:Name="BtnIncreaseTimeSpan"
                         Grid.Column="4"
-                        Width="36"
+                        Width="40"
                         Height="36"
                         VerticalAlignment="Center"
                         ToolTip="Increase Time Span">
-                        <Image
-                            Width="16"
-                            Height="16"
-                            Source="/UI/Ressources/GTN_ICON_ADD_PROFILE.png"
-                            Stretch="Uniform" />
+                        <TextBlock
+                            FontFamily="Segoe MDL2 Assets"
+                            FontSize="9"
+                            Text="&#xE710;" />
                     </Button>
                 </Grid>
                 
@@ -123,13 +121,13 @@
                 <Button
                     x:Name="BtnRefresh"
                     Grid.Column="4"
-                    Width="36"
+                    Width="40"
                     Height="36"
                     VerticalAlignment="Center"
                     ToolTip="Refresh">
                     <TextBlock
                         FontFamily="Segoe MDL2 Assets"
-                        FontSize="14"
+                        FontSize="9"
                         Text="&#xE72C;" />
                 </Button>
             </Grid>
