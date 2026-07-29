@@ -16,12 +16,14 @@ const
 type
   TOldInnoScope = (scNone, scSystemWide, scUserScoped);
 
-// Looks for an old Inno Setup uninstall entry under either the pre-fix or
-// post-fix AppId, checking system-wide locations (HKLM64/HKLM32) as well as
-// a possible old per-user install (HKCU). Returns the scope it was found in,
-// if any. System-wide is checked first (in either AppId form), then
-// per-user, so a machine with leftovers from both scopes gets its
-// machine-wide one handled first.
+// Looks for an old Inno Setup uninstall entry, checking system-wide
+// locations (HKLM64/HKLM32) under EITHER AppId form, and a possible old
+// per-user install (HKCU) under the pre-fix AppId only - a user-scoped
+// entry under the current AppId is just this app's own previous version,
+// which Inno upgrades in place natively and must not be routed through
+// this forced-uninstall flow. Returns the scope it was found in, if any.
+// System-wide is checked first, so a machine with leftovers from both
+// scopes gets its machine-wide one handled first.
 function FindOldInnoUninstallKey(var RootKey: Integer; var SubKeyName: String; var Scope: TOldInnoScope): Boolean;
 var
   AppIds: array[0..1] of String;
@@ -31,9 +33,6 @@ begin
   AppIds[0] := OldInnoAppIdBuggy;
   AppIds[1] := OldInnoAppIdFixed;
 
-  // System-wide: any leftover install under EITHER AppId form must go,
-  // since the whole point of this migration is ending up user-scoped only,
-  // regardless of which script version created the old install.
   for i := 0 to GetArrayLength(AppIds) - 1 do
   begin
     CandidateSubKey := 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\' + AppIds[i] + '_is1';
@@ -57,11 +56,6 @@ begin
     end;
   end;
 
-  // User-scoped: only the pre-fix (buggy) AppId counts as "old" here. A
-  // user-scoped entry under the current (fixed) AppId is just this app's
-  // own previous version - Inno's normal upgrade behavior already handles
-  // that in place, so it must NOT be routed through this forced-uninstall
-  // flow, or every future update would wrongly demand a full reinstall.
   CandidateSubKey := 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\' + OldInnoAppIdBuggy + '_is1';
 
   if RegKeyExists(HKCU, CandidateSubKey) then
@@ -93,6 +87,7 @@ var
   Scope: TOldInnoScope;
   UninstallString: String;
   ResultCode: Integer;
+  LogSwitch: String;
 begin
   Result := False;
 
@@ -135,6 +130,14 @@ begin
     Exit;
   end;
 
+  // A persistent log helps diagnose a silent failure after the fact.
+  // ForceDirectories is a no-op if the folder already exists, and this
+  // early in Setup (before our own [Files] entries are installed) it may
+  // not exist yet.
+  ForceDirectories(ExpandConstant('{localappdata}\GameTimeNext'));
+  LogSwitch :=
+    ' /LOG="' + ExpandConstant('{localappdata}') + '\GameTimeNext\OldInnoUninstall.log"';
+
   if Scope = scSystemWide then
   begin
     // Machine-wide install lives in an admin-only location, but this Setup
@@ -143,7 +146,7 @@ begin
       ShellExec(
         'runas',
         UninstallString,
-        '/VERYSILENT /SUPPRESSMSGBOXES /NORESTART',
+        '/VERYSILENT /SUPPRESSMSGBOXES /NORESTART' + LogSwitch,
         '',
         SW_SHOW,
         ewWaitUntilTerminated,
@@ -157,7 +160,7 @@ begin
     Result :=
       Exec(
         UninstallString,
-        '/VERYSILENT /SUPPRESSMSGBOXES /NORESTART',
+        '/VERYSILENT /SUPPRESSMSGBOXES /NORESTART' + LogSwitch,
         '',
         SW_SHOW,
         ewWaitUntilTerminated,
@@ -174,6 +177,7 @@ var
   SubKeyName: String;
   Scope: TOldInnoScope;
   ScopeDescription: String;
+  ScopeWarning: String;
 begin
   Result := True;
 
@@ -182,13 +186,20 @@ begin
   while FindOldInnoUninstallKey(RootKey, SubKeyName, Scope) do
   begin
     if Scope = scSystemWide then
-      ScopeDescription := 'system-wide'
+    begin
+      ScopeDescription := 'system-wide';
+      ScopeWarning := #13#10#13#10 + 'This was installed for all users, so you may be asked for administrator credentials.';
+    end
     else
+    begin
       ScopeDescription := 'user-scoped';
+      ScopeWarning := '';
+    end;
 
     if MsgBox(
       'A previous ' + ScopeDescription + ' installation of GameTimeNext was found.' + #13#10 +
-      'It must be removed before continuing installation.' + #13#10#13#10 +
+      'It must be removed before continuing installation.' +
+      ScopeWarning + #13#10#13#10 +
       'Uninstall it now?',
       mbConfirmation,
       MB_YESNO
