@@ -12,6 +12,38 @@ namespace GameTimeNext.Core.Framework.Utils
 {
     public partial class FnSystem
     {
+        // Mutex to ensure single-instance behavior for the whole application process
+        private static Mutex? _singleInstanceMutex;
+
+        /// <summary>
+        /// Tries to acquire a global mutex so only one instance of the application runs.
+        /// Returns true if this is the first instance, false if another instance is already running.
+        /// </summary>
+        public static bool TryAcquireSingleInstance()
+        {
+            try
+            {
+                const string mutexName = "Global\\GameTimeNext_SingleInstance_Mutex";
+
+                bool createdNew;
+                _singleInstanceMutex = new Mutex(initiallyOwned: true, name: mutexName, createdNew: out createdNew);
+
+                if (!createdNew)
+                {
+                    // Another instance already holds the mutex
+                    _singleInstanceMutex.Dispose();
+                    _singleInstanceMutex = null;
+                    return false;
+                }
+
+                return true;
+            }
+            catch
+            {
+                return true;
+            }
+        }
+
         public static bool SetAutoStart(bool enabled, bool startMinimized = false)
         {
             try
