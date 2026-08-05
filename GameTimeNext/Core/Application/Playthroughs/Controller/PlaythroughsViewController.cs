@@ -222,7 +222,11 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
                     query.AddWhere(K1PLTHR.Name, K1PLTHR.Fields.PTDE, QueryCompareType.LIKE, GetView().TxbDescription.Text);
                 }
 
-                // ToDo: Playthrough type
+
+                if (!FnString.IsNullEmptyOrWhitespace(GetView().CmbPlaythroughType.SelectedValue?.ToString()))
+                {
+                    query.AddWhere(K1PLTHR.Name, K1PLTHR.Fields.PTTY, QueryCompareType.EQUALS, GetView().CmbPlaythroughType.SelectedValue?.ToString());
+                }
 
                 if (GetView().ChbCompleted.IsChecked == true)
                     query.AddWhere(K1PLTHR.Name, K1PLTHR.Fields.PTCO, QueryCompareType.EQUALS, true);
