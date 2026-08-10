@@ -1,4 +1,5 @@
 ﻿using GameTimeNext.Core.Framework;
+using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.Versioning;
 using UIX.ViewController.Engine.Utils;
 
@@ -8,7 +9,7 @@ namespace GameTimeNext.Core.Application.MigrationTasks
     {
         public static void MigrateIfNeeded()
         {
-            string versionOldRaw = AppEnvironment.GetAppConfig().AppVersion;
+            string versionOldRaw = AppConfig.AppVersion;
             AppVersion currentVersion = AppEnvironment.AppVersion;
 
             if (FnString.IsNullEmptyOrWhitespace(versionOldRaw))

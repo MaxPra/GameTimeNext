@@ -4,6 +4,7 @@ using GameTimeNext.Core.Application.General.UserSettings;
 using GameTimeNext.Core.Application.General.ViewModels;
 using GameTimeNext.Core.Application.GTXMigration;
 using GameTimeNext.Core.Framework;
+using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.Logging;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.Utils;
@@ -173,7 +174,7 @@ namespace GameTimeNext.Core.Application.General.Controller
 
         private async Task CheckGTXMigration()
         {
-            string[] gtnFiles = Directory.GetFiles(AppEnvironment.GetAppConfig().CoverFolderPath);
+            string[] gtnFiles = Directory.GetFiles(AppConfig.ProfileCoversDirectoryPath);
             string loaderTextStart = "Migrating GTX -> GTN ...";
 
             if (Directory.Exists(_gtxPath) && gtnFiles.Length == 0)

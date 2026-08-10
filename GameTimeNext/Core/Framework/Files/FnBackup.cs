@@ -1,4 +1,5 @@
 ﻿using GameTimeNext.Core.Application.Settings;
+using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.Utils;
 using System.IO;
 using System.IO.Compression;
@@ -13,7 +14,7 @@ namespace GameTimeNext.Core.Framework.Files
         /// <param name="expPath">Export Pfad</param>
         public static async Task CreateBackupAsync(string expPath, string backuptype = BackupType.APP_START_BACKUP)
         {
-            string sourceFolder = AppEnvironment.GetAppConfig().AppFolderPath;
+            string sourceFolder = AppConfig.StorageDirectoryPath;
             string backupName = $"{DateTime.Now:yyyyMMddHHmmss}_GameTimeNext";
 
             if (backuptype == BackupType.APP_START_BACKUP)
@@ -25,15 +26,15 @@ namespace GameTimeNext.Core.Framework.Files
 
             expPath = Path.Combine(expPath, backupName);
 
-            string tempFolderDest = Path.Combine(AppEnvironment.GetAppConfig().AppDataLocalPath, "gametimenext_bkptemp");
+            string tempFolderDest = AppConfig.TempBackupDirectoryPath;
 
             // Appordner kopieren
-            FnDirectory.CopyDirectory(sourceFolder, tempFolderDest, new string[] { "GameTimeNextDb.db" }, true);
+            FnDirectory.CopyDirectory(sourceFolder, tempFolderDest, new string[] { AppConfig.Root._databaseFileName }, true);
 
             string dataBaseDest = Path.Combine(tempFolderDest, "Data");
 
             // Datenbankfile backup
-            AppEnvironment.GetDataBaseManager().CreateBackup(Path.Combine(dataBaseDest, "GameTimeNextDb.db"));
+            AppEnvironment.GetDataBaseManager().CreateBackup(Path.Combine(dataBaseDest, AppConfig.Root._databaseFileName));
 
             // Backup Zip erstellen
             ZipFile.CreateFromDirectory(tempFolderDest, expPath);
@@ -53,7 +54,7 @@ namespace GameTimeNext.Core.Framework.Files
         /// <param name="impPath">Import Pfad</param>
         public static void ImportBackup(string impPath)
         {
-            string extractPath = AppEnvironment.GetAppConfig().AppFolderPath;
+            string extractPath = AppConfig.StorageDirectoryPath;
 
             if (Directory.Exists(extractPath))
             {

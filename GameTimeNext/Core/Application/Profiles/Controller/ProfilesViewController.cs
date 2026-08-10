@@ -9,6 +9,7 @@ using GameTimeNext.Core.Application.Profiles.Views;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Application.TimeMonitoring;
 using GameTimeNext.Core.Framework;
+using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.LauncherIntegration;
 using GameTimeNext.Core.Framework.Logging;
 using GameTimeNext.Core.Framework.UI;
@@ -396,14 +397,14 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
                     string platformSymbolFile = t1ctabdIm?.PARM1 ?? string.Empty;
                     string platformSymbolFullPath =
-                        AppEnvironment.GetAppConfig().ImagesSymbolsPath +
+                        AppConfig.ImagesSymbolsDirectoryPath +
                         platformSymbolFile;
 
                     ProfilesListBoxItem item = new ProfilesListBoxItem
                     {
                         ItemObject = prof,
                         COCOVIM = FnImage.LoadImageWithoutLock(
-                            Path.Combine(AppEnvironment.GetAppConfig().CoverFolderPath ?? string.Empty, prof.PPFN),
+                            Path.Combine(AppConfig.ProfileCoversDirectoryPath ?? string.Empty, prof.PPFN),
                             300,
                             450),
                         COISPLA = FnSystem.IsExeFoundInPath(prof.EXGF),
@@ -639,7 +640,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             {
                 T1PROFI selectedT1profi = GetSelectedProfile();
 
-                string coverPath = Path.Combine(AppEnvironment.GetAppConfig().CoverFolderPath ?? string.Empty, selectedT1profi.PPFN);
+                string coverPath = Path.Combine(AppConfig.ProfileCoversDirectoryPath ?? string.Empty, selectedT1profi.PPFN);
                 File.Delete(coverPath);
 
                 TFPROFI.DeleteT1PROFIAndLinkedData(selectedT1profi);

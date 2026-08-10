@@ -12,60 +12,9 @@ namespace GameTimeNext.Core.Framework.Files
     {
         public static void CreateApplicationFoldersAndFiles()
         {
+            // OFDOI: Remove
 
             CreateDevAppFolder();
-
-            if (!Directory.Exists(AppEnvironment.GetAppConfig().AppFolderPath))
-            {
-                Directory.CreateDirectory(AppEnvironment.GetAppConfig().AppFolderPath);
-            }
-
-            if (!Directory.Exists(AppEnvironment.GetAppConfig().DataFolderPath))
-            {
-                Directory.CreateDirectory(AppEnvironment.GetAppConfig().DataFolderPath);
-            }
-
-            if (!Directory.Exists(AppEnvironment.GetAppConfig().CoverFolderPath))
-            {
-                Directory.CreateDirectory(AppEnvironment.GetAppConfig().CoverFolderPath);
-            }
-
-            if (!Directory.Exists(AppEnvironment.GetAppConfig().CoverFolderTempPath))
-            {
-                Directory.CreateDirectory(AppEnvironment.GetAppConfig().CoverFolderTempPath);
-            }
-
-            if (!File.Exists(AppEnvironment.GetAppConfig().AppConfigPath))
-            {
-                AppConfig appConfig = new AppConfig();
-
-                File.WriteAllText(AppEnvironment.GetAppConfig().AppConfigPath, JsonSerializer.Serialize(appConfig));
-            }
-
-            if (!File.Exists(AppEnvironment.GetAppConfig().LogFilePath))
-            {
-                File.Create(AppEnvironment.GetAppConfig().LogFilePath).Close();
-            }
-
-            if (!Directory.Exists(AppEnvironment.GetAppConfig().DevGeneratedFilesPath))
-            {
-                Directory.CreateDirectory(AppEnvironment.GetAppConfig().DevGeneratedFilesPath);
-            }
-
-            if (!Directory.Exists(AppEnvironment.GetAppConfig().ImagesSymbolsPath))
-            {
-                Directory.CreateDirectory(AppEnvironment.GetAppConfig().ImagesSymbolsPath);
-            }
-
-            if (!Directory.Exists(AppEnvironment.GetAppConfig().ImagesSymbolsPathDefault))
-            {
-                Directory.CreateDirectory(AppEnvironment.GetAppConfig().ImagesSymbolsPathDefault);
-            }
-
-            if (!Directory.Exists(AppEnvironment.GetAppConfig().ImagesSymbolsPathUser))
-            {
-                Directory.CreateDirectory(AppEnvironment.GetAppConfig().ImagesSymbolsPathUser);
-            }
         }
 
         public static void CopyDirectory(string sourceDirectory, string targetDirectory, bool overwriteFiles)
@@ -130,7 +79,7 @@ namespace GameTimeNext.Core.Framework.Files
 
             if (FnSystem.IsDebug())
             {
-                backupPath = AppEnvironment.GetAppConfig().DevBackupFolderPath;
+                backupPath = AppConfig.Dev.BackupDirectoryPath;
 
                 if (!Directory.Exists(backupPath))
                     Directory.CreateDirectory(backupPath);
@@ -229,8 +178,8 @@ namespace GameTimeNext.Core.Framework.Files
             if (!FnSystem.IsDebug())
                 return;
 
-            string appFolderPathNormal = AppEnvironment.GetAppConfig().AppFolderPathNormal;
-            string appFolderPathDev = AppEnvironment.GetAppConfig().AppFolderPath;
+            string appFolderPathNormal = AppConfig.NormalStorageDirectoryPath;
+            string appFolderPathDev = AppConfig.StorageDirectoryPath;
 
             if (Directory.Exists(appFolderPathDev))
                 return;

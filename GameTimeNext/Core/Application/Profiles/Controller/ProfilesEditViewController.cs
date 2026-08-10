@@ -7,6 +7,7 @@ using GameTimeNext.Core.Application.Profiles.Viewmodel;
 using GameTimeNext.Core.Application.Profiles.Views;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
+using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.Igdb;
 using GameTimeNext.Core.Framework.LauncherIntegration;
 using GameTimeNext.Core.Framework.UI.Dialogs;
@@ -137,8 +138,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected override void Event_Closing()
         {
-            try { Directory.Delete(AppEnvironment.GetAppConfig().AppDataLocalPathSteamGridDBCovers, true); } catch { }
-            try { Directory.Delete(AppEnvironment.GetAppConfig().AppDataLocalPathTempCovers, true); } catch { }
+            try { Directory.Delete(AppConfig.SteamGridDBCoversDirectoryPath, true); } catch { }
+            try { Directory.Delete(AppConfig.TempCoversDirectoryPath, true); } catch { }
 
 
             Exit(false);
@@ -937,7 +938,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 try
                 {
                     // Altes Bild löschen
-                    File.Delete(Path.Combine(AppEnvironment.GetAppConfig().CoverFolderPath, _oldProfileCoverFileName));
+                    File.Delete(Path.Combine(AppConfig.ProfileCoversDirectoryPath, _oldProfileCoverFileName));
                 }
                 catch (Exception)
                 {

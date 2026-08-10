@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using GameTimeNext.Core.Framework.Config;
+using System.Reflection;
 
 namespace GameTimeNext.Core.Framework.Versioning
 {
@@ -52,10 +53,10 @@ namespace GameTimeNext.Core.Framework.Versioning
 
         public void SetAppVersionInConfig()
         {
-            if (AppEnvironment.GetAppConfig().AppVersion == _informationalVersion)
+            if (AppConfig.AppVersion == _informationalVersion)
                 return;
 
-            AppEnvironment.GetAppConfig().AppVersion = _informationalVersion;
+            AppConfig.AppVersion = _informationalVersion;
             AppEnvironment.SaveAppConfig();
         }
 

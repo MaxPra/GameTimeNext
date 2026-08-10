@@ -1,4 +1,5 @@
 ﻿using GameTimeNext.Core.Application.TableObjects;
+using GameTimeNext.Core.Framework.Config;
 using System.Data;
 using System.Data.SQLite;
 using System.IO;
@@ -23,7 +24,7 @@ namespace GameTimeNext.Core.Framework.DataBase
         {
             // -- Erstellen --
             // Prüfen, ob File existiert
-            if (File.Exists(AppEnvironment.GetAppConfig().DataBaseFilePath))
+            if (File.Exists(AppConfig.DatabaseFilePath))
             {
                 // -- Verbinden --
                 ConnectToSQLite();
@@ -31,7 +32,7 @@ namespace GameTimeNext.Core.Framework.DataBase
                 return;
             }
 
-            using (File.Create(AppEnvironment.GetAppConfig().DataBaseFilePath)) { }
+            using (File.Create(AppConfig.DatabaseFilePath)) { }
 
             // -- Verbinden --
             ConnectToSQLite();
@@ -93,14 +94,14 @@ namespace GameTimeNext.Core.Framework.DataBase
             bool newDataBase = false;
             string connectionString = String.Empty;
 
-            if (!File.Exists(AppEnvironment.GetAppConfig().DataBaseFilePath))
+            if (!File.Exists(AppConfig.DatabaseFilePath))
             {
-                connectionString = $"Data Source={AppEnvironment.GetAppConfig().DataBaseFilePath};Version=3;New=True;Compress=True;BusyTimeout=15000;Pooling=False;";
+                connectionString = $"Data Source={AppConfig.DatabaseFilePath};Version=3;New=True;Compress=True;BusyTimeout=15000;Pooling=False;";
                 newDataBase = true;
             }
             else
             {
-                connectionString = $"Data Source={AppEnvironment.GetAppConfig().DataBaseFilePath};Version=3;Compress=True;BusyTimeout=15000;Pooling=False;";
+                connectionString = $"Data Source={AppConfig.DatabaseFilePath};Version=3;Compress=True;BusyTimeout=15000;Pooling=False;";
                 newDataBase = false;
             }
 

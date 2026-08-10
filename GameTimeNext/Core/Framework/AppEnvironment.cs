@@ -25,7 +25,6 @@ namespace GameTimeNext.Core.Framework
 {
     internal class AppEnvironment
     {
-
         private static AppConfig _appConfig = new AppConfig();
         private static DataBaseManager _databaseManager = new DataBaseManager();
         private static T1PROFI? _t1Profi = new T1PROFI();
@@ -96,7 +95,7 @@ namespace GameTimeNext.Core.Framework
 
             string appConfigText = JsonSerializer.Serialize(GetAppConfig(), options);
 
-            File.WriteAllText(new AppConfig().AppConfigPath, appConfigText);
+            File.WriteAllText(AppConfig.AppConfigFilePath, appConfigText);
         }
 
         public static void Initalize()
@@ -178,15 +177,15 @@ namespace GameTimeNext.Core.Framework
         private static void HandleBackup()
         {
             // Backup hier einspielen
-            if (_appConfig.AppSettings.BackupType == BackupType.IMPORT_BACKUP)
+            if (GetAppConfig().AppSettings.BackupType == BackupType.IMPORT_BACKUP)
             {
                 try
                 {
-                    FnBackup.ImportBackup(_appConfig.AppSettings.BackupImportPath);
+                    FnBackup.ImportBackup(GetAppConfig().AppSettings.BackupImportPath);
                 }
                 catch (Exception)
                 {
-                    InformationList.Add(new InformationListItem(CFMBOXIcon.Error, "Could not import backupfile:\n" + _appConfig.AppSettings.BackupImportPath + "."));
+                    InformationList.Add(new InformationListItem(CFMBOXIcon.Error, "Could not import backupfile:\n" + GetAppConfig().AppSettings.BackupImportPath + "."));
                 }
 
                 // Hier nochmal AppConfig laden, da vorher durch Backupimport überschrieben
@@ -194,14 +193,14 @@ namespace GameTimeNext.Core.Framework
             }
             else
             {
-                if (!_appConfig.AppSettings.AutoBackup)
+                if (!GetAppConfig().AppSettings.AutoBackup)
                     return;
 
-                string backupPath = _appConfig.AppSettings.BackupExportPath;
+                string backupPath = GetAppConfig().AppSettings.BackupExportPath;
 
                 if (FnSystem.IsDebug())
                 {
-                    backupPath = AppEnvironment.GetAppConfig().DevBackupFolderPath;
+                    backupPath = AppConfig.Dev.BackupDirectoryPath;
 
                     if (!Directory.Exists(backupPath))
                         Directory.CreateDirectory(backupPath);
@@ -226,7 +225,7 @@ namespace GameTimeNext.Core.Framework
 
         private static void CheckShowChangeLog()
         {
-            string versionOldRaw = AppEnvironment.GetAppConfig().AppVersion;
+            string versionOldRaw = AppConfig.AppVersion;
 
             AppVersion versionOld = new AppVersion();
             versionOld.Get(versionOldRaw);
@@ -270,7 +269,7 @@ namespace GameTimeNext.Core.Framework
 
         public static void LoadAppConfig()
         {
-            string appConfigText = File.ReadAllText(new AppConfig().AppConfigPath);
+            string appConfigText = File.ReadAllText(AppConfig.AppConfigFilePath);
 
             if (appConfigText == null || appConfigText.Length == 0)
             {

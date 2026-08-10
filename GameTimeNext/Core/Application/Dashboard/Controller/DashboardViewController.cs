@@ -5,6 +5,7 @@ using GameTimeNext.Core.Application.Profiles;
 using GameTimeNext.Core.Application.Profiles.Viewmodel;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
+using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.Utils;
 using System.Globalization;
 using System.IO;
@@ -207,7 +208,7 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
             return t1profiles.Select(prof => new ProfilesListBoxItem
             {
                 ItemObject = prof,
-                COCOVIM = FnImage.LoadImageWithoutLock(Path.Combine(AppEnvironment.GetAppConfig().CoverFolderPath ?? string.Empty, prof.PPFN), 300, 450),
+                COCOVIM = FnImage.LoadImageWithoutLock(Path.Combine(AppConfig.ProfileCoversDirectoryPath ?? string.Empty, prof.PPFN), 300, 450),
                 COISPLA = FnSystem.IsExeFoundInPath(prof.EXGF)
             }).ToList();
         }

@@ -1,6 +1,7 @@
 ﻿using GameTimeNext.Core.Application.General;
 using GameTimeNext.Core.Application.Settings;
 using GameTimeNext.Core.Framework;
+using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.Files;
 using GameTimeNext.Core.Framework.GitHub;
 using GameTimeNext.Core.Framework.Logging;
@@ -66,7 +67,7 @@ namespace GameTimeNext
 
             AppEnvironment.LoadAppConfig();
 
-            FnLog.Configure(AppEnvironment.GetAppConfig().LogFilePath);
+            FnLog.Configure(AppConfig.LogFilePath);
 
             FnLog.AddInfo("MainApp", "*** Initializing Application... ***");
 
@@ -109,7 +110,7 @@ namespace GameTimeNext
 
                 if (FnSystem.IsDebug())
                 {
-                    backupPath = AppEnvironment.GetAppConfig().DevBackupFolderPath;
+                    backupPath = AppConfig.Dev.BackupDirectoryPath;
 
                     if (!Directory.Exists(backupPath))
                         Directory.CreateDirectory(backupPath);

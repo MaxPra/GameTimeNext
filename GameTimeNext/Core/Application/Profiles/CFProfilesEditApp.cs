@@ -1,5 +1,6 @@
 ﻿using GameTimeNext.Core.Application.Profiles.Views;
 using GameTimeNext.Core.Framework;
+using GameTimeNext.Core.Framework.Config;
 using System.IO;
 using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Utils;
@@ -18,7 +19,7 @@ namespace GameTimeNext.Core.Application.Profiles
         /// <param name="currentPath"></param>
         public static void CopyProfileCoverToAppCoverFolder(string currentPath, string destFileName)
         {
-            File.Copy(currentPath, AppEnvironment.GetAppConfig().CoverFolderPath + Path.DirectorySeparatorChar + destFileName);
+            File.Copy(currentPath, AppConfig.ProfileCoversDirectoryPath + Path.DirectorySeparatorChar + destFileName);
         }
 
 

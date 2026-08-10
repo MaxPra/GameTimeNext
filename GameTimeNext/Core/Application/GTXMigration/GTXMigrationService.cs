@@ -3,6 +3,7 @@ using GameTimeNext.Core.Application.General;
 using GameTimeNext.Core.Application.Profiles.Components;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
+using GameTimeNext.Core.Framework.Config;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing;
 using SixLabors.ImageSharp.Drawing.Processing;
@@ -132,7 +133,7 @@ namespace GameTimeNext.Core.Application.GTXMigration
                             DateTime fipl = ParseOldDateTime(reader.GetValue(2));
                             DateTime lapl = ParseOldDateTime(reader.GetValue(3));
 
-                            string ppfn = AppEnvironment.GetAppConfig().CoverFolderPath + System.IO.Path.DirectorySeparatorChar + reader.GetString(4);
+                            string ppfn = AppConfig.ProfileCoversDirectoryPath + System.IO.Path.DirectorySeparatorChar + reader.GetString(4);
                             string exgf = reader.GetString(5);
 
                             DateTime crat = ParseOldDateTime(reader.GetString(6));
@@ -408,7 +409,7 @@ namespace GameTimeNext.Core.Application.GTXMigration
 
             try
             {
-                ConvertFolderToNewFormat(_imagesFolderPath, AppEnvironment.GetAppConfig().CoverFolderPath);
+                ConvertFolderToNewFormat(_imagesFolderPath, AppConfig.ProfileCoversDirectoryPath);
             }
             catch
             {

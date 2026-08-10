@@ -1,5 +1,6 @@
 ﻿using GameTimeNext.Core.Application.Profiles;
 using GameTimeNext.Core.Application.Profiles.Viewmodel;
+using GameTimeNext.Core.Framework.Config;
 using Microsoft.Win32;
 using System.Diagnostics;
 using System.IO;
@@ -271,13 +272,13 @@ namespace GameTimeNext.Core.Framework.Utils
                 {
                     fileNameReturn = CFProfilesEditApp.GetGUIDCoverName("jpg");
 
-                    pathReturn = AppEnvironment.GetAppConfig().AppDataLocalPathTempCovers + System.IO.Path.DirectorySeparatorChar + fileNameReturn;
+                    pathReturn = AppConfig.TempCoversDirectoryPath + System.IO.Path.DirectorySeparatorChar + fileNameReturn;
 
                     BitmapEncoder encoder = new PngBitmapEncoder();
                     encoder.Frames.Add(BitmapFrame.Create(croppedImage));
 
-                    if (!Directory.Exists(AppEnvironment.GetAppConfig().AppDataLocalPathTempCovers))
-                        Directory.CreateDirectory(AppEnvironment.GetAppConfig().AppDataLocalPathTempCovers);
+                    if (!Directory.Exists(AppConfig.TempCoversDirectoryPath))
+                        Directory.CreateDirectory(AppConfig.TempCoversDirectoryPath);
 
                     using (FileStream stream = new FileStream(pathReturn, FileMode.Create))
                     {
