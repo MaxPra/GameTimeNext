@@ -26,7 +26,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Import
             //if (FnSystem.IsDebug())
             //    return;
 
-            string importDirectory = AppConfig.ImportDirectoryPath;
+            string importDirectory = AppConfig.Temp.ImportDirectoryPath;
 
             string[] files = Directory.GetFiles(importDirectory, "*.zip");
 
@@ -46,7 +46,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Import
             if (!File.Exists(importPackagePath))
                 throw new FileNotFoundException($"Import package not found: {importPackagePath}");
 
-            string tempDirectory = Path.Combine(AppConfig.ImportDirectoryPath, $"GTN_Import_{Guid.NewGuid():N}");
+            string tempDirectory = Path.Combine(AppConfig.Temp.ImportDirectoryPath, $"GTN_Import_{Guid.NewGuid():N}");
 
             Directory.CreateDirectory(tempDirectory);
             try
@@ -214,7 +214,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Import
             if (!Directory.Exists(packageDefaultDirectory))
                 return;
 
-            string targetDirectory = AppConfig.DefaultImagesSymbolsDirectoryPath;
+            string targetDirectory = AppConfig.Storage.DefaultImagesSymbolsDirectoryPath;
 
             if (Directory.Exists(targetDirectory))
                 Directory.Delete(targetDirectory, true);

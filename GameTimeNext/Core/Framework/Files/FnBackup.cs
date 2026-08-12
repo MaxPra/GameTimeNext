@@ -14,8 +14,8 @@ namespace GameTimeNext.Core.Framework.Files
         /// <param name="expPath">Export Pfad</param>
         public static async Task CreateBackupAsync(string expPath, string backuptype = BackupType.APP_START_BACKUP)
         {
-            string sourceFolder = AppConfig.StorageDirectoryPath;
-            string backupName = $"{DateTime.Now:yyyyMMddHHmmss}_GameTimeNext";
+            string sourceFolder = AppConfig.Storage.StorageDirectoryPath;
+            string backupName = $"{DateTime.Now:yyyyMMddHHmmss}_" + AppConfig.Root.ApplicationName;
 
             if (backuptype == BackupType.APP_START_BACKUP)
                 backupName += "_AppStarted";
@@ -26,15 +26,15 @@ namespace GameTimeNext.Core.Framework.Files
 
             expPath = Path.Combine(expPath, backupName);
 
-            string tempFolderDest = AppConfig.TempBackupDirectoryPath;
+            string tempFolderDest = AppConfig.Temp.BackupDirectoryPath;
 
             // Appordner kopieren
-            FnDirectory.CopyDirectory(sourceFolder, tempFolderDest, new string[] { AppConfig.Root._databaseFileName }, true);
+            FnDirectory.CopyDirectory(sourceFolder, tempFolderDest, new string[] { AppConfig.Root.DatabaseFileName }, true);
 
             string dataBaseDest = Path.Combine(tempFolderDest, "Data");
 
             // Datenbankfile backup
-            AppEnvironment.GetDataBaseManager().CreateBackup(Path.Combine(dataBaseDest, AppConfig.Root._databaseFileName));
+            AppEnvironment.GetDataBaseManager().CreateBackup(Path.Combine(dataBaseDest, AppConfig.Root.DatabaseFileName));
 
             // Backup Zip erstellen
             ZipFile.CreateFromDirectory(tempFolderDest, expPath);
@@ -54,7 +54,7 @@ namespace GameTimeNext.Core.Framework.Files
         /// <param name="impPath">Import Pfad</param>
         public static void ImportBackup(string impPath)
         {
-            string extractPath = AppConfig.StorageDirectoryPath;
+            string extractPath = AppConfig.Storage.StorageDirectoryPath;
 
             if (Directory.Exists(extractPath))
             {

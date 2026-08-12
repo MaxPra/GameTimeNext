@@ -10,40 +10,36 @@ namespace GameTimeNext.Core.Framework.Config
 {
     internal class AppConfig
     {
-        // OFDOI: Make self-creating
-        // OFDOI: Replace all DirectorySeparatorChar
-        private static readonly string FUCKING_WORK_FOR_NOW = Path.Combine(@"C:\Users\Oliver Fida\Desktop\TEMP\FWFN");
-
         public static class Root
         {
-            public static string _publisherName = "MaxPra";
-            public static string _applicationName = "GameTimeNext";
-            public static string _databaseFileName = _applicationName + "Db.db";
-            public static string _appConfigFileName = "appConfig.gtnconf";
-            public static string _appLogFileName = $"ApplicationLog_{DateTime.Now:yyyy-MM-dd}.log";
+            public static string PublisherName = "MaxPra";
+            public static string ApplicationName = "GameTimeNext";
+            public static string DatabaseFileName = ApplicationName + "Db.db";
+            public static string AppConfigFileName = "appConfig.gtnconf";
+            public static string AppLogFileName = $"ApplicationLog_{DateTime.Now:yyyy-MM-dd}.log";
 
             [JsonIgnore]
-            public static string _rootApplicationDirectoryPath
+            public static string ApplicationDirectoryPath
             {
-                get => ReturnEnsureDirectoryExists(AppContext.BaseDirectory);
+                get => AppContext.BaseDirectory;
             }
 
             [JsonIgnore]
-            public static string _rootWorkingDirectoryPath
+            public static string WorkingDirectoryPath
             {
                 get => ReturnEnsureDirectoryExists(Environment.CurrentDirectory);
             }
 
             [JsonIgnore]
-            public static string _rootStorageDirectoryPath
+            public static string StorageDirectoryPath
             {
-                get => ReturnEnsureDirectoryExists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), _publisherName));
+                get => ReturnEnsureDirectoryExists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), PublisherName));
             }
 
             [JsonIgnore]
-            public static string _rootLocalStorageDirectoryPath
+            public static string LocalStorageDirectoryPath
             {
-                get => ReturnEnsureDirectoryExists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), _publisherName, _applicationName));
+                get => ReturnEnsureDirectoryExists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), PublisherName, ApplicationName));
             }
         }
 
@@ -52,7 +48,7 @@ namespace GameTimeNext.Core.Framework.Config
             [JsonIgnore]
             private static string _devDirectoryPath
             {
-                get => ReturnEnsureDirectoryExists(Path.Combine(Root._rootLocalStorageDirectoryPath, "dev"));
+                get => ReturnEnsureDirectoryExists(Path.Combine(Root.LocalStorageDirectoryPath, "dev"));
             }
 
             [JsonIgnore]
@@ -68,136 +64,136 @@ namespace GameTimeNext.Core.Framework.Config
             }
         }
 
-        #region Internal
-        #region Directories
-        [JsonIgnore]
-        private static string _normalStorageDirectoryName
+        public static class Storage
         {
-            get
+            [JsonIgnore]
+            private static string _normalStorageDirectoryName
             {
-                string temp = Root._applicationName;
+                get
+                {
+                    string temp = Root.ApplicationName;
 
-                // Modi
-                if (AppEnvironment.StartArguments.ContainsKey("m") && !FnString.IsNullEmptyOrWhitespace(AppEnvironment.StartArguments["m"]))
-                    temp += "_m" + AppEnvironment.StartArguments["m"];
+                    // Modi
+                    if (AppEnvironment.StartArguments is not null && AppEnvironment.StartArguments.ContainsKey("m") && !FnString.IsNullEmptyOrWhitespace(AppEnvironment.StartArguments["m"]))
+                        temp += "_m" + AppEnvironment.StartArguments["m"];
 
-                return temp;
+                    return temp;
+                }
+            }
+
+            [JsonIgnore]
+            private static string _storageDirectoryName
+            {
+                get
+                {
+                    string temp = _normalStorageDirectoryName;
+
+                    if (FnSystem.IsDebug())
+                        temp += "_dev";
+
+                    return ReturnEnsureDirectoryExists(temp);
+                }
+            }
+
+            [JsonIgnore]
+            public static string NormalStorageDirectoryPath
+            {
+                get => Path.Combine(Root.StorageDirectoryPath, _normalStorageDirectoryName);
+            }
+
+            [JsonIgnore]
+            public static string StorageDirectoryPath
+            {
+                get => ReturnEnsureDirectoryExists(Path.Combine(Root.StorageDirectoryPath, _storageDirectoryName));
+            }
+
+            [JsonIgnore]
+            private static string _dataDirectoryPath
+            {
+                get => ReturnEnsureDirectoryExists(Path.Combine(StorageDirectoryPath, "data"));
+            }
+
+            [JsonIgnore]
+            public static string ProfileCoversDirectoryPath
+            {
+                get => ReturnEnsureDirectoryExists(Path.Combine(_dataDirectoryPath, "profileCovers"));
+            }
+
+            [JsonIgnore]
+            public static string ImagesSymbolsDirectoryPath
+            {
+                get => ReturnEnsureDirectoryExists(Path.Combine(_dataDirectoryPath, "imagesAndSymbols"));
+            }
+
+            [JsonIgnore]
+            public static string DefaultImagesSymbolsDirectoryPath
+            {
+                get => ReturnEnsureDirectoryExists(Path.Combine(ImagesSymbolsDirectoryPath, "default"));
+            }
+
+            [JsonIgnore]
+            public static string UserImagesSymbolsDirectoryPath
+            {
+                get => ReturnEnsureDirectoryExists(Path.Combine(ImagesSymbolsDirectoryPath, "user"));
+            }
+
+            [JsonIgnore]
+            public static string AppConfigFilePath
+            {
+                get => ReturnEnsureFileExists(Path.Combine(StorageDirectoryPath, Root.AppConfigFileName));
+            }
+
+            [JsonIgnore]
+            public static string DatabaseFilePath
+            {
+                get => Path.Combine(StorageDirectoryPath, Root.DatabaseFileName);
             }
         }
 
-        [JsonIgnore]
-        private static string _storageDirectoryName
+        public static class Temp
         {
-            get
+            [JsonIgnore]
+            public static string SteamGridDBCoversDirectoryPath
             {
-                string temp = _normalStorageDirectoryName;
-
-                if (FnSystem.IsDebug())
-                    temp += "_dev";
-
-                return ReturnEnsureDirectoryExists(temp);
+                get => ReturnEnsureDirectoryExists(Path.Combine(_tempDirectoryPath, "steamGridDbCovers"));
             }
-        }
 
-        [JsonIgnore]
-        public static string NormalStorageDirectoryPath
-        {
-            get => Path.Combine(Root._rootStorageDirectoryPath, _normalStorageDirectoryName);
-        }
+            [JsonIgnore]
+            public static string ProfileCoversDirectoryPath
+            {
+                get => ReturnEnsureDirectoryExists(Path.Combine(_tempDirectoryPath, "tempCovers"));
+            }
 
-        [JsonIgnore]
-        public static string StorageDirectoryPath
-        {
-            get => ReturnEnsureDirectoryExists(Path.Combine(Root._rootStorageDirectoryPath, _storageDirectoryName));
-        }
+            [JsonIgnore]
+            public static string ImportDirectoryPath
+            {
+                get => ReturnEnsureDirectoryExists(Path.Combine(_tempDirectoryPath, "import"));
+            }
 
-        [JsonIgnore]
-        private static string _dataDirectoryPath
-        {
-            get => ReturnEnsureDirectoryExists(Path.Combine(StorageDirectoryPath, "data"));
-        }
-
-        [JsonIgnore]
-        public static string ProfileCoversDirectoryPath
-        {
-            get => ReturnEnsureDirectoryExists(Path.Combine(_dataDirectoryPath, "profileCovers"));
-        }
-
-        [JsonIgnore]
-        public static string ImagesSymbolsDirectoryPath
-        {
-            get => ReturnEnsureDirectoryExists(Path.Combine(_dataDirectoryPath, "imagesAndSymbols"));
-        }
-
-        [JsonIgnore]
-        public static string DefaultImagesSymbolsDirectoryPath
-        {
-            get => ReturnEnsureDirectoryExists(Path.Combine(ImagesSymbolsDirectoryPath, "default"));
-        }
-
-        [JsonIgnore]
-        public static string UserImagesSymbolsDirectoryPath
-        {
-            get => ReturnEnsureDirectoryExists(Path.Combine(ImagesSymbolsDirectoryPath, "user"));
+            [JsonIgnore]
+            public static string BackupDirectoryPath
+            {
+                get => ReturnEnsureDirectoryExists(Path.Combine(_tempDirectoryPath, "backup"));
+            }
         }
 
         [JsonIgnore]
         private static string _logsDirectoryPath
         {
-            get => ReturnEnsureDirectoryExists(Path.Combine(Root._rootWorkingDirectoryPath, "logs"));
+            get => ReturnEnsureDirectoryExists(Path.Combine(Root.WorkingDirectoryPath, "logs"));
         }
 
         [JsonIgnore]
         private static string _tempDirectoryPath
         {
-            get => ReturnEnsureDirectoryExists(Path.Combine(Root._rootLocalStorageDirectoryPath, "temp"));
+            get => ReturnEnsureDirectoryExists(Path.Combine(Root.LocalStorageDirectoryPath, "temp"));
         }
 
-        [JsonIgnore]
-        public static string SteamGridDBCoversDirectoryPath
-        {
-            get => ReturnEnsureDirectoryExists(Path.Combine(_tempDirectoryPath, "steamGridDbCovers"));
-        }
-
-        [JsonIgnore]
-        public static string TempCoversDirectoryPath
-        {
-            get => ReturnEnsureDirectoryExists(Path.Combine(_tempDirectoryPath, "tempCovers"));
-        }
-
-        [JsonIgnore]
-        public static string ImportDirectoryPath
-        {
-            get => ReturnEnsureDirectoryExists(Path.Combine(_tempDirectoryPath, "import"));
-        }
-
-        [JsonIgnore]
-        public static string TempBackupDirectoryPath
-        {
-            get => ReturnEnsureDirectoryExists(Path.Combine(_tempDirectoryPath, "backup"));
-        }
-        #endregion
-
-        #region Files
         [JsonIgnore]
         public static string LogFilePath
         {
-            get => ReturnEnsureFileExists(Path.Combine(_logsDirectoryPath, Root._appLogFileName));
+            get => ReturnEnsureFileExists(Path.Combine(_logsDirectoryPath, Root.AppLogFileName));
         }
-
-        [JsonIgnore]
-        public static string AppConfigFilePath
-        {
-            get => ReturnEnsureFileExists(Path.Combine(StorageDirectoryPath, Root._appConfigFileName));
-        }
-
-        [JsonIgnore]
-        public static string DatabaseFilePath
-        {
-            get => Path.Combine(StorageDirectoryPath, Root._databaseFileName);
-        }
-        #endregion
-        #endregion
 
         #region External
         public FilterCache FilterCache { get; set; } = new FilterCache();
@@ -209,7 +205,44 @@ namespace GameTimeNext.Core.Framework.Config
 
         public AppConfig()
         {
+            EnsurePathsExist();
+        }
 
+        private static void EnsurePathsExist()
+        {
+            string temp = string.Empty;
+
+            // Root
+            temp = Root.ApplicationDirectoryPath;
+            temp = Root.WorkingDirectoryPath;
+            temp = Root.StorageDirectoryPath;
+            temp = Root.LocalStorageDirectoryPath;
+
+            // Dev
+            if (FnSystem.IsDebug())
+            {
+                temp = Dev.GenClassDirectoryPath;
+                temp = Dev.BackupDirectoryPath;
+            }
+
+            // Storage
+            temp = Storage.NormalStorageDirectoryPath;
+            temp = Storage.StorageDirectoryPath;
+            temp = Storage.ProfileCoversDirectoryPath;
+            temp = Storage.ImagesSymbolsDirectoryPath;
+            temp = Storage.DefaultImagesSymbolsDirectoryPath;
+            temp = Storage.UserImagesSymbolsDirectoryPath;
+            temp = Storage.AppConfigFilePath;
+            temp = Storage.DatabaseFilePath;
+
+            // Temp
+            temp = Temp.SteamGridDBCoversDirectoryPath;
+            temp = Temp.ProfileCoversDirectoryPath;
+            temp = Temp.ImportDirectoryPath;
+            temp = Temp.BackupDirectoryPath;
+
+            // General
+            temp = LogFilePath;
         }
 
         private static string ReturnEnsureDirectoryExists(string path)

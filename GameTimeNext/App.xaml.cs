@@ -63,7 +63,7 @@ namespace GameTimeNext
         {
 
             // Ordner erstellen
-            FileHandler.CreateApplicationFoldersAndFiles();
+            FileHandler.CreateDevAppFolder();
 
             AppEnvironment.LoadAppConfig();
 

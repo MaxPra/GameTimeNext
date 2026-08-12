@@ -208,7 +208,7 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
             return t1profiles.Select(prof => new ProfilesListBoxItem
             {
                 ItemObject = prof,
-                COCOVIM = FnImage.LoadImageWithoutLock(Path.Combine(AppConfig.ProfileCoversDirectoryPath ?? string.Empty, prof.PPFN), 300, 450),
+                COCOVIM = FnImage.LoadImageWithoutLock(Path.Combine(AppConfig.Storage.ProfileCoversDirectoryPath ?? string.Empty, prof.PPFN), 300, 450),
                 COISPLA = FnSystem.IsExeFoundInPath(prof.EXGF)
             }).ToList();
         }

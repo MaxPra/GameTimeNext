@@ -174,7 +174,7 @@ namespace GameTimeNext.Core.Application.General.Controller
 
         private async Task CheckGTXMigration()
         {
-            string[] gtnFiles = Directory.GetFiles(AppConfig.ProfileCoversDirectoryPath);
+            string[] gtnFiles = Directory.GetFiles(AppConfig.Storage.ProfileCoversDirectoryPath);
             string loaderTextStart = "Migrating GTX -> GTN ...";
 
             if (Directory.Exists(_gtxPath) && gtnFiles.Length == 0)
@@ -182,7 +182,7 @@ namespace GameTimeNext.Core.Application.General.Controller
                 FnLog.AddInfo("MainApp", "GameTimeX installation found. Prompting user for migration.");
 
                 CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
-                string msg = "A GameTimeX-Installation was found.\nDo you want to migrate your profiles to GameTimeNXT?";
+                string msg = $"A GameTimeX-Installation was found.\nDo you want to migrate your profiles to {AppConfig.Root.ApplicationName}?";
                 CFMBOXResult result = cfmbox.Show("Start GameTimeX migration?", msg, CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
 
                 if (result == CFMBOXResult.Yes)

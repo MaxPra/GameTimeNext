@@ -87,7 +87,7 @@ namespace GameTimeNext.Core.Application.CreateImportPackage
 
         private static void CreateImportPackageCodetablesFiles(string tempDirectory)
         {
-            string sourceDefaultPath = AppConfig.DefaultImagesSymbolsDirectoryPath;
+            string sourceDefaultPath = AppConfig.Storage.DefaultImagesSymbolsDirectoryPath;
 
             if (!Directory.Exists(sourceDefaultPath))
                 return;

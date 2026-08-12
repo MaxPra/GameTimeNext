@@ -1,5 +1,6 @@
 using GameTimeNext.Core.Application.Profiles.Viewmodel;
 using GameTimeNext.Core.Application.Profiles.Views;
+using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.Utils;
 using System.Windows;
@@ -101,7 +102,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
             CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
 
-            CFMBOXResult result = cfmbox.Show("Question", "Cancel selection of valid executables?\nSome GameTimeNext features may not be available for this profile afterward.", CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
+            CFMBOXResult result = cfmbox.Show("Question", $"Cancel selection of valid executables?\nSome {AppConfig.Root.ApplicationName} features may not be available for this profile afterward.", CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
 
             if (result == CFMBOXResult.Yes)
             {

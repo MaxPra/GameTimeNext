@@ -76,7 +76,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
             ResetView();
 
-            GetView().imgProfileCover.Source = FnImage.LoadImageWithoutLock(Path.Combine(AppConfig.ProfileCoversDirectoryPath, _dataWrapper!.GetTypedTableObject().PPFN), 300, 450);
+            GetView().imgProfileCover.Source = FnImage.LoadImageWithoutLock(Path.Combine(AppConfig.Storage.ProfileCoversDirectoryPath, _dataWrapper!.GetTypedTableObject().PPFN), 300, 450);
 
             GetView().btnLaunchGame.IsEnabled = _dataWrapper!.GetTypedTableObject().SAID != 0 && GetView().btnLaunchGame.Content != "Running..." && TFPROFI.HasExecutables(_dataWrapper.GetTypedTableObject());
 

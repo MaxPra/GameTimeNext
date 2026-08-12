@@ -189,7 +189,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             {
                 try
                 {
-                    string coverPath = Path.Combine(AppConfig.ProfileCoversDirectoryPath ?? string.Empty, t1profi.PPFN);
+                    string coverPath = Path.Combine(AppConfig.Storage.ProfileCoversDirectoryPath ?? string.Empty, t1profi.PPFN);
                     File.Delete(coverPath);
                 }
                 catch (FileNotFoundException fnfe)

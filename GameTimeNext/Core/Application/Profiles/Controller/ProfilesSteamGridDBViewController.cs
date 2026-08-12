@@ -18,7 +18,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
     {
         private ProfilesSteamGridDBViewModel _profilesSteamGridDBViewModel;
 
-        private readonly string _coversFolder = AppConfig.SteamGridDBCoversDirectoryPath;
+        private readonly string _coversFolder = AppConfig.Temp.SteamGridDBCoversDirectoryPath;
         private readonly int _coversPerPage = 12;
 
         private int _currentPage = 0;

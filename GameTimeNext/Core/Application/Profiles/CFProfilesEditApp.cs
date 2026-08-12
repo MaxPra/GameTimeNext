@@ -19,7 +19,7 @@ namespace GameTimeNext.Core.Application.Profiles
         /// <param name="currentPath"></param>
         public static void CopyProfileCoverToAppCoverFolder(string currentPath, string destFileName)
         {
-            File.Copy(currentPath, AppConfig.ProfileCoversDirectoryPath + Path.DirectorySeparatorChar + destFileName);
+            File.Copy(currentPath, Path.Join(AppConfig.Storage.ProfileCoversDirectoryPath, destFileName));
         }
 
 

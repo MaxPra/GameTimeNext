@@ -95,7 +95,7 @@ namespace GameTimeNext.Core.Framework
 
             string appConfigText = JsonSerializer.Serialize(GetAppConfig(), options);
 
-            File.WriteAllText(AppConfig.AppConfigFilePath, appConfigText);
+            File.WriteAllText(AppConfig.Storage.AppConfigFilePath, appConfigText);
         }
 
         public static void Initalize()
@@ -269,7 +269,7 @@ namespace GameTimeNext.Core.Framework
 
         public static void LoadAppConfig()
         {
-            string appConfigText = File.ReadAllText(AppConfig.AppConfigFilePath);
+            string appConfigText = File.ReadAllText(AppConfig.Storage.AppConfigFilePath);
 
             if (appConfigText == null || appConfigText.Length == 0)
             {

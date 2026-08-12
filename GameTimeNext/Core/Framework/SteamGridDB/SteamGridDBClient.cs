@@ -1,4 +1,5 @@
-﻿using SixLabors.ImageSharp;
+﻿using GameTimeNext.Core.Framework.Config;
+using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using System.IO;
 using System.Net.Http;
@@ -24,7 +25,7 @@ namespace GameTimeNext.Core.Framework.SteamGridDB
             _httpClient.Timeout = TimeSpan.FromSeconds(20);
 
             _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(
-                                                                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) GameTimeNext/1.0"
+                                                                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " + AppConfig.Root.ApplicationName + " / 1.0"
                                                                 );
             _httpClient.DefaultRequestHeaders.Accept.ParseAdd("*/*");
 
@@ -119,7 +120,7 @@ namespace GameTimeNext.Core.Framework.SteamGridDB
             using var httpClient = new HttpClient();
             httpClient.Timeout = TimeSpan.FromSeconds(20);
             httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) GameTimeNext/1.0"
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " + AppConfig.Root.ApplicationName + " / 1.0"
             );
             httpClient.DefaultRequestHeaders.Accept.ParseAdd("*/*");
 

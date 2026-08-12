@@ -148,7 +148,7 @@ namespace GameTimeNext.Core.Application.General.AppSearch.Controller
             {
                 List<SearchableApplication> searchableApplications = GetSearchableApplications(searchText);
 
-                // Aussortieren von Anwendungen, welche nicht f¸r alle User sichtbar sein sollen
+                // Aussortieren von Anwendungen, welche nicht f√ºr alle User sichtbar sein sollen
                 searchableApplications = SortOutSearchableApplications(searchableApplications);
 
                 View.Dispatcher.Invoke(() =>
@@ -184,7 +184,7 @@ namespace GameTimeNext.Core.Application.General.AppSearch.Controller
 
             foreach (var app in applications)
             {
-                // CreateImportPackage wird ausgenommen (auﬂer wenn in Debug-/Dev-Modus)
+                // CreateImportPackage wird ausgenommen (au√üer wenn in Debug-/Dev-Modus)
                 if (app.ClassName != typeof(CreateImportPackageApp).FullName! && app.ClassName != typeof(MetadataApp).FullName! || FnSystem.IsDebug())
                 {
                     sortedApplications.Add(app);

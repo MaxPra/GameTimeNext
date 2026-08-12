@@ -36,9 +36,9 @@ namespace GameTimeNext.Core.Application.GTXMigration
         {
             _rootFolder = rootFolder;
 
-            _databaseFilePath = rootFolder + System.IO.Path.DirectorySeparatorChar + "GameTimeXDB.db";
-            _startUpParmsFilePath = rootFolder + System.IO.Path.DirectorySeparatorChar + "startUpParms.json";
-            _imagesFolderPath = rootFolder + System.IO.Path.DirectorySeparatorChar + "images";
+            _databaseFilePath = System.IO.Path.Join(rootFolder, "GameTimeXDB.db");
+            _startUpParmsFilePath = System.IO.Path.Join(rootFolder, "startUpParms.json");
+            _imagesFolderPath = System.IO.Path.Join(rootFolder, "images");
 
             _loader = loader;
         }
@@ -133,7 +133,7 @@ namespace GameTimeNext.Core.Application.GTXMigration
                             DateTime fipl = ParseOldDateTime(reader.GetValue(2));
                             DateTime lapl = ParseOldDateTime(reader.GetValue(3));
 
-                            string ppfn = AppConfig.ProfileCoversDirectoryPath + System.IO.Path.DirectorySeparatorChar + reader.GetString(4);
+                            string ppfn = System.IO.Path.Join(AppConfig.Storage.ProfileCoversDirectoryPath, reader.GetString(4));
                             string exgf = reader.GetString(5);
 
                             DateTime crat = ParseOldDateTime(reader.GetString(6));
@@ -145,7 +145,7 @@ namespace GameTimeNext.Core.Application.GTXMigration
 
                             long cupt = 0;
 
-                            List<System.Windows.Media.Color> accentColorsCalc = FnImage.GetTopAccentColors(_imagesFolderPath + System.IO.Path.DirectorySeparatorChar + reader.GetString(4), 3);
+                            List<System.Windows.Media.Color> accentColorsCalc = FnImage.GetTopAccentColors(System.IO.Path.Join(_imagesFolderPath, reader.GetString(4)), 3);
                             System.Windows.Media.Color accentColor = System.Windows.Media.Color.FromArgb(255, accentColorsCalc[0].R, accentColorsCalc[0].G, accentColorsCalc[0].B);
                             string[] accentColors = FnTheme.CalculateAccentStateColors(accentColor.ToString());
 
@@ -409,7 +409,7 @@ namespace GameTimeNext.Core.Application.GTXMigration
 
             try
             {
-                ConvertFolderToNewFormat(_imagesFolderPath, AppConfig.ProfileCoversDirectoryPath);
+                ConvertFolderToNewFormat(_imagesFolderPath, AppConfig.Storage.ProfileCoversDirectoryPath);
             }
             catch
             {

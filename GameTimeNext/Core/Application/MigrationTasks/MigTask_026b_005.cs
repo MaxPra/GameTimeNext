@@ -54,7 +54,7 @@ namespace GameTimeNext.Core.Application.MigrationTasks
 
         private static void DeleteUnusedProfileImages()
         {
-            string coverFolder = AppConfig.ProfileCoversDirectoryPath;
+            string coverFolder = AppConfig.Storage.ProfileCoversDirectoryPath;
 
             if (!Directory.Exists(coverFolder))
                 return;

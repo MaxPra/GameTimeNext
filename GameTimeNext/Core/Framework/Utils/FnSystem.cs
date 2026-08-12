@@ -24,7 +24,7 @@ namespace GameTimeNext.Core.Framework.Utils
         {
             try
             {
-                const string mutexName = "Global\\GameTimeNext_SingleInstance_Mutex";
+                string mutexName = $"Global\\{AppConfig.Root.ApplicationName}_SingleInstance_Mutex";
 
                 bool createdNew;
                 _singleInstanceMutex = new Mutex(initiallyOwned: true, name: mutexName, createdNew: out createdNew);
@@ -50,7 +50,7 @@ namespace GameTimeNext.Core.Framework.Utils
             try
             {
                 const string runKeyPath = @"Software\Microsoft\Windows\CurrentVersion\Run";
-                const string runValueName = "GameTimeNext";
+                string runValueName = AppConfig.Root.ApplicationName;
 
                 using RegistryKey? runKey = Registry.CurrentUser.OpenSubKey(runKeyPath, true) ?? Registry.CurrentUser.CreateSubKey(runKeyPath);
                 if (runKey == null)
@@ -272,13 +272,13 @@ namespace GameTimeNext.Core.Framework.Utils
                 {
                     fileNameReturn = CFProfilesEditApp.GetGUIDCoverName("jpg");
 
-                    pathReturn = AppConfig.TempCoversDirectoryPath + System.IO.Path.DirectorySeparatorChar + fileNameReturn;
+                    pathReturn = System.IO.Path.Join(AppConfig.Temp.ProfileCoversDirectoryPath, fileNameReturn);
 
                     BitmapEncoder encoder = new PngBitmapEncoder();
                     encoder.Frames.Add(BitmapFrame.Create(croppedImage));
 
-                    if (!Directory.Exists(AppConfig.TempCoversDirectoryPath))
-                        Directory.CreateDirectory(AppConfig.TempCoversDirectoryPath);
+                    if (!Directory.Exists(AppConfig.Temp.ProfileCoversDirectoryPath))
+                        Directory.CreateDirectory(AppConfig.Temp.ProfileCoversDirectoryPath);
 
                     using (FileStream stream = new FileStream(pathReturn, FileMode.Create))
                     {

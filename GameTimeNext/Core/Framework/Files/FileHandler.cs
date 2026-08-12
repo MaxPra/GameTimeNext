@@ -10,11 +10,34 @@ namespace GameTimeNext.Core.Framework.Files
 {
     internal class FileHandler
     {
-        public static void CreateApplicationFoldersAndFiles()
+        /// <summary>
+        /// Creates the development application folder if it does not already exist and the application is running in
+        /// debug mode.
+        /// </summary>
+        /// <remarks>If a normal application folder exists, its contents are copied to the development
+        /// folder. Otherwise, an empty development folder is created. This method has no effect when not running in
+        /// debug mode.</remarks>
+        public static void CreateDevAppFolder()
         {
-            // OFDOI: Remove
+            if (!FnSystem.IsDebug())
+                return;
 
-            CreateDevAppFolder();
+            string appFolderPathNormal = AppConfig.Storage.NormalStorageDirectoryPath;
+            string appFolderPathDev = AppConfig.Storage.StorageDirectoryPath;
+
+            if (Directory.Exists(appFolderPathDev))
+                return;
+
+            if (Directory.Exists(appFolderPathNormal))
+            {
+                CopyDirectory(appFolderPathNormal, appFolderPathDev, true);
+
+                AppEnvironment.InformationList.Add(new InformationListItem(UI.Dialogs.CFMBOXIcon.Info, "Dev folder was created from production app folder!"));
+            }
+            else
+            {
+                Directory.CreateDirectory(appFolderPathDev);
+            }
         }
 
         public static void CopyDirectory(string sourceDirectory, string targetDirectory, bool overwriteFiles)
@@ -164,36 +187,6 @@ namespace GameTimeNext.Core.Framework.Files
             return files
                 .OrderByDescending(f => f.LastWriteTime)
                 .FirstOrDefault();
-        }
-
-        /// <summary>
-        /// Creates the development application folder if it does not already exist and the application is running in
-        /// debug mode.
-        /// </summary>
-        /// <remarks>If a normal application folder exists, its contents are copied to the development
-        /// folder. Otherwise, an empty development folder is created. This method has no effect when not running in
-        /// debug mode.</remarks>
-        private static void CreateDevAppFolder()
-        {
-            if (!FnSystem.IsDebug())
-                return;
-
-            string appFolderPathNormal = AppConfig.NormalStorageDirectoryPath;
-            string appFolderPathDev = AppConfig.StorageDirectoryPath;
-
-            if (Directory.Exists(appFolderPathDev))
-                return;
-
-            if (Directory.Exists(appFolderPathNormal))
-            {
-                CopyDirectory(appFolderPathNormal, appFolderPathDev, true);
-
-                AppEnvironment.InformationList.Add(new InformationListItem(UI.Dialogs.CFMBOXIcon.Info, "Dev folder was created from production app folder!"));
-            }
-            else
-            {
-                Directory.CreateDirectory(appFolderPathDev);
-            }
         }
     }
 }

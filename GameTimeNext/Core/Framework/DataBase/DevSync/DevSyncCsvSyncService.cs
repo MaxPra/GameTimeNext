@@ -102,7 +102,7 @@ namespace GameTimeNext.Core.Framework.DataBase.DevSync
 
         private static void ExportCodetableDefaultFiles()
         {
-            string sourceDirectory = AppConfig.DefaultImagesSymbolsDirectoryPath;
+            string sourceDirectory = AppConfig.Storage.DefaultImagesSymbolsDirectoryPath;
             string destinationDirectory = Path.Combine(GetDevSyncDirectory(), "files", "default");
 
             if (Directory.Exists(destinationDirectory))
@@ -496,13 +496,12 @@ namespace GameTimeNext.Core.Framework.DataBase.DevSync
 
         private static string GetDevSyncDirectory()
         {
-            // OFDOI: Auch zentralisieren?
             string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
             DirectoryInfo? current = new DirectoryInfo(baseDirectory);
 
             while (current != null)
             {
-                string slnxPath = Path.Combine(current.FullName, "GameTimeNext.slnx");
+                string slnxPath = Path.Combine(current.FullName, AppConfig.Root.ApplicationName + ".slnx");
                 if (File.Exists(slnxPath))
                     return Path.Combine(current.FullName, "devsync");
 

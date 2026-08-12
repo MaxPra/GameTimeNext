@@ -84,7 +84,7 @@ namespace GameTimeNext.Core.Application.DataManagers
                         UIXQuery.GetString(reader, "GANA"),
                         UIXQuery.GetDateTime(reader, "PLTO"),
                         TFPROFI.GetGameTimeInMinutes(UIXQuery.GetInt64(reader, "PFID"), timeSpanStart, timeSpanEnd),
-                        Path.Combine(AppConfig.ProfileCoversDirectoryPath ?? string.Empty, UIXQuery.GetString(reader, "PPFN"))
+                        Path.Combine(AppConfig.Storage.ProfileCoversDirectoryPath ?? string.Empty, UIXQuery.GetString(reader, "PPFN"))
                     );
 
             return ("n.A.", DateTime.MinValue, 0, string.Empty);
@@ -100,7 +100,7 @@ namespace GameTimeNext.Core.Application.DataManagers
                         UIXQuery.GetString(reader, "GANA"),
                         GetPlaytime(timeSpanStart, timeSpanEnd, UIXQuery.GetInt64(reader, "PFID")),
                         GetDaysPlayed(timeSpanStart, timeSpanEnd, UIXQuery.GetInt64(reader, "PFID")),
-                        Path.Combine(AppConfig.ProfileCoversDirectoryPath ?? string.Empty, UIXQuery.GetString(reader, "PPFN"))
+                        Path.Combine(AppConfig.Storage.ProfileCoversDirectoryPath ?? string.Empty, UIXQuery.GetString(reader, "PPFN"))
                     );
 
             return ("n.A.", 0, 0, string.Empty);

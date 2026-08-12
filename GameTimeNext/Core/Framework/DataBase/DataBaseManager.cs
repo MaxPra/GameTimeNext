@@ -24,7 +24,7 @@ namespace GameTimeNext.Core.Framework.DataBase
         {
             // -- Erstellen --
             // Prüfen, ob File existiert
-            if (File.Exists(AppConfig.DatabaseFilePath))
+            if (File.Exists(AppConfig.Storage.DatabaseFilePath))
             {
                 // -- Verbinden --
                 ConnectToSQLite();
@@ -32,7 +32,7 @@ namespace GameTimeNext.Core.Framework.DataBase
                 return;
             }
 
-            using (File.Create(AppConfig.DatabaseFilePath)) { }
+            using (File.Create(AppConfig.Storage.DatabaseFilePath)) { }
 
             // -- Verbinden --
             ConnectToSQLite();
@@ -94,14 +94,14 @@ namespace GameTimeNext.Core.Framework.DataBase
             bool newDataBase = false;
             string connectionString = String.Empty;
 
-            if (!File.Exists(AppConfig.DatabaseFilePath))
+            if (!File.Exists(AppConfig.Storage.DatabaseFilePath))
             {
-                connectionString = $"Data Source={AppConfig.DatabaseFilePath};Version=3;New=True;Compress=True;BusyTimeout=15000;Pooling=False;";
+                connectionString = $"Data Source={AppConfig.Storage.DatabaseFilePath};Version=3;New=True;Compress=True;BusyTimeout=15000;Pooling=False;";
                 newDataBase = true;
             }
             else
             {
-                connectionString = $"Data Source={AppConfig.DatabaseFilePath};Version=3;Compress=True;BusyTimeout=15000;Pooling=False;";
+                connectionString = $"Data Source={AppConfig.Storage.DatabaseFilePath};Version=3;Compress=True;BusyTimeout=15000;Pooling=False;";
                 newDataBase = false;
             }
 

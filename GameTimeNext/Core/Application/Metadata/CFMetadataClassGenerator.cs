@@ -1,4 +1,5 @@
 using GameTimeNext.Core.Application.Metadata.Data;
+using GameTimeNext.Core.Framework.Config;
 using System.IO;
 using UIX.ViewController.Engine.Utils;
 
@@ -86,7 +87,7 @@ namespace GameTimeNext.Core.Application.Metadata
 
             while (directory != null)
             {
-                string csprojPath = Path.Combine(directory.FullName, "GameTimeNext.csproj");
+                string csprojPath = Path.Combine(directory.FullName, AppConfig.Root.ApplicationName + ".csproj");
                 if (File.Exists(csprojPath))
                     return directory.FullName;
 
@@ -101,10 +102,10 @@ namespace GameTimeNext.Core.Application.Metadata
             string className = $"T1{suffix}";
 
             UIXCodeGenerator code = new UIXCodeGenerator();
-            code.AppendLine("using GameTimeNext.Core.Application.DataManagers;");
+            code.AppendLine($"using {AppConfig.Root.ApplicationName}.Core.Application.DataManagers;");
             code.AppendLine("using UIX.ViewController.Engine.DataBaseObjects;");
             code.AppendEmptyLine();
-            code.BeginBlock("namespace GameTimeNext.Core.Application.TableObjects");
+            code.BeginBlock($"namespace {AppConfig.Root.ApplicationName}.Core.Application.TableObjects");
             code.BeginBlock($"public class {className} : UIXTableObjectBase");
             code.AppendLine($"public override bool IsDevSynced => {(devSync ? "true" : "false")};");
             code.AppendEmptyLine();
@@ -132,7 +133,7 @@ namespace GameTimeNext.Core.Application.Metadata
             string className = $"K1{suffix}";
 
             UIXCodeGenerator code = new UIXCodeGenerator();
-            code.BeginBlock("namespace GameTimeNext.Core.Application.TableObjects");
+            code.BeginBlock($"namespace {AppConfig.Root.ApplicationName}.Core.Application.TableObjects");
             code.BeginBlock($"public static class {className}");
             code.AppendLine($"public const string Name = \"{tableName}\";");
             code.AppendEmptyLine();
@@ -172,15 +173,15 @@ namespace GameTimeNext.Core.Application.Metadata
                 : fields.Where(x => !ReferenceEquals(x, autoIncrementPrimaryKey)).ToList();
 
             UIXCodeGenerator code = new UIXCodeGenerator();
-            code.AppendLine("using GameTimeNext.Core.Application.TableObjects;");
-            code.AppendLine("using GameTimeNext.Core.Framework;");
-            code.AppendLine("using GameTimeNext.Core.Framework.DataBase.DevSync;");
+            code.AppendLine($"using {AppConfig.Root.ApplicationName}.Core.Application.TableObjects;");
+            code.AppendLine($"using {AppConfig.Root.ApplicationName}.Core.Framework;");
+            code.AppendLine($"using {AppConfig.Root.ApplicationName}.Core.Framework.DataBase.DevSync;");
             code.AppendLine("using System.Data.SQLite;");
             code.AppendLine("using System.Globalization;");
             code.AppendLine("using UIX.ViewController.Engine.DataBaseObjects;");
             code.AppendLine("using UIX.ViewController.Engine.Querying;");
             code.AppendEmptyLine();
-            code.BeginBlock("namespace GameTimeNext.Core.Application.DataManagers");
+            code.BeginBlock($"namespace {AppConfig.Root.ApplicationName}.Core.Application.DataManagers");
             code.BeginBlock($"public class {className}");
 
             code.BeginBlock($"public virtual {t1ClassName} CreateNew()");
@@ -405,7 +406,7 @@ namespace GameTimeNext.Core.Application.Metadata
                 return;
 
             UIXCodeGenerator code = new UIXCodeGenerator();
-            code.BeginBlock("namespace GameTimeNext.Core.Application.DataManagers");
+            code.BeginBlock($"namespace {AppConfig.Root.ApplicationName}.Core.Application.DataManagers");
             code.BeginBlock($"public class {className} : {baseClassName}");
             code.EndBlock();
             code.EndBlock();

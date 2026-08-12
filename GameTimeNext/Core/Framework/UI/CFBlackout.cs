@@ -1,5 +1,6 @@
 ﻿using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.TableObjects;
+using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.Utils;
 using System.Windows;
 using System.Windows.Controls;
@@ -10,7 +11,7 @@ namespace GameTimeNext.Core.Framework.UI
 {
     internal static class CFBlackout
     {
-        private const string BlackoutLabelText = "GameTimeNext";
+        private static string BlackoutLabelText = AppConfig.Root.ApplicationName;
         private static readonly List<Window> blackoutWindows = new();
         private static readonly List<Action> movementStops = new();
         private static readonly Random random = new();
