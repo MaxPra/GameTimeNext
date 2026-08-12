@@ -61,9 +61,9 @@ namespace GameTimeNext.Core.Framework.DataBase
                     null,
                     0);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                throw e;
+                throw;
             }
             finally
             {

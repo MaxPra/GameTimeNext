@@ -1,5 +1,4 @@
-﻿using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework;
+﻿using GameTimeNext.Core.Framework;
 using System.Collections.ObjectModel;
 using UIX.ViewController.Engine.Viewmodel;
 

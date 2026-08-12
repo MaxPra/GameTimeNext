@@ -1,8 +1,6 @@
-﻿using System;
-using System.IO;
-using System.Collections.Generic;
-using GameTimeNext.Core.Application.TableObjects;
+﻿using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
+using System.IO;
 
 namespace GameTimeNext.Core.Application.MigrationTasks
 {

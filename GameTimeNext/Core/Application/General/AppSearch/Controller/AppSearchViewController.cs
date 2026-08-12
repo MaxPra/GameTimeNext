@@ -233,4 +233,3 @@ namespace GameTimeNext.Core.Application.General.AppSearch.Controller
         }
     }
 }
-

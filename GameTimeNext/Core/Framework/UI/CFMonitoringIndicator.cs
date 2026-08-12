@@ -39,7 +39,7 @@ namespace GameTimeNext.Core.Framework.UI
                 CloseWindow();
             else
                 dispatcher.Invoke(CloseWindow);
-                
+
             isActive = false;
         }
 

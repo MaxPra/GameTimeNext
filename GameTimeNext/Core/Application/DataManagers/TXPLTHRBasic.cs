@@ -42,7 +42,7 @@ namespace GameTimeNext.Core.Application.DataManagers
 
             using SQLiteCommand cmd = connection.CreateCommand();
             cmd.CommandText = "DELETE FROM T1PLTHR WHERE PTID = @PTID";
-            cmd.Parameters.AddWithValue("@PTID", pTID); 
+            cmd.Parameters.AddWithValue("@PTID", pTID);
             cmd.ExecuteNonQuery();
             DevSyncCsvSyncService.ExportTable("T1PLTHR");
         }

@@ -1,5 +1,4 @@
 ﻿using GameTimeNext.Core.Application.Profiles.Views;
-using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Config;
 using System.IO;
 using System.Windows.Controls.Primitives;

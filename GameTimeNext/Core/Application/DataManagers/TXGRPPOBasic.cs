@@ -42,7 +42,7 @@ namespace GameTimeNext.Core.Application.DataManagers
 
             using SQLiteCommand cmd = connection.CreateCommand();
             cmd.CommandText = "DELETE FROM T1GRPPO WHERE GPID = @GPID";
-            cmd.Parameters.AddWithValue("@GPID", gPID); 
+            cmd.Parameters.AddWithValue("@GPID", gPID);
             cmd.ExecuteNonQuery();
             DevSyncCsvSyncService.ExportTable("T1GRPPO");
         }

@@ -50,7 +50,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             using (var reader = query.Execute())
             {
                 TXSESSI txSessi = new TXSESSI();
-                while(reader.Read())
+                while (reader.Read())
                 {
                     int seid = UIXQuery.GetInt32(reader, K1SESSI.Name, K1SESSI.Fields.SEID);
                     txSessi.Delete(seid);

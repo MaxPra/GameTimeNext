@@ -42,7 +42,7 @@ namespace GameTimeNext.Core.Application.DataManagers
 
             using SQLiteCommand cmd = connection.CreateCommand();
             cmd.CommandText = "DELETE FROM T1SESSI WHERE SEID = @SEID";
-            cmd.Parameters.AddWithValue("@SEID", sEID); 
+            cmd.Parameters.AddWithValue("@SEID", sEID);
             cmd.ExecuteNonQuery();
             DevSyncCsvSyncService.ExportTable("T1SESSI");
         }

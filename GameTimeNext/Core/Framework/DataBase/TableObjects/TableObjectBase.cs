@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace GameTimeNext.Core.Framework.DataBase.TableObjects
+﻿namespace GameTimeNext.Core.Framework.DataBase.TableObjects
 {
     public abstract class TableObjectBase
     {

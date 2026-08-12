@@ -1,10 +1,8 @@
 ﻿using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.Utils;
-using Microsoft.VisualBasic.FileIO;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Text.Json;
 
 namespace GameTimeNext.Core.Framework.Files
 {

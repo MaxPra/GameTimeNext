@@ -170,7 +170,7 @@ namespace GameTimeNext.Core.Application.DataManagers
                 return query;
             }
 
-            public static string BuildQueryDaysPlayed(DateTime? timeSpanStart, DateTime timeSpanEnd,long? pfid = null)
+            public static string BuildQueryDaysPlayed(DateTime? timeSpanStart, DateTime timeSpanEnd, long? pfid = null)
             {
                 string sqlPlfr = "";
                 string sqlPlto = "";

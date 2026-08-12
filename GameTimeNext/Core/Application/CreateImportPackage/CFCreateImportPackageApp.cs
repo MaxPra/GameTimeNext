@@ -1,7 +1,6 @@
 ﻿using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Metadata.Data;
 using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Config;
 using System.Globalization;
 using System.IO;
