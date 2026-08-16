@@ -260,7 +260,7 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
             }, selectedT1plthr);
         }
 
-        protected async Task EV_ctxtCompletePlaythroughAsync()
+        protected async Task EV_ctxtCompletePlaythrough()
         {
             if (_viewModel?.SelectedRow?.RowObject is not T1PLTHR selectedT1plthr)
                 return;
