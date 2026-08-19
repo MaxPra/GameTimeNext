@@ -7,7 +7,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.DataManagers
 {
-    public class TFPROFI
+    public partial class TFPROFI
     {
         /// <summary>
         /// Löscht das übergebene Profil inkl. der zugehörigen Daten
@@ -120,52 +120,20 @@ namespace GameTimeNext.Core.Application.DataManagers
 
         public static double GetTodaysGameTimeInMinutes(long pfid)
         {
-            UIXQuery query = BuildQueryTodaysGameTime(pfid);
-
-            double playedMinutesToday = 0;
-
-            string sql = query.PreviewQuery();
-            using (var reader = query.Execute())
-            {
-                while (reader.Read())
-                {
-                    DateTime plfr = UIXQuery.GetDateTime(reader, K1SESSI.Name, K1SESSI.Fields.PLFR);
-                    DateTime plto = UIXQuery.GetDateTime(reader, K1SESSI.Name, K1SESSI.Fields.PLTO);
-                    double plti = UIXQuery.GetDouble(reader, K1SESSI.Name, K1SESSI.Fields.PLTI);
-
-                    // Wenn Von gleich gestern
-                    // dann muss die differenz vom letzten Ende der Session zu 00:00 Uhr heute berechnet werden
-                    if (plfr.Date == DateTime.Today.AddDays(-1))
-                    {
-                        playedMinutesToday += ((double)(plto - DateTime.Today).TotalSeconds / 60);
-                    }
-                    else
-                    {
-                        playedMinutesToday += plti;
-                    }
-                }
-            }
-
-            return playedMinutesToday;
+            return GetGameTimeInMinutes(pfid, DateTime.Today.Date, DateTime.Today.Date);
         }
 
-        public static double GetTotalGameTimeInMinutes(long pfid)
+        public static double GetGameTimeInMinutes(long pfid, DateTime? start, DateTime end)
         {
-            UIXQuery query = new UIXQuery(K1SESSI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
+            UIXQuery query = TFSESSI.BuildQuerySessionsInTimeSpanBase(start, end, pfid: pfid);
             query.AddField(K1SESSI.Name, K1SESSI.Fields.PLTI);
-            query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PFID, QueryCompareType.EQUALS, pfid);
-
-            double totalPlayedMinutes = 0;
+            query.AddSum(K1SESSI.Name, K1SESSI.Fields.PLTI, "PLTI");
 
             using (var reader = query.Execute())
-            {
-                while (reader.Read())
-                {
-                    double plti = UIXQuery.GetDouble(reader, K1SESSI.Name, K1SESSI.Fields.PLTI);
-                    totalPlayedMinutes += plti;
-                }
-            }
-            return totalPlayedMinutes;
+                if (reader.Read())
+                    return UIXQuery.GetDouble(reader, "PLTI");
+
+            return 0;
         }
 
         public static string GetProfileName(long pfid)
@@ -177,6 +145,31 @@ namespace GameTimeNext.Core.Application.DataManagers
                 return string.Empty;
 
             return t1profi.GANA;
+        }
+
+        /// <summary>
+        /// Gibt zurück, ob es sich bei dem Profil um ein externes Spiel handelt (Konsolen, Mobile, etc.)
+        /// </summary>
+        /// <param name="pfid"></param>
+        /// <returns></returns>
+        public static bool IsExternalGame(long pfid)
+        {
+            TXPROFI txprofi = new TXPROFI();
+            T1PROFI t1profi = txprofi.Read(pfid);
+
+            if (t1profi is null)
+                return false;
+
+            string plafo = t1profi.PLAFO;
+            T1CTABD t1ctabd = new TXCTABD().Read("pF", plafo);
+
+            if (t1ctabd is null)
+                return false;
+
+            t1ctabd = new TXCTABD().Read("pT", t1ctabd.PARM1);
+
+            // 02 => External (Console, Mobile, etc.)
+            return t1ctabd.TXNUM == "02";
         }
 
         private static void DeleteAllLinkedT1GRPPOs(T1PROFI t1profi)
@@ -227,20 +220,6 @@ namespace GameTimeNext.Core.Application.DataManagers
                 {
                 }
             }
-        }
-
-        private static UIXQuery BuildQueryTodaysGameTime(long pfid)
-        {
-            UIXQuery query = new UIXQuery(K1SESSI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
-
-            query.AddField(K1SESSI.Name, K1SESSI.Fields.PLFR);
-            query.AddField(K1SESSI.Name, K1SESSI.Fields.PLTO);
-            query.AddField(K1SESSI.Name, K1SESSI.Fields.PLTI);
-
-            query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PFID, QueryCompareType.EQUALS, pfid);
-            query.AddWhereDateOnDay(K1SESSI.Name, K1SESSI.Fields.PLTO, DateTime.Today);
-
-            return query;
         }
 
         private static UIXQuery BuildLinkedTagsQuery(long pfid)

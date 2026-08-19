@@ -51,30 +51,83 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="8" />
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
+                <Grid
+                    x:Name="grdTimeSpanOffset"
+                    Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="8" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="8" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <Button
+                        x:Name="BtnDecreaseTimeSpan"
+                        Grid.Column="0"
+                        Width="40"
+                        Height="36"
+                        VerticalAlignment="Center"
+                        ToolTip="Decrease Time Span">
+                        <TextBlock
+                            FontFamily="Segoe MDL2 Assets"
+                            FontSize="9"
+                            Text="&#xE738;" />
+                    </Button>
+
+                    <TextBlock
+                        x:Name="txtTimeSpanOffset"
+                        Grid.Column="2"
+                        Width="36"
+                        TextAlignment="Center"
+                        Text="0"
+                        FontSize="14"
+                        FontWeight="Bold"
+                        Foreground="{DynamicResource Brush.TextPrimary}" />
+
+                    <Button
+                        x:Name="BtnIncreaseTimeSpan"
+                        Grid.Column="4"
+                        Width="40"
+                        Height="36"
+                        VerticalAlignment="Center"
+                        ToolTip="Increase Time Span">
+                        <TextBlock
+                            FontFamily="Segoe MDL2 Assets"
+                            FontSize="9"
+                            Text="&#xE710;" />
+                    </Button>
+                </Grid>
+                
                 <ComboBox
                     x:Name="CmbTimeRange"
-                    Grid.Column="0"
+                    Grid.Column="2"
                     Width="190"
                     Height="36"
                     VerticalAlignment="Center"
                     SelectedIndex="0">
+                    <ComboBoxItem Content="Last 7 Days" />
                     <ComboBoxItem Content="Last 30 Days" />
                     <ComboBoxItem Content="Last 365 Days" />
+                    <ComboBoxItem Content="Week" />
+                    <ComboBoxItem Content="Month" />
                     <ComboBoxItem Content="All Time" />
                 </ComboBox>
 
                 <Button
                     x:Name="BtnRefresh"
-                    Grid.Column="2"
-                    Width="36"
+                    Grid.Column="4"
+                    Width="40"
                     Height="36"
                     VerticalAlignment="Center"
                     ToolTip="Refresh">
                     <TextBlock
                         FontFamily="Segoe MDL2 Assets"
-                        FontSize="14"
+                        FontSize="9"
                         Text="&#xE72C;" />
                 </Button>
             </Grid>
@@ -462,7 +515,7 @@
                             FontSize="14"
                             FontWeight="SemiBold"
                             Foreground="{DynamicResource Brush.TextPrimary}"
-                            Text="Recently Played" />
+                            Text="Games Played" />
                     </StackPanel>
 
                     <!--  Recent game list  -->
@@ -779,6 +832,13 @@
                                     FontWeight="Bold"
                                     Foreground="{DynamicResource Brush.TextPrimary}"
                                     Text="n.A." />
+                                <TextBlock
+                                    x:Name="txtStatLongestSessionGame"
+                                    Margin="0,2,0,0"
+                                    FontSize="11"
+                                    FontWeight="Normal"
+                                    Foreground="{DynamicResource Brush.TextSecondary}"
+                                    Text="(n.A.)" />
                                 <TextBlock
                                     x:Name="txtStatLongestSessionDate"
                                     Margin="0,2,0,0"

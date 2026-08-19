@@ -1,15 +1,17 @@
 ﻿using GameTimeNext.Core.Application.Dashboard.ViewModels;
 using GameTimeNext.Core.Application.Dashboard.Views;
 using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.Profiles.Viewmodel;
 using GameTimeNext.Core.Application.Profiles;
+using GameTimeNext.Core.Application.Profiles.Viewmodel;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Utils;
+using System.Globalization;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Media.Imaging;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.Events;
 using UIX.ViewController.Engine.Querying;
@@ -21,7 +23,10 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
     public class DashboardViewController : UIXViewControllerBase
     {
         DashboardViewModel? viewModel = null;
-        int timeSpanDays = 30;
+        short timeSpanOffset = 0;
+        DateTime? timeSpanStart = null;
+        DateTime timeSpanEnd = DateTime.Today.AddDays(1).AddTicks(-1);
+        bool showOffsetSelection = false;
 
         public DashboardViewController(UIXApplication app) : base(app)
         {
@@ -54,18 +59,18 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
             using (SuppressRunEventPipeline())
             {
                 GetView().CmbTimeRange.SelectedIndex = AppEnvironment.GetAppConfig().UserSettings.SelectedDashboardMode;
+                timeSpanOffset = AppEnvironment.GetAppConfig().UserSettings.SelectedDashboardOffset;
                 ChangeTimeSpanDays();
             }
         }
 
         protected override async Task BuildFirstImplAsync()
         {
-            await BuildProfilesListBoxAsync();
+            await BuildPlayedProfilesListBoxAsync();
         }
 
         protected override void BuildFirstImpl()
         {
-
         }
 
         protected override async Task BuildImplAsync()
@@ -74,6 +79,8 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
 
         protected override void BuildImpl()
         {
+            FnControls.SetVisible(GetView().grdTimeSpanOffset, showOffsetSelection);
+            FnControls.SetEnabled(GetView().BtnIncreaseTimeSpan, timeSpanOffset < 0);
         }
 
         protected override void Check()
@@ -90,18 +97,16 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
 
         protected override void FillViewImpl()
         {
-            FillMostPlayedSection();
+            GetView().txtTimeSpanOffset.Text = timeSpanOffset.ToString();
 
-            FillLastPlayedSection();
-
-            FillPlaytimeOverviewSection();
-
-            FillOverallStatisticsSection();
+            FillSectionPlaytimeOverview();
+            FillSectionOverallStatistics();
+            FillSectionLastPlayed();
+            FillSectionMostPlayed();
         }
 
         protected override void SaveDBOImpl()
         {
-
         }
 
         protected override void TriggeredEvent(FrameworkElement source, string eventName)
@@ -119,8 +124,8 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
                     AppEnvironment.GetAppConfig().UserSettings.SelectedDashboardMode = (short)GetView().CmbTimeRange.SelectedIndex;
                     AppEnvironment.SaveAppConfig();
 
-                    await BuildProfilesListBoxAsync();
-                    FillView();
+                    await BuildPlayedProfilesListBoxAsync();
+                    Open(true);
                 }
 
             }
@@ -136,19 +141,60 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
             return (DashboardView)View;
         }
 
-        private async Task BuildProfilesListBoxAsync()
+        private void ChangeTimeSpanDays()
+        {
+            int selectedIndex = GetView().CmbTimeRange.SelectedIndex;
+
+            showOffsetSelection = false;
+            switch (selectedIndex)
+            {
+                case 0:
+                    // Last 7 Days
+                    timeSpanOffset = 0;
+                    (timeSpanStart, timeSpanEnd) = FnTimeSpan.GetBeginningAndEndDays(7);
+                    break;
+                case 1:
+                    // Last 30 Days
+                    timeSpanOffset = 0;
+                    (timeSpanStart, timeSpanEnd) = FnTimeSpan.GetBeginningAndEndDays(30);
+                    break;
+                case 2:
+                    // Last 365 Days
+                    timeSpanOffset = 0;
+                    (timeSpanStart, timeSpanEnd) = FnTimeSpan.GetBeginningAndEndDays(365);
+                    break;
+                case 3:
+                    // Week
+                    (timeSpanStart, timeSpanEnd) = FnTimeSpan.GetBeginningAndEnd(FnTimeSpan.TimeSpanType.Week, offset: timeSpanOffset);
+                    showOffsetSelection = true;
+                    break;
+                case 4:
+                    // Month
+                    (timeSpanStart, timeSpanEnd) = FnTimeSpan.GetBeginningAndEnd(FnTimeSpan.TimeSpanType.Month, offset: timeSpanOffset);
+                    showOffsetSelection = true;
+                    break;
+                default:
+                    // All time
+                    timeSpanOffset = 0;
+                    timeSpanStart = null;
+                    timeSpanEnd = DateTime.Today.AddDays(1).AddTicks(-1);
+                    break;
+            }
+        }
+
+        private async Task BuildPlayedProfilesListBoxAsync()
         {
             GetApp().Loader.Begin();
 
             await Task.Run(() =>
             {
-                List<T1PROFI> t1profis = GetRecentlyPlayedProfiles();
-                List<ProfilesListBoxItem> profileItems = BuildProfileListItems(t1profis);
+                List<T1PROFI> t1profis = TFPROFI.GetPlayedProfiles(timeSpanStart, timeSpanEnd);
+                List<ProfilesListBoxItem> profiles = BuildProfileListBoxItems(t1profis);
 
                 View.Dispatcher.Invoke(() =>
                 {
                     viewModel = new DashboardViewModel();
-                    viewModel!.T1Profis = new System.Collections.ObjectModel.ObservableCollection<ProfilesListBoxItem>(profileItems);
+                    viewModel!.T1Profis = new System.Collections.ObjectModel.ObservableCollection<ProfilesListBoxItem>(profiles);
                     GetView().DataContext = viewModel;
 
                     GetApp().Loader.Stop();
@@ -156,294 +202,7 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
             });
         }
 
-        private void FillMostPlayedSection()
-        {
-            T1PROFI t1profiMostPlayed = DetermineMostPlayedProfile();
-
-            if (t1profiMostPlayed == null)
-                return;
-
-            string coverPath = Path.Combine(AppEnvironment.GetAppConfig().CoverFolderPath ?? string.Empty, t1profiMostPlayed.PPFN);
-            var coverImage = FnImage.LoadImageWithoutLock(coverPath, 300, 450);
-
-            GetView().txtMostPlayedTitle.Text = t1profiMostPlayed.GANA;
-            GetView().imgMostPlayedCover.Source = coverImage;
-            GetView().txtMostPlayedPlaytime.Text = CFDashboardApp.FormatTime(TFPROFI.GetTotalGameTimeInMinutes(t1profiMostPlayed.PFID));
-
-            int daysPlayed = TFSESSI.GetPlayedDays(t1profiMostPlayed.PFID, timeSpanDays);
-            GetView().txtMostPlayedDays.Text = daysPlayed.ToString();
-        }
-
-        private void FillLastPlayedSection()
-        {
-            T1PROFI t1profiLastPlayed = DetermineLastPlayedProfile();
-
-            if (t1profiLastPlayed == null)
-                return;
-
-            GetView().txtLastPlayedTitle.Text = t1profiLastPlayed.GANA;
-            GetView().txtLastPlayedDate.Text = CFProfilesApp.FormatFirstLastDate(t1profiLastPlayed.LAPL);
-            GetView().txtLastPlayedTime.Text = CFDashboardApp.FormatTime(TFPROFI.GetTotalGameTimeInMinutes(t1profiLastPlayed.PFID));
-
-            string coverPath = Path.Combine(AppEnvironment.GetAppConfig().CoverFolderPath ?? string.Empty, t1profiLastPlayed.PPFN);
-            var coverImage = FnImage.LoadImageWithoutLock(coverPath, 300, 450);
-
-            GetView().imgLastPlayedCover.Source = coverImage;
-        }
-
-        private void FillPlaytimeOverviewSection()
-        {
-            double overallPlayTimeMinutes = GetTotalPlaytimeMinutes();
-
-            GetView().txtTotalPlaytime.Text = CFDashboardApp.FormatTime(overallPlayTimeMinutes);
-
-            int daysPlayed = TFSESSI.GetPlayedDays(timeSpanDays);
-            GetView().txtDaysPlayed.Text = daysPlayed.ToString();
-
-            GetView().txtGamesPlayed.Text = GetTotalPlayedGames().ToString();
-        }
-
-        private void FillOverallStatisticsSection()
-        {
-            GetView().txtStatPlayedToday.Text = CFDashboardApp.FormatTime(GetTodaysPlaytime());
-
-            T1SESSI t1sessi = GetLargestSession();
-
-            if (t1sessi == null)
-                return;
-
-            GetView().txtStatLongestSession.Text = CFDashboardApp.FormatTime(t1sessi.PLTI);
-            GetView().txtStatLongestSessionDate.Text = "(" + CFProfilesApp.FormatFirstLastDate(t1sessi.PLTO) + ")";
-        }
-
-        private List<T1PROFI> GetRecentlyPlayedProfiles()
-        {
-            UIXQuery query = BuildQueryRecentlyPlayedProfiles();
-
-            TXPROFI txprofi = new TXPROFI();
-            List<T1PROFI> profiles = new List<T1PROFI>();
-
-            string s = query.PreviewQuery();
-
-            using (var reader = query.Execute())
-            {
-                while (reader.Read())
-                {
-                    T1PROFI t1profi = txprofi.Read(UIXQuery.GetInt64(reader, K1PROFI.Name, K1PROFI.Fields.PFID));
-
-                    profiles.Add(t1profi);
-                }
-            }
-
-            return profiles;
-        }
-
-        private double GetTotalPlaytimeMinutes()
-        {
-            UIXQuery query = BuildQueryTotalPlaytimeMinutes();
-
-            using (var reader = query.Execute())
-            {
-                if (reader.Read())
-                {
-                    return UIXQuery.GetDouble(reader, "TotalPlaytime");
-                }
-            }
-
-            return 0;
-        }
-
-
-
-        private int GetTotalPlayedGames()
-        {
-            UIXQuery query = new UIXQuery(K1PROFI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
-            query.AddCount(K1PROFI.Name, K1PROFI.Fields.PFID, true, "TotalGames");
-
-            UIXQueryTable t1sessi_table = query.AddJoinTable(K1SESSI.Name, JoinType.INNER);
-            t1sessi_table.AddJoinCondition(
-                K1PROFI.Name, K1PROFI.Fields.PFID,
-                QueryCompareType.EQUALS,
-                K1SESSI.Name, K1SESSI.Fields.PFID);
-
-            if (timeSpanDays != 0)
-            {
-                DateTime limitDate = DateTime.Now.AddDays(-timeSpanDays);
-                query.AddWhere(K1PROFI.Name, K1PROFI.Fields.LAPL, QueryCompareType.GREATER_THAN, limitDate);
-            }
-
-            query.SetDistinct(true);
-
-            using (var reader = query.Execute())
-            {
-                if (reader.Read())
-                {
-                    return UIXQuery.GetInt32(reader, "TotalGames");
-                }
-            }
-
-            return 0;
-        }
-
-        private double GetTodaysPlaytime()
-        {
-            UIXQuery query = BuildQueryTodaysPlaytime();
-
-            double playedMinutesToday = 0;
-
-            string sql = query.PreviewQuery();
-            using (var reader = query.Execute())
-            {
-                while (reader.Read())
-                {
-                    DateTime plfr = UIXQuery.GetDateTime(reader, K1SESSI.Name, K1SESSI.Fields.PLFR);
-                    DateTime plto = UIXQuery.GetDateTime(reader, K1SESSI.Name, K1SESSI.Fields.PLTO);
-                    double plti = UIXQuery.GetDouble(reader, K1SESSI.Name, K1SESSI.Fields.PLTI);
-
-                    // Wenn Von gleich gestern
-                    // dann muss die differenz vom letzten Ende der Session zu 00:00 Uhr heute berechnet werden
-                    if (plfr.Date == DateTime.Today.AddDays(-1))
-                    {
-                        playedMinutesToday += ((double)(plto - DateTime.Today).TotalSeconds / 60);
-                    }
-                    else
-                    {
-                        playedMinutesToday += plti;
-                    }
-                }
-            }
-
-            return playedMinutesToday;
-        }
-
-        private T1SESSI GetLargestSession()
-        {
-            UIXQuery query = BuildQueryLargestSessionTime();
-
-            string s = query.PreviewQuery();
-
-            using (var reader = query.Execute())
-            {
-                if (reader.Read())
-                {
-                    TXSESSI txsessi = new TXSESSI();
-
-                    long seid = UIXQuery.GetInt64(reader, K1SESSI.Name, K1SESSI.Fields.SEID);
-
-                    return txsessi.Read(seid);
-                }
-            }
-
-            return null!;
-        }
-
-        private UIXQuery BuildQueryLargestSessionTime()
-        {
-            UIXQuery query = new UIXQuery(K1SESSI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
-
-            query.AddField(K1SESSI.Name, K1SESSI.Fields.SEID);
-
-            if (timeSpanDays != 0)
-            {
-                DateTime limitDate = DateTime.Now.AddDays(-timeSpanDays);
-                query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PLTO, QueryCompareType.GREATER_THAN, limitDate);
-            }
-
-            query.AddOrderBy(K1SESSI.Name, K1SESSI.Fields.PLTI, OrderDirection.DESC);
-
-            query.SetTopX(1);
-
-            return query;
-
-        }
-
-        private UIXQuery BuildQueryRecentlyPlayedProfiles()
-        {
-            UIXQuery query = new UIXQuery(K1PROFI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
-
-            query.AddField(K1PROFI.Name, K1PROFI.Fields.PFID);
-
-            if (timeSpanDays != 0)
-            {
-                DateTime limitDate = DateTime.Now.AddDays(-timeSpanDays);
-                query.AddWhere(K1PROFI.Name, K1PROFI.Fields.LAPL, QueryCompareType.GREATER_THAN, limitDate);
-            }
-
-            query.AddOrderBy(K1PROFI.Name, K1PROFI.Fields.LAPL, OrderDirection.DESC);
-
-            return query;
-        }
-
-        private UIXQuery BuildQueryTodaysPlaytime()
-        {
-            UIXQuery query = new UIXQuery(K1SESSI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
-
-            query.AddField(K1SESSI.Name, K1SESSI.Fields.PLFR);
-            query.AddField(K1SESSI.Name, K1SESSI.Fields.PLTO);
-            query.AddField(K1SESSI.Name, K1SESSI.Fields.PLTI);
-
-            query.AddWhereDateOnDay(K1SESSI.Name, K1SESSI.Fields.PLTO, DateTime.Today);
-
-            return query;
-        }
-
-        private UIXQuery BuildQueryTotalPlaytimeMinutes()
-        {
-            UIXQuery query = new UIXQuery(K1SESSI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
-
-            query.AddSum(K1SESSI.Name, K1SESSI.Fields.PLTI, "TotalPlaytime");
-
-            if (timeSpanDays != 0)
-            {
-                DateTime limitDate = DateTime.Now.AddDays(-timeSpanDays);
-                query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PLTO, QueryCompareType.GREATER_THAN, limitDate);
-            }
-
-            return query;
-        }
-
-        private UIXQuery BuildQueryMostPlayedGame()
-        {
-            UIXQuery query = new UIXQuery(K1PROFI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
-
-            query.AddField(K1PROFI.Name, K1PROFI.Fields.PFID);
-            query.AddSum(K1SESSI.Name, K1SESSI.Fields.PLTI, "TotalPlaytime");
-
-            UIXQueryTable t1sessi = query.AddJoinTable(K1SESSI.Name, JoinType.LEFT);
-            t1sessi.AddJoinCondition(
-                K1PROFI.Name, K1PROFI.Fields.PFID,
-                QueryCompareType.EQUALS,
-                K1SESSI.Name, K1SESSI.Fields.PFID);
-
-            if (timeSpanDays != 0)
-            {
-                DateTime limitDate = DateTime.Now.AddDays(-timeSpanDays);
-                query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PLTO, QueryCompareType.GREATER_THAN, limitDate);
-            }
-
-            query.AddGroupBy(K1PROFI.Name, K1PROFI.Fields.PFID);
-
-            query.AddOrderByAlias("TotalPlaytime", OrderDirection.DESC);
-
-            query.SetTopX(1);
-
-            return query;
-        }
-
-        private UIXQuery BuildQueryLastPlayedGame()
-        {
-            UIXQuery query = new UIXQuery(K1SESSI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
-
-            query.AddField(K1SESSI.Name, K1SESSI.Fields.PFID);
-
-            query.AddOrderBy(K1SESSI.Name, K1SESSI.Fields.PLTO, OrderDirection.DESC);
-
-            query.SetTopX(1);
-
-            return query;
-        }
-
-        private List<ProfilesListBoxItem> BuildProfileListItems(List<T1PROFI> t1profiles)
+        private List<ProfilesListBoxItem> BuildProfileListBoxItems(List<T1PROFI> t1profiles)
         {
             return t1profiles.Select(prof => new ProfilesListBoxItem
             {
@@ -453,52 +212,71 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
             }).ToList();
         }
 
-        private void ChangeTimeSpanDays()
+        private void FillSectionPlaytimeOverview()
         {
-            if (GetView().CmbTimeRange.SelectedIndex == 0)
-                timeSpanDays = 30;
-            else if (GetView().CmbTimeRange.SelectedIndex == 1)
-                timeSpanDays = 365;
-            else
-                timeSpanDays = 0;
+            GetView().txtTotalPlaytime.Text = CFDashboardApp.FormatTime(TFPROFI.GetPlaytime(timeSpanStart, timeSpanEnd));
+            GetView().txtGamesPlayed.Text = TFPROFI.GetPlayedProfilesCount(timeSpanStart, timeSpanEnd).ToString();
+            GetView().txtDaysPlayed.Text = TFPROFI.GetDaysPlayed(timeSpanStart, timeSpanEnd).ToString();
         }
 
-        private T1PROFI DetermineMostPlayedProfile()
+        private void FillSectionOverallStatistics()
         {
-            UIXQuery query = BuildQueryMostPlayedGame();
-            TXPROFI txprofi = new TXPROFI();
+            GetView().txtStatPlayedToday.Text = CFDashboardApp.FormatTime(TFPROFI.GetPlaytimeToday(timeSpanStart, timeSpanEnd));
 
-            string s = query.PreviewQuery();
-
-            using (var reader = query.Execute())
             {
-                if (!reader.Read())
-                    return null!;
-
-                long pfid = UIXQuery.GetInt64(reader, K1PROFI.Name, K1PROFI.Fields.PFID);
-                return txprofi.Read(pfid);
+                // Longest Session
+                (string gana, double plti, DateTime plto) = TFPROFI.GetLongestSession(timeSpanStart, timeSpanEnd);
+                GetView().txtStatLongestSession.Text = CFDashboardApp.FormatTime(plti);
+                GetView().txtStatLongestSessionGame.Text = gana;
+                GetView().txtStatLongestSessionDate.Text = $"({CFProfilesApp.FormatFirstLastDate(plto)})";
             }
         }
 
-        private T1PROFI DetermineLastPlayedProfile()
+        private void FillSectionLastPlayed()
         {
-            UIXQuery query = BuildQueryLastPlayedGame();
+            (string gana, DateTime lapl, double plti, string ppfn) = TFPROFI.GetLastPlayed(timeSpanStart, timeSpanEnd);
+            GetView().txtLastPlayedTitle.Text = gana;
+            GetView().txtLastPlayedDate.Text = CFProfilesApp.FormatFirstLastDate(lapl);
+            GetView().txtLastPlayedTime.Text = CFDashboardApp.FormatTime(plti);
 
-            using (var reader = query.Execute())
-            {
-                if (reader.Read())
-                {
-                    long pfid = UIXQuery.GetInt64(reader, K1SESSI.Name, K1SESSI.Fields.PFID);
-                    TXPROFI txprofi = new TXPROFI();
-                    return txprofi.Read(pfid);
-                }
-            }
+            BitmapImage? coverImage = FnImage.LoadImageWithoutLock(ppfn, 300, 450);
+            GetView().imgLastPlayedCover.Source = coverImage;
+        }
 
-            return null!;
+        private void FillSectionMostPlayed()
+        {
+            (string gana, double plti, int days, string ppfn) = TFPROFI.GetMostPlayed(timeSpanStart, timeSpanEnd);
+            GetView().txtMostPlayedTitle.Text = gana;
+            GetView().txtMostPlayedPlaytime.Text = CFDashboardApp.FormatTime(plti);
+            GetView().txtMostPlayedDays.Text = days.ToString();
+
+            BitmapImage? coverImage = FnImage.LoadImageWithoutLock(ppfn, 300, 450);
+            GetView().imgMostPlayedCover.Source = coverImage;
         }
 
         protected void EV_BtnRefresh()
         {
+            Open(true);
+        }
+
+        protected void EV_BtnDecreaseTimeSpan()
+        {
+            timeSpanOffset--;
+
+            AppEnvironment.GetAppConfig().UserSettings.SelectedDashboardOffset = timeSpanOffset;
+            AppEnvironment.SaveAppConfig();
+
+            Open(true);
+        }
+
+        protected void EV_BtnIncreaseTimeSpan()
+        {
+            timeSpanOffset++;
+            if (timeSpanOffset > 0) timeSpanOffset = 0;
+
+            AppEnvironment.GetAppConfig().UserSettings.SelectedDashboardOffset = timeSpanOffset;
+            AppEnvironment.SaveAppConfig();
+
             Open(true);
         }
     }

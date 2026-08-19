@@ -5,7 +5,6 @@ using GameTimeNext.Core.Framework.Files;
 using GameTimeNext.Core.Framework.GitHub;
 using GameTimeNext.Core.Framework.Logging;
 using GameTimeNext.Core.Framework.Utils;
-using Microsoft.VisualBasic.FileIO;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
@@ -22,6 +21,13 @@ namespace GameTimeNext
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+
+            // Sicherstellen, dass nur eine Instance läuft
+            if (!FnSystem.TryAcquireSingleInstance())
+            {
+                Shutdown();
+                return;
+            }
 
             FnSystem.ParseStartArguments(e.Args);
             bool startMinimized = AppEnvironment.StartArguments.ContainsKey("minimized");
