@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI.Base"
+    xmlns:uixprops="clr-namespace:UIX.ViewController.Engine.AttachedProperties;assembly=UIX.ViewController.Engine"
     xmlns:uixsel="clr-namespace:UIX.ViewController.Engine.FrameworkElements.Selectors;assembly=UIX.ViewController.Engine"
     Width="1300"
     Height="700"
@@ -155,14 +156,11 @@
                         Grid.Column="2"
                         Height="36"
                         VerticalAlignment="Center"
+                        uixprops:UIXAttachedProperty.AdditionalEntry="(All)"
+                        uixprops:UIXAttachedProperty.Source="From=T1CTABD;Where=TXTYP:pL;Text=DESCR;Value=TXNUM"
                         SelectedIndex="0"
                         SelectedValue=""
-                        SelectedValuePath="Tag">
-                        <ComboBoxItem Content="(All)" Tag="" />
-                        <ComboBoxItem Content="Initial" Tag="GTN.INITIAL_PLAYTHROUGH" />
-                        <ComboBoxItem Content="New Playthrough" Tag="GTN.NEW_PLAYTHROUGH" />
-                        <ComboBoxItem Content="DLC" Tag="GTN.DLC" />
-                    </ComboBox>
+                        SelectedValuePath="Tag" />
                 </Grid>
 
                 <Button

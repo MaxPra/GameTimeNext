@@ -192,8 +192,6 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             UIXQuery query = BuildProfilesQuery();
 
-            string sql = query.PreviewQuery();
-
             using (var reader = query.Execute())
             {
                 while (reader.Read())
