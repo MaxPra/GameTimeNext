@@ -148,6 +148,31 @@ namespace GameTimeNext.Core.Application.DataManagers
             return t1profi.GANA;
         }
 
+        /// <summary>
+        /// Gibt zurück, ob es sich bei dem Profil um ein externes Spiel handelt (Konsolen, Mobile, etc.)
+        /// </summary>
+        /// <param name="pfid"></param>
+        /// <returns></returns>
+        public static bool IsExternalGame(long pfid)
+        {
+            TXPROFI txprofi = new TXPROFI();
+            T1PROFI t1profi = txprofi.Read(pfid);
+
+            if (t1profi is null)
+                return false;
+
+            string plafo = t1profi.PLAFO;
+            T1CTABD t1ctabd = new TXCTABD().Read("pF", plafo);
+
+            if (t1ctabd is null)
+                return false;
+
+            t1ctabd = new TXCTABD().Read("pT", t1ctabd.PARM1);
+
+            // 02 => External (Console, Mobile, etc.)
+            return t1ctabd.TXNUM == "02";
+        }
+
         private static void DeleteAllLinkedT1GRPPOs(T1PROFI t1profi)
         {
             // Zugehörige Daten löschen

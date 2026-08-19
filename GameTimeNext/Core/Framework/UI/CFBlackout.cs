@@ -29,14 +29,14 @@ namespace GameTimeNext.Core.Framework.UI
             }
         }
 
-        public static void Enable(Window owner)
+        public static void Enable(Window owner, bool consoleMode = false)
         {
             if (isActive)
             {
                 return;
             }
 
-            bool showMovingLabel = AppEnvironment.GetAppConfig().AppSettings.EnableFullBlackoutText;
+            bool showMovingLabel = AppEnvironment.GetAppConfig().AppSettings.EnableFullBlackoutText && !consoleMode;
             CreateWindowsForMonitors(owner, monitor => true, showMovingLabel: showMovingLabel);
             FnDisplay.MoveMouseToVirtualBottomRight();
             FnDisplay.HideMouseCursorGlobally();
@@ -100,7 +100,7 @@ namespace GameTimeNext.Core.Framework.UI
             return false;
         }
 
-        public static void ToggleSecondaryBlackout(Window owner, bool manageCursor = false)
+        public static void ToggleSecondaryBlackout(Window owner, bool manageCursor = false, bool consoleMode = false)
         {
             if (isActive)
             {
@@ -108,7 +108,11 @@ namespace GameTimeNext.Core.Framework.UI
             }
             else
             {
-                EnableOnSecondaryMonitors(owner, manageCursor);
+                // Bei Consolemode alle Bildschirme ausschwärzen
+                if (consoleMode)
+                    Enable(owner, true);
+                else
+                    EnableOnSecondaryMonitors(owner, manageCursor);
             }
         }
 
