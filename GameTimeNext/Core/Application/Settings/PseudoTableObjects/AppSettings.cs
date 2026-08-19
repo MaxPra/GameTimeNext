@@ -81,6 +81,9 @@ namespace GameTimeNext.Core.Application.TableObjects
         [UIXSignatureField(22)]
         public bool EnableFullBlackoutText { get; set; }
 
+        [UIXSignatureField(23)]
+        public bool EnableTwitchIGDB { get; set; }
+
 
 
         public AppSettings()
@@ -99,6 +102,7 @@ namespace GameTimeNext.Core.Application.TableObjects
             EnableSessionCleanup = false;
             SessionCleanupSeconds = 30.0;
             SteamGridDbKey = string.Empty;
+            EnableTwitchIGDB = false;
             TwitchIGDBClientID = string.Empty;
             TwitchIGDBClientSecret = string.Empty;
 

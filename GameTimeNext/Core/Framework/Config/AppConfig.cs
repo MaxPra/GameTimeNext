@@ -1,8 +1,10 @@
 ﻿using GameTimeNext.Core.Application.General.UserSettings;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework.Utils;
+using Microsoft.VisualBasic.FileIO;
 using System.IO;
 using System.Text.Json.Serialization;
+using UIX.ViewController.Engine.Utils;
 using static GameTimeNext.Core.Application.Profiles.Controller.ProfilesViewController;
 
 namespace GameTimeNext.Core.Framework.Config
@@ -40,6 +42,24 @@ namespace GameTimeNext.Core.Framework.Config
         }
 
         [JsonIgnore]
+        public string DevBackupFolderPath
+        {
+            get
+            {
+                string temp = SpecialDirectories.MyDocuments + @"\GameTimeNext_Backup";
+
+                // Modi
+                if (AppEnvironment.StartArguments.ContainsKey("m") && !FnString.IsNullEmptyOrWhitespace(AppEnvironment.StartArguments["m"]))
+                {
+                    temp += "_m" + AppEnvironment.StartArguments["m"];
+                }
+
+                temp += "_dev";
+                return temp;
+            }
+        }
+
+        [JsonIgnore]
         public string LogFilePath
         {
             get
@@ -65,7 +85,18 @@ namespace GameTimeNext.Core.Framework.Config
         [JsonIgnore]
         public string AppFolderPathNormal
         {
-            get => RootFolderPath + Path.DirectorySeparatorChar + "GameTimeNXT";
+            get
+            {
+                string temp = RootFolderPath + Path.DirectorySeparatorChar + "GameTimeNXT";
+
+                // Modi
+                if (AppEnvironment.StartArguments.ContainsKey("m") && !FnString.IsNullEmptyOrWhitespace(AppEnvironment.StartArguments["m"]))
+                {
+                    temp += "_m" + AppEnvironment.StartArguments["m"];
+                }
+
+                return temp;
+            }
         }
 
         [JsonIgnore]

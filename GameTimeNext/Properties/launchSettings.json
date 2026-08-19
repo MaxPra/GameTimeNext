@@ -1,0 +1,15 @@
+{
+  "profiles": {
+    "GameTimeNext": {
+      "commandName": "Project"
+    },
+    "GameTimeNext (CLS)": {
+      "commandName": "Project",
+      "commandLineArgs": "-m CLS"
+    },
+    "GameTimeNext (UT)": {
+      "commandName": "Project",
+      "commandLineArgs": "-m UT"
+    }
+  }
+}

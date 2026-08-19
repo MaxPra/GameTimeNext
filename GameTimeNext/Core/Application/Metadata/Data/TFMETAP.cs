@@ -9,8 +9,6 @@ namespace GameTimeNext.Core.Application.Metadata.Data
         {
             UIXQuery query = BuildQueryMaxOrder(t1metap);
 
-            string s = query.PreviewQuery();
-
             using (var reader = query.Execute())
             {
                 if (reader.Read())

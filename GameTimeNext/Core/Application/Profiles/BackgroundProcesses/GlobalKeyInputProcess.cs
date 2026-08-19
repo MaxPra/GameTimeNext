@@ -84,9 +84,12 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
 
                 if (CFBlackout.AllowedToToggleBlackout(new TXPROFI().Read(AppEnvironment.CurrentPfid)))
                 {
+
+                    bool isExternalGame = TFPROFI.IsExternalGame(AppEnvironment.CurrentPfid);
+
                     System.Windows.Application.Current.Dispatcher.Invoke(() =>
                     {
-                        CFBlackout.ToggleSecondaryBlackout(System.Windows.Application.Current.MainWindow);
+                        CFBlackout.ToggleSecondaryBlackout(System.Windows.Application.Current.MainWindow, false, isExternalGame);
                     });
                 }
 
@@ -112,9 +115,12 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
 
                 if (CFBlackout.AllowedToToggleBlackout(new TXPROFI().Read(AppEnvironment.CurrentPfid)))
                 {
+
+                    bool isExternalGame = TFPROFI.IsExternalGame(AppEnvironment.CurrentPfid);
+
                     System.Windows.Application.Current.Dispatcher.Invoke(() =>
                     {
-                        CFBlackout.ToggleSecondaryBlackout(System.Windows.Application.Current.MainWindow);
+                        CFBlackout.ToggleSecondaryBlackout(System.Windows.Application.Current.MainWindow, false, isExternalGame);
                     });
                 }
 

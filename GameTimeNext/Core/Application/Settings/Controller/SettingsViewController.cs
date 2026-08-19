@@ -7,7 +7,6 @@ using GameTimeNext.Core.Framework.Files;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.UserInput;
 using GameTimeNext.Core.Framework.Utils;
-using Microsoft.VisualBasic.FileIO;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
@@ -81,6 +80,11 @@ namespace GameTimeNext.Core.Application.Settings.Controller
 
             if (!GetView().cbAutoDeleteBackups.IsEnabled)
                 GetView().cbAutoDeleteBackups.IsChecked = false;
+
+            FnControls.SetEnabled(GetView().txbIgdbClientId, GetView().cbEnableIGDBIntegration.IsChecked == true);
+            FnControls.SetEnabled(GetView().btnOpenIgdbClientId, GetView().cbEnableIGDBIntegration.IsChecked == true);
+            FnControls.SetEnabled(GetView().txbIgdbClientSecret, GetView().cbEnableIGDBIntegration.IsChecked == true);
+            FnControls.SetEnabled(GetView().btnOpenIgdbClientSecret, GetView().cbEnableIGDBIntegration.IsChecked == true);
         }
 
         protected override void Check()
@@ -136,6 +140,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             GetView().cbAutoDeleteBackups.IsChecked = _appSettings.AutoDelete == true;
 
             // IGDB
+            GetView().cbEnableIGDBIntegration.IsChecked = _appSettings.EnableTwitchIGDB;
             GetView().txbIgdbClientId.Text = _appSettings.TwitchIGDBClientID;
             GetView().txbIgdbClientSecret.Text = _appSettings.TwitchIGDBClientSecret;
 
@@ -166,6 +171,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             _appSettings!.AutoBackup = GetView().cbAutoBackup.IsChecked == true;
             _appSettings!.AutoDelete = GetView().cbAutoDeleteBackups.IsChecked == true;
 
+            _appSettings!.EnableTwitchIGDB = GetView().cbEnableIGDBIntegration.IsChecked == true;
             _appSettings!.TwitchIGDBClientID = GetView().txbIgdbClientId.Text;
             _appSettings!.TwitchIGDBClientSecret = GetView().txbIgdbClientSecret.Text;
 
@@ -307,7 +313,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
 
             if (FnSystem.IsDebug())
             {
-                exportPath = SpecialDirectories.MyDocuments + @"\GameTimeNext_Backup_dev";
+                exportPath = AppEnvironment.GetAppConfig().DevBackupFolderPath;
 
                 if (!Directory.Exists(exportPath))
                     Directory.CreateDirectory(exportPath);
@@ -366,13 +372,6 @@ namespace GameTimeNext.Core.Application.Settings.Controller
         {
             if (GetView().cbAllowProfileSpecificStyleChanges.IsChecked == false)
                 FnTheme.ApplyDefaultTheme();
-
-            if (_appSettings!.HasFieldDataChanged("TwitchIGDBClientID") || _appSettings.HasFieldDataChanged("TwitchIGDBClientSecret"))
-            {
-                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Attention", "Settings for IGDB have changed.\nRestart required!\nGameTimeNext will restart now!", CFMBOXResult.Ok, CFMBOXIcon.Info);
-                AppEnvironment.RestartGTNApplication();
-            }
-
         }
     }
 }

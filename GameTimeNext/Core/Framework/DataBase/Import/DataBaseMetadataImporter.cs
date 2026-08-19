@@ -100,9 +100,6 @@ namespace GameTimeNext.Core.Framework.DataBase.Import
 
             foreach (T1METAH header in txmetah.ReadAll())
             {
-                if (!header.GENER)
-                    continue;
-
                 if (!menamsWithPositions.Contains(header.MENAM))
                     continue;
 

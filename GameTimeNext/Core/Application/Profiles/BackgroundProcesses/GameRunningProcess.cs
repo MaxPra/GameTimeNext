@@ -29,10 +29,12 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
 
             if (ExecutablesToSearch.Count > 0)
             {
+                Dictionary<string, List<string>> runningProcesses = FnSystem.GetRunningProcessesSnapshot(ExecutablesToSearch);
+
                 // Alle Profile durchloopen
                 List<T1PROFI> t1profis = T1profis.Values.ToList();
 
-                foreach (var t1profi in t1profis)
+                foreach (T1PROFI t1profi in t1profis)
                 {
                     if (FnString.IsNullEmptyOrWhitespace(t1profi.EXGF) || FnString.IsNullEmptyOrWhitespace(t1profi.EXEC))
                     {
@@ -40,9 +42,12 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
                     }
 
 
-                    foreach (string executable in ExecutablesToSearch[t1profi.PFID])
+                    if (!ExecutablesToSearch.TryGetValue(t1profi.PFID, out List<string>? executables))
+                        continue;
+
+                    foreach (string executable in executables)
                     {
-                        if (FnSystem.IsProcessRunningWithPathPart(executable, t1profi.EXGF) && AppEnvironment.IsApplicationRunning(typeof(ProfilesApp).FullName!) && AppEnvironment.IsApplicationInitialized(typeof(ProfilesApp).FullName!))
+                        if (FnSystem.IsProcessRunningWithPathPart(runningProcesses, executable, t1profi.EXGF) && AppEnvironment.IsApplicationRunning(typeof(ProfilesApp).FullName!) && AppEnvironment.IsApplicationInitialized(typeof(ProfilesApp).FullName!))
                         {
                             if (_currentProfileRunning!.pfid == 0 && !t1profi.ARCH)
                             {

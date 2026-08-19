@@ -65,9 +65,6 @@ namespace GameTimeNext.Core.Application.DataManagers
             query.AddWhere(K1PLTHR.Name, K1PLTHR.Fields.PFID, QueryCompareType.EQUALS, pfid);
             query.AddWhereIn(K1PLTHR.Name, K1PLTHR.Fields.PTTY, types);
 
-
-            string sql = query.PreviewQuery();
-
             using (var reader = query.Execute())
             {
                 if (reader.Read())
