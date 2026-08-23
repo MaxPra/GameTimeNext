@@ -144,6 +144,10 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
                 contextBuilder.AddItem("ctxtCancelPlaythrough", "Cancel Playthrough", icon: UIXContextMenuFactory.CreateMdlIcon("\uE711"), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
 
             }
+            else if (t1plthr.PTCO)
+            {
+                contextBuilder.AddItem("ctxtReopenPlaythrough", "Reopen Playthrough", icon: UIXContextMenuFactory.CreateMdlIcon("\uE72C"), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
+            }
 
             if (contextBuilder.HasItems())
                 dgRow.ContextMenu = contextBuilder.Build();
@@ -289,6 +293,38 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
 
             // Playthrough canceln
             selectedT1plthr.PTCA = true;
+
+            new TXPLTHR().Save(selectedT1plthr);
+
+            await BuildDataGridAsync();
+
+            GetViewReturn<PlaythroughsViewReturn>().HasChanged = true;
+        }
+
+        protected async Task EV_ctxtReopenPlaythrough()
+        {
+            if (_viewModel?.SelectedRow?.RowObject is not T1PLTHR selectedT1plthr)
+                return;
+
+            T1PLTHR currentPlaythrough = TFPLTHR.GetCurrentPlaythrough(selectedT1plthr.PFID);
+            string text = "Do you really want to reoprn this playthrough?";
+
+            if (currentPlaythrough is not null)
+                text += "\n\nInformation: Your current playthrough will be completed!";
+
+            CFMBOXResult result = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Question", text, CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
+            if (result == CFMBOXResult.No)
+                return;
+
+            // Aktuellen PT abschließen
+            if (currentPlaythrough is not null)
+            {
+                currentPlaythrough.PTCO = true;
+                new TXPLTHR().Save(currentPlaythrough);
+            }
+
+            // Playthrough als offen markieren
+            selectedT1plthr.PTCO = false;
 
             new TXPLTHR().Save(selectedT1plthr);
 
