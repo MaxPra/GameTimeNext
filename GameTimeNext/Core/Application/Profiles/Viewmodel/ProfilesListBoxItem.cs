@@ -9,5 +9,8 @@ namespace GameTimeNext.Core.Application.Profiles.Viewmodel
         public bool COISPLA { get; set; }
 
         public BitmapImage? COPLFPA { get; set; }
+        
+        // Calculated Playtime
+        public string COCPLTI { get; set; }
     }
 }
