@@ -164,11 +164,16 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
                     (timeSpanStart, timeSpanEnd) = FnTimeSpan.GetBeginningAndEndDays(365);
                     break;
                 case 3:
+                    // Day
+                    (timeSpanStart, timeSpanEnd) = FnTimeSpan.GetBeginningAndEnd(FnTimeSpan.TimeSpanType.Day, offset: timeSpanOffset);
+                    showOffsetSelection = true;
+                    break;
+                case 4:
                     // Week
                     (timeSpanStart, timeSpanEnd) = FnTimeSpan.GetBeginningAndEnd(FnTimeSpan.TimeSpanType.Week, offset: timeSpanOffset);
                     showOffsetSelection = true;
                     break;
-                case 4:
+                case 5:
                     // Month
                     (timeSpanStart, timeSpanEnd) = FnTimeSpan.GetBeginningAndEnd(FnTimeSpan.TimeSpanType.Month, offset: timeSpanOffset);
                     showOffsetSelection = true;
@@ -208,7 +213,8 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
             {
                 ItemObject = prof,
                 COCOVIM = FnImage.LoadImageWithoutLock(Path.Combine(AppEnvironment.GetAppConfig().CoverFolderPath ?? string.Empty, prof.PPFN), 300, 450),
-                COISPLA = FnSystem.IsExeFoundInPath(prof.EXGF)
+                COISPLA = FnSystem.IsExeFoundInPath(prof.EXGF),
+                COCPLTI = CFDashboardApp.FormatTime(TFPROFI.GetGameTimeInMinutes(prof.PFID, timeSpanStart, timeSpanEnd))
             }).ToList();
         }
 
