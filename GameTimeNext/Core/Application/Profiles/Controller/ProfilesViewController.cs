@@ -34,6 +34,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         private ProfilesSubViewDataWrapper? _dataWrapper;
         private ProfilesSubGridViewModel? _profilesSubGridViewModel;
         private bool _playableFilter = false;
+        private bool _externalGameFilter = false;
 
         public ProfilesViewController(UIXApplication app) : base(app)
         {
@@ -198,13 +199,18 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 while (reader.Read())
                 {
                     TXPROFI txprofi = new TXPROFI();
+                    long pfid = UIXQuery.GetInt64(reader, K1PROFI.Name, K1PROFI.Fields.PFID);
+                    T1PROFI t1profi = txprofi.Read(pfid);
 
-                    long pfid = UIXQuery.GetInt64(reader, K1PROFI.Fields.PFID);
+                    bool includeProfile = true;
 
-                    T1PROFI t1profi = txprofi.Read(UIXQuery.GetInt64(reader, K1PROFI.Name, K1PROFI.Fields.PFID));
+                    if (_playableFilter)
+                        includeProfile &= FnSystem.IsExeFoundInPath(t1profi.EXGF);
 
-                    // Hier wird nach "playable" gefiltert
-                    if ((_playableFilter && FnSystem.IsExeFoundInPath(t1profi.EXGF)) || !_playableFilter)
+                    if (_externalGameFilter)
+                        includeProfile &= TFPROFI.IsExternalGame(t1profi.PFID);
+
+                    if (includeProfile)
                         t1profisFiltered.Add(t1profi);
                 }
             }
@@ -237,12 +243,6 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             List<T1GROUP> selectedTags = new List<T1GROUP>();
             List<T1GROUP> selectedStates = new List<T1GROUP>();
 
-            //if (filterController.ProfilesFilterViewModel != null)
-            //{
-            //    selectedTags = filterController.ProfilesFilterViewModel.T1GROUPs.Where(t => t.IsSelected == true).ToList();
-            //    selectedStates = filterController.ProfilesFilterViewModel.States.Where(s => s.IsSelected == true).ToList();
-            //}
-
             // Selektion aus Filter Cache lesen
             selectedTags = GetApp().FilterCache.SelectedTags;
             selectedStates = GetApp().FilterCache.SelectedStates;
@@ -268,6 +268,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 bool containsCurrentlyPlaying = false;
                 bool containsPlayable = false;
                 bool containsArchived = false;
+                bool containsExternal = false;
 
                 foreach (T1GROUP group in selectedStates)
                 {
@@ -281,6 +282,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                         containsPlayable = true;
                     else if (group.GRNA == "Archived")
                         containsArchived = true;
+                    else if (group.GRNA == "External")
+                        containsExternal = true;
                 }
 
                 if (containsUnplayed)
@@ -309,6 +312,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
                 // Hier im Objekt speichern, da außerhalb der Methode darauf zugegriffen werden muss (Ausnahme)
                 _playableFilter = containsPlayable;
+                _externalGameFilter = containsExternal;
             }
             else
                 _playableFilter = false;
