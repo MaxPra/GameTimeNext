@@ -211,6 +211,10 @@
                     Header="Completed" />
                 <DataGridCheckBoxColumn
                     Width="120"
+                    Binding="{Binding COPTPA}"
+                    Header="Paused" />
+                <DataGridCheckBoxColumn
+                    Width="120"
                     Binding="{Binding COPTCA}"
                     Header="Canceled" />
                 <DataGridTextColumn

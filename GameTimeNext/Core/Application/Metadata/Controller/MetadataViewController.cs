@@ -3,7 +3,9 @@ using GameTimeNext.Core.Application.Metadata.Viewmodels;
 using GameTimeNext.Core.Application.Metadata.Views;
 using GameTimeNext.Core.Application.Profiles;
 using GameTimeNext.Core.Framework;
+using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.UI.Dialogs;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -258,11 +260,14 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
         }
 
-
-
         protected async Task EV_BtnRefresh()
         {
             await BuildDG();
+        }
+
+        protected void EV_BtnOpenGenClass()
+        {
+            Process.Start("explorer.exe", AppEnvironment.GetAppConfig().DevGeneratedFilesPath);
         }
     }
 }

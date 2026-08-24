@@ -141,12 +141,15 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
             if (!t1plthr.PTCO && !t1plthr.PTCA)
             {
                 contextBuilder.AddItem("ctxtCompletePlaythrough", "Complete Playthrough", icon: UIXContextMenuFactory.CreateMdlIcon("\uE930"), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
-                contextBuilder.AddItem("ctxtCancelPlaythrough", "Cancel Playthrough", icon: UIXContextMenuFactory.CreateMdlIcon("\uE711"), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
 
+                if (!t1plthr.PTPA)
+                    contextBuilder.AddItem("ctxtPausePlaythrough", "Pause Playthrough", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Pause), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
+
+                contextBuilder.AddItem("ctxtCancelPlaythrough", "Cancel Playthrough", icon: UIXContextMenuFactory.CreateMdlIcon("\uE711"), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
             }
-            else if (t1plthr.PTCO)
+            if (t1plthr.PTPA)
             {
-                contextBuilder.AddItem("ctxtReopenPlaythrough", "Reopen Playthrough", icon: UIXContextMenuFactory.CreateMdlIcon("\uE72C"), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
+                contextBuilder.AddItem("ctxtUnpausePlaythrough", "Unpause Playthrough", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Refresh), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
             }
 
             if (contextBuilder.HasItems())
@@ -195,8 +198,9 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
                     row.COGANA = TFPROFI.GetProfileName(t1plthr.PFID);
                     row.COPTDE = t1plthr.PTDE;
                     row.COPTTY = TFCTABD.GetDescription("pL", t1plthr.PTTY);
-                    row.COPTCA = t1plthr.PTCA;
                     row.COPTCO = t1plthr.PTCO;
+                    row.COPTCA = t1plthr.PTCA;
+                    row.COPTPA = t1plthr.PTPA;
                     row.RowObject = t1plthr;
 
                     rows.Add(row);
@@ -271,7 +275,7 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
 
             // Playthrough als Abgeschlossen markieren
             selectedT1plthr.PTCO = true;
-
+            selectedT1plthr.PTPA = false;
             new TXPLTHR().Save(selectedT1plthr);
 
             await BuildDataGridAsync();
@@ -293,7 +297,7 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
 
             // Playthrough canceln
             selectedT1plthr.PTCA = true;
-
+            selectedT1plthr.PTPA = false;
             new TXPLTHR().Save(selectedT1plthr);
 
             await BuildDataGridAsync();
@@ -301,31 +305,50 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
             GetViewReturn<PlaythroughsViewReturn>().HasChanged = true;
         }
 
-        protected async Task EV_ctxtReopenPlaythrough()
+        protected async Task EV_ctxtPausePlaythrough()
+        {
+            if (_viewModel?.SelectedRow?.RowObject is not T1PLTHR selectedT1plthr)
+                return;
+
+            string text = "Do you really want to pause this playthrough?";
+            CFMBOXResult result = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Question", text, CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
+
+            if (result == CFMBOXResult.No)
+                return;
+
+            // Pause playthrough
+            selectedT1plthr.PTPA = true;
+            new TXPLTHR().Save(selectedT1plthr);
+
+            await BuildDataGridAsync();
+
+            GetViewReturn<PlaythroughsViewReturn>().HasChanged = true;
+        }
+
+        protected async Task EV_ctxtUnpausePlaythrough()
         {
             if (_viewModel?.SelectedRow?.RowObject is not T1PLTHR selectedT1plthr)
                 return;
 
             T1PLTHR currentPlaythrough = TFPLTHR.GetCurrentPlaythrough(selectedT1plthr.PFID);
-            string text = "Do you really want to reoprn this playthrough?";
+            string text = "Do you really want to unpause this playthrough?";
 
             if (currentPlaythrough is not null)
-                text += "\n\nInformation: Your current playthrough will be completed!";
+                text += "\n\nInformation: Your current playthrough will be paused!";
 
             CFMBOXResult result = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Question", text, CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
             if (result == CFMBOXResult.No)
                 return;
 
-            // Aktuellen PT abschließen
+            // Pause current playthrough
             if (currentPlaythrough is not null)
             {
-                currentPlaythrough.PTCO = true;
+                currentPlaythrough.PTPA = true;
                 new TXPLTHR().Save(currentPlaythrough);
             }
 
-            // Playthrough als offen markieren
-            selectedT1plthr.PTCO = false;
-
+            // Unpause selected playthrough
+            selectedT1plthr.PTPA = false;
             new TXPLTHR().Save(selectedT1plthr);
 
             await BuildDataGridAsync();
