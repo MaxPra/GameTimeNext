@@ -58,6 +58,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             query.AddField(K1PLTHR.Name, K1PLTHR.Fields.CRAT);
             query.AddField(K1PLTHR.Name, K1PLTHR.Fields.CHAT);
             query.AddField(K1PLTHR.Name, K1PLTHR.Fields.PTCA);
+            query.AddField(K1PLTHR.Name, K1PLTHR.Fields.PTPA);
             query.AddWhere(K1PLTHR.Name, K1PLTHR.Fields.PTID, QueryCompareType.EQUALS, pTID);
 
             using var reader = query.Execute();
@@ -80,6 +81,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             query.AddField(K1PLTHR.Name, K1PLTHR.Fields.CRAT);
             query.AddField(K1PLTHR.Name, K1PLTHR.Fields.CHAT);
             query.AddField(K1PLTHR.Name, K1PLTHR.Fields.PTCA);
+            query.AddField(K1PLTHR.Name, K1PLTHR.Fields.PTPA);
             query.AddOrderBy(K1PLTHR.Name, K1PLTHR.Fields.PTID, OrderDirection.ASC);
 
             List<T1PLTHR> list = new List<T1PLTHR>();
@@ -100,7 +102,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             DateTime now = DateTime.Now;
             obj.CRAT = now;
             obj.CHAT = now;
-            cmd.CommandText = "INSERT INTO T1PLTHR (PFID, PTTY, PTDE, PTCO, CRAT, CHAT, PTCA) VALUES (@PFID, @PTTY, @PTDE, @PTCO, @CRAT, @CHAT, @PTCA)";
+            cmd.CommandText = "INSERT INTO T1PLTHR (PFID, PTTY, PTDE, PTCO, CRAT, CHAT, PTCA, PTPA) VALUES (@PFID, @PTTY, @PTDE, @PTCO, @CRAT, @CHAT, @PTCA, @PTPA)";
             cmd.Parameters.AddWithValue("@PFID", ToDbValue(obj.PFID));
             cmd.Parameters.AddWithValue("@PTTY", ToDbValue(obj.PTTY));
             cmd.Parameters.AddWithValue("@PTDE", ToDbValue(obj.PTDE));
@@ -108,6 +110,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
             cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
             cmd.Parameters.AddWithValue("@PTCA", ToDbValue(obj.PTCA));
+            cmd.Parameters.AddWithValue("@PTPA", ToDbValue(obj.PTPA));
             cmd.ExecuteNonQuery();
             using SQLiteCommand idCmd = connection.CreateCommand();
             idCmd.CommandText = "SELECT last_insert_rowid();";
@@ -118,7 +121,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         {
             using SQLiteCommand cmd = connection.CreateCommand();
             obj.CHAT = DateTime.Now;
-            cmd.CommandText = "UPDATE T1PLTHR SET PFID = @PFID, PTTY = @PTTY, PTDE = @PTDE, PTCO = @PTCO, CRAT = @CRAT, CHAT = @CHAT, PTCA = @PTCA WHERE PTID = @PTID";
+            cmd.CommandText = "UPDATE T1PLTHR SET PFID = @PFID, PTTY = @PTTY, PTDE = @PTDE, PTCO = @PTCO, CRAT = @CRAT, CHAT = @CHAT, PTCA = @PTCA, PTPA = @PTPA WHERE PTID = @PTID";
             cmd.Parameters.AddWithValue("@PTID", ToDbValue(obj.PTID));
             cmd.Parameters.AddWithValue("@PFID", ToDbValue(obj.PFID));
             cmd.Parameters.AddWithValue("@PTTY", ToDbValue(obj.PTTY));
@@ -127,6 +130,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
             cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
             cmd.Parameters.AddWithValue("@PTCA", ToDbValue(obj.PTCA));
+            cmd.Parameters.AddWithValue("@PTPA", ToDbValue(obj.PTPA));
             cmd.ExecuteNonQuery();
         }
 
@@ -149,6 +153,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             obj.CRAT = ParseDbDateTime(reader.GetValue(5));
             obj.CHAT = ParseDbDateTime(reader.GetValue(6));
             obj.PTCA = !reader.IsDBNull(7) && Convert.ToInt32(reader.GetValue(7)) == 1;
+            obj.PTPA = !reader.IsDBNull(8) && Convert.ToInt32(reader.GetValue(8)) == 1;
             obj.State = UIXTableObjectState.Available;
             return obj;
         }

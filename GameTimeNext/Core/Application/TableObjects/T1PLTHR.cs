@@ -31,6 +31,9 @@ namespace GameTimeNext.Core.Application.TableObjects
         [UIXSignatureField(7)]
         public bool PTCA { get; set; } = false;
 
+        [UIXSignatureField(8)]
+        public bool PTPA { get; set; } = false;
+
         public override void Save()
         {
             new TXPLTHR().Save(this);
