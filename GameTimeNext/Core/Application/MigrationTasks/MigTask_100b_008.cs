@@ -3,7 +3,7 @@ using System.Data.Common;
 
 namespace GameTimeNext.Core.Application.MigrationTasks
 {
-    internal class MigTask_100b_008
+    internal partial class MigTask_100b_008
     {
         private static readonly DbConnection? _connection = AppEnvironment.GetDataBaseManager().GetConnection();
 

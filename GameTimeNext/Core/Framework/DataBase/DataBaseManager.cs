@@ -17,14 +17,19 @@ namespace GameTimeNext.Core.Framework.DataBase
         // [------------------ PUBLIC ----------------------]
         // [------------------------------------------------]
 
+        public void Initialize()
+        {
+            Initialize(AppConfig.Storage.DatabaseFilePath);
+        }
+
         /// <summary>
         /// Initialisiert die Datenbankverbindung und legt die Datenbank an, sollte sie noch nicht existieren
         /// </summary>
-        public void Initialize()
+        public void Initialize(string databaseFilePath)
         {
             // -- Erstellen --
             // Prüfen, ob File existiert
-            if (File.Exists(AppConfig.Storage.DatabaseFilePath))
+            if (File.Exists(databaseFilePath))
             {
                 // -- Verbinden --
                 ConnectToSQLite();
@@ -32,7 +37,7 @@ namespace GameTimeNext.Core.Framework.DataBase
                 return;
             }
 
-            using (File.Create(AppConfig.Storage.DatabaseFilePath)) { }
+            using (File.Create(databaseFilePath)) { }
 
             // -- Verbinden --
             ConnectToSQLite();

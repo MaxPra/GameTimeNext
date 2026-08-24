@@ -22,7 +22,7 @@ SOLUTION_DIR = Path(__file__).resolve().parent.parent
 # --------------------------------------------------------------
 ALLOWED_SOURCES = {
     "GameTimeNext": {
-        "GameTimeNext/Core/Framework/Config/AppConfig.cs": 1,
+        "GameTimeNext/Core/Framework/Config/AppConfig.Paths.cs": 1,
         "GameTimeNext/App.xaml.cs": 1,
         "GameTimeNext/Core/Framework/Config/AppConfigOld.cs": 1000,
     },
@@ -32,7 +32,7 @@ ALLOWED_SOURCES = {
     },
 
     "MaxPra": {
-        "GameTimeNext/Core/Framework/Config/AppConfig.cs": 1,
+        "GameTimeNext/Core/Framework/Config/AppConfig.Paths.cs": 1,
         "GameTimeNext/App.xaml.cs": 1,
     },
 }

@@ -98,20 +98,19 @@ namespace GameTimeNext.Core.Framework
 
         public static void Initalize()
         {
-            InitializeStartableApps();
-
             HandleBackup();
 
-            CheckShowChangeLog();
-
             MigrationManager.MigrateIfNeeded();
+            if (MigrationManager.ShutdownRequested) return;
+
+            InitializeStartableApps();
+
+            CheckShowChangeLog();
 
             DataBaseImporter.Import();
 
             if (FnSystem.IsDebug())
                 DevSyncCsvSyncService.ImportAllFromCsv();
-
-            AppVersion.SetAppVersionInConfig();
 
             if (GetAppConfig().AppSettings.EnableSessionCleanup)
                 InitializeCleanup();
@@ -223,7 +222,7 @@ namespace GameTimeNext.Core.Framework
 
         private static void CheckShowChangeLog()
         {
-            string versionOldRaw = AppConfig.AppVersion;
+            string versionOldRaw = AppEnvironment.GetAppConfig().AppVersion;
 
             AppVersion versionOld = new AppVersion();
             versionOld.Get(versionOldRaw);

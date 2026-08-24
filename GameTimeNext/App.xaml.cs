@@ -1,4 +1,5 @@
 ﻿using GameTimeNext.Core.Application.General;
+using GameTimeNext.Core.Application.MigrationTasks;
 using GameTimeNext.Core.Application.Settings;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Config;
@@ -45,6 +46,7 @@ namespace GameTimeNext
             }
 
             InitializeApp();
+            if (MigrationManager.ShutdownRequested) return;
 
             Dispatcher.CurrentDispatcher.Invoke(() => { }, DispatcherPriority.Background);
 
@@ -81,6 +83,7 @@ namespace GameTimeNext
             FnLog.AddInfo("MainApp", "Initializing application environment...");
             // AppEnvironment initialisieren
             AppEnvironment.Initalize();
+            if (MigrationManager.ShutdownRequested) return;
 
             FnLog.AddInfo("MainApp", "Deleting old backups...");
             // Alte Backups löschen

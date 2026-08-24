@@ -53,10 +53,10 @@ namespace GameTimeNext.Core.Framework.Versioning
 
         public void SetAppVersionInConfig()
         {
-            if (AppConfig.AppVersion == _informationalVersion)
+            if (AppEnvironment.GetAppConfig().AppVersion == _informationalVersion)
                 return;
 
-            AppConfig.AppVersion = _informationalVersion;
+            AppEnvironment.GetAppConfig().AppVersion = _informationalVersion;
             AppEnvironment.SaveAppConfig();
         }
 
