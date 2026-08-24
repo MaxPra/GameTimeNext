@@ -54,7 +54,7 @@ Source: "{#BinDirectory}\*.deps.json"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BinDirectory}\runtimes\win-x64\*.dll"; DestDir: "{app}\runtimes\win-x64"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 ;App Specific
-Source: "{#BinDirectory}\ImportPackages\*.*"; DestDir: "{localappdata}\GameTimeNext\Import"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#BinDirectory}\ImportPackages\*.*"; DestDir: "{localappdata}\{#AppPublisher}\{#AppName}\temp\import"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "{#BinDirectory}\Core\*.*"; DestDir: "{app}\Core"; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "*\UpdateChanges_vNEXT.txt,ImportPackages\*"
 Source: "{#BinDirectory}\UI\*.*"; DestDir: "{app}\UI"; Flags: ignoreversion recursesubdirs createallsubdirs
 

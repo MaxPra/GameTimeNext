@@ -7,7 +7,6 @@ namespace GameTimeNext.Core.Framework.Config
 {
     internal partial class AppConfig
     {
-        // OFDOI: Ensure installer is working with new paths
         public static class Root
         {
             public static string PublisherName = "MaxPra";
