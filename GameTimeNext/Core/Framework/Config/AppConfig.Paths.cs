@@ -95,43 +95,43 @@ namespace GameTimeNext.Core.Framework.Config
             [JsonIgnore]
             public static string StorageDirectoryPath
             {
-                get => ReturnEnsureDirectoryExists(Path.Combine(Root.StorageDirectoryPath, _storageDirectoryName));
+                get => Path.Combine(Root.StorageDirectoryPath, _storageDirectoryName);
             }
 
             [JsonIgnore]
             private static string _dataDirectoryPath
             {
-                get => ReturnEnsureDirectoryExists(Path.Combine(StorageDirectoryPath, "data"));
+                get => ReturnEnsureDirectoryExists(Path.Combine(StorageDirectoryPath, "data"), requireParentExists: true);
             }
 
             [JsonIgnore]
             public static string ProfileCoversDirectoryPath
             {
-                get => ReturnEnsureDirectoryExists(Path.Combine(_dataDirectoryPath, "profileCovers"));
+                get => ReturnEnsureDirectoryExists(Path.Combine(_dataDirectoryPath, "profileCovers"), requireParentExists: true);
             }
 
             [JsonIgnore]
             public static string ImagesSymbolsDirectoryPath
             {
-                get => ReturnEnsureDirectoryExists(Path.Combine(_dataDirectoryPath, "imagesAndSymbols"));
+                get => ReturnEnsureDirectoryExists(Path.Combine(_dataDirectoryPath, "imagesAndSymbols"), requireParentExists: true);
             }
 
             [JsonIgnore]
             public static string DefaultImagesSymbolsDirectoryPath
             {
-                get => ReturnEnsureDirectoryExists(Path.Combine(ImagesSymbolsDirectoryPath, "default"));
+                get => ReturnEnsureDirectoryExists(Path.Combine(ImagesSymbolsDirectoryPath, "default"), requireParentExists: true);
             }
 
             [JsonIgnore]
             public static string UserImagesSymbolsDirectoryPath
             {
-                get => ReturnEnsureDirectoryExists(Path.Combine(ImagesSymbolsDirectoryPath, "user"));
+                get => ReturnEnsureDirectoryExists(Path.Combine(ImagesSymbolsDirectoryPath, "user"), requireParentExists: true);
             }
 
             [JsonIgnore]
             public static string AppConfigFilePath
             {
-                get => ReturnEnsureFileExists(Path.Combine(StorageDirectoryPath, Root.AppConfigFileName));
+                get => Path.Combine(StorageDirectoryPath, Root.AppConfigFileName);
             }
 
             [JsonIgnore]
@@ -230,10 +230,14 @@ namespace GameTimeNext.Core.Framework.Config
             temp = LogFilePath;
         }
 
-        private static string ReturnEnsureDirectoryExists(string path)
+        private static string ReturnEnsureDirectoryExists(string path, bool requireParentExists = false)
         {
             if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
+            {
+                DirectoryInfo? parentDirectoryInfo = new DirectoryInfo(path).Parent;
+                if (!requireParentExists || (parentDirectoryInfo is not null && parentDirectoryInfo.Exists))
+                    Directory.CreateDirectory(path);
+            }
 
             return path;
         }
