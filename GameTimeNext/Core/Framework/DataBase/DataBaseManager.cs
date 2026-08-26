@@ -340,6 +340,7 @@ namespace GameTimeNext.Core.Framework.DataBase
                     PTDE VARCHAR(200),
                     PTCO INTEGER,
                     PTCA INTEGER,
+                    PTPA INTEGER,
                     CRAT DATETIME,
                     CHAT DATETIME,
                     UNIQUE (PFID, PTID)
