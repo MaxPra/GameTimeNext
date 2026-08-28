@@ -84,10 +84,9 @@ namespace GameTimeNext.Core.Framework.DataBase.DevSync
                 sb.AppendLine(string.Join(Separator, values));
             }
 
-            string devSyncDirectory = GetDevSyncDirectory();
-            Directory.CreateDirectory(devSyncDirectory);
+            Directory.CreateDirectory(AppConfig.Dev.DevSyncDirectoryPath);
 
-            string filePath = Path.Combine(devSyncDirectory, tableName + ".csv");
+            string filePath = Path.Combine(AppConfig.Dev.DevSyncDirectoryPath, tableName + ".csv");
             File.WriteAllText(filePath, sb.ToString(), Encoding.UTF8);
 
             if (IsCodetableTable(tableName))
@@ -103,7 +102,7 @@ namespace GameTimeNext.Core.Framework.DataBase.DevSync
         private static void ExportCodetableDefaultFiles()
         {
             string sourceDirectory = AppConfig.Storage.DefaultImagesSymbolsDirectoryPath;
-            string destinationDirectory = Path.Combine(GetDevSyncDirectory(), "files", "default");
+            string destinationDirectory = Path.Combine(AppConfig.Dev.DevSyncDirectoryPath, "files", "default");
 
             if (Directory.Exists(destinationDirectory))
                 Directory.Delete(destinationDirectory, true);
@@ -171,14 +170,13 @@ namespace GameTimeNext.Core.Framework.DataBase.DevSync
             if (!FnSystem.IsDebug())
                 return;
 
-            string devSyncDirectory = GetDevSyncDirectory();
-            if (!Directory.Exists(devSyncDirectory))
+            if (!Directory.Exists(AppConfig.Dev.DevSyncDirectoryPath))
                 return;
 
             SQLiteConnection connection = AppEnvironment.GetDataBaseManager().GetConnection();
             EnsureOpen(connection);
 
-            string[] files = Directory.GetFiles(devSyncDirectory, "*.csv", SearchOption.TopDirectoryOnly);
+            string[] files = Directory.GetFiles(AppConfig.Dev.DevSyncDirectoryPath, "*.csv", SearchOption.TopDirectoryOnly);
 
             List<string> orderedFiles = files
                 .OrderBy(f =>
@@ -492,23 +490,6 @@ namespace GameTimeNext.Core.Framework.DataBase.DevSync
             }
 
             return result;
-        }
-
-        private static string GetDevSyncDirectory()
-        {
-            string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            DirectoryInfo? current = new DirectoryInfo(baseDirectory);
-
-            while (current != null)
-            {
-                string slnxPath = Path.Combine(current.FullName, AppConfig.Root.ApplicationName + ".slnx");
-                if (File.Exists(slnxPath))
-                    return Path.Combine(current.FullName, "devsync");
-
-                current = current.Parent;
-            }
-
-            return Path.Combine(baseDirectory, "devsync");
         }
 
         private static List<List<string>> ParseCsv(string text)

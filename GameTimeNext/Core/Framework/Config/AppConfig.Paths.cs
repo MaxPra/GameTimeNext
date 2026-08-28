@@ -1,5 +1,6 @@
 ﻿using GameTimeNext.Core.Framework.Utils;
 using System.IO;
+using System.Security.Policy;
 using System.Text.Json.Serialization;
 using UIX.ViewController.Engine.Utils;
 
@@ -52,6 +53,27 @@ namespace GameTimeNext.Core.Framework.Config
             public static string BackupDirectoryPath
             {
                 get => ReturnEnsureDirectoryExists(Path.Combine(DevDirectoryPath, "backup"));
+            }
+
+            [JsonIgnore]
+            public static string DevSyncDirectoryPath
+            {
+                get
+                {
+                    string startingDirectoryPath = Root.ApplicationDirectoryPath;
+
+                    DirectoryInfo? current = new DirectoryInfo(startingDirectoryPath);
+                    while (current is not null)
+                    {
+                        string slnxFilePath = Path.Combine(current.FullName, $"{Root.ApplicationName}.slnx");
+                        if (File.Exists(slnxFilePath))
+                            return Path.Combine(current.FullName, "devsync");
+
+                        current = current.Parent;
+                    }
+
+                    return Path.Combine(startingDirectoryPath, "devsync");
+                }
             }
         }
 
