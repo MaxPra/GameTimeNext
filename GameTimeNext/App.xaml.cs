@@ -46,7 +46,6 @@ namespace GameTimeNext
             }
 
             InitializeApp();
-            if (MigrationManager.ShutdownRequested) return;
 
             Dispatcher.CurrentDispatcher.Invoke(() => { }, DispatcherPriority.Background);
 
@@ -63,6 +62,8 @@ namespace GameTimeNext
 
         private void InitializeApp()
         {
+            // FileSystem Migration
+            MigTask_100b_008.MigrateFileSystem();
 
             // Ordner erstellen
             FileHandler.CreateDevAppFolder();
@@ -76,21 +77,20 @@ namespace GameTimeNext
             FnLog.AddInfo("MainApp", "Initiating Databasemanager...");
             AppEnvironment.InitiateDataBaseManager();
 
-            FnLog.AddInfo("MainApp", "Initializing database...");
             // Datenbank initialisieren
+            FnLog.AddInfo("MainApp", "Initializing database...");
             AppEnvironment.GetDataBaseManager().Initialize();
 
-            FnLog.AddInfo("MainApp", "Initializing application environment...");
             // AppEnvironment initialisieren
+            FnLog.AddInfo("MainApp", "Initializing application environment...");
             AppEnvironment.Initalize();
-            if (MigrationManager.ShutdownRequested) return;
 
-            FnLog.AddInfo("MainApp", "Deleting old backups...");
             // Alte Backups löschen
+            FnLog.AddInfo("MainApp", "Deleting old backups...");
             FileHandler.DeleteOldBackupFiles();
 
-            FnLog.AddInfo("MainApp", "Checking for new version (Github)...");
             // Auf neue Version (Github) prüfen
+            FnLog.AddInfo("MainApp", "Checking for new version (Github)...");
             CheckForNewVersion();
         }
 

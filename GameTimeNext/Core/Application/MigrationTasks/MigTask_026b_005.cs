@@ -1,20 +1,23 @@
-﻿using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.Config;
+﻿using GameTimeNext.Core.Framework.Config;
 using System.IO;
 
 namespace GameTimeNext.Core.Application.MigrationTasks
 {
-    public class MigTask_026b_005
+    internal class MigTask_026b_005 : MigTaskBase
     {
-        public static void Execute()
+        // OFDOI: Remove SQL
+
+        public MigTask_026b_005() : base("0.2.6", requireDb: true)
         {
 
-            var connection = AppEnvironment.GetDataBaseManager().GetConnection();
+        }
 
+        protected override void ExecuteImpl()
+        {
             // Kürze in allen T1PROFI-Einträgen das Feld PPFN auf den Dateinamen (ohne Pfad)
             var updates = new List<(long RowId, string Ppfn)>();
 
-            using (var selectCmd = connection.CreateCommand())
+            using (var selectCmd = _connection!.CreateCommand())
             {
                 // Ensure a stable column name for the row identifier across different SQLite provider behaviors
                 selectCmd.CommandText = "SELECT ROWID AS _ROWID, PPFN FROM T1PROFI;";
@@ -42,7 +45,7 @@ namespace GameTimeNext.Core.Application.MigrationTasks
 
             foreach (var u in updates)
             {
-                using var updateCmd = connection.CreateCommand();
+                using var updateCmd = _connection.CreateCommand();
                 updateCmd.CommandText = "UPDATE T1PROFI SET PPFN = @ppfn WHERE ROWID = @rowid;";
                 updateCmd.Parameters.AddWithValue("@ppfn", u.Ppfn);
                 updateCmd.Parameters.AddWithValue("@rowid", u.RowId);
@@ -52,17 +55,16 @@ namespace GameTimeNext.Core.Application.MigrationTasks
             DeleteUnusedProfileImages();
         }
 
-        private static void DeleteUnusedProfileImages()
+        private void DeleteUnusedProfileImages()
         {
             string coverFolder = AppConfig.Storage.ProfileCoversDirectoryPath;
 
             if (!Directory.Exists(coverFolder))
                 return;
 
-            var connection = AppEnvironment.GetDataBaseManager().GetConnection();
             var referencedFiles = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-            using (var cmd = connection.CreateCommand())
+            using (var cmd = _connection!.CreateCommand())
             {
                 cmd.CommandText = "SELECT PPFN FROM T1PROFI WHERE PPFN IS NOT NULL AND PPFN != '';";
 
