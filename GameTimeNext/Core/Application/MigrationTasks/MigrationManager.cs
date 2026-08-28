@@ -20,10 +20,13 @@ namespace GameTimeNext.Core.Application.MigrationTasks
 
         public static void RestartGTN()
         {
-            CFMBOX cfmbox = new CFMBOX();
-            cfmbox.Show($"{AppConfig.Root.ApplicationName} will now be restarted in order to activate the new version!", CFMBOXResult.Ok, CFMBOXIcon.Info);
+            System.Windows.Application.Current.Dispatcher.Invoke(() =>
+            {
+                CFMBOX cfmbox = new CFMBOX();
+                cfmbox.Show($"{AppConfig.Root.ApplicationName} will now be restarted in order to activate the new version!", CFMBOXResult.Ok, CFMBOXIcon.Info);
 
-            AppEnvironment.RestartGTNApplication();
+                AppEnvironment.RestartGTNApplication();
+            });
         }
     }
 }

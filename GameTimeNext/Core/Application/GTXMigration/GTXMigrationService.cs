@@ -1,5 +1,6 @@
 ﻿using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.General;
+using GameTimeNext.Core.Application.MigrationTasks;
 using GameTimeNext.Core.Application.Profiles.Components;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
@@ -71,6 +72,8 @@ namespace GameTimeNext.Core.Application.GTXMigration
 
             // Alte Verbindung schließen
             _connectionOld.Close();
+
+            new MigTask_026b_005().Execute();
         }
 
         private bool ConnectToSQLite()

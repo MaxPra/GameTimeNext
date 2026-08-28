@@ -31,8 +31,6 @@ namespace GameTimeNext.Core.Application.MigrationTasks
             EnsureDbOpen();
 
             ExecuteImpl();
-
-            EnsureDbClosed();
         }
         #endregion
 
@@ -50,12 +48,6 @@ namespace GameTimeNext.Core.Application.MigrationTasks
 
             if (_connection.State != System.Data.ConnectionState.Open)
                 _connection.Open();
-        }
-
-        private void EnsureDbClosed()
-        {
-            if (_requireDb && _connection is not null && _connection.State != System.Data.ConnectionState.Closed)
-                _connection.Close();
         }
         #endregion
     }
