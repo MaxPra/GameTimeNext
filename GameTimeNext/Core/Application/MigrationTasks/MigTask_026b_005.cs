@@ -5,8 +5,6 @@ namespace GameTimeNext.Core.Application.MigrationTasks
 {
     internal class MigTask_026b_005 : MigTaskBase
     {
-        // OFDOI: Remove SQL
-
         public MigTask_026b_005() : base("0.2.6", requireDb: true)
         {
 
