@@ -46,6 +46,10 @@ namespace GameTimeNext.Core.Application.MigrationTasks
         {
             if (!File.Exists(oldPath)) return;
 
+            FileInfo newFileInfo = new FileInfo(newPath);
+            if (!newFileInfo.Directory!.Exists)
+                Directory.CreateDirectory(newFileInfo.DirectoryName!);
+
             File.Copy(oldPath, newPath, true);
         }
 

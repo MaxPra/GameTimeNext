@@ -100,9 +100,6 @@ namespace GameTimeNext.Core.Framework
         {
             HandleBackup();
 
-            MigrationManager.MigrateIfNeeded();
-            if (MigrationManager.ShutdownRequested) return;
-
             InitializeStartableApps();
 
             CheckShowChangeLog();
@@ -111,6 +108,8 @@ namespace GameTimeNext.Core.Framework
 
             if (FnSystem.IsDebug())
                 DevSyncCsvSyncService.ImportAllFromCsv();
+
+            MigrationManager.Migrate();
 
             if (GetAppConfig().AppSettings.EnableSessionCleanup)
                 InitializeCleanup();
@@ -266,6 +265,12 @@ namespace GameTimeNext.Core.Framework
 
         public static void LoadAppConfig()
         {
+            if (!File.Exists(AppConfig.Storage.AppConfigFilePath))
+            {
+                FileStream fs = File.Create(AppConfig.Storage.AppConfigFilePath);
+                fs.Close();
+            }
+
             string appConfigText = File.ReadAllText(AppConfig.Storage.AppConfigFilePath);
 
             if (appConfigText == null || appConfigText.Length == 0)
