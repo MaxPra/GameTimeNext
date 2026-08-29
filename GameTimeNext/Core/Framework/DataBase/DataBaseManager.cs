@@ -34,15 +34,13 @@ namespace GameTimeNext.Core.Framework.DataBase
             if (File.Exists(databaseFilePath))
             {
                 // -- Verbinden --
-                ConnectToSQLite();
+                ConnectToSQLite(databaseFilePath);
 
                 return;
             }
 
-            using (File.Create(databaseFilePath)) { }
-
             // -- Verbinden --
-            ConnectToSQLite();
+            ConnectToSQLite(databaseFilePath);
 
             // -- Tabellen erstellen --
             CreateMetadataTables();
@@ -54,7 +52,7 @@ namespace GameTimeNext.Core.Framework.DataBase
 
             using var destinationConnection = new SQLiteConnection($"Data Source={backupPathInklFileName};Version=3;");
 
-            ConnectToSQLite();
+            ConnectToSQLite(AppConfig.Storage.DatabaseFilePath);
 
             try
             {
@@ -113,7 +111,7 @@ namespace GameTimeNext.Core.Framework.DataBase
         // [------------------ PRIVATE ---------------------]
         // [------------------------------------------------]
 
-        private bool ConnectToSQLite()
+        private bool ConnectToSQLite(string databaseFilePath)
         {
 
             if (_connection != null && _connection.State == ConnectionState.Open)
@@ -122,14 +120,14 @@ namespace GameTimeNext.Core.Framework.DataBase
             bool newDataBase = false;
             string connectionString = String.Empty;
 
-            if (!File.Exists(AppConfig.Storage.DatabaseFilePath))
+            if (!File.Exists(databaseFilePath))
             {
-                connectionString = $"Data Source={AppConfig.Storage.DatabaseFilePath};Version=3;New=True;Compress=True;BusyTimeout=15000;Pooling=False;";
+                connectionString = $"Data Source={databaseFilePath};Version=3;New=True;Compress=True;BusyTimeout=15000;Pooling=False;";
                 newDataBase = true;
             }
             else
             {
-                connectionString = $"Data Source={AppConfig.Storage.DatabaseFilePath};Version=3;Compress=True;BusyTimeout=15000;Pooling=False;";
+                connectionString = $"Data Source={databaseFilePath};Version=3;Compress=True;BusyTimeout=15000;Pooling=False;";
                 newDataBase = false;
             }
 
@@ -152,14 +150,15 @@ namespace GameTimeNext.Core.Framework.DataBase
         private void CreateMetadataTables()
         {
             string sql = MigrationFactory.GetSqlCreate(metadata: true);
-            UIXQuery.ExecuteCustom(sql, AppEnvironment.GetDataBaseManager().GetConnection());
+            UIXQuery.ExecuteCustom(sql, GetConnection());
         }
 
         private void GetT1groupIds(ref Dictionary<string, int> dictionary)
         {
             string sql = "SELECT GRID, GRNA FROM T1GROUP;";
 
-            using (var reader = UIXQuery.ExecuteCustom(sql, _connection))
+            using (var reader = UIXQuery.QueryCustom(sql, _connection))
+            {
                 while (reader.Read())
                 {
                     int GRID = UIXQuery.GetInt32(reader, "GRID");
@@ -167,6 +166,8 @@ namespace GameTimeNext.Core.Framework.DataBase
 
                     dictionary[GRNA] = GRID;
                 }
+                reader.Close();
+            }
         }
 
         private void ClearT1group()

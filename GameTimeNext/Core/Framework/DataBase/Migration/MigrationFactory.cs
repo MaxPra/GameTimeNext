@@ -1,6 +1,8 @@
 ﻿using GameTimeNext.Core.Framework.Config;
 using System.Collections.ObjectModel;
+using System.Data.SQLite;
 using System.IO;
+using UIX.ViewController.Engine.Querying;
 
 namespace GameTimeNext.Core.Framework.DataBase.Migration
 {
@@ -81,6 +83,29 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
 
             return String.Join(Environment.NewLine, tableSchemas.Select(s => s.GetSqlCreate()));
         }
+
+        public static void CopyAllToTargetDb(SQLiteConnection oldDb, SQLiteConnection newDb)
+        {
+            List<TableSchema> oldTableSchemas = GenerateTableSchemasFromDatabase(oldDb);
+            List<TableSchema> newTableSchemas = GenerateTableSchemasFromDatabase(newDb);
+
+            foreach (TableSchema oldTableSchema in oldTableSchemas)
+            {
+                TableSchema? newTableSchema = newTableSchemas.Where(s => s.MENAM.Equals(oldTableSchema.MENAM)).SingleOrDefault();
+                if (newTableSchema is null) continue;
+
+                List<string> sqlLines = new List<string>()
+                {
+                    $"ATTACH DATABASE '{oldDb.FileName}' AS olddb;",
+                    $"INSERT INTO main.{oldTableSchema.MENAM} ({oldTableSchema.GetColumnNamesForSql()})",
+                    $"SELECT {oldTableSchema.GetColumnNamesForSql()}",
+                    $"FROM olddb.{oldTableSchema.MENAM};",
+                    $"DETACH DATABASE olddb;",
+                };
+
+                UIXQuery.ExecuteCustom(String.Join(Environment.NewLine, sqlLines), newDb);
+            }
+        }
         #endregion
 
         #region Methods PRIVATE
@@ -102,6 +127,48 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
             if (!File.Exists(metapFilePath)) return new List<TableSchema>();
 
             return GenerateTableSchemas(metahFilePath, metapFilePath);
+        }
+
+        private static List<TableSchema> GenerateTableSchemasFromDatabase(SQLiteConnection connection)
+        {
+            List<string> tableNames = new List<string>();
+            using (var reader = UIXQuery.QueryCustom("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;", connection))
+            {
+                while (reader.Read())
+                {
+                    string name = UIXQuery.GetString(reader, "name");
+                    if (name.StartsWith("T1"))
+                        tableNames.Add(name);
+                }
+                reader.Close();
+            }
+
+            List<TableSchema> tableSchemas = new List<TableSchema>();
+            foreach (string tableName in tableNames)
+            {
+                TableSchema tS = new TableSchema(tableName);
+
+                using (var reader = UIXQuery.QueryCustom($"PRAGMA table_info({tableName});", connection))
+                {
+                    int order = 0;
+                    while (reader.Read())
+                    {
+                        string name = UIXQuery.GetString(reader, "name");
+                        string type = UIXQuery.GetString(reader, "type");
+                        string dflt = UIXQuery.GetString(reader, "dflt_value");
+                        bool pk = UIXQuery.GetBool(reader, "pk");
+
+                        ColumnSchema cS = new ColumnSchema(name, SqliteDataType.GetDataTypeFromSqlite(type).Key, 0, order, pk, false);
+                        tS.AddColumn(cS);
+                        order++;
+                    }
+                    reader.Close();
+                }
+
+                tableSchemas.Add(tS);
+            }
+
+            return tableSchemas;
         }
 
         private static List<TableSchema> GenerateTableSchemas(string metahFilePath, string metapFilePath)
@@ -251,18 +318,19 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 };
 
                 List<ColumnSchema> columnsPK = _columns.FindAll(c => c.PRIMK.Equals(true)).ToList();
+                int countPk = columnsPK.Count;
 
                 // Columns
                 for (int i = 0; i < _columns.Count; i++)
                 {
-                    if ((_columns.Count > 1 && (i < _columns.Count - 1)) || columnsPK.Count > 0)
-                        sqlLines.Add($"{_columns[i].GetSql()},");
+                    if ((_columns.Count > 1 && (i < _columns.Count - 1)) || countPk > 1)
+                        sqlLines.Add($"{_columns[i].GetSql(countPk)},");
                     else
-                        sqlLines.Add(_columns[i].GetSql());
+                        sqlLines.Add(_columns[i].GetSql(countPk));
                 }
 
                 // Primary Keys
-                if (columnsPK.Count > 0)
+                if (columnsPK.Count > 1)
                 {
                     sqlLines.Add($"PRIMARY KEY ({String.Join(", ", columnsPK.Select(c => c.PONAM).ToList())})");
                 }
@@ -289,12 +357,17 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
 
                 return String.Join(Environment.NewLine, statements);
             }
+
+            public string GetColumnNamesForSql()
+            {
+                return String.Join(", ", Columns.Select(c => c.PONAM));
+            }
             #endregion
 
             #region Methods PRIVATE
             private string GetSqlInsertInto(TableSchema sourceSchema)
             {
-                string columnNames = String.Join(", ", sourceSchema.Columns.Select(c => c.PONAM));
+                string columnNames = sourceSchema.GetColumnNamesForSql();
 
                 return $"INSERT INTO {MENAM} ({columnNames}) SELECT ({columnNames}) FROM {sourceSchema.MENAM};";
             }
@@ -337,8 +410,18 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 AUTOI = autoi.Equals("1");
             }
 
+            public ColumnSchema(string ponam, string datyp, int dalen, int porde, bool primk, bool autoi)
+            {
+                PONAM = ponam;
+                DATYP = datyp;
+                DALEN = dalen;
+                PORDE = porde;
+                PRIMK = primk;
+                AUTOI = autoi;
+            }
+
             #region Methods PUBLIC
-            public string GetSql()
+            public string GetSql(int countPk)
             {
                 List<string> parts = new List<string>()
                 {
@@ -346,7 +429,8 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     SqliteDataType.GetByKey(DATYP).GetSqliteType(DALEN)
                 };
 
-                if (AUTOI) parts.Add("AUTO INCREMENT");
+                if (PRIMK && countPk == 1) parts.Add("PRIMARY KEY");
+                if (AUTOI && countPk <= 1) parts.Add("AUTOINCREMENT");
 
                 return String.Join(' ', parts);
             }
@@ -435,6 +519,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
             private const string DateTime = "DATETIME";
             private const string Text = "TEXT";
             private const string Varchar = "VARCHAR";
+            private const string Boolean = "BOOLEAN";
 
             private static List<SqliteDataType> _DATATYPES = new List<SqliteDataType>()
             {
@@ -443,7 +528,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 new SqliteDataType("03", "Long", Integer),
                 new SqliteDataType("04", "Double", Real),
                 new SqliteDataType("05", "DateTime", DateTime),
-                new SqliteDataType("06", "Boolean", Integer),
+                new SqliteDataType("06", "Boolean", Boolean),
                 new SqliteDataType("07", "MemoText", Text)
             };
             private static ReadOnlyCollection<SqliteDataType> DATATYPES = new ReadOnlyCollection<SqliteDataType>(_DATATYPES);
@@ -490,6 +575,29 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 }
 
                 return _sqliteType;
+            }
+
+            public static SqliteDataType GetDataTypeFromSqlite(string name)
+            {
+                string typeName = name.Split(' ').First().Split('(').First();
+
+                switch (typeName)
+                {
+                    case Text:
+                        return DATATYPES.Where(t => t.Key.Equals("07")).Single();
+                    case Varchar:
+                        return DATATYPES.Where(t => t.Key.Equals("01")).Single();
+                    case Integer:
+                        return DATATYPES.Where(t => t.Key.Equals("02")).Single();
+                    case Real:
+                        return DATATYPES.Where(t => t.Key.Equals("04")).Single();
+                    case DateTime:
+                        return DATATYPES.Where(t => t.Key.Equals("05")).Single();
+                    case Boolean:
+                        return DATATYPES.Where(t => t.Key.Equals("06")).Single();
+                    default:
+                        throw new NotImplementedException();
+                }
             }
             #endregion
         }
