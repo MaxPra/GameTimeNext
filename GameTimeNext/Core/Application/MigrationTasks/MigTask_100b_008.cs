@@ -10,7 +10,6 @@ namespace GameTimeNext.Core.Application.MigrationTasks
         protected override void ExecuteImpl()
         {
             MigratePlaythroughTypeValues();
-            EnsureExternalConditionGroup();
         }
 
         private void MigratePlaythroughTypeValues()
@@ -28,18 +27,6 @@ namespace GameTimeNext.Core.Application.MigrationTasks
                     ELSE PTTY
                 END
                 WHERE PTTY IN ('GTN.DLC', 'GTN.NEW_PLAYTHROUGH', 'GTN.INITIAL_PLAYTHROUGH');";
-            command.ExecuteNonQuery();
-        }
-
-        private void EnsureExternalConditionGroup()
-        {
-            if (_connection == null)
-                return;
-
-            using var command = _connection.CreateCommand();
-            command.CommandText = @"
-                INSERT INTO T1GROUP (GRNA, GTYP, CRAT, CHAT)
-                VALUES ('External', 'GTN.CONDITION', CURRENT_DATE, CURRENT_TIMESTAMP);";
             command.ExecuteNonQuery();
         }
     }

@@ -1,8 +1,6 @@
 ﻿using GameTimeNext.Core.Framework.Config;
-using GameTimeNext.Core.Framework.Utils;
 using System.Collections.ObjectModel;
 using System.IO;
-using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Framework.DataBase.Migration
 {
@@ -22,6 +20,47 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
 
         private static Dictionary<string, List<List<string>>> _CACHED_FILECONTENTS = new Dictionary<string, List<List<string>>>();
 
+        private static List<TableSchema>? _METADATA;
+        private static List<TableSchema> METADATA
+        {
+            get
+            {
+                if (_METADATA is not null) return _METADATA;
+
+                List<TableSchema> tableSchemas = new List<TableSchema>();
+
+                TableSchema mH = new TableSchema("T1METAH");
+                mH.AddColumn(new ColumnSchema("MENAM", "01", "0", "1", "1", "0"));
+                mH.AddColumn(new ColumnSchema("DESCR", "01", "0", "2", "0", "0"));
+                mH.AddColumn(new ColumnSchema("MTYPE", "01", "0", "3", "0", "0"));
+                mH.AddColumn(new ColumnSchema("DSYNC", "06", "0", "4", "0", "0"));
+                mH.AddColumn(new ColumnSchema("GENER", "06", "0", "5", "0", "0"));
+                mH.AddColumn(new ColumnSchema("CRAT", "05", "0", "6", "0", "0"));
+                mH.AddColumn(new ColumnSchema("CRUS", "01", "0", "7", "0", "0"));
+                mH.AddColumn(new ColumnSchema("CHAT", "05", "0", "8", "0", "0"));
+                mH.AddColumn(new ColumnSchema("CHUS", "01", "0", "9", "0", "0"));
+                tableSchemas.Add(mH);
+
+                TableSchema mP = new TableSchema("T1METAP");
+                mP.AddColumn(new ColumnSchema("MENAM", "01", "0", "1", "1", "0"));
+                mP.AddColumn(new ColumnSchema("PONAM", "01", "0", "2", "1", "0"));
+                mP.AddColumn(new ColumnSchema("DESCR", "01", "0", "3", "0", "0"));
+                mP.AddColumn(new ColumnSchema("DATYP", "01", "0", "4", "0", "0"));
+                mP.AddColumn(new ColumnSchema("DALEN", "02", "0", "5", "0", "0"));
+                mP.AddColumn(new ColumnSchema("PORDE", "02", "0", "6", "0", "0"));
+                mP.AddColumn(new ColumnSchema("PRIMK", "06", "0", "7", "0", "0"));
+                mP.AddColumn(new ColumnSchema("AUTOI", "06", "0", "8", "0", "0"));
+                mP.AddColumn(new ColumnSchema("CRAT", "05", "0", "9", "0", "0"));
+                mP.AddColumn(new ColumnSchema("CRUS", "01", "0", "10", "0", "0"));
+                mP.AddColumn(new ColumnSchema("CHAT", "05", "0", "11", "0", "0"));
+                mP.AddColumn(new ColumnSchema("CHUS", "01", "0", "12", "0", "0"));
+                tableSchemas.Add(mP);
+
+                _METADATA = tableSchemas;
+                return _METADATA;
+            }
+        }
+
         #region Methods PUBLIC
         // OFDOI: Run these methods from DatabaseMigration and DevSync
         // Manual statements in MigTask and Initialization is deprecated!!
@@ -31,9 +70,14 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
             return String.Join(Environment.NewLine, actions.Select(a => a.GetSql()));
         }
 
-        public static string GetSqlCreate()
+        public static string GetSqlCreate(bool metadata = false)
         {
-            List<TableSchema> tableSchemas = GenerateTableSchemasFromDevSync();
+            List<TableSchema> tableSchemas;
+            if (metadata)
+                tableSchemas = METADATA;
+            else
+                tableSchemas = GenerateTableSchemasFromDevSync();
+
             return String.Join(Environment.NewLine, tableSchemas.Select(s => s.GetSqlCreate()));
         }
         #endregion
@@ -406,7 +450,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 new SqliteDataType("06", "Boolean", Integer),
                 new SqliteDataType("07", "MemoText", Text)
             };
-            public static ReadOnlyCollection<SqliteDataType> DATATYPES = new ReadOnlyCollection<SqliteDataType>(_DATATYPES);
+            private static ReadOnlyCollection<SqliteDataType> DATATYPES = new ReadOnlyCollection<SqliteDataType>(_DATATYPES);
 
             #region Properties
             public string Key { get; }

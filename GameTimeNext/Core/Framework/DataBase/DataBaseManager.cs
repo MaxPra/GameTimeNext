@@ -1,8 +1,10 @@
 ﻿using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework.Config;
+using GameTimeNext.Core.Framework.DataBase.Migration;
 using System.Data;
 using System.Data.SQLite;
 using System.IO;
+using UIX.ViewController.Engine.Querying;
 
 namespace GameTimeNext.Core.Framework.DataBase
 {
@@ -43,7 +45,7 @@ namespace GameTimeNext.Core.Framework.DataBase
             ConnectToSQLite();
 
             // -- Tabellen erstellen --
-            CreateTables();
+            CreateMetadataTables();
 
         }
 
@@ -86,6 +88,27 @@ namespace GameTimeNext.Core.Framework.DataBase
             return _connection;
         }
 
+        public void EnsureT1groupSeeded()
+        {
+            Dictionary<string, int> oldIds = new Dictionary<string, int>();
+            GetT1groupIds(ref oldIds);
+
+            bool migrationNeeded = false;
+            if (!oldIds.ContainsKey("External"))
+                migrationNeeded = true;
+            if (!migrationNeeded && !oldIds["External"].Equals("6"))
+                migrationNeeded = true;
+
+            if (migrationNeeded)
+                ClearT1group();
+
+            EnsureDefaultValuesT1groupConditions();
+            EnsureDefaultValuesT1groupTags();
+
+            if (migrationNeeded)
+                UpdateT1grppo(oldIds);
+        }
+
         // [------------------------------------------------]
         // [------------------ PRIVATE ---------------------]
         // [------------------------------------------------]
@@ -126,49 +149,67 @@ namespace GameTimeNext.Core.Framework.DataBase
         /// <summary>
         /// Erstellt alle Tabellen, sofern noch nicht vorhanden (Erster Start)
         /// </summary>
-        private void CreateTables()
+        private void CreateMetadataTables()
         {
-            // -- T1PROFI (Tabelle für Profile) --
-            CreateTableT1PROFI();
-
-            // -- T1SESSI (Tabelle für Sessions) --
-            CreateTableT1SESSI();
-
-            // -- T1GROUP (Tabelle für Gruppen) --
-            CreateTableT1GROUP();
-            InsertDefaultValuesT1GROUPConditions();
-            InsertDefaultValuesT1GROUPTags();
-
-            // -- T1GRPPO (Tabelle für Gruppen und Profile [n zu m] --
-            CreateTableT1GRPPO();
-
-            // -- T1PLTHR (Tabelle für Playthroughs)
-            CreateTableT1PLTHR();
-
-            // -- T1CTABH (Tabelle für Codetabellen-Köpfe)
-            CreateTableT1CTABH();
-
-            // -- T1CTABD (Tabelle für Codetabellen-Einträge)
-            CreateTableT1CTABD();
-
-            // -- T1METAH (Tabelle für Metadaten-Köpfe)
-            CreateTableT1METAH();
-
-            // -- T1METAP (Tabelle für Metadaten-Parameter)
-            CreateTableT1METAP();
+            string sql = MigrationFactory.GetSqlCreate(metadata: true);
+            UIXQuery.ExecuteCustom(sql, AppEnvironment.GetDataBaseManager().GetConnection());
         }
 
-        private void InsertDefaultValuesT1GROUPConditions()
+        private void GetT1groupIds(ref Dictionary<string, int> dictionary)
         {
-            var sql = @"
-                        INSERT INTO T1GROUP (GRNA, GTYP, CRAT, CHAT)
+            string sql = "SELECT GRID, GRNA FROM T1GROUP;";
+
+            using (var reader = UIXQuery.ExecuteCustom(sql, _connection))
+                while (reader.Read())
+                {
+                    int GRID = UIXQuery.GetInt32(reader, "GRID");
+                    string GRNA = UIXQuery.GetString(reader, "GRNA");
+
+                    dictionary[GRNA] = GRID;
+                }
+        }
+
+        private void ClearT1group()
+        {
+            List<string> sqlLines = new List<string>() {
+                "PRAGMA foreign_keys = OFF;",
+                "DELETE FROM T1GROUP;",
+                "PRAGMA foreign_keys = ON;"
+            };
+            UIXQuery.ExecuteCustom(String.Join(Environment.NewLine, sqlLines), _connection);
+        }
+
+        private void UpdateT1grppo(Dictionary<string, int> oldIds)
+        {
+            Dictionary<string, int> newIds = new Dictionary<string, int>();
+            GetT1groupIds(ref newIds);
+
+            foreach (var oldId in oldIds)
+            {
+                string sql;
+                if (newIds.TryGetValue(oldId.Key, out int newValue))
+                {
+                    sql = $"UPDATE T1GRPPO SET GRID='{newValue}' WHERE GRID='{oldId.Value}';";
+                }
+                else
+                {
+                    sql = $"DELETE FROM T1GRPPO WHERE GRID='{oldId.Value}';";
+                }
+
+                UIXQuery.ExecuteCustom(sql, _connection);
+            }
+        }
+
+        private void EnsureDefaultValuesT1groupConditions()
+        {
+            var sql = @"INSERT OR REPLACE INTO T1GROUP (GRID, GRNA, GTYP, CRAT, CHAT)
                         VALUES 
-                        ('Completed', @gtyp, @crat, @chat),
-                        ('Unplayed', @gtyp, @crat, @chat),
-                        ('Currently Playing', @gtyp, @crat, @chat),
-                        ('Playable', @gtyp, @crat, @chat),
-                        ('Archived', @gtyp, @crat, @chat);
-                        ";
+                        (1, 'Completed', @gtyp, @crat, @chat),
+                        (2, 'Unplayed', @gtyp, @crat, @chat),
+                        (3, 'Currently Playing', @gtyp, @crat, @chat),
+                        (4, 'Playable', @gtyp, @crat, @chat),
+                        (5, 'Archived', @gtyp, @crat, @chat),
+                        (6, 'External', @gtyp, @crat, @chat);";
 
             using var command = _connection.CreateCommand();
             command.CommandText = sql;
@@ -180,36 +221,36 @@ namespace GameTimeNext.Core.Framework.DataBase
             command.ExecuteNonQuery();
         }
 
-        private void InsertDefaultValuesT1GROUPTags()
+        private void EnsureDefaultValuesT1groupTags()
         {
             var sql = @"
-                        INSERT INTO T1GROUP (GRNA, GTYP, CRAT, CHAT)
+                        INSERT OR REPLACE INTO T1GROUP (GRID, GRNA, GTYP, CRAT, CHAT)
                         VALUES
-                        ('Singleplayer', @gtyp, @crat, @chat),
-                        ('Multiplayer', @gtyp, @crat, @chat),
-                        ('Co-op', @gtyp, @crat, @chat),
-                        ('PvP', @gtyp, @crat, @chat),
+                        (101, 'Singleplayer', @gtyp, @crat, @chat),
+                        (102, 'Multiplayer', @gtyp, @crat, @chat),
+                        (103, 'Co-op', @gtyp, @crat, @chat),
+                        (104, 'PvP', @gtyp, @crat, @chat),
 
-                        ('Action', @gtyp, @crat, @chat),
-                        ('Adventure', @gtyp, @crat, @chat),
-                        ('RPG', @gtyp, @crat, @chat),
-                        ('Strategy', @gtyp, @crat, @chat),
-                        ('Simulation', @gtyp, @crat, @chat),
-                        ('Shooter', @gtyp, @crat, @chat),
-                        ('Horror', @gtyp, @crat, @chat),
-                        ('Survival', @gtyp, @crat, @chat),
+                        (105, 'Action', @gtyp, @crat, @chat),
+                        (106, 'Adventure', @gtyp, @crat, @chat),
+                        (107, 'RPG', @gtyp, @crat, @chat),
+                        (108, 'Strategy', @gtyp, @crat, @chat),
+                        (109, 'Simulation', @gtyp, @crat, @chat),
+                        (110, 'Shooter', @gtyp, @crat, @chat),
+                        (111, 'Horror', @gtyp, @crat, @chat),
+                        (112, 'Survival', @gtyp, @crat, @chat),
 
-                        ('Open World', @gtyp, @crat, @chat),
-                        ('Sandbox', @gtyp, @crat, @chat),
-                        ('Story Rich', @gtyp, @crat, @chat),
-                        ('Exploration', @gtyp, @crat, @chat),
-                        ('Crafting', @gtyp, @crat, @chat),
-                        ('Building', @gtyp, @crat, @chat),
+                        (113, 'Open World', @gtyp, @crat, @chat),
+                        (114, 'Sandbox', @gtyp, @crat, @chat),
+                        (115, 'Story Rich', @gtyp, @crat, @chat),
+                        (116, 'Exploration', @gtyp, @crat, @chat),
+                        (117, 'Crafting', @gtyp, @crat, @chat),
+                        (118, 'Building', @gtyp, @crat, @chat),
 
-                        ('First Person', @gtyp, @crat, @chat),
-                        ('Third Person', @gtyp, @crat, @chat),
-                        ('Isometric', @gtyp, @crat, @chat),
-                        ('Top-Down', @gtyp, @crat, @chat);
+                        (119, 'First Person', @gtyp, @crat, @chat),
+                        (120, 'Third Person', @gtyp, @crat, @chat),
+                        (121, 'Isometric', @gtyp, @crat, @chat),
+                        (122, 'Top-Down', @gtyp, @crat, @chat);
                     ";
 
             using var command = _connection.CreateCommand();
@@ -219,244 +260,6 @@ namespace GameTimeNext.Core.Framework.DataBase
             command.Parameters.AddWithValue("@crat", DateTime.Today);
             command.Parameters.AddWithValue("@chat", DateTime.Now);
 
-            command.ExecuteNonQuery();
-        }
-
-        /// <summary>
-        /// Erstellt die Tabelle für die Beziehung zwischen TAB_GROUP und TAB_PROFI
-        /// </summary>
-        private void CreateTableT1GRPPO()
-        {
-            var sql = @"
-            CREATE TABLE IF NOT EXISTS T1GRPPO (
-                GPID INTEGER PRIMARY KEY AUTOINCREMENT,
-                GRID INTEGER NOT NULL,
-                PFID INTEGER NOT NULL,
-                CRAT DATETIME,
-                CHAT DATETIME,
-                FOREIGN KEY (GRID) REFERENCES T1GROUP(GRID) ON DELETE CASCADE,
-                FOREIGN KEY (PFID) REFERENCES T1PROFI(PFID) ON DELETE CASCADE
-            );
-        ";
-
-            using var command = _connection.CreateCommand();
-            command.CommandText = sql;
-            command.ExecuteNonQuery();
-        }
-
-        /// <summary>
-        /// Erstellt die Tabelle für die Groups (TAB_GROUP)
-        /// </summary>
-        /// <exception cref="NotImplementedException"></exception>
-        private void CreateTableT1GROUP()
-        {
-            var sql = @"
-            CREATE TABLE IF NOT EXISTS T1GROUP (
-                GRID INTEGER PRIMARY KEY AUTOINCREMENT,
-                GRNA VARCHAR(200),
-                GTYP VARCHAR(200),
-                CRAT DATETIME,
-                CHAT DATETIME
-            );
-        ";
-
-            using var command = _connection.CreateCommand();
-            command.CommandText = sql;
-            command.ExecuteNonQuery();
-        }
-
-        /// <summary>
-        /// Erstellt die Tabelle für die Sessions (TAB_SESSI)
-        /// </summary>
-        private void CreateTableT1SESSI()
-        {
-            var sql = @"
-                CREATE TABLE IF NOT EXISTS T1SESSI (
-                    SEID INTEGER PRIMARY KEY AUTOINCREMENT,
-                    PFID INTEGER NOT NULL,
-                    PTID INTEGER NOT NULL,
-                    PLFR DATETIME,
-                    PLTO DATETIME,
-                    PLTI REAL NOT NULL DEFAULT 0.0,
-                    CRAT DATETIME,
-                    CHAT DATETIME,
-                    FOREIGN KEY (PFID) REFERENCES T1PROFI(PFID) ON DELETE CASCADE
-                );
-            ";
-
-            if (_connection == null)
-                return;
-
-            using var command = _connection.CreateCommand();
-            command.CommandText = sql;
-            command.ExecuteNonQuery();
-        }
-
-        /// <summary>
-        /// Erstellt die Tabelle für die Profile (TAB_PROFI)
-        /// </summary>
-        private void CreateTableT1PROFI()
-        {
-            var sql = @"
-                CREATE TABLE IF NOT EXISTS T1PROFI (
-                    PFID INTEGER PRIMARY KEY AUTOINCREMENT,
-                    GANA VARCHAR(200),
-                    FIPL DATETIME,
-                    LAPL DATETIME,
-                    PPFN VARCHAR(10000),
-                    EXGF VARCHAR(10000),
-                    SAID INTEGER,
-                    PRSE TEXT,
-                    EXEC TEXT,
-                    CRAT DATETIME,
-                    CHAT DATETIME,
-                    ACCO VARCHAR(200),
-                    ACIN VARCHAR(200),
-                    ACAC INTEGER,
-                    CUPT INTEGER,
-                    ETMA REAL,
-                    ETME REAL,
-                    ETCO REAL,
-                    ETTY VARCHAR(200),
-                    ETML INTEGER,
-                    ARCH INTEGER
-                );";
-
-            if (_connection == null)
-                return;
-
-            using var command = _connection.CreateCommand();
-            command.CommandText = sql;
-            command.ExecuteNonQuery();
-        }
-
-        private void CreateTableT1PLTHR()
-        {
-            var sql = @"
-                CREATE TABLE IF NOT EXISTS T1PLTHR (
-                    PTID INTEGER PRIMARY KEY AUTOINCREMENT,
-                    PFID INTEGER NOT NULL,
-                    PTTY VARCHAR(200),
-                    PTDE VARCHAR(200),
-                    PTCO INTEGER,
-                    PTCA INTEGER,
-                    PTPA INTEGER,
-                    CRAT DATETIME,
-                    CHAT DATETIME,
-                    UNIQUE (PFID, PTID)
-                );";
-
-            if (_connection == null)
-                return;
-
-            using var command = _connection.CreateCommand();
-            command.CommandText = sql;
-            command.ExecuteNonQuery();
-        }
-
-        private void CreateTableT1CTABH()
-        {
-            var sql = @"CREATE TABLE IF NOT EXISTS T1CTABH (
-                            TXTYP VARCHAR(200) PRIMARY KEY,
-                            DESCR VARCHAR(200),
-                            PERMI VARCHAR(200),
-
-                            PAAC1 INTEGER,
-                            PADE1 VARCHAR(200),
-                            PARF1 INTEGER,
-                            PACO1 VARCHAR(200),
-                            PACT1 VARCHAR(200),
-
-                            PAAC2 INTEGER,
-                            PADE2 VARCHAR(200),
-                            PARF2 INTEGER,
-                            PACO2 VARCHAR(200),
-                            PACT2 VARCHAR(200),
-
-                            CRAT DATETIME,
-                            CHAT DATETIME
-                        );";
-
-            if (_connection == null)
-                return;
-
-            using var command = _connection.CreateCommand();
-            command.CommandText = sql;
-            command.ExecuteNonQuery();
-        }
-
-        private void CreateTableT1CTABD()
-        {
-            var sql = @"
-                    CREATE TABLE IF NOT EXISTS T1CTABD
-                    (
-                        TXTYP TEXT NOT NULL,
-                        TXNUM TEXT NOT NULL,
-                        DESCR TEXT,
-                        CRAT  TEXT,
-                        CHAT  TEXT,
-                        PARM1 TEXT,
-                        PARM2 TEXT,
-                        PRIMARY KEY (TXTYP, TXNUM)
-                    );";
-
-            if (_connection == null)
-                return;
-
-            using var command = _connection.CreateCommand();
-            command.CommandText = sql;
-            command.ExecuteNonQuery();
-        }
-
-        private void CreateTableT1METAH()
-        {
-            var sql = @"
-                    CREATE TABLE IF NOT EXISTS T1METAH
-                    (
-                        MENAM TEXT PRIMARY KEY,
-                        DESCR TEXT,
-                        MTYPE TEXT,
-                        DSYNC INTEGER,
-                        GENER INTEGER,
-                        CRAT  TEXT,
-                        CRUS  TEXT,
-                        CHAT  TEXT,
-                        CHUS  TEXT
-                    );";
-
-            if (_connection == null)
-                return;
-
-            using var command = _connection.CreateCommand();
-            command.CommandText = sql;
-            command.ExecuteNonQuery();
-        }
-
-        private void CreateTableT1METAP()
-        {
-            var sql = @"
-                    CREATE TABLE IF NOT EXISTS T1METAP
-                    (
-                        MENAM TEXT NOT NULL,
-                        PONAM TEXT NOT NULL,
-                        DESCR TEXT,
-                        DATYP TEXT,
-                        DALEN INTEGER,
-                        PORDE INTEGER,
-                        PRIMK INTEGER,
-                        AUTOI INTEGER,
-                        CRAT  TEXT,
-                        CRUS  TEXT,
-                        CHAT  TEXT,
-                        CHUS  TEXT,
-                        PRIMARY KEY (MENAM, PONAM)
-                    );";
-
-            if (_connection == null)
-                return;
-
-            using var command = _connection.CreateCommand();
-            command.CommandText = sql;
             command.ExecuteNonQuery();
         }
     }

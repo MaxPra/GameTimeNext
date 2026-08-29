@@ -110,6 +110,7 @@ namespace GameTimeNext.Core.Framework
                 DevSyncCsvSyncService.ImportAllFromCsv();
 
             MigrationManager.Migrate();
+            GetDataBaseManager().EnsureT1groupSeeded();
 
             if (GetAppConfig().AppSettings.EnableSessionCleanup)
                 InitializeCleanup();
