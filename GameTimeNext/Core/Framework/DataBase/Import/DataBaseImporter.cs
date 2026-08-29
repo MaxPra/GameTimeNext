@@ -1,6 +1,7 @@
 ﻿using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.DataBase.Import.Base;
 using GameTimeNext.Core.Framework.Logging;
+using GameTimeNext.Core.Framework.Utils;
 using System.IO;
 using System.IO.Compression;
 using System.Reflection;
@@ -23,8 +24,8 @@ namespace GameTimeNext.Core.Framework.DataBase.Import
 
         public static void Import()
         {
-            //if (FnSystem.IsDebug())
-            //    return;
+            if (FnSystem.IsDebug())
+                return;
 
             string importDirectory = AppConfig.Temp.ImportDirectoryPath;
 
