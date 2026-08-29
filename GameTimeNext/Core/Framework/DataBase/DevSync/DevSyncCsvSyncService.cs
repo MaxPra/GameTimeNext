@@ -173,6 +173,10 @@ namespace GameTimeNext.Core.Framework.DataBase.DevSync
             if (!Directory.Exists(AppConfig.Dev.DevSyncDirectoryPath))
                 return;
 
+            // OFDOI: Continue here.
+            // DevSync only needed for importing csv into T1METAH and T1METAP (and other files)
+            // Actual SQL-generation happens in MigrationFactory
+
             SQLiteConnection connection = AppEnvironment.GetDataBaseManager().GetConnection();
             EnsureOpen(connection);
 

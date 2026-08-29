@@ -30,9 +30,9 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
         protected override void BuildFirstImpl()
         {
-            FnControls.SetEnabled(GetWnd().TxbField, GetWnd().ViewIndicator.Contains("CN"));
-            FnControls.SetEnabled(GetWnd().ChbPrimaryKey, GetWnd().ViewIndicator.Contains("CN"));
-            FnControls.SetEnabled(GetWnd().ChbAutoIncrement, GetWnd().ViewIndicator.Contains("CN"));
+            FnControls.SetEnabled(GetWnd().txbField, GetWnd().ViewIndicator.Contains("CN"));
+            FnControls.SetEnabled(GetWnd().chbPrimaryKey, GetWnd().ViewIndicator.Contains("CN"));
+            FnControls.SetEnabled(GetWnd().chbAutoIncrement, GetWnd().ViewIndicator.Contains("CN"));
         }
 
         protected override async Task BuildFirstImplAsync()
@@ -47,7 +47,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
                 codetable.AddEntry(dataType.Key, dataType.Text);
             }
 
-            codetable.ApplyTo(GetWnd().CmbDataType);
+            codetable.ApplyTo(GetWnd().cmbDataType);
 
             T1METAP? metadataPosition = GetApp().T1METAP;
             if (metadataPosition != null)
@@ -70,37 +70,60 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
         protected override void BuildImpl()
         {
-            string selectedDataType = GetWnd().CmbDataType.SelectedValue?.ToString() ?? string.Empty;
+            string selectedDataType = GetWnd().cmbDataType.SelectedValue?.ToString() ?? string.Empty;
 
-            FnControls.SetVisible(GetWnd().TxbLength, "01".Equals(selectedDataType));
-            FnControls.SetVisible(GetWnd().LblLength, "01".Equals(selectedDataType));
-            FnControls.SetVisible(GetWnd().ChbAutoIncrement, GetWnd().ChbPrimaryKey.IsChecked == true);
+            FnControls.SetVisible(GetWnd().txbLength, "01".Equals(selectedDataType));
+            FnControls.SetVisible(GetWnd().lblLength, "01".Equals(selectedDataType));
+            FnControls.SetVisible(GetWnd().chbAutoIncrement, GetWnd().chbPrimaryKey.IsChecked == true);
+
+            BuildVisibilityDefault();
+        }
+
+        private void BuildVisibilityDefault()
+        {
+            string selectedDataType = GetWnd().cmbDataType.SelectedValue?.ToString() ?? string.Empty;
+
+            string[] allowedDatatypes = ["01", "06"];
+            bool showForDatatype = allowedDatatypes.Contains(selectedDataType);
+            bool isActive = GetWnd().chbDefault.IsChecked ?? false;
+
+            FnControls.SetVisible(GetWnd().lblDefault, showForDatatype);
+            FnControls.SetVisible(GetWnd().chbDefault, showForDatatype);
+            FnControls.SetVisible(GetWnd().chbDefaultBool, showForDatatype && isActive && "06".Equals(selectedDataType));
+            FnControls.SetVisible(GetWnd().txbDefault, showForDatatype && isActive && !"06".Equals(selectedDataType));
+
+            if (!showForDatatype)
+            {
+                GetWnd().chbDefault.IsChecked = false;
+                GetWnd().chbDefaultBool.IsChecked = false;
+                GetWnd().txbDefault.Text = string.Empty;
+            }
         }
 
         protected override void Check()
         {
-            string selectedDataType = GetWnd().CmbDataType.SelectedValue?.ToString() ?? string.Empty;
+            string selectedDataType = GetWnd().cmbDataType.SelectedValue?.ToString() ?? string.Empty;
 
-            if (FnString.IsNullEmptyOrWhitespace(GetWnd().TxbField.Text))
-                AddViewError(GetWnd().TxbField, "Field name cannot be empty.");
+            if (FnString.IsNullEmptyOrWhitespace(GetWnd().txbField.Text))
+                AddViewError(GetWnd().txbField, "Field name cannot be empty.");
 
-            if (FnString.IsNullEmptyOrWhitespace(GetWnd().TxbDescription.Text))
-                AddViewError(GetWnd().TxbDescription, "Description cannot be empty.");
+            if (FnString.IsNullEmptyOrWhitespace(GetWnd().txbDescription.Text))
+                AddViewError(GetWnd().txbDescription, "Description cannot be empty.");
 
-            if (FnString.IsNullEmptyOrWhitespace(GetWnd().TxbLength.Text) && "01".Equals(selectedDataType))
-                AddViewError(GetWnd().TxbLength, "Length cannot be empty.");
+            if (FnString.IsNullEmptyOrWhitespace(GetWnd().txbLength.Text) && "01".Equals(selectedDataType))
+                AddViewError(GetWnd().txbLength, "Length cannot be empty.");
 
             if (FnString.IsNullEmptyOrWhitespace(selectedDataType))
-                AddViewError(GetWnd().CmbDataType, "Data type cannot be empty.");
+                AddViewError(GetWnd().cmbDataType, "Data type cannot be empty.");
 
-            if (FnString.IsNullEmptyOrWhitespace(GetWnd().TxbOrder.Text))
-                AddViewError(GetWnd().TxbOrder, "Order cannot be empty.");
+            if (FnString.IsNullEmptyOrWhitespace(GetWnd().txbOrder.Text))
+                AddViewError(GetWnd().txbOrder, "Order cannot be empty.");
         }
 
         protected override void FillViewImpl()
         {
             if (GetWnd().ViewIndicator.Contains("CN"))
-                GetWnd().TxbOrder.Text = TFMETAP.GetNextOrder(GetApp().T1METAP!).ToString();
+                GetWnd().txbOrder.Text = TFMETAP.GetNextOrder(GetApp().T1METAP!).ToString();
         }
 
         protected override void FillDBOImpl()

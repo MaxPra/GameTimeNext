@@ -33,30 +33,32 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 List<TableSchema> tableSchemas = new List<TableSchema>();
 
                 TableSchema mH = new TableSchema("T1METAH");
-                mH.AddColumn(new ColumnSchema("MENAM", "01", "0", "1", "1", "0"));
-                mH.AddColumn(new ColumnSchema("DESCR", "01", "0", "2", "0", "0"));
-                mH.AddColumn(new ColumnSchema("MTYPE", "01", "0", "3", "0", "0"));
-                mH.AddColumn(new ColumnSchema("DSYNC", "06", "0", "4", "0", "0"));
-                mH.AddColumn(new ColumnSchema("GENER", "06", "0", "5", "0", "0"));
-                mH.AddColumn(new ColumnSchema("CRAT", "05", "0", "6", "0", "0"));
-                mH.AddColumn(new ColumnSchema("CRUS", "01", "0", "7", "0", "0"));
-                mH.AddColumn(new ColumnSchema("CHAT", "05", "0", "8", "0", "0"));
-                mH.AddColumn(new ColumnSchema("CHUS", "01", "0", "9", "0", "0"));
+                mH.AddColumn(new ColumnSchema("MENAM", "01", "0", "1", "1", "0", "0", ""));
+                mH.AddColumn(new ColumnSchema("DESCR", "01", "0", "2", "0", "0", "0", ""));
+                mH.AddColumn(new ColumnSchema("MTYPE", "01", "0", "3", "0", "0", "0", ""));
+                mH.AddColumn(new ColumnSchema("DSYNC", "06", "0", "4", "0", "0", "0", ""));
+                mH.AddColumn(new ColumnSchema("GENER", "06", "0", "5", "0", "0", "0", ""));
+                mH.AddColumn(new ColumnSchema("CRAT", "05", "0", "6", "0", "0", "0", ""));
+                mH.AddColumn(new ColumnSchema("CRUS", "01", "0", "7", "0", "0", "0", ""));
+                mH.AddColumn(new ColumnSchema("CHAT", "05", "0", "8", "0", "0", "0", ""));
+                mH.AddColumn(new ColumnSchema("CHUS", "01", "0", "9", "0", "0", "0", ""));
                 tableSchemas.Add(mH);
 
                 TableSchema mP = new TableSchema("T1METAP");
-                mP.AddColumn(new ColumnSchema("MENAM", "01", "0", "1", "1", "0"));
-                mP.AddColumn(new ColumnSchema("PONAM", "01", "0", "2", "1", "0"));
-                mP.AddColumn(new ColumnSchema("DESCR", "01", "0", "3", "0", "0"));
-                mP.AddColumn(new ColumnSchema("DATYP", "01", "0", "4", "0", "0"));
-                mP.AddColumn(new ColumnSchema("DALEN", "02", "0", "5", "0", "0"));
-                mP.AddColumn(new ColumnSchema("PORDE", "02", "0", "6", "0", "0"));
-                mP.AddColumn(new ColumnSchema("PRIMK", "06", "0", "7", "0", "0"));
-                mP.AddColumn(new ColumnSchema("AUTOI", "06", "0", "8", "0", "0"));
-                mP.AddColumn(new ColumnSchema("CRAT", "05", "0", "9", "0", "0"));
-                mP.AddColumn(new ColumnSchema("CRUS", "01", "0", "10", "0", "0"));
-                mP.AddColumn(new ColumnSchema("CHAT", "05", "0", "11", "0", "0"));
-                mP.AddColumn(new ColumnSchema("CHUS", "01", "0", "12", "0", "0"));
+                mP.AddColumn(new ColumnSchema("MENAM", "01", "0", "1", "1", "0", "0", ""));
+                mP.AddColumn(new ColumnSchema("PONAM", "01", "0", "2", "1", "0", "0", ""));
+                mP.AddColumn(new ColumnSchema("DESCR", "01", "0", "3", "0", "0", "0", ""));
+                mP.AddColumn(new ColumnSchema("DATYP", "01", "0", "4", "0", "0", "0", ""));
+                mP.AddColumn(new ColumnSchema("DALEN", "02", "0", "5", "0", "0", "0", ""));
+                mP.AddColumn(new ColumnSchema("PORDE", "02", "0", "6", "0", "0", "0", ""));
+                mP.AddColumn(new ColumnSchema("PRIMK", "06", "0", "7", "0", "0", "0", ""));
+                mP.AddColumn(new ColumnSchema("AUTOI", "06", "0", "8", "0", "0", "0", ""));
+                mP.AddColumn(new ColumnSchema("CRAT", "05", "0", "9", "0", "0", "0", ""));
+                mP.AddColumn(new ColumnSchema("CRUS", "01", "0", "10", "0", "0", "0", ""));
+                mP.AddColumn(new ColumnSchema("CHAT", "05", "0", "11", "0", "0", "0", ""));
+                mP.AddColumn(new ColumnSchema("CHUS", "01", "0", "12", "0", "0", "0", ""));
+                mP.AddColumn(new ColumnSchema("DEFAK", "06", "0", "13", "0", "0", "0", ""));
+                mP.AddColumn(new ColumnSchema("DEFVL", "01", "0", "14", "0", "0", "", ""));
                 tableSchemas.Add(mP);
 
                 _METADATA = tableSchemas;
@@ -67,10 +69,34 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
         #region Methods PUBLIC
         // OFDOI: Run these methods from DatabaseMigration and DevSync
         // Manual statements in MigTask and Initialization is deprecated!!
-        public static string GetSqlMigration()
+        public static string GetSqlMigration(bool metadata = false)
         {
-            List<MigrationAction> actions = GenerateMigrationActions();
-            return String.Join(Environment.NewLine, actions.Select(a => a.GetSql()));
+            if (!metadata)
+            {
+                List<MigrationAction> actions = GenerateMigrationActions();
+                return String.Join(Environment.NewLine, actions.Select(a => a.GetSql()));
+            }
+            else
+            {
+                List<TableSchema> tableSchemas = GenerateTableSchemasFromDatabase(AppEnvironment.GetDataBaseManager().GetConnection());
+
+                List<MigrationAction> actions = new List<MigrationAction>()
+                {
+                    new MigrationAction()
+                    {
+                        SchemaDevSync = METADATA.Where(s => s.MENAM.Equals("T1METAH")).Single(),
+                        SchemaStored = tableSchemas.Where(s => s.MENAM.Equals("T1METAH")).Single(),
+                        Type = ActionType.ALTER
+                    },
+                    new MigrationAction()
+                    {
+                        SchemaDevSync = METADATA.Where(s => s.MENAM.Equals("T1METAP")).Single(),
+                        SchemaStored = tableSchemas.Where(s => s.MENAM.Equals("T1METAP")).Single(),
+                        Type = ActionType.ALTER
+                    },
+                };
+                return String.Join(Environment.NewLine, actions.Select(a => a.GetSql()));
+            }
         }
 
         public static string GetSqlCreate(bool metadata = false)
@@ -97,14 +123,20 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 List<string> sqlLines = new List<string>()
                 {
                     $"ATTACH DATABASE '{oldDb.FileName}' AS olddb;",
-                    $"INSERT INTO main.{oldTableSchema.MENAM} ({oldTableSchema.GetColumnNamesForSql()})",
-                    $"SELECT {oldTableSchema.GetColumnNamesForSql()}",
+                    $"INSERT INTO main.{oldTableSchema.MENAM} ({oldTableSchema.GetColumnNamesForSql(newTableSchema)})",
+                    $"SELECT {oldTableSchema.GetColumnNamesForSql(newTableSchema)}",
                     $"FROM olddb.{oldTableSchema.MENAM};",
                     $"DETACH DATABASE olddb;",
                 };
 
                 UIXQuery.ExecuteCustom(String.Join(Environment.NewLine, sqlLines), newDb);
             }
+        }
+
+        public static void MigrateMetadataTables()
+        {
+            string sql = MigrationFactory.GetSqlMigration(metadata: true);
+            UIXQuery.ExecuteCustom(sql, AppEnvironment.GetDataBaseManager().GetConnection());
         }
         #endregion
 
@@ -224,7 +256,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
             // Iterate tables
             foreach (List<string> metapLine in metapLines)
             {
-                ColumnSchema columnSchema = new ColumnSchema(metapLine[1], metapLine[3], metapLine[4], metapLine[5], metapLine[6], metapLine[7]);
+                ColumnSchema columnSchema = new ColumnSchema(metapLine[1], metapLine[3], metapLine[4], metapLine[5], metapLine[6], metapLine[7], metapLine[8], metapLine[9]);
 
                 tableSchema.AddColumn(columnSchema);
             }
@@ -281,7 +313,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
         /// <summary>
         /// Defines what a table should look like.
         /// </summary>
-        private class TableSchema
+        public class TableSchema
         {
             private static string MIGRATION_SUFFIX = "_mig";
 
@@ -358,18 +390,24 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 return String.Join(Environment.NewLine, statements);
             }
 
-            public string GetColumnNamesForSql()
+            /// <summary>
+            /// Returns an SQL formatted list of its column names.
+            /// </summary>
+            /// <param name="filteringSchema">Return values will only include columns, which are also present in this schema.</param>
+            /// <returns></returns>
+            public string GetColumnNamesForSql(TableSchema filteringSchema)
             {
-                return String.Join(", ", Columns.Select(c => c.PONAM));
+                List<ColumnSchema> filteredColumns = Columns.Where(c => filteringSchema.Columns.Where(fC => fC.PONAM.Equals(c.PONAM)).SingleOrDefault() is not null).ToList();
+                return String.Join(", ", filteredColumns.Select(c => c.PONAM));
             }
             #endregion
 
             #region Methods PRIVATE
             private string GetSqlInsertInto(TableSchema sourceSchema)
             {
-                string columnNames = sourceSchema.GetColumnNamesForSql();
+                string columnNames = sourceSchema.GetColumnNamesForSql(this);
 
-                return $"INSERT INTO {MENAM} ({columnNames}) SELECT ({columnNames}) FROM {sourceSchema.MENAM};";
+                return $"INSERT INTO {MENAM} ({columnNames}) SELECT {columnNames} FROM {sourceSchema.MENAM};";
             }
 
             private string GetSqlAlterName(string newTableName)
@@ -384,7 +422,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
         /// <summary>
         /// Defines what a column should look like.
         /// </summary>
-        private class ColumnSchema
+        public class ColumnSchema
         {
             #region Properties
             public string PONAM { get; }
@@ -398,9 +436,13 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
             public bool PRIMK { get; }
 
             public bool AUTOI { get; }
+
+            public bool DEFAK { get; }
+
+            public string DEFVL { get; }
             #endregion
 
-            public ColumnSchema(string ponam, string datyp, string dalen, string porde, string primk, string autoi)
+            public ColumnSchema(string ponam, string datyp, string dalen, string porde, string primk, string autoi, string defak, string defvl)
             {
                 PONAM = ponam;
                 DATYP = datyp;
@@ -408,6 +450,8 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 PORDE = Convert.ToInt32(porde);
                 PRIMK = primk.Equals("1");
                 AUTOI = autoi.Equals("1");
+                DEFAK = defak.Equals("1");
+                DEFVL = defvl;
             }
 
             public ColumnSchema(string ponam, string datyp, int dalen, int porde, bool primk, bool autoi)
@@ -418,19 +462,26 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 PORDE = porde;
                 PRIMK = primk;
                 AUTOI = autoi;
+                DEFAK = false;
+                DEFVL = string.Empty;
             }
 
             #region Methods PUBLIC
             public string GetSql(int countPk)
             {
+                SqliteDataType dataType = SqliteDataType.GetByKey(DATYP);
+
                 List<string> parts = new List<string>()
                 {
                     PONAM,
-                    SqliteDataType.GetByKey(DATYP).GetSqliteType(DALEN)
+                    dataType.GetSqliteType(DALEN)
                 };
 
                 if (PRIMK && countPk == 1) parts.Add("PRIMARY KEY");
                 if (AUTOI && countPk <= 1) parts.Add("AUTOINCREMENT");
+
+                // OFDOI: Add defaults
+                if (DATYP.Equals("06")) parts.Add("DEFAULT '0'");
 
                 return String.Join(' ', parts);
             }
@@ -444,7 +495,9 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     DALEN.ToString("#"),
                     PORDE.ToString("#"),
                     PRIMK ? "1" : "0",
-                    AUTOI ? "1" : "0"
+                    AUTOI ? "1" : "0",
+                    DEFAK ? "1" : "0",
+                    DEFVL,
                 };
 
                 return String.Join(";", parts);

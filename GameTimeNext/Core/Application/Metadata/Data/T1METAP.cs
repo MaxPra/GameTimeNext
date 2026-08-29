@@ -68,6 +68,12 @@ namespace GameTimeNext.Core.Application.Metadata.Data
         [UIXSignatureField(11)]
         public string CHUS { get; set; }
 
+        [UIXSignatureField(12)]
+        public bool DEFAK { get; set; }
+
+        [UIXSignatureField(13)]
+        public string DEFVL { get; set; }
+
         public T1METAP()
         {
             MENAM = string.Empty;
@@ -82,6 +88,8 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             CRUS = string.Empty;
             CHAT = DateTime.MinValue;
             CHUS = string.Empty;
+            DEFAK = false;
+            DEFVL = string.Empty;
 
             AcceptChanges();
         }

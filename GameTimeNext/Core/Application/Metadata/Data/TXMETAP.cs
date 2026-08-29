@@ -43,6 +43,9 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             copy.CRAT = now;
             copy.CHAT = now;
 
+            copy.DEFAK = source.DEFAK;
+            copy.DEFVL = source.DEFVL;
+
             copy.State = UIXTableObjectState.New;
 
             return copy;
@@ -106,7 +109,7 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             using SQLiteCommand cmd = connection.CreateCommand();
 
             cmd.CommandText =
-                "SELECT MENAM, PONAM, DESCR, DATYP, DALEN, PORDE, PRIMK, AUTOI, CRAT, CRUS, CHAT, CHUS " +
+                "SELECT MENAM, PONAM, DESCR, DATYP, DALEN, PORDE, PRIMK, AUTOI, CRAT, CRUS, CHAT, CHUS, DEFAK, DEFVL " +
                 "FROM T1METAP " +
                 "WHERE MENAM = @MENAM AND PONAM = @PONAM;";
 
@@ -134,7 +137,7 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             using SQLiteCommand cmd = connection.CreateCommand();
 
             cmd.CommandText =
-                "SELECT MENAM, PONAM, DESCR, DATYP, DALEN, PORDE, PRIMK, AUTOI, CRAT, CRUS, CHAT, CHUS " +
+                "SELECT MENAM, PONAM, DESCR, DATYP, DALEN, PORDE, PRIMK, AUTOI, CRAT, CRUS, CHAT, CHUS, DEFAK, DEFVL " +
                 "FROM T1METAP " +
                 "ORDER BY MENAM, PORDE, PONAM;";
 
@@ -157,9 +160,9 @@ namespace GameTimeNext.Core.Application.Metadata.Data
 
             cmd.CommandText =
                 "INSERT INTO T1METAP " +
-                "(MENAM, PONAM, DESCR, DATYP, DALEN, PORDE, PRIMK, AUTOI, CRAT, CRUS, CHAT, CHUS) " +
+                "(MENAM, PONAM, DESCR, DATYP, DALEN, PORDE, PRIMK, AUTOI, CRAT, CRUS, CHAT, CHUS, DEFAK, DEFVL) " +
                 "VALUES " +
-                "(@MENAM, @PONAM, @DESCR, @DATYP, @DALEN, @PORDE, @PRIMK, @AUTOI, @CRAT, @CRUS, @CHAT, @CHUS);";
+                "(@MENAM, @PONAM, @DESCR, @DATYP, @DALEN, @PORDE, @PRIMK, @AUTOI, @CRAT, @CRUS, @CHAT, @CHUS, @DEFAK, @DEFVL);";
 
             AddParameters(cmd, obj);
 
@@ -182,6 +185,8 @@ namespace GameTimeNext.Core.Application.Metadata.Data
                 "CRUS = @CRUS, " +
                 "CHAT = @CHAT, " +
                 "CHUS = @CHUS " +
+                "DEFAK = @DEFAK " +
+                "DEFVL = @DEFVL " +
                 "WHERE MENAM = @MENAM AND PONAM = @PONAM;";
 
             AddParameters(cmd, obj);
@@ -218,6 +223,8 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             cmd.Parameters.AddWithValue("@CRUS", obj.CRUS);
             cmd.Parameters.AddWithValue("@CHAT", ToDbDateTime(obj.CHAT));
             cmd.Parameters.AddWithValue("@CHUS", obj.CHUS);
+            cmd.Parameters.AddWithValue("@DEFAK", obj.DEFAK);
+            cmd.Parameters.AddWithValue("@DEFVL", obj.DEFVL);
         }
 
         private T1METAP Map(SQLiteDataReader reader)
@@ -237,6 +244,8 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             obj.CRUS = reader.IsDBNull(9) ? string.Empty : reader.GetString(9);
             obj.CHAT = ParseDbDateTime(reader.IsDBNull(10) ? null : reader.GetString(10));
             obj.CHUS = reader.IsDBNull(11) ? string.Empty : reader.GetString(11);
+            obj.DEFAK = !reader.IsDBNull(12) && Convert.ToInt32(reader.GetValue(12)) == 1;
+            obj.DEFVL = reader.IsDBNull(13) ? string.Empty : reader.GetString(13);
 
             obj.State = UIXTableObjectState.Available;
 

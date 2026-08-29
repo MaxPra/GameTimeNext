@@ -7,6 +7,7 @@ using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.DataBase;
 using GameTimeNext.Core.Framework.DataBase.DevSync;
 using GameTimeNext.Core.Framework.DataBase.Import;
+using GameTimeNext.Core.Framework.DataBase.Migration;
 using GameTimeNext.Core.Framework.Files;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.Utils;
@@ -99,6 +100,8 @@ namespace GameTimeNext.Core.Framework
         public static void Initalize()
         {
             HandleBackup();
+
+            MigrationFactory.MigrateMetadataTables();
 
             InitializeStartableApps();
 
