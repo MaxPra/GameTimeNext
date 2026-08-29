@@ -17,6 +17,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
         //   - Applying changes from DevSync the same way, it gets applied while migrating (use same methods -> centralized)
         // Attention:
         //   - Maybe add default values in Metadata (true/false required for bools)
+        //   - When done, move into UIX Library (Utils)
 
         private static Dictionary<string, List<List<string>>> _CACHED_FILECONTENTS = new Dictionary<string, List<List<string>>>();
 
@@ -218,7 +219,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
             private static string MIGRATION_SUFFIX = "_mig";
 
             #region Properties
-            public string MENAM { get; }
+            public string MENAM { get; private set; }
             public string MigrationTableName
             {
                 get => $"{MENAM}{MIGRATION_SUFFIX}";
@@ -245,39 +246,8 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
 
             public string GetSqlCreate()
             {
-                return GetSqlCreate(false);
-            }
-
-            public string GetSqlDrop(bool migrationTable = false)
-            {
-                string migrationSuffix = migrationTable ? MIGRATION_SUFFIX : string.Empty;
-
-                return $"DROP TABLE {MENAM}{migrationSuffix};";
-            }
-
-            public string GetMultiSqlAlter(TableSchema newTableSchema)
-            {
-                List<string> statements = new List<string>()
-                {
-                    GetSqlCreate(migrationTable: true),
-                    GetSqlInsertInto(MigrationTableName),
-                    GetSqlDrop(),
-                    newTableSchema.GetSqlCreate(),
-                    newTableSchema.GetSqlInsertInto(MigrationTableName, reverse: true),
-                    GetSqlDrop(migrationTable: true)
-                };
-
-                return String.Join(Environment.NewLine, statements);
-            }
-            #endregion
-
-            #region Methods PRIVATE
-            private string GetSqlCreate(bool migrationTable)
-            {
-                string migrationSuffix = migrationTable ? MIGRATION_SUFFIX : string.Empty;
-
                 List<string> sqlLines = new List<string>() {
-                    $"CREATE TABLE IF NOT EXISTS {MENAM}{migrationSuffix} ("
+                    $"CREATE TABLE IF NOT EXISTS {MENAM} ("
                 };
 
                 List<ColumnSchema> columnsPK = _columns.FindAll(c => c.PRIMK.Equals(true)).ToList();
@@ -302,12 +272,38 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 return String.Join(Environment.NewLine, sqlLines);
             }
 
-            private string GetSqlInsertInto(string targetTableName, bool reverse = false)
+            public string GetSqlDrop()
             {
-                string sourceTableName = reverse ? targetTableName : MENAM;
-                string actTargetTableName = reverse ? MENAM : targetTableName;
+                return $"DROP TABLE {MENAM};";
+            }
 
-                return $"INSERT INTO {actTargetTableName} SELECT * FROM {sourceTableName};";
+            public string GetMultiSqlAlter(TableSchema newTableSchema)
+            {
+                List<string> statements = new List<string>()
+                {
+                    GetSqlAlterName(MigrationTableName),
+                    newTableSchema.GetSqlCreate(),
+                    newTableSchema.GetSqlInsertInto(this),
+                    GetSqlDrop(),
+                };
+
+                return String.Join(Environment.NewLine, statements);
+            }
+            #endregion
+
+            #region Methods PRIVATE
+            private string GetSqlInsertInto(TableSchema sourceSchema)
+            {
+                string columnNames = String.Join(", ", sourceSchema.Columns.Select(c => c.PONAM));
+
+                return $"INSERT INTO {MENAM} ({columnNames}) SELECT ({columnNames}) FROM {sourceSchema.MENAM};";
+            }
+
+            private string GetSqlAlterName(string newTableName)
+            {
+                string temp = $"ALTER TABLE {MENAM} RENAME TO {newTableName};";
+                MENAM = newTableName;
+                return temp;
             }
             #endregion
         }
@@ -492,9 +488,6 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
 
                     return temp;
                 }
-
-                // DATETIME
-                // OFDOI: DATETIME
 
                 return _sqliteType;
             }

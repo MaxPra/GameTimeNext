@@ -2,8 +2,6 @@
 {
     internal class MigTask_033b_007 : MigTaskBase
     {
-        // OFDOI: Remove SQL
-
         public MigTask_033b_007() : base("0.3.3", requireDb: true)
         {
 

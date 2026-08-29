@@ -36,6 +36,15 @@ namespace GameTimeNext.Core.Application.MigrationTasks
 
         #region Methods PROTECTED
         protected abstract void ExecuteImpl();
+
+        protected void ExecuteOnlyWhenReallyNeeded(Action action)
+        {
+            string versionOldRaw = AppEnvironment.GetAppConfig().AppVersion;
+            AppVersion currentVersion = AppEnvironment.AppVersion;
+            if (FnString.IsNullEmptyOrWhitespace(versionOldRaw) || !currentVersion.NeedsMigrationFrom(versionOldRaw, _version)) return;
+
+            action.Invoke();
+        }
         #endregion
 
         #region Methods PRIVATE
