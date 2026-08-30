@@ -175,7 +175,7 @@ namespace GameTimeNext.Core.Application.Metadata
             UIXCodeGenerator code = new UIXCodeGenerator();
             code.AppendLine($"using {AppConfig.Root.ApplicationName}.Core.Application.TableObjects;");
             code.AppendLine($"using {AppConfig.Root.ApplicationName}.Core.Framework;");
-            code.AppendLine($"using {AppConfig.Root.ApplicationName}.Core.Framework.DataBase.DevSync;");
+            code.AppendLine($"using {AppConfig.Root.ApplicationName}.Core.Framework.DataBase.Migration;");
             code.AppendLine("using System.Data.SQLite;");
             code.AppendLine("using System.Globalization;");
             code.AppendLine("using UIX.ViewController.Engine.DataBaseObjects;");
@@ -205,7 +205,7 @@ namespace GameTimeNext.Core.Application.Metadata
             code.AppendEmptyLine();
             code.AppendLine("obj.State = UIXTableObjectState.Available;");
             code.AppendLine("obj.AcceptChanges();");
-            code.AppendLine("DevSyncCsvSyncService.ExportTableFor(obj);");
+            code.AppendLine("MigrationFactory.ExportCsvFileFor(obj);");
             code.EndBlock();
             code.AppendEmptyLine();
 
@@ -221,7 +221,7 @@ namespace GameTimeNext.Core.Application.Metadata
                 code.AppendLine($"cmd.Parameters.AddWithValue(\"@{name}\", {ToCamelCase(name)}); ");
             }
             code.AppendLine("cmd.ExecuteNonQuery();");
-            code.AppendLine($"DevSyncCsvSyncService.ExportTable(\"{tableName}\");");
+            code.AppendLine($"MigrationFactory.ExportCsvFile(\"{tableName}\");");
             code.EndBlock();
             code.AppendEmptyLine();
 

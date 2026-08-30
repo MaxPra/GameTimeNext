@@ -15,6 +15,8 @@ namespace GameTimeNext.Core.Application.CreateImportPackage
     /// </summary>
     public class CFCreateImportPackageApp
     {
+        // OFDOI: Replace this with MigrationFactory logic -> centralizing
+
         /// <summary>
         /// Erstellt ein Exportpaket mit den angegebenen Parametern
         /// </summary>

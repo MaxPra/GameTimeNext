@@ -9,7 +9,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
     /// <summary>
     /// Used for centrally generating/migrating the database.
     /// </summary>
-    internal static class MigrationFactory
+    internal static partial class MigrationFactory
     {
         // OFDOI: MigrationFactory
         // Store current schema in a file (maybe in DevSync directory)
@@ -78,7 +78,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
             }
             else
             {
-                List<TableSchema> tableSchemas = GenerateTableSchemasFromDatabase(AppEnvironment.GetDataBaseManager().GetConnection());
+                List<TableSchema> tableSchemas = GenerateTableSchemasFromActualDatabase(AppEnvironment.GetDataBaseManager().GetConnection());
 
                 List<MigrationAction> actions = new List<MigrationAction>()
                 {
@@ -112,8 +112,8 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
 
         public static void CopyAllToTargetDb(SQLiteConnection oldDb, SQLiteConnection newDb)
         {
-            List<TableSchema> oldTableSchemas = GenerateTableSchemasFromDatabase(oldDb);
-            List<TableSchema> newTableSchemas = GenerateTableSchemasFromDatabase(newDb);
+            List<TableSchema> oldTableSchemas = GenerateTableSchemasFromActualDatabase(oldDb);
+            List<TableSchema> newTableSchemas = GenerateTableSchemasFromActualDatabase(newDb);
 
             foreach (TableSchema oldTableSchema in oldTableSchemas)
             {
@@ -161,8 +161,10 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
             return GenerateTableSchemas(metahFilePath, metapFilePath);
         }
 
-        private static List<TableSchema> GenerateTableSchemasFromDatabase(SQLiteConnection connection)
+        private static List<TableSchema> GenerateTableSchemasFromActualDatabase(SQLiteConnection connection)
         {
+            // OFDOI: parse CREATE statement instead of PRAGMA table_info
+
             List<string> tableNames = new List<string>();
             using (var reader = UIXQuery.QueryCustom("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;", connection))
             {
@@ -393,11 +395,23 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
             /// <summary>
             /// Returns an SQL formatted list of its column names.
             /// </summary>
-            /// <param name="filteringSchema">Return values will only include columns, which are also present in this schema.</param>
-            /// <returns></returns>
-            public string GetColumnNamesForSql(TableSchema filteringSchema)
+            /// <returns>e.g.: col1, col2, col3, ...</returns>
+            public string GetColumnNamesForSql()
             {
-                List<ColumnSchema> filteredColumns = Columns.Where(c => filteringSchema.Columns.Where(fC => fC.PONAM.Equals(c.PONAM)).SingleOrDefault() is not null).ToList();
+                return GetColumnNamesForSql(null);
+            }
+
+            /// <summary>
+            /// Returns an SQL formatted list of its column names.
+            /// </summary>
+            /// <param name="filteringSchema">Return values will only include columns, which are also present in this schema.</param>
+            /// <returns>e.g.: col1, col2, col3, ...</returns>
+            public string GetColumnNamesForSql(TableSchema? filteringSchema)
+            {
+                List<ColumnSchema> filteredColumns = Columns.ToList();
+                if (filteringSchema is not null)
+                    filteredColumns = Columns.Where(c => filteringSchema.Columns.Where(fC => fC.PONAM.Equals(c.PONAM)).SingleOrDefault() is not null).ToList();
+
                 return String.Join(", ", filteredColumns.Select(c => c.PONAM));
             }
             #endregion
@@ -486,6 +500,11 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 return String.Join(' ', parts);
             }
 
+            public SqliteDataType GetSqliteDataType()
+            {
+                return SqliteDataType.GetByKey(DATYP);
+            }
+
             public override string ToString()
             {
                 List<string> parts = new List<string>()
@@ -565,7 +584,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
             #endregion
         }
 
-        private class SqliteDataType
+        public class SqliteDataType
         {
             private const string Integer = "INTEGER";
             private const string Real = "REAL";

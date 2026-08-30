@@ -1,5 +1,5 @@
 using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.DataBase.DevSync;
+using GameTimeNext.Core.Framework.DataBase.Migration;
 using System.Data.SQLite;
 using System.Globalization;
 using UIX.ViewController.Engine.DataBaseObjects;
@@ -74,7 +74,7 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             obj.State = UIXTableObjectState.Available;
             obj.AcceptChanges();
 
-            DevSyncCsvSyncService.ExportTableFor(obj);
+            MigrationFactory.ExportCsvFileFor(obj);
         }
 
         public void Delete(string menam)
@@ -92,7 +92,7 @@ namespace GameTimeNext.Core.Application.Metadata.Data
 
             cmd.ExecuteNonQuery();
 
-            DevSyncCsvSyncService.ExportTable("T1METAH");
+            MigrationFactory.ExportCsvFile("T1METAH");
         }
 
         public T1METAH Read(string menam)

@@ -1,6 +1,6 @@
 ﻿using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.DataBase.DevSync;
+using GameTimeNext.Core.Framework.DataBase.Migration;
 using System.Data.SQLite;
 using System.Globalization;
 using UIX.ViewController.Engine.DataBaseObjects;
@@ -32,7 +32,7 @@ namespace GameTimeNext.Core.Application.DataManagers
 
             obj.State = UIXTableObjectState.Available;
             obj.AcceptChanges();
-            DevSyncCsvSyncService.ExportTableFor(obj);
+            MigrationFactory.ExportCsvFileFor(obj);
         }
 
         public virtual void Delete(string tXTYP, string tXNUM)
@@ -42,10 +42,10 @@ namespace GameTimeNext.Core.Application.DataManagers
 
             using SQLiteCommand cmd = connection.CreateCommand();
             cmd.CommandText = "DELETE FROM T1CTABD WHERE TXTYP = @TXTYP AND TXNUM = @TXNUM";
-            cmd.Parameters.AddWithValue("@TXTYP", tXTYP);
-            cmd.Parameters.AddWithValue("@TXNUM", tXNUM);
+            cmd.Parameters.AddWithValue("@TXTYP", tXTYP); 
+            cmd.Parameters.AddWithValue("@TXNUM", tXNUM); 
             cmd.ExecuteNonQuery();
-            DevSyncCsvSyncService.ExportTable("T1CTABD");
+            MigrationFactory.ExportCsvFile("T1CTABD");
         }
 
         public virtual T1CTABD? Read(string tXTYP, string tXNUM)

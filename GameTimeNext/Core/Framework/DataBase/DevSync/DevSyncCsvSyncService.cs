@@ -6,112 +6,13 @@ using System.Data;
 using System.Data.SQLite;
 using System.Globalization;
 using System.IO;
-using System.Reflection;
 using System.Text;
-using UIX.ViewController.Engine.DataBaseObjects;
 
 namespace GameTimeNext.Core.Framework.DataBase.DevSync
 {
     internal static class DevSyncCsvSyncService
     {
         private const char Separator = ';';
-
-        public static void ExportTableFor(UIXTableObjectBase obj)
-        {
-
-            if (!FnSystem.IsDebug())
-                return;
-
-            if (obj == null || !obj.IsDevSynced)
-                return;
-
-            string tableName = obj.GetType().Name;
-            ExportTable(tableName);
-        }
-
-        public static void ExportTable(string tableName)
-        {
-            if (!FnSystem.IsDebug())
-                return;
-
-            if (string.IsNullOrWhiteSpace(tableName))
-                return;
-
-            if (!IsDevSyncEnabledForTable(tableName))
-                return;
-
-            SQLiteConnection connection = AppEnvironment.GetDataBaseManager().GetConnection();
-            EnsureOpen(connection);
-
-            if (!TableExists(connection, tableName))
-                return;
-
-            Dictionary<string, string> columnTypes = GetTableColumnTypes(connection, tableName);
-            List<string> columns = columnTypes.Keys.ToList();
-            if (columns.Count == 0)
-                return;
-
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine(string.Join(Separator, columns.Select(EscapeCsv)));
-
-            using SQLiteCommand cmd = connection.CreateCommand();
-            cmd.CommandText = $"SELECT * FROM {QuoteIdentifier(tableName)};";
-
-            using SQLiteDataReader reader = cmd.ExecuteReader();
-            while (reader.Read())
-            {
-                List<string> values = new List<string>(columns.Count);
-                for (int i = 0; i < columns.Count; i++)
-                {
-                    object value;
-
-                    if (reader.IsDBNull(i))
-                    {
-                        value = DBNull.Value;
-                    }
-                    else if (columnTypes.TryGetValue(columns[i], out string columnType) && IsDateLikeType(columnType))
-                    {
-                        value = NormalizeDateStringToSqlite(reader.GetString(i));
-                    }
-                    else
-                    {
-                        value = reader.GetValue(i);
-                    }
-
-                    values.Add(EscapeCsv(ToCsvValue(value)));
-                }
-
-                sb.AppendLine(string.Join(Separator, values));
-            }
-
-            Directory.CreateDirectory(AppConfig.Dev.DevSyncDirectoryPath);
-
-            string filePath = Path.Combine(AppConfig.Dev.DevSyncDirectoryPath, tableName + ".csv");
-            File.WriteAllText(filePath, sb.ToString(), Encoding.UTF8);
-
-            if (IsCodetableTable(tableName))
-                ExportCodetableDefaultFiles();
-        }
-
-        private static bool IsCodetableTable(string tableName)
-        {
-            return string.Equals(tableName, "T1CTABD", StringComparison.OrdinalIgnoreCase) ||
-                   string.Equals(tableName, "T1CTABH", StringComparison.OrdinalIgnoreCase);
-        }
-
-        private static void ExportCodetableDefaultFiles()
-        {
-            string sourceDirectory = AppConfig.Storage.DefaultImagesSymbolsDirectoryPath;
-            string destinationDirectory = Path.Combine(AppConfig.Dev.DevSyncDirectoryPath, "files", "default");
-
-            if (Directory.Exists(destinationDirectory))
-                Directory.Delete(destinationDirectory, true);
-
-            if (!Directory.Exists(sourceDirectory))
-                return;
-
-            CopyDirectory(sourceDirectory, destinationDirectory);
-        }
 
         private static void CopyDirectory(string sourceDirectory, string destinationDirectory)
         {
@@ -128,40 +29,6 @@ namespace GameTimeNext.Core.Framework.DataBase.DevSync
                 string destinationSubDirectory = Path.Combine(destinationDirectory, Path.GetFileName(directoryPath));
                 CopyDirectory(directoryPath, destinationSubDirectory);
             }
-        }
-
-        private static bool IsDevSyncEnabledForTable(string tableName)
-        {
-            if (string.Equals(tableName, "T1METAH", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(tableName, "T1METAP", StringComparison.OrdinalIgnoreCase))
-                return true;
-
-            Type? tableType = AppDomain.CurrentDomain
-                .GetAssemblies()
-                .SelectMany(assembly =>
-                {
-                    try
-                    {
-                        return assembly.GetTypes();
-                    }
-                    catch (ReflectionTypeLoadException ex)
-                    {
-                        return ex.Types.Where(t => t != null)!;
-                    }
-                })
-                .FirstOrDefault(type =>
-                    type != null &&
-                    !type.IsAbstract &&
-                    typeof(UIXTableObjectBase).IsAssignableFrom(type) &&
-                    string.Equals(type.Name, tableName, StringComparison.OrdinalIgnoreCase));
-
-            if (tableType == null)
-                return true;
-
-            if (Activator.CreateInstance(tableType) is not UIXTableObjectBase instance)
-                return true;
-
-            return instance.IsDevSynced;
         }
 
         public static void ImportAllFromCsv()
@@ -447,20 +314,6 @@ namespace GameTimeNext.Core.Framework.DataBase.DevSync
             return rawValue;
         }
 
-        private static string ToCsvValue(object value)
-        {
-            if (value == null || value == DBNull.Value)
-                return string.Empty;
-
-            if (value is byte[] bytes)
-                return Convert.ToBase64String(bytes);
-
-            if (value is IFormattable formattable)
-                return formattable.ToString(null, CultureInfo.InvariantCulture);
-
-            return value.ToString() ?? string.Empty;
-        }
-
         private static bool TableExists(SQLiteConnection connection, string tableName)
         {
             using SQLiteCommand cmd = connection.CreateCommand();
@@ -468,12 +321,6 @@ namespace GameTimeNext.Core.Framework.DataBase.DevSync
             cmd.Parameters.AddWithValue("@name", tableName);
 
             return Convert.ToInt64(cmd.ExecuteScalar(), CultureInfo.InvariantCulture) > 0;
-        }
-
-        private static List<string> GetTableColumns(SQLiteConnection connection, string tableName)
-        {
-            Dictionary<string, string> columnsWithType = GetTableColumnTypes(connection, tableName);
-            return columnsWithType.Keys.ToList();
         }
 
         private static Dictionary<string, string> GetTableColumnTypes(SQLiteConnection connection, string tableName)
@@ -555,18 +402,6 @@ namespace GameTimeNext.Core.Framework.DataBase.DevSync
             }
 
             return rows;
-        }
-
-        private static string EscapeCsv(string value)
-        {
-            if (value == null)
-                return string.Empty;
-
-            bool mustQuote = value.Contains(Separator) || value.Contains('"') || value.Contains('\n') || value.Contains('\r');
-            if (!mustQuote)
-                return value;
-
-            return '"' + value.Replace("\"", "\"\"") + '"';
         }
 
         private static string QuoteIdentifier(string identifier)

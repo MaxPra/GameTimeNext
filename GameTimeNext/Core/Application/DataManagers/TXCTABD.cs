@@ -1,6 +1,6 @@
 ﻿using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.DataBase.DevSync;
+using GameTimeNext.Core.Framework.DataBase.Migration;
 using System.Data.SQLite;
 
 namespace GameTimeNext.Core.Application.DataManagers
@@ -22,7 +22,7 @@ namespace GameTimeNext.Core.Application.DataManagers
 
             cmd.ExecuteNonQuery();
 
-            DevSyncCsvSyncService.ExportTable("T1CTABD");
+            MigrationFactory.ExportCsvFile("T1CTABD");
         }
 
         public List<T1CTABD> GetEntries(string txtyp)
