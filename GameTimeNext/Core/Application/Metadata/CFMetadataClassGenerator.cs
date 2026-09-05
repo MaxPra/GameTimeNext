@@ -205,7 +205,7 @@ namespace GameTimeNext.Core.Application.Metadata
             code.AppendEmptyLine();
             code.AppendLine("obj.State = UIXTableObjectState.Available;");
             code.AppendLine("obj.AcceptChanges();");
-            code.AppendLine("MigrationFactory.ExportCsvFileFor(obj);");
+            code.AppendLine("MigrationFactory.ToCsv.ExportCsvFileFor(connection, obj);");
             code.EndBlock();
             code.AppendEmptyLine();
 
@@ -221,7 +221,7 @@ namespace GameTimeNext.Core.Application.Metadata
                 code.AppendLine($"cmd.Parameters.AddWithValue(\"@{name}\", {ToCamelCase(name)}); ");
             }
             code.AppendLine("cmd.ExecuteNonQuery();");
-            code.AppendLine($"MigrationFactory.ExportCsvFile(\"{tableName}\");");
+            code.AppendLine($"MigrationFactory.ToCsv.ExportCsvFileFor(connection, \"{tableName}\");");
             code.EndBlock();
             code.AppendEmptyLine();
 

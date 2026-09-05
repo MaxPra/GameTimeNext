@@ -5,7 +5,6 @@ using GameTimeNext.Core.Application.Settings;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.DataBase;
-using GameTimeNext.Core.Framework.DataBase.DevSync;
 using GameTimeNext.Core.Framework.DataBase.Import;
 using GameTimeNext.Core.Framework.DataBase.Migration;
 using GameTimeNext.Core.Framework.Files;
@@ -101,7 +100,7 @@ namespace GameTimeNext.Core.Framework
         {
             HandleBackup();
 
-            MigrationFactory.MigrateMetadataTables();
+            MigrationFactory.Metadata.MigrateTables();
 
             InitializeStartableApps();
 
@@ -109,8 +108,7 @@ namespace GameTimeNext.Core.Framework
 
             DataBaseImporter.Import();
 
-            if (FnSystem.IsDebug())
-                DevSyncCsvSyncService.ImportAllFromCsv();
+            MigrationFactory.FromCsv.MigrateTables(MigrationFactory.ImportType.DevSync);
 
             MigrationManager.Migrate();
             GetDataBaseManager().EnsureT1groupSeeded();

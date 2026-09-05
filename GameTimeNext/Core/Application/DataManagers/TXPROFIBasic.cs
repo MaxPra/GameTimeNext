@@ -32,7 +32,7 @@ namespace GameTimeNext.Core.Application.DataManagers
 
             obj.State = UIXTableObjectState.Available;
             obj.AcceptChanges();
-            MigrationFactory.ExportCsvFileFor(obj);
+            MigrationFactory.ToCsv.ExportCsvFileFor(connection, obj);
         }
 
         public virtual void Delete(long pFID)
@@ -42,9 +42,9 @@ namespace GameTimeNext.Core.Application.DataManagers
 
             using SQLiteCommand cmd = connection.CreateCommand();
             cmd.CommandText = "DELETE FROM T1PROFI WHERE PFID = @PFID";
-            cmd.Parameters.AddWithValue("@PFID", pFID); 
+            cmd.Parameters.AddWithValue("@PFID", pFID);
             cmd.ExecuteNonQuery();
-            MigrationFactory.ExportCsvFile("T1PROFI");
+            MigrationFactory.ToCsv.ExportCsvFileFor(connection, "T1PROFI");
         }
 
         public virtual T1PROFI? Read(long pFID)

@@ -1,6 +1,5 @@
 ﻿using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework.Config;
-using GameTimeNext.Core.Framework.DataBase.Migration;
 using System.Data;
 using System.Data.SQLite;
 using System.IO;
@@ -41,10 +40,6 @@ namespace GameTimeNext.Core.Framework.DataBase
 
             // -- Verbinden --
             ConnectToSQLite(databaseFilePath);
-
-            // -- Tabellen erstellen --
-            CreateMetadataTables();
-
         }
 
         public void CreateBackup(string backupPathInklFileName)
@@ -142,15 +137,6 @@ namespace GameTimeNext.Core.Framework.DataBase
             catch { }
 
             return newDataBase;
-        }
-
-        /// <summary>
-        /// Erstellt alle Tabellen, sofern noch nicht vorhanden (Erster Start)
-        /// </summary>
-        private void CreateMetadataTables()
-        {
-            string sql = MigrationFactory.GetSqlCreate(metadata: true);
-            UIXQuery.ExecuteCustom(sql, GetConnection());
         }
 
         private void GetT1groupIds(ref Dictionary<string, int> dictionary)

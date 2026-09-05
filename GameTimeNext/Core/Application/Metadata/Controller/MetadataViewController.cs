@@ -257,7 +257,6 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
         {
             MetadataEditApp metadataEditApp = GetApp().GetApplication<MetadataEditApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
             metadataEditApp.CreateNew();
-
         }
 
         protected async Task EV_BtnRefresh()

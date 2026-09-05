@@ -22,7 +22,7 @@ namespace GameTimeNext.Core.Application.DataManagers
 
             cmd.ExecuteNonQuery();
 
-            MigrationFactory.ExportCsvFile("T1CTABD");
+            MigrationFactory.ToCsv.ExportCsvFileFor(connection, "T1CTABD");
         }
 
         public List<T1CTABD> GetEntries(string txtyp)

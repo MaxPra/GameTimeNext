@@ -9,6 +9,18 @@ namespace GameTimeNext.Core.Application.Metadata.Data
 {
     public class TXMETAH
     {
+        private SQLiteConnection _connection;
+
+        public TXMETAH()
+        {
+            _connection = AppEnvironment.GetDataBaseManager().GetConnection();
+        }
+
+        public TXMETAH(SQLiteConnection connection)
+        {
+            _connection = connection;
+        }
+
         public T1METAH CreateNew()
         {
             T1METAH obj = new T1METAH();
@@ -51,15 +63,14 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             if (obj == null)
                 throw new ArgumentNullException(nameof(obj));
 
-            SQLiteConnection connection = AppEnvironment.GetDataBaseManager().GetConnection();
-            EnsureOpen(connection);
+            EnsureOpen(_connection);
 
             DateTime now = DateTime.Now;
 
-            if (Exists(connection, obj.MENAM))
+            if (Exists(_connection, obj.MENAM))
             {
                 obj.CHAT = now;
-                Update(connection, obj);
+                Update(_connection, obj);
             }
             else
             {
@@ -68,21 +79,20 @@ namespace GameTimeNext.Core.Application.Metadata.Data
 
                 obj.CHAT = now;
 
-                Insert(connection, obj);
+                Insert(_connection, obj);
             }
 
             obj.State = UIXTableObjectState.Available;
             obj.AcceptChanges();
 
-            MigrationFactory.ExportCsvFileFor(obj);
+            MigrationFactory.ToCsv.ExportCsvFileFor(_connection, obj);
         }
 
         public void Delete(string menam)
         {
-            SQLiteConnection connection = AppEnvironment.GetDataBaseManager().GetConnection();
-            EnsureOpen(connection);
+            EnsureOpen(_connection);
 
-            using SQLiteCommand cmd = connection.CreateCommand();
+            using SQLiteCommand cmd = _connection.CreateCommand();
 
             cmd.CommandText =
                 "DELETE FROM T1METAH " +
@@ -92,15 +102,14 @@ namespace GameTimeNext.Core.Application.Metadata.Data
 
             cmd.ExecuteNonQuery();
 
-            MigrationFactory.ExportCsvFile("T1METAH");
+            MigrationFactory.ToCsv.ExportCsvFileFor(_connection, "T1METAH");
         }
 
         public T1METAH Read(string menam)
         {
-            SQLiteConnection connection = AppEnvironment.GetDataBaseManager().GetConnection();
-            EnsureOpen(connection);
+            EnsureOpen(_connection);
 
-            using SQLiteCommand cmd = connection.CreateCommand();
+            using SQLiteCommand cmd = _connection.CreateCommand();
 
             cmd.CommandText =
                 "SELECT MENAM, DESCR, MTYPE, DSYNC, GENER, CRAT, CRUS, CHAT, CHUS " +
@@ -122,12 +131,11 @@ namespace GameTimeNext.Core.Application.Metadata.Data
 
         public List<T1METAH> ReadAll()
         {
-            SQLiteConnection connection = AppEnvironment.GetDataBaseManager().GetConnection();
-            EnsureOpen(connection);
+            EnsureOpen(_connection);
 
             List<T1METAH> list = new List<T1METAH>();
 
-            using SQLiteCommand cmd = connection.CreateCommand();
+            using SQLiteCommand cmd = _connection.CreateCommand();
 
             cmd.CommandText =
                 "SELECT MENAM, DESCR, MTYPE, DSYNC, GENER, CRAT, CRUS, CHAT, CHUS " +

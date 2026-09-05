@@ -2,6 +2,7 @@
 using GameTimeNext.Core.Framework.DataBase;
 using GameTimeNext.Core.Framework.DataBase.Migration;
 using GameTimeNext.Core.Framework.Utils;
+using System.Configuration;
 using System.Data.SQLite;
 using System.IO;
 using UIX.ViewController.Engine.Querying;
@@ -57,9 +58,13 @@ namespace GameTimeNext.Core.Application.MigrationTasks
             newDbManager.Initialize(AppConfig.Storage.DatabaseFilePath);
             using SQLiteConnection newDb = newDbManager.GetConnection();
 
-            UIXQuery.ExecuteCustom(MigrationFactory.GetSqlCreate(), newDb);
+            MigrationFactory.ImportType importType;
+            if (FnSystem.IsDebug()) importType = MigrationFactory.ImportType.DevSync;
+            else importType = MigrationFactory.ImportType.ImportPackages;
 
-            MigrationFactory.CopyAllToTargetDb(oldDbManager.GetConnection(), newDb);
+            MigrationFactory.Metadata.MigrateTables(newDb);
+            MigrationFactory.FromCsv.CreateTables(importType, newDb);
+            MigrationFactory.FromCsv.CopyDataToTargetDb(oldDb, newDb);
 
             oldDb.Close();
             oldDb.Dispose();

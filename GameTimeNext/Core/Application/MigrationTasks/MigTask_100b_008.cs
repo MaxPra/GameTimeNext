@@ -1,3 +1,5 @@
+using UIX.ViewController.Engine.Querying;
+
 namespace GameTimeNext.Core.Application.MigrationTasks
 {
     internal partial class MigTask_100b_008 : MigTaskBase
@@ -10,6 +12,7 @@ namespace GameTimeNext.Core.Application.MigrationTasks
         protected override void ExecuteImpl()
         {
             MigratePlaythroughTypeValues();
+            EnsureT1plthrPtpaIsFalse();
         }
 
         private void MigratePlaythroughTypeValues()
@@ -28,6 +31,14 @@ namespace GameTimeNext.Core.Application.MigrationTasks
                 END
                 WHERE PTTY IN ('GTN.DLC', 'GTN.NEW_PLAYTHROUGH', 'GTN.INITIAL_PLAYTHROUGH');";
             command.ExecuteNonQuery();
+        }
+
+        private void EnsureT1plthrPtpaIsFalse()
+        {
+            if (_connection is null) return;
+
+            string sql = $"UPDATE T1PLTHR SET PTPA = 0 WHERE PTPA IS NULL;";
+            UIXQuery.ExecuteCustom(sql, _connection);
         }
     }
 }

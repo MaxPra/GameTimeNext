@@ -8,6 +8,18 @@ namespace GameTimeNext.Core.Application.Metadata.Data
 {
     public class TXMETAP
     {
+        private SQLiteConnection _connection;
+
+        public TXMETAP()
+        {
+            _connection = AppEnvironment.GetDataBaseManager().GetConnection();
+        }
+
+        public TXMETAP(SQLiteConnection connection)
+        {
+            _connection = connection;
+        }
+
         public T1METAP CreateNew()
         {
             T1METAP obj = new T1METAP();
@@ -56,15 +68,14 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             if (obj == null)
                 throw new ArgumentNullException(nameof(obj));
 
-            SQLiteConnection connection = AppEnvironment.GetDataBaseManager().GetConnection();
-            EnsureOpen(connection);
+            EnsureOpen(_connection);
 
             DateTime now = DateTime.Now;
 
-            if (Exists(connection, obj.MENAM, obj.PONAM))
+            if (Exists(_connection, obj.MENAM, obj.PONAM))
             {
                 obj.CHAT = now;
-                Update(connection, obj);
+                Update(_connection, obj);
             }
             else
             {
@@ -73,21 +84,20 @@ namespace GameTimeNext.Core.Application.Metadata.Data
 
                 obj.CHAT = now;
 
-                Insert(connection, obj);
+                Insert(_connection, obj);
             }
 
             obj.State = UIXTableObjectState.Available;
             obj.AcceptChanges();
 
-            MigrationFactory.ExportCsvFileFor(obj);
+            MigrationFactory.ToCsv.ExportCsvFileFor(_connection, obj);
         }
 
         public void Delete(string menam, string ponam)
         {
-            SQLiteConnection connection = AppEnvironment.GetDataBaseManager().GetConnection();
-            EnsureOpen(connection);
+            EnsureOpen(_connection);
 
-            using SQLiteCommand cmd = connection.CreateCommand();
+            using SQLiteCommand cmd = _connection.CreateCommand();
 
             cmd.CommandText =
                 "DELETE FROM T1METAP " +
@@ -98,15 +108,14 @@ namespace GameTimeNext.Core.Application.Metadata.Data
 
             cmd.ExecuteNonQuery();
 
-            MigrationFactory.ExportCsvFile("T1METAP");
+            MigrationFactory.ToCsv.ExportCsvFileFor(_connection, "T1METAP");
         }
 
         public T1METAP Read(string menam, string ponam)
         {
-            SQLiteConnection connection = AppEnvironment.GetDataBaseManager().GetConnection();
-            EnsureOpen(connection);
+            EnsureOpen(_connection);
 
-            using SQLiteCommand cmd = connection.CreateCommand();
+            using SQLiteCommand cmd = _connection.CreateCommand();
 
             cmd.CommandText =
                 "SELECT MENAM, PONAM, DESCR, DATYP, DALEN, PORDE, PRIMK, AUTOI, CRAT, CRUS, CHAT, CHUS, DEFAK, DEFVL " +
@@ -129,17 +138,29 @@ namespace GameTimeNext.Core.Application.Metadata.Data
 
         public List<T1METAP> ReadAll()
         {
-            SQLiteConnection connection = AppEnvironment.GetDataBaseManager().GetConnection();
-            EnsureOpen(connection);
+            return ReadAll(null);
+        }
+
+        public List<T1METAP> ReadAll(string? menam)
+        {
+            EnsureOpen(_connection);
 
             List<T1METAP> list = new List<T1METAP>();
 
-            using SQLiteCommand cmd = connection.CreateCommand();
+            using SQLiteCommand cmd = _connection.CreateCommand();
 
-            cmd.CommandText =
-                "SELECT MENAM, PONAM, DESCR, DATYP, DALEN, PORDE, PRIMK, AUTOI, CRAT, CRUS, CHAT, CHUS, DEFAK, DEFVL " +
-                "FROM T1METAP " +
-                "ORDER BY MENAM, PORDE, PONAM;";
+            List<string> sqlLines = new List<string>()
+            {
+                "SELECT MENAM, PONAM, DESCR, DATYP, DALEN, PORDE, PRIMK, AUTOI, CRAT, CRUS, CHAT, CHUS, DEFAK, DEFVL ",
+                "FROM T1METAP ",
+            };
+
+            if (menam is not null)
+                sqlLines.Add($"WHERE MENAM = \"{menam}\"");
+
+            sqlLines.Add("ORDER BY MENAM, PORDE, PONAM;");
+
+            cmd.CommandText = string.Join(Environment.NewLine, sqlLines);
 
             using SQLiteDataReader reader = cmd.ExecuteReader();
 
