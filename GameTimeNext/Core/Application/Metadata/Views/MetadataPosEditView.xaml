@@ -222,6 +222,7 @@
                             HorizontalAlignment="Left"
                             VerticalContentAlignment="Center" />
                         <!-- OFDOI: uixprops:UIXAttachedProperty.Path="T1METAP.DALEN" /> -->
+                        <!-- OFDOI: Fix some visibility stuff /> -->
                     </Grid>
                 </Grid>
             </Grid>

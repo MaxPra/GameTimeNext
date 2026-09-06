@@ -380,6 +380,12 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
             ImportPackages = 1,
         }
 
+        public class ImportPackageType
+        {
+            public const string Codetables = "cT";
+            public const string Metadata = "mE";
+        }
+
         #region STATIC
         private static class SchemaGenerator
         {
@@ -391,6 +397,13 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
             public static List<TableSchema> GenerateFromMetadata(string? tableName = null, SQLiteConnection? connection = null)
             {
                 List<TableSchema> schemas = new List<TableSchema>();
+
+                if (!FnString.IsNullEmptyOrWhitespace(tableName) && tableName!.StartsWith("T1META"))
+                {
+                    // Metadata
+                    schemas.Add(Metadata.METADATA.Where(s => s.MENAM.Equals(tableName)).Single());
+                    return schemas;
+                }
 
                 TXMETAH txmetah;
                 TXMETAP txmetap;

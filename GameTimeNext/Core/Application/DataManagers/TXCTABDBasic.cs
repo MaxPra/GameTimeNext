@@ -32,7 +32,7 @@ namespace GameTimeNext.Core.Application.DataManagers
 
             obj.State = UIXTableObjectState.Available;
             obj.AcceptChanges();
-            MigrationFactory.ToCsv.ExportCsvFileFor(connection, obj);
+            MigrationFactory.ToCsv.ExportCsvFileFor(connection, obj, MigrationFactory.ImportType.DevSync);
         }
 
         public virtual void Delete(string tXTYP, string tXNUM)
@@ -45,7 +45,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             cmd.Parameters.AddWithValue("@TXTYP", tXTYP);
             cmd.Parameters.AddWithValue("@TXNUM", tXNUM);
             cmd.ExecuteNonQuery();
-            MigrationFactory.ToCsv.ExportCsvFileFor(connection, "T1CTABD");
+            MigrationFactory.ToCsv.ExportCsvFileFor(connection, "T1CTABD", MigrationFactory.ImportType.DevSync);
         }
 
         public virtual T1CTABD? Read(string tXTYP, string tXNUM)

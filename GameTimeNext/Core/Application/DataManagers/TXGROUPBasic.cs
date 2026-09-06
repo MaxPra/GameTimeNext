@@ -32,7 +32,7 @@ namespace GameTimeNext.Core.Application.DataManagers
 
             obj.State = UIXTableObjectState.Available;
             obj.AcceptChanges();
-            MigrationFactory.ToCsv.ExportCsvFileFor(connection, obj);
+            MigrationFactory.ToCsv.ExportCsvFileFor(connection, obj, MigrationFactory.ImportType.DevSync);
         }
 
         public virtual void Delete(long gRID)
@@ -44,7 +44,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             cmd.CommandText = "DELETE FROM T1GROUP WHERE GRID = @GRID";
             cmd.Parameters.AddWithValue("@GRID", gRID);
             cmd.ExecuteNonQuery();
-            MigrationFactory.ToCsv.ExportCsvFileFor(connection, "T1GROUP");
+            MigrationFactory.ToCsv.ExportCsvFileFor(connection, "T1GROUP", MigrationFactory.ImportType.DevSync);
         }
 
         public virtual T1GROUP? Read(long gRID)

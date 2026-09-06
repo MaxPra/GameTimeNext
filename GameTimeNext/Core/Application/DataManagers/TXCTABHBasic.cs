@@ -32,7 +32,7 @@ namespace GameTimeNext.Core.Application.DataManagers
 
             obj.State = UIXTableObjectState.Available;
             obj.AcceptChanges();
-            MigrationFactory.ToCsv.ExportCsvFileFor(connection, obj);
+            MigrationFactory.ToCsv.ExportCsvFileFor(connection, obj, MigrationFactory.ImportType.DevSync);
         }
 
         public virtual void Delete(string tXTYP)
@@ -44,7 +44,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             cmd.CommandText = "DELETE FROM T1CTABH WHERE TXTYP = @TXTYP";
             cmd.Parameters.AddWithValue("@TXTYP", tXTYP);
             cmd.ExecuteNonQuery();
-            MigrationFactory.ToCsv.ExportCsvFileFor(connection, "T1CTABH");
+            MigrationFactory.ToCsv.ExportCsvFileFor(connection, "T1CTABH", MigrationFactory.ImportType.DevSync);
         }
 
         public virtual T1CTABH? Read(string tXTYP)

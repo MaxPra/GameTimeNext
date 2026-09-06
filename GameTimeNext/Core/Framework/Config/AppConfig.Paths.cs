@@ -79,11 +79,13 @@ namespace GameTimeNext.Core.Framework.Config
             [JsonIgnore]
             public static string DevSyncDefaultImagesSymbolsDirectoryPath
             {
-                get
-                {
-                    string temp = ReturnEnsureDirectoryExists(Path.Combine(DevSyncDirectoryPath, "imagesAndSymbols"), requireParentExists: true);
-                    return ReturnEnsureDirectoryExists(Path.Combine(temp, "default"), requireParentExists: true);
-                }
+                get => GetImagesAndSymbolsDirectoryPath(DevSyncDirectoryPath);
+            }
+
+            public static string GetImagesAndSymbolsDirectoryPath(string parentDirectoryPath)
+            {
+                string temp = ReturnEnsureDirectoryExists(Path.Combine(parentDirectoryPath, "imagesAndSymbols"), requireParentExists: true);
+                return ReturnEnsureDirectoryExists(Path.Combine(temp, "default"), requireParentExists: true);
             }
         }
 

@@ -90,7 +90,7 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             obj.State = UIXTableObjectState.Available;
             obj.AcceptChanges();
 
-            MigrationFactory.ToCsv.ExportCsvFileFor(_connection, obj);
+            MigrationFactory.ToCsv.ExportCsvFileFor(_connection, obj, MigrationFactory.ImportType.DevSync);
         }
 
         public void Delete(string menam, string ponam)
@@ -108,7 +108,7 @@ namespace GameTimeNext.Core.Application.Metadata.Data
 
             cmd.ExecuteNonQuery();
 
-            MigrationFactory.ToCsv.ExportCsvFileFor(_connection, "T1METAP");
+            MigrationFactory.ToCsv.ExportCsvFileFor(_connection, "T1METAP", MigrationFactory.ImportType.DevSync);
         }
 
         public T1METAP Read(string menam, string ponam)

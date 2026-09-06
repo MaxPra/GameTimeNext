@@ -1,10 +1,12 @@
-﻿using GameTimeNext.Core.Framework.Config;
+﻿using GameTimeNext.Core.Application.Metadata.Data;
+using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.Utils;
 using System.Data.SQLite;
 using System.IO;
 using System.Text;
 using UIX.ViewController.Engine.DataBaseObjects;
 using UIX.ViewController.Engine.Querying;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Framework.DataBase.Migration
 {
@@ -14,19 +16,26 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
         {
             public static char _CSV_SEPERATOR = ';';
 
-            public static void ExportCsvFileFor(SQLiteConnection connection, UIXTableObjectBase obj)
+            public static void ExportCsvFileFor(SQLiteConnection connection, UIXTableObjectBase obj, ImportType importType, string? outputDirectoryPath = null)
             {
                 if (!FnSystem.IsDebug()) return;
                 if (obj is null || !obj.IsDevSynced) return;
 
                 string tableName = obj.GetType().Name;
-                if (tableName.StartsWith("T1META")) return;
+                if (importType.Equals(ImportType.ImportPackages))
+                {
+                    T1METAH t1metah = (T1METAH)obj;
+                    tableName = t1metah.MENAM;
+                    if (!t1metah.DSYNC) return;
+                }
 
-                ExportCsvFileFor(connection, tableName);
+                ExportCsvFileFor(connection, tableName, importType, outputDirectoryPath: outputDirectoryPath);
             }
 
-            public static void ExportCsvFileFor(SQLiteConnection connection, string tableName)
+            public static void ExportCsvFileFor(SQLiteConnection connection, string tableName, ImportType importType, string? outputDirectoryPath = null)
             {
+                // OFDOI: Exporting Codetables includes T1CTABH and T1CTABD entries, not selected for export (T1TABH.EXPRT)
+
                 if (!FnSystem.IsDebug()) return;
 
                 TableSchema? tS = SchemaGenerator.GenerateSingleFromMetadata(tableName);
@@ -40,9 +49,9 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
 
                 // Add headers
                 List<string> csvLines = new List<string>()
-            {
-                String.Join(_CSV_SEPERATOR, columns.Keys),
-            };
+                {
+                    String.Join(_CSV_SEPERATOR, columns.Keys),
+                };
 
                 using (var reader = UIXQuery.QueryCustom($"SELECT {tS.GetColumnNamesForSql()} FROM {tableName};", connection))
                 {
@@ -72,20 +81,36 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     reader.Close();
                 }
 
-                if (!Directory.Exists(AppConfig.Dev.DevSyncDirectoryPath))
-                    Directory.CreateDirectory(AppConfig.Dev.DevSyncDirectoryPath);
+                string actualOutputDirectoryPath = AppConfig.Dev.DevSyncDirectoryPath;
+                if (importType.Equals(ImportType.ImportPackages))
+                {
+                    if (FnString.IsNullEmptyOrWhitespace(outputDirectoryPath))
+                        throw new ArgumentException("Output directory path cannot be null or empty for ImportPackages export type.");
 
-                string filePath = Path.Combine(AppConfig.Dev.DevSyncDirectoryPath, $"{tableName}.csv");
+                    actualOutputDirectoryPath = outputDirectoryPath!;
+                }
+
+                if (!Directory.Exists(actualOutputDirectoryPath))
+                    Directory.CreateDirectory(actualOutputDirectoryPath);
+
+                string filePath = Path.Combine(actualOutputDirectoryPath, $"{tableName}.csv");
                 File.WriteAllLines(filePath, csvLines, Encoding.UTF8);
 
                 if (tS.IsCodetableTable)
-                    ExportCodetableDefaultFiles();
+                    ExportCodetableDefaultFiles(importType, destinationDirectoryPathOverride: actualOutputDirectoryPath);
             }
 
-            private static void ExportCodetableDefaultFiles()
+            private static void ExportCodetableDefaultFiles(ImportType importType, string? destinationDirectoryPathOverride = null)
             {
                 string sourceDirectoryPath = AppConfig.Storage.DefaultImagesSymbolsDirectoryPath;
                 string destinationDirectoryPath = AppConfig.Dev.DevSyncDefaultImagesSymbolsDirectoryPath;
+                if (importType.Equals(ImportType.ImportPackages))
+                {
+                    if (FnString.IsNullEmptyOrWhitespace(destinationDirectoryPathOverride))
+                        throw new ArgumentException("Destination directory path cannot be null or empty for ImportPackages export type.");
+
+                    destinationDirectoryPath = AppConfig.Dev.GetImagesAndSymbolsDirectoryPath(destinationDirectoryPathOverride!);
+                }
 
                 if (Directory.Exists(destinationDirectoryPath))
                     Directory.Delete(destinationDirectoryPath, true);
@@ -129,7 +154,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                         if (!menam.Equals("T1METAH") && !menam.Equals("T1METAP") && !dsync)
                             continue;
 
-                        ExportCsvFileFor(connection, menam);
+                        ExportCsvFileFor(connection, menam, MigrationFactory.ImportType.DevSync);
                     }
 
                     reader.Close();

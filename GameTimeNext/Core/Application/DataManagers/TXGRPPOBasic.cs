@@ -32,7 +32,7 @@ namespace GameTimeNext.Core.Application.DataManagers
 
             obj.State = UIXTableObjectState.Available;
             obj.AcceptChanges();
-            MigrationFactory.ToCsv.ExportCsvFileFor(connection, obj);
+            MigrationFactory.ToCsv.ExportCsvFileFor(connection, obj, MigrationFactory.ImportType.DevSync);
         }
 
         public virtual void Delete(long gPID)
@@ -44,7 +44,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             cmd.CommandText = "DELETE FROM T1GRPPO WHERE GPID = @GPID";
             cmd.Parameters.AddWithValue("@GPID", gPID);
             cmd.ExecuteNonQuery();
-            MigrationFactory.ToCsv.ExportCsvFileFor(connection, "T1GRPPO");
+            MigrationFactory.ToCsv.ExportCsvFileFor(connection, "T1GRPPO", MigrationFactory.ImportType.DevSync);
         }
 
         public virtual T1GRPPO? Read(long gPID)

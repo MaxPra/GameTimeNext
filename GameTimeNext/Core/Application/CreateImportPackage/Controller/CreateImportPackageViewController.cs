@@ -1,5 +1,6 @@
 using GameTimeNext.Core.Application.CreateImportPackage.Views;
 using GameTimeNext.Core.Application.DataManagers;
+using GameTimeNext.Core.Framework.DataBase.Migration;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.Utils;
 using System.Windows;
@@ -93,7 +94,7 @@ namespace GameTimeNext.Core.Application.CreateImportPackage.Controller
             {
                 try
                 {
-                    CFCreateImportPackageApp.CreateImportPackage(outputPath, exportType);
+                    MigrationFactory.ImportPackage.ExportPackage(outputPath, exportType);
                 }
                 catch (Exception)
                 {

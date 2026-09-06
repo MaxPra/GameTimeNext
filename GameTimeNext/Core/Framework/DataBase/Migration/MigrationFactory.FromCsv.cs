@@ -91,7 +91,6 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
 
             private static void ImportFromCsv(SQLiteConnection connection, string filePath)
             {
-                // OFDOI: E.g.: Consider, that when not T1META, only tables with Dev-Permissions must remove entries
                 string tableName = GetTableNameFromFile(filePath);
                 List<List<string>> csvLines = GetFileContent(filePath);
                 List<string> headers = csvLines[0];

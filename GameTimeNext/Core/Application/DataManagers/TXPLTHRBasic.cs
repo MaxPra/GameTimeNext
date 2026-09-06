@@ -32,7 +32,7 @@ namespace GameTimeNext.Core.Application.DataManagers
 
             obj.State = UIXTableObjectState.Available;
             obj.AcceptChanges();
-            MigrationFactory.ToCsv.ExportCsvFileFor(connection, obj);
+            MigrationFactory.ToCsv.ExportCsvFileFor(connection, obj, MigrationFactory.ImportType.DevSync);
         }
 
         public virtual void Delete(long pTID)
@@ -44,7 +44,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             cmd.CommandText = "DELETE FROM T1PLTHR WHERE PTID = @PTID";
             cmd.Parameters.AddWithValue("@PTID", pTID);
             cmd.ExecuteNonQuery();
-            MigrationFactory.ToCsv.ExportCsvFileFor(connection, "T1PLTHR");
+            MigrationFactory.ToCsv.ExportCsvFileFor(connection, "T1PLTHR", MigrationFactory.ImportType.DevSync);
         }
 
         public virtual T1PLTHR? Read(long pTID)
