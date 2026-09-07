@@ -1,4 +1,6 @@
 ﻿using GameTimeNext.Core.Application.Metadata.Data;
+using GameTimeNext.Core.Framework.Config;
+using GameTimeNext.Core.Framework.Utils;
 using System.Data.SQLite;
 using System.IO;
 using System.IO.Compression;
@@ -51,6 +53,14 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 }
             }
 
+            public static void ImportPackages()
+            {
+                if (FnSystem.IsDebug()) return;
+
+                List<string> filePaths = Directory.GetFiles(AppConfig.Temp.ImportDirectoryPath, "*.zip").ToList();
+                filePaths.ForEach(p => ImportSinglePackage(p));
+            }
+
             private static void ExportToTemp(string tempDirectoryPath, bool exportMetadata, bool exportCodetables)
             {
                 SQLiteConnection connection = AppEnvironment.GetDataBaseManager().GetConnection();
@@ -77,6 +87,30 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 {
                     ToCsv.ExportCsvFileFor(connection, t1metah, ImportType.ImportPackages, tempDirectoryPath);
                 });
+            }
+
+            private static void ImportSinglePackage(string packageFilePath)
+            {
+                FileInfo packageFileInfo = new FileInfo(packageFilePath);
+                string tempDirectoryName = packageFileInfo.Name.Split('.').SkipLast(1).Last();
+                string tempDirectoryPath = Path.Combine(AppConfig.Temp.ImportDirectoryPath, tempDirectoryName);
+                if (!Directory.Exists(tempDirectoryPath))
+                    Directory.CreateDirectory(tempDirectoryPath);
+
+                try
+                {
+                    ZipFile.ExtractToDirectory(packageFilePath, tempDirectoryPath);
+
+                    FromCsv.MigrateTables(ImportType.ImportPackages, importDirectoryPathOverride: tempDirectoryPath);
+                }
+                finally
+                {
+                    if (Directory.Exists(tempDirectoryPath))
+                        Directory.Delete(tempDirectoryPath, true);
+                }
+
+                if (File.Exists(packageFilePath))
+                    File.Delete(packageFilePath);
             }
         }
     }

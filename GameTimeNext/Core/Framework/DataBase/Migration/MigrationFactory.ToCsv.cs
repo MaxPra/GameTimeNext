@@ -1,4 +1,6 @@
-﻿using GameTimeNext.Core.Application.Metadata.Data;
+﻿using GameTimeNext.Core.Application.DataManagers;
+using GameTimeNext.Core.Application.Metadata.Data;
+using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.Utils;
 using System.Data.SQLite;
@@ -32,10 +34,9 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 ExportCsvFileFor(connection, tableName, importType, outputDirectoryPath: outputDirectoryPath);
             }
 
+            // OFDO: Maybe split Metadata export and others
             public static void ExportCsvFileFor(SQLiteConnection connection, string tableName, ImportType importType, string? outputDirectoryPath = null)
             {
-                // OFDOI: Exporting Codetables includes T1CTABH and T1CTABD entries, not selected for export (T1TABH.EXPRT)
-
                 if (!FnSystem.IsDebug()) return;
 
                 TableSchema? tS = SchemaGenerator.GenerateSingleFromMetadata(tableName);
@@ -73,6 +74,25 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                                 value = reader.GetValue(i);
 
                             values.Add(SqliteCsvDataConverter.EscapeCsv(SqliteCsvDataConverter.ToCsvValue(value), _CSV_SEPERATOR));
+                        }
+
+                        if (tS.IsCodetableTable && !tS.IsCodetableTabd)
+                        {
+                            int indexExprt = columns.Keys.ToList().IndexOf("EXPRT");
+                            bool exprtEnabled = values[indexExprt].Equals("1");
+
+                            if (!exprtEnabled) continue;
+                        }
+                        if (tS.IsCodetableTabd)
+                        {
+                            int indexTxtyp = columns.Keys.ToList().IndexOf("TXTYP");
+                            string txtyp = values[indexTxtyp];
+
+                            TXCTABH txctabh = new TXCTABH();
+                            T1CTABH? t1ctabh = txctabh.Read(txtyp);
+
+                            if (t1ctabh is null) continue;
+                            if (!t1ctabh.EXPRT) continue;
                         }
 
                         csvLines.Add(String.Join(_CSV_SEPERATOR, values));
@@ -119,20 +139,6 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     return;
 
                 CopyDirectory(sourceDirectoryPath, destinationDirectoryPath);
-            }
-
-            private static void CopyDirectory(string sourceDirectoryPath, string destinationDirectoryPath)
-            {
-                if (!Directory.Exists(sourceDirectoryPath)) return;
-
-                List<string> filePaths = Directory.GetFiles(sourceDirectoryPath, "*", SearchOption.TopDirectoryOnly).ToList();
-
-                Parallel.ForEach(filePaths, filePath =>
-                {
-                    FileInfo fileInfo = new FileInfo(filePath);
-                    string newPath = Path.Combine(destinationDirectoryPath, fileInfo.Name);
-                    File.Copy(fileInfo.FullName, newPath, true);
-                });
             }
 
 #if DEBUG

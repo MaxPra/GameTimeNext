@@ -4,6 +4,7 @@ using System.Data.SQLite;
 using System.IO;
 using System.Text;
 using UIX.ViewController.Engine.Querying;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Framework.DataBase.Migration
 {
@@ -16,12 +17,12 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 MigrateTables(type, connection, MigrationActionType.CREATE);
             }
 
-            public static void MigrateTables(ImportType type)
+            public static void MigrateTables(ImportType type, string? importDirectoryPathOverride = null)
             {
-                MigrateTables(type, null, null);
+                MigrateTables(type, null, null, importDirectoryPathOverride: importDirectoryPathOverride);
             }
 
-            private static void MigrateTables(ImportType type, SQLiteConnection? connection, MigrationActionType? overrideActionType)
+            private static void MigrateTables(ImportType type, SQLiteConnection? connection, MigrationActionType? overrideActionType, string? importDirectoryPathOverride = null)
             {
                 if (type.Equals(ImportType.DevSync) && !FnSystem.IsDebug()) return;
 
@@ -31,7 +32,10 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     sourceDirectoryPath = AppConfig.Dev.DevSyncDirectoryPath;
                 else if (type.Equals(ImportType.ImportPackages))
                 {
-                    throw new NotImplementedException();
+                    if (FnString.IsNullEmptyOrWhitespace(importDirectoryPathOverride))
+                        throw new ArgumentException("Inpuit directory path cannot be null or empty for ImportPackages export type.");
+
+                    sourceDirectoryPath = importDirectoryPathOverride!;
                 }
                 else
                     throw new NotImplementedException();
@@ -64,6 +68,9 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 // Import other tables data
                 foreach (string filePath in filePathsNotMetadata)
                     ImportFromCsv(connection, filePath);
+
+                // Import imagesAndSymbols
+                ImportDefaultFiles(sourceDirectoryPath);
             }
 
             public static void CopyDataToTargetDb(SQLiteConnection oldDb, SQLiteConnection newDb)
@@ -152,6 +159,14 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
             {
                 FileInfo fileInfo = new FileInfo(filePath);
                 return File.ReadAllLines(filePath, Encoding.UTF8).Select(l => l.Split(ToCsv._CSV_SEPERATOR).ToList()).ToList();
+            }
+
+            private static void ImportDefaultFiles(string sourceDirectoryPath)
+            {
+                string actualSourceDirectoryPath = AppConfig.Dev.GetImagesAndSymbolsDirectoryPath(sourceDirectoryPath);
+                string actualTargetDirectoryPath = AppConfig.Storage.DefaultImagesSymbolsDirectoryPath;
+
+                CopyDirectory(actualSourceDirectoryPath, actualTargetDirectoryPath);
             }
         }
     }

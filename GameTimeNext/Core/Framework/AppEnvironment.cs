@@ -5,7 +5,6 @@ using GameTimeNext.Core.Application.Settings;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.DataBase;
-using GameTimeNext.Core.Framework.DataBase.Import;
 using GameTimeNext.Core.Framework.DataBase.Migration;
 using GameTimeNext.Core.Framework.Files;
 using GameTimeNext.Core.Framework.UI.Dialogs;
@@ -106,7 +105,7 @@ namespace GameTimeNext.Core.Framework
 
             CheckShowChangeLog();
 
-            DataBaseImporter.Import();
+            MigrationFactory.ImportPackage.ImportPackages();
 
             MigrationFactory.FromCsv.MigrateTables(MigrationFactory.ImportType.DevSync);
 

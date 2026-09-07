@@ -1,21 +1,27 @@
-﻿namespace GameTimeNext.Core.Framework.DataBase.Migration
+﻿using System.IO;
+
+namespace GameTimeNext.Core.Framework.DataBase.Migration
 {
     internal static partial class MigrationFactory
     {
-        // OFDOI: MigrationFactory
-        // Store current schema in a file (maybe in DevSync directory)
-        // Methods for:
-        //   - Autogenerating new CreateDB-SQL
-        //   - Autogenerating new Migration-SQLs
-        //   - Applying changes from DevSync the same way, it gets applied while migrating (use same methods -> centralized)
-        // Attention:
-        //   - Maybe add default values in Metadata (true/false required for bools)
-        //   - When done, move into UIX Library (Utils)
-
         private const string _SQL_TRANSACTION_BEGIN = "BEGIN TRANSACTION;";
         private const string _SQL_TRANSACTION_COMMIT = "COMMIT;";
         private const string _SQL_TRANSACTION_ROLLBACK = "ROLLBACK;";
         private const string _SQL_PRIMARYKEY_OFF = "PRAGMA foreign_keys = OFF;";
         private const string _SQL_PRIMARYKEY_ON = "PRAGMA foreign_keys = ON;";
+
+        private static void CopyDirectory(string sourceDirectoryPath, string destinationDirectoryPath)
+        {
+            if (!Directory.Exists(sourceDirectoryPath)) return;
+
+            List<string> filePaths = Directory.GetFiles(sourceDirectoryPath, "*", SearchOption.TopDirectoryOnly).ToList();
+
+            Parallel.ForEach(filePaths, filePath =>
+            {
+                FileInfo fileInfo = new FileInfo(filePath);
+                string newPath = Path.Combine(destinationDirectoryPath, fileInfo.Name);
+                File.Copy(fileInfo.FullName, newPath, true);
+            });
+        }
     }
 }

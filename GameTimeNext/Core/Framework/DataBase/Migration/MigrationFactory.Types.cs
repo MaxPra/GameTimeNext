@@ -26,6 +26,11 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
             {
                 get => "T1CTABH".Equals(MENAM, StringComparison.OrdinalIgnoreCase) || "T1CTABD".Equals(MENAM, StringComparison.OrdinalIgnoreCase);
             }
+
+            public bool IsCodetableTabd
+            {
+                get => "T1CTABD".Equals(MENAM, StringComparison.OrdinalIgnoreCase);
+            }
             #endregion
 
             public TableSchema(string menam)
