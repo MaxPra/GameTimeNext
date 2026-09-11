@@ -207,12 +207,14 @@
                             Grid.Column="0"
                             VerticalAlignment="Center"
                             HorizontalAlignment="Left"
+                            uixprops:UIXAttachedProperty.Path="T1METAP.DEFAK"
                             Content="Active" />
                         <CheckBox
                             x:Name="chbDefaultBool"
                             Grid.Column="2"
                             VerticalAlignment="Center"
                             HorizontalAlignment="Left"
+                            uixprops:UIXAttachedProperty.Path="T1METAP.DEFVL"
                             Content="Value" />
                         <TextBox
                             x:Name="txbDefault"
@@ -220,8 +222,8 @@
                             Width="300"
                             Height="36"
                             HorizontalAlignment="Left"
-                            VerticalContentAlignment="Center" />
-                        <!-- OFDOI: uixprops:UIXAttachedProperty.Path="T1METAP.DALEN" /> -->
+                            VerticalContentAlignment="Center"
+                            uixprops:UIXAttachedProperty.Path="T1METAP.DALEN" /> 
                         <!-- OFDOI: Fix some visibility stuff /> -->
                     </Grid>
                 </Grid>

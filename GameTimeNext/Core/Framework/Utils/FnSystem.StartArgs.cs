@@ -4,6 +4,11 @@ namespace GameTimeNext.Core.Framework.Utils
 {
     public partial class FnSystem
     {
+        // Possible start arguments:
+        // -m <modi_key> : Start the application with a specific modi key.
+        // -minimized : Start the application minimized.
+        // --force-metadata-migration : Force the application to perform metadata migration on startup.
+
         public static void ParseStartArguments(string[] args)
         {
             Dictionary<string, string?> retValue = new Dictionary<string, string?>();

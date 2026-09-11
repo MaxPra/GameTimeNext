@@ -205,8 +205,8 @@ namespace GameTimeNext.Core.Application.Metadata.Data
                 "CRAT = @CRAT, " +
                 "CRUS = @CRUS, " +
                 "CHAT = @CHAT, " +
-                "CHUS = @CHUS " +
-                "DEFAK = @DEFAK " +
+                "CHUS = @CHUS, " +
+                "DEFAK = @DEFAK, " +
                 "DEFVL = @DEFVL " +
                 "WHERE MENAM = @MENAM AND PONAM = @PONAM;";
 
@@ -244,7 +244,7 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             cmd.Parameters.AddWithValue("@CRUS", obj.CRUS);
             cmd.Parameters.AddWithValue("@CHAT", ToDbDateTime(obj.CHAT));
             cmd.Parameters.AddWithValue("@CHUS", obj.CHUS);
-            cmd.Parameters.AddWithValue("@DEFAK", obj.DEFAK);
+            cmd.Parameters.AddWithValue("@DEFAK", obj.DEFAK ? 1 : 0);
             cmd.Parameters.AddWithValue("@DEFVL", obj.DEFVL);
         }
 

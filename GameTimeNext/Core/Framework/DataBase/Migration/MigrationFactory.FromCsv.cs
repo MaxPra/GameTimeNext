@@ -14,17 +14,21 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
         {
             public static void CreateTables(ImportType type, SQLiteConnection connection)
             {
+                LogInfo($"Running (ImportType: \"{type.ToString()}\")...", subSystem: "FromCsv", method: "CreateTables");
                 MigrateTables(type, connection, MigrationActionType.CREATE);
             }
 
             public static void MigrateTables(ImportType type, string? importDirectoryPathOverride = null)
             {
+                LogInfo($"Running (ImportType: \"{type.ToString()}\")...", subSystem: "FromCsv", method: "MigrateTables");
                 MigrateTables(type, null, null, importDirectoryPathOverride: importDirectoryPathOverride);
             }
 
             private static void MigrateTables(ImportType type, SQLiteConnection? connection, MigrationActionType? overrideActionType, string? importDirectoryPathOverride = null)
             {
                 if (type.Equals(ImportType.DevSync) && !FnSystem.IsDebug()) return;
+
+                // OFDO: Continue Logging
 
                 // Determine the source directory path based on the import type
                 string sourceDirectoryPath;

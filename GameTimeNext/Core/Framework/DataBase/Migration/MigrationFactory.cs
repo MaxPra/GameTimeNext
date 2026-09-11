@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using GameTimeNext.Core.Framework.Logging;
+using System.IO;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Framework.DataBase.Migration
 {
@@ -14,6 +16,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
         {
             if (!Directory.Exists(sourceDirectoryPath)) return;
 
+            LogInfo($"Copying files from \"{sourceDirectoryPath}\" to \"{destinationDirectoryPath}\"...");
             List<string> filePaths = Directory.GetFiles(sourceDirectoryPath, "*", SearchOption.TopDirectoryOnly).ToList();
 
             Parallel.ForEach(filePaths, filePath =>
@@ -22,6 +25,31 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 string newPath = Path.Combine(destinationDirectoryPath, fileInfo.Name);
                 File.Copy(fileInfo.FullName, newPath, true);
             });
+        }
+
+        private static void LogInfo(string message, string? subSystem = null, string? method = null)
+            => FnLog.AddInfo("MigrationFactory", BuildLogMessage(message, subSystem, method));
+
+        private static void LogError(string message, Exception? exception = null, string? subSystem = null, string? method = null)
+            => FnLog.AddError("MigrationFactory", BuildLogMessage(message, subSystem, method), exception: exception);
+
+        private static string BuildLogMessage(string message, string? subSystem, string? method)
+        {
+            string temp = string.Empty;
+
+            if (!FnString.IsNullEmptyOrWhitespace(subSystem) || !FnString.IsNullEmptyOrWhitespace(method))
+            {
+                temp += "[";
+
+                if (!FnString.IsNullEmptyOrWhitespace(subSystem)) temp += subSystem;
+                if (!FnString.IsNullEmptyOrWhitespace(subSystem) && !FnString.IsNullEmptyOrWhitespace(method)) temp += ".";
+                if (!FnString.IsNullEmptyOrWhitespace(method)) temp += $"{method}()";
+
+                temp += "] ";
+            }
+
+            temp += message;
+            return temp;
         }
     }
 }

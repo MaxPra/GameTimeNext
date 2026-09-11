@@ -106,7 +106,6 @@ namespace GameTimeNext.Core.Framework
             CheckShowChangeLog();
 
             MigrationFactory.ImportPackage.ImportPackages();
-
             MigrationFactory.FromCsv.MigrateTables(MigrationFactory.ImportType.DevSync);
 
             MigrationManager.Migrate();

@@ -93,6 +93,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
             {
                 FileInfo packageFileInfo = new FileInfo(packageFilePath);
                 string tempDirectoryName = packageFileInfo.Name.Split('.').SkipLast(1).Last();
+                LogInfo($"Importing ImportPackage \"{tempDirectoryName}\"...", subSystem: "ImportPackage", method: "ImportSinglePackage");
                 string tempDirectoryPath = Path.Combine(AppConfig.Temp.ImportDirectoryPath, tempDirectoryName);
                 if (!Directory.Exists(tempDirectoryPath))
                     Directory.CreateDirectory(tempDirectoryPath);
@@ -111,6 +112,8 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
 
                 if (File.Exists(packageFilePath))
                     File.Delete(packageFilePath);
+
+                LogInfo($"ImportPackage \"{tempDirectoryName}\" done.", subSystem: "ImportPackage", method: "ImportSinglePackage");
             }
         }
     }

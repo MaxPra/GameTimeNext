@@ -1,4 +1,5 @@
 ﻿using GameTimeNext.Core.Application.Metadata.Data;
+using GameTimeNext.Core.Framework.Utils;
 using System.Collections.ObjectModel;
 using System.Data.SQLite;
 using System.Globalization;
@@ -30,6 +31,11 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
             public bool IsCodetableTabd
             {
                 get => "T1CTABD".Equals(MENAM, StringComparison.OrdinalIgnoreCase);
+            }
+
+            public bool IsMetadataTable
+            {
+                get => MENAM.StartsWith("T1META");
             }
             #endregion
 
@@ -64,11 +70,16 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
             /// <returns>e.g.: col1, col2, col3, ...</returns>
             public string GetColumnNamesForSql(TableSchema? filteringSchema)
             {
-                List<ColumnSchema> filteredColumns = Columns.ToList();
-                if (filteringSchema is not null)
-                    filteredColumns = Columns.Where(c => filteringSchema.Columns.Where(fC => fC.PONAM.Equals(c.PONAM)).SingleOrDefault() is not null).ToList();
+                List<ColumnSchema> filteredColumns = GetFilteredColumns(filteringSchema);
 
                 return String.Join(", ", filteredColumns.Select(c => c.PONAM));
+            }
+
+            public string GetColumnNamesWithCoalesceForSql(TableSchema? filteringSchema)
+            {
+                List<ColumnSchema> filteredColumns = GetFilteredColumns(filteringSchema);
+
+                return String.Join(", ", filteredColumns.Select(c => $"COALESCE({c.PONAM}, {c.GetDefaultValue()})"));
             }
 
             public string GetSql_Create()
@@ -115,8 +126,19 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
             public string GetSql_InsertInto(TableSchema sourceSchema)
             {
                 string columnNames = sourceSchema.GetColumnNamesForSql(this);
+                string columnNamesWithCoalesce = sourceSchema.GetColumnNamesWithCoalesceForSql(this);
 
-                return $"INSERT INTO {MENAM} ({columnNames}) SELECT {columnNames} FROM {sourceSchema.MENAM};";
+                return $"INSERT INTO {MENAM} ({columnNames}) SELECT {columnNamesWithCoalesce} FROM {sourceSchema.MENAM};";
+            }
+            #endregion
+
+            #region Methods PRIVATE
+            private List<ColumnSchema> GetFilteredColumns(TableSchema? filteringSchema)
+            {
+                if (filteringSchema is not null)
+                    return Columns.Where(c => filteringSchema.Columns.Where(fC => fC.PONAM.Equals(c.PONAM)).SingleOrDefault() is not null).ToList();
+
+                return Columns.ToList();
             }
             #endregion
         }
@@ -139,9 +161,11 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
             public bool DEFAK { get; }
 
             public string DEFVL { get; }
+
+            public string? CHAT { get; }
             #endregion
 
-            public ColumnSchema(string ponam, string datyp, int dalen, int porde, bool primk, bool autoi, bool defak = false, string defvl = "")
+            public ColumnSchema(string ponam, string datyp, int dalen, int porde, bool primk, bool autoi, bool defak = false, string defvl = "", string? chat = null)
             {
                 PONAM = ponam;
                 DATYP = SqliteDataType.GetByKey(datyp);
@@ -151,6 +175,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 AUTOI = autoi;
                 DEFAK = defak;
                 DEFVL = defvl;
+                CHAT = chat;
             }
 
             #region Methods PUBLIC
@@ -159,14 +184,14 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 List<string> parts = new List<string>()
                 {
                     PONAM,
-                    DATYP.GetSqliteType(DALEN)
+                    DATYP.GetSqliteType(DALEN),
+                    "NOT NULL"
                 };
 
                 if (PRIMK && countPk == 1) parts.Add("PRIMARY KEY");
                 if (AUTOI && countPk <= 1) parts.Add("AUTOINCREMENT");
 
-                // OFDOI: Add defaults
-                if (DATYP.Equals("06")) parts.Add("DEFAULT '0'");
+                parts.Add($"DEFAULT {GetDefaultValue()}");
 
                 return String.Join(' ', parts);
             }
@@ -186,6 +211,32 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 };
 
                 return String.Join(";", parts);
+            }
+
+            public string GetDefaultValue()
+            {
+                if (DEFAK)
+                {
+                    // Default set by Metadata
+                    string valueString = DEFVL;
+
+                    if (DATYP.Key.Equals("06")) valueString = (DEFVL.ToLowerInvariant() == "true" ? "1" : "0");
+
+                    return $"'{valueString}'";
+                }
+                else
+                {
+                    // Default not set -> Fallback
+                    if (DATYP.Key.Equals("01")) return "''";
+                    if (DATYP.Key.Equals("02")) return "0";
+                    if (DATYP.Key.Equals("03")) return "0";
+                    if (DATYP.Key.Equals("04")) return "0";
+                    if (DATYP.Key.Equals("05")) return "'1900-01-01 00:00:00'";
+                    if (DATYP.Key.Equals("06")) return "'0'";
+                    if (DATYP.Key.Equals("07")) return "''";
+                }
+
+                throw new NotImplementedException($"Not default value implemented for SqliteDataType with Key \"{DATYP.Key}\".");
             }
             #endregion
 
@@ -221,6 +272,17 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     string columnDefinitionBefore = String.Join(';', SchemaBefore.Columns.Select(c => c.ToCsvString())).ToLowerInvariant();
                     if (!columnDefinitionAfter.Equals(columnDefinitionBefore)) return true;
 
+                    // Check CHAT as last indicator of change
+                    if (!SchemaAfter.IsMetadataTable)
+                    {
+                        string chatsBefore = String.Join(';', SchemaBefore.Columns.Select(c => c.CHAT));
+                        string chatsAfter = String.Join(';', SchemaAfter.Columns.Select(c => c.CHAT));
+                        if (!chatsAfter.Equals(chatsBefore)) return true;
+                    }
+
+                    // In debug-mode always
+                    if (FnSystem.IsDebug()) return true;
+
                     return false;
                 }
             }
@@ -236,6 +298,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
             #region Methods PUBLIC
             public bool Migrate(SQLiteConnection connection)
             {
+                LogInfo($"Migrating {(SchemaBefore ?? SchemaAfter)!.MENAM} ({Type.ToString()})...", subSystem: "MigrationAction", method: "Migrate");
                 UIXQuery.ExecuteCustom(_SQL_PRIMARYKEY_OFF, connection);
                 UIXQuery.ExecuteCustom(_SQL_TRANSACTION_BEGIN, connection);
 
@@ -260,10 +323,12 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     }
 
                     UIXQuery.ExecuteCustom(_SQL_TRANSACTION_COMMIT, connection);
+                    LogInfo($"Migrated {(SchemaBefore ?? SchemaAfter)!.MENAM} ({Type.ToString()})...", subSystem: "MigrationAction", method: "Migrate");
                 }
-                catch
+                catch (Exception ex)
                 {
                     UIXQuery.ExecuteCustom(_SQL_TRANSACTION_ROLLBACK, connection);
+                    LogError($"Migration failed for {(SchemaBefore ?? SchemaAfter)!.MENAM} ({Type.ToString()})...", exception: ex, subSystem: "MigrationAction", method: "Migrate");
                     return false;
                 }
                 finally
@@ -448,7 +513,8 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                             t1metap.PRIMK,
                             t1metap.AUTOI,
                             defak: t1metap.DEFAK,
-                            defvl: t1metap.DEFVL
+                            defvl: t1metap.DEFVL,
+                            chat: SqliteCsvDataConverter.DateToCsv(t1metap.CHAT)
                         ));
                     }
 
@@ -460,7 +526,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
 
             public static List<TableSchema> GenerateFromActualDatabase(SQLiteConnection connection)
             {
-                // OFDOI: parse CREATE statement instead of PRAGMA table_info
+                // OFDO: parse CREATE statement instead of PRAGMA table_info
 
                 List<string> tableNames = new List<string>();
                 using (var reader = UIXQuery.QueryCustom("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;", connection))
@@ -521,13 +587,13 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 // NOTHING, ALTER & DROP
                 tableSchemasBefore.ForEach(tS =>
                 {
-                    if (metadata)
+                    if (metadata && !tS.IsMetadataTable)
                     {
-                        if (!tS.MENAM.Equals("T1METAH") && !tS.MENAM.Equals("T1METAP")) return;
+                        return;
                     }
-                    else
+                    else if (!metadata && tS.IsMetadataTable)
                     {
-                        if (tS.MENAM.Equals("T1METAH") || tS.MENAM.Equals("T1METAP")) return;
+                        return;
                     }
 
                     MigrationAction? existingAction = actions.GetValueOrDefault(tS.MENAM);
@@ -554,6 +620,8 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
 
         private static class SqliteCsvDataConverter
         {
+            private static string _CSVFORMAT_DATE = "yyyy-MM-dd HH:mm:ss";
+
             public static string DateToCsv(string value)
             {
                 DateTimeStyles styles = DateTimeStyles.AllowWhiteSpaces;
@@ -569,9 +637,14 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 };
 
                 if (DateTime.TryParseExact(value, formats, CultureInfo.InvariantCulture, styles, out DateTime exactResult) || DateTime.TryParse(value, CultureInfo.InvariantCulture, styles, out exactResult))
-                    return exactResult.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+                    return exactResult.ToString(_CSVFORMAT_DATE, CultureInfo.InvariantCulture);
 
                 return value;
+            }
+
+            public static string DateToCsv(DateTime dateTime)
+            {
+                return dateTime.ToString(_CSVFORMAT_DATE, CultureInfo.InvariantCulture);
             }
 
             public static string EscapeCsv(string value, char separator)
