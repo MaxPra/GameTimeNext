@@ -1,5 +1,6 @@
 using GameTimeNext.Core.Application.Codetables.Views;
 using GameTimeNext.Core.Application.DataManagers;
+using GameTimeNext.Core.Framework.Utils;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -67,19 +68,18 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
         protected override void Check()
         {
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().TxbTextType.Text))
-                AddViewError(GetWnd().TxbTextType, "Text Type must not be empty.");
+                AddViewError(GetWnd().TxbTextType, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Text type"));
+            if (GetWnd().TxbTextType.Text.Length > 2)
+                AddViewError(GetWnd().TxbTextType, FnErrorMessage.ErrorMessage.CannotExceedChars.GetMessage("Text type", "2"));
 
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().TxbDescription.Text))
-                AddViewError(GetWnd().TxbDescription, "Description must not be empty.");
+                AddViewError(GetWnd().TxbDescription, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Description"));
 
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().CmbPermission.SelectedValue.ToString()!))
-                AddViewError(GetWnd().CmbPermission, "Permission must be selected.");
+                AddViewError(GetWnd().CmbPermission, FnErrorMessage.ErrorMessage.MustBeSelected.GetMessage("Permission"));
 
             if (GetWnd().TxbDescription.Text.Length > 200)
-                AddViewError(GetWnd().TxbDescription, "Description must not be longer than 200 characters.");
-
-            if (GetWnd().TxbTextType.Text.Length > 2)
-                AddViewError(GetWnd().TxbTextType, "Text Type must not be longer than 2 characters.");
+                AddViewError(GetWnd().TxbDescription, FnErrorMessage.ErrorMessage.CannotExceedChars.GetMessage("Description", "200"));
         }
 
         protected override void FillViewImpl()

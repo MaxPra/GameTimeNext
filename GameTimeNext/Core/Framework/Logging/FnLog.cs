@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using GameTimeNext.Core.Framework.Utils;
+using System.IO;
 using UIX.ViewController.Engine.Runnables;
 
 namespace GameTimeNext.Core.Framework.Logging
@@ -18,7 +19,7 @@ namespace GameTimeNext.Core.Framework.Logging
         public static void Configure(string logFilePath)
         {
             if (string.IsNullOrWhiteSpace(logFilePath))
-                throw new ArgumentException("Log file path cannot be empty.", nameof(logFilePath));
+                throw new ArgumentException(FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Log file path"), nameof(logFilePath));
 
             _logFilePath = logFilePath;
         }
@@ -38,7 +39,7 @@ namespace GameTimeNext.Core.Framework.Logging
                 throw new InvalidOperationException("FnLog is not configured. Call Configure(...) first.");
 
             if (string.IsNullOrWhiteSpace(message))
-                throw new ArgumentException("Message cannot be empty.", nameof(message));
+                throw new ArgumentException(FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Message"), nameof(message));
 
             string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             string? sourceName = GetSourceName(source);

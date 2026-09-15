@@ -239,9 +239,6 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 throw new NotImplementedException($"Not default value implemented for SqliteDataType with Key \"{DATYP.Key}\".");
             }
             #endregion
-
-            #region Methods PRIVATE
-            #endregion
         }
 
         private class MigrationAction
@@ -338,9 +335,6 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
 
                 return true;
             }
-            #endregion
-
-            #region Methods PRIVATE
             #endregion
         }
 

@@ -33,7 +33,7 @@ namespace GameTimeNext.Core.Application.CreateImportPackage.Controller
         protected override void Check()
         {
             if (FnString.IsNullEmptyOrWhitespace(GetView().TxbOutputPath.Text))
-                AddViewError(GetView().TxbOutputPath, "Output path cannot be empty.");
+                AddViewError(GetView().TxbOutputPath, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Output path"));
         }
 
         protected override void DataWrapperSelectionChangedImpl(Selector source)

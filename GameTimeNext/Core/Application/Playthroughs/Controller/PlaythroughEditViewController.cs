@@ -1,6 +1,7 @@
 using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Playthroughs.Views;
 using GameTimeNext.Core.Application.TableObjects;
+using GameTimeNext.Core.Framework.Utils;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -58,10 +59,10 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
         protected override void Check()
         {
             if (FnString.IsNullEmptyOrWhitespace(GetView().txbDescription.Text))
-                AddViewError(GetView().txbDescription, "Invalid input: description has to be specified.");
+                AddViewError(GetView().txbDescription, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Description"));
 
             if (FnString.IsNullEmptyOrWhitespace(GetView().cmbType.SelectedValue?.ToString()!))
-                AddViewError(GetView().cmbType, "Invalid input: type has to be specified.");
+                AddViewError(GetView().cmbType, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Type"));
         }
 
         protected override void DataWrapperSelectionChangedImpl(Selector source)

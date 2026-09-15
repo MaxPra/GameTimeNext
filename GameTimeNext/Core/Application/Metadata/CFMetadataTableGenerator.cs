@@ -5,6 +5,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Metadata
 {
+    // OFDOI: Migrate CFMetadataTableGenerator to MigrationFactory
     public sealed class CFMetadataTableGenerator
     {
         public sealed class TableGenerationResult

@@ -223,8 +223,8 @@
                             Height="36"
                             HorizontalAlignment="Left"
                             VerticalContentAlignment="Center"
-                            uixprops:UIXAttachedProperty.Path="T1METAP.DALEN" /> 
-                        <!-- OFDOI: Fix some visibility stuff /> -->
+                            uixprops:UIXAttachedProperty.Path="T1METAP.DEFVL" />
+                        <!--OFDOI: Both fields reference same BO field. How do i do that? Maybe manual?-->
                     </Grid>
                 </Grid>
             </Grid>

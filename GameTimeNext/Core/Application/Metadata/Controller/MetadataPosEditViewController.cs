@@ -1,5 +1,6 @@
 using GameTimeNext.Core.Application.Metadata.Data;
 using GameTimeNext.Core.Application.Metadata.Views;
+using GameTimeNext.Core.Framework.Utils;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
@@ -11,6 +12,9 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 {
     public class MetadataPosEditViewController : UIXViewControllerBase
     {
+        private static readonly string[] DATATYPES_WITH_DEFAULT = ["01", "02", "03", "04", "06"]; // OFDOI: IsDefaultAllowed auf SqliteDataType statt hier
+        private static readonly string[] DATATYPES_NUMERIC = ["02", "03", "04"]; // OFDOI: IsNumeric auf SqliteDataType statt hier
+
         public MetadataPosEditViewController(UIXApplication app) : base(app)
         {
         }
@@ -83,16 +87,18 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
         {
             string selectedDataType = GetWnd().cmbDataType.SelectedValue?.ToString() ?? string.Empty;
 
-            string[] allowedDatatypes = ["01", "06"];
-            bool showForDatatype = allowedDatatypes.Contains(selectedDataType);
+            //MigrationFactory.SqliteDataType dataType = MigrationFactory.SqliteDataType.GetByKey(selectedDataType);
+            //dataType.IsNumeric
+
+            bool datatypeWithDefault = DATATYPES_WITH_DEFAULT.Contains(selectedDataType);
             bool isActive = GetWnd().chbDefault.IsChecked ?? false;
 
-            FnControls.SetVisible(GetWnd().lblDefault, showForDatatype);
-            FnControls.SetVisible(GetWnd().chbDefault, showForDatatype);
-            FnControls.SetVisible(GetWnd().chbDefaultBool, showForDatatype && isActive && "06".Equals(selectedDataType));
-            FnControls.SetVisible(GetWnd().txbDefault, showForDatatype && isActive && !"06".Equals(selectedDataType));
+            FnControls.SetVisible(GetWnd().lblDefault, datatypeWithDefault);
+            FnControls.SetVisible(GetWnd().chbDefault, datatypeWithDefault);
+            FnControls.SetVisible(GetWnd().chbDefaultBool, datatypeWithDefault && isActive && "06".Equals(selectedDataType));
+            FnControls.SetVisible(GetWnd().txbDefault, datatypeWithDefault && isActive && !"06".Equals(selectedDataType));
 
-            if (!showForDatatype)
+            if (!datatypeWithDefault)
             {
                 GetWnd().chbDefault.IsChecked = false;
                 GetWnd().chbDefaultBool.IsChecked = false;
@@ -103,21 +109,33 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
         protected override void Check()
         {
             string selectedDataType = GetWnd().cmbDataType.SelectedValue?.ToString() ?? string.Empty;
+            bool datatypeWithDefault = DATATYPES_WITH_DEFAULT.Contains(selectedDataType);
+            bool onlyNumeric = DATATYPES_NUMERIC.Contains(selectedDataType);
 
+            // Order
+            if (!FnControls.ContainsOnlyNumericValue(GetWnd().txbOrder))
+                AddViewError(GetWnd().txbOrder, FnErrorMessage.ErrorMessage.OnlyNumeric.GetMessage());
+
+            // Field
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().txbField.Text))
-                AddViewError(GetWnd().txbField, "Field name cannot be empty.");
+                AddViewError(GetWnd().txbField, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Field name"));
 
+            // Description
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().txbDescription.Text))
-                AddViewError(GetWnd().txbDescription, "Description cannot be empty.");
+                AddViewError(GetWnd().txbDescription, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Description"));
 
-            if (FnString.IsNullEmptyOrWhitespace(GetWnd().txbLength.Text) && "01".Equals(selectedDataType))
-                AddViewError(GetWnd().txbLength, "Length cannot be empty.");
-
+            // Datatype
             if (FnString.IsNullEmptyOrWhitespace(selectedDataType))
-                AddViewError(GetWnd().cmbDataType, "Data type cannot be empty.");
+                AddViewError(GetWnd().cmbDataType, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Data type"));
 
-            if (FnString.IsNullEmptyOrWhitespace(GetWnd().txbOrder.Text))
-                AddViewError(GetWnd().txbOrder, "Order cannot be empty.");
+            // Length
+            if (FnString.IsNullEmptyOrWhitespace(GetWnd().txbLength.Text) && "01".Equals(selectedDataType))
+                AddViewError(GetWnd().txbLength, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Length"));
+
+            // Default
+            if (datatypeWithDefault && onlyNumeric && GetWnd().chbDefault.IsChecked.Equals(true))
+                if (!FnControls.ContainsOnlyNumericValue(GetWnd().txbDefault))
+                    AddViewError(GetWnd().txbDefault, FnErrorMessage.ErrorMessage.OnlyNumeric.GetMessage());
         }
 
         protected override void FillViewImpl()

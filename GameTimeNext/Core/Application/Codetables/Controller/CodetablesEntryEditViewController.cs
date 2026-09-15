@@ -232,18 +232,13 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().TxbTextNumber.Text))
             {
-                AddViewError(GetWnd().TxbTextNumber, "Text Number is required.");
+                AddViewError(GetWnd().TxbTextNumber, FnErrorMessage.ErrorMessage.IsRequired.GetMessage("Text number"));
             }
 
             if (GetWnd().TxbTextNumber.Text.StartsWith("D_") && !FnSystem.IsDebug() && t1ctabh!.NRANA)
             {
-                AddViewError(GetWnd().TxbTextNumber, "Text Number must not start with D_ (only for developer-entrys)");
+                AddViewError(GetWnd().TxbTextNumber, FnErrorMessage.ErrorMessage.IsRequired.GetMessage("Text number", "_D", "only for deverloper-entries"));
             }
-
-            //if (!GetWnd().TxbTextNumber.Text.StartsWith("D_") && FnSystem.IsDebug() && t1ctabh!.NRANA)
-            //{
-            //    AddViewError(GetWnd().TxbTextNumber, "Text Number must start with D_");
-            //}
         }
 
         /// <summary>
@@ -281,7 +276,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
                 if (FnString.IsNullEmptyOrWhitespace(value))
                 {
-                    AddViewError(paramControl.Control!, "This Parameter is required.");
+                    AddViewError(paramControl.Control!, FnErrorMessage.ErrorMessage.IsRequired.GetMessage("Parameter"));
                 }
             }
         }

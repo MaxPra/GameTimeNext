@@ -113,23 +113,23 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
             // Profile Name
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().txbProfileName.Text))
-                AddViewError(GetWnd().txbProfileName, "Invalid input: Profile name");
+                AddViewError(GetWnd().txbProfileName, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Profile name"));
 
             // Cover
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().txbImagePath.Text))
-                AddViewError(GetWnd().txbImagePath, "Invalid input: Profile cover");
+                AddViewError(GetWnd().txbImagePath, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Profile cover"));
 
             // Accent Colors
             if (GetWnd().cbUseProfileAccentColors.IsChecked == true
                 && (GetWnd().tglAccent1.IsChecked == false && GetWnd().tglAccent2.IsChecked == false && GetWnd().tglAccent3.IsChecked == false))
-                AddViewError(GetWnd().cbUseProfileAccentColors, "Invalid input: Accent colors are enabled, but no color was specified.");
+                AddViewError(GetWnd().cbUseProfileAccentColors, FnErrorMessage.ErrorMessage.MustBeSelected.GetMessage("An accent color"));
 
             if (GetWnd().cbUseProfileAccentColors.IsChecked == false
                 && (GetWnd().tglAccent1.IsChecked == true || GetWnd().tglAccent2.IsChecked == true || GetWnd().tglAccent3.IsChecked == true))
-                AddViewError(GetWnd().cbUseProfileAccentColors, "Invalid input: Accent colors are disabled, but a color was specified.");
+                AddViewError(GetWnd().cbUseProfileAccentColors, FnErrorMessage.ErrorMessage.GetCustomMessage("Accent colors are disabled, but a color was specified."));
 
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().cmbPlatform.SelectedValue.ToString()!))
-                AddViewError(GetWnd().cmbPlatform, "Invalid input: Platform is required.");
+                AddViewError(GetWnd().cmbPlatform, FnErrorMessage.ErrorMessage.IsRequired.GetMessage("Platform"));
         }
 
         protected override void DataWrapperSelectionChangedImpl(Selector source)

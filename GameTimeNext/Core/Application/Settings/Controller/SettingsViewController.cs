@@ -92,12 +92,12 @@ namespace GameTimeNext.Core.Application.Settings.Controller
         {
             if (!FnControls.ContainsOnlyNumericValue(GetView().txbBreakReminderHours))
             {
-                AddViewError(GetView().txbBreakReminderHours, "Only numeric values allowed!");
+                AddViewError(GetView().txbBreakReminderHours, FnErrorMessage.ErrorMessage.OnlyNumeric.GetMessage());
             }
 
             if (!FnControls.ContainsOnlyNumericValue(GetView().txbSessionCleanupSeconds))
             {
-                AddViewError(GetView().txbSessionCleanupSeconds, "Only numeric values allowed!");
+                AddViewError(GetView().txbSessionCleanupSeconds, FnErrorMessage.ErrorMessage.OnlyNumeric.GetMessage());
             }
         }
 

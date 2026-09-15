@@ -5,6 +5,7 @@ using GameTimeNext.Core.Application.Profiles;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.UI.Dialogs;
+using GameTimeNext.Core.Framework.Utils;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -61,19 +62,19 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
         protected override void Check()
         {
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().TxbTableObject.Text))
-                AddViewError(GetWnd().TxbTableObject, "Table Object cannot be empty.");
+                AddViewError(GetWnd().TxbTableObject, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Table object"));
 
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().TxbDescription.Text))
-                AddViewError(GetWnd().TxbDescription, "Description cannot be empty.");
+                AddViewError(GetWnd().TxbDescription, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Description"));
 
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().CmbType.SelectedValue.ToString()!))
-                AddViewError(GetWnd().CmbType, "Type must be selected.");
+                AddViewError(GetWnd().CmbType, FnErrorMessage.ErrorMessage.MustBeSelected.GetMessage("Type"));
 
             if (GetWnd().TxbTableObject.Text.Length > 7)
-                AddViewError(GetWnd().TxbTableObject, "Table Object cannot exceed 7 characters.");
+                AddViewError(GetWnd().TxbTableObject, FnErrorMessage.ErrorMessage.CannotExceedChars.GetMessage("Table object", "7"));
 
             if (GetWnd().TxbDescription.Text.Length > 200)
-                AddViewError(GetWnd().TxbDescription, "Description cannot exceed 200 characters.");
+                AddViewError(GetWnd().TxbDescription, FnErrorMessage.ErrorMessage.CannotExceedChars.GetMessage("Description", "200"));
         }
 
         protected override void FillViewImpl()

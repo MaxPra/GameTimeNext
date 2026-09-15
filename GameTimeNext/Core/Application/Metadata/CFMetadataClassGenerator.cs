@@ -7,6 +7,7 @@ namespace GameTimeNext.Core.Application.Metadata
 {
     public sealed class CFMetadataClassGenerator
     {
+        // OFDOI: Migrate CFMetadataClassGenerator to MigrationFactory
         public void GenerateFor(T1METAH t1metah)
         {
             string projectRoot = ResolveProjectRoot();
