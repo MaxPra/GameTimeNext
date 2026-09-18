@@ -225,6 +225,7 @@
                             VerticalContentAlignment="Center"
                             uixprops:UIXAttachedProperty.Path="T1METAP.DEFVL" />
                         <!--OFDOI: Both fields reference same BO field. How do i do that? Maybe manual?-->
+                        <!--OFDOI: Automatically set Datatype to integer when Autoincrement active (and hide Datatype field)-->
                     </Grid>
                 </Grid>
             </Grid>

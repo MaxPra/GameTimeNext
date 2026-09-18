@@ -1,3 +1,5 @@
+using GameTimeNext.Core.Framework.DataBase.Migration;
+
 namespace GameTimeNext.Core.Application.Metadata.Data
 {
     public static class TFMETAH
@@ -18,13 +20,9 @@ namespace GameTimeNext.Core.Application.Metadata.Data
                 txmetap.Delete(pos.MENAM, pos.PONAM);
             }
 
-            if (deleteTable)
-            {
-                CFMetadataTableGenerator tableGenerator = new CFMetadataTableGenerator();
-                tableGenerator.DeleteTableFor(t1metah);
-            }
-
             new TXMETAH().Delete(t1metah.MENAM);
+
+            MigrationFactory.FromCsv.MigrateTables(MigrationFactory.ImportType.MetadataGenerator);
         }
     }
 }

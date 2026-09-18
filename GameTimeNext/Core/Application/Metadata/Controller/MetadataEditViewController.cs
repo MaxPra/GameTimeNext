@@ -4,6 +4,7 @@ using GameTimeNext.Core.Application.Metadata.Views;
 using GameTimeNext.Core.Application.Profiles;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Config;
+using GameTimeNext.Core.Framework.DataBase.Migration;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.Utils;
 using System.Windows;
@@ -323,8 +324,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
                     CFMetadataClassGenerator classGenerator = new CFMetadataClassGenerator();
                     classGenerator.GenerateFor(GetApp().T1METAH!, AppConfig.Dev.GenClassDirectoryPath);
 
-                    CFMetadataTableGenerator tableGenerator = new CFMetadataTableGenerator();
-                    tableGenerator.EnsureTableFor(GetApp().T1METAH!);
+                    MigrationFactory.FromCsv.MigrateTables(MigrationFactory.ImportType.MetadataGenerator);
                 });
 
                 GetApp().T1METAH!.GENER = true;

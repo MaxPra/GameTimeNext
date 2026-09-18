@@ -26,7 +26,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
 
             private static void MigrateTables(ImportType type, SQLiteConnection? connection, MigrationActionType? overrideActionType, string? importDirectoryPathOverride = null)
             {
-                if (type.Equals(ImportType.DevSync) && !FnSystem.IsDebug()) return;
+                if ((type.Equals(ImportType.DevSync) || type.Equals(ImportType.MetadataGenerator)) && !FnSystem.IsDebug()) return;
 
                 // OFDO: Continue Logging
 
@@ -41,14 +41,23 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
 
                     sourceDirectoryPath = importDirectoryPathOverride!;
                 }
+                else if (type.Equals(ImportType.MetadataGenerator))
+                    sourceDirectoryPath = string.Empty; // Not needed
                 else
                     throw new NotImplementedException();
 
                 // Get all CSV files paths in the source directory
-                List<string> filePaths = Directory.GetFiles(sourceDirectoryPath, "*.csv", SearchOption.TopDirectoryOnly).ToList();
-                string? filePathMetah = filePaths.Where(p => p.EndsWith("T1METAH.csv")).SingleOrDefault();
-                string? filePathMetap = filePaths.Where(p => p.EndsWith("T1METAP.csv")).SingleOrDefault();
-                List<string> filePathsNotMetadata = filePaths.Where(p => !p.EndsWith("T1METAP.csv") && !p.EndsWith("T1METAH.csv")).ToList();
+                List<string> filePaths = new List<string>();
+                string? filePathMetah = null;
+                string? filePathMetap = null;
+                List<string> filePathsNotMetadata = new List<string>();
+                if (!type.Equals(ImportType.MetadataGenerator))
+                {
+                    filePaths = Directory.GetFiles(sourceDirectoryPath, "*.csv", SearchOption.TopDirectoryOnly).ToList();
+                    filePathMetah = filePaths.Where(p => p.EndsWith("T1METAH.csv")).SingleOrDefault();
+                    filePathMetap = filePaths.Where(p => p.EndsWith("T1METAP.csv")).SingleOrDefault();
+                    filePathsNotMetadata = filePaths.Where(p => !p.EndsWith("T1METAP.csv") && !p.EndsWith("T1METAH.csv")).ToList();
+                }
 
                 if (connection is null)
                     connection = AppEnvironment.GetDataBaseManager().GetConnection();
@@ -56,25 +65,36 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 // Get the table schemas before importing new metadata
                 List<TableSchema> tableSchemasBeforeImport = new List<TableSchema>();
                 if (overrideActionType is null || !overrideActionType.Equals(MigrationActionType.CREATE))
-                    tableSchemasBeforeImport = SchemaGenerator.GenerateFromMetadata();
+                {
+                    if (type.Equals(ImportType.MetadataGenerator))
+                        tableSchemasBeforeImport = SchemaGenerator.GenerateFromActualDatabase(connection);
+                    else
+                        tableSchemasBeforeImport = SchemaGenerator.GenerateFromMetadata();
+                }
 
                 // Import matadata tables data first
-                if (filePathMetah is not null)
+                if (!type.Equals(ImportType.MetadataGenerator))
                 {
-                    ImportFromCsv(connection, filePathMetah);
-                    if (filePathMetap is not null)
-                        ImportFromCsv(connection, filePathMetap);
+                    if (filePathMetah is not null)
+                    {
+                        ImportFromCsv(connection, filePathMetah);
+                        if (filePathMetap is not null)
+                            ImportFromCsv(connection, filePathMetap);
+                    }
                 }
 
                 // Apply metadata changes to the database
                 MigrateTablesFromMetadata(connection, tableSchemasBeforeImport);
 
-                // Import other tables data
-                foreach (string filePath in filePathsNotMetadata)
+                if (!type.Equals(ImportType.MetadataGenerator))
+                {
+                    // Import other tables data
+                    foreach (string filePath in filePathsNotMetadata)
                     ImportFromCsv(connection, filePath);
 
-                // Import imagesAndSymbols
-                ImportDefaultFiles(sourceDirectoryPath);
+                    // Import imagesAndSymbols
+                    ImportDefaultFiles(sourceDirectoryPath);
+                }
             }
 
             public static void CopyDataToTargetDb(SQLiteConnection oldDb, SQLiteConnection newDb)

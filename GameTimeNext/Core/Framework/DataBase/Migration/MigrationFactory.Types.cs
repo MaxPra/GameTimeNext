@@ -442,6 +442,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
         {
             DevSync = 0,
             ImportPackages = 1,
+            MetadataGenerator = 2,
         }
 
         public class ImportPackageType
