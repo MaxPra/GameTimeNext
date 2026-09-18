@@ -1,7 +1,9 @@
 using GameTimeNext.Core.Application.Metadata.Data;
 using GameTimeNext.Core.Application.Metadata.Views;
 using GameTimeNext.Core.Framework.Utils;
+using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements.UserControls;
@@ -34,9 +36,21 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
         protected override void BuildFirstImpl()
         {
+            FnControls.SetEnabled(GetWnd().txbOrder, GetWnd().ViewIndicator.Contains("CN"));
+
             FnControls.SetEnabled(GetWnd().txbField, GetWnd().ViewIndicator.Contains("CN"));
             FnControls.SetEnabled(GetWnd().chbPrimaryKey, GetWnd().ViewIndicator.Contains("CN"));
             FnControls.SetEnabled(GetWnd().chbAutoIncrement, GetWnd().ViewIndicator.Contains("CN"));
+
+            FnControls.SetEnabled(GetWnd().txbDescription, GetWnd().ViewIndicator.Contains("CN"));
+
+            FnControls.SetEnabled(GetWnd().cmbDataType, GetWnd().ViewIndicator.Contains("CN"));
+
+            FnControls.SetEnabled(GetWnd().txbLength, GetWnd().ViewIndicator.Contains("CN"));
+
+            FnControls.SetEnabled(GetWnd().chbDefault, GetWnd().ViewIndicator.Contains("CN"));
+            FnControls.SetEnabled(GetWnd().chbDefaultBool, GetWnd().ViewIndicator.Contains("CN"));
+            FnControls.SetEnabled(GetWnd().txbDefault, GetWnd().ViewIndicator.Contains("CN"));
         }
 
         protected override async Task BuildFirstImplAsync()
@@ -76,17 +90,45 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
         {
             string selectedDataType = GetWnd().cmbDataType.SelectedValue?.ToString() ?? string.Empty;
 
-            FnControls.SetVisible(GetWnd().txbLength, "01".Equals(selectedDataType));
-            FnControls.SetVisible(GetWnd().lblLength, "01".Equals(selectedDataType));
-            FnControls.SetVisible(GetWnd().chbAutoIncrement, GetWnd().chbPrimaryKey.IsChecked == true);
+            FnControls.SetVisible(GetWnd().chbAutoIncrement, GetWnd().chbPrimaryKey.IsChecked.Equals(true));
 
-            BuildVisibilityDefault();
+            if (GetWnd().chbAutoIncrement.IsChecked.Equals(true))
+            {
+                FnControls.SetVisible(GetWnd().lblDataType, false);
+                FnControls.SetVisible(GetWnd().cmbDataType, false);
+                using (SuppressRunEventPipeline())
+                {
+                    ComboBox cmbDataType = GetWnd().cmbDataType;
+
+                    ComboBoxItem item = cmbDataType.Items.OfType<ComboBoxItem>().First(i => i.Tag.Equals("03"));
+                    cmbDataType.SelectedItem = item;
+                }
+
+                FnControls.SetVisible(GetWnd().txbLength, false);
+                FnControls.SetVisible(GetWnd().lblLength, false);
+
+                FnControls.SetVisible(GetWnd().lblDefault, false);
+                FnControls.SetVisible(GetWnd().chbDefault, false);
+                FnControls.SetVisible(GetWnd().chbDefaultBool, false);
+                FnControls.SetVisible(GetWnd().txbDefault, false);
+            }
+            else
+            {
+                FnControls.SetVisible(GetWnd().lblDataType, true);
+                FnControls.SetVisible(GetWnd().cmbDataType, true);
+
+                FnControls.SetVisible(GetWnd().txbLength, "01".Equals(selectedDataType));
+                FnControls.SetVisible(GetWnd().lblLength, "01".Equals(selectedDataType));
+
+                BuildVisibilityDefault();
+            }
         }
 
         private void BuildVisibilityDefault()
         {
             string selectedDataType = GetWnd().cmbDataType.SelectedValue?.ToString() ?? string.Empty;
 
+            // OFDOI: BuildVisibilityDefault
             //MigrationFactory.SqliteDataType dataType = MigrationFactory.SqliteDataType.GetByKey(selectedDataType);
             //dataType.IsNumeric
 
@@ -100,9 +142,12 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
             if (!datatypeWithDefault)
             {
-                GetWnd().chbDefault.IsChecked = false;
-                GetWnd().chbDefaultBool.IsChecked = false;
-                GetWnd().txbDefault.Text = string.Empty;
+                using (SuppressRunEventPipeline())
+                {
+                    GetWnd().chbDefault.IsChecked = false;
+                    GetWnd().chbDefaultBool.IsChecked = false;
+                    GetWnd().txbDefault.Text = string.Empty;
+                }
             }
         }
 
@@ -119,6 +164,12 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
             // Field
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().txbField.Text))
                 AddViewError(GetWnd().txbField, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Field name"));
+            else if (!Regex.IsMatch(GetWnd().txbField.Text, @"^[A-Z]+$"))
+                AddViewError(GetWnd().txbField, "Field can only be A-Z characters.");
+            else if (GetWnd().txbField.Text.Length < 4)
+                AddViewError(GetWnd().txbField, FnErrorMessage.ErrorMessage.MustExceedChars.GetMessage("Field", "4"));
+            else if (GetWnd().txbField.Text.Length > 5)
+                AddViewError(GetWnd().txbField, FnErrorMessage.ErrorMessage.CannotExceedChars.GetMessage("Field", "5"));
 
             // Description
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().txbDescription.Text))

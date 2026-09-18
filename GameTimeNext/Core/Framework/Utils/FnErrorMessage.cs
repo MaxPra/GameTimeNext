@@ -12,7 +12,9 @@
 
             // Strings
             public static readonly ErrorMessage CannotExceedChars = new("&1 cannot exceed &2 characters.");
+            public static readonly ErrorMessage MustExceedChars = new("&1 must contain at least &2 characters.");
             public static readonly ErrorMessage CannotStartWith = new("&1 cannot start with &2 (&3).");
+            public static readonly ErrorMessage MustEditWith = new("&1 must end with &2.");
 
             // Numerics
             public static readonly ErrorMessage OnlyNumeric = new("Only numeric values allowed.");
