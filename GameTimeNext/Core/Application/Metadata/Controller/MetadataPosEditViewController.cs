@@ -151,7 +151,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
             }
         }
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
             string selectedDataType = GetWnd().cmbDataType.SelectedValue?.ToString() ?? string.Empty;
             bool datatypeWithDefault = DATATYPES_WITH_DEFAULT.Contains(selectedDataType);

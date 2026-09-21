@@ -166,7 +166,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             FnControls.SetEnabled(GetWnd().btnNextPage, _currentPage < _sgdbPages.Count - 1);
         }
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
         }
 

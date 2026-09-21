@@ -43,7 +43,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             BuildGroupList(string.Empty);
         }
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
         }
 

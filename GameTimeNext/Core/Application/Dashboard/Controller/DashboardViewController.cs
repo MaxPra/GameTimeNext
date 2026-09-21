@@ -82,7 +82,7 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
             FnControls.SetEnabled(GetView().BtnIncreaseTimeSpan, timeSpanOffset < 0);
         }
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
         }
 

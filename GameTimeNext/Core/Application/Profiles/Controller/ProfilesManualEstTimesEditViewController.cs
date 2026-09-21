@@ -44,7 +44,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
         }
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
             if (!FnControls.ContainsOnlyNumericValue(GetWnd().txbEstTimeMain))
                 AddViewError(GetWnd().txbEstTimeMain, FnErrorMessage.ErrorMessage.OnlyNumeric.GetMessage());

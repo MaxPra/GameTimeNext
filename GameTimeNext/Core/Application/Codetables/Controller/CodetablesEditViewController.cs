@@ -65,7 +65,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
             ControlCodetableVisibility();
         }
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().TxbTextType.Text))
                 AddViewError(GetWnd().TxbTextType, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Text type"));

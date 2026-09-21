@@ -60,7 +60,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
         {
         }
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
             CheckParameterRequired();
 

@@ -60,7 +60,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
         }
 
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().TxbTableObject.Text))
                 AddViewError(GetWnd().TxbTableObject, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Table object"));

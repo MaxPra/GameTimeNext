@@ -43,7 +43,7 @@ namespace GameTimeNext.Core.Application.General.AppSearch.Controller
         {
         }
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
         }
 

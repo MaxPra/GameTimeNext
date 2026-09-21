@@ -49,7 +49,7 @@ namespace GameTimeNext.Core.Application.General.FavAppsReorder.Controller
         {
         }
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
         }
 

@@ -40,7 +40,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             BuildSteamGameGrid();
         }
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
         }
 

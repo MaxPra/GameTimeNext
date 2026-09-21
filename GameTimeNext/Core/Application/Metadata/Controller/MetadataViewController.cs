@@ -59,7 +59,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
         {
         }
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
         }
 

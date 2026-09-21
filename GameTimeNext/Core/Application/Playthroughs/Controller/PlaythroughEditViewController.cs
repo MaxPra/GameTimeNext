@@ -56,7 +56,7 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
         {
         }
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
             if (FnString.IsNullEmptyOrWhitespace(GetView().txbDescription.Text))
                 AddViewError(GetView().txbDescription, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Description"));

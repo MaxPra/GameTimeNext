@@ -111,7 +111,7 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
             }
         }
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
         }
 

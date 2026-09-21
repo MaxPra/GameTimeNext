@@ -109,7 +109,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             BuildAccentColorSection();
         }
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
             // Profile Name
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().txbProfileName.Text))

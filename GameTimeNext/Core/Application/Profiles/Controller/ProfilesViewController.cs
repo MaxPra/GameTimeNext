@@ -96,7 +96,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         }
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
         }
 

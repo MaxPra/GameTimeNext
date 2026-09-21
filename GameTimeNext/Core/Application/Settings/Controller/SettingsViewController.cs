@@ -88,7 +88,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             FnControls.SetEnabled(GetView().btnOpenIgdbClientSecret, GetView().cbEnableIGDBIntegration.IsChecked == true);
         }
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
             if (!FnControls.ContainsOnlyNumericValue(GetView().txbBreakReminderHours))
             {
