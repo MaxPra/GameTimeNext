@@ -130,7 +130,6 @@
 
                 <!-- Datatype -->
                 <TextBlock
-                    x:Name="lblDataType"
                     Grid.Row="6"
                     Grid.Column="0"
                     VerticalAlignment="Center"
@@ -215,7 +214,6 @@
                             Grid.Column="2"
                             VerticalAlignment="Center"
                             HorizontalAlignment="Left"
-                            uixprops:UIXAttachedProperty.Path="T1METAP.DEFVL"
                             Content="Value" />
                         <TextBox
                             x:Name="txbDefault"
@@ -223,9 +221,7 @@
                             Width="300"
                             Height="36"
                             HorizontalAlignment="Left"
-                            VerticalContentAlignment="Center"
-                            uixprops:UIXAttachedProperty.Path="T1METAP.DEFVL" />
-                        <!--OFDOI: Both fields reference same BO field. How do i do that? Maybe manual?-->
+                            VerticalContentAlignment="Center" />
                     </Grid>
                 </Grid>
             </Grid>

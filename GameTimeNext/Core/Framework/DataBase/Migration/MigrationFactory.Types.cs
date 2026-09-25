@@ -352,13 +352,13 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
 
             private static ReadOnlyCollection<SqliteDataType> DATATYPES = new ReadOnlyCollection<SqliteDataType>(new List<SqliteDataType> ()
                 {
-                    new SqliteDataType("01", "String", SqliteString.Text),
-                    new SqliteDataType("02", "Integer", SqliteString.Integer),
-                    new SqliteDataType("03", "Long", SqliteString.Integer),
-                    new SqliteDataType("04", "Double", SqliteString.Real),
-                    new SqliteDataType("05", "DateTime", SqliteString.DateTime),
-                    new SqliteDataType("06", "Boolean", SqliteString.Boolean),
-                    new SqliteDataType("07", "MemoText", SqliteString.Text),
+                    new SqliteDataType("01", "String", SqliteString.Text, true, false),
+                    new SqliteDataType("02", "Integer", SqliteString.Integer, true, true),
+                    new SqliteDataType("03", "Long", SqliteString.Integer, true, true),
+                    new SqliteDataType("04", "Double", SqliteString.Real, true, true),
+                    new SqliteDataType("05", "DateTime", SqliteString.DateTime, false, false),
+                    new SqliteDataType("06", "Boolean", SqliteString.Boolean, true, false),
+                    new SqliteDataType("07", "MemoText", SqliteString.Text, false, false),
                 }
             );
 
@@ -368,13 +368,19 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
             public string Name { get; }
 
             private string _sqliteType { get; }
+
+            public bool IsDefaultAllowed { get; }
+
+            public bool IsNumeric { get; }
             #endregion
 
-            private SqliteDataType(string key, string name, string sqliteType)
+            private SqliteDataType(string key, string name, string sqliteType, bool isDefaultAllowed, bool isNumeric)
             {
                 Key = key;
                 Name = name;
                 _sqliteType = sqliteType;
+                IsDefaultAllowed = isDefaultAllowed;
+                IsNumeric = isNumeric;
             }
 
             #region Methods PUBLIC
@@ -395,6 +401,11 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 }
 
                 return _sqliteType;
+            }
+
+            public static List<SqliteDataType> GetAll()
+            {
+                return DATATYPES.ToList();
             }
 
             public static SqliteDataType GetByKey(string key)

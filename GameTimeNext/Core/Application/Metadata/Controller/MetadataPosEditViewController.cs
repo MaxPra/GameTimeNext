@@ -1,5 +1,6 @@
 using GameTimeNext.Core.Application.Metadata.Data;
 using GameTimeNext.Core.Application.Metadata.Views;
+using GameTimeNext.Core.Framework.DataBase.Migration;
 using GameTimeNext.Core.Framework.Utils;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -14,9 +15,6 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 {
     public class MetadataPosEditViewController : UIXViewControllerBase
     {
-        private static readonly string[] DATATYPES_WITH_DEFAULT = ["01", "02", "03", "04", "06"]; // OFDOI: IsDefaultAllowed auf SqliteDataType statt hier
-        private static readonly string[] DATATYPES_NUMERIC = ["02", "03", "04"]; // OFDOI: IsNumeric auf SqliteDataType statt hier
-
         public MetadataPosEditViewController(UIXApplication app) : base(app)
         {
         }
@@ -56,13 +54,13 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
         protected override async Task BuildFirstImplAsync()
         {
             // Datentypen Combobox füllen
-            IReadOnlyList<UIXSQLiteDataTypes.DataTypeDefinition> dataTypes = UIXSQLiteDataTypes.GetDefinitions();
+            IReadOnlyList<MigrationFactory.SqliteDataType> dataTypes = MigrationFactory.SqliteDataType.GetAll();
 
             UIXManualCodetable codetable = new UIXManualCodetable();
 
             foreach (var dataType in dataTypes)
             {
-                codetable.AddEntry(dataType.Key, dataType.Text);
+                codetable.AddEntry(dataType.Key, dataType.Name);
             }
 
             codetable.ApplyTo(GetWnd().cmbDataType);
@@ -70,13 +68,13 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
             T1METAP? metadataPosition = GetApp().T1METAP;
             if (metadataPosition != null)
             {
-                UIXSQLiteDataTypes.DataTypeDefinition? matchingDefinition = dataTypes.FirstOrDefault(x =>
+                MigrationFactory.SqliteDataType? matchingDefinition = dataTypes.FirstOrDefault(x =>
                     string.Equals(x.Key, metadataPosition.DATYP, StringComparison.OrdinalIgnoreCase));
 
                 if (matchingDefinition == null)
                 {
                     matchingDefinition = dataTypes.FirstOrDefault(x =>
-                        string.Equals(x.Text, metadataPosition.DATYP, StringComparison.OrdinalIgnoreCase));
+                        string.Equals(x.Name, metadataPosition.DATYP, StringComparison.OrdinalIgnoreCase));
                 }
 
                 if (matchingDefinition != null && !string.Equals(metadataPosition.DATYP, matchingDefinition.Key, StringComparison.OrdinalIgnoreCase))
@@ -88,20 +86,19 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
         protected override void BuildImpl()
         {
-            string selectedDataType = GetWnd().cmbDataType.SelectedValue?.ToString() ?? string.Empty;
+            ComboBox cmbDataType = GetWnd().cmbDataType;
+            string selectedDataType = cmbDataType.SelectedValue?.ToString() ?? string.Empty;
 
             FnControls.SetVisible(GetWnd().chbAutoIncrement, GetWnd().chbPrimaryKey.IsChecked.Equals(true));
 
             if (GetWnd().chbAutoIncrement.IsChecked.Equals(true))
             {
-                FnControls.SetVisible(GetWnd().lblDataType, false);
-                FnControls.SetVisible(GetWnd().cmbDataType, false);
+                FnControls.SetEnabled(cmbDataType, false);
                 using (SuppressRunEventPipeline())
                 {
-                    ComboBox cmbDataType = GetWnd().cmbDataType;
 
                     ComboBoxItem item = cmbDataType.Items.OfType<ComboBoxItem>().First(i => i.Tag.Equals("03"));
-                    cmbDataType.SelectedItem = item;
+                    cmbDataType.SelectedItem = item; // CONTINUEHERE: Does not seem to work, since currently T1TESTS.TSID has no DATYP
                 }
 
                 FnControls.SetVisible(GetWnd().txbLength, false);
@@ -114,8 +111,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
             }
             else
             {
-                FnControls.SetVisible(GetWnd().lblDataType, true);
-                FnControls.SetVisible(GetWnd().cmbDataType, true);
+                FnControls.SetEnabled(cmbDataType, true);
 
                 FnControls.SetVisible(GetWnd().txbLength, "01".Equals(selectedDataType));
                 FnControls.SetVisible(GetWnd().lblLength, "01".Equals(selectedDataType));
@@ -127,20 +123,16 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
         private void BuildVisibilityDefault()
         {
             string selectedDataType = GetWnd().cmbDataType.SelectedValue?.ToString() ?? string.Empty;
+            MigrationFactory.SqliteDataType dataType = MigrationFactory.SqliteDataType.GetByKey(selectedDataType);
 
-            // OFDOI: BuildVisibilityDefault
-            //MigrationFactory.SqliteDataType dataType = MigrationFactory.SqliteDataType.GetByKey(selectedDataType);
-            //dataType.IsNumeric
-
-            bool datatypeWithDefault = DATATYPES_WITH_DEFAULT.Contains(selectedDataType);
             bool isActive = GetWnd().chbDefault.IsChecked ?? false;
 
-            FnControls.SetVisible(GetWnd().lblDefault, datatypeWithDefault);
-            FnControls.SetVisible(GetWnd().chbDefault, datatypeWithDefault);
-            FnControls.SetVisible(GetWnd().chbDefaultBool, datatypeWithDefault && isActive && "06".Equals(selectedDataType));
-            FnControls.SetVisible(GetWnd().txbDefault, datatypeWithDefault && isActive && !"06".Equals(selectedDataType));
+            FnControls.SetVisible(GetWnd().lblDefault, dataType.IsDefaultAllowed);
+            FnControls.SetVisible(GetWnd().chbDefault, dataType.IsDefaultAllowed);
+            FnControls.SetVisible(GetWnd().chbDefaultBool, dataType.IsDefaultAllowed && isActive && "06".Equals(selectedDataType));
+            FnControls.SetVisible(GetWnd().txbDefault, dataType.IsDefaultAllowed && isActive && !"06".Equals(selectedDataType));
 
-            if (!datatypeWithDefault)
+            if (!dataType.IsDefaultAllowed)
             {
                 using (SuppressRunEventPipeline())
                 {
@@ -154,8 +146,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
         protected override void CheckImpl()
         {
             string selectedDataType = GetWnd().cmbDataType.SelectedValue?.ToString() ?? string.Empty;
-            bool datatypeWithDefault = DATATYPES_WITH_DEFAULT.Contains(selectedDataType);
-            bool onlyNumeric = DATATYPES_NUMERIC.Contains(selectedDataType);
+            MigrationFactory.SqliteDataType dataType = MigrationFactory.SqliteDataType.GetByKey(selectedDataType);
 
             // Order
             if (!FnControls.ContainsOnlyNumericValue(GetWnd().txbOrder))
@@ -163,9 +154,9 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
             // Field
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().txbField.Text))
-                AddViewError(GetWnd().txbField, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Field name"));
-            else if (!Regex.IsMatch(GetWnd().txbField.Text, @"^[A-Z]+$"))
-                AddViewError(GetWnd().txbField, "Field can only be A-Z characters.");
+                AddViewError(GetWnd().txbField, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Field"));
+            else if (!Regex.IsMatch(GetWnd().txbField.Text, @"^[A-Z][A-Z0-9]*$"))
+                AddViewError(GetWnd().txbField, "Field has invalid format.");
             else if (GetWnd().txbField.Text.Length < 4)
                 AddViewError(GetWnd().txbField, FnErrorMessage.ErrorMessage.MustExceedChars.GetMessage("Field", "4"));
             else if (GetWnd().txbField.Text.Length > 5)
@@ -174,17 +165,19 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
             // Description
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().txbDescription.Text))
                 AddViewError(GetWnd().txbDescription, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Description"));
+            else if (GetWnd().txbDescription.Text.Length > 200)
+                AddViewError(GetWnd().txbDescription, FnErrorMessage.ErrorMessage.CannotExceedChars.GetMessage("Description", "200"));
 
             // Datatype
             if (FnString.IsNullEmptyOrWhitespace(selectedDataType))
-                AddViewError(GetWnd().cmbDataType, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Data type"));
+                AddViewError(GetWnd().cmbDataType, FnErrorMessage.ErrorMessage.MustBeSelected.GetMessage("Data type"));
 
             // Length
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().txbLength.Text) && "01".Equals(selectedDataType))
                 AddViewError(GetWnd().txbLength, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Length"));
 
             // Default
-            if (datatypeWithDefault && onlyNumeric && GetWnd().chbDefault.IsChecked.Equals(true))
+            if (dataType.IsDefaultAllowed && dataType.IsNumeric && GetWnd().chbDefault.IsChecked.Equals(true))
                 if (!FnControls.ContainsOnlyNumericValue(GetWnd().txbDefault))
                     AddViewError(GetWnd().txbDefault, FnErrorMessage.ErrorMessage.OnlyNumeric.GetMessage());
         }
@@ -193,10 +186,37 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
         {
             if (GetWnd().ViewIndicator.Contains("CN"))
                 GetWnd().txbOrder.Text = TFMETAP.GetNextOrder(GetApp().T1METAP!).ToString();
+
+            string selectedDataType = GetWnd().cmbDataType.SelectedValue?.ToString() ?? string.Empty;
+
+            // DEFVL
+            if (selectedDataType.Equals("06"))
+            {
+                // Checkbox
+                GetWnd().chbDefaultBool.IsChecked = GetApp().T1METAP!.DEFVL.Equals("1");
+            }
+            else
+            {
+                // Textbox
+                GetWnd().txbDefault.Text = GetApp().T1METAP!.DEFVL;
+            }
         }
 
         protected override void FillDBOImpl()
         {
+            string selectedDataType = GetWnd().cmbDataType.SelectedValue?.ToString() ?? string.Empty;
+
+            // DEFVL
+            if (selectedDataType.Equals("06"))
+            {
+                // Checkbox
+                GetApp().T1METAP!.DEFVL = GetWnd().chbDefaultBool.IsChecked.Equals(true) ? "1" : "0";
+            }
+            else
+            {
+                // Textbox
+                GetApp().T1METAP!.DEFVL = GetWnd().txbDefault.Text;
+            }
         }
 
         protected override void SaveDBOImpl()

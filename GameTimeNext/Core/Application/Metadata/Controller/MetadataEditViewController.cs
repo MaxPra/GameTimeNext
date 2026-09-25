@@ -7,6 +7,7 @@ using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.DataBase.Migration;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.Utils;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -62,20 +63,27 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
         protected override void CheckImpl()
         {
+            string selectedType = GetWnd().CmbType.SelectedValue?.ToString() ?? string.Empty;
+
+            // Table object
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().TxbTableObject.Text))
                 AddViewError(GetWnd().TxbTableObject, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Table object"));
-
-            if (FnString.IsNullEmptyOrWhitespace(GetWnd().TxbDescription.Text))
-                AddViewError(GetWnd().TxbDescription, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Description"));
-
-            if (FnString.IsNullEmptyOrWhitespace(GetWnd().CmbType.SelectedValue.ToString()!))
-                AddViewError(GetWnd().CmbType, FnErrorMessage.ErrorMessage.MustBeSelected.GetMessage("Type"));
-
-            if (GetWnd().TxbTableObject.Text.Length > 7)
+            else if (!Regex.IsMatch(GetWnd().TxbTableObject.Text, @"^T1[A-Z0-9]*$"))
+                AddViewError(GetWnd().TxbTableObject, "Field has invalid format.");
+            else if (GetWnd().TxbTableObject.Text.Length < 7)
+                AddViewError(GetWnd().TxbTableObject, FnErrorMessage.ErrorMessage.MustExceedChars.GetMessage("Table object", "7"));
+            else if (GetWnd().TxbTableObject.Text.Length > 7)
                 AddViewError(GetWnd().TxbTableObject, FnErrorMessage.ErrorMessage.CannotExceedChars.GetMessage("Table object", "7"));
 
-            if (GetWnd().TxbDescription.Text.Length > 200)
+            // Description
+            if (FnString.IsNullEmptyOrWhitespace(GetWnd().TxbDescription.Text))
+                AddViewError(GetWnd().TxbDescription, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Description"));
+            else if (GetWnd().TxbDescription.Text.Length > 200)
                 AddViewError(GetWnd().TxbDescription, FnErrorMessage.ErrorMessage.CannotExceedChars.GetMessage("Description", "200"));
+
+            // Type
+            if (FnString.IsNullEmptyOrWhitespace(selectedType))
+                AddViewError(GetWnd().CmbType, FnErrorMessage.ErrorMessage.MustBeSelected.GetMessage("Type"));
         }
 
         protected override void FillViewImpl()
