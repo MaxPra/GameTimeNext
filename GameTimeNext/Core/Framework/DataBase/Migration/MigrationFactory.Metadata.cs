@@ -7,7 +7,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
 {
     internal static partial class MigrationFactory
     {
-        public static class Metadata
+        public static partial class Metadata
         {
             private static string _LAST_CHANGED_AT_VERSION = "1.0.0";
 

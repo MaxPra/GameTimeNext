@@ -2,7 +2,6 @@
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.DataBase.Migration;
 using System.Data.SQLite;
-using System.Globalization;
 using UIX.ViewController.Engine.DataBaseObjects;
 using UIX.ViewController.Engine.Querying;
 
@@ -10,6 +9,12 @@ namespace GameTimeNext.Core.Application.DataManagers
 {
     public class TXSESSIBasic
     {
+        protected SQLiteConnection _connection
+        {
+            get => AppEnvironment.GetDataBaseManager().GetConnection();
+        }
+
+        #region Methods PUBLIC
         public virtual T1SESSI CreateNew()
         {
             T1SESSI obj = new T1SESSI();
@@ -19,37 +24,34 @@ namespace GameTimeNext.Core.Application.DataManagers
 
         public virtual void Save(T1SESSI obj)
         {
-            if (obj == null)
+            if (obj is null)
+            {
                 throw new ArgumentNullException(nameof(obj));
+            }
 
-            SQLiteConnection connection = AppEnvironment.GetDataBaseManager().GetConnection();
-            EnsureOpen(connection);
-
-            if (Exists(connection, obj))
-                Update(connection, obj);
+            if (Exists(obj))
+            {
+                Update(obj);
+            }
             else
-                Insert(connection, obj);
-
+            {
+                Insert(obj);
+            }
             obj.State = UIXTableObjectState.Available;
             obj.AcceptChanges();
-            MigrationFactory.ToCsv.ExportCsvFileFor(connection, obj, MigrationFactory.ImportType.DevSync);
+            MigrationFactory.ToCsv.ExportCsvFileFor(_connection, obj, MigrationFactory.ImportType.DevSync);
         }
 
-        public virtual void Delete(long sEID)
+        public virtual void Delete(long seid)
         {
-            SQLiteConnection connection = AppEnvironment.GetDataBaseManager().GetConnection();
-            EnsureOpen(connection);
-
-            using SQLiteCommand cmd = connection.CreateCommand();
-            cmd.CommandText = "DELETE FROM T1SESSI WHERE SEID = @SEID";
-            cmd.Parameters.AddWithValue("@SEID", sEID);
-            cmd.ExecuteNonQuery();
-            MigrationFactory.ToCsv.ExportCsvFileFor(connection, "T1SESSI", MigrationFactory.ImportType.DevSync);
+            string sql = $"DELETE FROM T1SESSI WHERE SEID = '{seid}';";
+            UIXQuery.ExecuteCustom(sql, _connection);
+            MigrationFactory.ToCsv.ExportCsvFileFor(_connection, "T1SESSI", MigrationFactory.ImportType.DevSync);
         }
 
-        public virtual T1SESSI? Read(long sEID)
+        public virtual T1SESSI? Read(long seid)
         {
-            UIXQuery query = new UIXQuery(K1SESSI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
+            UIXQuery query = new UIXQuery(K1SESSI.Name, _connection);
             query.AddField(K1SESSI.Name, K1SESSI.Fields.SEID);
             query.AddField(K1SESSI.Name, K1SESSI.Fields.PFID);
             query.AddField(K1SESSI.Name, K1SESSI.Fields.PTID);
@@ -58,11 +60,13 @@ namespace GameTimeNext.Core.Application.DataManagers
             query.AddField(K1SESSI.Name, K1SESSI.Fields.PLTI);
             query.AddField(K1SESSI.Name, K1SESSI.Fields.CRAT);
             query.AddField(K1SESSI.Name, K1SESSI.Fields.CHAT);
-            query.AddWhere(K1SESSI.Name, K1SESSI.Fields.SEID, QueryCompareType.EQUALS, sEID);
+            query.AddWhere(K1SESSI.Name, K1SESSI.Fields.SEID, QueryCompareType.EQUALS, seid);
 
             using var reader = query.Execute();
             if (!reader.Read())
+            {
                 return null;
+            }
 
             T1SESSI obj = Map(reader);
             obj.AcceptChanges();
@@ -71,7 +75,7 @@ namespace GameTimeNext.Core.Application.DataManagers
 
         public virtual List<T1SESSI> ReadAll()
         {
-            UIXQuery query = new UIXQuery(K1SESSI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
+            UIXQuery query = new UIXQuery(K1SESSI.Name, _connection);
             query.AddField(K1SESSI.Name, K1SESSI.Fields.SEID);
             query.AddField(K1SESSI.Name, K1SESSI.Fields.PFID);
             query.AddField(K1SESSI.Name, K1SESSI.Fields.PTID);
@@ -85,7 +89,6 @@ namespace GameTimeNext.Core.Application.DataManagers
             List<T1SESSI> list = new List<T1SESSI>();
             using var reader = query.Execute();
             while (reader.Read())
-
             {
                 T1SESSI obj = Map(reader);
                 obj.AcceptChanges();
@@ -93,100 +96,49 @@ namespace GameTimeNext.Core.Application.DataManagers
             }
             return list;
         }
+        #endregion
 
-        private void Insert(SQLiteConnection connection, T1SESSI obj)
-        {
-            using SQLiteCommand cmd = connection.CreateCommand();
-            DateTime now = DateTime.Now;
-            obj.CRAT = now;
-            obj.CHAT = now;
-            cmd.CommandText = "INSERT INTO T1SESSI (PFID, PTID, PLFR, PLTO, PLTI, CRAT, CHAT) VALUES (@PFID, @PTID, @PLFR, @PLTO, @PLTI, @CRAT, @CHAT)";
-            cmd.Parameters.AddWithValue("@PFID", ToDbValue(obj.PFID));
-            cmd.Parameters.AddWithValue("@PTID", ToDbValue(obj.PTID));
-            cmd.Parameters.AddWithValue("@PLFR", ToDbValue(obj.PLFR));
-            cmd.Parameters.AddWithValue("@PLTO", ToDbValue(obj.PLTO));
-            cmd.Parameters.AddWithValue("@PLTI", ToDbValue(obj.PLTI));
-            cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
-            cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
-            cmd.ExecuteNonQuery();
-            using SQLiteCommand idCmd = connection.CreateCommand();
-            idCmd.CommandText = "SELECT last_insert_rowid();";
-            obj.SEID = Convert.ToInt64(idCmd.ExecuteScalar());
-        }
-
-        private void Update(SQLiteConnection connection, T1SESSI obj)
-        {
-            using SQLiteCommand cmd = connection.CreateCommand();
-            obj.CHAT = DateTime.Now;
-            cmd.CommandText = "UPDATE T1SESSI SET PFID = @PFID, PTID = @PTID, PLFR = @PLFR, PLTO = @PLTO, PLTI = @PLTI, CRAT = @CRAT, CHAT = @CHAT WHERE SEID = @SEID";
-            cmd.Parameters.AddWithValue("@SEID", ToDbValue(obj.SEID));
-            cmd.Parameters.AddWithValue("@PFID", ToDbValue(obj.PFID));
-            cmd.Parameters.AddWithValue("@PTID", ToDbValue(obj.PTID));
-            cmd.Parameters.AddWithValue("@PLFR", ToDbValue(obj.PLFR));
-            cmd.Parameters.AddWithValue("@PLTO", ToDbValue(obj.PLTO));
-            cmd.Parameters.AddWithValue("@PLTI", ToDbValue(obj.PLTI));
-            cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
-            cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
-            cmd.ExecuteNonQuery();
-        }
-
-        private bool Exists(SQLiteConnection connection, T1SESSI obj)
-        {
-            using SQLiteCommand cmd = connection.CreateCommand();
-            cmd.CommandText = "SELECT COUNT(*) FROM T1SESSI WHERE SEID = @SEID";
-            cmd.Parameters.AddWithValue("@SEID", ToDbValue(obj.SEID));
-            return Convert.ToInt64(cmd.ExecuteScalar()) > 0;
-        }
+        #region Methods PRIVATE
 
         protected static T1SESSI Map(SQLiteDataReader reader)
         {
             T1SESSI obj = new T1SESSI();
-            obj.SEID = reader.IsDBNull(0) ? 0 : Convert.ToInt64(reader.GetValue(0));
-            obj.PFID = reader.IsDBNull(1) ? 0 : Convert.ToInt64(reader.GetValue(1));
-            obj.PTID = reader.IsDBNull(2) ? 0 : Convert.ToInt64(reader.GetValue(2));
-            obj.PLFR = ParseDbDateTime(reader.GetValue(3));
-            obj.PLTO = ParseDbDateTime(reader.GetValue(4));
-            obj.PLTI = reader.IsDBNull(5) ? 0d : Convert.ToDouble(reader.GetValue(5), CultureInfo.InvariantCulture);
-            obj.CRAT = ParseDbDateTime(reader.GetValue(6));
-            obj.CHAT = ParseDbDateTime(reader.GetValue(7));
+            obj.SEID = UIXQuery.GetInt64(reader, K1SESSI.Name, K1SESSI.Fields.SEID);
+            obj.PFID = UIXQuery.GetInt64(reader, K1SESSI.Name, K1SESSI.Fields.PFID);
+            obj.PTID = UIXQuery.GetInt64(reader, K1SESSI.Name, K1SESSI.Fields.PTID);
+            obj.PLFR = UIXQuery.GetDateTime(reader, K1SESSI.Name, K1SESSI.Fields.PLFR);
+            obj.PLTO = UIXQuery.GetDateTime(reader, K1SESSI.Name, K1SESSI.Fields.PLTO);
+            obj.PLTI = UIXQuery.GetDouble(reader, K1SESSI.Name, K1SESSI.Fields.PLTI);
+            obj.CRAT = UIXQuery.GetDateTime(reader, K1SESSI.Name, K1SESSI.Fields.CRAT);
+            obj.CHAT = UIXQuery.GetDateTime(reader, K1SESSI.Name, K1SESSI.Fields.CHAT);
             obj.State = UIXTableObjectState.Available;
             return obj;
         }
+        #endregion
 
-        private static object ToDbValue(object? value)
+        #region Methods PRIVATE
+        private void Insert(T1SESSI obj)
         {
-            if (value is bool boolValue)
-                return boolValue ? 1 : 0;
-            if (value is DateTime dt)
-                return dt.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
-            return value ?? DBNull.Value;
+            string sql = $"INSERT INTO T1SESSI (PFID, PTID, PLFR, PLTO, PLTI, CRAT, CHAT) VALUES ({obj.PFID}, {obj.PTID}, {obj.PLFR}, {obj.PLTO}, {obj.PLTI}, {obj.CRAT}, {obj.CHAT});";
+            UIXQuery.ExecuteCustom(sql, _connection);
+
+            using SQLiteCommand idCmd = _connection.CreateCommand();
+            idCmd.CommandText = "SELECT last_insert_rowid();";
+            obj.SEID = Convert.ToInt64(idCmd.ExecuteScalar());
         }
 
-        private static DateTime ParseDbDateTime(object? value)
+        private void Update(T1SESSI obj)
         {
-            if (value == null || value == DBNull.Value)
-                return DateTime.MinValue;
-
-            string raw = value.ToString() ?? string.Empty;
-            if (string.IsNullOrWhiteSpace(raw))
-                return DateTime.MinValue;
-
-            if (DateTime.TryParseExact(raw, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsed))
-                return parsed;
-            if (DateTime.TryParseExact(raw, "dd.MM.yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsed))
-                return parsed;
-            if (DateTime.TryParse(raw, CultureInfo.CurrentCulture, DateTimeStyles.None, out parsed))
-                return parsed;
-            if (DateTime.TryParse(raw, CultureInfo.InvariantCulture, DateTimeStyles.None, out parsed))
-                return parsed;
-
-            return DateTime.MinValue;
+            string sql = $"UPDATE T1SESSI SET PFID = '{obj.PFID}', PTID = '{obj.PTID}', PLFR = '{obj.PLFR}', PLTO = '{obj.PLTO}', PLTI = '{obj.PLTI}', CRAT = '{obj.CRAT}', CHAT = '{obj.CHAT}' WHERE SEID = '{obj.SEID}';";
+            UIXQuery.ExecuteCustom(sql, _connection);
         }
 
-        protected static void EnsureOpen(SQLiteConnection connection)
+        private bool Exists(T1SESSI obj)
         {
-            if (connection.State != System.Data.ConnectionState.Open)
-                connection.Open();
+            using SQLiteCommand cmd = _connection.CreateCommand();
+            cmd.CommandText = $"SELECT COUNT(*) FROM T1SESSI WHERE SEID = '{obj.SEID}';";
+            return Convert.ToInt64(cmd.ExecuteScalar()) > 0;
         }
+        #endregion
     }
 }

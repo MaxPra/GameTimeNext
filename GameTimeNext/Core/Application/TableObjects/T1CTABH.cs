@@ -8,43 +8,43 @@ namespace GameTimeNext.Core.Application.TableObjects
         public override bool IsDevSynced => true;
 
         [UIXSignatureField(0)]
-        public string TXTYP { get; set; } = string.Empty;
+        public string TXTYP { get; set; } = "";
 
         [UIXSignatureField(1)]
-        public string DESCR { get; set; } = string.Empty;
+        public string DESCR { get; set; } = "";
 
         [UIXSignatureField(2)]
-        public string PERMI { get; set; } = string.Empty;
+        public string PERMI { get; set; } = "";
 
         [UIXSignatureField(3)]
         public bool PAAC1 { get; set; } = false;
 
         [UIXSignatureField(4)]
-        public string PADE1 { get; set; } = string.Empty;
+        public string PADE1 { get; set; } = "";
 
         [UIXSignatureField(5)]
         public bool PARF1 { get; set; } = false;
 
         [UIXSignatureField(6)]
-        public string PACO1 { get; set; } = string.Empty;
+        public string PACO1 { get; set; } = "";
 
         [UIXSignatureField(7)]
-        public string PACT1 { get; set; } = string.Empty;
+        public string PACT1 { get; set; } = "";
 
         [UIXSignatureField(8)]
         public bool PAAC2 { get; set; } = false;
 
         [UIXSignatureField(9)]
-        public string PADE2 { get; set; } = string.Empty;
+        public string PADE2 { get; set; } = "";
 
         [UIXSignatureField(10)]
         public bool PARF2 { get; set; } = false;
 
         [UIXSignatureField(11)]
-        public string PACO2 { get; set; } = string.Empty;
+        public string PACO2 { get; set; } = "";
 
         [UIXSignatureField(12)]
-        public string PACT2 { get; set; } = string.Empty;
+        public string PACT2 { get; set; } = "";
 
         [UIXSignatureField(13)]
         public DateTime CRAT { get; set; } = DateTime.MinValue;
@@ -59,10 +59,10 @@ namespace GameTimeNext.Core.Application.TableObjects
         public bool EXPRT { get; set; } = false;
 
         [UIXSignatureField(17)]
-        public string PTOL1 { get; set; } = string.Empty;
+        public string PTOL1 { get; set; } = "";
 
         [UIXSignatureField(18)]
-        public string PTOL2 { get; set; } = string.Empty;
+        public string PTOL2 { get; set; } = "";
 
         public override void Save()
         {

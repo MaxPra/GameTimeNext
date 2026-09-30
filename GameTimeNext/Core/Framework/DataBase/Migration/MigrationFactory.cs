@@ -6,6 +6,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
 {
     internal static partial class MigrationFactory
     {
+        // OFDO: Move MigrationFactory to UIX
         private const string _SQL_TRANSACTION_BEGIN = "BEGIN TRANSACTION;";
         private const string _SQL_TRANSACTION_COMMIT = "COMMIT;";
         private const string _SQL_TRANSACTION_ROLLBACK = "ROLLBACK;";

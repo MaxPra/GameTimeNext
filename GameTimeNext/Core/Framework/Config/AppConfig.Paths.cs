@@ -44,9 +44,21 @@ namespace GameTimeNext.Core.Framework.Config
             }
 
             [JsonIgnore]
-            public static string GenClassDirectoryPath
+            public static string GenClassDirectoryPath // OFDOI: Change to private
             {
                 get => ReturnEnsureDirectoryExists(Path.Combine(DevDirectoryPath, "genClass"));
+            }
+
+            [JsonIgnore]
+            public static string GenClassTableObjectsDirectoryPath
+            {
+                get => ReturnEnsureDirectoryExists(Path.Combine(GenClassDirectoryPath, "TableObjects"));
+            }
+
+            [JsonIgnore]
+            public static string GenClassDataManagersDirectoryPath
+            {
+                get => ReturnEnsureDirectoryExists(Path.Combine(GenClassDirectoryPath, "DataManagers"));
             }
 
             [JsonIgnore]

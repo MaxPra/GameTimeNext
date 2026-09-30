@@ -23,7 +23,7 @@ namespace GameTimeNext.Core.Application.TableObjects
         public DateTime PLTO { get; set; } = DateTime.MinValue;
 
         [UIXSignatureField(5)]
-        public double PLTI { get; set; } = 0d;
+        public double PLTI { get; set; } = 0;
 
         [UIXSignatureField(6)]
         public DateTime CRAT { get; set; } = DateTime.MinValue;

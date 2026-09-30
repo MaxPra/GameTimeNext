@@ -98,7 +98,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
                 {
 
                     ComboBoxItem item = cmbDataType.Items.OfType<ComboBoxItem>().First(i => i.Tag.Equals("03"));
-                    cmbDataType.SelectedItem = item; // CONTINUEHERE: Does not seem to work, since currently T1TESTS.TSID has no DATYP
+                    cmbDataType.SelectedItem = item;
                 }
 
                 FnControls.SetVisible(GetWnd().txbLength, false);

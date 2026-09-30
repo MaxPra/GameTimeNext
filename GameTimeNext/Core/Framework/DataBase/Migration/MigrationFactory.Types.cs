@@ -213,27 +213,47 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 return String.Join(";", parts);
             }
 
-            public string GetDefaultValue()
+            public string GetDefaultValue(bool forCsharp = false)
             {
+                string sD = "'"; // String delimiter
+                if (forCsharp)
+                    sD = $"\"";
+
                 if (DEFAK)
                 {
                     // Default set by Metadata
                     string valueString = DEFVL;
 
-                    if (DATYP.Key.Equals("06")) valueString = (DEFVL.ToLowerInvariant() == "true" ? "1" : "0");
+                    if (DATYP.Key.Equals("06"))
+                    {
+                        if (forCsharp) return DEFVL;
 
-                    return $"'{valueString}'";
+                        valueString = (DEFVL.ToLowerInvariant() == "true" ? "1" : "0");
+                    }
+
+                    return $"{sD}{valueString}{sD}";
                 }
                 else
                 {
                     // Default not set -> Fallback
-                    if (DATYP.Key.Equals("01")) return "''";
+                    if (DATYP.Key.Equals("01")) return $"{sD}{sD}";
                     if (DATYP.Key.Equals("02")) return "0";
                     if (DATYP.Key.Equals("03")) return "0";
                     if (DATYP.Key.Equals("04")) return "0";
-                    if (DATYP.Key.Equals("05")) return "'1900-01-01 00:00:00'";
-                    if (DATYP.Key.Equals("06")) return "'0'";
-                    if (DATYP.Key.Equals("07")) return "''";
+                    if (DATYP.Key.Equals("05"))
+                    {
+                        if (forCsharp) return "DateTime.MinValue";
+
+                        string value = DateTime.MinValue.ToString("yyyy-MM-dd HH:mm:ss");
+                        return $"{sD}{value}{sD}";
+                    }
+                    if (DATYP.Key.Equals("06"))
+                    {
+                        if (forCsharp) return "false";
+
+                        return $"{sD}0{sD}";
+                    }
+                    if (DATYP.Key.Equals("07")) return $"{sD}{sD}";
                 }
 
                 throw new NotImplementedException($"Not default value implemented for SqliteDataType with Key \"{DATYP.Key}\".");
@@ -350,15 +370,25 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 public const string Boolean = "BOOLEAN";
             }
 
+            private static class CsString
+            {
+                public const string Integer = "int";
+                public const string DateTime = "DateTime";
+                public const string String = "string";
+                public const string Boolean = "bool";
+                public const string Long = "long";
+                public const string Double = "double";
+            }
+
             private static ReadOnlyCollection<SqliteDataType> DATATYPES = new ReadOnlyCollection<SqliteDataType>(new List<SqliteDataType> ()
                 {
-                    new SqliteDataType("01", "String", SqliteString.Text, true, false),
-                    new SqliteDataType("02", "Integer", SqliteString.Integer, true, true),
-                    new SqliteDataType("03", "Long", SqliteString.Integer, true, true),
-                    new SqliteDataType("04", "Double", SqliteString.Real, true, true),
-                    new SqliteDataType("05", "DateTime", SqliteString.DateTime, false, false),
-                    new SqliteDataType("06", "Boolean", SqliteString.Boolean, true, false),
-                    new SqliteDataType("07", "MemoText", SqliteString.Text, false, false),
+                    new SqliteDataType("01", "String", SqliteString.Text, CsString.String, true, false),
+                    new SqliteDataType("02", "Integer", SqliteString.Integer, CsString.Integer, true, true),
+                    new SqliteDataType("03", "Long", SqliteString.Integer, CsString.Long, true, true),
+                    new SqliteDataType("04", "Double", SqliteString.Real, CsString.Double, true, true),
+                    new SqliteDataType("05", "DateTime", SqliteString.DateTime, CsString.DateTime, false, false),
+                    new SqliteDataType("06", "Boolean", SqliteString.Boolean, CsString.Boolean, true, false),
+                    new SqliteDataType("07", "MemoText", SqliteString.Text, CsString.String, false, false),
                 }
             );
 
@@ -368,17 +398,19 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
             public string Name { get; }
 
             private string _sqliteType { get; }
+            public string CsType { get; }
 
             public bool IsDefaultAllowed { get; }
 
             public bool IsNumeric { get; }
             #endregion
 
-            private SqliteDataType(string key, string name, string sqliteType, bool isDefaultAllowed, bool isNumeric)
+            private SqliteDataType(string key, string name, string sqliteType, string csType, bool isDefaultAllowed, bool isNumeric)
             {
                 Key = key;
                 Name = name;
                 _sqliteType = sqliteType;
+                CsType = csType;
                 IsDefaultAllowed = isDefaultAllowed;
                 IsNumeric = isNumeric;
             }
@@ -401,6 +433,25 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 }
 
                 return _sqliteType;
+            }
+
+            public string GetUixQueryMethod()
+            {
+                switch (CsType)
+                {
+                    case CsString.Integer:
+                        return "GetInt32";
+                    case CsString.DateTime:
+                        return "GetDateTime";
+                    case CsString.Boolean:
+                        return "GetBool";
+                    case CsString.Long:
+                        return "GetInt64";
+                    case CsString.Double:
+                        return "GetDouble";
+                    default:
+                        return "GetString";
+                }
             }
 
             public static List<SqliteDataType> GetAll()

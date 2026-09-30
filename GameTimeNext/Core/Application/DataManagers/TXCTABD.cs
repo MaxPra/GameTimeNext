@@ -1,5 +1,4 @@
 ﻿using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.DataBase.Migration;
 using System.Data.SQLite;
 
@@ -9,10 +8,7 @@ namespace GameTimeNext.Core.Application.DataManagers
     {
         public void DeleteAllEntries(string txtyp)
         {
-            SQLiteConnection connection = AppEnvironment.GetDataBaseManager().GetConnection();
-            EnsureOpen(connection);
-
-            using SQLiteCommand cmd = connection.CreateCommand();
+            using SQLiteCommand cmd = _connection.CreateCommand();
 
             cmd.CommandText =
                 "DELETE FROM T1CTABD " +
@@ -22,17 +18,14 @@ namespace GameTimeNext.Core.Application.DataManagers
 
             cmd.ExecuteNonQuery();
 
-            MigrationFactory.ToCsv.ExportCsvFileFor(connection, "T1CTABD", MigrationFactory.ImportType.DevSync);
+            MigrationFactory.ToCsv.ExportCsvFileFor(_connection, "T1CTABD", MigrationFactory.ImportType.DevSync);
         }
 
         public List<T1CTABD> GetEntries(string txtyp)
         {
-            SQLiteConnection connection = AppEnvironment.GetDataBaseManager().GetConnection();
-            EnsureOpen(connection);
-
             List<T1CTABD> list = new List<T1CTABD>();
 
-            using SQLiteCommand cmd = connection.CreateCommand();
+            using SQLiteCommand cmd = _connection.CreateCommand();
 
             cmd.CommandText =
                 "SELECT TXTYP, TXNUM, DESCR, PARM1, PARM2, CRAT, CHAT " +

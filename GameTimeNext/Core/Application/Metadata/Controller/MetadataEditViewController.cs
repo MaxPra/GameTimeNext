@@ -157,7 +157,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
                     MetadataPosDataGridRow row = GetWnd().DgFields.CreateNewRow<MetadataPosDataGridRow>();
                     row.COPONAM = t1metap.PONAM;
                     row.COMENAM = t1metap.MENAM;
-                    row.CODATYP = UIXSQLiteDataTypes.GetDefinitionByKey(t1metap.DATYP)?.Text ?? UIXSQLiteDataTypes.Text;
+                    row.CODATYP = MigrationFactory.SqliteDataType.GetByKey(t1metap.DATYP).Name;
                     row.CODESCR = t1metap.DESCR;
                     row.COPRIMK = t1metap.PRIMK;
                     row.CODALEN = t1metap.DALEN;
@@ -329,9 +329,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
                 await Task.Run(() =>
                 {
-                    CFMetadataClassGenerator classGenerator = new CFMetadataClassGenerator();
-                    classGenerator.GenerateFor(GetApp().T1METAH!, AppConfig.Dev.GenClassDirectoryPath);
-
+                    MigrationFactory.Metadata.CodeGenerator.GenerateFor(GetApp().T1METAH!);
                     MigrationFactory.FromCsv.MigrateTables(MigrationFactory.ImportType.MetadataGenerator);
                 });
 
