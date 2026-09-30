@@ -2,7 +2,7 @@
 #define AppExeName AppName + ".exe"
 #define AppVersionSemantic "0.4.0"
 #define AppVersionSuffix "beta"
-#define AppPublisher "MaxPra"
+#define AppPublisher "Cryloud Studios"
 
 #if AppVersionSuffix != ""
   #define AppVersion AppVersionSemantic + "-" + AppVersionSuffix

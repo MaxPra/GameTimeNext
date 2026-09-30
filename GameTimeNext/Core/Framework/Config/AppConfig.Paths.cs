@@ -1,6 +1,5 @@
 ﻿using GameTimeNext.Core.Framework.Utils;
 using System.IO;
-using System.Security.Policy;
 using System.Text.Json.Serialization;
 using UIX.ViewController.Engine.Utils;
 
@@ -10,7 +9,7 @@ namespace GameTimeNext.Core.Framework.Config
     {
         public static class Root
         {
-            public static string PublisherName = "MaxPra";
+            public static string PublisherName = "Cryloud Studios";
             public static string ApplicationName = "GameTimeNext";
             public static string DatabaseFileName = ApplicationName + "Db.db";
             public static string AppConfigFileName = "appConfig.gtnconf";
