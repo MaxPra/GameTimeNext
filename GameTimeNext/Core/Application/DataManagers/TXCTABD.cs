@@ -1,6 +1,7 @@
 ﻿using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework.DataBase.Migration;
 using System.Data.SQLite;
+using UIX.ViewController.Engine.Querying;
 
 namespace GameTimeNext.Core.Application.DataManagers
 {
@@ -8,15 +9,8 @@ namespace GameTimeNext.Core.Application.DataManagers
     {
         public void DeleteAllEntries(string txtyp)
         {
-            using SQLiteCommand cmd = _connection.CreateCommand();
-
-            cmd.CommandText =
-                "DELETE FROM T1CTABD " +
-                "WHERE TXTYP = @TXTYP;";
-
-            cmd.Parameters.AddWithValue("@TXTYP", txtyp);
-
-            cmd.ExecuteNonQuery();
+            string sql = $"DELETE FROM T1CTABD WHERE TXTYP = '{txtyp}';";
+            UIXQuery.ExecuteCustom(sql, _connection);
 
             MigrationFactory.ToCsv.ExportCsvFileFor(_connection, "T1CTABD", MigrationFactory.ImportType.DevSync);
         }
@@ -25,18 +19,21 @@ namespace GameTimeNext.Core.Application.DataManagers
         {
             List<T1CTABD> list = new List<T1CTABD>();
 
-            using SQLiteCommand cmd = _connection.CreateCommand();
+            UIXQuery query = new UIXQuery(K1CTABD.Name, _connection);
+            query.AddField(K1CTABD.Name, K1CTABD.Fields.TXTYP);
+            query.AddField(K1CTABD.Name, K1CTABD.Fields.TXNUM);
+            query.AddField(K1CTABD.Name, K1CTABD.Fields.DESCR);
+            query.AddField(K1CTABD.Name, K1CTABD.Fields.CRAT);
+            query.AddField(K1CTABD.Name, K1CTABD.Fields.CHAT);
+            query.AddField(K1CTABD.Name, K1CTABD.Fields.PARM1);
+            query.AddField(K1CTABD.Name, K1CTABD.Fields.PARM2);
 
-            cmd.CommandText =
-                "SELECT TXTYP, TXNUM, DESCR, PARM1, PARM2, CRAT, CHAT " +
-                "FROM T1CTABD " +
-                "WHERE TXTYP = @TXTYP " +
-                "ORDER BY TXNUM;";
+            query.AddWhere(K1CTABD.Name, K1CTABD.Fields.TXTYP, QueryCompareType.EQUALS, txtyp);
 
-            cmd.Parameters.AddWithValue("@TXTYP", txtyp);
+            query.AddOrderBy(K1CTABD.Name, K1CTABD.Fields.TXTYP, OrderDirection.ASC);
+            query.AddOrderBy(K1CTABD.Name, K1CTABD.Fields.TXNUM, OrderDirection.ASC);
 
-            using SQLiteDataReader reader = cmd.ExecuteReader();
-
+            SQLiteDataReader reader = query.Execute();
             while (reader.Read())
             {
                 T1CTABD obj = Map(reader);
