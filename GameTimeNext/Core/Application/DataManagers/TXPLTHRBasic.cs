@@ -122,7 +122,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         #region Methods PRIVATE
         private void Insert(T1PLTHR obj)
         {
-            string sql = $"INSERT INTO T1PLTHR (PFID, PTTY, PTDE, PTCO, CRAT, CHAT, PTCA, PTPA) VALUES ({obj.PFID}, {obj.PTTY}, {obj.PTDE}, {obj.PTCO}, {obj.CRAT}, {obj.CHAT}, {obj.PTCA}, {obj.PTPA});";
+            string sql = $"INSERT INTO T1PLTHR (PFID, PTTY, PTDE, PTCO, CRAT, CHAT, PTCA, PTPA) VALUES ('{obj.PFID}', '{obj.PTTY}', '{obj.PTDE}', '{obj.PTCO}', '{obj.CRAT}', '{obj.CHAT}', '{obj.PTCA}', '{obj.PTPA}');";
             UIXQuery.ExecuteCustom(sql, _connection);
 
             using SQLiteCommand idCmd = _connection.CreateCommand();

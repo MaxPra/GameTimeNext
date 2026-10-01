@@ -119,7 +119,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         #region Methods PRIVATE
         private void Insert(T1SESSI obj)
         {
-            string sql = $"INSERT INTO T1SESSI (PFID, PTID, PLFR, PLTO, PLTI, CRAT, CHAT) VALUES ({obj.PFID}, {obj.PTID}, {obj.PLFR}, {obj.PLTO}, {obj.PLTI}, {obj.CRAT}, {obj.CHAT});";
+            string sql = $"INSERT INTO T1SESSI (PFID, PTID, PLFR, PLTO, PLTI, CRAT, CHAT) VALUES ('{obj.PFID}', '{obj.PTID}', '{obj.PLFR}', '{obj.PLTO}', '{obj.PLTI}', '{obj.CRAT}', '{obj.CHAT}');";
             UIXQuery.ExecuteCustom(sql, _connection);
 
             using SQLiteCommand idCmd = _connection.CreateCommand();

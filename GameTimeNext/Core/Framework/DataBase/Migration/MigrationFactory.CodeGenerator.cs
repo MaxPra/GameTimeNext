@@ -360,7 +360,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                         Dictionary<T1METAP, SqliteDataType> filteredFields = fields.Where(f => !f.Key.AUTOI).ToDictionary();
 
                         // OFDO: wird ToDbValue benötigt? return String.Join(", ", filteredFields.Select(f => $"{{ToDbValue(obj.{f.Key.PONAM})}}"));
-                        return String.Join(", ", filteredFields.Select(f => $"{{obj.{f.Key.PONAM}}}"));
+                        return String.Join(", ", filteredFields.Select(f => $"'{{obj.{f.Key.PONAM}}}'"));
                     }
 
                     public static string GetSqlUpdateFields(Dictionary<T1METAP, SqliteDataType> fields)

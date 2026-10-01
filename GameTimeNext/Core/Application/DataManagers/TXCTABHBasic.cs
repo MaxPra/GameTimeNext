@@ -152,7 +152,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         #region Methods PRIVATE
         private void Insert(T1CTABH obj)
         {
-            string sql = $"INSERT INTO T1CTABH (TXTYP, DESCR, PERMI, PAAC1, PADE1, PARF1, PACO1, PACT1, PAAC2, PADE2, PARF2, PACO2, PACT2, CRAT, CHAT, NRANA, EXPRT, PTOL1, PTOL2) VALUES ({obj.TXTYP}, {obj.DESCR}, {obj.PERMI}, {obj.PAAC1}, {obj.PADE1}, {obj.PARF1}, {obj.PACO1}, {obj.PACT1}, {obj.PAAC2}, {obj.PADE2}, {obj.PARF2}, {obj.PACO2}, {obj.PACT2}, {obj.CRAT}, {obj.CHAT}, {obj.NRANA}, {obj.EXPRT}, {obj.PTOL1}, {obj.PTOL2});";
+            string sql = $"INSERT INTO T1CTABH (TXTYP, DESCR, PERMI, PAAC1, PADE1, PARF1, PACO1, PACT1, PAAC2, PADE2, PARF2, PACO2, PACT2, CRAT, CHAT, NRANA, EXPRT, PTOL1, PTOL2) VALUES ('{obj.TXTYP}', '{obj.DESCR}', '{obj.PERMI}', '{obj.PAAC1}', '{obj.PADE1}', '{obj.PARF1}', '{obj.PACO1}', '{obj.PACT1}', '{obj.PAAC2}', '{obj.PADE2}', '{obj.PARF2}', '{obj.PACO2}', '{obj.PACT2}', '{obj.CRAT}', '{obj.CHAT}', '{obj.NRANA}', '{obj.EXPRT}', '{obj.PTOL1}', '{obj.PTOL2}');";
             UIXQuery.ExecuteCustom(sql, _connection);
         }
 

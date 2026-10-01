@@ -110,7 +110,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         #region Methods PRIVATE
         private void Insert(T1GROUP obj)
         {
-            string sql = $"INSERT INTO T1GROUP (GRNA, GTYP, CRAT, CHAT) VALUES ({obj.GRNA}, {obj.GTYP}, {obj.CRAT}, {obj.CHAT});";
+            string sql = $"INSERT INTO T1GROUP (GRNA, GTYP, CRAT, CHAT) VALUES ('{obj.GRNA}', '{obj.GTYP}', '{obj.CRAT}', '{obj.CHAT}');";
             UIXQuery.ExecuteCustom(sql, _connection);
 
             using SQLiteCommand idCmd = _connection.CreateCommand();

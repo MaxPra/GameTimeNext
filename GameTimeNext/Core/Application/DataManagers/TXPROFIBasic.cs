@@ -161,7 +161,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         #region Methods PRIVATE
         private void Insert(T1PROFI obj)
         {
-            string sql = $"INSERT INTO T1PROFI (GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, CRAT, CHAT, ACCO, ACIN, ACAC, CUPT, ETMA, ETME, ETCO, ETTY, ETML, ARCH, PLAFO) VALUES ({obj.GANA}, {obj.FIPL}, {obj.LAPL}, {obj.PPFN}, {obj.EXGF}, {obj.SAID}, {obj.PRSE}, {obj.EXEC}, {obj.CRAT}, {obj.CHAT}, {obj.ACCO}, {obj.ACIN}, {obj.ACAC}, {obj.CUPT}, {obj.ETMA}, {obj.ETME}, {obj.ETCO}, {obj.ETTY}, {obj.ETML}, {obj.ARCH}, {obj.PLAFO});";
+            string sql = $"INSERT INTO T1PROFI (GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, CRAT, CHAT, ACCO, ACIN, ACAC, CUPT, ETMA, ETME, ETCO, ETTY, ETML, ARCH, PLAFO) VALUES ('{obj.GANA}', '{obj.FIPL}', '{obj.LAPL}', '{obj.PPFN}', '{obj.EXGF}', '{obj.SAID}', '{obj.PRSE}', '{obj.EXEC}', '{obj.CRAT}', '{obj.CHAT}', '{obj.ACCO}', '{obj.ACIN}', '{obj.ACAC}', '{obj.CUPT}', '{obj.ETMA}', '{obj.ETME}', '{obj.ETCO}', '{obj.ETTY}', '{obj.ETML}', '{obj.ARCH}', '{obj.PLAFO}');";
             UIXQuery.ExecuteCustom(sql, _connection);
 
             using SQLiteCommand idCmd = _connection.CreateCommand();

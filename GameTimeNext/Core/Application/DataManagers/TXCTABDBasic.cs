@@ -118,7 +118,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         #region Methods PRIVATE
         private void Insert(T1CTABD obj)
         {
-            string sql = $"INSERT INTO T1CTABD (TXTYP, TXNUM, DESCR, CRAT, CHAT, PARM1, PARM2) VALUES ({obj.TXTYP}, {obj.TXNUM}, {obj.DESCR}, {obj.CRAT}, {obj.CHAT}, {obj.PARM1}, {obj.PARM2});";
+            string sql = $"INSERT INTO T1CTABD (TXTYP, TXNUM, DESCR, CRAT, CHAT, PARM1, PARM2) VALUES ('{obj.TXTYP}', '{obj.TXNUM}', '{obj.DESCR}', '{obj.CRAT}', '{obj.CHAT}', '{obj.PARM1}', '{obj.PARM2}');";
             UIXQuery.ExecuteCustom(sql, _connection);
         }
 

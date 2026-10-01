@@ -360,6 +360,8 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
 
         public class SqliteDataType
         {
+            // OFDOI: Centralize data conversion between SQLite and C# values
+
             private static class SqliteString
             {
                 public const string Integer = "INTEGER";
