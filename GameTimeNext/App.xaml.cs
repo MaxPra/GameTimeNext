@@ -114,9 +114,6 @@ namespace GameTimeNext
                 if (FnSystem.IsDebug())
                 {
                     backupPath = AppConfig.Dev.BackupDirectoryPath;
-
-                    if (!Directory.Exists(backupPath))
-                        Directory.CreateDirectory(backupPath);
                 }
 
                 FnLog.AddInfo(null, "Creating backup at: " + backupPath);

@@ -1,0 +1,2 @@
+- !Directory.Exists followed by Directory.Create -> FnPath.EnsureDirectoryExists
+- String.IsNullOrWhitespace -> FnString.IsNullEmptyOrWhitespace

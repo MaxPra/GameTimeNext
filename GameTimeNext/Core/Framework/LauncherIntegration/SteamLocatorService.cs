@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using System.IO;
 using System.Text.RegularExpressions;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Framework.LauncherIntegration
 {
@@ -27,10 +28,10 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
         public static bool IsGameInstalledByAppId(string appId)
         {
             var root = GetSteamRoot();
-            if (string.IsNullOrWhiteSpace(root))
+            if (FnString.IsNullEmptyOrWhitespace(root))
                 return false;
 
-            var libs = SteamLibrariesHelper.GetLibraryPaths(root);
+            var libs = SteamLibrariesHelper.GetLibraryPaths(root!);
             foreach (var lib in libs)
             {
                 // Stelle sicher, dass wir genau auf ".../steamapps" zeigen
@@ -57,7 +58,7 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
 
                 // 3) Fallback über installdir -> .../steamapps/common/<installdir>
                 var installDirName = GetVdfValue(txt, "installdir");
-                if (!string.IsNullOrWhiteSpace(installDirName))
+                if (!FnString.IsNullEmptyOrWhitespace(installDirName))
                 {
                     var gameDir = Path.Combine(steamappsDir, "common", installDirName);
                     if (Directory.Exists(gameDir))

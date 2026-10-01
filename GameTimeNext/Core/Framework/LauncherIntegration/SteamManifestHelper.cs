@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Text.RegularExpressions;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Framework.LauncherIntegration
 {
@@ -55,7 +56,7 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
         {
             // <library>\common\<installdir>
             var common = Path.Combine(g.LibraryPath.Replace('/', '\\'), "common");
-            if (!string.IsNullOrWhiteSpace(g.InstallDir))
+            if (!FnString.IsNullEmptyOrWhitespace(g.InstallDir))
             {
                 var p = Path.Combine(common, g.InstallDir);
                 if (Directory.Exists(p)) return p;

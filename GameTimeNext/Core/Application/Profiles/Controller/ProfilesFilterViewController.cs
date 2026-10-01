@@ -7,6 +7,7 @@ using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements.UserControls;
 using UIX.ViewController.Engine.Runnables;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Profiles.Controller
 {
@@ -126,7 +127,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             states = T1GROUPs.Where(s => s.GTYP == GroupType.Condition).ToList();
             T1GROUPs = T1GROUPs.Where(s => s.GTYP == GroupType.Tag).ToList();
 
-            if (!string.IsNullOrWhiteSpace(searchText))
+            if (!FnString.IsNullEmptyOrWhitespace(searchText))
             {
                 T1GROUPs = T1GROUPs.Where(st => st.GRNA.Contains(searchText, StringComparison.OrdinalIgnoreCase)).ToList();
             }

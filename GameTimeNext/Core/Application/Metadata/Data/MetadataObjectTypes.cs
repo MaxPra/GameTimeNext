@@ -1,3 +1,5 @@
+using UIX.ViewController.Engine.Utils;
+
 namespace GameTimeNext.Core.Application.Metadata.Data
 {
     public static class MetadataObjectTypes
@@ -14,7 +16,7 @@ namespace GameTimeNext.Core.Application.Metadata.Data
 
         public static string GetText(string key)
         {
-            if (string.IsNullOrWhiteSpace(key))
+            if (FnString.IsNullEmptyOrWhitespace(key))
                 return string.Empty;
 
             Entry? entry = _entries.FirstOrDefault(x => string.Equals(x.Key, key, StringComparison.OrdinalIgnoreCase));

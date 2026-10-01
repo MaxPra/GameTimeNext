@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Framework.GitHub
 {
@@ -132,7 +133,7 @@ namespace GameTimeNext.Core.Framework.GitHub
 
         private static Version? ExtractVersion(string input)
         {
-            if (string.IsNullOrWhiteSpace(input))
+            if (FnString.IsNullEmptyOrWhitespace(input))
                 return null;
 
             Match match = Regex.Match(input, @"\d+(\.\d+){1,3}");

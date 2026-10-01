@@ -1,5 +1,6 @@
 ﻿using GameTimeNext.Core.Framework.Config;
 using System.IO;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.MigrationTasks
 {
@@ -31,7 +32,7 @@ namespace GameTimeNext.Core.Application.MigrationTasks
                         long rowid = Convert.ToInt64(rowObj);
                         var ppfnObj = reader["PPFN"];
                         var ppfn = ppfnObj?.ToString();
-                        if (string.IsNullOrEmpty(ppfn))
+                        if (FnString.IsNullEmptyOrWhitespace(ppfn))
                             continue;
 
                         var fileName = Path.GetFileName(ppfn);
@@ -71,8 +72,8 @@ namespace GameTimeNext.Core.Application.MigrationTasks
                     while (reader.Read())
                     {
                         var ppfn = reader["PPFN"]?.ToString();
-                        if (!string.IsNullOrEmpty(ppfn))
-                            referencedFiles.Add(ppfn);
+                        if (!FnString.IsNullEmptyOrWhitespace(ppfn))
+                            referencedFiles.Add(ppfn!);
                     }
                 }
             }

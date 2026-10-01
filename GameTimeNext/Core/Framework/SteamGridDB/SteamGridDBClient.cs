@@ -1,4 +1,5 @@
 ﻿using GameTimeNext.Core.Framework.Config;
+using GameTimeNext.Core.Framework.Utils;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using System.IO;
@@ -115,7 +116,7 @@ namespace GameTimeNext.Core.Framework.SteamGridDB
             string? directory = Path.GetDirectoryName(targetPath);
 
             if (!FnString.IsNullEmptyOrWhitespace(directory))
-                Directory.CreateDirectory(directory);
+                FnDirectory.EnsureDirectoryExists(directory!);
 
             using var httpClient = new HttpClient();
             httpClient.Timeout = TimeSpan.FromSeconds(20);

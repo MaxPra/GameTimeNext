@@ -15,13 +15,11 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
             {
                 Guid packageGuid = Guid.NewGuid();
 
-                if (!Directory.Exists(outputDirectoryPath))
-                    Directory.CreateDirectory(outputDirectoryPath);
+                FnDirectory.EnsureDirectoryExists(outputDirectoryPath);
 
                 string packageName = $"Import_Package_{packageGuid:N}";
                 string tempDirectoryPath = Path.Combine(outputDirectoryPath, packageName);
-                if (!Directory.Exists(tempDirectoryPath))
-                    Directory.CreateDirectory(tempDirectoryPath);
+                FnDirectory.EnsureDirectoryExists(tempDirectoryPath);
 
                 try
                 {
@@ -95,8 +93,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 string tempDirectoryName = packageFileInfo.Name.Split('.').SkipLast(1).Last();
                 LogInfo($"Importing ImportPackage \"{tempDirectoryName}\"...", subSystem: "ImportPackage", method: "ImportSinglePackage");
                 string tempDirectoryPath = Path.Combine(AppConfig.Temp.ImportDirectoryPath, tempDirectoryName);
-                if (!Directory.Exists(tempDirectoryPath))
-                    Directory.CreateDirectory(tempDirectoryPath);
+                FnDirectory.EnsureDirectoryExists(tempDirectoryPath);
 
                 try
                 {

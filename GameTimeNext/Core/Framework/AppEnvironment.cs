@@ -199,9 +199,6 @@ namespace GameTimeNext.Core.Framework
                 if (FnSystem.IsDebug())
                 {
                     backupPath = AppConfig.Dev.BackupDirectoryPath;
-
-                    if (!Directory.Exists(backupPath))
-                        Directory.CreateDirectory(backupPath);
                 }
 
                 if (!Directory.Exists(backupPath))
@@ -269,6 +266,7 @@ namespace GameTimeNext.Core.Framework
         {
             if (!File.Exists(AppConfig.Storage.AppConfigFilePath))
             {
+                FnDirectory.EnsureDirectoryExists(AppConfig.Storage.StorageDirectoryPath);
                 FileStream fs = File.Create(AppConfig.Storage.AppConfigFilePath);
                 fs.Close();
             }

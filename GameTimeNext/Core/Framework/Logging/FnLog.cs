@@ -1,6 +1,7 @@
 ﻿using GameTimeNext.Core.Framework.Utils;
 using System.IO;
 using UIX.ViewController.Engine.Runnables;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Framework.Logging
 {
@@ -18,7 +19,7 @@ namespace GameTimeNext.Core.Framework.Logging
 
         public static void Configure(string logFilePath)
         {
-            if (string.IsNullOrWhiteSpace(logFilePath))
+            if (FnString.IsNullEmptyOrWhitespace(logFilePath))
                 throw new ArgumentException(FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Log file path"), nameof(logFilePath));
 
             _logFilePath = logFilePath;
@@ -35,16 +36,16 @@ namespace GameTimeNext.Core.Framework.Logging
 
         public static void Add(LogType logType, object? source, string message, Exception? exception = null)
         {
-            if (string.IsNullOrWhiteSpace(_logFilePath))
+            if (FnString.IsNullEmptyOrWhitespace(_logFilePath))
                 throw new InvalidOperationException("FnLog is not configured. Call Configure(...) first.");
 
-            if (string.IsNullOrWhiteSpace(message))
+            if (FnString.IsNullEmptyOrWhitespace(message))
                 throw new ArgumentException(FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Message"), nameof(message));
 
             string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             string? sourceName = GetSourceName(source);
 
-            string formattedMessage = string.IsNullOrWhiteSpace(sourceName)
+            string formattedMessage = FnString.IsNullEmptyOrWhitespace(sourceName)
                 ? $"{timestamp} - {logType} - {message}"
                 : $"{timestamp} - {logType} - [{sourceName}] {message}";
 
@@ -52,8 +53,8 @@ namespace GameTimeNext.Core.Framework.Logging
                 formattedMessage = $"{formattedMessage}{Environment.NewLine}{exception}";
 
             string? directory = Path.GetDirectoryName(_logFilePath);
-            if (!string.IsNullOrWhiteSpace(directory))
-                Directory.CreateDirectory(directory);
+            if (!FnString.IsNullEmptyOrWhitespace(directory))
+                FnDirectory.EnsureDirectoryExists(directory!);
 
             lock (SyncRoot)
             {
@@ -67,7 +68,7 @@ namespace GameTimeNext.Core.Framework.Logging
                 return null;
 
             if (source is string sourceName)
-                return string.IsNullOrWhiteSpace(sourceName) ? null : sourceName;
+                return FnString.IsNullEmptyOrWhitespace(sourceName) ? null : sourceName;
 
             if (source is UIXApplication application)
                 return application.GetType().Name;

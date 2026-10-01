@@ -3,6 +3,7 @@ using GameTimeNext.Core.Framework.DataBase.Migration;
 using System.Data.SQLite;
 using System.Globalization;
 using UIX.ViewController.Engine.DataBaseObjects;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Metadata.Data
 {
@@ -275,7 +276,7 @@ namespace GameTimeNext.Core.Application.Metadata.Data
 
         private DateTime ParseDbDateTime(string value)
         {
-            if (string.IsNullOrWhiteSpace(value))
+            if (FnString.IsNullEmptyOrWhitespace(value))
                 return DateTime.MinValue;
 
             if (DateTime.TryParseExact(value, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime result))

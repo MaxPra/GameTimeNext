@@ -6,6 +6,7 @@ using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.Events;
 using UIX.ViewController.Engine.FrameworkElements.Windows;
 using UIX.ViewController.Engine.Runnables;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Framework.UI.Dialogs
 {
@@ -154,7 +155,7 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
             // Do not show dialog as separate taskbar window
             GetWnd().ShowInTaskbar = false;
 
-            if (string.IsNullOrWhiteSpace(title))
+            if (FnString.IsNullEmptyOrWhitespace(title))
                 title = DeriveTitleFromIcon(icon);
 
             GetWnd().Title = title;

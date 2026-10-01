@@ -316,8 +316,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             {
                 exportPath = AppConfig.Dev.BackupDirectoryPath;
 
-                if (!Directory.Exists(exportPath))
-                    Directory.CreateDirectory(exportPath);
+                FnDirectory.EnsureDirectoryExists(exportPath);
             }
 
             GetApp().Loader.Begin("Creating backup...");

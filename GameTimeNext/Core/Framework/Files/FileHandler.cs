@@ -34,7 +34,7 @@ namespace GameTimeNext.Core.Framework.Files
             }
             else
             {
-                Directory.CreateDirectory(appFolderPathDev);
+                FnDirectory.EnsureDirectoryExists(appFolderPathDev);
             }
         }
 
@@ -45,10 +45,7 @@ namespace GameTimeNext.Core.Framework.Files
                 throw new DirectoryNotFoundException("Quellordner nicht gefunden: " + sourceDirectory);
             }
 
-            if (!Directory.Exists(targetDirectory))
-            {
-                Directory.CreateDirectory(targetDirectory);
-            }
+            FnDirectory.EnsureDirectoryExists(targetDirectory);
 
             // Dateien kopieren
             string[] files = Directory.GetFiles(sourceDirectory);
@@ -102,8 +99,7 @@ namespace GameTimeNext.Core.Framework.Files
             {
                 backupPath = AppConfig.Dev.BackupDirectoryPath;
 
-                if (!Directory.Exists(backupPath))
-                    Directory.CreateDirectory(backupPath);
+                FnDirectory.EnsureDirectoryExists(backupPath);
             }
 
             if (!Directory.Exists(backupPath))

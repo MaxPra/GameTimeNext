@@ -6,6 +6,7 @@ using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements.UserControls;
 using UIX.ViewController.Engine.Runnables;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Profiles.Controller
 {
@@ -123,12 +124,12 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             List<SteamGame> games = new List<SteamGame>();
 
             var root = SteamLocatorService.GetSteamRoot();
-            if (string.IsNullOrEmpty(root))
+            if (FnString.IsNullEmptyOrWhitespace(root))
             {
                 // Todo Messagebox
             }
 
-            var libs = SteamLibrariesHelper.GetLibraryPaths(root);
+            var libs = SteamLibrariesHelper.GetLibraryPaths(root!);
             games = SteamManifestHelper.ScanAllGames(libs);
 
             // Tools/Redistributables ausblenden
@@ -149,15 +150,15 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             games = games.Where(g => SteamManifestHelper.ResolveInstallPath(g) != null).ToList();
 
             // Suche
-            if (!string.IsNullOrWhiteSpace(GetView().TxbSearch.Text))
+            if (!FnString.IsNullEmptyOrWhitespace(GetView().TxbSearch.Text))
                 games = games.Where(g => g.Name?.IndexOf(GetView().TxbSearch.Text, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
 
             // Duplikate entfernen (pro AppID ein Eintrag; bevorzugt mit gültigem InstallPath)
             games = games
                 .GroupBy(g => g.AppId)
                 .Select(grp =>
-                    grp.OrderByDescending(x => !string.IsNullOrEmpty(SteamManifestHelper.ResolveInstallPath(x)))
-                       .ThenByDescending(x => !string.IsNullOrEmpty(x.InstallDir))
+                    grp.OrderByDescending(x => !FnString.IsNullEmptyOrWhitespace(SteamManifestHelper.ResolveInstallPath(x)))
+                       .ThenByDescending(x => !FnString.IsNullEmptyOrWhitespace(x.InstallDir))
                        .ThenBy(x => x.LibraryPath)
                        .First())
                 .OrderBy(g => g.Name, StringComparer.OrdinalIgnoreCase)

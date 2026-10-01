@@ -1,4 +1,5 @@
 ﻿using GameTimeNext.Core.Framework.Components.Base;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Profiles.Components
 {
@@ -83,7 +84,7 @@ namespace GameTimeNext.Core.Application.Profiles.Components
 
         private static bool IsIgnored(string name)
         {
-            if (string.IsNullOrWhiteSpace(name)) return false;
+            if (FnString.IsNullEmptyOrWhitespace(name)) return false;
             var lower = name.ToLowerInvariant();
             return IgnoreSubstrings.Any(sub => lower.Contains(sub));
         }

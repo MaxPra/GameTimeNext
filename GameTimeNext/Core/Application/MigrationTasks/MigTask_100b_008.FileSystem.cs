@@ -51,8 +51,7 @@ namespace GameTimeNext.Core.Application.MigrationTasks
             oldDbManager.Initialize(oldConfig.DataBaseFilePath);
             using SQLiteConnection oldDb = oldDbManager.GetConnection();
             DataBaseManager newDbManager = new DataBaseManager();
-            if (!Directory.Exists(AppConfig.Storage.StorageDirectoryPath))
-                Directory.CreateDirectory(AppConfig.Storage.StorageDirectoryPath);
+            FnDirectory.EnsureDirectoryExists(AppConfig.Storage.StorageDirectoryPath);
             newDbManager.Initialize(AppConfig.Storage.DatabaseFilePath);
             using SQLiteConnection newDb = newDbManager.GetConnection();
 
@@ -80,8 +79,7 @@ namespace GameTimeNext.Core.Application.MigrationTasks
             if (!File.Exists(oldPath)) return;
 
             FileInfo newFileInfo = new FileInfo(newPath);
-            if (!newFileInfo.Directory!.Exists)
-                Directory.CreateDirectory(newFileInfo.DirectoryName!);
+            FnDirectory.EnsureDirectoryExists(newFileInfo.DirectoryName!);
 
             File.Copy(oldPath, newPath, true);
         }

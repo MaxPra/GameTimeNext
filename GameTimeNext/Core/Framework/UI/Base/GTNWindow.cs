@@ -10,6 +10,7 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using UIX.ViewController.Engine.FrameworkElements.Windows;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Framework.UI.Base
 {
@@ -436,7 +437,7 @@ namespace GameTimeNext.Core.Framework.UI.Base
                 if (item == null)
                     return false;
 
-                if (string.IsNullOrWhiteSpace(searchText))
+                if (FnString.IsNullEmptyOrWhitespace(searchText))
                     return true;
 
                 var text = item.ToString() ?? string.Empty;
@@ -457,7 +458,7 @@ namespace GameTimeNext.Core.Framework.UI.Base
                 return;
             }
 
-            if (showAllWhenEmpty && string.IsNullOrWhiteSpace(ApplicationSearchText))
+            if (showAllWhenEmpty && FnString.IsNullEmptyOrWhitespace(ApplicationSearchText))
                 RefreshApplicationSearchFilter();
 
             _applicationSearchBox.IsDropDownOpen = HasVisibleItems();

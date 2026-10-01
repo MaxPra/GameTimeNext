@@ -13,7 +13,7 @@ namespace GameTimeNext.Core.Framework.Utils
         /// <param name="overwrite">Überschreiben bereits vorhandener Dateien</param>
         public static void CopyDirectory(string sourceDir, string targetDir, string[] filesToSkip, bool overwrite = true)
         {
-            Directory.CreateDirectory(targetDir);
+            FnDirectory.EnsureDirectoryExists(targetDir);
 
             // Dateien kopieren
             foreach (var file in Directory.GetFiles(sourceDir))
@@ -32,6 +32,16 @@ namespace GameTimeNext.Core.Framework.Utils
                 var dirName = Path.GetFileName(directory);
                 var destDir = Path.Combine(targetDir, dirName);
                 CopyDirectory(directory, destDir, filesToSkip, overwrite);
+            }
+        }
+
+        public static void EnsureDirectoryExists(string path, bool requireParentExists = false)
+        {
+            if (!Directory.Exists(path))
+            {
+                DirectoryInfo? parentDirectoryInfo = new DirectoryInfo(path).Parent;
+                if (!requireParentExists || (parentDirectoryInfo is not null && parentDirectoryInfo.Exists))
+                    Directory.CreateDirectory(path);
             }
         }
     }

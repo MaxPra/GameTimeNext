@@ -5,6 +5,7 @@ using GameTimeNext.Core.Application.Profiles.Components;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Config;
+using GameTimeNext.Core.Framework.Utils;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing;
 using SixLabors.ImageSharp.Drawing.Processing;
@@ -14,7 +15,6 @@ using System.Data.SQLite;
 using System.IO;
 using System.Text;
 using UIX.ViewController.Engine.FrameworkElements.Loader;
-using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.GTXMigration
@@ -319,30 +319,6 @@ namespace GameTimeNext.Core.Application.GTXMigration
             }
         }
 
-        private List<T1SESSI> GetAllT1SESSIsOrderedByPFID()
-        {
-            List<T1SESSI> t1sessis = new List<T1SESSI>();
-
-            UIXQuery query = new UIXQuery(K1SESSI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
-
-            query.AddField(K1SESSI.Name, K1SESSI.Fields.SEID);
-            query.AddField(K1SESSI.Name, K1SESSI.Fields.PFID);
-
-            query.AddOrderBy(K1SESSI.Name, K1SESSI.Fields.PFID, OrderDirection.ASC);
-
-            using (var reader = query.Execute())
-            {
-                while (reader.Read())
-                {
-                    long seid = UIXQuery.GetInt64(reader, K1SESSI.Name, K1SESSI.Fields.SEID);
-
-                    t1sessis.Add(new TXSESSI().Read(seid));
-                }
-            }
-
-            return t1sessis;
-        }
-
         private DateTime ParseOldDateTime(object value)
         {
             if (value == null || value == DBNull.Value)
@@ -352,7 +328,7 @@ namespace GameTimeNext.Core.Application.GTXMigration
 
             string str = value.ToString();
 
-            if (string.IsNullOrWhiteSpace(str))
+            if (FnString.IsNullEmptyOrWhitespace(str))
             {
                 return DateTime.MinValue;
             }
@@ -438,10 +414,7 @@ namespace GameTimeNext.Core.Application.GTXMigration
                 throw new DirectoryNotFoundException("Quellordner nicht gefunden: " + sourceFolder);
             }
 
-            if (!Directory.Exists(targetFolder))
-            {
-                Directory.CreateDirectory(targetFolder);
-            }
+            FnDirectory.EnsureDirectoryExists(targetFolder);
 
             string[] files = Directory.GetFiles(sourceFolder);
             int total = files.Length;
@@ -517,16 +490,6 @@ namespace GameTimeNext.Core.Application.GTXMigration
                     }
                 }
             }
-        }
-
-        private static void ResizeTo600x900(IImageProcessingContext ctx)
-        {
-            ResizeOptions opt = new ResizeOptions();
-            opt.Size = new Size(600, 900);
-            opt.Mode = ResizeMode.Crop;
-            opt.Position = AnchorPositionMode.Center;
-
-            ctx.Resize(opt);
         }
 
         private static void DrawSlantedOverlays(

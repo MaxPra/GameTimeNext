@@ -278,23 +278,14 @@ namespace GameTimeNext.Core.Framework.Config
 
         private static string ReturnEnsureDirectoryExists(string path, bool requireParentExists = false)
         {
-            if (!Directory.Exists(path))
-            {
-                DirectoryInfo? parentDirectoryInfo = new DirectoryInfo(path).Parent;
-                if (!requireParentExists || (parentDirectoryInfo is not null && parentDirectoryInfo.Exists))
-                    Directory.CreateDirectory(path);
-            }
+            FnDirectory.EnsureDirectoryExists(path, requireParentExists);
 
             return path;
         }
 
         private static string ReturnEnsureFileExists(string path)
         {
-            if (!File.Exists(path))
-            {
-                FileStream fs = File.Create(path);
-                fs.Close();
-            }
+            FnFile.EnsureFileExists(path);
 
             return path;
         }

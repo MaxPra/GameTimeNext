@@ -110,8 +110,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     actualOutputDirectoryPath = outputDirectoryPath!;
                 }
 
-                if (!Directory.Exists(actualOutputDirectoryPath))
-                    Directory.CreateDirectory(actualOutputDirectoryPath);
+                FnDirectory.EnsureDirectoryExists(actualOutputDirectoryPath);
 
                 string filePath = Path.Combine(actualOutputDirectoryPath, $"{tableName}.csv");
                 File.WriteAllLines(filePath, csvLines, Encoding.UTF8);
