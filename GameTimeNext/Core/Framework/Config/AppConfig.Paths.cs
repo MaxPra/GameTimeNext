@@ -10,7 +10,7 @@ namespace GameTimeNext.Core.Framework.Config
     {
         public static class Root
         {
-            public static string PublisherName = "MaxPra";
+            public static string PublisherName = "CryloudStudios";
             public static string ApplicationName = "GameTimeNext";
             public static string DatabaseFileName = ApplicationName + "Db.db";
             public static string AppConfigFileName = "appConfig.gtnconf";

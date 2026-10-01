@@ -25,7 +25,7 @@ namespace GameTimeNext
             base.OnStartup(e);
 
             // Sicherstellen, dass nur eine Instance läuft
-            if (!FnSystem.TryAcquireSingleInstance())
+            if (!FnSystem.IsDebug() && !FnSystem.TryAcquireSingleInstance())
             {
                 Shutdown();
                 return;
@@ -62,6 +62,8 @@ namespace GameTimeNext
 
         private void InitializeApp()
         {
+            FnLog.Configure(AppConfig.LogFilePath);
+
             // FileSystem Migration
             MigTask_100b_008.MigrateFileSystem();
 
@@ -69,8 +71,6 @@ namespace GameTimeNext
             FileHandler.CreateDevAppFolder();
 
             AppEnvironment.LoadAppConfig();
-
-            FnLog.Configure(AppConfig.LogFilePath);
 
             FnLog.AddInfo("MainApp", "*** Initializing Application... ***");
 
@@ -96,12 +96,6 @@ namespace GameTimeNext
 
         protected override void OnExit(ExitEventArgs e)
         {
-            //if (!CanCloseApplication())
-            //{
-            //    e.ApplicationExitCode = 1;
-            //    return;
-            //}
-
             FnLog.AddInfo(null, "*** Shutdown initiated ***");
 
             FnLog.AddInfo(null, "Stopping background processes...");
@@ -126,17 +120,6 @@ namespace GameTimeNext
                 AppEnvironment.GetDataBaseManager().GetConnection().Close();
 
             FnLog.AddInfo(null, "*** Shutdown completed ***");
-        }
-
-        private bool CanCloseApplication()
-        {
-            foreach (var app in AppEnvironment.StartedApplications.Values)
-            {
-                if (!app.CanClose())
-                    return false;
-            }
-
-            return true;
         }
 
         private void CheckForNewVersion()
