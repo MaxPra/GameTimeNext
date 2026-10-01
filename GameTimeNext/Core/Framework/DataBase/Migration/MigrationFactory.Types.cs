@@ -360,7 +360,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
 
         public class SqliteDataType
         {
-            // OFDOI: Centralize data conversion between SQLite and C# values
+            // OFDOI: Centralize data conversion between SQLite, CSV and C# values
 
             private static class SqliteString
             {
