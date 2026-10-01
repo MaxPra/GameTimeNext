@@ -30,33 +30,28 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
 
                 // OFDO: Continue Logging
 
+                MigrationPath migPath = GetMigrationPath(type, overrideActionType);
+
                 // Determine the source directory path based on the import type
                 string sourceDirectoryPath;
-                if (type.Equals(ImportType.DevSync))
+                if (migPath.Equals(MigrationPath.DevSync))
+                {
                     sourceDirectoryPath = AppConfig.Dev.DevSyncDirectoryPath;
-                else if (type.Equals(ImportType.ImportPackages))
+                }
+                else if (migPath.Equals(MigrationPath.ImportPackages))
                 {
                     if (FnString.IsNullEmptyOrWhitespace(importDirectoryPathOverride))
-                        throw new ArgumentException("Inpuit directory path cannot be null or empty for ImportPackages export type.");
+                        throw new ArgumentException("Input directory path cannot be null or empty for ImportPackages export type.");
 
                     sourceDirectoryPath = importDirectoryPathOverride!;
                 }
-                else if (type.Equals(ImportType.MetadataGenerator))
-                    sourceDirectoryPath = string.Empty; // Not needed
-                else
-                    throw new NotImplementedException();
-
-                // Get all CSV files paths in the source directory
-                List<string> filePaths = new List<string>();
-                string? filePathMetah = null;
-                string? filePathMetap = null;
-                List<string> filePathsNotMetadata = new List<string>();
-                if (!type.Equals(ImportType.MetadataGenerator))
+                else if (migPath.Equals(MigrationPath.MetadataGenerator) || migPath.Equals(MigrationPath.ImportPackages_Create))
                 {
-                    filePaths = Directory.GetFiles(sourceDirectoryPath, "*.csv", SearchOption.TopDirectoryOnly).ToList();
-                    filePathMetah = filePaths.Where(p => p.EndsWith("T1METAH.csv")).SingleOrDefault();
-                    filePathMetap = filePaths.Where(p => p.EndsWith("T1METAP.csv")).SingleOrDefault();
-                    filePathsNotMetadata = filePaths.Where(p => !p.EndsWith("T1METAP.csv") && !p.EndsWith("T1METAH.csv")).ToList();
+                    sourceDirectoryPath = string.Empty; // Not needed
+                }
+                else
+                {
+                    throw new NotImplementedException();
                 }
 
                 if (connection is null)
@@ -72,21 +67,37 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                         tableSchemasBeforeImport = SchemaGenerator.GenerateFromMetadata();
                 }
 
-                // Import matadata tables data first
-                if (!type.Equals(ImportType.MetadataGenerator))
+                List<string> filePathsNotMetadata = new List<string>();
+                if (!migPath.Equals(MigrationPath.ImportPackages_Create))
                 {
-                    if (filePathMetah is not null)
+                    // Get all CSV files paths in the source directory
+                    List<string> filePaths = new List<string>();
+                    string? filePathMetah = null;
+                    string? filePathMetap = null;
+                    if (!type.Equals(ImportType.MetadataGenerator))
                     {
-                        ImportFromCsv(connection, filePathMetah);
-                        if (filePathMetap is not null)
-                            ImportFromCsv(connection, filePathMetap);
+                        filePaths = Directory.GetFiles(sourceDirectoryPath, "*.csv", SearchOption.TopDirectoryOnly).ToList();
+                        filePathMetah = filePaths.Where(p => p.EndsWith("T1METAH.csv")).SingleOrDefault();
+                        filePathMetap = filePaths.Where(p => p.EndsWith("T1METAP.csv")).SingleOrDefault();
+                        filePathsNotMetadata = filePaths.Where(p => !p.EndsWith("T1METAP.csv") && !p.EndsWith("T1METAH.csv")).ToList();
+                    }
+
+                    // Import matadata tables data first
+                    if (!type.Equals(ImportType.MetadataGenerator))
+                    {
+                        if (filePathMetah is not null)
+                        {
+                            ImportFromCsv(connection, filePathMetah);
+                            if (filePathMetap is not null)
+                                ImportFromCsv(connection, filePathMetap);
+                        }
                     }
                 }
 
                 // Apply metadata changes to the database
                 MigrateTablesFromMetadata(connection, tableSchemasBeforeImport);
 
-                if (!type.Equals(ImportType.MetadataGenerator))
+                if (!migPath.Equals(MigrationPath.MetadataGenerator) && !migPath.Equals(MigrationPath.ImportPackages_Create))
                 {
                     // Import other tables data
                     foreach (string filePath in filePathsNotMetadata)
@@ -97,24 +108,30 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 }
             }
 
-            public static void CopyDataToTargetDb(SQLiteConnection oldDb, SQLiteConnection newDb)
+            public static void CopyDataToTargetDb(SQLiteConnection oldDb, SQLiteConnection newDb, bool metadata = false)
             {
                 List<TableSchema> oldTableSchemas = SchemaGenerator.GenerateFromActualDatabase(oldDb);
-                List<TableSchema> newTableSchemas = SchemaGenerator.GenerateFromActualDatabase(newDb);
+                List<TableSchema> newTableSchemas;
+                if (metadata)
+                    newTableSchemas = MigrationFactory.Metadata.METADATA;
+                else
+                    newTableSchemas = SchemaGenerator.GenerateFromMetadata(connection: newDb);
 
                 oldTableSchemas.ForEach(oldTableSchema =>
                 {
+                    if (!oldTableSchema.IsMetadataTable.Equals(metadata)) return;
+
                     TableSchema? newTableSchema = newTableSchemas.Where(s => s.MENAM.Equals(oldTableSchema.MENAM)).SingleOrDefault();
                     if (newTableSchema is null) return;
 
                     List<string> sqlLines = new List<string>()
-                {
-                    $"ATTACH DATABASE '{oldDb.FileName}' AS olddb;",
-                    $"REPLACE INTO main.{oldTableSchema.MENAM} ({oldTableSchema.GetColumnNamesForSql(newTableSchema)})",
-                    $"SELECT {oldTableSchema.GetColumnNamesForSql(newTableSchema)}",
-                    $"FROM olddb.{oldTableSchema.MENAM};",
-                    $"DETACH DATABASE olddb;",
-                };
+                    {
+                        $"ATTACH DATABASE '{oldDb.FileName}' AS olddb;",
+                        $"REPLACE INTO main.{oldTableSchema.MENAM} ({oldTableSchema.GetColumnNamesForSql(newTableSchema)})",
+                        $"SELECT {oldTableSchema.GetColumnNamesForSql(newTableSchema)}",
+                        $"FROM olddb.{oldTableSchema.MENAM};",
+                        $"DETACH DATABASE olddb;",
+                    };
 
                     UIXQuery.ExecuteCustom(String.Join(Environment.NewLine, sqlLines), newDb);
                 });
@@ -191,6 +208,47 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 string actualTargetDirectoryPath = AppConfig.Storage.DefaultImagesSymbolsDirectoryPath;
 
                 CopyDirectory(actualSourceDirectoryPath, actualTargetDirectoryPath);
+            }
+
+            private static MigrationPath GetMigrationPath(ImportType importType, MigrationActionType? overrideActionType)
+            {
+                MigrationPath temp;
+
+                switch (importType)
+                {
+                    case ImportType.DevSync:
+                        temp = MigrationPath.DevSync;
+                        break;
+                    case ImportType.ImportPackages:
+                        temp = MigrationPath.ImportPackages;
+                        break;
+                    case ImportType.MetadataGenerator:
+                        temp = MigrationPath.MetadataGenerator;
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
+
+                if (temp.Equals(MigrationPath.ImportPackages))
+                {
+                    if (MigrationActionType.CREATE.Equals(overrideActionType))
+                    {
+                        temp = MigrationPath.ImportPackages_Create;
+                    }
+                }
+
+                return temp;
+            }
+
+            private enum MigrationPath
+            {
+                // Standalone-Paths
+                DevSync,
+                ImportPackages,
+                MetadataGenerator,
+
+                // Multilayer-Paths
+                ImportPackages_Create,
             }
         }
     }

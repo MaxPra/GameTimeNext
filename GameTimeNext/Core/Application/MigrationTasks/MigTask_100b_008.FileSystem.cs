@@ -2,10 +2,8 @@
 using GameTimeNext.Core.Framework.DataBase;
 using GameTimeNext.Core.Framework.DataBase.Migration;
 using GameTimeNext.Core.Framework.Utils;
-using System.Configuration;
 using System.Data.SQLite;
 using System.IO;
-using UIX.ViewController.Engine.Querying;
 
 namespace GameTimeNext.Core.Application.MigrationTasks
 {
@@ -63,6 +61,7 @@ namespace GameTimeNext.Core.Application.MigrationTasks
             else importType = MigrationFactory.ImportType.ImportPackages;
 
             MigrationFactory.Metadata.MigrateTables(newDb);
+            MigrationFactory.FromCsv.CopyDataToTargetDb(oldDb, newDb, metadata: true);
             MigrationFactory.FromCsv.CreateTables(importType, newDb);
             MigrationFactory.FromCsv.CopyDataToTargetDb(oldDb, newDb);
 
