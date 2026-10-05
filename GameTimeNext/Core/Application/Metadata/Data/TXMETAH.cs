@@ -210,8 +210,8 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             cmd.Parameters.AddWithValue("@MENAM", obj.MENAM);
             cmd.Parameters.AddWithValue("@DESCR", obj.DESCR);
             cmd.Parameters.AddWithValue("@MTYPE", obj.MTYPE);
-            cmd.Parameters.AddWithValue("@DSYNC", obj.DSYNC ? 1 : 0);
-            cmd.Parameters.AddWithValue("@GENER", obj.GENER ? 1 : 0);
+            cmd.Parameters.AddWithValue("@DSYNC", obj.DSYNC ? 1 : 0); // OFODI: Centralize Convert
+            cmd.Parameters.AddWithValue("@GENER", obj.GENER ? 1 : 0); // OFODI: Centralize Convert
             cmd.Parameters.AddWithValue("@CRAT", ToDbDateTime(obj.CRAT));
             cmd.Parameters.AddWithValue("@CRUS", obj.CRUS);
             cmd.Parameters.AddWithValue("@CHAT", ToDbDateTime(obj.CHAT));

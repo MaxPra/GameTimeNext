@@ -14,6 +14,7 @@ using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements;
 using UIX.ViewController.Engine.FrameworkElements.UserControls;
+using UIX.ViewController.Engine.Migration.Types;
 using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
@@ -157,7 +158,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
                     MetadataPosDataGridRow row = GetWnd().DgFields.CreateNewRow<MetadataPosDataGridRow>();
                     row.COPONAM = t1metap.PONAM;
                     row.COMENAM = t1metap.MENAM;
-                    row.CODATYP = MigrationFactory.SqliteDataType.GetByKey(t1metap.DATYP).Name;
+                    row.CODATYP = UIXSqliteDataType.GetByKey(t1metap.DATYP).Name;
                     row.CODESCR = t1metap.DESCR;
                     row.COPRIMK = t1metap.PRIMK;
                     row.CODALEN = t1metap.DALEN;

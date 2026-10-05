@@ -1,7 +1,7 @@
 ﻿using GameTimeNext.Core.Application.General.Controller;
-using GameTimeNext.Core.Framework.Logging;
 using System.Windows.Controls;
 using UIX.ViewController.Engine.Runnables;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.General
 {

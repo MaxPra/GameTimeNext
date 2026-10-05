@@ -239,13 +239,13 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             cmd.Parameters.AddWithValue("@DATYP", obj.DATYP);
             cmd.Parameters.AddWithValue("@DALEN", obj.DALEN);
             cmd.Parameters.AddWithValue("@PORDE", obj.PORDE);
-            cmd.Parameters.AddWithValue("@PRIMK", obj.PRIMK ? 1 : 0);
-            cmd.Parameters.AddWithValue("@AUTOI", obj.AUTOI ? 1 : 0);
+            cmd.Parameters.AddWithValue("@PRIMK", obj.PRIMK ? 1 : 0); // OFODI: Centralize Convert
+            cmd.Parameters.AddWithValue("@AUTOI", obj.AUTOI ? 1 : 0); // OFODI: Centralize Convert
             cmd.Parameters.AddWithValue("@CRAT", ToDbDateTime(obj.CRAT));
             cmd.Parameters.AddWithValue("@CRUS", obj.CRUS);
             cmd.Parameters.AddWithValue("@CHAT", ToDbDateTime(obj.CHAT));
             cmd.Parameters.AddWithValue("@CHUS", obj.CHUS);
-            cmd.Parameters.AddWithValue("@DEFAK", obj.DEFAK ? 1 : 0);
+            cmd.Parameters.AddWithValue("@DEFAK", obj.DEFAK ? 1 : 0); // OFODI: Centralize Convert
             cmd.Parameters.AddWithValue("@DEFVL", obj.DEFVL);
         }
 

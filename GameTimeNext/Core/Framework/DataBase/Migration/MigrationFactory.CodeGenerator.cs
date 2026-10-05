@@ -2,6 +2,7 @@
 using GameTimeNext.Core.Framework.Config;
 using System.IO;
 using System.Text;
+using UIX.ViewController.Engine.Migration.Types;
 using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Framework.DataBase.Migration
@@ -27,7 +28,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
 
                     if (t1metaps.Count == 0) throw new InvalidOperationException($"No metadata positions found for '{menam}'.");
 
-                    Dictionary<T1METAP, SqliteDataType> fields = GenerateFields(t1metaps);
+                    Dictionary<T1METAP, UIXSqliteDataType> fields = GenerateFields(t1metaps);
                     TableSchema tSchema = SchemaGenerator.GenerateSingleFromMetadata(t1metah.MENAM);
                     GenerateT1Class(suffix, tSchema, t1metah.DSYNC, fields);
                     GenerateK1Class(suffix, fields);
@@ -35,20 +36,20 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     GenerateTXClass(suffix);
                 }
 
-                private static Dictionary<T1METAP, SqliteDataType> GenerateFields(List<T1METAP> t1metaps)
+                private static Dictionary<T1METAP, UIXSqliteDataType> GenerateFields(List<T1METAP> t1metaps)
                 {
-                    Dictionary<T1METAP, SqliteDataType> temp = new Dictionary<T1METAP, SqliteDataType>();
+                    Dictionary<T1METAP, UIXSqliteDataType> temp = new Dictionary<T1METAP, UIXSqliteDataType>();
 
                     t1metaps.ForEach(t1metap =>
                     {
-                        SqliteDataType dataType = SqliteDataType.GetByKey(t1metap.DATYP);
+                        UIXSqliteDataType dataType = UIXSqliteDataType.GetByKey(t1metap.DATYP);
                         temp.Add(t1metap, dataType);
                     });
 
                     return temp;
                 }
 
-                private static void GenerateT1Class(string suffix, TableSchema tSchema, bool devSync, Dictionary<T1METAP, SqliteDataType> fields)
+                private static void GenerateT1Class(string suffix, TableSchema tSchema, bool devSync, Dictionary<T1METAP, UIXSqliteDataType> fields)
                 {
                     string className = $"T1{suffix}";
                     CodeBuilder code = new CodeBuilder();
@@ -66,7 +67,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     code.AddLine($"public override bool IsDevSynced => {(devSync ? "true" : "false")};");
                     code.AddLine();
 
-                    foreach ((int i, KeyValuePair<T1METAP, SqliteDataType> field) in fields.Index())
+                    foreach ((int i, KeyValuePair<T1METAP, UIXSqliteDataType> field) in fields.Index())
                     {
                         ColumnSchema cSchema = tSchema.Columns.Where(c => c.PONAM.Equals(field.Key.PONAM)).Single();
 
@@ -88,7 +89,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     code.SaveToFile(targetFilePath);
                 }
 
-                private static void GenerateK1Class(string suffix, Dictionary<T1METAP, SqliteDataType> fields)
+                private static void GenerateK1Class(string suffix, Dictionary<T1METAP, UIXSqliteDataType> fields)
                 {
                     string className = $"K1{suffix}";
                     string classNameT1 = $"T1{suffix}";
@@ -105,7 +106,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     // Sub-Classes
                     code.BeginBlock("public static class Fields");
 
-                    foreach (KeyValuePair<T1METAP, SqliteDataType> field in fields)
+                    foreach (KeyValuePair<T1METAP, UIXSqliteDataType> field in fields)
                     {
                         code.AddLine($"public const string {field.Key.PONAM} = \"{field.Key.PONAM}\";");
                     }
@@ -121,14 +122,14 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     code.SaveToFile(targetFilePath);
                 }
 
-                private static void GenerateTXBasicClass(string suffix, TableSchema tSchema, Dictionary<T1METAP, SqliteDataType> fields)
+                private static void GenerateTXBasicClass(string suffix, TableSchema tSchema, Dictionary<T1METAP, UIXSqliteDataType> fields)
                 {
                     string className = $"TX{suffix}Basic";
                     string classNameT1 = $"T1{suffix}";
                     string classNameK1 = $"K1{suffix}";
                     CodeBuilder code = new CodeBuilder();
 
-                    Dictionary<T1METAP, SqliteDataType> primkFields = fields.Where(p => p.Key.PRIMK).ToDictionary();
+                    Dictionary<T1METAP, UIXSqliteDataType> primkFields = fields.Where(p => p.Key.PRIMK).ToDictionary();
 
                     // Imports
                     code.AddLine($"using {AppConfig.Root.ApplicationName}.Core.Application.TableObjects;");
@@ -190,11 +191,11 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                         code.AddLine();
                         code.BeginBlock($"public virtual {classNameT1}? Read({Helpers.GetMethodParams(primkFields)})");
                         code.AddLine($"UIXQuery query = new UIXQuery({classNameK1}.Name, _connection);");
-                        foreach (KeyValuePair<T1METAP, SqliteDataType> field in fields)
+                        foreach (KeyValuePair<T1METAP, UIXSqliteDataType> field in fields)
                         {
                             code.AddLine($"query.AddField({classNameK1}.Name, {classNameK1}.Fields.{field.Key.PONAM});");
                         }
-                        foreach (KeyValuePair<T1METAP, SqliteDataType> field in primkFields)
+                        foreach (KeyValuePair<T1METAP, UIXSqliteDataType> field in primkFields)
                         {
                             code.AddLine($"query.AddWhere({classNameK1}.Name, {classNameK1}.Fields.{field.Key.PONAM}, QueryCompareType.EQUALS, {field.Key.PONAM.ToLowerInvariant()});");
                         }
@@ -213,11 +214,11 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                         code.AddLine();
                         code.BeginBlock($"public virtual List<{classNameT1}> ReadAll()");
                         code.AddLine($"UIXQuery query = new UIXQuery({classNameK1}.Name, _connection);");
-                        foreach (KeyValuePair<T1METAP, SqliteDataType> field in fields)
+                        foreach (KeyValuePair<T1METAP, UIXSqliteDataType> field in fields)
                         {
                             code.AddLine($"query.AddField({classNameK1}.Name, {classNameK1}.Fields.{field.Key.PONAM});");
                         }
-                        foreach (KeyValuePair<T1METAP, SqliteDataType> field in primkFields)
+                        foreach (KeyValuePair<T1METAP, UIXSqliteDataType> field in primkFields)
                         {
                             code.AddLine($"query.AddOrderBy({classNameK1}.Name, {classNameK1}.Fields.{field.Key.PONAM}, OrderDirection.ASC);");
                         }
@@ -244,7 +245,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                         code.AddLine();
                         code.BeginBlock($"protected static {classNameT1} Map(SQLiteDataReader reader)");
                         code.AddLine($"{classNameT1} obj = new {classNameT1}();");
-                        foreach (KeyValuePair<T1METAP, SqliteDataType> field in fields)
+                        foreach (KeyValuePair<T1METAP, UIXSqliteDataType> field in fields)
                         {
                             code.AddLine($"obj.{field.Key.PONAM} = {Helpers.GetUixQueryMethodCall(classNameK1, field)};");
                         }
@@ -264,7 +265,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                         code.BeginBlock($"private void Insert({classNameT1} obj)");                        
                         code.AddLine($"string sql = $\"INSERT INTO {classNameT1} ({Helpers.GetSqlInsertFields(fields)}) VALUES ({Helpers.GetSqlInsertValues(fields)});\";");
                         code.AddLine("UIXQuery.ExecuteCustom(sql, _connection);");
-                        KeyValuePair<T1METAP, SqliteDataType> autoiField = fields.Where(f => f.Key.AUTOI).SingleOrDefault();
+                        KeyValuePair<T1METAP, UIXSqliteDataType> autoiField = fields.Where(f => f.Key.AUTOI).SingleOrDefault();
                         if (autoiField.Key is not null)
                         {
                             code.AddLine();
@@ -321,11 +322,11 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
 
                 private static class Helpers
                 {
-                    public static string GetMethodParams(Dictionary<T1METAP, SqliteDataType> parameters)
+                    public static string GetMethodParams(Dictionary<T1METAP, UIXSqliteDataType> parameters)
                     {
                         List<string> paramStrings = new List<string>();
 
-                        foreach (KeyValuePair<T1METAP, SqliteDataType> parameter in parameters)
+                        foreach (KeyValuePair<T1METAP, UIXSqliteDataType> parameter in parameters)
                         {
                             paramStrings.Add($"{parameter.Value.CsType} {parameter.Key.PONAM.ToLowerInvariant()}");
                         }
@@ -333,12 +334,12 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                         return String.Join(", ", paramStrings);
                     }
 
-                    public static string GetSqlWheres(Dictionary<T1METAP, SqliteDataType> fields, bool withObjPrefix = false)
+                    public static string GetSqlWheres(Dictionary<T1METAP, UIXSqliteDataType> fields, bool withObjPrefix = false)
                     {
                         string objPrefix = withObjPrefix ? "obj." : string.Empty;
                         List<string> fieldStrings = new List<string>();
 
-                        foreach (KeyValuePair<T1METAP, SqliteDataType> field in fields)
+                        foreach (KeyValuePair<T1METAP, UIXSqliteDataType> field in fields)
                         {
                             string valPonam = withObjPrefix ? field.Key.PONAM : field.Key.PONAM.ToLowerInvariant();
 
@@ -348,27 +349,27 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                         return String.Join(" AND ", fieldStrings);
                     }
                     
-                    public static string GetSqlInsertFields(Dictionary<T1METAP, SqliteDataType> fields)
+                    public static string GetSqlInsertFields(Dictionary<T1METAP, UIXSqliteDataType> fields)
                     {
-                        Dictionary<T1METAP, SqliteDataType> filteredFields = fields.Where(f => !f.Key.AUTOI).ToDictionary();
+                        Dictionary<T1METAP, UIXSqliteDataType> filteredFields = fields.Where(f => !f.Key.AUTOI).ToDictionary();
 
                         return String.Join(", ", filteredFields.Select(f => f.Key.PONAM));
                     }
 
-                    public static string GetSqlInsertValues(Dictionary<T1METAP, SqliteDataType> fields)
+                    public static string GetSqlInsertValues(Dictionary<T1METAP, UIXSqliteDataType> fields)
                     {
-                        Dictionary<T1METAP, SqliteDataType> filteredFields = fields.Where(f => !f.Key.AUTOI).ToDictionary();
+                        Dictionary<T1METAP, UIXSqliteDataType> filteredFields = fields.Where(f => !f.Key.AUTOI).ToDictionary();
 
                         // OFDO: wird ToDbValue benötigt? return String.Join(", ", filteredFields.Select(f => $"{{ToDbValue(obj.{f.Key.PONAM})}}"));
                         return String.Join(", ", filteredFields.Select(f => $"'{{obj.{f.Key.PONAM}}}'"));
                     }
 
-                    public static string GetSqlUpdateFields(Dictionary<T1METAP, SqliteDataType> fields)
+                    public static string GetSqlUpdateFields(Dictionary<T1METAP, UIXSqliteDataType> fields)
                     {
-                        Dictionary<T1METAP, SqliteDataType> filteredFields = fields.Where(f => !f.Key.AUTOI).ToDictionary();
+                        Dictionary<T1METAP, UIXSqliteDataType> filteredFields = fields.Where(f => !f.Key.AUTOI).ToDictionary();
                         List<string> fieldStrings = new List<string>();
 
-                        foreach (KeyValuePair<T1METAP, SqliteDataType> field in filteredFields)
+                        foreach (KeyValuePair<T1METAP, UIXSqliteDataType> field in filteredFields)
                         {
                             // fieldStrings.Add($"{field.Key.PONAM} = '{{ToDbValue(obj.{field.Key.PONAM})}}'");
                             fieldStrings.Add($"{field.Key.PONAM} = '{{obj.{field.Key.PONAM}}}'");
@@ -377,7 +378,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                         return String.Join(", ", fieldStrings);
                     }
 
-                    public static string GetUixQueryMethodCall(string classNameK1, KeyValuePair<T1METAP, SqliteDataType> field)
+                    public static string GetUixQueryMethodCall(string classNameK1, KeyValuePair<T1METAP, UIXSqliteDataType> field)
                     {
                         string methodName = field.Value.GetUixQueryMethod();
                         string ponam = field.Key.PONAM;

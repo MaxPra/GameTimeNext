@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements.UserControls;
+using UIX.ViewController.Engine.Migration.Types;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
@@ -54,7 +55,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
         protected override async Task BuildFirstImplAsync()
         {
             // Datentypen Combobox füllen
-            IReadOnlyList<MigrationFactory.SqliteDataType> dataTypes = MigrationFactory.SqliteDataType.GetAll();
+            IReadOnlyList<UIXSqliteDataType> dataTypes = UIXSqliteDataType.GetAll();
 
             UIXManualCodetable codetable = new UIXManualCodetable();
 
@@ -68,7 +69,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
             T1METAP? metadataPosition = GetApp().T1METAP;
             if (metadataPosition != null)
             {
-                MigrationFactory.SqliteDataType? matchingDefinition = dataTypes.FirstOrDefault(x =>
+                UIXSqliteDataType? matchingDefinition = dataTypes.FirstOrDefault(x =>
                     string.Equals(x.Key, metadataPosition.DATYP, StringComparison.OrdinalIgnoreCase));
 
                 if (matchingDefinition == null)
@@ -123,7 +124,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
         private void BuildVisibilityDefault()
         {
             string selectedDataType = GetWnd().cmbDataType.SelectedValue?.ToString() ?? string.Empty;
-            MigrationFactory.SqliteDataType dataType = MigrationFactory.SqliteDataType.GetByKey(selectedDataType);
+            UIXSqliteDataType dataType = UIXSqliteDataType.GetByKey(selectedDataType);
 
             bool isActive = GetWnd().chbDefault.IsChecked ?? false;
 
@@ -146,7 +147,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
         protected override void CheckImpl()
         {
             string selectedDataType = GetWnd().cmbDataType.SelectedValue?.ToString() ?? string.Empty;
-            MigrationFactory.SqliteDataType dataType = MigrationFactory.SqliteDataType.GetByKey(selectedDataType);
+            UIXSqliteDataType dataType = UIXSqliteDataType.GetByKey(selectedDataType);
 
             // Order
             if (!FnControls.ContainsOnlyNumericValue(GetWnd().txbOrder))
@@ -210,7 +211,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
             if (selectedDataType.Equals("06"))
             {
                 // Checkbox
-                GetApp().T1METAP!.DEFVL = GetWnd().chbDefaultBool.IsChecked.Equals(true) ? "1" : "0";
+                GetApp().T1METAP!.DEFVL = GetWnd().chbDefaultBool.IsChecked.Equals(true) ? "1" : "0"; // OFODI: Centralize Convert
             }
             else
             {

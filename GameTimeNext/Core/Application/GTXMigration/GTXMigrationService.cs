@@ -205,7 +205,7 @@ namespace GameTimeNext.Core.Application.GTXMigration
 
                                 insertCmd.Parameters.AddWithValue("@ACCO", acco);
                                 insertCmd.Parameters.AddWithValue("@ACIN", acin);
-                                insertCmd.Parameters.AddWithValue("@ACAC", acac ? 1 : 0);
+                                insertCmd.Parameters.AddWithValue("@ACAC", acac ? 1 : 0); // OFODI: Centralize Convert
 
                                 insertCmd.Parameters.AddWithValue("@CUPT", cupt);
 

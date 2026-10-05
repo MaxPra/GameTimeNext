@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Data.SQLite;
 using System.Globalization;
 using System.IO;
+using UIX.ViewController.Engine.Migration.Types;
 using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Utils;
 
@@ -148,7 +149,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
             #region Properties
             public string PONAM { get; }
 
-            public SqliteDataType DATYP { get; }
+            public UIXSqliteDataType DATYP { get; }
 
             public int DALEN { get; }
 
@@ -168,7 +169,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
             public ColumnSchema(string ponam, string datyp, int dalen, int porde, bool primk, bool autoi, bool defak = false, string defvl = "", string? chat = null)
             {
                 PONAM = ponam;
-                DATYP = SqliteDataType.GetByKey(datyp);
+                DATYP = UIXSqliteDataType.GetByKey(datyp);
                 DALEN = dalen;
                 PORDE = porde;
                 PRIMK = primk;
@@ -358,143 +359,6 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
             #endregion
         }
 
-        public class SqliteDataType
-        {
-            // OFDOI: Centralize data conversion between SQLite, CSV and C# values
-
-            private static class SqliteString
-            {
-                public const string Integer = "INTEGER";
-                public const string Real = "REAL";
-                public const string DateTime = "DATETIME";
-                public const string Text = "TEXT";
-                public const string Varchar = "VARCHAR";
-                public const string Boolean = "BOOLEAN";
-            }
-
-            private static class CsString
-            {
-                public const string Integer = "int";
-                public const string DateTime = "DateTime";
-                public const string String = "string";
-                public const string Boolean = "bool";
-                public const string Long = "long";
-                public const string Double = "double";
-            }
-
-            private static ReadOnlyCollection<SqliteDataType> DATATYPES = new ReadOnlyCollection<SqliteDataType>(new List<SqliteDataType> ()
-                {
-                    new SqliteDataType("01", "String", SqliteString.Text, CsString.String, true, false),
-                    new SqliteDataType("02", "Integer", SqliteString.Integer, CsString.Integer, true, true),
-                    new SqliteDataType("03", "Long", SqliteString.Integer, CsString.Long, true, true),
-                    new SqliteDataType("04", "Double", SqliteString.Real, CsString.Double, true, true),
-                    new SqliteDataType("05", "DateTime", SqliteString.DateTime, CsString.DateTime, false, false),
-                    new SqliteDataType("06", "Boolean", SqliteString.Boolean, CsString.Boolean, true, false),
-                    new SqliteDataType("07", "MemoText", SqliteString.Text, CsString.String, false, false),
-                }
-            );
-
-            #region Properties
-            public string Key { get; }
-
-            public string Name { get; }
-
-            private string _sqliteType { get; }
-            public string CsType { get; }
-
-            public bool IsDefaultAllowed { get; }
-
-            public bool IsNumeric { get; }
-            #endregion
-
-            private SqliteDataType(string key, string name, string sqliteType, string csType, bool isDefaultAllowed, bool isNumeric)
-            {
-                Key = key;
-                Name = name;
-                _sqliteType = sqliteType;
-                CsType = csType;
-                IsDefaultAllowed = isDefaultAllowed;
-                IsNumeric = isNumeric;
-            }
-
-            #region Methods PUBLIC
-            public string GetSqliteType(int length = 0)
-            {
-                // TEXT, VARCHAR, VARCHAR(length)
-                if (_sqliteType.Equals(SqliteString.Text) && !Key.Equals("07"))
-                {
-                    string temp = SqliteString.Varchar;
-
-                    if (!length.Equals(0))
-                    {
-                        string lengthString = length.ToString("#");
-                        temp += $"({lengthString})";
-                    }
-
-                    return temp;
-                }
-
-                return _sqliteType;
-            }
-
-            public string GetUixQueryMethod()
-            {
-                switch (CsType)
-                {
-                    case CsString.Integer:
-                        return "GetInt32";
-                    case CsString.DateTime:
-                        return "GetDateTime";
-                    case CsString.Boolean:
-                        return "GetBool";
-                    case CsString.Long:
-                        return "GetInt64";
-                    case CsString.Double:
-                        return "GetDouble";
-                    default:
-                        return "GetString";
-                }
-            }
-
-            public static List<SqliteDataType> GetAll()
-            {
-                return DATATYPES.ToList();
-            }
-
-            public static SqliteDataType GetByKey(string key)
-            {
-                SqliteDataType? result = DATATYPES.Where(d => d.Key.ToLowerInvariant().Equals(key.ToLowerInvariant())).SingleOrDefault();
-                if (result is null)
-                    throw new InvalidDataException($"Unknown datatype of key \"{key}\".");
-
-                return result;
-            }
-
-            public static SqliteDataType GetBySqliteType(string name)
-            {
-                string typeName = name.Split(' ').First().Split('(').First();
-
-                switch (typeName)
-                {
-                    case SqliteString.Text:
-                        return DATATYPES.Where(t => t.Key.Equals("07")).Single();
-                    case SqliteString.Varchar:
-                        return DATATYPES.Where(t => t.Key.Equals("01")).Single();
-                    case SqliteString.Integer:
-                        return DATATYPES.Where(t => t.Key.Equals("02")).Single();
-                    case SqliteString.Real:
-                        return DATATYPES.Where(t => t.Key.Equals("04")).Single();
-                    case SqliteString.DateTime:
-                        return DATATYPES.Where(t => t.Key.Equals("05")).Single();
-                    case SqliteString.Boolean:
-                        return DATATYPES.Where(t => t.Key.Equals("06")).Single();
-                    default:
-                        throw new NotImplementedException();
-                }
-            }
-            #endregion
-        }
-
         private enum MigrationActionType
         {
             CREATE = 1,
@@ -614,7 +478,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                             string dflt = UIXQuery.GetString(reader, "dflt_value");
                             bool pk = UIXQuery.GetBool(reader, "pk");
 
-                            ColumnSchema cS = new ColumnSchema(name, SqliteDataType.GetBySqliteType(type).Key, 0, order, pk, false);
+                            ColumnSchema cS = new ColumnSchema(name, UIXSqliteDataType.GetBySqliteType(type).Key, 0, order, pk, false);
                             tS.AddColumn(cS);
                             order++;
                         }

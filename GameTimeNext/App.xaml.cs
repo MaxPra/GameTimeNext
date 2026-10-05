@@ -5,13 +5,12 @@ using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.Files;
 using GameTimeNext.Core.Framework.GitHub;
-using GameTimeNext.Core.Framework.Logging;
 using GameTimeNext.Core.Framework.Utils;
 using System.Diagnostics;
-using System.IO;
 using System.Windows;
 using System.Windows.Threading;
 using UIX.ViewController.Engine.Runnables;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext
 {
@@ -72,7 +71,7 @@ namespace GameTimeNext
 
             AppEnvironment.LoadAppConfig();
 
-            FnLog.AddInfo("MainApp", "*** Initializing Application... ***");
+            FnLog.AddInfo("MainApp", "*** Initializing Application... ***"); // OFDOI: Fix warning
 
             FnLog.AddInfo("MainApp", "Initiating Databasemanager...");
             AppEnvironment.InitiateDataBaseManager();

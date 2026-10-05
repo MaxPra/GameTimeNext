@@ -11,7 +11,6 @@ using GameTimeNext.Core.Application.TimeMonitoring;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.LauncherIntegration;
-using GameTimeNext.Core.Framework.Logging;
 using GameTimeNext.Core.Framework.UI;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.Utils;

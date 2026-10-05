@@ -7,6 +7,7 @@ using System.Data.SQLite;
 using System.IO;
 using System.Text;
 using UIX.ViewController.Engine.DataBaseObjects;
+using UIX.ViewController.Engine.Migration.Types;
 using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Utils;
 
@@ -43,7 +44,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 if (tS is null) return;
 
                 // Get column names and types
-                Dictionary<string, SqliteDataType> columns = tS.Columns.ToDictionary(
+                Dictionary<string, UIXSqliteDataType> columns = tS.Columns.ToDictionary(
                     c => c.PONAM,
                     c => c.DATYP
                 );
@@ -63,7 +64,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                         // Iterate columns
                         for (int i = 0; i < columns.Count; i++)
                         {
-                            SqliteDataType dataType = columns.ElementAt(i).Value;
+                            UIXSqliteDataType dataType = columns.ElementAt(i).Value;
                             object value;
 
                             if (reader.IsDBNull(i))

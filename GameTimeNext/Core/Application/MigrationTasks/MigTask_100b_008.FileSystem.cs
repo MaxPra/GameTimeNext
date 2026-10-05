@@ -4,6 +4,7 @@ using GameTimeNext.Core.Framework.DataBase.Migration;
 using GameTimeNext.Core.Framework.Utils;
 using System.Data.SQLite;
 using System.IO;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.MigrationTasks
 {

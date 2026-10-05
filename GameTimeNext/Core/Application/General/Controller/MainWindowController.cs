@@ -5,7 +5,6 @@ using GameTimeNext.Core.Application.General.ViewModels;
 using GameTimeNext.Core.Application.GTXMigration;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Config;
-using GameTimeNext.Core.Framework.Logging;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.Utils;
 using System.IO;
@@ -18,7 +17,6 @@ using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.Events;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
-using AppEnvironment = GameTimeNext.Core.Framework.AppEnvironment;
 
 namespace GameTimeNext.Core.Application.General.Controller
 {

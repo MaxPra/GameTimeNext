@@ -1,5 +1,4 @@
-﻿using GameTimeNext.Core.Framework.Logging;
-using System.IO;
+﻿using System.IO;
 using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Framework.DataBase.Migration
