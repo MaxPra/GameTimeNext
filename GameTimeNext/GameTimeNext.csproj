@@ -1,22 +1,31 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net10.0-windows</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <UseWPF>true</UseWPF>
-    <ApplicationIcon>UI\Ressources\GTN_APP_ICON.ico</ApplicationIcon>
-  </PropertyGroup>
+	<PropertyGroup>
+		<Authors>CryLoud Studios</Authors>
+		<Copyright>© $(Authors)</Copyright>
+		<TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
+		<SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+		<PlatformTarget>x64</PlatformTarget>
+
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<UseWPF>true</UseWPF>
+		<OutputType>WinExe</OutputType>
+
+		<ApplicationIcon>UI\Ressources\GTN_APP_ICON.ico</ApplicationIcon>
+	</PropertyGroup>
 
 	<PropertyGroup>
-		<Version>0.4.0</Version>
+		<VersionSemantic>0.4.0</VersionSemantic>
 		<VersionTag>beta</VersionTag>
 		<BuildDate>2026-06-21</BuildDate>
 
-		<InformationalVersion>$(Version)-$(VersionTag)+$(BuildDate)</InformationalVersion>
+		<AssemblyVersion>$(VersionSemantic)</AssemblyVersion>
+		<FileVersion>$(AssemblyVersion)</FileVersion>
+		<VersionPrefix>$(AssemblyVersion)</VersionPrefix>
+		<VersionSuffix>$(VersionTag)</VersionSuffix>
 
-		<PlatformTarget>x64</PlatformTarget>
+		<InformationalVersion>$(VersionSemantic)-$(VersionTag)+$(BuildDate)</InformationalVersion>
 	</PropertyGroup>
 
   <ItemGroup>
