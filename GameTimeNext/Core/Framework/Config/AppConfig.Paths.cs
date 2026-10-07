@@ -68,7 +68,7 @@ namespace GameTimeNext.Core.Framework.Config
             }
 
             [JsonIgnore]
-            public static string DevSyncDirectoryPath
+            public static string SolutionDirectoryPath
             {
                 get
                 {
@@ -79,13 +79,19 @@ namespace GameTimeNext.Core.Framework.Config
                     {
                         string slnxFilePath = Path.Combine(current.FullName, $"{Root.ApplicationName}.slnx");
                         if (File.Exists(slnxFilePath))
-                            return Path.Combine(current.FullName, "devsync");
+                            return current.FullName;
 
                         current = current.Parent;
                     }
 
-                    return Path.Combine(startingDirectoryPath, "devsync");
+                    return startingDirectoryPath;
                 }
+            }
+
+            [JsonIgnore]
+            public static string DevSyncDirectoryPath
+            {
+                get => Path.Combine(SolutionDirectoryPath, "devsync");
             }
 
             [JsonIgnore]

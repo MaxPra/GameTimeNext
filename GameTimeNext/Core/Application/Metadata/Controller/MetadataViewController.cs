@@ -310,6 +310,11 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
             await BuildDG();
         }
 
+        protected void EV_BtnOpenLog()
+        {
+            Process.Start("explorer.exe", AppConfig.LogsDirectoryPath);
+        }
+
         protected void EV_BtnOpenGenClass()
         {
             Process.Start("explorer.exe", AppConfig.Dev.GenClassDirectoryPath);

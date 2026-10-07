@@ -85,8 +85,8 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     code.EndBlock();
                     code.EndBlock();
 
-                    string targetFilePath = Path.Combine(AppConfig.Dev.GenClassTableObjectsDirectoryPath, $"{className}.cs");
-                    code.SaveToFile(targetFilePath);
+
+                    code.SaveToFile(AppConfig.Dev.GenClassTableObjectsDirectoryPath, $"{className}.cs");
                 }
 
                 private static void GenerateK1Class(string suffix, Dictionary<T1METAP, UIXSqliteDataType> fields)
@@ -118,8 +118,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     code.EndBlock();
 
 
-                    string targetFilePath = Path.Combine(AppConfig.Dev.GenClassTableObjectsDirectoryPath, $"{className}.cs");
-                    code.SaveToFile(targetFilePath);
+                    code.SaveToFile(AppConfig.Dev.GenClassTableObjectsDirectoryPath, $"{className}.cs");
                 }
 
                 private static void GenerateTXBasicClass(string suffix, TableSchema tSchema, Dictionary<T1METAP, UIXSqliteDataType> fields)
@@ -310,8 +309,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     code.EndBlock();
 
 
-                    string targetFilePath = Path.Combine(AppConfig.Dev.GenClassDataManagersDirectoryPath, $"{className}.cs");
-                    code.SaveToFile(targetFilePath);
+                    code.SaveToFile(AppConfig.Dev.GenClassDataManagersDirectoryPath, $"{className}.cs");
                 }
 
                 private static void GenerateTXClass(string suffix)
@@ -327,8 +325,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     code.EndBlock();
 
 
-                    string targetFilePath = Path.Combine(AppConfig.Dev.GenClassDataManagersDirectoryPath, $"{className}.cs");
-                    code.SaveToFile(targetFilePath);
+                    code.SaveToFile(AppConfig.Dev.GenClassDataManagersDirectoryPath, $"{className}.cs", preventSolutionOverride: true);
                 }
 
                 private static class Helpers
@@ -401,9 +398,12 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
 
                 private sealed class CodeBuilder
                 {
+                    #region Properties
                     private readonly StringBuilder _sb = new StringBuilder();
                     private int _indentLevel = 0;
+                    #endregion
 
+                    #region Methods PUBLIC
                     public CodeBuilder AddLine(string line = "")
                     {
                         if (line is null) line = string.Empty;
@@ -439,17 +439,45 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                         return this;
                     }
 
-                    public void SaveToFile(string targetFilePath)
+                    public void SaveToFile(string targetDirectoryPath, string fileName, bool preventSolutionOverride = false)
                     {
-                        File.WriteAllText(targetFilePath, ToString(), Encoding.UTF8);
+                        string? solutionFilePath = GetSolutionFilePath(fileName);
 
-                        // OFDOI: Try to export to solution
+                        if (solutionFilePath is not null && !preventSolutionOverride)
+                        {
+                            File.WriteAllText(solutionFilePath, ToString(), Encoding.UTF8);
+                            FnLog.AddInfo(this, $"{fileName} generated to solution.");
+                        }
+                        else
+                        {
+                            File.WriteAllText(Path.Combine(targetDirectoryPath, fileName), ToString(), Encoding.UTF8);
+                            FnLog.AddInfo(this, $"{fileName} generated to genClass.");
+                        }
                     }
 
                     public override string ToString()
                     {
                         return _sb.ToString();
                     }
+                    #endregion
+
+                    #region Methods PRIVATE
+                    private string? GetSolutionFilePath(string fileName)
+                    {
+                        try
+                        {
+                            DirectoryInfo slnDirInfo = new DirectoryInfo(AppConfig.Dev.SolutionDirectoryPath);
+                            return slnDirInfo.GetFiles(fileName, new EnumerationOptions()
+                            {
+                                MatchCasing = MatchCasing.CaseInsensitive,
+                                RecurseSubdirectories = true
+                            }).Single().FullName;
+                        }
+                        catch{
+                            return null;
+                        }
+                    }
+                    #endregion
                 }
             }
         }
