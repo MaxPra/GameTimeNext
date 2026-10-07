@@ -71,7 +71,7 @@ namespace GameTimeNext
 
             AppEnvironment.LoadAppConfig();
 
-            FnLog.AddInfo("MainApp", "*** Initializing Application... ***"); // OFDOI: Fix warning
+            FnLog.AddInfo("MainApp", "*** Initializing Application... ***");
 
             FnLog.AddInfo("MainApp", "Initiating Databasemanager...");
             AppEnvironment.InitiateDataBaseManager();

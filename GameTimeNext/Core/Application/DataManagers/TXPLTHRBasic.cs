@@ -3,6 +3,7 @@ using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.DataBase.Migration;
 using System.Data.SQLite;
 using UIX.ViewController.Engine.DataBaseObjects;
+using UIX.ViewController.Engine.Migration.Types;
 using UIX.ViewController.Engine.Querying;
 
 namespace GameTimeNext.Core.Application.DataManagers
@@ -122,7 +123,9 @@ namespace GameTimeNext.Core.Application.DataManagers
         #region Methods PRIVATE
         private void Insert(T1PLTHR obj)
         {
-            string sql = $"INSERT INTO T1PLTHR (PFID, PTTY, PTDE, PTCO, CRAT, CHAT, PTCA, PTPA) VALUES ('{obj.PFID}', '{obj.PTTY}', '{obj.PTDE}', '{obj.PTCO}', '{obj.CRAT}', '{obj.CHAT}', '{obj.PTCA}', '{obj.PTPA}');";
+            obj.CRAT = DateTime.Now;
+            obj.CHAT = DateTime.Now;
+            string sql = $"INSERT INTO T1PLTHR (PFID, PTTY, PTDE, PTCO, CRAT, CHAT, PTCA, PTPA) VALUES ('{ToDbValue(obj.PFID)}', '{ToDbValue(obj.PTTY)}', '{ToDbValue(obj.PTDE)}', '{ToDbValue(obj.PTCO)}', '{ToDbValue(obj.CRAT)}', '{ToDbValue(obj.CHAT)}', '{ToDbValue(obj.PTCA)}', '{ToDbValue(obj.PTPA)}');";
             UIXQuery.ExecuteCustom(sql, _connection);
 
             using SQLiteCommand idCmd = _connection.CreateCommand();
@@ -132,7 +135,8 @@ namespace GameTimeNext.Core.Application.DataManagers
 
         private void Update(T1PLTHR obj)
         {
-            string sql = $"UPDATE T1PLTHR SET PFID = '{obj.PFID}', PTTY = '{obj.PTTY}', PTDE = '{obj.PTDE}', PTCO = '{obj.PTCO}', CRAT = '{obj.CRAT}', CHAT = '{obj.CHAT}', PTCA = '{obj.PTCA}', PTPA = '{obj.PTPA}' WHERE PTID = '{obj.PTID}';";
+            obj.CHAT = DateTime.Now;
+            string sql = $"UPDATE T1PLTHR SET PFID = '{ToDbValue(obj.PFID)}', PTTY = '{ToDbValue(obj.PTTY)}', PTDE = '{ToDbValue(obj.PTDE)}', PTCO = '{ToDbValue(obj.PTCO)}', CRAT = '{ToDbValue(obj.CRAT)}', CHAT = '{ToDbValue(obj.CHAT)}', PTCA = '{ToDbValue(obj.PTCA)}', PTPA = '{ToDbValue(obj.PTPA)}' WHERE PTID = '{obj.PTID}';";
             UIXQuery.ExecuteCustom(sql, _connection);
         }
 
@@ -141,6 +145,11 @@ namespace GameTimeNext.Core.Application.DataManagers
             using SQLiteCommand cmd = _connection.CreateCommand();
             cmd.CommandText = $"SELECT COUNT(*) FROM T1PLTHR WHERE PTID = '{obj.PTID}';";
             return Convert.ToInt64(cmd.ExecuteScalar()) > 0;
+        }
+
+        private static object? ToDbValue(object? valFrom)
+        {
+            return UIXSqliteDataType.Convert(UIXSqliteDataType.ConversionType.CSharp, UIXSqliteDataType.ConversionType.Sqlite, valFrom);
         }
         #endregion
     }

@@ -3,6 +3,7 @@ using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.DataBase.Migration;
 using System.Data.SQLite;
 using UIX.ViewController.Engine.DataBaseObjects;
+using UIX.ViewController.Engine.Migration.Types;
 using UIX.ViewController.Engine.Querying;
 
 namespace GameTimeNext.Core.Application.DataManagers
@@ -119,7 +120,9 @@ namespace GameTimeNext.Core.Application.DataManagers
         #region Methods PRIVATE
         private void Insert(T1SESSI obj)
         {
-            string sql = $"INSERT INTO T1SESSI (PFID, PTID, PLFR, PLTO, PLTI, CRAT, CHAT) VALUES ('{obj.PFID}', '{obj.PTID}', '{obj.PLFR}', '{obj.PLTO}', '{obj.PLTI}', '{obj.CRAT}', '{obj.CHAT}');";
+            obj.CRAT = DateTime.Now;
+            obj.CHAT = DateTime.Now;
+            string sql = $"INSERT INTO T1SESSI (PFID, PTID, PLFR, PLTO, PLTI, CRAT, CHAT) VALUES ('{ToDbValue(obj.PFID)}', '{ToDbValue(obj.PTID)}', '{ToDbValue(obj.PLFR)}', '{ToDbValue(obj.PLTO)}', '{ToDbValue(obj.PLTI)}', '{ToDbValue(obj.CRAT)}', '{ToDbValue(obj.CHAT)}');";
             UIXQuery.ExecuteCustom(sql, _connection);
 
             using SQLiteCommand idCmd = _connection.CreateCommand();
@@ -129,7 +132,8 @@ namespace GameTimeNext.Core.Application.DataManagers
 
         private void Update(T1SESSI obj)
         {
-            string sql = $"UPDATE T1SESSI SET PFID = '{obj.PFID}', PTID = '{obj.PTID}', PLFR = '{obj.PLFR}', PLTO = '{obj.PLTO}', PLTI = '{obj.PLTI}', CRAT = '{obj.CRAT}', CHAT = '{obj.CHAT}' WHERE SEID = '{obj.SEID}';";
+            obj.CHAT = DateTime.Now;
+            string sql = $"UPDATE T1SESSI SET PFID = '{ToDbValue(obj.PFID)}', PTID = '{ToDbValue(obj.PTID)}', PLFR = '{ToDbValue(obj.PLFR)}', PLTO = '{ToDbValue(obj.PLTO)}', PLTI = '{ToDbValue(obj.PLTI)}', CRAT = '{ToDbValue(obj.CRAT)}', CHAT = '{ToDbValue(obj.CHAT)}' WHERE SEID = '{obj.SEID}';";
             UIXQuery.ExecuteCustom(sql, _connection);
         }
 
@@ -138,6 +142,11 @@ namespace GameTimeNext.Core.Application.DataManagers
             using SQLiteCommand cmd = _connection.CreateCommand();
             cmd.CommandText = $"SELECT COUNT(*) FROM T1SESSI WHERE SEID = '{obj.SEID}';";
             return Convert.ToInt64(cmd.ExecuteScalar()) > 0;
+        }
+
+        private static object? ToDbValue(object? valFrom)
+        {
+            return UIXSqliteDataType.Convert(UIXSqliteDataType.ConversionType.CSharp, UIXSqliteDataType.ConversionType.Sqlite, valFrom);
         }
         #endregion
     }

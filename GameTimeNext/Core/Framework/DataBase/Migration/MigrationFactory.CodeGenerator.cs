@@ -137,6 +137,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     code.AddLine($"using {AppConfig.Root.ApplicationName}.Core.Framework.DataBase.Migration;");
                     code.AddLine($"using System.Data.SQLite;");
                     code.AddLine($"using UIX.ViewController.Engine.DataBaseObjects;");
+                    code.AddLine($"using UIX.ViewController.Engine.Migration.Types;");
                     code.AddLine($"using UIX.ViewController.Engine.Querying;");
                     code.AddLine();
 
@@ -262,7 +263,10 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                         code.AddLine("#region Methods PRIVATE");
 
                         // Insert
-                        code.BeginBlock($"private void Insert({classNameT1} obj)");                        
+                        code.BeginBlock($"private void Insert({classNameT1} obj)");
+                        // OFDO: Find all places where CRAT and CHAT are being set unneccessarily
+                        code.AddLine("obj.CRAT = DateTime.Now;");
+                        code.AddLine("obj.CHAT = DateTime.Now;");
                         code.AddLine($"string sql = $\"INSERT INTO {classNameT1} ({Helpers.GetSqlInsertFields(fields)}) VALUES ({Helpers.GetSqlInsertValues(fields)});\";");
                         code.AddLine("UIXQuery.ExecuteCustom(sql, _connection);");
                         KeyValuePair<T1METAP, UIXSqliteDataType> autoiField = fields.Where(f => f.Key.AUTOI).SingleOrDefault();
@@ -278,6 +282,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                         // Update
                         code.AddLine();
                         code.BeginBlock($"private void Update({classNameT1} obj)");
+                        code.AddLine("obj.CHAT = DateTime.Now;");
                         code.AddLine($"string sql = $\"UPDATE {classNameT1} SET {Helpers.GetSqlUpdateFields(fields)} WHERE {Helpers.GetSqlWheres(primkFields, withObjPrefix: true)};\";");
                         code.AddLine("UIXQuery.ExecuteCustom(sql, _connection);");
                         code.EndBlock();
@@ -289,6 +294,12 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                         code.AddLine("using SQLiteCommand cmd = _connection.CreateCommand();");
                         code.AddLine($"cmd.CommandText = $\"SELECT COUNT(*) FROM {classNameT1} WHERE {Helpers.GetSqlWheres(primkFields, withObjPrefix: true)};\";");
                         code.AddLine("return Convert.ToInt64(cmd.ExecuteScalar()) > 0;");
+                        code.EndBlock();
+
+                        // ToDbValue
+                        code.AddLine();
+                        code.BeginBlock("private static object? ToDbValue(object? valFrom)");
+                        code.AddLine("return UIXSqliteDataType.Convert(UIXSqliteDataType.ConversionType.CSharp, UIXSqliteDataType.ConversionType.Sqlite, valFrom);");
                         code.EndBlock();
 
                         code.AddLine("#endregion");
@@ -360,8 +371,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     {
                         Dictionary<T1METAP, UIXSqliteDataType> filteredFields = fields.Where(f => !f.Key.AUTOI).ToDictionary();
 
-                        // OFDO: wird ToDbValue benötigt? return String.Join(", ", filteredFields.Select(f => $"{{ToDbValue(obj.{f.Key.PONAM})}}"));
-                        return String.Join(", ", filteredFields.Select(f => $"'{{obj.{f.Key.PONAM}}}'"));
+                        return String.Join(", ", filteredFields.Select(f => $"'{{ToDbValue(obj.{f.Key.PONAM})}}'"));
                     }
 
                     public static string GetSqlUpdateFields(Dictionary<T1METAP, UIXSqliteDataType> fields)
@@ -371,8 +381,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
 
                         foreach (KeyValuePair<T1METAP, UIXSqliteDataType> field in filteredFields)
                         {
-                            // fieldStrings.Add($"{field.Key.PONAM} = '{{ToDbValue(obj.{field.Key.PONAM})}}'");
-                            fieldStrings.Add($"{field.Key.PONAM} = '{{obj.{field.Key.PONAM}}}'");
+                            fieldStrings.Add($"{field.Key.PONAM} = '{{ToDbValue(obj.{field.Key.PONAM})}}'");
                         }
 
                         return String.Join(", ", fieldStrings);

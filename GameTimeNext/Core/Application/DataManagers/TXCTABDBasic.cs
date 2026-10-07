@@ -3,6 +3,7 @@ using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.DataBase.Migration;
 using System.Data.SQLite;
 using UIX.ViewController.Engine.DataBaseObjects;
+using UIX.ViewController.Engine.Migration.Types;
 using UIX.ViewController.Engine.Querying;
 
 namespace GameTimeNext.Core.Application.DataManagers
@@ -118,13 +119,16 @@ namespace GameTimeNext.Core.Application.DataManagers
         #region Methods PRIVATE
         private void Insert(T1CTABD obj)
         {
-            string sql = $"INSERT INTO T1CTABD (TXTYP, TXNUM, DESCR, CRAT, CHAT, PARM1, PARM2) VALUES ('{obj.TXTYP}', '{obj.TXNUM}', '{obj.DESCR}', '{obj.CRAT}', '{obj.CHAT}', '{obj.PARM1}', '{obj.PARM2}');";
+            obj.CRAT = DateTime.Now;
+            obj.CHAT = DateTime.Now;
+            string sql = $"INSERT INTO T1CTABD (TXTYP, TXNUM, DESCR, CRAT, CHAT, PARM1, PARM2) VALUES ('{ToDbValue(obj.TXTYP)}', '{ToDbValue(obj.TXNUM)}', '{ToDbValue(obj.DESCR)}', '{ToDbValue(obj.CRAT)}', '{ToDbValue(obj.CHAT)}', '{ToDbValue(obj.PARM1)}', '{ToDbValue(obj.PARM2)}');";
             UIXQuery.ExecuteCustom(sql, _connection);
         }
 
         private void Update(T1CTABD obj)
         {
-            string sql = $"UPDATE T1CTABD SET TXTYP = '{obj.TXTYP}', TXNUM = '{obj.TXNUM}', DESCR = '{obj.DESCR}', CRAT = '{obj.CRAT}', CHAT = '{obj.CHAT}', PARM1 = '{obj.PARM1}', PARM2 = '{obj.PARM2}' WHERE TXTYP = '{obj.TXTYP}' AND TXNUM = '{obj.TXNUM}';";
+            obj.CHAT = DateTime.Now;
+            string sql = $"UPDATE T1CTABD SET TXTYP = '{ToDbValue(obj.TXTYP)}', TXNUM = '{ToDbValue(obj.TXNUM)}', DESCR = '{ToDbValue(obj.DESCR)}', CRAT = '{ToDbValue(obj.CRAT)}', CHAT = '{ToDbValue(obj.CHAT)}', PARM1 = '{ToDbValue(obj.PARM1)}', PARM2 = '{ToDbValue(obj.PARM2)}' WHERE TXTYP = '{obj.TXTYP}' AND TXNUM = '{obj.TXNUM}';";
             UIXQuery.ExecuteCustom(sql, _connection);
         }
 
@@ -133,6 +137,11 @@ namespace GameTimeNext.Core.Application.DataManagers
             using SQLiteCommand cmd = _connection.CreateCommand();
             cmd.CommandText = $"SELECT COUNT(*) FROM T1CTABD WHERE TXTYP = '{obj.TXTYP}' AND TXNUM = '{obj.TXNUM}';";
             return Convert.ToInt64(cmd.ExecuteScalar()) > 0;
+        }
+
+        private static object? ToDbValue(object? valFrom)
+        {
+            return UIXSqliteDataType.Convert(UIXSqliteDataType.ConversionType.CSharp, UIXSqliteDataType.ConversionType.Sqlite, valFrom);
         }
         #endregion
     }

@@ -543,6 +543,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
 
         private static class SqliteCsvDataConverter
         {
+            // OFDO: Let SqliteCsvDataConverter die -> Comes into UIXSqliteDateType.Convert
             private static string _CSVFORMAT_DATE = "yyyy-MM-dd HH:mm:ss";
 
             public static string DateToCsv(string value)

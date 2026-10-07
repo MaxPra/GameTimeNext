@@ -4,6 +4,7 @@ using GameTimeNext.Core.Application.Metadata.Views;
 using GameTimeNext.Core.Application.Profiles;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Config;
+using GameTimeNext.Core.Framework.DataBase.Migration;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using System.Diagnostics;
 using System.Windows;
@@ -181,8 +182,27 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
         private List<MetadataDataGridRow> BuildMetadataRows()
         {
-
+            List<T1METAH> t1metahs = GetT1metahs();
             List<MetadataDataGridRow> metadataRows = new List<MetadataDataGridRow>();
+
+            foreach (T1METAH t1metah in t1metahs)
+            {
+                // Neue Zeile erstellen
+                MetadataDataGridRow row = GetView().DgMetadata.CreateNewRow<MetadataDataGridRow>();
+                row.COMENAM = t1metah.MENAM;
+                row.CODESCR = t1metah.DESCR;
+                row.COMTYPE = MetadataObjectTypes.GetText(t1metah.MTYPE);
+                row.RowObject = t1metah;
+
+                metadataRows.Add(row);
+            }
+
+            return metadataRows;
+        }
+
+        private List<T1METAH> GetT1metahs()
+        {
+            List<T1METAH> t1metahs = new List<T1METAH>();
 
             UIXQuery query = BuildQueryMetadata();
 
@@ -196,19 +216,11 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
                     TXMETAH txmetah = new TXMETAH();
                     T1METAH t1metah = txmetah.Read(menam);
 
-                    // Neue Zeile erstellen
-                    MetadataDataGridRow row = GetView().DgMetadata.CreateNewRow<MetadataDataGridRow>();
-                    row.COMENAM = t1metah.MENAM;
-                    row.CODESCR = t1metah.DESCR;
-                    row.COMTYPE = MetadataObjectTypes.GetText(t1metah.MTYPE);
-                    row.RowObject = t1metah;
-
-                    metadataRows.Add(row);
-
+                    t1metahs.Add(t1metah);
                 }
             }
 
-            return metadataRows;
+            return t1metahs;
         }
 
         private UIXQuery BuildQueryMetadata()
@@ -261,6 +273,40 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
         protected async Task EV_BtnRefresh()
         {
+            await BuildDG();
+        }
+
+        protected async Task EV_BtnGenerateAll()
+        {
+            try
+            {
+                GetApp().Loader.Begin();
+
+                List<T1METAH> t1metahs = GetT1metahs();
+
+                foreach (T1METAH t1metah in t1metahs)
+                {
+                    await Task.Run(() =>
+                    {
+                        MigrationFactory.Metadata.CodeGenerator.GenerateFor(t1metah);
+                        MigrationFactory.FromCsv.MigrateTables(MigrationFactory.ImportType.MetadataGenerator);
+                    });
+
+                    t1metah.GENER = true;
+                    new TXMETAH().Save(t1metah);
+                }
+
+                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Generation completed.", CFMBOXResult.Ok, CFMBOXIcon.Success);
+            }
+            catch (Exception ex)
+            {
+                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Generation failed", ex.Message, CFMBOXResult.Ok, CFMBOXIcon.Error);
+            }
+            finally
+            {
+                GetApp().Loader.Stop();
+            }
+
             await BuildDG();
         }
 

@@ -3,6 +3,7 @@ using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.DataBase.Migration;
 using System.Data.SQLite;
 using UIX.ViewController.Engine.DataBaseObjects;
+using UIX.ViewController.Engine.Migration.Types;
 using UIX.ViewController.Engine.Querying;
 
 namespace GameTimeNext.Core.Application.DataManagers
@@ -152,13 +153,16 @@ namespace GameTimeNext.Core.Application.DataManagers
         #region Methods PRIVATE
         private void Insert(T1CTABH obj)
         {
-            string sql = $"INSERT INTO T1CTABH (TXTYP, DESCR, PERMI, PAAC1, PADE1, PARF1, PACO1, PACT1, PAAC2, PADE2, PARF2, PACO2, PACT2, CRAT, CHAT, NRANA, EXPRT, PTOL1, PTOL2) VALUES ('{obj.TXTYP}', '{obj.DESCR}', '{obj.PERMI}', '{obj.PAAC1}', '{obj.PADE1}', '{obj.PARF1}', '{obj.PACO1}', '{obj.PACT1}', '{obj.PAAC2}', '{obj.PADE2}', '{obj.PARF2}', '{obj.PACO2}', '{obj.PACT2}', '{obj.CRAT}', '{obj.CHAT}', '{obj.NRANA}', '{obj.EXPRT}', '{obj.PTOL1}', '{obj.PTOL2}');";
+            obj.CRAT = DateTime.Now;
+            obj.CHAT = DateTime.Now;
+            string sql = $"INSERT INTO T1CTABH (TXTYP, DESCR, PERMI, PAAC1, PADE1, PARF1, PACO1, PACT1, PAAC2, PADE2, PARF2, PACO2, PACT2, CRAT, CHAT, NRANA, EXPRT, PTOL1, PTOL2) VALUES ('{ToDbValue(obj.TXTYP)}', '{ToDbValue(obj.DESCR)}', '{ToDbValue(obj.PERMI)}', '{ToDbValue(obj.PAAC1)}', '{ToDbValue(obj.PADE1)}', '{ToDbValue(obj.PARF1)}', '{ToDbValue(obj.PACO1)}', '{ToDbValue(obj.PACT1)}', '{ToDbValue(obj.PAAC2)}', '{ToDbValue(obj.PADE2)}', '{ToDbValue(obj.PARF2)}', '{ToDbValue(obj.PACO2)}', '{ToDbValue(obj.PACT2)}', '{ToDbValue(obj.CRAT)}', '{ToDbValue(obj.CHAT)}', '{ToDbValue(obj.NRANA)}', '{ToDbValue(obj.EXPRT)}', '{ToDbValue(obj.PTOL1)}', '{ToDbValue(obj.PTOL2)}');";
             UIXQuery.ExecuteCustom(sql, _connection);
         }
 
         private void Update(T1CTABH obj)
         {
-            string sql = $"UPDATE T1CTABH SET TXTYP = '{obj.TXTYP}', DESCR = '{obj.DESCR}', PERMI = '{obj.PERMI}', PAAC1 = '{obj.PAAC1}', PADE1 = '{obj.PADE1}', PARF1 = '{obj.PARF1}', PACO1 = '{obj.PACO1}', PACT1 = '{obj.PACT1}', PAAC2 = '{obj.PAAC2}', PADE2 = '{obj.PADE2}', PARF2 = '{obj.PARF2}', PACO2 = '{obj.PACO2}', PACT2 = '{obj.PACT2}', CRAT = '{obj.CRAT}', CHAT = '{obj.CHAT}', NRANA = '{obj.NRANA}', EXPRT = '{obj.EXPRT}', PTOL1 = '{obj.PTOL1}', PTOL2 = '{obj.PTOL2}' WHERE TXTYP = '{obj.TXTYP}';";
+            obj.CHAT = DateTime.Now;
+            string sql = $"UPDATE T1CTABH SET TXTYP = '{ToDbValue(obj.TXTYP)}', DESCR = '{ToDbValue(obj.DESCR)}', PERMI = '{ToDbValue(obj.PERMI)}', PAAC1 = '{ToDbValue(obj.PAAC1)}', PADE1 = '{ToDbValue(obj.PADE1)}', PARF1 = '{ToDbValue(obj.PARF1)}', PACO1 = '{ToDbValue(obj.PACO1)}', PACT1 = '{ToDbValue(obj.PACT1)}', PAAC2 = '{ToDbValue(obj.PAAC2)}', PADE2 = '{ToDbValue(obj.PADE2)}', PARF2 = '{ToDbValue(obj.PARF2)}', PACO2 = '{ToDbValue(obj.PACO2)}', PACT2 = '{ToDbValue(obj.PACT2)}', CRAT = '{ToDbValue(obj.CRAT)}', CHAT = '{ToDbValue(obj.CHAT)}', NRANA = '{ToDbValue(obj.NRANA)}', EXPRT = '{ToDbValue(obj.EXPRT)}', PTOL1 = '{ToDbValue(obj.PTOL1)}', PTOL2 = '{ToDbValue(obj.PTOL2)}' WHERE TXTYP = '{obj.TXTYP}';";
             UIXQuery.ExecuteCustom(sql, _connection);
         }
 
@@ -167,6 +171,11 @@ namespace GameTimeNext.Core.Application.DataManagers
             using SQLiteCommand cmd = _connection.CreateCommand();
             cmd.CommandText = $"SELECT COUNT(*) FROM T1CTABH WHERE TXTYP = '{obj.TXTYP}';";
             return Convert.ToInt64(cmd.ExecuteScalar()) > 0;
+        }
+
+        private static object? ToDbValue(object? valFrom)
+        {
+            return UIXSqliteDataType.Convert(UIXSqliteDataType.ConversionType.CSharp, UIXSqliteDataType.ConversionType.Sqlite, valFrom);
         }
         #endregion
     }

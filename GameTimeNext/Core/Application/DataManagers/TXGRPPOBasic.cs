@@ -3,6 +3,7 @@ using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.DataBase.Migration;
 using System.Data.SQLite;
 using UIX.ViewController.Engine.DataBaseObjects;
+using UIX.ViewController.Engine.Migration.Types;
 using UIX.ViewController.Engine.Querying;
 
 namespace GameTimeNext.Core.Application.DataManagers
@@ -110,7 +111,9 @@ namespace GameTimeNext.Core.Application.DataManagers
         #region Methods PRIVATE
         private void Insert(T1GRPPO obj)
         {
-            string sql = $"INSERT INTO T1GRPPO (GRID, PFID, CRAT, CHAT) VALUES ('{obj.GRID}', '{obj.PFID}', '{obj.CRAT}', '{obj.CHAT}');";
+            obj.CRAT = DateTime.Now;
+            obj.CHAT = DateTime.Now;
+            string sql = $"INSERT INTO T1GRPPO (GRID, PFID, CRAT, CHAT) VALUES ('{ToDbValue(obj.GRID)}', '{ToDbValue(obj.PFID)}', '{ToDbValue(obj.CRAT)}', '{ToDbValue(obj.CHAT)}');";
             UIXQuery.ExecuteCustom(sql, _connection);
 
             using SQLiteCommand idCmd = _connection.CreateCommand();
@@ -120,7 +123,8 @@ namespace GameTimeNext.Core.Application.DataManagers
 
         private void Update(T1GRPPO obj)
         {
-            string sql = $"UPDATE T1GRPPO SET GRID = '{obj.GRID}', PFID = '{obj.PFID}', CRAT = '{obj.CRAT}', CHAT = '{obj.CHAT}' WHERE GPID = '{obj.GPID}';";
+            obj.CHAT = DateTime.Now;
+            string sql = $"UPDATE T1GRPPO SET GRID = '{ToDbValue(obj.GRID)}', PFID = '{ToDbValue(obj.PFID)}', CRAT = '{ToDbValue(obj.CRAT)}', CHAT = '{ToDbValue(obj.CHAT)}' WHERE GPID = '{obj.GPID}';";
             UIXQuery.ExecuteCustom(sql, _connection);
         }
 
@@ -129,6 +133,11 @@ namespace GameTimeNext.Core.Application.DataManagers
             using SQLiteCommand cmd = _connection.CreateCommand();
             cmd.CommandText = $"SELECT COUNT(*) FROM T1GRPPO WHERE GPID = '{obj.GPID}';";
             return Convert.ToInt64(cmd.ExecuteScalar()) > 0;
+        }
+
+        private static object? ToDbValue(object? valFrom)
+        {
+            return UIXSqliteDataType.Convert(UIXSqliteDataType.ConversionType.CSharp, UIXSqliteDataType.ConversionType.Sqlite, valFrom);
         }
         #endregion
     }

@@ -42,6 +42,8 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="8" />
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
@@ -135,8 +137,24 @@
                 </Button>
 
                 <Button
-                    x:Name="BtnOpenGenClass"
+                    x:Name="BtnGenerateAll"
                     Grid.Column="10"
+                    Width="38"
+                    Height="38"
+                    VerticalAlignment="Center"
+                    IsDefault="True"
+                    ToolTip="Generate all Metadata">
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontFamily="Segoe MDL2 Assets"
+                        FontSize="14"
+                        Text="&#xE8B8;" />
+                </Button>
+
+                <Button
+                    x:Name="BtnOpenGenClass"
+                    Grid.Column="12"
                     Width="38"
                     Height="38"
                     VerticalAlignment="Center"

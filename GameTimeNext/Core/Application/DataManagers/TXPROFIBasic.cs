@@ -3,6 +3,7 @@ using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.DataBase.Migration;
 using System.Data.SQLite;
 using UIX.ViewController.Engine.DataBaseObjects;
+using UIX.ViewController.Engine.Migration.Types;
 using UIX.ViewController.Engine.Querying;
 
 namespace GameTimeNext.Core.Application.DataManagers
@@ -161,7 +162,9 @@ namespace GameTimeNext.Core.Application.DataManagers
         #region Methods PRIVATE
         private void Insert(T1PROFI obj)
         {
-            string sql = $"INSERT INTO T1PROFI (GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, CRAT, CHAT, ACCO, ACIN, ACAC, CUPT, ETMA, ETME, ETCO, ETTY, ETML, ARCH, PLAFO) VALUES ('{obj.GANA}', '{obj.FIPL}', '{obj.LAPL}', '{obj.PPFN}', '{obj.EXGF}', '{obj.SAID}', '{obj.PRSE}', '{obj.EXEC}', '{obj.CRAT}', '{obj.CHAT}', '{obj.ACCO}', '{obj.ACIN}', '{obj.ACAC}', '{obj.CUPT}', '{obj.ETMA}', '{obj.ETME}', '{obj.ETCO}', '{obj.ETTY}', '{obj.ETML}', '{obj.ARCH}', '{obj.PLAFO}');";
+            obj.CRAT = DateTime.Now;
+            obj.CHAT = DateTime.Now;
+            string sql = $"INSERT INTO T1PROFI (GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, CRAT, CHAT, ACCO, ACIN, ACAC, CUPT, ETMA, ETME, ETCO, ETTY, ETML, ARCH, PLAFO) VALUES ('{ToDbValue(obj.GANA)}', '{ToDbValue(obj.FIPL)}', '{ToDbValue(obj.LAPL)}', '{ToDbValue(obj.PPFN)}', '{ToDbValue(obj.EXGF)}', '{ToDbValue(obj.SAID)}', '{ToDbValue(obj.PRSE)}', '{ToDbValue(obj.EXEC)}', '{ToDbValue(obj.CRAT)}', '{ToDbValue(obj.CHAT)}', '{ToDbValue(obj.ACCO)}', '{ToDbValue(obj.ACIN)}', '{ToDbValue(obj.ACAC)}', '{ToDbValue(obj.CUPT)}', '{ToDbValue(obj.ETMA)}', '{ToDbValue(obj.ETME)}', '{ToDbValue(obj.ETCO)}', '{ToDbValue(obj.ETTY)}', '{ToDbValue(obj.ETML)}', '{ToDbValue(obj.ARCH)}', '{ToDbValue(obj.PLAFO)}');";
             UIXQuery.ExecuteCustom(sql, _connection);
 
             using SQLiteCommand idCmd = _connection.CreateCommand();
@@ -171,7 +174,8 @@ namespace GameTimeNext.Core.Application.DataManagers
 
         private void Update(T1PROFI obj)
         {
-            string sql = $"UPDATE T1PROFI SET GANA = '{obj.GANA}', FIPL = '{obj.FIPL}', LAPL = '{obj.LAPL}', PPFN = '{obj.PPFN}', EXGF = '{obj.EXGF}', SAID = '{obj.SAID}', PRSE = '{obj.PRSE}', EXEC = '{obj.EXEC}', CRAT = '{obj.CRAT}', CHAT = '{obj.CHAT}', ACCO = '{obj.ACCO}', ACIN = '{obj.ACIN}', ACAC = '{obj.ACAC}', CUPT = '{obj.CUPT}', ETMA = '{obj.ETMA}', ETME = '{obj.ETME}', ETCO = '{obj.ETCO}', ETTY = '{obj.ETTY}', ETML = '{obj.ETML}', ARCH = '{obj.ARCH}', PLAFO = '{obj.PLAFO}' WHERE PFID = '{obj.PFID}';";
+            obj.CHAT = DateTime.Now;
+            string sql = $"UPDATE T1PROFI SET GANA = '{ToDbValue(obj.GANA)}', FIPL = '{ToDbValue(obj.FIPL)}', LAPL = '{ToDbValue(obj.LAPL)}', PPFN = '{ToDbValue(obj.PPFN)}', EXGF = '{ToDbValue(obj.EXGF)}', SAID = '{ToDbValue(obj.SAID)}', PRSE = '{ToDbValue(obj.PRSE)}', EXEC = '{ToDbValue(obj.EXEC)}', CRAT = '{ToDbValue(obj.CRAT)}', CHAT = '{ToDbValue(obj.CHAT)}', ACCO = '{ToDbValue(obj.ACCO)}', ACIN = '{ToDbValue(obj.ACIN)}', ACAC = '{ToDbValue(obj.ACAC)}', CUPT = '{ToDbValue(obj.CUPT)}', ETMA = '{ToDbValue(obj.ETMA)}', ETME = '{ToDbValue(obj.ETME)}', ETCO = '{ToDbValue(obj.ETCO)}', ETTY = '{ToDbValue(obj.ETTY)}', ETML = '{ToDbValue(obj.ETML)}', ARCH = '{ToDbValue(obj.ARCH)}', PLAFO = '{ToDbValue(obj.PLAFO)}' WHERE PFID = '{obj.PFID}';";
             UIXQuery.ExecuteCustom(sql, _connection);
         }
 
@@ -180,6 +184,11 @@ namespace GameTimeNext.Core.Application.DataManagers
             using SQLiteCommand cmd = _connection.CreateCommand();
             cmd.CommandText = $"SELECT COUNT(*) FROM T1PROFI WHERE PFID = '{obj.PFID}';";
             return Convert.ToInt64(cmd.ExecuteScalar()) > 0;
+        }
+
+        private static object? ToDbValue(object? valFrom)
+        {
+            return UIXSqliteDataType.Convert(UIXSqliteDataType.ConversionType.CSharp, UIXSqliteDataType.ConversionType.Sqlite, valFrom);
         }
         #endregion
     }
