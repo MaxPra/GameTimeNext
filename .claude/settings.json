@@ -1,0 +1,60 @@
+{
+  "permissions": {
+    "defaultMode": "default",
+    "disableBypassPermissionsMode": "disable",
+    "blockReadsOutsideWorkingDirectories": true,
+    "allow": [
+      "Edit(**)",
+
+      "Bash(git status *)",
+      "Bash(git log *)",
+      "Bash(git diff *)",
+      "Bash(git show *)",
+      "Bash(git branch)",
+      "Bash(git branch --show-current)",
+      "Bash(git branch -a)",
+      "Bash(git branch -v)",
+      "Bash(git blame *)",
+      "Bash(git ls-files *)",
+      "Bash(git rev-parse *)",
+
+      "Bash(tasklist)",
+      "Bash(tasklist *)",
+      "Bash(ls *)",
+      "Bash(pwd)",
+      "Bash(cat *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(wc *)",
+      "Bash(grep *)",
+      "Bash(which *)",
+      "Bash(diff *)"
+    ],
+    "deny": [
+      "PowerShell",
+      "WebFetch",
+      "WebSearch",
+      "mcp__*",
+
+      "Read(*.env)",
+      "Read(**/.env*)",
+      "Read(~/.ssh/**)",
+      
+      "Read(**/bin/**)",
+      "Read(**/obj/**)",
+      "Read(**/.github/**)",
+      "Edit(**/bin/**)",
+      "Edit(**/obj/**)",
+      "Edit(**/.github/**)",
+      "Edit(.git/**)",
+      
+      "Bash(git push*)",
+      "Bash(git reset*)",
+      "Bash(git * --output*)",
+
+      "Bash(* .env*)",
+      "Bash(*/.env*)",
+      "Bash(*.ssh*)"
+    ]
+  }
+}
