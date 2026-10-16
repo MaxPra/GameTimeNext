@@ -12,6 +12,7 @@ namespace GameTimeNext.Core.Application.MigrationTasks
             EnsureOpen();
             MigratePlaythroughTypeValues();
             EnsureExternalConditionGroup();
+            AlterTableT1plthrAddColumnPtpa();
         }
 
         private static void EnsureOpen()
@@ -48,6 +49,42 @@ namespace GameTimeNext.Core.Application.MigrationTasks
                 INSERT INTO T1GROUP (GRNA, GTYP, CRAT, CHAT)
                 VALUES ('External', 'GTN.CONDITION', CURRENT_DATE, CURRENT_TIMESTAMP);";
             command.ExecuteNonQuery();
+        }
+
+        private static void AlterTableT1plthrAddColumnPtpa()
+        {
+            if (_connection == null)
+                return;
+
+            using (var checkCmd = _connection.CreateCommand())
+            {
+                checkCmd.CommandText = "PRAGMA table_info(T1PLTHR);";
+
+                using (var reader = checkCmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        string columnName = reader["name"]?.ToString();
+
+                        if (string.Equals(columnName, "PTPA", StringComparison.OrdinalIgnoreCase))
+                        {
+                            return;
+                        }
+                    }
+                }
+            }
+
+            using (var alterCmd = _connection.CreateCommand())
+            {
+                alterCmd.CommandText = "ALTER TABLE T1PLTHR ADD COLUMN PTPA INTEGER NOT NULL DEFAULT 0;";
+                alterCmd.ExecuteNonQuery();
+            }
+
+            using (var updateCmd = _connection.CreateCommand())
+            {
+                updateCmd.CommandText = "UPDATE T1PLTHR SET PTPA = 0 WHERE PTPA IS NULL;";
+                updateCmd.ExecuteNonQuery();
+            }
         }
     }
 }

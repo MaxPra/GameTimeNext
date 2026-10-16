@@ -3,6 +3,8 @@ using GameTimeNext.Core.Application.Profiles.Viewmodel;
 using Microsoft.Win32;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Media.Imaging;
 using UIX.ViewController.Engine.FrameworkElements.Loader;
@@ -216,7 +218,7 @@ namespace GameTimeNext.Core.Framework.Utils
                     if (!executableNames.Contains(process.ProcessName))
                         continue;
 
-                    string? processPath = process.MainModule?.FileName;
+                    string? processPath = TryGetProcessImagePath(process.Id);
                     if (string.IsNullOrWhiteSpace(processPath))
                         continue;
 
@@ -295,6 +297,24 @@ namespace GameTimeNext.Core.Framework.Utils
             }
 
             return (pathReturn, fileNameReturn);
+        }
+
+        public static string? TryGetProcessImagePath(int pid)
+        {
+            IntPtr handle = WinAPI.OpenProcess(WinAPI.PROCESS_QUERY_LIMITED_INFORMATION, false, pid);
+            if (handle == IntPtr.Zero)
+                return null;
+
+            try
+            {
+                var sb = new StringBuilder(1024);
+                int size = sb.Capacity;
+                return WinAPI.QueryFullProcessImageName(handle, 0, sb, ref size) ? sb.ToString() : null;
+            }
+            finally
+            {
+                WinAPI.CloseHandle(handle);
+            }
         }
 
         private static int RateExecutable(string exeName)
@@ -657,5 +677,19 @@ namespace GameTimeNext.Core.Framework.Utils
             "x64",
             "client"
         };
+
+        private static class WinAPI
+        {
+            public const int PROCESS_QUERY_LIMITED_INFORMATION = 0x1000;
+
+            [DllImport("kernel32.dll", SetLastError = true)]
+            public static extern IntPtr OpenProcess(int dwDesiredAccess, bool bInheritHandle, int dwProcessId);
+
+            [DllImport("kernel32.dll", SetLastError = true)]
+            public static extern bool CloseHandle(IntPtr hObject);
+
+            [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+            public static extern bool QueryFullProcessImageName(IntPtr hProcess, int dwFlags, StringBuilder lpExeName, ref int lpdwSize);
+        }
     }
 }

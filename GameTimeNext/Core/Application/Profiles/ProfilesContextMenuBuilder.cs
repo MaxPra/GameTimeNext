@@ -28,7 +28,7 @@ namespace GameTimeNext.Core.Application.Profiles
 
             playthroughSubMenu.AddItem("ctxtShowPlaythroughs", "Show playthroughs", icon: null, itemStyle: contextMenuItemStyle);
 
-            if (currentPlaythrough != null && !currentPlaythrough.PTCO && !currentPlaythrough.PTCA)
+            if (currentPlaythrough != null && !currentPlaythrough.PTCO && !currentPlaythrough.PTCA && !currentPlaythrough.PTPA)
             {
                 playthroughSubMenu.AddItem("ctxtCompleteProfile", "Current playthrough completed", icon: UIXContextMenuFactory.CreateMdlIcon("\uE930"), itemStyle: contextMenuItemStyle);
                 playthroughSubMenu.AddItem("ctxtCancelPlaythrough", "Cancel current playthrough", icon: UIXContextMenuFactory.CreateMdlIcon("\uE711"), itemStyle: contextMenuItemStyle);

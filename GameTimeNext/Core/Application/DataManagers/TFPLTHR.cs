@@ -18,6 +18,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             query.AddWhere(K1PLTHR.Name, K1PLTHR.Fields.PFID, QueryCompareType.EQUALS, pfid);
             query.AddWhere(K1PLTHR.Name, K1PLTHR.Fields.PTCO, QueryCompareType.EQUALS, false);
             query.AddWhere(K1PLTHR.Name, K1PLTHR.Fields.PTCA, QueryCompareType.EQUALS, false);
+            query.AddWhere(K1PLTHR.Name, K1PLTHR.Fields.PTPA, QueryCompareType.EQUALS, false);
 
             using (var reader = query.Execute())
             {
@@ -39,7 +40,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         {
             T1PLTHR currT1plthr = GetCurrentPlaythrough(pfid);
 
-            return currT1plthr != null && currT1plthr.PTCO == false && currT1plthr.PTCA == false;
+            return currT1plthr != null && currT1plthr.PTCO == false && currT1plthr.PTCA == false && currT1plthr.PTPA == false;
         }
 
         public static long GetCurrentPlaythroughCount(long pfid, string type)
