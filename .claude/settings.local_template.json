@@ -1,0 +1,18 @@
+{
+    "permissions": {
+        "additionalDirectories": [
+            "X:/MaxPra/UIX.ViewController.Engine"
+        ],
+        "ask": [
+            "Edit(//x/MaxPra/UIX.ViewController.Engine/**)"
+        ],
+        "deny": [
+            "Read(//x/MaxPra/UIX.ViewController.Engine/**/bin/**)",
+            "Read(//x/MaxPra/UIX.ViewController.Engine/**/obj/**)",
+            "Read(//x/MaxPra/UIX.ViewController.Engine/**/.github/**)",
+            "Edit(//x/MaxPra/UIX.ViewController.Engine/**/bin/**)",
+            "Edit(//x/MaxPra/UIX.ViewController.Engine/**/obj/**)",
+            "Edit(//x/MaxPra/UIX.ViewController.Engine/**/.github/**)"
+        ]
+    }
+}
