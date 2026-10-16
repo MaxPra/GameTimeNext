@@ -36,5 +36,20 @@ namespace GameTimeNext.Core.Framework.Utils
 
             AppEnvironment.StartArguments = retValue;
         }
+
+        public static string GetStartArgumentsString()
+        {
+            List<string> parts = new List<string>();
+
+            foreach (KeyValuePair<string, string?> argument in AppEnvironment.StartArguments)
+            {
+                if (argument.Key.Length > 1) parts.Add($"--{argument.Key}");
+                else parts.Add($"-{argument.Key}");
+
+                if (!FnString.IsNullEmptyOrWhitespace(argument.Value)) parts.Add(argument.Value!);
+            }
+
+            return string.Join(" ", parts);
+        }
     }
 }

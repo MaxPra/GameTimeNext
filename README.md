@@ -182,6 +182,8 @@ Right-click any application:
 - Local data storage
 - External APIs: **SteamGridDB**, **HowLongToBeat**, **Twitch**
 
+<sub>Development is assisted by AI tools. Most of the code is written by hand, and AI-generated code is reviewed before it is merged.</sub>
+
 <br>
 
 ## Feedback

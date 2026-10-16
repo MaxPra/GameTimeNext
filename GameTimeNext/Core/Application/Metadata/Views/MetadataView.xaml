@@ -40,6 +40,8 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="8" />
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
@@ -130,6 +132,22 @@
                         FontFamily="Segoe MDL2 Assets"
                         FontSize="14"
                         Text="&#xE72C;" />
+                </Button>
+
+                <Button
+                    x:Name="BtnOpenGenClass"
+                    Grid.Column="10"
+                    Width="38"
+                    Height="38"
+                    VerticalAlignment="Center"
+                    IsDefault="True"
+                    ToolTip="Open genClass folder">
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontFamily="Segoe MDL2 Assets"
+                        FontSize="14"
+                        Text="&#xE8B7;" />
                 </Button>
             </Grid>
         </Border>
