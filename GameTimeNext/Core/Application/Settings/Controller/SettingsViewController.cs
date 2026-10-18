@@ -3,6 +3,7 @@ using GameTimeNext.Core.Application.Profiles.BackgroundProcesses;
 using GameTimeNext.Core.Application.Settings.Views;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
+using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.Files;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.UserInput;
@@ -313,7 +314,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
 
             if (FnSystem.IsDebug())
             {
-                exportPath = AppEnvironment.GetAppConfig().DevBackupFolderPath;
+                exportPath = AppConfig.Dev.BackupDirectoryPath;
 
                 if (!Directory.Exists(exportPath))
                     Directory.CreateDirectory(exportPath);

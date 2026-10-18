@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using GameTimeNext.Core.Framework.Config;
+using System.Reflection;
 
 namespace GameTimeNext.Core.Framework.Versioning
 {

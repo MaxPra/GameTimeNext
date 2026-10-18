@@ -18,7 +18,6 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
         private const int MAX_PARAM_COUNT = 2;
 
-        bool _hasChanged = false;
         Dictionary<string, ParameterControl> _parmControls = new Dictionary<string, ParameterControl>();
 
         public CodetablesEntryEditViewController(UIXApplication app) : base(app)

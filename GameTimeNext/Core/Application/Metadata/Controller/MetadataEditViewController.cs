@@ -3,6 +3,7 @@ using GameTimeNext.Core.Application.Metadata.Viewmodels;
 using GameTimeNext.Core.Application.Metadata.Views;
 using GameTimeNext.Core.Application.Profiles;
 using GameTimeNext.Core.Framework;
+using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using System.Windows;
 using System.Windows.Controls;
@@ -319,7 +320,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
                 await Task.Run(() =>
                 {
                     CFMetadataClassGenerator classGenerator = new CFMetadataClassGenerator();
-                    classGenerator.GenerateFor(GetApp().T1METAH!, AppEnvironment.GetAppConfig().DevGeneratedFilesPath);
+                    classGenerator.GenerateFor(GetApp().T1METAH!, AppConfig.Dev.GenClassDirectoryPath);
 
                     CFMetadataTableGenerator tableGenerator = new CFMetadataTableGenerator();
                     tableGenerator.EnsureTableFor(GetApp().T1METAH!);

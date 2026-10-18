@@ -106,7 +106,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             steamGames = GetSteamGames();
 
-            // Viewmodel befüllen
+            // Viewmodel befÃ¼llen
             _profilesSteamImportViewModel = new ProfilesSteamImportViewModel();
             _profilesSteamImportViewModel.SteamGames = new System.Collections.ObjectModel.ObservableCollection<SteamGame>(steamGames);
 
@@ -143,7 +143,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                            g.Name?.IndexOf(t, StringComparison.OrdinalIgnoreCase) >= 0))
                 .ToList();
 
-            // Nur vollständig installierte Spiele (StateFlags == 4)
+            // Nur vollstÃ¤ndig installierte Spiele (StateFlags == 4)
             games = games.Where(g => g.StateFlags == 4).ToList();
 
             games = games.Where(g => SteamManifestHelper.ResolveInstallPath(g) != null).ToList();
@@ -152,7 +152,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             if (!string.IsNullOrWhiteSpace(GetView().TxbSearch.Text))
                 games = games.Where(g => g.Name?.IndexOf(GetView().TxbSearch.Text, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
 
-            // Duplikate entfernen (pro AppID ein Eintrag; bevorzugt mit gültigem InstallPath)
+            // Duplikate entfernen (pro AppID ein Eintrag; bevorzugt mit gÃ¼ltigem InstallPath)
             games = games
                 .GroupBy(g => g.AppId)
                 .Select(grp =>

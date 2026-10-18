@@ -1,7 +1,7 @@
 ﻿using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Metadata.Data;
 using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework;
+using GameTimeNext.Core.Framework.Config;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
@@ -86,7 +86,7 @@ namespace GameTimeNext.Core.Application.CreateImportPackage
 
         private static void CreateImportPackageCodetablesFiles(string tempDirectory)
         {
-            string sourceDefaultPath = AppEnvironment.GetAppConfig().ImagesSymbolsPathDefault;
+            string sourceDefaultPath = AppConfig.Storage.DefaultImagesSymbolsDirectoryPath;
 
             if (!Directory.Exists(sourceDefaultPath))
                 return;

@@ -1,5 +1,6 @@
 ﻿using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.TableObjects;
+using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.UI;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using UIX.ViewController.Engine.Runnables;
@@ -67,7 +68,7 @@ namespace GameTimeNext.Core.Application.Profiles
 
             System.Windows.Application.Current.Dispatcher.Invoke(() =>
             {
-                ToastMessage tm = new ToastMessage("Attention!", "GameTimeNext needs your attention!");
+                ToastMessage tm = new ToastMessage("Attention!", AppConfig.Root.ApplicationName + " needs your attention!");
                 tm.Show();
 
                 CFMBOX cfmbox = app.GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
