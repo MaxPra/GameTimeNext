@@ -1,3 +1,4 @@
+﻿using System.Globalization;
 using GameTimeNext.Core.Application.Codetables;
 using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.General;
@@ -467,7 +468,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 if (GetApp().T1Profi.SAID != 0)
                 {
                     int steamSourceId = igdbservice.GetSteamSourceId();
-                    gameId = await igdbservice.FindGameIdBySteamAppIdAsync(steamSourceId, GetApp().T1Profi.SAID.ToString());
+                    gameId = await igdbservice.FindGameIdBySteamAppIdAsync(steamSourceId, GetApp().T1Profi.SAID.ToString(CultureInfo.InvariantCulture));
                 }
 
                 if (gameId == null)

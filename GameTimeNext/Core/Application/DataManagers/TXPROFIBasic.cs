@@ -2,6 +2,7 @@
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.DataBase.Migration;
 using System.Data.SQLite;
+using System.Globalization;
 using UIX.ViewController.Engine.DataBaseObjects;
 using UIX.ViewController.Engine.Migration.Types;
 using UIX.ViewController.Engine.Querying;
@@ -45,8 +46,10 @@ namespace GameTimeNext.Core.Application.DataManagers
 
         public virtual void Delete(long pfid)
         {
-            string sql = $"DELETE FROM T1PROFI WHERE PFID = '{pfid}';";
-            UIXQuery.ExecuteCustom(sql, _connection);
+            using SQLiteCommand cmd = _connection.CreateCommand();
+            cmd.CommandText = "DELETE FROM T1PROFI WHERE PFID = @PFID;";
+            cmd.Parameters.AddWithValue("@PFID", ToDbValue(pfid));
+            cmd.ExecuteNonQuery();
             MigrationFactory.ToCsv.ExportCsvFileFor(_connection, "T1PROFI", MigrationFactory.ImportType.DevSync);
         }
 
@@ -164,26 +167,72 @@ namespace GameTimeNext.Core.Application.DataManagers
         {
             obj.CRAT = DateTime.Now;
             obj.CHAT = DateTime.Now;
-            string sql = $"INSERT INTO T1PROFI (GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, CRAT, CHAT, ACCO, ACIN, ACAC, CUPT, ETMA, ETME, ETCO, ETTY, ETML, ARCH, PLAFO) VALUES ('{ToDbValue(obj.GANA)}', '{ToDbValue(obj.FIPL)}', '{ToDbValue(obj.LAPL)}', '{ToDbValue(obj.PPFN)}', '{ToDbValue(obj.EXGF)}', '{ToDbValue(obj.SAID)}', '{ToDbValue(obj.PRSE)}', '{ToDbValue(obj.EXEC)}', '{ToDbValue(obj.CRAT)}', '{ToDbValue(obj.CHAT)}', '{ToDbValue(obj.ACCO)}', '{ToDbValue(obj.ACIN)}', '{ToDbValue(obj.ACAC)}', '{ToDbValue(obj.CUPT)}', '{ToDbValue(obj.ETMA)}', '{ToDbValue(obj.ETME)}', '{ToDbValue(obj.ETCO)}', '{ToDbValue(obj.ETTY)}', '{ToDbValue(obj.ETML)}', '{ToDbValue(obj.ARCH)}', '{ToDbValue(obj.PLAFO)}');";
-            UIXQuery.ExecuteCustom(sql, _connection);
+            using SQLiteCommand cmd = _connection.CreateCommand();
+            cmd.CommandText = "INSERT INTO T1PROFI (GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, CRAT, CHAT, ACCO, ACIN, ACAC, CUPT, ETMA, ETME, ETCO, ETTY, ETML, ARCH, PLAFO) VALUES (@GANA, @FIPL, @LAPL, @PPFN, @EXGF, @SAID, @PRSE, @EXEC, @CRAT, @CHAT, @ACCO, @ACIN, @ACAC, @CUPT, @ETMA, @ETME, @ETCO, @ETTY, @ETML, @ARCH, @PLAFO);";
+            cmd.Parameters.AddWithValue("@GANA", ToDbValue(obj.GANA));
+            cmd.Parameters.AddWithValue("@FIPL", ToDbValue(obj.FIPL));
+            cmd.Parameters.AddWithValue("@LAPL", ToDbValue(obj.LAPL));
+            cmd.Parameters.AddWithValue("@PPFN", ToDbValue(obj.PPFN));
+            cmd.Parameters.AddWithValue("@EXGF", ToDbValue(obj.EXGF));
+            cmd.Parameters.AddWithValue("@SAID", ToDbValue(obj.SAID));
+            cmd.Parameters.AddWithValue("@PRSE", ToDbValue(obj.PRSE));
+            cmd.Parameters.AddWithValue("@EXEC", ToDbValue(obj.EXEC));
+            cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
+            cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
+            cmd.Parameters.AddWithValue("@ACCO", ToDbValue(obj.ACCO));
+            cmd.Parameters.AddWithValue("@ACIN", ToDbValue(obj.ACIN));
+            cmd.Parameters.AddWithValue("@ACAC", ToDbValue(obj.ACAC));
+            cmd.Parameters.AddWithValue("@CUPT", ToDbValue(obj.CUPT));
+            cmd.Parameters.AddWithValue("@ETMA", ToDbValue(obj.ETMA));
+            cmd.Parameters.AddWithValue("@ETME", ToDbValue(obj.ETME));
+            cmd.Parameters.AddWithValue("@ETCO", ToDbValue(obj.ETCO));
+            cmd.Parameters.AddWithValue("@ETTY", ToDbValue(obj.ETTY));
+            cmd.Parameters.AddWithValue("@ETML", ToDbValue(obj.ETML));
+            cmd.Parameters.AddWithValue("@ARCH", ToDbValue(obj.ARCH));
+            cmd.Parameters.AddWithValue("@PLAFO", ToDbValue(obj.PLAFO));
+            cmd.ExecuteNonQuery();
 
             using SQLiteCommand idCmd = _connection.CreateCommand();
             idCmd.CommandText = "SELECT last_insert_rowid();";
-            obj.PFID = Convert.ToInt64(idCmd.ExecuteScalar());
+            obj.PFID = Convert.ToInt64(idCmd.ExecuteScalar(), CultureInfo.InvariantCulture);
         }
 
         private void Update(T1PROFI obj)
         {
             obj.CHAT = DateTime.Now;
-            string sql = $"UPDATE T1PROFI SET GANA = '{ToDbValue(obj.GANA)}', FIPL = '{ToDbValue(obj.FIPL)}', LAPL = '{ToDbValue(obj.LAPL)}', PPFN = '{ToDbValue(obj.PPFN)}', EXGF = '{ToDbValue(obj.EXGF)}', SAID = '{ToDbValue(obj.SAID)}', PRSE = '{ToDbValue(obj.PRSE)}', EXEC = '{ToDbValue(obj.EXEC)}', CRAT = '{ToDbValue(obj.CRAT)}', CHAT = '{ToDbValue(obj.CHAT)}', ACCO = '{ToDbValue(obj.ACCO)}', ACIN = '{ToDbValue(obj.ACIN)}', ACAC = '{ToDbValue(obj.ACAC)}', CUPT = '{ToDbValue(obj.CUPT)}', ETMA = '{ToDbValue(obj.ETMA)}', ETME = '{ToDbValue(obj.ETME)}', ETCO = '{ToDbValue(obj.ETCO)}', ETTY = '{ToDbValue(obj.ETTY)}', ETML = '{ToDbValue(obj.ETML)}', ARCH = '{ToDbValue(obj.ARCH)}', PLAFO = '{ToDbValue(obj.PLAFO)}' WHERE PFID = '{obj.PFID}';";
-            UIXQuery.ExecuteCustom(sql, _connection);
+            using SQLiteCommand cmd = _connection.CreateCommand();
+            cmd.CommandText = "UPDATE T1PROFI SET GANA = @GANA, FIPL = @FIPL, LAPL = @LAPL, PPFN = @PPFN, EXGF = @EXGF, SAID = @SAID, PRSE = @PRSE, EXEC = @EXEC, CRAT = @CRAT, CHAT = @CHAT, ACCO = @ACCO, ACIN = @ACIN, ACAC = @ACAC, CUPT = @CUPT, ETMA = @ETMA, ETME = @ETME, ETCO = @ETCO, ETTY = @ETTY, ETML = @ETML, ARCH = @ARCH, PLAFO = @PLAFO WHERE PFID = @PFID;";
+            cmd.Parameters.AddWithValue("@PFID", ToDbValue(obj.PFID));
+            cmd.Parameters.AddWithValue("@GANA", ToDbValue(obj.GANA));
+            cmd.Parameters.AddWithValue("@FIPL", ToDbValue(obj.FIPL));
+            cmd.Parameters.AddWithValue("@LAPL", ToDbValue(obj.LAPL));
+            cmd.Parameters.AddWithValue("@PPFN", ToDbValue(obj.PPFN));
+            cmd.Parameters.AddWithValue("@EXGF", ToDbValue(obj.EXGF));
+            cmd.Parameters.AddWithValue("@SAID", ToDbValue(obj.SAID));
+            cmd.Parameters.AddWithValue("@PRSE", ToDbValue(obj.PRSE));
+            cmd.Parameters.AddWithValue("@EXEC", ToDbValue(obj.EXEC));
+            cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
+            cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
+            cmd.Parameters.AddWithValue("@ACCO", ToDbValue(obj.ACCO));
+            cmd.Parameters.AddWithValue("@ACIN", ToDbValue(obj.ACIN));
+            cmd.Parameters.AddWithValue("@ACAC", ToDbValue(obj.ACAC));
+            cmd.Parameters.AddWithValue("@CUPT", ToDbValue(obj.CUPT));
+            cmd.Parameters.AddWithValue("@ETMA", ToDbValue(obj.ETMA));
+            cmd.Parameters.AddWithValue("@ETME", ToDbValue(obj.ETME));
+            cmd.Parameters.AddWithValue("@ETCO", ToDbValue(obj.ETCO));
+            cmd.Parameters.AddWithValue("@ETTY", ToDbValue(obj.ETTY));
+            cmd.Parameters.AddWithValue("@ETML", ToDbValue(obj.ETML));
+            cmd.Parameters.AddWithValue("@ARCH", ToDbValue(obj.ARCH));
+            cmd.Parameters.AddWithValue("@PLAFO", ToDbValue(obj.PLAFO));
+            cmd.ExecuteNonQuery();
         }
 
         private bool Exists(T1PROFI obj)
         {
             using SQLiteCommand cmd = _connection.CreateCommand();
-            cmd.CommandText = $"SELECT COUNT(*) FROM T1PROFI WHERE PFID = '{obj.PFID}';";
-            return Convert.ToInt64(cmd.ExecuteScalar()) > 0;
+            cmd.CommandText = "SELECT COUNT(*) FROM T1PROFI WHERE PFID = @PFID;";
+            cmd.Parameters.AddWithValue("@PFID", ToDbValue(obj.PFID));
+            return Convert.ToInt64(cmd.ExecuteScalar(), CultureInfo.InvariantCulture) > 0;
         }
 
         private static object? ToDbValue(object? valFrom)

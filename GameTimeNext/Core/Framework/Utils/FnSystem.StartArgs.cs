@@ -20,7 +20,7 @@ namespace GameTimeNext.Core.Framework.Utils
                 if (arg.StartsWith('-'))
                 {
                     // Key
-                    currentKey = arg.ToLower().Substring(1);
+                    currentKey = arg.ToLowerInvariant().Substring(1);
 
                     if (currentKey.StartsWith('-'))
                     {

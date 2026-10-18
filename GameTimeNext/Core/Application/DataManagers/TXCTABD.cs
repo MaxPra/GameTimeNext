@@ -9,8 +9,10 @@ namespace GameTimeNext.Core.Application.DataManagers
     {
         public void DeleteAllEntries(string txtyp)
         {
-            string sql = $"DELETE FROM T1CTABD WHERE TXTYP = '{txtyp}';";
-            UIXQuery.ExecuteCustom(sql, _connection);
+            using SQLiteCommand cmd = _connection.CreateCommand();
+            cmd.CommandText = "DELETE FROM T1CTABD WHERE TXTYP = @TXTYP;";
+            cmd.Parameters.AddWithValue("@TXTYP", txtyp);
+            cmd.ExecuteNonQuery();
 
             MigrationFactory.ToCsv.ExportCsvFileFor(_connection, "T1CTABD", MigrationFactory.ImportType.DevSync);
         }

@@ -1,3 +1,4 @@
+﻿using System.Globalization;
 using GameTimeNext.Core.Application.Metadata.Data;
 using GameTimeNext.Core.Application.Metadata.Views;
 using GameTimeNext.Core.Framework.DataBase.Migration;
@@ -186,7 +187,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
         protected override void FillViewImpl()
         {
             if (GetWnd().ViewIndicator.Contains("CN"))
-                GetWnd().txbOrder.Text = TFMETAP.GetNextOrder(GetApp().T1METAP!).ToString();
+                GetWnd().txbOrder.Text = TFMETAP.GetNextOrder(GetApp().T1METAP!).ToString(CultureInfo.CurrentCulture);
 
             string selectedDataType = GetWnd().cmbDataType.SelectedValue?.ToString() ?? string.Empty;
 
@@ -194,7 +195,16 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
             if (selectedDataType.Equals("06"))
             {
                 // Checkbox
-                GetWnd().chbDefaultBool.IsChecked = GetApp().T1METAP!.DEFVL.Equals("1");
+                bool defaultBool = false;
+                try
+                {
+                    defaultBool = UIXSqliteDataType.Convert(UIXSqliteDataType.ConversionType.CSV, UIXSqliteDataType.ConversionType.CSharp, GetApp().T1METAP!.DEFVL, UIXSqliteDataType.GetByKey(selectedDataType)) is true;
+                }
+                catch (FormatException)
+                {
+                    // DEFVL still holds a non-boolean value of a previous datatype
+                }
+                GetWnd().chbDefaultBool.IsChecked = defaultBool;
             }
             else
             {
@@ -211,7 +221,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
             if (selectedDataType.Equals("06"))
             {
                 // Checkbox
-                GetApp().T1METAP!.DEFVL = GetWnd().chbDefaultBool.IsChecked.Equals(true) ? "1" : "0"; // OFODI: Centralize Convert
+                GetApp().T1METAP!.DEFVL = (string)UIXSqliteDataType.Convert(UIXSqliteDataType.ConversionType.CSharp, UIXSqliteDataType.ConversionType.CSV, GetWnd().chbDefaultBool.IsChecked.Equals(true))!;
             }
             else
             {

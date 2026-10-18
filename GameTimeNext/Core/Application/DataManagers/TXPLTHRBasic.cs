@@ -2,6 +2,7 @@
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.DataBase.Migration;
 using System.Data.SQLite;
+using System.Globalization;
 using UIX.ViewController.Engine.DataBaseObjects;
 using UIX.ViewController.Engine.Migration.Types;
 using UIX.ViewController.Engine.Querying;
@@ -45,8 +46,10 @@ namespace GameTimeNext.Core.Application.DataManagers
 
         public virtual void Delete(long ptid)
         {
-            string sql = $"DELETE FROM T1PLTHR WHERE PTID = '{ptid}';";
-            UIXQuery.ExecuteCustom(sql, _connection);
+            using SQLiteCommand cmd = _connection.CreateCommand();
+            cmd.CommandText = "DELETE FROM T1PLTHR WHERE PTID = @PTID;";
+            cmd.Parameters.AddWithValue("@PTID", ToDbValue(ptid));
+            cmd.ExecuteNonQuery();
             MigrationFactory.ToCsv.ExportCsvFileFor(_connection, "T1PLTHR", MigrationFactory.ImportType.DevSync);
         }
 
@@ -125,26 +128,46 @@ namespace GameTimeNext.Core.Application.DataManagers
         {
             obj.CRAT = DateTime.Now;
             obj.CHAT = DateTime.Now;
-            string sql = $"INSERT INTO T1PLTHR (PFID, PTTY, PTDE, PTCO, CRAT, CHAT, PTCA, PTPA) VALUES ('{ToDbValue(obj.PFID)}', '{ToDbValue(obj.PTTY)}', '{ToDbValue(obj.PTDE)}', '{ToDbValue(obj.PTCO)}', '{ToDbValue(obj.CRAT)}', '{ToDbValue(obj.CHAT)}', '{ToDbValue(obj.PTCA)}', '{ToDbValue(obj.PTPA)}');";
-            UIXQuery.ExecuteCustom(sql, _connection);
+            using SQLiteCommand cmd = _connection.CreateCommand();
+            cmd.CommandText = "INSERT INTO T1PLTHR (PFID, PTTY, PTDE, PTCO, CRAT, CHAT, PTCA, PTPA) VALUES (@PFID, @PTTY, @PTDE, @PTCO, @CRAT, @CHAT, @PTCA, @PTPA);";
+            cmd.Parameters.AddWithValue("@PFID", ToDbValue(obj.PFID));
+            cmd.Parameters.AddWithValue("@PTTY", ToDbValue(obj.PTTY));
+            cmd.Parameters.AddWithValue("@PTDE", ToDbValue(obj.PTDE));
+            cmd.Parameters.AddWithValue("@PTCO", ToDbValue(obj.PTCO));
+            cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
+            cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
+            cmd.Parameters.AddWithValue("@PTCA", ToDbValue(obj.PTCA));
+            cmd.Parameters.AddWithValue("@PTPA", ToDbValue(obj.PTPA));
+            cmd.ExecuteNonQuery();
 
             using SQLiteCommand idCmd = _connection.CreateCommand();
             idCmd.CommandText = "SELECT last_insert_rowid();";
-            obj.PTID = Convert.ToInt64(idCmd.ExecuteScalar());
+            obj.PTID = Convert.ToInt64(idCmd.ExecuteScalar(), CultureInfo.InvariantCulture);
         }
 
         private void Update(T1PLTHR obj)
         {
             obj.CHAT = DateTime.Now;
-            string sql = $"UPDATE T1PLTHR SET PFID = '{ToDbValue(obj.PFID)}', PTTY = '{ToDbValue(obj.PTTY)}', PTDE = '{ToDbValue(obj.PTDE)}', PTCO = '{ToDbValue(obj.PTCO)}', CRAT = '{ToDbValue(obj.CRAT)}', CHAT = '{ToDbValue(obj.CHAT)}', PTCA = '{ToDbValue(obj.PTCA)}', PTPA = '{ToDbValue(obj.PTPA)}' WHERE PTID = '{obj.PTID}';";
-            UIXQuery.ExecuteCustom(sql, _connection);
+            using SQLiteCommand cmd = _connection.CreateCommand();
+            cmd.CommandText = "UPDATE T1PLTHR SET PFID = @PFID, PTTY = @PTTY, PTDE = @PTDE, PTCO = @PTCO, CRAT = @CRAT, CHAT = @CHAT, PTCA = @PTCA, PTPA = @PTPA WHERE PTID = @PTID;";
+            cmd.Parameters.AddWithValue("@PTID", ToDbValue(obj.PTID));
+            cmd.Parameters.AddWithValue("@PFID", ToDbValue(obj.PFID));
+            cmd.Parameters.AddWithValue("@PTTY", ToDbValue(obj.PTTY));
+            cmd.Parameters.AddWithValue("@PTDE", ToDbValue(obj.PTDE));
+            cmd.Parameters.AddWithValue("@PTCO", ToDbValue(obj.PTCO));
+            cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
+            cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
+            cmd.Parameters.AddWithValue("@PTCA", ToDbValue(obj.PTCA));
+            cmd.Parameters.AddWithValue("@PTPA", ToDbValue(obj.PTPA));
+            cmd.ExecuteNonQuery();
         }
 
         private bool Exists(T1PLTHR obj)
         {
             using SQLiteCommand cmd = _connection.CreateCommand();
-            cmd.CommandText = $"SELECT COUNT(*) FROM T1PLTHR WHERE PTID = '{obj.PTID}';";
-            return Convert.ToInt64(cmd.ExecuteScalar()) > 0;
+            cmd.CommandText = "SELECT COUNT(*) FROM T1PLTHR WHERE PTID = @PTID;";
+            cmd.Parameters.AddWithValue("@PTID", ToDbValue(obj.PTID));
+            return Convert.ToInt64(cmd.ExecuteScalar(), CultureInfo.InvariantCulture) > 0;
         }
 
         private static object? ToDbValue(object? valFrom)

@@ -1,6 +1,6 @@
 ﻿using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
-using System.Globalization;
+using UIX.ViewController.Engine.Migration.Types;
 using UIX.ViewController.Engine.Querying;
 
 namespace GameTimeNext.Core.Application.DataManagers
@@ -63,9 +63,9 @@ namespace GameTimeNext.Core.Application.DataManagers
             UIXQuery query = new UIXQuery(K1SESSI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
 
             if (start is not null)
-                query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PLTO, QueryCompareType.GREATER_OR_EQUAL, start.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
+                query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PLTO, QueryCompareType.GREATER_OR_EQUAL, ToDbValue(start.Value.Date));
 
-            query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PLFR, QueryCompareType.LESS_THAN, end.AddDays(1).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
+            query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PLFR, QueryCompareType.LESS_THAN, ToDbValue(end.Date.AddDays(1)));
 
             if (pfid is not null)
                 query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PFID, QueryCompareType.EQUALS, pfid);
@@ -117,6 +117,11 @@ namespace GameTimeNext.Core.Application.DataManagers
         private static void AddWhereInvalidSesssions(ref UIXQuery query)
         {
             query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PLTI, QueryCompareType.LESS_THAN, AppEnvironment.GetAppConfig().AppSettings.SessionCleanupSeconds / 60);
+        }
+
+        private static object? ToDbValue(object? valFrom)
+        {
+            return UIXSqliteDataType.Convert(UIXSqliteDataType.ConversionType.CSharp, UIXSqliteDataType.ConversionType.Sqlite, valFrom);
         }
     }
 }

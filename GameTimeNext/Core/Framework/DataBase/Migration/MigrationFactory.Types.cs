@@ -203,11 +203,11 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 {
                     PONAM,
                     DATYP.Key,
-                    DALEN.ToString("#"),
-                    PORDE.ToString("#"),
-                    PRIMK ? "1" : "0",
-                    AUTOI ? "1" : "0",
-                    DEFAK ? "1" : "0",
+                    ToCsvValue(DALEN),
+                    ToCsvValue(PORDE),
+                    ToCsvValue(PRIMK),
+                    ToCsvValue(AUTOI),
+                    ToCsvValue(DEFAK),
                     DEFVL,
                 };
 
@@ -222,15 +222,12 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
 
                 if (DEFAK)
                 {
-                    // Default set by Metadata
-                    string valueString = DEFVL;
+                    // Default set by Metadata (DEFVL is stored in CSV format)
+                    if (DATYP.Key.Equals("06") && forCsharp)
+                        return UIXSqliteDataType.Convert(UIXSqliteDataType.ConversionType.CSV, UIXSqliteDataType.ConversionType.CSharp, DEFVL, DATYP) is true ? "true" : "false";
 
-                    if (DATYP.Key.Equals("06"))
-                    {
-                        if (forCsharp) return DEFVL;
-
-                        valueString = (DEFVL.ToLowerInvariant() == "true" ? "1" : "0");
-                    }
+                    object? valueSqlite = UIXSqliteDataType.Convert(UIXSqliteDataType.ConversionType.CSV, UIXSqliteDataType.ConversionType.Sqlite, DEFVL, DATYP);
+                    string valueString = Convert.ToString(valueSqlite, CultureInfo.InvariantCulture) ?? string.Empty;
 
                     return $"{sD}{valueString}{sD}";
                 }
@@ -245,19 +242,27 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     {
                         if (forCsharp) return "DateTime.MinValue";
 
-                        string value = DateTime.MinValue.ToString("yyyy-MM-dd HH:mm:ss");
+                        object? value = UIXSqliteDataType.Convert(UIXSqliteDataType.ConversionType.CSharp, UIXSqliteDataType.ConversionType.Sqlite, DateTime.MinValue);
                         return $"{sD}{value}{sD}";
                     }
                     if (DATYP.Key.Equals("06"))
                     {
                         if (forCsharp) return "false";
 
-                        return $"{sD}0{sD}";
+                        object? value = UIXSqliteDataType.Convert(UIXSqliteDataType.ConversionType.CSharp, UIXSqliteDataType.ConversionType.Sqlite, false);
+                        return $"{sD}{value}{sD}";
                     }
                     if (DATYP.Key.Equals("07")) return $"{sD}{sD}";
                 }
 
                 throw new NotImplementedException($"Not default value implemented for SqliteDataType with Key \"{DATYP.Key}\".");
+            }
+            #endregion
+
+            #region Methods PRIVATE
+            private static string ToCsvValue(object? valFrom)
+            {
+                return (string)UIXSqliteDataType.Convert(UIXSqliteDataType.ConversionType.CSharp, UIXSqliteDataType.ConversionType.CSV, valFrom)!;
             }
             #endregion
         }
@@ -437,7 +442,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                             t1metap.AUTOI,
                             defak: t1metap.DEFAK,
                             defvl: t1metap.DEFVL,
-                            chat: SqliteCsvDataConverter.DateToCsv(t1metap.CHAT)
+                            chat: (string?)UIXSqliteDataType.Convert(UIXSqliteDataType.ConversionType.CSharp, UIXSqliteDataType.ConversionType.CSV, t1metap.CHAT)
                         ));
                     }
 
@@ -538,63 +543,6 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 });
 
                 return actions.Select(a => a.Value).ToList();
-            }
-        }
-
-        private static class SqliteCsvDataConverter
-        {
-            // OFDO: Let SqliteCsvDataConverter die -> Comes into UIXSqliteDateType.Convert
-            private static string _CSVFORMAT_DATE = "yyyy-MM-dd HH:mm:ss";
-
-            public static string DateToCsv(string value)
-            {
-                DateTimeStyles styles = DateTimeStyles.AllowWhiteSpaces;
-                string[] formats =
-                {
-                    "yyyy-MM-dd HH:mm:ss",
-                    "yyyy-MM-dd HH:mm:ss.FFFFFFF",
-                    "yyyy-MM-ddTHH:mm:ss",
-                    "yyyy-MM-ddTHH:mm:ss.FFFFFFF",
-                    "dd.MM.yyyy HH:mm:ss",
-                    "dd.MM.yyyy HH:mm",
-                    "o"
-                };
-
-                if (DateTime.TryParseExact(value, formats, CultureInfo.InvariantCulture, styles, out DateTime exactResult) || DateTime.TryParse(value, CultureInfo.InvariantCulture, styles, out exactResult))
-                    return exactResult.ToString(_CSVFORMAT_DATE, CultureInfo.InvariantCulture);
-
-                return value;
-            }
-
-            public static string DateToCsv(DateTime dateTime)
-            {
-                return dateTime.ToString(_CSVFORMAT_DATE, CultureInfo.InvariantCulture);
-            }
-
-            public static string EscapeCsv(string value, char separator)
-            {
-                if (value is null)
-                    return string.Empty;
-
-                bool mustQuote = value.Contains(separator) || value.Contains('"') || value.Contains('\n') || value.Contains('\r');
-                if (!mustQuote)
-                    return value;
-
-                return '"' + value.Replace("\"", "\"\"") + '"';
-            }
-
-            public static string ToCsvValue(object value)
-            {
-                if (value is null || value == DBNull.Value)
-                    return string.Empty;
-
-                if (value is bool)
-                    return (bool)value ? "1" : "0";
-
-                if (value is IFormattable formattable)
-                    return formattable.ToString(null, CultureInfo.InvariantCulture);
-
-                return value.ToString() ?? string.Empty;
             }
         }
         #endregion

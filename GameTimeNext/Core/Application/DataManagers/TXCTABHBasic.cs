@@ -2,6 +2,7 @@
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.DataBase.Migration;
 using System.Data.SQLite;
+using System.Globalization;
 using UIX.ViewController.Engine.DataBaseObjects;
 using UIX.ViewController.Engine.Migration.Types;
 using UIX.ViewController.Engine.Querying;
@@ -45,8 +46,10 @@ namespace GameTimeNext.Core.Application.DataManagers
 
         public virtual void Delete(string txtyp)
         {
-            string sql = $"DELETE FROM T1CTABH WHERE TXTYP = '{txtyp}';";
-            UIXQuery.ExecuteCustom(sql, _connection);
+            using SQLiteCommand cmd = _connection.CreateCommand();
+            cmd.CommandText = "DELETE FROM T1CTABH WHERE TXTYP = @TXTYP;";
+            cmd.Parameters.AddWithValue("@TXTYP", ToDbValue(txtyp));
+            cmd.ExecuteNonQuery();
             MigrationFactory.ToCsv.ExportCsvFileFor(_connection, "T1CTABH", MigrationFactory.ImportType.DevSync);
         }
 
@@ -155,22 +158,63 @@ namespace GameTimeNext.Core.Application.DataManagers
         {
             obj.CRAT = DateTime.Now;
             obj.CHAT = DateTime.Now;
-            string sql = $"INSERT INTO T1CTABH (TXTYP, DESCR, PERMI, PAAC1, PADE1, PARF1, PACO1, PACT1, PAAC2, PADE2, PARF2, PACO2, PACT2, CRAT, CHAT, NRANA, EXPRT, PTOL1, PTOL2) VALUES ('{ToDbValue(obj.TXTYP)}', '{ToDbValue(obj.DESCR)}', '{ToDbValue(obj.PERMI)}', '{ToDbValue(obj.PAAC1)}', '{ToDbValue(obj.PADE1)}', '{ToDbValue(obj.PARF1)}', '{ToDbValue(obj.PACO1)}', '{ToDbValue(obj.PACT1)}', '{ToDbValue(obj.PAAC2)}', '{ToDbValue(obj.PADE2)}', '{ToDbValue(obj.PARF2)}', '{ToDbValue(obj.PACO2)}', '{ToDbValue(obj.PACT2)}', '{ToDbValue(obj.CRAT)}', '{ToDbValue(obj.CHAT)}', '{ToDbValue(obj.NRANA)}', '{ToDbValue(obj.EXPRT)}', '{ToDbValue(obj.PTOL1)}', '{ToDbValue(obj.PTOL2)}');";
-            UIXQuery.ExecuteCustom(sql, _connection);
+            using SQLiteCommand cmd = _connection.CreateCommand();
+            cmd.CommandText = "INSERT INTO T1CTABH (TXTYP, DESCR, PERMI, PAAC1, PADE1, PARF1, PACO1, PACT1, PAAC2, PADE2, PARF2, PACO2, PACT2, CRAT, CHAT, NRANA, EXPRT, PTOL1, PTOL2) VALUES (@TXTYP, @DESCR, @PERMI, @PAAC1, @PADE1, @PARF1, @PACO1, @PACT1, @PAAC2, @PADE2, @PARF2, @PACO2, @PACT2, @CRAT, @CHAT, @NRANA, @EXPRT, @PTOL1, @PTOL2);";
+            cmd.Parameters.AddWithValue("@TXTYP", ToDbValue(obj.TXTYP));
+            cmd.Parameters.AddWithValue("@DESCR", ToDbValue(obj.DESCR));
+            cmd.Parameters.AddWithValue("@PERMI", ToDbValue(obj.PERMI));
+            cmd.Parameters.AddWithValue("@PAAC1", ToDbValue(obj.PAAC1));
+            cmd.Parameters.AddWithValue("@PADE1", ToDbValue(obj.PADE1));
+            cmd.Parameters.AddWithValue("@PARF1", ToDbValue(obj.PARF1));
+            cmd.Parameters.AddWithValue("@PACO1", ToDbValue(obj.PACO1));
+            cmd.Parameters.AddWithValue("@PACT1", ToDbValue(obj.PACT1));
+            cmd.Parameters.AddWithValue("@PAAC2", ToDbValue(obj.PAAC2));
+            cmd.Parameters.AddWithValue("@PADE2", ToDbValue(obj.PADE2));
+            cmd.Parameters.AddWithValue("@PARF2", ToDbValue(obj.PARF2));
+            cmd.Parameters.AddWithValue("@PACO2", ToDbValue(obj.PACO2));
+            cmd.Parameters.AddWithValue("@PACT2", ToDbValue(obj.PACT2));
+            cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
+            cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
+            cmd.Parameters.AddWithValue("@NRANA", ToDbValue(obj.NRANA));
+            cmd.Parameters.AddWithValue("@EXPRT", ToDbValue(obj.EXPRT));
+            cmd.Parameters.AddWithValue("@PTOL1", ToDbValue(obj.PTOL1));
+            cmd.Parameters.AddWithValue("@PTOL2", ToDbValue(obj.PTOL2));
+            cmd.ExecuteNonQuery();
         }
 
         private void Update(T1CTABH obj)
         {
             obj.CHAT = DateTime.Now;
-            string sql = $"UPDATE T1CTABH SET TXTYP = '{ToDbValue(obj.TXTYP)}', DESCR = '{ToDbValue(obj.DESCR)}', PERMI = '{ToDbValue(obj.PERMI)}', PAAC1 = '{ToDbValue(obj.PAAC1)}', PADE1 = '{ToDbValue(obj.PADE1)}', PARF1 = '{ToDbValue(obj.PARF1)}', PACO1 = '{ToDbValue(obj.PACO1)}', PACT1 = '{ToDbValue(obj.PACT1)}', PAAC2 = '{ToDbValue(obj.PAAC2)}', PADE2 = '{ToDbValue(obj.PADE2)}', PARF2 = '{ToDbValue(obj.PARF2)}', PACO2 = '{ToDbValue(obj.PACO2)}', PACT2 = '{ToDbValue(obj.PACT2)}', CRAT = '{ToDbValue(obj.CRAT)}', CHAT = '{ToDbValue(obj.CHAT)}', NRANA = '{ToDbValue(obj.NRANA)}', EXPRT = '{ToDbValue(obj.EXPRT)}', PTOL1 = '{ToDbValue(obj.PTOL1)}', PTOL2 = '{ToDbValue(obj.PTOL2)}' WHERE TXTYP = '{obj.TXTYP}';";
-            UIXQuery.ExecuteCustom(sql, _connection);
+            using SQLiteCommand cmd = _connection.CreateCommand();
+            cmd.CommandText = "UPDATE T1CTABH SET TXTYP = @TXTYP, DESCR = @DESCR, PERMI = @PERMI, PAAC1 = @PAAC1, PADE1 = @PADE1, PARF1 = @PARF1, PACO1 = @PACO1, PACT1 = @PACT1, PAAC2 = @PAAC2, PADE2 = @PADE2, PARF2 = @PARF2, PACO2 = @PACO2, PACT2 = @PACT2, CRAT = @CRAT, CHAT = @CHAT, NRANA = @NRANA, EXPRT = @EXPRT, PTOL1 = @PTOL1, PTOL2 = @PTOL2 WHERE TXTYP = @TXTYP;";
+            cmd.Parameters.AddWithValue("@TXTYP", ToDbValue(obj.TXTYP));
+            cmd.Parameters.AddWithValue("@DESCR", ToDbValue(obj.DESCR));
+            cmd.Parameters.AddWithValue("@PERMI", ToDbValue(obj.PERMI));
+            cmd.Parameters.AddWithValue("@PAAC1", ToDbValue(obj.PAAC1));
+            cmd.Parameters.AddWithValue("@PADE1", ToDbValue(obj.PADE1));
+            cmd.Parameters.AddWithValue("@PARF1", ToDbValue(obj.PARF1));
+            cmd.Parameters.AddWithValue("@PACO1", ToDbValue(obj.PACO1));
+            cmd.Parameters.AddWithValue("@PACT1", ToDbValue(obj.PACT1));
+            cmd.Parameters.AddWithValue("@PAAC2", ToDbValue(obj.PAAC2));
+            cmd.Parameters.AddWithValue("@PADE2", ToDbValue(obj.PADE2));
+            cmd.Parameters.AddWithValue("@PARF2", ToDbValue(obj.PARF2));
+            cmd.Parameters.AddWithValue("@PACO2", ToDbValue(obj.PACO2));
+            cmd.Parameters.AddWithValue("@PACT2", ToDbValue(obj.PACT2));
+            cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
+            cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
+            cmd.Parameters.AddWithValue("@NRANA", ToDbValue(obj.NRANA));
+            cmd.Parameters.AddWithValue("@EXPRT", ToDbValue(obj.EXPRT));
+            cmd.Parameters.AddWithValue("@PTOL1", ToDbValue(obj.PTOL1));
+            cmd.Parameters.AddWithValue("@PTOL2", ToDbValue(obj.PTOL2));
+            cmd.ExecuteNonQuery();
         }
 
         private bool Exists(T1CTABH obj)
         {
             using SQLiteCommand cmd = _connection.CreateCommand();
-            cmd.CommandText = $"SELECT COUNT(*) FROM T1CTABH WHERE TXTYP = '{obj.TXTYP}';";
-            return Convert.ToInt64(cmd.ExecuteScalar()) > 0;
+            cmd.CommandText = "SELECT COUNT(*) FROM T1CTABH WHERE TXTYP = @TXTYP;";
+            cmd.Parameters.AddWithValue("@TXTYP", ToDbValue(obj.TXTYP));
+            return Convert.ToInt64(cmd.ExecuteScalar(), CultureInfo.InvariantCulture) > 0;
         }
 
         private static object? ToDbValue(object? valFrom)

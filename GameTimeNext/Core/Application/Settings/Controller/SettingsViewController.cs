@@ -1,4 +1,5 @@
-﻿using GameTimeNext.Core.Application.General;
+﻿using System.Globalization;
+using GameTimeNext.Core.Application.General;
 using GameTimeNext.Core.Application.Profiles.BackgroundProcesses;
 using GameTimeNext.Core.Application.Settings.Views;
 using GameTimeNext.Core.Application.TableObjects;
@@ -146,7 +147,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             GetView().txbIgdbClientSecret.Text = _appSettings.TwitchIGDBClientSecret;
 
             GetView().cbRemindTakeBreak.IsChecked = _appSettings.BreakReminder;
-            GetView().txbBreakReminderHours.Text = _appSettings.BreakReminderHrs.ToString();
+            GetView().txbBreakReminderHours.Text = _appSettings.BreakReminderHrs.ToString(CultureInfo.CurrentCulture);
         }
 
         private void FillTabMonitoring()
@@ -158,7 +159,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             GetView().txbMonitoringKey.Text = _appSettings!.MonitoringKey;
             GetView().cbEnableSessionTimeQuery.IsChecked = _appSettings!.EnableSessionTimeQuery;
             GetView().cbEnableSessionCleanup.IsChecked = _appSettings!.EnableSessionCleanup;
-            GetView().txbSessionCleanupSeconds.Text = _appSettings!.SessionCleanupSeconds.ToString();
+            GetView().txbSessionCleanupSeconds.Text = _appSettings!.SessionCleanupSeconds.ToString(CultureInfo.CurrentCulture);
         }
 
         private void FillDBOGeneral()

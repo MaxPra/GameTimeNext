@@ -1,4 +1,5 @@
-﻿using GameTimeNext.Core.Application.Dashboard.ViewModels;
+﻿using System.Globalization;
+using GameTimeNext.Core.Application.Dashboard.ViewModels;
 using GameTimeNext.Core.Application.Dashboard.Views;
 using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Profiles;
@@ -96,7 +97,7 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
 
         protected override void FillViewImpl()
         {
-            GetView().txtTimeSpanOffset.Text = timeSpanOffset.ToString();
+            GetView().txtTimeSpanOffset.Text = timeSpanOffset.ToString(CultureInfo.CurrentCulture);
 
             FillSectionPlaytimeOverview();
             FillSectionOverallStatistics();
@@ -220,8 +221,8 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
         private void FillSectionPlaytimeOverview()
         {
             GetView().txtTotalPlaytime.Text = CFDashboardApp.FormatTime(TFPROFI.GetPlaytime(timeSpanStart, timeSpanEnd));
-            GetView().txtGamesPlayed.Text = TFPROFI.GetPlayedProfilesCount(timeSpanStart, timeSpanEnd).ToString();
-            GetView().txtDaysPlayed.Text = TFPROFI.GetDaysPlayed(timeSpanStart, timeSpanEnd).ToString();
+            GetView().txtGamesPlayed.Text = TFPROFI.GetPlayedProfilesCount(timeSpanStart, timeSpanEnd).ToString(CultureInfo.CurrentCulture);
+            GetView().txtDaysPlayed.Text = TFPROFI.GetDaysPlayed(timeSpanStart, timeSpanEnd).ToString(CultureInfo.CurrentCulture);
         }
 
         private void FillSectionOverallStatistics()
@@ -253,7 +254,7 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
             (string gana, double plti, int days, string ppfn) = TFPROFI.GetMostPlayed(timeSpanStart, timeSpanEnd);
             GetView().txtMostPlayedTitle.Text = gana;
             GetView().txtMostPlayedPlaytime.Text = CFDashboardApp.FormatTime(plti);
-            GetView().txtMostPlayedDays.Text = days.ToString();
+            GetView().txtMostPlayedDays.Text = days.ToString(CultureInfo.CurrentCulture);
 
             BitmapImage? coverImage = FnImage.LoadImageWithoutLock(ppfn, 300, 450);
             GetView().imgMostPlayedCover.Source = coverImage;

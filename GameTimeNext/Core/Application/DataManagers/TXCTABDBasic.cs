@@ -2,6 +2,7 @@
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.DataBase.Migration;
 using System.Data.SQLite;
+using System.Globalization;
 using UIX.ViewController.Engine.DataBaseObjects;
 using UIX.ViewController.Engine.Migration.Types;
 using UIX.ViewController.Engine.Querying;
@@ -45,8 +46,11 @@ namespace GameTimeNext.Core.Application.DataManagers
 
         public virtual void Delete(string txtyp, string txnum)
         {
-            string sql = $"DELETE FROM T1CTABD WHERE TXTYP = '{txtyp}' AND TXNUM = '{txnum}';";
-            UIXQuery.ExecuteCustom(sql, _connection);
+            using SQLiteCommand cmd = _connection.CreateCommand();
+            cmd.CommandText = "DELETE FROM T1CTABD WHERE TXTYP = @TXTYP AND TXNUM = @TXNUM;";
+            cmd.Parameters.AddWithValue("@TXTYP", ToDbValue(txtyp));
+            cmd.Parameters.AddWithValue("@TXNUM", ToDbValue(txnum));
+            cmd.ExecuteNonQuery();
             MigrationFactory.ToCsv.ExportCsvFileFor(_connection, "T1CTABD", MigrationFactory.ImportType.DevSync);
         }
 
@@ -121,22 +125,40 @@ namespace GameTimeNext.Core.Application.DataManagers
         {
             obj.CRAT = DateTime.Now;
             obj.CHAT = DateTime.Now;
-            string sql = $"INSERT INTO T1CTABD (TXTYP, TXNUM, DESCR, CRAT, CHAT, PARM1, PARM2) VALUES ('{ToDbValue(obj.TXTYP)}', '{ToDbValue(obj.TXNUM)}', '{ToDbValue(obj.DESCR)}', '{ToDbValue(obj.CRAT)}', '{ToDbValue(obj.CHAT)}', '{ToDbValue(obj.PARM1)}', '{ToDbValue(obj.PARM2)}');";
-            UIXQuery.ExecuteCustom(sql, _connection);
+            using SQLiteCommand cmd = _connection.CreateCommand();
+            cmd.CommandText = "INSERT INTO T1CTABD (TXTYP, TXNUM, DESCR, CRAT, CHAT, PARM1, PARM2) VALUES (@TXTYP, @TXNUM, @DESCR, @CRAT, @CHAT, @PARM1, @PARM2);";
+            cmd.Parameters.AddWithValue("@TXTYP", ToDbValue(obj.TXTYP));
+            cmd.Parameters.AddWithValue("@TXNUM", ToDbValue(obj.TXNUM));
+            cmd.Parameters.AddWithValue("@DESCR", ToDbValue(obj.DESCR));
+            cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
+            cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
+            cmd.Parameters.AddWithValue("@PARM1", ToDbValue(obj.PARM1));
+            cmd.Parameters.AddWithValue("@PARM2", ToDbValue(obj.PARM2));
+            cmd.ExecuteNonQuery();
         }
 
         private void Update(T1CTABD obj)
         {
             obj.CHAT = DateTime.Now;
-            string sql = $"UPDATE T1CTABD SET TXTYP = '{ToDbValue(obj.TXTYP)}', TXNUM = '{ToDbValue(obj.TXNUM)}', DESCR = '{ToDbValue(obj.DESCR)}', CRAT = '{ToDbValue(obj.CRAT)}', CHAT = '{ToDbValue(obj.CHAT)}', PARM1 = '{ToDbValue(obj.PARM1)}', PARM2 = '{ToDbValue(obj.PARM2)}' WHERE TXTYP = '{obj.TXTYP}' AND TXNUM = '{obj.TXNUM}';";
-            UIXQuery.ExecuteCustom(sql, _connection);
+            using SQLiteCommand cmd = _connection.CreateCommand();
+            cmd.CommandText = "UPDATE T1CTABD SET TXTYP = @TXTYP, TXNUM = @TXNUM, DESCR = @DESCR, CRAT = @CRAT, CHAT = @CHAT, PARM1 = @PARM1, PARM2 = @PARM2 WHERE TXTYP = @TXTYP AND TXNUM = @TXNUM;";
+            cmd.Parameters.AddWithValue("@TXTYP", ToDbValue(obj.TXTYP));
+            cmd.Parameters.AddWithValue("@TXNUM", ToDbValue(obj.TXNUM));
+            cmd.Parameters.AddWithValue("@DESCR", ToDbValue(obj.DESCR));
+            cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
+            cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
+            cmd.Parameters.AddWithValue("@PARM1", ToDbValue(obj.PARM1));
+            cmd.Parameters.AddWithValue("@PARM2", ToDbValue(obj.PARM2));
+            cmd.ExecuteNonQuery();
         }
 
         private bool Exists(T1CTABD obj)
         {
             using SQLiteCommand cmd = _connection.CreateCommand();
-            cmd.CommandText = $"SELECT COUNT(*) FROM T1CTABD WHERE TXTYP = '{obj.TXTYP}' AND TXNUM = '{obj.TXNUM}';";
-            return Convert.ToInt64(cmd.ExecuteScalar()) > 0;
+            cmd.CommandText = "SELECT COUNT(*) FROM T1CTABD WHERE TXTYP = @TXTYP AND TXNUM = @TXNUM;";
+            cmd.Parameters.AddWithValue("@TXTYP", ToDbValue(obj.TXTYP));
+            cmd.Parameters.AddWithValue("@TXNUM", ToDbValue(obj.TXNUM));
+            return Convert.ToInt64(cmd.ExecuteScalar(), CultureInfo.InvariantCulture) > 0;
         }
 
         private static object? ToDbValue(object? valFrom)

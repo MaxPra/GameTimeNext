@@ -1,4 +1,5 @@
-﻿using GameTimeNext.Core.Application.DataManagers;
+﻿using System.Globalization;
+using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.UI;
@@ -22,7 +23,7 @@ namespace GameTimeNext.Core.Application.Profiles
             double gameTimeHours = gameTime / 60.0;
             double roundedHours = Math.Round(gameTimeHours, 1);
 
-            returnedFormat = roundedHours.ToString("0.#") + " h";
+            returnedFormat = roundedHours.ToString("0.#", CultureInfo.CurrentCulture) + " h";
 
             if (roundedHours < 1)
                 returnedFormat = "< 1 h";
@@ -42,7 +43,7 @@ namespace GameTimeNext.Core.Application.Profiles
             double gameTimeMinutes = gameTime;
             double roundedMinutes = Math.Round(gameTimeMinutes, 1);
 
-            returnedFormat = roundedMinutes.ToString("0") + " min";
+            returnedFormat = roundedMinutes.ToString("0", CultureInfo.CurrentCulture) + " min";
 
             return returnedFormat;
         }
@@ -54,7 +55,7 @@ namespace GameTimeNext.Core.Application.Profiles
                 return "n.A.";
             }
 
-            return dateTime.ToString("dd.MM.yyyy HH:mm");
+            return dateTime.ToString("dd.MM.yyyy HH:mm", CultureInfo.CurrentCulture);
         }
 
         public static bool AskForNewPlaythroughCreationIfNotActive(long pfid, UIXApplication app)

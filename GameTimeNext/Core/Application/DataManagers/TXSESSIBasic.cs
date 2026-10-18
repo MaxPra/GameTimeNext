@@ -2,6 +2,7 @@
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.DataBase.Migration;
 using System.Data.SQLite;
+using System.Globalization;
 using UIX.ViewController.Engine.DataBaseObjects;
 using UIX.ViewController.Engine.Migration.Types;
 using UIX.ViewController.Engine.Querying;
@@ -45,8 +46,10 @@ namespace GameTimeNext.Core.Application.DataManagers
 
         public virtual void Delete(long seid)
         {
-            string sql = $"DELETE FROM T1SESSI WHERE SEID = '{seid}';";
-            UIXQuery.ExecuteCustom(sql, _connection);
+            using SQLiteCommand cmd = _connection.CreateCommand();
+            cmd.CommandText = "DELETE FROM T1SESSI WHERE SEID = @SEID;";
+            cmd.Parameters.AddWithValue("@SEID", ToDbValue(seid));
+            cmd.ExecuteNonQuery();
             MigrationFactory.ToCsv.ExportCsvFileFor(_connection, "T1SESSI", MigrationFactory.ImportType.DevSync);
         }
 
@@ -122,26 +125,44 @@ namespace GameTimeNext.Core.Application.DataManagers
         {
             obj.CRAT = DateTime.Now;
             obj.CHAT = DateTime.Now;
-            string sql = $"INSERT INTO T1SESSI (PFID, PTID, PLFR, PLTO, PLTI, CRAT, CHAT) VALUES ('{ToDbValue(obj.PFID)}', '{ToDbValue(obj.PTID)}', '{ToDbValue(obj.PLFR)}', '{ToDbValue(obj.PLTO)}', '{ToDbValue(obj.PLTI)}', '{ToDbValue(obj.CRAT)}', '{ToDbValue(obj.CHAT)}');";
-            UIXQuery.ExecuteCustom(sql, _connection);
+            using SQLiteCommand cmd = _connection.CreateCommand();
+            cmd.CommandText = "INSERT INTO T1SESSI (PFID, PTID, PLFR, PLTO, PLTI, CRAT, CHAT) VALUES (@PFID, @PTID, @PLFR, @PLTO, @PLTI, @CRAT, @CHAT);";
+            cmd.Parameters.AddWithValue("@PFID", ToDbValue(obj.PFID));
+            cmd.Parameters.AddWithValue("@PTID", ToDbValue(obj.PTID));
+            cmd.Parameters.AddWithValue("@PLFR", ToDbValue(obj.PLFR));
+            cmd.Parameters.AddWithValue("@PLTO", ToDbValue(obj.PLTO));
+            cmd.Parameters.AddWithValue("@PLTI", ToDbValue(obj.PLTI));
+            cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
+            cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
+            cmd.ExecuteNonQuery();
 
             using SQLiteCommand idCmd = _connection.CreateCommand();
             idCmd.CommandText = "SELECT last_insert_rowid();";
-            obj.SEID = Convert.ToInt64(idCmd.ExecuteScalar());
+            obj.SEID = Convert.ToInt64(idCmd.ExecuteScalar(), CultureInfo.InvariantCulture);
         }
 
         private void Update(T1SESSI obj)
         {
             obj.CHAT = DateTime.Now;
-            string sql = $"UPDATE T1SESSI SET PFID = '{ToDbValue(obj.PFID)}', PTID = '{ToDbValue(obj.PTID)}', PLFR = '{ToDbValue(obj.PLFR)}', PLTO = '{ToDbValue(obj.PLTO)}', PLTI = '{ToDbValue(obj.PLTI)}', CRAT = '{ToDbValue(obj.CRAT)}', CHAT = '{ToDbValue(obj.CHAT)}' WHERE SEID = '{obj.SEID}';";
-            UIXQuery.ExecuteCustom(sql, _connection);
+            using SQLiteCommand cmd = _connection.CreateCommand();
+            cmd.CommandText = "UPDATE T1SESSI SET PFID = @PFID, PTID = @PTID, PLFR = @PLFR, PLTO = @PLTO, PLTI = @PLTI, CRAT = @CRAT, CHAT = @CHAT WHERE SEID = @SEID;";
+            cmd.Parameters.AddWithValue("@SEID", ToDbValue(obj.SEID));
+            cmd.Parameters.AddWithValue("@PFID", ToDbValue(obj.PFID));
+            cmd.Parameters.AddWithValue("@PTID", ToDbValue(obj.PTID));
+            cmd.Parameters.AddWithValue("@PLFR", ToDbValue(obj.PLFR));
+            cmd.Parameters.AddWithValue("@PLTO", ToDbValue(obj.PLTO));
+            cmd.Parameters.AddWithValue("@PLTI", ToDbValue(obj.PLTI));
+            cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
+            cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
+            cmd.ExecuteNonQuery();
         }
 
         private bool Exists(T1SESSI obj)
         {
             using SQLiteCommand cmd = _connection.CreateCommand();
-            cmd.CommandText = $"SELECT COUNT(*) FROM T1SESSI WHERE SEID = '{obj.SEID}';";
-            return Convert.ToInt64(cmd.ExecuteScalar()) > 0;
+            cmd.CommandText = "SELECT COUNT(*) FROM T1SESSI WHERE SEID = @SEID;";
+            cmd.Parameters.AddWithValue("@SEID", ToDbValue(obj.SEID));
+            return Convert.ToInt64(cmd.ExecuteScalar(), CultureInfo.InvariantCulture) > 0;
         }
 
         private static object? ToDbValue(object? valFrom)

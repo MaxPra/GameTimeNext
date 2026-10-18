@@ -1,4 +1,5 @@
-﻿using GameTimeNext.Core.Application.Metadata.Data;
+﻿using System.Globalization;
+using GameTimeNext.Core.Application.Metadata.Data;
 using GameTimeNext.Core.Framework.Config;
 using System.IO;
 using System.Text;
@@ -135,6 +136,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     code.AddLine($"using {AppConfig.Root.ApplicationName}.Core.Framework;");
                     code.AddLine($"using {AppConfig.Root.ApplicationName}.Core.Framework.DataBase.Migration;");
                     code.AddLine($"using System.Data.SQLite;");
+                    code.AddLine($"using System.Globalization;");
                     code.AddLine($"using UIX.ViewController.Engine.DataBaseObjects;");
                     code.AddLine($"using UIX.ViewController.Engine.Migration.Types;");
                     code.AddLine($"using UIX.ViewController.Engine.Querying;");
@@ -182,8 +184,10 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                         // Delete
                         code.AddLine();
                         code.BeginBlock($"public virtual void Delete({Helpers.GetMethodParams(primkFields)})");
-                        code.AddLine($"string sql = $\"DELETE FROM {classNameT1} WHERE {Helpers.GetSqlWheres(primkFields)};\";");
-                        code.AddLine("UIXQuery.ExecuteCustom(sql, _connection);");
+                        code.AddLine("using SQLiteCommand cmd = _connection.CreateCommand();");
+                        code.AddLine($"cmd.CommandText = \"DELETE FROM {classNameT1} WHERE {Helpers.GetSqlWheres(primkFields)};\";");
+                        Helpers.AddSqlParameters(code, primkFields);
+                        code.AddLine("cmd.ExecuteNonQuery();");
                         code.AddLine($"MigrationFactory.ToCsv.ExportCsvFileFor(_connection, \"{classNameT1}\", MigrationFactory.ImportType.DevSync);");
                         code.EndBlock();
 
@@ -266,15 +270,17 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                         // OFDO: Find all places where CRAT and CHAT are being set unneccessarily
                         code.AddLine("obj.CRAT = DateTime.Now;");
                         code.AddLine("obj.CHAT = DateTime.Now;");
-                        code.AddLine($"string sql = $\"INSERT INTO {classNameT1} ({Helpers.GetSqlInsertFields(fields)}) VALUES ({Helpers.GetSqlInsertValues(fields)});\";");
-                        code.AddLine("UIXQuery.ExecuteCustom(sql, _connection);");
+                        code.AddLine("using SQLiteCommand cmd = _connection.CreateCommand();");
+                        code.AddLine($"cmd.CommandText = \"INSERT INTO {classNameT1} ({Helpers.GetSqlInsertFields(fields)}) VALUES ({Helpers.GetSqlInsertValues(fields)});\";");
+                        Helpers.AddSqlParameters(code, fields.Where(f => !f.Key.AUTOI), withObjPrefix: true);
+                        code.AddLine("cmd.ExecuteNonQuery();");
                         KeyValuePair<T1METAP, UIXSqliteDataType> autoiField = fields.Where(f => f.Key.AUTOI).SingleOrDefault();
                         if (autoiField.Key is not null)
                         {
                             code.AddLine();
                             code.AddLine("using SQLiteCommand idCmd = _connection.CreateCommand();");
                             code.AddLine("idCmd.CommandText = \"SELECT last_insert_rowid();\";");
-                            code.AddLine($"obj.{autoiField.Key.PONAM} = Convert.ToInt64(idCmd.ExecuteScalar());");
+                            code.AddLine($"obj.{autoiField.Key.PONAM} = Convert.ToInt64(idCmd.ExecuteScalar(), CultureInfo.InvariantCulture);");
                         }
                         code.EndBlock();
 
@@ -282,8 +288,10 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                         code.AddLine();
                         code.BeginBlock($"private void Update({classNameT1} obj)");
                         code.AddLine("obj.CHAT = DateTime.Now;");
-                        code.AddLine($"string sql = $\"UPDATE {classNameT1} SET {Helpers.GetSqlUpdateFields(fields)} WHERE {Helpers.GetSqlWheres(primkFields, withObjPrefix: true)};\";");
-                        code.AddLine("UIXQuery.ExecuteCustom(sql, _connection);");
+                        code.AddLine("using SQLiteCommand cmd = _connection.CreateCommand();");
+                        code.AddLine($"cmd.CommandText = \"UPDATE {classNameT1} SET {Helpers.GetSqlUpdateFields(fields)} WHERE {Helpers.GetSqlWheres(primkFields)};\";");
+                        Helpers.AddSqlParameters(code, fields.Where(f => !f.Key.AUTOI || f.Key.PRIMK), withObjPrefix: true);
+                        code.AddLine("cmd.ExecuteNonQuery();");
                         code.EndBlock();
 
                         // Exists
@@ -291,8 +299,9 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                         code.BeginBlock($"private bool Exists({classNameT1} obj)");
                         // OFDO: UIXQuery?
                         code.AddLine("using SQLiteCommand cmd = _connection.CreateCommand();");
-                        code.AddLine($"cmd.CommandText = $\"SELECT COUNT(*) FROM {classNameT1} WHERE {Helpers.GetSqlWheres(primkFields, withObjPrefix: true)};\";");
-                        code.AddLine("return Convert.ToInt64(cmd.ExecuteScalar()) > 0;");
+                        code.AddLine($"cmd.CommandText = \"SELECT COUNT(*) FROM {classNameT1} WHERE {Helpers.GetSqlWheres(primkFields)};\";");
+                        Helpers.AddSqlParameters(code, primkFields, withObjPrefix: true);
+                        code.AddLine("return Convert.ToInt64(cmd.ExecuteScalar(), CultureInfo.InvariantCulture) > 0;");
                         code.EndBlock();
 
                         // ToDbValue
@@ -342,19 +351,9 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                         return String.Join(", ", paramStrings);
                     }
 
-                    public static string GetSqlWheres(Dictionary<T1METAP, UIXSqliteDataType> fields, bool withObjPrefix = false)
+                    public static string GetSqlWheres(Dictionary<T1METAP, UIXSqliteDataType> fields)
                     {
-                        string objPrefix = withObjPrefix ? "obj." : string.Empty;
-                        List<string> fieldStrings = new List<string>();
-
-                        foreach (KeyValuePair<T1METAP, UIXSqliteDataType> field in fields)
-                        {
-                            string valPonam = withObjPrefix ? field.Key.PONAM : field.Key.PONAM.ToLowerInvariant();
-
-                            fieldStrings.Add($"{field.Key.PONAM} = '{{{objPrefix}{valPonam}}}'");
-                        }
-
-                        return String.Join(" AND ", fieldStrings);
+                        return String.Join(" AND ", fields.Select(f => $"{f.Key.PONAM} = @{f.Key.PONAM}"));
                     }
                     
                     public static string GetSqlInsertFields(Dictionary<T1METAP, UIXSqliteDataType> fields)
@@ -368,20 +367,27 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     {
                         Dictionary<T1METAP, UIXSqliteDataType> filteredFields = fields.Where(f => !f.Key.AUTOI).ToDictionary();
 
-                        return String.Join(", ", filteredFields.Select(f => $"'{{ToDbValue(obj.{f.Key.PONAM})}}'"));
+                        return String.Join(", ", filteredFields.Select(f => $"@{f.Key.PONAM}"));
                     }
 
                     public static string GetSqlUpdateFields(Dictionary<T1METAP, UIXSqliteDataType> fields)
                     {
                         Dictionary<T1METAP, UIXSqliteDataType> filteredFields = fields.Where(f => !f.Key.AUTOI).ToDictionary();
-                        List<string> fieldStrings = new List<string>();
 
-                        foreach (KeyValuePair<T1METAP, UIXSqliteDataType> field in filteredFields)
+                        return String.Join(", ", filteredFields.Select(f => $"{f.Key.PONAM} = @{f.Key.PONAM}"));
+                    }
+
+                    /// <summary>
+                    /// Adds a "cmd.Parameters.AddWithValue" line per field, so values are passed typed instead of being formatted into the SQL string.
+                    /// </summary>
+                    public static void AddSqlParameters(CodeBuilder code, IEnumerable<KeyValuePair<T1METAP, UIXSqliteDataType>> fields, bool withObjPrefix = false)
+                    {
+                        foreach (KeyValuePair<T1METAP, UIXSqliteDataType> field in fields)
                         {
-                            fieldStrings.Add($"{field.Key.PONAM} = '{{ToDbValue(obj.{field.Key.PONAM})}}'");
-                        }
+                            string valName = withObjPrefix ? $"obj.{field.Key.PONAM}" : field.Key.PONAM.ToLowerInvariant();
 
-                        return String.Join(", ", fieldStrings);
+                            code.AddLine($"cmd.Parameters.AddWithValue(\"@{field.Key.PONAM}\", ToDbValue({valName}));");
+                        }
                     }
 
                     public static string GetUixQueryMethodCall(string classNameK1, KeyValuePair<T1METAP, UIXSqliteDataType> field)

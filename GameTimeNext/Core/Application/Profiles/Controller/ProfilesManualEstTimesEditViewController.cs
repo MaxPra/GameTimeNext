@@ -1,3 +1,4 @@
+﻿using System.Globalization;
 using GameTimeNext.Core.Application.Profiles.Views;
 using GameTimeNext.Core.Framework.Utils;
 using System.Windows;
@@ -75,9 +76,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected override void FillViewImpl()
         {
-            GetWnd().txbEstTimeMain.Text = GetApp().ManualEstTimesCache.estTimeMain.ToString();
-            GetWnd().txbEstTimeMainExtra.Text = GetApp().ManualEstTimesCache.estTimeMainExtra.ToString();
-            GetWnd().txbEstTimeCompletionist.Text = GetApp().ManualEstTimesCache.estTimeCompletionist.ToString();
+            GetWnd().txbEstTimeMain.Text = GetApp().ManualEstTimesCache.estTimeMain.ToString(CultureInfo.CurrentCulture);
+            GetWnd().txbEstTimeMainExtra.Text = GetApp().ManualEstTimesCache.estTimeMainExtra.ToString(CultureInfo.CurrentCulture);
+            GetWnd().txbEstTimeCompletionist.Text = GetApp().ManualEstTimesCache.estTimeCompletionist.ToString(CultureInfo.CurrentCulture);
         }
 
         protected override void SaveDBOImpl()

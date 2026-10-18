@@ -171,19 +171,28 @@ namespace GameTimeNext.Core.Framework.DataBase
             Dictionary<string, int> newIds = new Dictionary<string, int>();
             GetT1groupIds(ref newIds);
 
+            using SQLiteCommand cmdUpdate = _connection.CreateCommand();
+            cmdUpdate.CommandText = "UPDATE T1GRPPO SET GRID = @NEWGRID WHERE GRID = @OLDGRID;";
+            SQLiteParameter parNewGrid = cmdUpdate.Parameters.Add("@NEWGRID", DbType.Int32);
+            SQLiteParameter parUpdateOldGrid = cmdUpdate.Parameters.Add("@OLDGRID", DbType.Int32);
+
+            using SQLiteCommand cmdDelete = _connection.CreateCommand();
+            cmdDelete.CommandText = "DELETE FROM T1GRPPO WHERE GRID = @OLDGRID;";
+            SQLiteParameter parDeleteOldGrid = cmdDelete.Parameters.Add("@OLDGRID", DbType.Int32);
+
             foreach (var oldId in oldIds)
             {
-                string sql;
                 if (newIds.TryGetValue(oldId.Key, out int newValue))
                 {
-                    sql = $"UPDATE T1GRPPO SET GRID='{newValue}' WHERE GRID='{oldId.Value}';";
+                    parNewGrid.Value = newValue;
+                    parUpdateOldGrid.Value = oldId.Value;
+                    cmdUpdate.ExecuteNonQuery();
                 }
                 else
                 {
-                    sql = $"DELETE FROM T1GRPPO WHERE GRID='{oldId.Value}';";
+                    parDeleteOldGrid.Value = oldId.Value;
+                    cmdDelete.ExecuteNonQuery();
                 }
-
-                UIXQuery.ExecuteCustom(sql, _connection);
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using GameTimeNext.Core.Framework.Config;
+﻿using System.Globalization;
+using GameTimeNext.Core.Framework.Config;
 using System.IO;
 using UIX.ViewController.Engine.Utils;
 
@@ -29,7 +30,7 @@ namespace GameTimeNext.Core.Application.MigrationTasks
                         if (rowObj == null || rowObj == DBNull.Value)
                             continue;
 
-                        long rowid = Convert.ToInt64(rowObj);
+                        long rowid = Convert.ToInt64(rowObj, CultureInfo.InvariantCulture);
                         var ppfnObj = reader["PPFN"];
                         var ppfn = ppfnObj?.ToString();
                         if (FnString.IsNullEmptyOrWhitespace(ppfn))

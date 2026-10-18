@@ -70,17 +70,18 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                             if (reader.IsDBNull(i))
                                 value = DBNull.Value;
                             else if (dataType.Key.Equals("05"))
-                                value = SqliteCsvDataConverter.DateToCsv(reader.GetString(i));
+                                value = reader.GetString(i); // Raw string, the conversion parses it
                             else
                                 value = reader.GetValue(i);
 
-                            values.Add(SqliteCsvDataConverter.EscapeCsv(SqliteCsvDataConverter.ToCsvValue(value), _CSV_SEPERATOR));
+                            string valueCsv = (string)UIXSqliteDataType.Convert(UIXSqliteDataType.ConversionType.Sqlite, UIXSqliteDataType.ConversionType.CSV, value, dataType)!;
+                            values.Add(EscapeCsv(valueCsv, _CSV_SEPERATOR));
                         }
 
                         if (tS.IsCodetableTable && !tS.IsCodetableTabd)
                         {
                             int indexExprt = columns.Keys.ToList().IndexOf("EXPRT");
-                            bool exprtEnabled = values[indexExprt].Equals("1");
+                            bool exprtEnabled = UIXSqliteDataType.Convert(UIXSqliteDataType.ConversionType.CSV, UIXSqliteDataType.ConversionType.CSharp, values[indexExprt], columns["EXPRT"]) is true;
 
                             if (!exprtEnabled) continue;
                         }
@@ -139,6 +140,18 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     return;
 
                 CopyDirectory(sourceDirectoryPath, destinationDirectoryPath);
+            }
+
+            private static string EscapeCsv(string value, char separator)
+            {
+                if (value is null)
+                    return string.Empty;
+
+                bool mustQuote = value.Contains(separator) || value.Contains('"') || value.Contains('\n') || value.Contains('\r');
+                if (!mustQuote)
+                    return value;
+
+                return '"' + value.Replace("\"", "\"\"") + '"';
             }
 
 #if DEBUG

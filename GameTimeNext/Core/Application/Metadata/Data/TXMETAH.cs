@@ -1,8 +1,9 @@
+﻿using System.Globalization;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.DataBase.Migration;
 using System.Data.SQLite;
-using System.Globalization;
 using UIX.ViewController.Engine.DataBaseObjects;
+using UIX.ViewController.Engine.Migration.Types;
 using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Metadata.Data
@@ -202,7 +203,7 @@ namespace GameTimeNext.Core.Application.Metadata.Data
 
             cmd.Parameters.AddWithValue("@MENAM", menam);
 
-            return Convert.ToInt64(cmd.ExecuteScalar()) > 0;
+            return Convert.ToInt64(cmd.ExecuteScalar(), CultureInfo.InvariantCulture) > 0;
         }
 
         private void AddParameters(SQLiteCommand cmd, T1METAH obj)
@@ -210,11 +211,11 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             cmd.Parameters.AddWithValue("@MENAM", obj.MENAM);
             cmd.Parameters.AddWithValue("@DESCR", obj.DESCR);
             cmd.Parameters.AddWithValue("@MTYPE", obj.MTYPE);
-            cmd.Parameters.AddWithValue("@DSYNC", obj.DSYNC ? 1 : 0); // OFODI: Centralize Convert
-            cmd.Parameters.AddWithValue("@GENER", obj.GENER ? 1 : 0); // OFODI: Centralize Convert
-            cmd.Parameters.AddWithValue("@CRAT", ToDbDateTime(obj.CRAT));
+            cmd.Parameters.AddWithValue("@DSYNC", ToDbValue(obj.DSYNC));
+            cmd.Parameters.AddWithValue("@GENER", ToDbValue(obj.GENER));
+            cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
             cmd.Parameters.AddWithValue("@CRUS", obj.CRUS);
-            cmd.Parameters.AddWithValue("@CHAT", ToDbDateTime(obj.CHAT));
+            cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
             cmd.Parameters.AddWithValue("@CHUS", obj.CHUS);
         }
 
@@ -222,39 +223,42 @@ namespace GameTimeNext.Core.Application.Metadata.Data
         {
             T1METAH obj = new T1METAH();
 
-            obj.MENAM = reader.IsDBNull(0) ? string.Empty : reader.GetString(0);
-            obj.DESCR = reader.IsDBNull(1) ? string.Empty : reader.GetString(1);
-            obj.MTYPE = reader.IsDBNull(2) ? string.Empty : reader.GetString(2);
-            obj.DSYNC = !reader.IsDBNull(3) && Convert.ToInt32(reader.GetValue(3)) == 1;
-            obj.GENER = !reader.IsDBNull(4) && Convert.ToInt32(reader.GetValue(4)) == 1;
+            obj.MENAM = (string?)FromDbValue(reader, 0) ?? string.Empty;
+            obj.DESCR = (string?)FromDbValue(reader, 1) ?? string.Empty;
+            obj.MTYPE = (string?)FromDbValue(reader, 2) ?? string.Empty;
+            obj.DSYNC = (bool?)FromDbValue(reader, 3) ?? false;
+            obj.GENER = (bool?)FromDbValue(reader, 4) ?? false;
 
-            obj.CRAT = ParseDbDateTime(reader.IsDBNull(5) ? null : reader.GetString(5));
-            obj.CRUS = reader.IsDBNull(6) ? string.Empty : reader.GetString(6);
-            obj.CHAT = ParseDbDateTime(reader.IsDBNull(7) ? null : reader.GetString(7));
-            obj.CHUS = reader.IsDBNull(8) ? string.Empty : reader.GetString(8);
+            obj.CRAT = (DateTime?)FromDbValue(reader, 5) ?? DateTime.MinValue;
+            obj.CRUS = (string?)FromDbValue(reader, 6) ?? string.Empty;
+            obj.CHAT = (DateTime?)FromDbValue(reader, 7) ?? DateTime.MinValue;
+            obj.CHUS = (string?)FromDbValue(reader, 8) ?? string.Empty;
 
             obj.State = UIXTableObjectState.Available;
 
             return obj;
         }
 
-        private DateTime ParseDbDateTime(string value)
+        private static object? FromDbValue(SQLiteDataReader reader, int ordinal)
         {
-            if (FnString.IsNullEmptyOrWhitespace(value))
-                return DateTime.MinValue;
+            UIXSqliteDataType dataType = MigrationFactory.Metadata.METADATA
+                .Where(s => s.MENAM.Equals("T1METAH")).Single()
+                .Columns.Where(c => c.PONAM.Equals(reader.GetName(ordinal), StringComparison.OrdinalIgnoreCase)).Single().DATYP;
 
-            if (DateTime.TryParseExact(value, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime result))
-                return result;
+            object value;
+            if (reader.IsDBNull(ordinal))
+                value = DBNull.Value;
+            else if (dataType.Key.Equals("05"))
+                value = reader.GetString(ordinal); // Raw string, the conversion parses it
+            else
+                value = reader.GetValue(ordinal);
 
-            if (DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
-                return result;
-
-            return DateTime.MinValue;
+            return UIXSqliteDataType.Convert(UIXSqliteDataType.ConversionType.Sqlite, UIXSqliteDataType.ConversionType.CSharp, value, dataType);
         }
 
-        private string ToDbDateTime(DateTime value)
+        private static object? ToDbValue(object? valFrom)
         {
-            return value.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+            return UIXSqliteDataType.Convert(UIXSqliteDataType.ConversionType.CSharp, UIXSqliteDataType.ConversionType.Sqlite, valFrom);
         }
 
         private void EnsureOpen(SQLiteConnection connection)

@@ -1,3 +1,4 @@
+﻿using System.Globalization;
 using GameTimeNext.Core.Application.Profiles.Viewmodel;
 using GameTimeNext.Core.Application.Profiles.Views;
 using GameTimeNext.Core.Framework;
@@ -341,7 +342,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         private string BuildImageFileName(int pageIndex, int itemIndex, SgdbGrid grid)
         {
             string appPart = GetApp().SteamAppId != 0
-                ? GetApp().SteamAppId.ToString()
+                ? GetApp().SteamAppId.ToString(CultureInfo.InvariantCulture)
                 : SanitizeFileName(GetApp().GameName);
 
             string gridPart = "grid";

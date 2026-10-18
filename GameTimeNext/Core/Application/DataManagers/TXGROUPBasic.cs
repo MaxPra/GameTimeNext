@@ -2,6 +2,7 @@
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.DataBase.Migration;
 using System.Data.SQLite;
+using System.Globalization;
 using UIX.ViewController.Engine.DataBaseObjects;
 using UIX.ViewController.Engine.Migration.Types;
 using UIX.ViewController.Engine.Querying;
@@ -45,8 +46,10 @@ namespace GameTimeNext.Core.Application.DataManagers
 
         public virtual void Delete(long grid)
         {
-            string sql = $"DELETE FROM T1GROUP WHERE GRID = '{grid}';";
-            UIXQuery.ExecuteCustom(sql, _connection);
+            using SQLiteCommand cmd = _connection.CreateCommand();
+            cmd.CommandText = "DELETE FROM T1GROUP WHERE GRID = @GRID;";
+            cmd.Parameters.AddWithValue("@GRID", ToDbValue(grid));
+            cmd.ExecuteNonQuery();
             MigrationFactory.ToCsv.ExportCsvFileFor(_connection, "T1GROUP", MigrationFactory.ImportType.DevSync);
         }
 
@@ -113,26 +116,38 @@ namespace GameTimeNext.Core.Application.DataManagers
         {
             obj.CRAT = DateTime.Now;
             obj.CHAT = DateTime.Now;
-            string sql = $"INSERT INTO T1GROUP (GRNA, GTYP, CRAT, CHAT) VALUES ('{ToDbValue(obj.GRNA)}', '{ToDbValue(obj.GTYP)}', '{ToDbValue(obj.CRAT)}', '{ToDbValue(obj.CHAT)}');";
-            UIXQuery.ExecuteCustom(sql, _connection);
+            using SQLiteCommand cmd = _connection.CreateCommand();
+            cmd.CommandText = "INSERT INTO T1GROUP (GRNA, GTYP, CRAT, CHAT) VALUES (@GRNA, @GTYP, @CRAT, @CHAT);";
+            cmd.Parameters.AddWithValue("@GRNA", ToDbValue(obj.GRNA));
+            cmd.Parameters.AddWithValue("@GTYP", ToDbValue(obj.GTYP));
+            cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
+            cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
+            cmd.ExecuteNonQuery();
 
             using SQLiteCommand idCmd = _connection.CreateCommand();
             idCmd.CommandText = "SELECT last_insert_rowid();";
-            obj.GRID = Convert.ToInt64(idCmd.ExecuteScalar());
+            obj.GRID = Convert.ToInt64(idCmd.ExecuteScalar(), CultureInfo.InvariantCulture);
         }
 
         private void Update(T1GROUP obj)
         {
             obj.CHAT = DateTime.Now;
-            string sql = $"UPDATE T1GROUP SET GRNA = '{ToDbValue(obj.GRNA)}', GTYP = '{ToDbValue(obj.GTYP)}', CRAT = '{ToDbValue(obj.CRAT)}', CHAT = '{ToDbValue(obj.CHAT)}' WHERE GRID = '{obj.GRID}';";
-            UIXQuery.ExecuteCustom(sql, _connection);
+            using SQLiteCommand cmd = _connection.CreateCommand();
+            cmd.CommandText = "UPDATE T1GROUP SET GRNA = @GRNA, GTYP = @GTYP, CRAT = @CRAT, CHAT = @CHAT WHERE GRID = @GRID;";
+            cmd.Parameters.AddWithValue("@GRID", ToDbValue(obj.GRID));
+            cmd.Parameters.AddWithValue("@GRNA", ToDbValue(obj.GRNA));
+            cmd.Parameters.AddWithValue("@GTYP", ToDbValue(obj.GTYP));
+            cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
+            cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
+            cmd.ExecuteNonQuery();
         }
 
         private bool Exists(T1GROUP obj)
         {
             using SQLiteCommand cmd = _connection.CreateCommand();
-            cmd.CommandText = $"SELECT COUNT(*) FROM T1GROUP WHERE GRID = '{obj.GRID}';";
-            return Convert.ToInt64(cmd.ExecuteScalar()) > 0;
+            cmd.CommandText = "SELECT COUNT(*) FROM T1GROUP WHERE GRID = @GRID;";
+            cmd.Parameters.AddWithValue("@GRID", ToDbValue(obj.GRID));
+            return Convert.ToInt64(cmd.ExecuteScalar(), CultureInfo.InvariantCulture) > 0;
         }
 
         private static object? ToDbValue(object? valFrom)

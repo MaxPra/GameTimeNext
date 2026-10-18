@@ -2,6 +2,7 @@
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.DataBase.Migration;
 using System.Data.SQLite;
+using System.Globalization;
 using UIX.ViewController.Engine.DataBaseObjects;
 using UIX.ViewController.Engine.Migration.Types;
 using UIX.ViewController.Engine.Querying;
@@ -45,8 +46,10 @@ namespace GameTimeNext.Core.Application.DataManagers
 
         public virtual void Delete(long gpid)
         {
-            string sql = $"DELETE FROM T1GRPPO WHERE GPID = '{gpid}';";
-            UIXQuery.ExecuteCustom(sql, _connection);
+            using SQLiteCommand cmd = _connection.CreateCommand();
+            cmd.CommandText = "DELETE FROM T1GRPPO WHERE GPID = @GPID;";
+            cmd.Parameters.AddWithValue("@GPID", ToDbValue(gpid));
+            cmd.ExecuteNonQuery();
             MigrationFactory.ToCsv.ExportCsvFileFor(_connection, "T1GRPPO", MigrationFactory.ImportType.DevSync);
         }
 
@@ -113,26 +116,38 @@ namespace GameTimeNext.Core.Application.DataManagers
         {
             obj.CRAT = DateTime.Now;
             obj.CHAT = DateTime.Now;
-            string sql = $"INSERT INTO T1GRPPO (GRID, PFID, CRAT, CHAT) VALUES ('{ToDbValue(obj.GRID)}', '{ToDbValue(obj.PFID)}', '{ToDbValue(obj.CRAT)}', '{ToDbValue(obj.CHAT)}');";
-            UIXQuery.ExecuteCustom(sql, _connection);
+            using SQLiteCommand cmd = _connection.CreateCommand();
+            cmd.CommandText = "INSERT INTO T1GRPPO (GRID, PFID, CRAT, CHAT) VALUES (@GRID, @PFID, @CRAT, @CHAT);";
+            cmd.Parameters.AddWithValue("@GRID", ToDbValue(obj.GRID));
+            cmd.Parameters.AddWithValue("@PFID", ToDbValue(obj.PFID));
+            cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
+            cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
+            cmd.ExecuteNonQuery();
 
             using SQLiteCommand idCmd = _connection.CreateCommand();
             idCmd.CommandText = "SELECT last_insert_rowid();";
-            obj.GPID = Convert.ToInt64(idCmd.ExecuteScalar());
+            obj.GPID = Convert.ToInt64(idCmd.ExecuteScalar(), CultureInfo.InvariantCulture);
         }
 
         private void Update(T1GRPPO obj)
         {
             obj.CHAT = DateTime.Now;
-            string sql = $"UPDATE T1GRPPO SET GRID = '{ToDbValue(obj.GRID)}', PFID = '{ToDbValue(obj.PFID)}', CRAT = '{ToDbValue(obj.CRAT)}', CHAT = '{ToDbValue(obj.CHAT)}' WHERE GPID = '{obj.GPID}';";
-            UIXQuery.ExecuteCustom(sql, _connection);
+            using SQLiteCommand cmd = _connection.CreateCommand();
+            cmd.CommandText = "UPDATE T1GRPPO SET GRID = @GRID, PFID = @PFID, CRAT = @CRAT, CHAT = @CHAT WHERE GPID = @GPID;";
+            cmd.Parameters.AddWithValue("@GPID", ToDbValue(obj.GPID));
+            cmd.Parameters.AddWithValue("@GRID", ToDbValue(obj.GRID));
+            cmd.Parameters.AddWithValue("@PFID", ToDbValue(obj.PFID));
+            cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
+            cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
+            cmd.ExecuteNonQuery();
         }
 
         private bool Exists(T1GRPPO obj)
         {
             using SQLiteCommand cmd = _connection.CreateCommand();
-            cmd.CommandText = $"SELECT COUNT(*) FROM T1GRPPO WHERE GPID = '{obj.GPID}';";
-            return Convert.ToInt64(cmd.ExecuteScalar()) > 0;
+            cmd.CommandText = "SELECT COUNT(*) FROM T1GRPPO WHERE GPID = @GPID;";
+            cmd.Parameters.AddWithValue("@GPID", ToDbValue(obj.GPID));
+            return Convert.ToInt64(cmd.ExecuteScalar(), CultureInfo.InvariantCulture) > 0;
         }
 
         private static object? ToDbValue(object? valFrom)

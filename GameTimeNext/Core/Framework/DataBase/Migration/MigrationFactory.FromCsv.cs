@@ -1,8 +1,10 @@
 ﻿using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.Utils;
 using System.Data.SQLite;
+using System.Globalization;
 using System.IO;
 using System.Text;
+using UIX.ViewController.Engine.Migration.Types;
 using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Utils;
 
@@ -143,10 +145,16 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 List<List<string>> csvLines = GetFileContent(filePath);
                 List<string> headers = csvLines[0];
 
+                TableSchema tS = SchemaGenerator.GenerateFromMetadata(tableName: tableName, connection: connection).Single();
+                List<ColumnSchema?> headerColumns = headers.Select(h => tS.Columns.Where(c => c.PONAM.Equals(h)).SingleOrDefault()).ToList();
+
                 UIXQuery.ExecuteCustom($"DELETE FROM {tableName};", connection);
 
+                // Do not build INSERT Statement, if nothing needs to be imported
+                if (csvLines.Count <= 1) return;
+
                 StringBuilder sb = new StringBuilder();
-                sb.Append($"INSERT INTO {tableName} (");
+                sb.Append("INSERT INTO ").Append(tableName).Append(" (");
 
                 bool firstHeaderAdded = false;
                 foreach (string header in headers)
@@ -163,12 +171,11 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     bool isLastLine = i.Equals(csvLines.Count - 1);
                     sb.Append("(");
 
-                    bool firstValueAdded = false;
-                    foreach (string value in csvLines[i])
+                    for (int j = 0; j < csvLines[i].Count; j++)
                     {
-                        if (firstValueAdded) sb.Append(", ");
-                        sb.Append($"'{value}'");
-                        firstValueAdded = true;
+                        if (j > 0) sb.Append(", ");
+                        ColumnSchema? cS = j < headerColumns.Count ? headerColumns[j] : null;
+                        sb.Append(ToSqlValue(csvLines[i][j], cS));
                     }
 
                     if (isLastLine)
@@ -179,9 +186,23 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
 
                 sb.Append(";");
 
-                // OFDOI: Value-Conversion from CSV format to SQLite format
-
                 UIXQuery.ExecuteCustom(sb.ToString(), connection);
+            }
+
+            private static string ToSqlValue(string valueCsv, ColumnSchema? cS)
+            {
+                // Unknown column -> Insert as is
+                if (cS is null)
+                    return $"'{valueCsv.Replace("'", "''")}'";
+
+                object? valueSqlite = UIXSqliteDataType.Convert(UIXSqliteDataType.ConversionType.CSV, UIXSqliteDataType.ConversionType.Sqlite, valueCsv, cS.DATYP);
+
+                // All columns are NOT NULL -> Fallback to column default
+                if (valueSqlite == DBNull.Value)
+                    return cS.GetDefaultValue();
+
+                string valueString = Convert.ToString(valueSqlite, CultureInfo.InvariantCulture) ?? string.Empty;
+                return $"'{valueString.Replace("'", "''")}'";
             }
 
             private static void MigrateTablesFromMetadata(SQLiteConnection connection, List<TableSchema> tableSchemasBeforeImport)
@@ -198,8 +219,81 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
 
             private static List<List<string>> GetFileContent(string filePath)
             {
-                FileInfo fileInfo = new FileInfo(filePath);
-                return File.ReadAllLines(filePath, Encoding.UTF8).Select(l => l.Split(ToCsv._CSV_SEPERATOR).ToList()).ToList();
+                try
+                {
+                    return ParseCsv(File.ReadAllText(filePath, Encoding.UTF8), ToCsv._CSV_SEPERATOR);
+                }
+                catch (FormatException ex)
+                {
+                    throw new FormatException($"Invalid CSV file \"{filePath}\": {ex.Message}", ex);
+                }
+            }
+
+            /// <summary>
+            /// Parses CSV content written by ToCsv: quoted fields, doubled quotes and line breaks inside quoted fields.
+            /// </summary>
+            private static List<List<string>> ParseCsv(string content, char separator)
+            {
+                List<List<string>> records = new List<List<string>>();
+                List<string> record = new List<string>();
+                StringBuilder field = new StringBuilder();
+                bool inQuotes = false;
+
+                for (int i = 0; i < content.Length; i++)
+                {
+                    char c = content[i];
+
+                    if (inQuotes)
+                    {
+                        if (c != '"')
+                            field.Append(c);
+                        else if (i + 1 < content.Length && content[i + 1] == '"')
+                        {
+                            field.Append('"');
+                            i++;
+                        }
+                        else
+                            inQuotes = false;
+
+                        continue;
+                    }
+
+                    if (c == '"' && field.Length == 0)
+                    {
+                        inQuotes = true;
+                    }
+                    else if (c == separator)
+                    {
+                        record.Add(field.ToString());
+                        field.Clear();
+                    }
+                    else if (c == '\r' || c == '\n')
+                    {
+                        if (c == '\r' && i + 1 < content.Length && content[i + 1] == '\n')
+                            i++;
+
+                        record.Add(field.ToString());
+                        field.Clear();
+                        records.Add(record);
+                        record = new List<string>();
+                    }
+                    else
+                    {
+                        field.Append(c);
+                    }
+                }
+
+                if (inQuotes)
+                    throw new FormatException("Unterminated quoted field.");
+
+                // Last record without trailing line break
+                if (field.Length > 0 || record.Count > 0)
+                {
+                    record.Add(field.ToString());
+                    records.Add(record);
+                }
+
+                return records;
             }
 
             private static void ImportDefaultFiles(string sourceDirectoryPath)

@@ -1,4 +1,4 @@
-﻿using UIX.ViewController.Engine.Querying;
+﻿using System.Data.SQLite;
 
 namespace GameTimeNext.Core.Application.DataManagers
 {
@@ -9,8 +9,10 @@ namespace GameTimeNext.Core.Application.DataManagers
             if (pfid == 0)
                 return;
 
-            string sql = $"DELETE FROM T1GRPPO WHERE PFID = '{pfid}';";
-            UIXQuery.ExecuteCustom(sql, _connection);
+            using SQLiteCommand cmd = _connection.CreateCommand();
+            cmd.CommandText = "DELETE FROM T1GRPPO WHERE PFID = @PFID;";
+            cmd.Parameters.AddWithValue("@PFID", pfid);
+            cmd.ExecuteNonQuery();
         }
     }
 }

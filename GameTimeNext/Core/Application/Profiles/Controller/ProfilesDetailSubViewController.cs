@@ -1,4 +1,5 @@
 ﻿
+using System.Globalization;
 using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Profiles.DataWrapper;
 using GameTimeNext.Core.Application.Profiles.Types;
@@ -421,7 +422,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         public async void EV_btnLaunchGame()
         {
-            FnSteam.StartSteamGame(_dataWrapper!.GetTypedTableObject().SAID.ToString(), _dataWrapper!.GetTypedTableObject().PFID, GetApp());
+            FnSteam.StartSteamGame(_dataWrapper!.GetTypedTableObject().SAID.ToString(CultureInfo.InvariantCulture), _dataWrapper!.GetTypedTableObject().PFID, GetApp());
             GetView().btnLaunchGame.Content = "Launching...";
             GetView().btnLaunchGame.IsEnabled = false;
 
