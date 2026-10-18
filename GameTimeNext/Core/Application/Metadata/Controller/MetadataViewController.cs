@@ -19,13 +19,6 @@ using static UIX.ViewController.Engine.FrameworkElements.UIXContextMenuFactory;
 
 namespace GameTimeNext.Core.Application.Metadata.Controller
 {
-
-    /************ TODO **************/
-    // - T1METAH und T1METAP nicht in Metdaten übernehmnen (Systemtabellen werden immer noch händisch erzeugt / wird sowieso nicht so viel daran geändert)
-    // - Danach alle bisherigen manuellen Tabellen in Metadaten übenehmen
-
-
-
     public class MetadataViewController : UIXViewControllerBase
     {
         private MetadataViewModel? _viewModel;
@@ -214,9 +207,10 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
                     // Objekt aus Datenbank auslesen
                     TXMETAH txmetah = new TXMETAH();
-                    T1METAH t1metah = txmetah.Read(menam);
+                    T1METAH? t1metah = txmetah.Read(menam);
 
-                    t1metahs.Add(t1metah);
+                    if (t1metah is not null)
+                        t1metahs.Add(t1metah);
                 }
             }
 
@@ -308,6 +302,26 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
             }
 
             await BuildDG();
+        }
+
+        protected async Task EV_BtnGenerateMetadataTables()
+        {
+            try
+            {
+                GetApp().Loader.Begin();
+
+                await Task.Run(() => MigrationFactory.Metadata.CodeGenerator.GenerateForMetadata());
+
+                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Generation completed.", CFMBOXResult.Ok, CFMBOXIcon.Success);
+            }
+            catch (Exception ex)
+            {
+                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Generation failed", ex.Message, CFMBOXResult.Ok, CFMBOXIcon.Error);
+            }
+            finally
+            {
+                GetApp().Loader.Stop();
+            }
         }
 
         protected void EV_BtnOpenLog()

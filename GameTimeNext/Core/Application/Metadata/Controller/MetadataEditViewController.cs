@@ -153,7 +153,9 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
                     string menam = UIXQuery.GetString(reader, K1METAP.Name, K1METAP.Fields.MENAM, string.Empty);
                     string ponam = UIXQuery.GetString(reader, K1METAP.Name, K1METAP.Fields.PONAM, string.Empty);
 
-                    T1METAP t1metap = txmetap.Read(menam, ponam);
+                    T1METAP? t1metap = txmetap.Read(menam, ponam);
+                    if (t1metap is null)
+                        continue;
 
                     MetadataPosDataGridRow row = GetWnd().DgFields.CreateNewRow<MetadataPosDataGridRow>();
                     row.COPONAM = t1metap.PONAM;

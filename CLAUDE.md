@@ -47,6 +47,8 @@ Tables use 6-char names with a prefix per class role, e.g. for table `T1SESSI`:
 
 Schema is metadata-driven: table definitions live in metadata tables `T1METAH` (header) / `T1METAP` (positions), editable in the Metadata module. `MigrationFactory.Metadata.CodeGenerator.GenerateFor(T1METAH)` generates the T1/K1/TXBasic/TX classes; if a file with that name already exists in the solution it is overwritten in place (except `TX*.cs`), otherwise it is written to `%LOCALAPPDATA%/<Publisher>/GameTimeNext/dev/genClass/`.
 
+The metadata tables themselves are not rows in `T1METAH`/`T1METAP`; their schema is hard-coded in `MigrationFactory.Metadata.METADATA`. `CodeGenerator.GenerateForMetadata()` (button "Generate classes of the metadata tables" in the Metadata view) generates their classes from that definition into `Core/Application/Metadata/Data/`, following the same T1/K1/TXBasic/TX pattern. To change a metadata table, edit `METADATA`, then regenerate. Generated `TX*Basic` classes take an optional `SQLiteConnection` in the constructor (used when migrating into another database), and set `CRUS`/`CHUS` on insert/update when the table has those fields.
+
 `MigrationFactory` (`Core/Framework/DataBase/Migration/`, partial class split by concern) handles schema diff/migration from metadata, CSV import/export (`ToCsv`/`FromCsv`), and import packages. `ImportType.DevSync` and `MetadataGenerator` only run in debug builds. In debug, saving a table object with `IsDevSynced == true` re-exports its CSV into `devsync/`.
 
 ### Startup & versioned migrations

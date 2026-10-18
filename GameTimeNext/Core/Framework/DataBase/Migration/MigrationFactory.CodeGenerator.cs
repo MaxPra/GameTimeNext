@@ -31,10 +31,43 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
 
                     Dictionary<T1METAP, UIXSqliteDataType> fields = GenerateFields(t1metaps);
                     TableSchema tSchema = SchemaGenerator.GenerateSingleFromMetadata(t1metah.MENAM);
-                    GenerateT1Class(suffix, tSchema, t1metah.DSYNC, fields);
-                    GenerateK1Class(suffix, fields);
-                    GenerateTXBasicClass(suffix, tSchema, fields);
-                    GenerateTXClass(suffix);
+                    string nsTableObjects = $"{AppConfig.Root.ApplicationName}.Core.Application.TableObjects";
+                    string nsDataManagers = $"{AppConfig.Root.ApplicationName}.Core.Application.DataManagers";
+                    Generate(suffix, tSchema, t1metah.DSYNC, fields, nsTableObjects, nsDataManagers);
+                }
+
+                /// <summary>
+                /// Generates the classes of the metadata tables (T1METAH, T1METAP) from the hard-coded METADATA definition.
+                /// </summary>
+                public static void GenerateForMetadata()
+                {
+                    string nsMetadata = $"{AppConfig.Root.ApplicationName}.Core.Application.Metadata.Data";
+
+                    foreach (TableSchema tSchema in METADATA)
+                    {
+                        List<T1METAP> t1metaps = tSchema.Columns.Select(c => new T1METAP()
+                        {
+                            MENAM = tSchema.MENAM,
+                            PONAM = c.PONAM,
+                            DATYP = c.DATYP.Key,
+                            DALEN = c.DALEN,
+                            PORDE = c.PORDE,
+                            PRIMK = c.PRIMK,
+                            AUTOI = c.AUTOI,
+                            DEFAK = c.DEFAK,
+                            DEFVL = c.DEFVL,
+                        }).OrderBy(p => p.PORDE).ThenBy(p => p.PONAM).ToList();
+
+                        Generate(tSchema.MENAM.Substring(2), tSchema, true, GenerateFields(t1metaps), nsMetadata, nsMetadata);
+                    }
+                }
+
+                private static void Generate(string suffix, TableSchema tSchema, bool devSync, Dictionary<T1METAP, UIXSqliteDataType> fields, string nsTableObjects, string nsDataManagers)
+                {
+                    GenerateT1Class(suffix, tSchema, devSync, fields, nsTableObjects, nsDataManagers);
+                    GenerateK1Class(suffix, fields, nsTableObjects);
+                    GenerateTXBasicClass(suffix, tSchema, fields, nsTableObjects, nsDataManagers);
+                    GenerateTXClass(suffix, nsDataManagers);
                 }
 
                 private static Dictionary<T1METAP, UIXSqliteDataType> GenerateFields(List<T1METAP> t1metaps)
@@ -50,18 +83,19 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     return temp;
                 }
 
-                private static void GenerateT1Class(string suffix, TableSchema tSchema, bool devSync, Dictionary<T1METAP, UIXSqliteDataType> fields)
+                private static void GenerateT1Class(string suffix, TableSchema tSchema, bool devSync, Dictionary<T1METAP, UIXSqliteDataType> fields, string nsTableObjects, string nsDataManagers)
                 {
                     string className = $"T1{suffix}";
                     CodeBuilder code = new CodeBuilder();
 
                     // Imports
-                    code.AddLine($"using {AppConfig.Root.ApplicationName}.Core.Application.DataManagers;");
+                    if (!nsDataManagers.Equals(nsTableObjects))
+                        code.AddLine($"using {nsDataManagers};");
                     code.AddLine("using UIX.ViewController.Engine.DataBaseObjects;");
                     code.AddLine();
 
                     // Namespace & Class
-                    code.BeginBlock($"namespace {AppConfig.Root.ApplicationName}.Core.Application.TableObjects");
+                    code.BeginBlock($"namespace {nsTableObjects}");
                     code.BeginBlock($"public class {className} : UIXTableObjectBase");
 
                     // Properties
@@ -90,14 +124,14 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     code.SaveToFile(AppConfig.Dev.GenClassTableObjectsDirectoryPath, $"{className}.cs");
                 }
 
-                private static void GenerateK1Class(string suffix, Dictionary<T1METAP, UIXSqliteDataType> fields)
+                private static void GenerateK1Class(string suffix, Dictionary<T1METAP, UIXSqliteDataType> fields, string nsTableObjects)
                 {
                     string className = $"K1{suffix}";
                     string classNameT1 = $"T1{suffix}";
                     CodeBuilder code = new CodeBuilder();
 
                     // Namespace & Class
-                    code.BeginBlock($"namespace {AppConfig.Root.ApplicationName}.Core.Application.TableObjects");
+                    code.BeginBlock($"namespace {nsTableObjects}");
                     code.BeginBlock($"public static class {className}");
 
                     // Properties
@@ -122,7 +156,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     code.SaveToFile(AppConfig.Dev.GenClassTableObjectsDirectoryPath, $"{className}.cs");
                 }
 
-                private static void GenerateTXBasicClass(string suffix, TableSchema tSchema, Dictionary<T1METAP, UIXSqliteDataType> fields)
+                private static void GenerateTXBasicClass(string suffix, TableSchema tSchema, Dictionary<T1METAP, UIXSqliteDataType> fields, string nsTableObjects, string nsDataManagers)
                 {
                     string className = $"TX{suffix}Basic";
                     string classNameT1 = $"T1{suffix}";
@@ -130,9 +164,12 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     CodeBuilder code = new CodeBuilder();
 
                     Dictionary<T1METAP, UIXSqliteDataType> primkFields = fields.Where(p => p.Key.PRIMK).ToDictionary();
+                    bool hasCrus = Helpers.HasField(fields, "CRUS");
+                    bool hasChus = Helpers.HasField(fields, "CHUS");
 
                     // Imports
-                    code.AddLine($"using {AppConfig.Root.ApplicationName}.Core.Application.TableObjects;");
+                    if (!nsTableObjects.Equals(nsDataManagers))
+                        code.AddLine($"using {nsTableObjects};");
                     code.AddLine($"using {AppConfig.Root.ApplicationName}.Core.Framework;");
                     code.AddLine($"using {AppConfig.Root.ApplicationName}.Core.Framework.DataBase.Migration;");
                     code.AddLine($"using System.Data.SQLite;");
@@ -140,15 +177,28 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     code.AddLine($"using UIX.ViewController.Engine.DataBaseObjects;");
                     code.AddLine($"using UIX.ViewController.Engine.Migration.Types;");
                     code.AddLine($"using UIX.ViewController.Engine.Querying;");
+                    if (hasCrus || hasChus)
+                        code.AddLine($"using UIX.ViewController.Engine.Utils;");
                     code.AddLine();
 
                     // Namespace & Class
-                    code.BeginBlock($"namespace {AppConfig.Root.ApplicationName}.Core.Application.DataManagers");
+                    code.BeginBlock($"namespace {nsDataManagers}");
                     code.BeginBlock($"public class {className}");
 
                     // Properties
+                    code.AddLine("private readonly SQLiteConnection? _connectionOverride;");
+                    code.AddLine();
                     code.BeginBlock($"protected SQLiteConnection _connection");
-                    code.AddLine($"get => AppEnvironment.GetDataBaseManager().GetConnection();");
+                    code.AddLine($"get => _connectionOverride ?? AppEnvironment.GetDataBaseManager().GetConnection();");
+                    code.EndBlock();
+                    code.AddLine();
+
+                    // Constructors
+                    code.BeginBlock($"public {className}()");
+                    code.EndBlock();
+                    code.AddLine();
+                    code.BeginBlock($"public {className}(SQLiteConnection connection)");
+                    code.AddLine("_connectionOverride = connection;");
                     code.EndBlock();
                     code.AddLine();
 
@@ -269,6 +319,10 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                         code.BeginBlock($"private void Insert({classNameT1} obj)");
                         code.AddLine("obj.CRAT = DateTime.Now;");
                         code.AddLine("obj.CHAT = DateTime.Now;");
+                        if (hasCrus)
+                            code.AddLine("obj.CRUS = FnOpSys.GetCurrentUserName();");
+                        if (hasChus)
+                            code.AddLine("obj.CHUS = FnOpSys.GetCurrentUserName();");
                         code.AddLine("using SQLiteCommand cmd = _connection.CreateCommand();");
                         code.AddLine($"cmd.CommandText = \"INSERT INTO {classNameT1} ({Helpers.GetSqlInsertFields(fields)}) VALUES ({Helpers.GetSqlInsertValues(fields)});\";");
                         Helpers.AddSqlParameters(code, fields.Where(f => !f.Key.AUTOI), withObjPrefix: true);
@@ -287,6 +341,8 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                         code.AddLine();
                         code.BeginBlock($"private void Update({classNameT1} obj)");
                         code.AddLine("obj.CHAT = DateTime.Now;");
+                        if (hasChus)
+                            code.AddLine("obj.CHUS = FnOpSys.GetCurrentUserName();");
                         code.AddLine("using SQLiteCommand cmd = _connection.CreateCommand();");
                         code.AddLine($"cmd.CommandText = \"UPDATE {classNameT1} SET {Helpers.GetSqlUpdateFields(fields)} WHERE {Helpers.GetSqlWheres(primkFields)};\";");
                         Helpers.AddSqlParameters(code, fields.Where(f => !f.Key.AUTOI || f.Key.PRIMK), withObjPrefix: true);
@@ -320,15 +376,24 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     code.SaveToFile(AppConfig.Dev.GenClassDataManagersDirectoryPath, $"{className}.cs");
                 }
 
-                private static void GenerateTXClass(string suffix)
+                private static void GenerateTXClass(string suffix, string nsDataManagers)
                 {
                     string className = $"TX{suffix}";
                     string classNameBasic = $"{className}Basic";
                     CodeBuilder code = new CodeBuilder();
 
+                    // Imports
+                    code.AddLine("using System.Data.SQLite;");
+                    code.AddLine();
+
                     // Namespace & Class
-                    code.BeginBlock($"namespace {AppConfig.Root.ApplicationName}.Core.Application.DataManagers");
+                    code.BeginBlock($"namespace {nsDataManagers}");
                     code.BeginBlock($"public class {className} : {classNameBasic}");
+                    code.BeginBlock($"public {className}()");
+                    code.EndBlock();
+                    code.AddLine();
+                    code.BeginBlock($"public {className}(SQLiteConnection connection) : base(connection)");
+                    code.EndBlock();
                     code.EndBlock();
                     code.EndBlock();
 
@@ -338,6 +403,11 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
 
                 private static class Helpers
                 {
+                    public static bool HasField(Dictionary<T1METAP, UIXSqliteDataType> fields, string ponam)
+                    {
+                        return fields.Keys.Any(f => f.PONAM.Equals(ponam));
+                    }
+
                     public static string GetMethodParams(Dictionary<T1METAP, UIXSqliteDataType> parameters)
                     {
                         List<string> paramStrings = new List<string>();

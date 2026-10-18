@@ -423,7 +423,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 else
                     t1metahs = new List<T1METAH>()
                     {
-                        txmetah.Read(tableName!)
+                        txmetah.Read(tableName!) ?? throw new InvalidOperationException($"No metadata found for '{tableName}'.")
                     };
 
                 foreach (T1METAH t1metah in t1metahs)

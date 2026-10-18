@@ -1,4 +1,4 @@
-namespace GameTimeNext.Core.Application.Metadata.Data
+﻿namespace GameTimeNext.Core.Application.Metadata.Data
 {
     public static class K1METAP
     {
@@ -18,6 +18,8 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             public const string CRUS = "CRUS";
             public const string CHAT = "CHAT";
             public const string CHUS = "CHUS";
+            public const string DEFAK = "DEFAK";
+            public const string DEFVL = "DEFVL";
         }
     }
 }

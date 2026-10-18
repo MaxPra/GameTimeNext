@@ -46,6 +46,8 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="8" />
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
@@ -155,8 +157,23 @@
                 </Button>
 
                 <Button
-                    x:Name="BtnOpenLog"
+                    x:Name="BtnGenerateMetadataTables"
                     Grid.Column="12"
+                    Width="38"
+                    Height="38"
+                    VerticalAlignment="Center"
+                    ToolTip="Generate classes of the metadata tables (T1METAH, T1METAP)">
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontFamily="Segoe MDL2 Assets"
+                        FontSize="14"
+                        Text="&#xE8B8;" />
+                </Button>
+
+                <Button
+                    x:Name="BtnOpenLog"
+                    Grid.Column="14"
                     Width="38"
                     Height="38"
                     VerticalAlignment="Center"
@@ -172,7 +189,7 @@
 
                 <Button
                     x:Name="BtnOpenGenClass"
-                    Grid.Column="14"
+                    Grid.Column="16"
                     Width="38"
                     Height="38"
                     VerticalAlignment="Center"
