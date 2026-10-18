@@ -47,10 +47,6 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
             FnControls.SetEnabled(GetWnd().cmbDataType, GetWnd().ViewIndicator.Contains("CN"));
 
             FnControls.SetEnabled(GetWnd().txbLength, GetWnd().ViewIndicator.Contains("CN"));
-
-            FnControls.SetEnabled(GetWnd().chbDefault, GetWnd().ViewIndicator.Contains("CN"));
-            FnControls.SetEnabled(GetWnd().chbDefaultBool, GetWnd().ViewIndicator.Contains("CN"));
-            FnControls.SetEnabled(GetWnd().txbDefault, GetWnd().ViewIndicator.Contains("CN"));
         }
 
         protected override async Task BuildFirstImplAsync()
