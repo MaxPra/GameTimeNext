@@ -83,10 +83,10 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 return String.Join(", ", filteredColumns.Select(c => $"COALESCE({c.PONAM}, {c.GetDefaultValue()})"));
             }
 
-            public string GetSql_Create()
+            public string GetSql_Create(string? tableNameOverride = null)
             {
                 List<string> sqlLines = new List<string>() {
-                    $"CREATE TABLE IF NOT EXISTS {MENAM} ("
+                    $"CREATE TABLE IF NOT EXISTS {tableNameOverride ?? MENAM} ("
                 };
 
                 List<ColumnSchema> columnsPK = _columns.FindAll(c => c.PRIMK.Equals(true)).ToList();
@@ -112,24 +112,27 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 return String.Join(Environment.NewLine, sqlLines);
             }
 
-            public string GetSql_Drop()
+            public string GetSql_Drop(string? tableNameOverride = null)
             {
-                return $"DROP TABLE {MENAM};";
+                return $"DROP TABLE {tableNameOverride ?? MENAM};";
             }
 
-            public string GetSql_AlterName(string newTableName)
+            public string GetSql_DropIfExists(string? tableNameOverride = null)
             {
-                string temp = $"ALTER TABLE {MENAM} RENAME TO {newTableName};";
-                MENAM = newTableName;
-                return temp;
+                return $"DROP TABLE IF EXISTS {tableNameOverride ?? MENAM};";
             }
 
-            public string GetSql_InsertInto(TableSchema sourceSchema)
+            public string GetSql_RenameTo(string sourceTableName)
+            {
+                return $"ALTER TABLE {sourceTableName} RENAME TO {MENAM};";
+            }
+
+            public string GetSql_InsertInto(TableSchema sourceSchema, string? tableNameOverride = null)
             {
                 string columnNames = sourceSchema.GetColumnNamesForSql(this);
                 string columnNamesWithCoalesce = sourceSchema.GetColumnNamesWithCoalesceForSql(this);
 
-                return $"INSERT INTO {MENAM} ({columnNames}) SELECT {columnNamesWithCoalesce} FROM {sourceSchema.MENAM};";
+                return $"INSERT INTO {tableNameOverride ?? MENAM} ({columnNames}) SELECT {columnNamesWithCoalesce} FROM {sourceSchema.MENAM};";
             }
             #endregion
 
@@ -336,10 +339,13 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                             UIXQuery.ExecuteCustom(SchemaBefore!.GetSql_Drop(), connection);
                             break;
                         case MigrationActionType.ALTER:
-                            UIXQuery.ExecuteCustom(SchemaBefore!.GetSql_AlterName(SchemaBefore!.MENAM_mig), connection);
-                            UIXQuery.ExecuteCustom(SchemaAfter!.GetSql_Create(), connection);
-                            UIXQuery.ExecuteCustom(SchemaAfter!.GetSql_InsertInto(SchemaBefore), connection);
+                            // Build the new table under a temporary name and rename it only at the end (procedure from the SQLite docs).
+                            // The old table must not be renamed: SQLite would otherwise rewrite REFERENCES of other tables to the temporary name.
+                            UIXQuery.ExecuteCustom(SchemaAfter!.GetSql_DropIfExists(SchemaAfter!.MENAM_mig), connection);
+                            UIXQuery.ExecuteCustom(SchemaAfter!.GetSql_Create(SchemaAfter!.MENAM_mig), connection);
+                            UIXQuery.ExecuteCustom(SchemaAfter!.GetSql_InsertInto(SchemaBefore!, SchemaAfter!.MENAM_mig), connection);
                             UIXQuery.ExecuteCustom(SchemaBefore!.GetSql_Drop(), connection);
+                            UIXQuery.ExecuteCustom(SchemaAfter!.GetSql_RenameTo(SchemaAfter!.MENAM_mig), connection);
                             break;
                         default:
                             throw new NotImplementedException("ActionType not yet implemented!");
