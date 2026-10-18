@@ -1,70 +1,40 @@
 ﻿using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.Utils;
-using Microsoft.VisualBasic.FileIO;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Text.Json;
 
 namespace GameTimeNext.Core.Framework.Files
 {
     internal class FileHandler
     {
-        public static void CreateApplicationFoldersAndFiles()
+        /// <summary>
+        /// Creates the development application folder if it does not already exist and the application is running in
+        /// debug mode.
+        /// </summary>
+        /// <remarks>If a normal application folder exists, its contents are copied to the development
+        /// folder. Otherwise, an empty development folder is created. This method has no effect when not running in
+        /// debug mode.</remarks>
+        public static void CreateDevAppFolder()
         {
+            if (!FnSystem.IsDebug())
+                return;
 
-            CreateDevAppFolder();
+            string appFolderPathNormal = AppConfig.Storage.NormalStorageDirectoryPath;
+            string appFolderPathDev = AppConfig.Storage.StorageDirectoryPath;
 
-            if (!Directory.Exists(AppEnvironment.GetAppConfig().AppFolderPath))
+            if (Directory.Exists(appFolderPathDev))
+                return;
+
+            if (Directory.Exists(appFolderPathNormal))
             {
-                Directory.CreateDirectory(AppEnvironment.GetAppConfig().AppFolderPath);
+                CopyDirectory(appFolderPathNormal, appFolderPathDev, true);
+
+                AppEnvironment.InformationList.Add(new InformationListItem(UI.Dialogs.CFMBOXIcon.Info, "Dev folder was created from production app folder!"));
             }
-
-            if (!Directory.Exists(AppEnvironment.GetAppConfig().DataFolderPath))
+            else
             {
-                Directory.CreateDirectory(AppEnvironment.GetAppConfig().DataFolderPath);
-            }
-
-            if (!Directory.Exists(AppEnvironment.GetAppConfig().CoverFolderPath))
-            {
-                Directory.CreateDirectory(AppEnvironment.GetAppConfig().CoverFolderPath);
-            }
-
-            if (!Directory.Exists(AppEnvironment.GetAppConfig().CoverFolderTempPath))
-            {
-                Directory.CreateDirectory(AppEnvironment.GetAppConfig().CoverFolderTempPath);
-            }
-
-            if (!File.Exists(AppEnvironment.GetAppConfig().AppConfigPath))
-            {
-                AppConfig appConfig = new AppConfig();
-
-                File.WriteAllText(AppEnvironment.GetAppConfig().AppConfigPath, JsonSerializer.Serialize(appConfig));
-            }
-
-            if (!File.Exists(AppEnvironment.GetAppConfig().LogFilePath))
-            {
-                File.Create(AppEnvironment.GetAppConfig().LogFilePath).Close();
-            }
-
-            if (!Directory.Exists(AppEnvironment.GetAppConfig().DevGeneratedFilesPath))
-            {
-                Directory.CreateDirectory(AppEnvironment.GetAppConfig().DevGeneratedFilesPath);
-            }
-
-            if (!Directory.Exists(AppEnvironment.GetAppConfig().ImagesSymbolsPath))
-            {
-                Directory.CreateDirectory(AppEnvironment.GetAppConfig().ImagesSymbolsPath);
-            }
-
-            if (!Directory.Exists(AppEnvironment.GetAppConfig().ImagesSymbolsPathDefault))
-            {
-                Directory.CreateDirectory(AppEnvironment.GetAppConfig().ImagesSymbolsPathDefault);
-            }
-
-            if (!Directory.Exists(AppEnvironment.GetAppConfig().ImagesSymbolsPathUser))
-            {
-                Directory.CreateDirectory(AppEnvironment.GetAppConfig().ImagesSymbolsPathUser);
+                Directory.CreateDirectory(appFolderPathDev);
             }
         }
 
@@ -130,7 +100,7 @@ namespace GameTimeNext.Core.Framework.Files
 
             if (FnSystem.IsDebug())
             {
-                backupPath = AppEnvironment.GetAppConfig().DevBackupFolderPath;
+                backupPath = AppConfig.Dev.BackupDirectoryPath;
 
                 if (!Directory.Exists(backupPath))
                     Directory.CreateDirectory(backupPath);
@@ -215,36 +185,6 @@ namespace GameTimeNext.Core.Framework.Files
             return files
                 .OrderByDescending(f => f.LastWriteTime)
                 .FirstOrDefault();
-        }
-
-        /// <summary>
-        /// Creates the development application folder if it does not already exist and the application is running in
-        /// debug mode.
-        /// </summary>
-        /// <remarks>If a normal application folder exists, its contents are copied to the development
-        /// folder. Otherwise, an empty development folder is created. This method has no effect when not running in
-        /// debug mode.</remarks>
-        private static void CreateDevAppFolder()
-        {
-            if (!FnSystem.IsDebug())
-                return;
-
-            string appFolderPathNormal = AppEnvironment.GetAppConfig().AppFolderPathNormal;
-            string appFolderPathDev = AppEnvironment.GetAppConfig().AppFolderPath;
-
-            if (Directory.Exists(appFolderPathDev))
-                return;
-
-            if (Directory.Exists(appFolderPathNormal))
-            {
-                CopyDirectory(appFolderPathNormal, appFolderPathDev, true);
-
-                AppEnvironment.InformationList.Add(new InformationListItem(UI.Dialogs.CFMBOXIcon.Info, "Dev folder was created from production app folder!"));
-            }
-            else
-            {
-                Directory.CreateDirectory(appFolderPathDev);
-            }
         }
     }
 }

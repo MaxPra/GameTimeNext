@@ -42,7 +42,7 @@ namespace GameTimeNext.Core.Application.DataManagers
 
             using SQLiteCommand cmd = connection.CreateCommand();
             cmd.CommandText = "DELETE FROM T1PROFI WHERE PFID = @PFID";
-            cmd.Parameters.AddWithValue("@PFID", pFID); 
+            cmd.Parameters.AddWithValue("@PFID", pFID);
             cmd.ExecuteNonQuery();
             DevSyncCsvSyncService.ExportTable("T1PROFI");
         }

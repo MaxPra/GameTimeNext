@@ -1,6 +1,7 @@
 ﻿using GameTimeNext.Core.Application.Profiles.Components;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
+using GameTimeNext.Core.Framework.Config;
 using System.IO;
 using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Utils;
@@ -213,7 +214,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             {
                 try
                 {
-                    string coverPath = Path.Combine(AppEnvironment.GetAppConfig().CoverFolderPath ?? string.Empty, t1profi.PPFN);
+                    string coverPath = Path.Combine(AppConfig.Storage.ProfileCoversDirectoryPath ?? string.Empty, t1profi.PPFN);
                     File.Delete(coverPath);
                 }
                 catch (FileNotFoundException fnfe)

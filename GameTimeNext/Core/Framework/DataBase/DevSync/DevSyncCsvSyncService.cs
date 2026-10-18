@@ -1,5 +1,6 @@
 using GameTimeNext.Core.Application.Metadata;
 using GameTimeNext.Core.Application.Metadata.Data;
+using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.Utils;
 using System.Data;
 using System.Data.SQLite;
@@ -101,7 +102,7 @@ namespace GameTimeNext.Core.Framework.DataBase.DevSync
 
         private static void ExportCodetableDefaultFiles()
         {
-            string sourceDirectory = AppEnvironment.GetAppConfig().ImagesSymbolsPathDefault;
+            string sourceDirectory = AppConfig.Storage.DefaultImagesSymbolsDirectoryPath;
             string destinationDirectory = Path.Combine(GetDevSyncDirectory(), "files", "default");
 
             if (Directory.Exists(destinationDirectory))
@@ -500,7 +501,7 @@ namespace GameTimeNext.Core.Framework.DataBase.DevSync
 
             while (current != null)
             {
-                string slnxPath = Path.Combine(current.FullName, "GameTimeNext.slnx");
+                string slnxPath = Path.Combine(current.FullName, AppConfig.Root.ApplicationName + ".slnx");
                 if (File.Exists(slnxPath))
                     return Path.Combine(current.FullName, "devsync");
 

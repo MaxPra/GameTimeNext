@@ -9,11 +9,9 @@ using GameTimeNext.Core.Framework.DataBase;
 using GameTimeNext.Core.Framework.DataBase.DevSync;
 using GameTimeNext.Core.Framework.DataBase.Import;
 using GameTimeNext.Core.Framework.Files;
-using GameTimeNext.Core.Framework.Igdb;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.Utils;
 using GameTimeNext.Core.Framework.Versioning;
-using Microsoft.VisualBasic.FileIO;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
@@ -26,7 +24,6 @@ namespace GameTimeNext.Core.Framework
 {
     internal class AppEnvironment
     {
-
         private static AppConfig _appConfig = new AppConfig();
         private static DataBaseManager _databaseManager = new DataBaseManager();
         private static T1PROFI? _t1Profi = new T1PROFI();
@@ -97,25 +94,23 @@ namespace GameTimeNext.Core.Framework
 
             string appConfigText = JsonSerializer.Serialize(GetAppConfig(), options);
 
-            File.WriteAllText(new AppConfig().AppConfigPath, appConfigText);
+            File.WriteAllText(AppConfig.Storage.AppConfigFilePath, appConfigText);
         }
 
         public static void Initalize()
         {
-            InitializeStartableApps();
-
             HandleBackup();
 
-            CheckShowChangeLog();
+            InitializeStartableApps();
 
-            MigrationManager.MigrateIfNeeded();
+            CheckShowChangeLog();
 
             DataBaseImporter.Import();
 
             if (FnSystem.IsDebug())
                 DevSyncCsvSyncService.ImportAllFromCsv();
 
-            AppVersion.SetAppVersionInConfig();
+            MigrationManager.Migrate();
 
             if (GetAppConfig().AppSettings.EnableSessionCleanup)
                 InitializeCleanup();
@@ -187,15 +182,15 @@ namespace GameTimeNext.Core.Framework
         private static void HandleBackup()
         {
             // Backup hier einspielen
-            if (_appConfig.AppSettings.BackupType == BackupType.IMPORT_BACKUP)
+            if (GetAppConfig().AppSettings.BackupType == BackupType.IMPORT_BACKUP)
             {
                 try
                 {
-                    FnBackup.ImportBackup(_appConfig.AppSettings.BackupImportPath);
+                    FnBackup.ImportBackup(GetAppConfig().AppSettings.BackupImportPath);
                 }
                 catch (Exception)
                 {
-                    InformationList.Add(new InformationListItem(CFMBOXIcon.Error, "Could not import backupfile:\n" + _appConfig.AppSettings.BackupImportPath + "."));
+                    InformationList.Add(new InformationListItem(CFMBOXIcon.Error, "Could not import backupfile:\n" + GetAppConfig().AppSettings.BackupImportPath + "."));
                 }
 
                 // Hier nochmal AppConfig laden, da vorher durch Backupimport überschrieben
@@ -203,14 +198,14 @@ namespace GameTimeNext.Core.Framework
             }
             else
             {
-                if (!_appConfig.AppSettings.AutoBackup)
+                if (!GetAppConfig().AppSettings.AutoBackup)
                     return;
 
-                string backupPath = _appConfig.AppSettings.BackupExportPath;
+                string backupPath = GetAppConfig().AppSettings.BackupExportPath;
 
                 if (FnSystem.IsDebug())
                 {
-                    backupPath = AppEnvironment.GetAppConfig().DevBackupFolderPath;
+                    backupPath = AppConfig.Dev.BackupDirectoryPath;
 
                     if (!Directory.Exists(backupPath))
                         Directory.CreateDirectory(backupPath);
@@ -279,7 +274,13 @@ namespace GameTimeNext.Core.Framework
 
         public static void LoadAppConfig()
         {
-            string appConfigText = File.ReadAllText(new AppConfig().AppConfigPath);
+            if (!File.Exists(AppConfig.Storage.AppConfigFilePath))
+            {
+                FileStream fs = File.Create(AppConfig.Storage.AppConfigFilePath);
+                fs.Close();
+            }
+
+            string appConfigText = File.ReadAllText(AppConfig.Storage.AppConfigFilePath);
 
             if (appConfigText == null || appConfigText.Length == 0)
             {

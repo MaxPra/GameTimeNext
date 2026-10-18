@@ -1,5 +1,6 @@
 ﻿using GameTimeNext.Core.Application.Profiles;
 using GameTimeNext.Core.Application.Profiles.Viewmodel;
+using GameTimeNext.Core.Framework.Config;
 using Microsoft.Win32;
 using System.Diagnostics;
 using System.IO;
@@ -25,7 +26,7 @@ namespace GameTimeNext.Core.Framework.Utils
         {
             try
             {
-                const string mutexName = "Global\\GameTimeNext_SingleInstance_Mutex";
+                string mutexName = $"Global\\{AppConfig.Root.ApplicationName}_SingleInstance_Mutex";
 
                 bool createdNew;
                 _singleInstanceMutex = new Mutex(initiallyOwned: true, name: mutexName, createdNew: out createdNew);
@@ -51,7 +52,7 @@ namespace GameTimeNext.Core.Framework.Utils
             try
             {
                 const string runKeyPath = @"Software\Microsoft\Windows\CurrentVersion\Run";
-                const string runValueName = "GameTimeNext";
+                string runValueName = AppConfig.Root.ApplicationName;
 
                 using RegistryKey? runKey = Registry.CurrentUser.OpenSubKey(runKeyPath, true) ?? Registry.CurrentUser.CreateSubKey(runKeyPath);
                 if (runKey == null)
@@ -273,13 +274,13 @@ namespace GameTimeNext.Core.Framework.Utils
                 {
                     fileNameReturn = CFProfilesEditApp.GetGUIDCoverName("jpg");
 
-                    pathReturn = AppEnvironment.GetAppConfig().AppDataLocalPathTempCovers + System.IO.Path.DirectorySeparatorChar + fileNameReturn;
+                    pathReturn = System.IO.Path.Join(AppConfig.Temp.ProfileCoversDirectoryPath, fileNameReturn);
 
                     BitmapEncoder encoder = new PngBitmapEncoder();
                     encoder.Frames.Add(BitmapFrame.Create(croppedImage));
 
-                    if (!Directory.Exists(AppEnvironment.GetAppConfig().AppDataLocalPathTempCovers))
-                        Directory.CreateDirectory(AppEnvironment.GetAppConfig().AppDataLocalPathTempCovers);
+                    if (!Directory.Exists(AppConfig.Temp.ProfileCoversDirectoryPath))
+                        Directory.CreateDirectory(AppConfig.Temp.ProfileCoversDirectoryPath);
 
                     using (FileStream stream = new FileStream(pathReturn, FileMode.Create))
                     {

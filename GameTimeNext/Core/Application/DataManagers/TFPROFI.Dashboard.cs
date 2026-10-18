@@ -1,5 +1,6 @@
 ﻿using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
+using GameTimeNext.Core.Framework.Config;
 using System.IO;
 using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Utils;
@@ -83,7 +84,7 @@ namespace GameTimeNext.Core.Application.DataManagers
                         UIXQuery.GetString(reader, "GANA"),
                         UIXQuery.GetDateTime(reader, "PLTO"),
                         TFPROFI.GetGameTimeInMinutes(UIXQuery.GetInt64(reader, "PFID"), timeSpanStart, timeSpanEnd),
-                        Path.Combine(AppEnvironment.GetAppConfig().CoverFolderPath ?? string.Empty, UIXQuery.GetString(reader, "PPFN"))
+                        Path.Combine(AppConfig.Storage.ProfileCoversDirectoryPath ?? string.Empty, UIXQuery.GetString(reader, "PPFN"))
                     );
 
             return ("n.A.", DateTime.MinValue, 0, string.Empty);
@@ -99,7 +100,7 @@ namespace GameTimeNext.Core.Application.DataManagers
                         UIXQuery.GetString(reader, "GANA"),
                         GetPlaytime(timeSpanStart, timeSpanEnd, UIXQuery.GetInt64(reader, "PFID")),
                         GetDaysPlayed(timeSpanStart, timeSpanEnd, UIXQuery.GetInt64(reader, "PFID")),
-                        Path.Combine(AppEnvironment.GetAppConfig().CoverFolderPath ?? string.Empty, UIXQuery.GetString(reader, "PPFN"))
+                        Path.Combine(AppConfig.Storage.ProfileCoversDirectoryPath ?? string.Empty, UIXQuery.GetString(reader, "PPFN"))
                     );
 
             return ("n.A.", 0, 0, string.Empty);
@@ -169,7 +170,7 @@ namespace GameTimeNext.Core.Application.DataManagers
                 return query;
             }
 
-            public static string BuildQueryDaysPlayed(DateTime? timeSpanStart, DateTime timeSpanEnd,long? pfid = null)
+            public static string BuildQueryDaysPlayed(DateTime? timeSpanStart, DateTime timeSpanEnd, long? pfid = null)
             {
                 string sqlPlfr = "";
                 string sqlPlto = "";

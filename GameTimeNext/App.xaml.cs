@@ -1,6 +1,8 @@
 ﻿using GameTimeNext.Core.Application.General;
+using GameTimeNext.Core.Application.MigrationTasks;
 using GameTimeNext.Core.Application.Settings;
 using GameTimeNext.Core.Framework;
+using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.Files;
 using GameTimeNext.Core.Framework.GitHub;
 using GameTimeNext.Core.Framework.Logging;
@@ -23,7 +25,7 @@ namespace GameTimeNext
             base.OnStartup(e);
 
             // Sicherstellen, dass nur eine Instance läuft
-            if (!FnSystem.TryAcquireSingleInstance())
+            if (!FnSystem.IsDebug() && !FnSystem.TryAcquireSingleInstance())
             {
                 Shutdown();
                 return;
@@ -60,44 +62,40 @@ namespace GameTimeNext
 
         private void InitializeApp()
         {
+            FnLog.Configure(AppConfig.LogFilePath);
+
+            // FileSystem Migration
+            MigTask_100b_008.MigrateFileSystem();
 
             // Ordner erstellen
-            FileHandler.CreateApplicationFoldersAndFiles();
+            FileHandler.CreateDevAppFolder();
 
             AppEnvironment.LoadAppConfig();
-
-            FnLog.Configure(AppEnvironment.GetAppConfig().LogFilePath);
 
             FnLog.AddInfo("MainApp", "*** Initializing Application... ***");
 
             FnLog.AddInfo("MainApp", "Initiating Databasemanager...");
             AppEnvironment.InitiateDataBaseManager();
 
-            FnLog.AddInfo("MainApp", "Initializing database...");
             // Datenbank initialisieren
+            FnLog.AddInfo("MainApp", "Initializing database...");
             AppEnvironment.GetDataBaseManager().Initialize();
 
-            FnLog.AddInfo("MainApp", "Initializing application environment...");
             // AppEnvironment initialisieren
+            FnLog.AddInfo("MainApp", "Initializing application environment...");
             AppEnvironment.Initalize();
 
-            FnLog.AddInfo("MainApp", "Deleting old backups...");
             // Alte Backups löschen
+            FnLog.AddInfo("MainApp", "Deleting old backups...");
             FileHandler.DeleteOldBackupFiles();
 
-            FnLog.AddInfo("MainApp", "Checking for new version (Github)...");
             // Auf neue Version (Github) prüfen
+            FnLog.AddInfo("MainApp", "Checking for new version (Github)...");
             CheckForNewVersion();
         }
 
         protected override void OnExit(ExitEventArgs e)
         {
-            //if (!CanCloseApplication())
-            //{
-            //    e.ApplicationExitCode = 1;
-            //    return;
-            //}
-
             FnLog.AddInfo(null, "*** Shutdown initiated ***");
 
             FnLog.AddInfo(null, "Stopping background processes...");
@@ -109,7 +107,7 @@ namespace GameTimeNext
 
                 if (FnSystem.IsDebug())
                 {
-                    backupPath = AppEnvironment.GetAppConfig().DevBackupFolderPath;
+                    backupPath = AppConfig.Dev.BackupDirectoryPath;
 
                     if (!Directory.Exists(backupPath))
                         Directory.CreateDirectory(backupPath);
@@ -125,17 +123,6 @@ namespace GameTimeNext
                 AppEnvironment.GetDataBaseManager().GetConnection().Close();
 
             FnLog.AddInfo(null, "*** Shutdown completed ***");
-        }
-
-        private bool CanCloseApplication()
-        {
-            foreach (var app in AppEnvironment.StartedApplications.Values)
-            {
-                if (!app.CanClose())
-                    return false;
-            }
-
-            return true;
         }
 
         private void CheckForNewVersion()
