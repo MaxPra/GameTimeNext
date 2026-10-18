@@ -454,7 +454,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
 
             public static List<TableSchema> GenerateFromActualDatabase(SQLiteConnection connection)
             {
-                // OFDO: parse CREATE statement instead of PRAGMA table_info
+                // OFDO (#OF001): parse CREATE statement instead of PRAGMA table_info
 
                 List<string> tableNames = new List<string>();
                 using (var reader = UIXQuery.QueryCustom("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;", connection))

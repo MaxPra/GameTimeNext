@@ -30,7 +30,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
             {
                 if ((type.Equals(ImportType.DevSync) || type.Equals(ImportType.MetadataGenerator)) && !FnSystem.IsDebug()) return;
 
-                // OFDO: Continue Logging
+                // OFDO (#OF001): Continue Logging
 
                 MigrationPath migPath = GetMigrationPath(type, overrideActionType);
 

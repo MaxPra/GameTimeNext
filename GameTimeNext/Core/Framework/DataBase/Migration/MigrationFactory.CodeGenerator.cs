@@ -14,8 +14,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
         {
             public static class CodeGenerator
             {
-                // OFDO: Add ability to overwrite existing files in solution
-                // OFDO: Make a base class for TXBasic with generic methods
+                // OFDO (#OF001): Make a base class for TXBasic with generic methods
 
                 public static void GenerateFor(T1METAH t1metah)
                 {
@@ -352,7 +351,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                         // Exists
                         code.AddLine();
                         code.BeginBlock($"private bool Exists({classNameT1} obj)");
-                        // OFDO: UIXQuery?
+                        // OFDO (#OF001): UIXQuery?
                         code.AddLine("using SQLiteCommand cmd = _connection.CreateCommand();");
                         code.AddLine($"cmd.CommandText = \"SELECT COUNT(*) FROM {classNameT1} WHERE {Helpers.GetSqlWheres(primkFields)};\";");
                         Helpers.AddSqlParameters(code, primkFields, withObjPrefix: true);
