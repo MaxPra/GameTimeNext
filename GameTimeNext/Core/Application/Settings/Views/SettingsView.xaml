@@ -91,14 +91,14 @@
                                     Grid.Column="4"
                                     VerticalAlignment="Center"
                                     Foreground="{DynamicResource Brush.TextSecondary}"
-                                    Text="Show text on blackout" />
+                                    Text="Show animation on blackout" />
 
                                 <CheckBox
                                     x:Name="cbShowTextOnBlackout"
                                     Grid.Column="6"
                                     HorizontalAlignment="Left"
                                     VerticalAlignment="Center"
-                                    ToolTip="Shows moving text when all monitors are blacked out." />
+                                    ToolTip="Shows an animated particle clock when all monitors are blacked out." />
                             </Grid>
 
                             <Grid Grid.Row="4" HorizontalAlignment="Left">

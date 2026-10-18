@@ -21,7 +21,7 @@
 
   * Added a new option to override the global blackout setting (side monitors while monitoring) on profile layer.
 
-  * Added a feature that allows displaying animated text when all monitors are blacked out.
+  * Added a feature that displays an animated particle clock when all monitors are blacked out.
 
 
   BUG FIXES

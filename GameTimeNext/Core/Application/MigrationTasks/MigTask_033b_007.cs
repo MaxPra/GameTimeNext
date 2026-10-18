@@ -1,57 +1,22 @@
-﻿using GameTimeNext.Core.Framework;
-using System.Data.Common;
-
-namespace GameTimeNext.Core.Application.MigrationTasks
+﻿namespace GameTimeNext.Core.Application.MigrationTasks
 {
-    internal class MigTask_033b_007
+    internal class MigTask_033b_007 : MigTaskBase
     {
+        // OFDOI: Remove SQL
 
-        private static DbConnection? _connection = AppEnvironment.GetDataBaseManager().GetConnection();
-
-        public static void Execute()
+        public MigTask_033b_007() : base("0.3.3", requireDb: true)
         {
-            EnsureOpen();
+
+        }
+
+        protected override void ExecuteImpl()
+        {
             CreateTableT1METAH();
             CreateTableT1METAP();
             NormalizeLegacyDateFormats();
         }
 
-        private static void NormalizeLegacyDateFormats()
-        {
-            NormalizeDateColumns("T1GROUP", "CRAT", "CHAT");
-            NormalizeDateColumns("T1METAH", "CRAT", "CHAT");
-            NormalizeDateColumns("T1METAP", "CRAT", "CHAT");
-            NormalizeDateColumns("T1PLTHR", "CRAT", "CHAT");
-            NormalizeDateColumns("T1PROFI", "FIPL", "LAPL", "CRAT", "CHAT");
-            NormalizeDateColumns("T1SESSI", "PLFR", "PLTO", "CRAT", "CHAT");
-        }
-
-        private static void NormalizeDateColumns(string tableName, params string[] columnNames)
-        {
-            if (_connection == null || columnNames == null || columnNames.Length == 0)
-                return;
-
-            string setSql = string.Join(", ", columnNames.Select(columnName =>
-                $"{columnName} = CASE " +
-                $"WHEN {columnName} LIKE '__.__.____ __:__:__' THEN " +
-                $"substr({columnName}, 7, 4) || '-' || substr({columnName}, 4, 2) || '-' || substr({columnName}, 1, 2) || ' ' || substr({columnName}, 12, 5) || ':00' " +
-                $"ELSE {columnName} END"));
-
-            string whereSql = string.Join(" OR ", columnNames.Select(columnName =>
-                $"{columnName} LIKE '__.__.____ __:__:__'"));
-
-            using var command = _connection.CreateCommand();
-            command.CommandText = $"UPDATE {tableName} SET {setSql} WHERE {whereSql};";
-            command.ExecuteNonQuery();
-        }
-
-        private static void EnsureOpen()
-        {
-            if (_connection != null && _connection.State != System.Data.ConnectionState.Open)
-                _connection.Open();
-        }
-
-        private static void CreateTableT1METAH()
+        private void CreateTableT1METAH()
         {
             var sql = @"
                     CREATE TABLE IF NOT EXISTS T1METAH
@@ -75,7 +40,7 @@ namespace GameTimeNext.Core.Application.MigrationTasks
             command.ExecuteNonQuery();
         }
 
-        private static void CreateTableT1METAP()
+        private void CreateTableT1METAP()
         {
             var sql = @"
                     CREATE TABLE IF NOT EXISTS T1METAP
@@ -100,6 +65,35 @@ namespace GameTimeNext.Core.Application.MigrationTasks
 
             using var command = _connection.CreateCommand();
             command.CommandText = sql;
+            command.ExecuteNonQuery();
+        }
+
+        private void NormalizeLegacyDateFormats()
+        {
+            NormalizeDateColumns("T1GROUP", "CRAT", "CHAT");
+            NormalizeDateColumns("T1METAH", "CRAT", "CHAT");
+            NormalizeDateColumns("T1METAP", "CRAT", "CHAT");
+            NormalizeDateColumns("T1PLTHR", "CRAT", "CHAT");
+            NormalizeDateColumns("T1PROFI", "FIPL", "LAPL", "CRAT", "CHAT");
+            NormalizeDateColumns("T1SESSI", "PLFR", "PLTO", "CRAT", "CHAT");
+        }
+
+        private void NormalizeDateColumns(string tableName, params string[] columnNames)
+        {
+            if (_connection == null || columnNames == null || columnNames.Length == 0)
+                return;
+
+            string setSql = string.Join(", ", columnNames.Select(columnName =>
+                $"{columnName} = CASE " +
+                $"WHEN {columnName} LIKE '__.__.____ __:__:__' THEN " +
+                $"substr({columnName}, 7, 4) || '-' || substr({columnName}, 4, 2) || '-' || substr({columnName}, 1, 2) || ' ' || substr({columnName}, 12, 5) || ':00' " +
+                $"ELSE {columnName} END"));
+
+            string whereSql = string.Join(" OR ", columnNames.Select(columnName =>
+                $"{columnName} LIKE '__.__.____ __:__:__'"));
+
+            using var command = _connection.CreateCommand();
+            command.CommandText = $"UPDATE {tableName} SET {setSql} WHERE {whereSql};";
             command.ExecuteNonQuery();
         }
     }

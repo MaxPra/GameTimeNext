@@ -42,8 +42,8 @@ namespace GameTimeNext.Core.Application.DataManagers
 
             using SQLiteCommand cmd = connection.CreateCommand();
             cmd.CommandText = "DELETE FROM T1CTABD WHERE TXTYP = @TXTYP AND TXNUM = @TXNUM";
-            cmd.Parameters.AddWithValue("@TXTYP", tXTYP); 
-            cmd.Parameters.AddWithValue("@TXNUM", tXNUM); 
+            cmd.Parameters.AddWithValue("@TXTYP", tXTYP);
+            cmd.Parameters.AddWithValue("@TXNUM", tXNUM);
             cmd.ExecuteNonQuery();
             DevSyncCsvSyncService.ExportTable("T1CTABD");
         }

@@ -267,7 +267,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
         protected void EV_BtnOpenGenClass()
         {
-            Process.Start("explorer.exe", AppEnvironment.GetAppConfig().DevGeneratedFilesPath);
+            Process.Start("explorer.exe", AppConfig.Dev.GenClassDirectoryPath);
         }
     }
 }

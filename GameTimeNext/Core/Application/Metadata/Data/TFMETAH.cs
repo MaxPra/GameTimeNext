@@ -1,5 +1,3 @@
-using GameTimeNext.Core.Application.Metadata;
-
 namespace GameTimeNext.Core.Application.Metadata.Data
 {
     public static class TFMETAH

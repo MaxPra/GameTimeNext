@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using GameTimeNext.Core.Framework.Config;
+using System.Net.Http;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
@@ -31,7 +32,7 @@ namespace GameTimeNext.Core.Framework.GitHub
                     Timeout = TimeSpan.FromSeconds(10)
                 };
 
-                client.DefaultRequestHeaders.UserAgent.ParseAdd("GameTimeNext Update Checker");
+                client.DefaultRequestHeaders.UserAgent.ParseAdd(AppConfig.Root.ApplicationName + " Update Checker");
                 client.DefaultRequestHeaders.Accept.ParseAdd("application/vnd.github+json");
 
                 string url = $"https://api.github.com/repos/{owner}/{repo}/releases";

@@ -123,6 +123,9 @@
     <None Update="ImportPackages\Import_Package_452c6973071d4ac2b05cc85d76d0dd75.zip">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="ImportPackages\Import_Package_609d8c29b84e458a9e0e9c7115efca27.zip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

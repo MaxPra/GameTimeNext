@@ -1,4 +1,5 @@
 ﻿using GameTimeNext.Core.Application.TableObjects;
+using GameTimeNext.Core.Framework.Config;
 using System.Data;
 using System.Data.SQLite;
 using System.IO;
@@ -16,14 +17,19 @@ namespace GameTimeNext.Core.Framework.DataBase
         // [------------------ PUBLIC ----------------------]
         // [------------------------------------------------]
 
+        public void Initialize()
+        {
+            Initialize(AppConfig.Storage.DatabaseFilePath);
+        }
+
         /// <summary>
         /// Initialisiert die Datenbankverbindung und legt die Datenbank an, sollte sie noch nicht existieren
         /// </summary>
-        public void Initialize()
+        public void Initialize(string databaseFilePath)
         {
             // -- Erstellen --
             // Prüfen, ob File existiert
-            if (File.Exists(AppEnvironment.GetAppConfig().DataBaseFilePath))
+            if (File.Exists(databaseFilePath))
             {
                 // -- Verbinden --
                 ConnectToSQLite();
@@ -31,7 +37,7 @@ namespace GameTimeNext.Core.Framework.DataBase
                 return;
             }
 
-            using (File.Create(AppEnvironment.GetAppConfig().DataBaseFilePath)) { }
+            using (File.Create(databaseFilePath)) { }
 
             // -- Verbinden --
             ConnectToSQLite();
@@ -60,9 +66,9 @@ namespace GameTimeNext.Core.Framework.DataBase
                     null,
                     0);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                throw e;
+                throw;
             }
             finally
             {
@@ -93,14 +99,14 @@ namespace GameTimeNext.Core.Framework.DataBase
             bool newDataBase = false;
             string connectionString = String.Empty;
 
-            if (!File.Exists(AppEnvironment.GetAppConfig().DataBaseFilePath))
+            if (!File.Exists(AppConfig.Storage.DatabaseFilePath))
             {
-                connectionString = $"Data Source={AppEnvironment.GetAppConfig().DataBaseFilePath};Version=3;New=True;Compress=True;BusyTimeout=15000;Pooling=False;";
+                connectionString = $"Data Source={AppConfig.Storage.DatabaseFilePath};Version=3;New=True;Compress=True;BusyTimeout=15000;Pooling=False;";
                 newDataBase = true;
             }
             else
             {
-                connectionString = $"Data Source={AppEnvironment.GetAppConfig().DataBaseFilePath};Version=3;Compress=True;BusyTimeout=15000;Pooling=False;";
+                connectionString = $"Data Source={AppConfig.Storage.DatabaseFilePath};Version=3;Compress=True;BusyTimeout=15000;Pooling=False;";
                 newDataBase = false;
             }
 
