@@ -11,7 +11,7 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
     public class FnSteam
     {
         /// <summary>
-        /// Startet ein Steam-Spiel anhand der ID
+        /// Starts a Steam game by its ID
         /// </summary>
         /// <param name="steamAppID"></param>
         public static async void StartSteamGame(string steamAppID, long pfid, UIXApplication app)
@@ -24,10 +24,10 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
                 if (t1profi == null)
                     return;
 
-                // Profileinstellungen laden
+                // Load profile settings
                 CProfileSettings cProfileSettings = new CProfileSettings(t1profi.PRSE).Dezerialize();
 
-                // Zuvor Profileinstellungen aktivieren
+                // Apply profile settings first
                 CFGameStarter.ActivateProfileSettings(cProfileSettings);
 
                 await Task.Delay(5000);

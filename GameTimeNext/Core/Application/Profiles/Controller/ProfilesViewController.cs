@@ -49,7 +49,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             GetApp().CallDispatcher.Register(this, nameof(EXEV_GameLaunched));
             GetApp().CallDispatcher.Register(this, nameof(EXEV_GameClosed));
 
-            // Loadertexte setzen
+            // Set loader texts
             GetApp().Loader.SetRandomTexts(
                                             "Preparing your gaming library...",
                                             "Checking which worlds you visited last...",
@@ -222,7 +222,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             UIXQuery query = new UIXQuery(K1PROFI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
             query.SetDistinct(true);
 
-            // Felder
+            // Fields
             query.AddField(K1PROFI.Name, K1PROFI.Fields.PFID);
 
             // Where Restrictions
@@ -242,7 +242,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             List<T1GROUP> selectedTags = new List<T1GROUP>();
             List<T1GROUP> selectedStates = new List<T1GROUP>();
 
-            // Selektion aus Filter Cache lesen
+            // Read selection from filter cache
             selectedTags = GetApp().FilterCache.SelectedTags;
             selectedStates = GetApp().FilterCache.SelectedStates;
 
@@ -254,7 +254,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 UIXQueryTable t1grppo_table = query.AddJoinTable(K1GRPPO.Name, JoinType.INNER);
                 t1grppo_table.AddJoinCondition(K1PROFI.Name, K1PROFI.Fields.PFID, QueryCompareType.EQUALS, K1GRPPO.Name, K1GRPPO.Fields.PFID);
 
-                // Alle Gruppen aus der GRPPO wo einer der selektierten Keys enthalten ist
+                // All groups from T1GRPPO that contain one of the selected keys
                 query.AddWhereIn(K1GRPPO.Name, K1GRPPO.Fields.GRID, selectedTagKeys);
             }
 
@@ -303,13 +303,13 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                     query.AddWhere(K1PLTHR.Name, K1PLTHR.Fields.PTCO, QueryCompareType.EQUALS, true);
                 }
 
-                // Archiviert
+                // Archived
                 if (containsArchived)
                     query.AddWhere(K1PROFI.Name, K1PROFI.Fields.ARCH, QueryCompareType.EQUALS, true);
                 else
                     query.AddWhere(K1PROFI.Name, K1PROFI.Fields.ARCH, QueryCompareType.EQUALS, false);
 
-                // Hier im Objekt speichern, da außerhalb der Methode darauf zugegriffen werden muss (Ausnahme)
+                // Store in the object here because it has to be accessed outside of this method (exception)
                 _playableFilter = containsPlayable;
                 _externalGameFilter = containsExternal;
             }
@@ -358,7 +358,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             ContextMenuBuilder contextBuilder = UIXContextMenuFactory.Create("ProfilesListBoxContextMenu");
             contextBuilder.SetStyle(ProfilesContextMenuBuilder.contextMenuStyle);
 
-            // Prinzipiell immer Edit und Delete
+            // Always Edit and Delete in principle
             contextBuilder.AddItem("ctxtEdit", "Edit", icon: UIXContextMenuFactory.CreateMdlIcon("\uE70F"), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
             contextBuilder.AddItem("ctxtDelete", "Delete", icon: UIXContextMenuFactory.CreateMdlIcon("\uE74D"), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
 
@@ -371,7 +371,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             // Steam
             ProfilesContextMenuBuilder.BuildContextSteam(contextBuilder, t1profi);
 
-            // Archivieren
+            // Archive
             ProfilesContextMenuBuilder.BuildContextArchive(contextBuilder, t1profi);
 
 
@@ -427,18 +427,18 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         private async Task AdjustFiltersToStartedGameProfile(long pfid)
         {
-            // Ermittlung der zugeordneten Gruppen
+            // Determine the assigned groups
             T1PROFI t1profi = new TXPROFI().Read(pfid);
 
             List<T1GROUP> tags = TFPROFI.GetAllLinkedTags(t1profi);
 
-            // Alle Selektionen bereinigen
+            // Clear all selections
             if (tags.Count == 0)
                 GetApp().FilterCache.SelectedTags = new List<T1GROUP>();
             else
                 GetApp().FilterCache.SelectedTags = tags;
 
-            // Alle States bereinigen
+            // Clear all states
             GetApp().FilterCache.SelectedStates = new List<T1GROUP>();
 
             await BuildProfilesListBoxAsync(pfid);
@@ -543,7 +543,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             {
                 GetApp().ProfilesFilterView.ShowView(true);
 
-                // Geschlossen per Apply
+                // Closed via Apply
                 GetApp().ProfilesFilterView.ViewController.SetResultCallback<ProfilesFilterViewController.ProfileFilterViewReturn>(async r =>
                 {
                     tags = r.TblGroups;
@@ -552,7 +552,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
                     if (applied)
                     {
-                        // Filter Cache aktualisieren
+                        // Update filter cache
                         GetApp().FilterCache.SelectedTags = tags;
                         GetApp().FilterCache.SelectedStates = states;
 
@@ -588,7 +588,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         }
 
         /// <summary>
-        /// Kontextmenü öffnet sich
+        /// Context menu is opening
         /// </summary>
         /// <param name="target"></param>
         protected void EV_ListBoxProfiles_CtxtOpening(FrameworkElement target)
@@ -605,7 +605,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         }
 
         /// <summary>
-        /// Steam Bibliothek öffnen
+        /// Open Steam library
         /// </summary>
         protected void EV_ctxtOpenSteamLibrary()
         {
@@ -683,7 +683,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             T1PLTHR t1plthr = TFPLTHR.GetCurrentPlaythrough(t1profi.PFID);
 
-            // Playthrough als Abgeschlossen markieren
+            // Mark playthrough as completed
             t1plthr.PTCO = true;
 
             new TXPLTHR().Save(t1plthr);
@@ -700,7 +700,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             {
                 if (r.HasChanged)
                 {
-                    // Nochmaliges öffnen triggern
+                    // Trigger reopening
                     _dataWrapper!.TargetController.Open(true);
                 }
             }, t1profi);
@@ -718,7 +718,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             if (result == CFMBOXResult.No)
                 return;
 
-            // Playthrough canceln
+            // Cancel playthrough
             t1plthr.PTCA = true;
 
             new TXPLTHR().Save(t1plthr);
@@ -762,7 +762,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             {
                 if (r.HasChanged)
                 {
-                    // Nochmaliges öffnen triggern
+                    // Trigger reopening
                     _dataWrapper!.TargetController.Open(true);
                 }
             });
@@ -778,8 +778,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         }
 
         /// <summary>
-        /// Filter Cache (Hier werden die Selektionen des Filters gespeichert)
-        /// Bzw. wird der Filter Cache auch für gespeicherte Selektionen (z.b. bei Neustart der Anwendung) genutzt
+        /// Filter cache (stores the filter selections)
+        /// The filter cache is also used for persisted selections (e.g. after restarting the application)
         /// </summary>
         public class FilterCache
         {

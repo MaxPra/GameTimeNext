@@ -198,7 +198,7 @@
             return virtualKeyMap.FirstOrDefault(x => x.Value == key).Key;
         }
 
-        // Erstellen der HashMap (Dictionary)
+        // Create the hash map (dictionary)
         public static Dictionary<VirtualKey, string> virtualKeyMap = new Dictionary<VirtualKey, string>
         {
 

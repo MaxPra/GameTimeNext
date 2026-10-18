@@ -34,7 +34,7 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
 
         protected override void BuildFirstImpl()
         {
-            // Nur bei Create New wird eine Auswahl des Typs erlaubt
+            // Selecting the type is only allowed in create-new mode
             FnControls.SetEnabled(GetView().cmbType, GetView().ViewIndicator.Contains("CN"));
 
             UIXManualCodetable mCt = new UIXManualCodetable();

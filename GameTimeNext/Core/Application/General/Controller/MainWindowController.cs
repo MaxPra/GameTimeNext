@@ -44,7 +44,7 @@ namespace GameTimeNext.Core.Application.General.Controller
 
         protected override async Task BuildFirstImplAsync()
         {
-            // Für Applauncher Tab Control setzen
+            // Set tab control for the app launcher
             AppEnvironment.AppLauncher.TabControl = GetWindow().MainTabControl;
 
             FnControls.SetVisible(GetWindow().pnlDevPathsHeader, FnSystem.IsDebug());
@@ -56,12 +56,12 @@ namespace GameTimeNext.Core.Application.General.Controller
             AppEnvironment.AppLauncher.StartFavorites(GetApp());
 
             FnLog.AddInfo("MainApp", "Starting background processes...");
-            // Hintergrundprozesse starten
+            // Start background processes
             AppEnvironment.StartBackgroundProcesses(GetApp());
 
-            // Warten bis alle ausstehenden Render-Operationen (Prio 7) abgearbeitet
-            // sind, bevor modale Dialoge gezeigt werden. Background-Prio (4) ist
-            // niedriger als Render (7) → Render läuft zuerst durch.
+            // Wait until all pending render operations (priority 7) have been processed
+            // before modal dialogs are shown. Background priority (4) is
+            // lower than Render (7) → rendering runs first.
             await System.Windows.Application.Current.Dispatcher.InvokeAsync(() => { }, DispatcherPriority.Background);
 
             if (GetApp().SplashScreen is not null)
@@ -74,7 +74,7 @@ namespace GameTimeNext.Core.Application.General.Controller
 
             FnControls.SetVisible(GetWindow(), true);
 
-            // WindowState setzen
+            // Set WindowState
             _ = GetWindow().Dispatcher.BeginInvoke(() =>
             {
                 GetWindow().WindowState = GetApp().StartMinimized
@@ -84,7 +84,7 @@ namespace GameTimeNext.Core.Application.General.Controller
 
             System.Windows.Application.Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
 
-            // Fehler anzeigen, die vor MainWindow passiert sind (Appstart)
+            // Show errors that occurred before the MainWindow (app start)
             ShowErrorsFromErrorList();
 
             await CheckGTXMigration();
@@ -156,7 +156,7 @@ namespace GameTimeNext.Core.Application.General.Controller
         }
 
         /// <summary>
-        /// Wird Tab geändert
+        /// Tab is changed
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>

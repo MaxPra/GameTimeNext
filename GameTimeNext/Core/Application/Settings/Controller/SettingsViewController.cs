@@ -361,10 +361,10 @@ namespace GameTimeNext.Core.Application.Settings.Controller
                 AppEnvironment.GetAppConfig().AppSettings.BackupType = BackupType.IMPORT_BACKUP;
                 AppEnvironment.GetAppConfig().AppSettings.BackupImportPath = GetView().txbBackupImportPath.Text;
 
-                // Aktuelle Einstellungen speichern
+                // Save current settings
                 SaveDBO();
 
-                // GameTimeNext neustarten
+                // Restart GameTimeNext
                 AppEnvironment.RestartGTNApplication();
             }
         }

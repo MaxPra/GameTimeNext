@@ -7,13 +7,13 @@ using UIX.ViewController.Engine.Utils;
 namespace GameTimeNext.Core.Application.Profiles
 {
     /// <summary>
-    /// Funktionsklasse für ProfilesEditApp
+    /// Function class for ProfilesEditApp
     /// </summary>
     public class CFProfilesEditApp
     {
 
         /// <summary>
-        /// Kopiert das übergebene Cover zum App Coverordner
+        /// Copies the given cover to the app cover folder
         /// </summary>
         /// <param name="currentPath"></param>
         public static void CopyProfileCoverToAppCoverFolder(string currentPath, string destFileName)
@@ -23,7 +23,7 @@ namespace GameTimeNext.Core.Application.Profiles
 
 
         /// <summary>
-        /// Gibt eine neue Guid für den Namen des Covers zurück (ink. Dateiendung)
+        /// Returns a new GUID for the cover name (including file extension)
         /// </summary>
         /// <returns></returns>
         public static string GetGUIDCoverName(string fileEnding)

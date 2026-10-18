@@ -3,7 +3,7 @@
     public class FnConvert
     {
         /// <summary>
-        /// Wandelt einen String in eine liste um.
+        /// Converts a string into a list.
         /// </summary>
         /// <param name="listStr"></param>
         /// <returns></returns>
@@ -15,7 +15,7 @@
         }
 
         /// <summary>
-        /// Wandelt eine Liste in einen String um.
+        /// Converts a list into a string.
         /// </summary>
         /// <param name="list"></param>
         /// <returns></returns>

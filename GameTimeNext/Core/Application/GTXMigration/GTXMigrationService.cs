@@ -22,7 +22,7 @@ using UIX.ViewController.Engine.Utils;
 namespace GameTimeNext.Core.Application.GTXMigration
 {
     /// <summary>
-    /// Für die Migration der alten GameTimeX Daten zu den neuen GameTimeNXT Daten verantwortlich
+    /// Responsible for migrating the old GameTimeX data to the new GameTimeNXT data
     /// </summary>
     public class GTXMigrationService
     {
@@ -50,14 +50,14 @@ namespace GameTimeNext.Core.Application.GTXMigration
         {
             _loader!.SetTextStep("connecting to old database");
 
-            // Verbindung zu alter Datenbank aufbauen
+            // Connect to the old database
             bool connectSuccess = ConnectToSQLite();
 
             if (!connectSuccess)
                 return;
 
             _loader.SetTextStep("migrating profile data");
-            // Profile migrieren
+            // Migrate profiles
             MigrateProfiles();
 
             _loader.SetTextStep("migrating session data");
@@ -69,10 +69,10 @@ namespace GameTimeNext.Core.Application.GTXMigration
             MigratePlaythroughs();
 
             _loader.SetTextStep("migrating profile covers");
-            // Profil Covers
+            // Profile covers
             MigrateProfileImagesToCovers();
 
-            // Alte Verbindung schließen
+            // Close old connection
             _connectionOld.Close();
 
             new MigTask_026b_005().Execute();
@@ -234,7 +234,7 @@ namespace GameTimeNext.Core.Application.GTXMigration
 
             try
             {
-                // Gesamtanzahl ermitteln
+                // Determine total count
                 using (var countCmd = _connectionOld.CreateCommand())
                 {
                     countCmd.CommandText = "SELECT COUNT(*) FROM tblGameSessions";
@@ -303,7 +303,7 @@ namespace GameTimeNext.Core.Application.GTXMigration
 
         private void MigratePlaythroughs()
         {
-            // Alle Profile lasen
+            // Read all profiles
             List<T1PROFI> t1profis = new TXPROFI().ReadAll();
 
             foreach (T1PROFI t1profi in t1profis)

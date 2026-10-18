@@ -108,7 +108,7 @@ namespace GameTimeNext.Core.Framework.UI
             }
             else
             {
-                // Bei Consolemode alle Bildschirme ausschwärzen
+                // Black out all screens in console mode
                 if (consoleMode)
                     Enable(owner, true);
                 else

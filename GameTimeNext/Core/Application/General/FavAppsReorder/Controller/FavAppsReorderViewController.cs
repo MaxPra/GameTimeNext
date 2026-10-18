@@ -285,7 +285,7 @@ namespace GameTimeNext.Core.Application.General.FavAppsReorder.Controller
 
                 _favAppsReorderViewModel.FavoriteApplications.Insert(newIndex, (FavoriteApplication)draggedItem);
 
-                // -- Hier Favorite Applications lt. jetziger Listbox neu anordnen und in der AppConfig aktualisieren
+                // -- Reorder favorite applications according to the current ListBox and update them in the AppConfig
                 FnUserSettings.ReorderFavoriteApplications(_favAppsReorderViewModel.FavoriteApplications.ToList());
 
                 AppEnvironment.GetAppConfig().UserSettings.FavApps = _favAppsReorderViewModel.FavoriteApplications.ToList();

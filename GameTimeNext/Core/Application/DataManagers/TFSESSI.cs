@@ -8,7 +8,7 @@ namespace GameTimeNext.Core.Application.DataManagers
     public class TFSESSI
     {
         /// <summary>
-        /// Ermittelt die Spielzeit der letzten Session
+        /// Determines the playtime of the last session
         /// </summary>
         /// <param name="pfid"></param>
         /// <returns></returns>
@@ -77,10 +77,10 @@ namespace GameTimeNext.Core.Application.DataManagers
         {
             UIXQuery query = new UIXQuery(K1SESSI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
 
-            // Nur ein Datensatz
+            // Only one record
             query.SetTopX(1);
 
-            // Felder
+            // Fields
             query.AddField(K1SESSI.Name, K1SESSI.Fields.PLTI);
 
             // Where

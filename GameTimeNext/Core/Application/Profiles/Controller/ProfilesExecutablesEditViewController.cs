@@ -89,7 +89,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
             List<Executable> executables = FnSystem.FindExecutables(GetApp().GameFolder);
 
-            // Nicht Spiel-Exe aussortieren
+            // Filter out non-game executables
             executables = FnSystem.SortOutExecutables(executables);
 
             _profilesExecutablesEditViewModel = new ProfilesExecutablesEditViewModel();

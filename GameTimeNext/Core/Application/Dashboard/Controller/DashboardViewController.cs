@@ -55,7 +55,7 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
                     "Compiling your playtime universe..."
                     );
 
-            // Pipeline unterdrücken
+            // Suppress pipeline
             using (SuppressRunEventPipeline())
             {
                 GetView().CmbTimeRange.SelectedIndex = AppEnvironment.GetAppConfig().UserSettings.SelectedDashboardMode;

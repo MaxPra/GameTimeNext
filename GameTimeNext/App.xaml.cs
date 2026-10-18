@@ -23,7 +23,7 @@ namespace GameTimeNext
         {
             base.OnStartup(e);
 
-            // Sicherstellen, dass nur eine Instance läuft
+            // Ensure that only one instance is running
             if (!FnSystem.IsDebug() && !FnSystem.TryAcquireSingleInstance())
             {
                 Shutdown();
@@ -48,7 +48,7 @@ namespace GameTimeNext
 
             Dispatcher.CurrentDispatcher.Invoke(() => { }, DispatcherPriority.Background);
 
-            // Erst danach Fenster öffnen
+            // Only open the window afterwards
             MainApp mainApp = new MainApp();
             mainApp.SplashScreen = splash;
             mainApp.StartMinimized = startMinimized;
@@ -66,7 +66,7 @@ namespace GameTimeNext
             // FileSystem Migration
             MigTask_100b_008.MigrateFileSystem();
 
-            // Ordner erstellen
+            // Create folders
             FileHandler.CreateDevAppFolder();
 
             AppEnvironment.LoadAppConfig();
@@ -76,19 +76,19 @@ namespace GameTimeNext
             FnLog.AddInfo("MainApp", "Initiating Databasemanager...");
             AppEnvironment.InitiateDataBaseManager();
 
-            // Datenbank initialisieren
+            // Initialize database
             FnLog.AddInfo("MainApp", "Initializing database...");
             AppEnvironment.GetDataBaseManager().Initialize();
 
-            // AppEnvironment initialisieren
+            // Initialize AppEnvironment
             FnLog.AddInfo("MainApp", "Initializing application environment...");
             AppEnvironment.Initalize();
 
-            // Alte Backups löschen
+            // Delete old backups
             FnLog.AddInfo("MainApp", "Deleting old backups...");
             FileHandler.DeleteOldBackupFiles();
 
-            // Auf neue Version (Github) prüfen
+            // Check for new version (GitHub)
             FnLog.AddInfo("MainApp", "Checking for new version (Github)...");
             CheckForNewVersion();
         }

@@ -51,7 +51,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
         protected override async Task BuildFirstImplAsync()
         {
-            // Datentypen Combobox füllen
+            // Fill data type ComboBox
             IReadOnlyList<UIXSqliteDataType> dataTypes = UIXSqliteDataType.GetAll();
 
             UIXManualCodetable codetable = new UIXManualCodetable();

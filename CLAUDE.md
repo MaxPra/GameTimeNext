@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-GameTimeNext is a Windows-only WPF desktop app (.NET `net10.0-windows`, x64) for tracking game playtime, launching games, and managing playthroughs. It succeeds GameTimeX (`../GameTimeX`). Code comments are often in German.
+GameTimeNext is a Windows-only WPF desktop app (.NET `net10.0-windows`, x64) for tracking game playtime, launching games, and managing playthroughs. It succeeds GameTimeX (`../GameTimeX`).
 
 ## Build & checks
 
@@ -22,6 +22,7 @@ From `Scripts/unallowed_code.md` and `.github/copilot-instructions.md`:
 - Paths/app names come from `AppConfig` (`Core/Framework/Config/AppConfig.Paths.cs`), not hard-coded strings.
 - Do not suppress validation on ComboBox `SelectionChanged`; tab validation must run together with field validation/adorner checks.
 - XML doc comments: concise, no icons/emojis.
+- All comments in source code (C#, XAML, scripts — in this repo and in `../UIX.ViewController.Engine`) must be in English, even when the conversation is in German.
 
 ## Architecture
 

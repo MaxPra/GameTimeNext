@@ -40,7 +40,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
         protected override void BuildFirstImpl()
         {
-            // Hinzufügenbutton nur bei Debug / Developmentmodus anzeigen
+            // Show the add button only in debug / development mode
             FnControls.SetVisible(GetView().BtnAddCodetable, FnSystem.IsDebug());
         }
 
@@ -182,7 +182,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
             T1CTABH t1ctabh = (T1CTABH)ctRow.RowObject!;
 
-            // Nur im Debugmodus dürfen Development-CTs geändert werden
+            // Development codetables may only be changed in debug mode
             if (t1ctabh.PERMI == "D" && FnSystem.IsDebug() || t1ctabh.PERMI == "U")
                 contextBuilder.AddItem("ctxtEdit", "Edit", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Edit), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
 
@@ -191,7 +191,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
             if (FnSystem.IsDebug())
                 contextBuilder.AddItem("ctxtProperties", "Properties", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Info), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
 
-            // Nur im Debugmodus dürfen Development-CTs gelöscht werden
+            // Development codetables may only be deleted in debug mode
             if (FnSystem.IsDebug())
                 contextBuilder.AddItem("ctxtDelete", "Delete", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Delete), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
 

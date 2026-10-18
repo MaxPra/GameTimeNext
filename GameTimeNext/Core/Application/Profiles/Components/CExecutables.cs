@@ -27,7 +27,7 @@ namespace GameTimeNext.Core.Application.Profiles.Components
 
             foreach (string lItem in list)
             {
-                bool isActive = !(IsIgnored(lItem) && sortOut); // true, wenn kein Treffer in Ignore-Liste
+                bool isActive = !(IsIgnored(lItem) && sortOut); // true if there is no match in the ignore list
                 dic[lItem] = isActive;
             }
 
@@ -51,7 +51,7 @@ namespace GameTimeNext.Core.Application.Profiles.Components
             // Anti-Cheat
             "eac","easyanticheat","battleye","anticheat","vac","punkbuster","fairfight","nprotect","xac","ggxx",
 
-            // Stores/Plattformen/Overlays
+            // Stores/platforms/overlays
             "steam","steamservice","steamwebhelper","gameoverlayui",
             "epicgames","egs","origin","uplay","connect","gog","galaxy",
             "battlenet","blizzard","bethesda","rockstar","rslauncher",
@@ -71,10 +71,10 @@ namespace GameTimeNext.Core.Application.Profiles.Components
             // CLI/Shell
             "console","shell","command","cmd","cli","powershell",
 
-            // Netzwerk/Voice
+            // Network/voice
             "voice","chat","server","dedicated","relay","proxy","upnp","matchmaking","auth","login","connectivity","p2p",
 
-            // Grafik/Engine-Begleitprozesse (sicher)
+            // Graphics/engine helper processes (safe)
             "shader","shadercache","compile","compiler","worker",  // UE3ShaderCompileWorker.exe
             "physx","systemsoftware",                              // PhysX_..._SystemSoftware.exe
             "vcredist","vc_redist","redist","redistributable",     // vcredist_x86.exe

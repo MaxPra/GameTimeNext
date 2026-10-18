@@ -116,7 +116,7 @@ namespace GameTimeNext.Core.Framework.Config
                 {
                     string temp = Root.ApplicationName;
 
-                    // Modi
+                    // Modes
                     if (AppEnvironment.StartArguments is not null && AppEnvironment.StartArguments.ContainsKey("m") && !FnString.IsNullEmptyOrWhitespace(AppEnvironment.StartArguments["m"]))
                         temp += "_m" + AppEnvironment.StartArguments["m"];
 

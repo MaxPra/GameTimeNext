@@ -170,11 +170,11 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
                 bool isControlTypeCombobox = "01".Equals(selectedControlType, StringComparison.Ordinal);
                 isControlTypeComboboxOnce |= isControlTypeCombobox;
 
-                // Combobox zur Codetabellenauswahl
+                // ComboBox for codetable selection
                 ComboBox comboBoxCodetable = (ComboBox)GetWnd().FindName($"CmbParam{i}Codetable");
                 FnControls.SetVisible(comboBoxCodetable, isControlTypeCombobox);
 
-                // Überschriftenlabel
+                // Heading label
                 TextBlock lblCodetable = (TextBlock)GetWnd().FindName($"LblParamCodetable");
                 FnControls.SetVisible(lblCodetable, isControlTypeCombobox || isControlTypeComboboxOnce);
             }

@@ -49,7 +49,7 @@ namespace GameTimeNext.Core.Application.DataManagers
 
             List<string> types = new List<string>();
 
-            // Wenn hier mit NEW_PLAYTHROUGH gesucht wird, muss natürlich auch der initiale Playthrough miteinbezogen werden
+            // When searching with NEW_PLAYTHROUGH, the initial playthrough has to be included as well
             if (type == PlaythroughType.NEW_PLAYTHROUGH)
             {
                 types.Add(PlaythroughType.NEW_PLAYTHROUGH);
@@ -78,7 +78,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         }
 
         /// <summary>
-        /// Erstellt einen neuen Playthrough für das übergebene Profil (Neuanlage)
+        /// Creates a new playthrough for the given profile (new entry)
         /// </summary>
         /// <param name="pfid"></param>
         /// <param name="description"></param>

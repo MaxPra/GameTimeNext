@@ -14,7 +14,7 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
         private static readonly Regex rxStateFlags = new(@"""StateFlags""\s*""(\d+)""", RegexOptions.IgnoreCase);
 
         /// <summary>
-        /// Scannt alle appmanifest_*.acf in den angegebenen steamapps-Ordnern.
+        /// Scans all appmanifest_*.acf files in the given steamapps folders.
         /// </summary>
         public static List<SteamGame> ScanAllGames(IEnumerable<string> steamappsFolders)
         {
@@ -50,7 +50,7 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
         }
 
         /// <summary>
-        /// Ermittelt den erwarteten Installationspfad des Spiels.
+        /// Determines the expected installation path of the game.
         /// </summary>
         public static string? ResolveInstallPath(SteamGame g)
         {

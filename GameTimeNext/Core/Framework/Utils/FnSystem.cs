@@ -256,7 +256,7 @@ namespace GameTimeNext.Core.Framework.Utils
         }
 
         /// <summary>
-        /// Legt das übergebene BitmapBild im App-Data Temp_cover pfad ab und gibt den kompletten Pfad und Dateinamen zurück
+        /// Stores the given bitmap image in the app data temp cover path and returns the full path and file name
         /// </summary>
         /// <param name="croppedImage"></param>
         /// <returns>Tuple (fullPath, fileName)</returns>

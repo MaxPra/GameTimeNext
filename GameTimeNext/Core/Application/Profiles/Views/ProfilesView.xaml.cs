@@ -4,7 +4,7 @@ using UIX.ViewController.Engine.FrameworkElements.UserControls;
 namespace GameTimeNext.Core.Application.Profiles.Views
 {
     /// <summary>
-    /// Interaktionslogik für ProfilesSubView.xaml
+    /// Interaction logic for ProfilesSubView.xaml
     /// </summary>
     public partial class ProfilesView : UIXUserControlBase
     {

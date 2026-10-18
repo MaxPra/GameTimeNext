@@ -165,13 +165,13 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
             T1CTABD t1ctabd = (T1CTABD)ctRow.RowObject!;
 
-            // Nur im Debugmodus dürfen Development-CTs geändert werden
+            // Development codetables may only be changed in debug mode
             if (GetWnd().ViewIndicator.Contains("ED"))
                 contextBuilder.AddItem("ctxtEdit", "Edit", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Edit), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
 
             contextBuilder.AddItem("ctxtView", "View", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.View), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
 
-            // Nur im Debugmodus dürfen Development-CTs gelöscht werden
+            // Development codetables may only be deleted in debug mode
             if (GetWnd().ViewIndicator.Contains("ED") && (!GetApp().T1CTABH!.NRANA && !t1ctabd.TXNUM.StartsWith("D_") || FnSystem.IsDebug()))
                 contextBuilder.AddItem("ctxtDelete", "Delete", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Delete), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
 

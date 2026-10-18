@@ -13,7 +13,7 @@ namespace GameTimeNext.Core.Application.General
             if (accentColorStart.StartsWith("#"))
                 accentColorStart = accentColorStart.Substring(1);
 
-            // Unterstützt RRGGBB und AARRGGBB
+            // Supports RRGGBB and AARRGGBB
             if (accentColorStart.Length == 8)
                 accentColorStart = accentColorStart.Substring(2);
 

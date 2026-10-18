@@ -177,7 +177,7 @@
                                                 <RowDefinition Height="Auto" />
                                             </Grid.RowDefinitions>
 
-                                            <!--  Prozent mittig  -->
+                                            <!--  Percentage centered  -->
                                             <TextBlock
                                                 x:Name="txtProgress"
                                                 Grid.Row="0"
@@ -185,7 +185,7 @@
                                                 Style="{StaticResource ProfileDetail.InfoValue}"
                                                 Text="0%" />
 
-                                            <!--  Progress Linie  -->
+                                            <!--  Progress line  -->
                                             <Grid Grid.Row="2">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="Auto" />

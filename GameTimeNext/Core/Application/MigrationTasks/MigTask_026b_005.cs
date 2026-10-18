@@ -14,7 +14,7 @@ namespace GameTimeNext.Core.Application.MigrationTasks
 
         protected override void ExecuteImpl()
         {
-            // Kürze in allen T1PROFI-Einträgen das Feld PPFN auf den Dateinamen (ohne Pfad)
+            // Shorten the PPFN field in all T1PROFI entries to the file name (without path)
             var updates = new List<(long RowId, string Ppfn)>();
 
             using (var selectCmd = _connection!.CreateCommand())

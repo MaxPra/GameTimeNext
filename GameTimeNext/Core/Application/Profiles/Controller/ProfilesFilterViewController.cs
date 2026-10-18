@@ -40,7 +40,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected override void BuildFirstImpl()
         {
-            // Gruppen-Liste (Tags u. States) befüllen
+            // Fill group list (tags and states)
             BuildGroupList(string.Empty);
         }
 
@@ -74,7 +74,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         protected void EV_BtnApply()
         {
 
-            // View Return setzen
+            // Set view return
             GetViewReturn<ProfileFilterViewReturn>().TblGroups = _profilesFilterViewModel.T1GROUPs
                 .Where(g => g.COISSEL)
                 .Select(g => g.ItemObject as T1GROUP)
@@ -114,7 +114,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         }
 
         /// <summary>
-        /// Befüllt die Listbox Groups u. States
+        /// Fills the groups and states ListBox
         /// </summary>
         private void BuildGroupList(string searchText, bool disableAll = false)
         {
@@ -123,7 +123,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             List<T1GROUP> states = new List<T1GROUP>();
             List<T1GROUP> T1GROUPs = TXGROUP.ReadAll();
 
-            // Filtern
+            // Filter
             states = T1GROUPs.Where(s => s.GTYP == GroupType.Condition).ToList();
             T1GROUPs = T1GROUPs.Where(s => s.GTYP == GroupType.Tag).ToList();
 
@@ -132,7 +132,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 T1GROUPs = T1GROUPs.Where(st => st.GRNA.Contains(searchText, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
-            // Viewmodel befüllen
+            // Fill view model
             _profilesFilterViewModel = new ProfilesFilterViewModel();
             List<ProfilesGroupListBoxItem> groupItems = BuildGroupItems(T1GROUPs, GetApp().FilterCache.SelectedTags);
             List<ProfilesGroupListBoxItem> stateItems = BuildGroupItems(states, GetApp().FilterCache.SelectedStates);

@@ -180,7 +180,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
             foreach (T1METAH t1metah in t1metahs)
             {
-                // Neue Zeile erstellen
+                // Create new row
                 MetadataDataGridRow row = GetView().DgMetadata.CreateNewRow<MetadataDataGridRow>();
                 row.COMENAM = t1metah.MENAM;
                 row.CODESCR = t1metah.DESCR;
@@ -205,7 +205,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
                 {
                     string menam = UIXQuery.GetString(reader, K1METAH.Name, K1METAH.Fields.MENAM, string.Empty);
 
-                    // Objekt aus Datenbank auslesen
+                    // Read object from database
                     TXMETAH txmetah = new TXMETAH();
                     T1METAH? t1metah = txmetah.Read(menam);
 
@@ -221,7 +221,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
         {
             UIXQuery query = new UIXQuery(K1METAH.Name, AppEnvironment.GetDataBaseManager().GetConnection());
 
-            // Felder hinzufügen
+            // Add fields
             query.AddField(K1METAH.Name, K1METAH.Fields.MENAM);
 
             View.Dispatcher.Invoke(() =>

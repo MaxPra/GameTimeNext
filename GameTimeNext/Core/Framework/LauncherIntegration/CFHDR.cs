@@ -14,7 +14,7 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
             uint flags,
             ref uint numPathArrayElements, IntPtr pathArray,
             ref uint numModeInfoArrayElements, IntPtr modeInfoArray,
-            IntPtr currentTopologyId); // IntPtr.Zero bei QDC_ONLY_ACTIVE_PATHS
+            IntPtr currentTopologyId); // IntPtr.Zero for QDC_ONLY_ACTIVE_PATHS
 
         [DllImport("user32.dll")]
         private static extern int DisplayConfigGetDeviceInfo(ref DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO request);
@@ -37,8 +37,8 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
             GET_TARGET_BASE_TYPE = 6,
             GET_SUPPORT_VIRTUAL_RESOLUTION = 7,
             SET_SUPPORT_VIRTUAL_RESOLUTION = 8,
-            GET_ADVANCED_COLOR_INFO = 9,   // korrekt
-            SET_ADVANCED_COLOR_STATE = 10, // korrekt
+            GET_ADVANCED_COLOR_INFO = 9,   // correct
+            SET_ADVANCED_COLOR_STATE = 10, // correct
             GET_SDR_WHITE_LEVEL = 11
         }
 
@@ -148,19 +148,19 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
         [StructLayout(LayoutKind.Sequential)]
         private struct DISPLAYCONFIG_2DREGION { public uint cx; public uint cy; }
 
-        // --- Advanced Color GET/SET (korrekte Layouts) ---
+        // --- Advanced Color GET/SET (correct layouts) ---
         [StructLayout(LayoutKind.Sequential)]
         private struct DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO
         {
             public DISPLAYCONFIG_DEVICE_INFO_HEADER header;
 
-            // DWORD mit Bitflags (siehe Properties unten)
+            // DWORD with bit flags (see properties below)
             public uint value;
 
             public DISPLAYCONFIG_COLOR_ENCODING colorEncoding; // DWORD
             public uint bitsPerColorChannel;                   // DWORD
 
-            // Convenience-Properties auf den Bitflags
+            // Convenience properties on the bit flags
             public bool advancedColorSupported => (value & 0x1) != 0;
             public bool advancedColorEnabled => (value & 0x2) != 0;
             public bool wideColorEnforced => (value & 0x4) != 0;
@@ -247,7 +247,7 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
                     }
 
                     if (!get.advancedColorSupported)
-                        continue; // kein HDR/Advanced Color
+                        continue; // no HDR/advanced color
 
                     var hdr = new DISPLAYCONFIG_DEVICE_INFO_HEADER
                     {

@@ -11,7 +11,7 @@ namespace GameTimeNext.Core.Application.DataManagers
     public partial class TFPROFI
     {
         /// <summary>
-        /// Löscht das übergebene Profil inkl. der zugehörigen Daten
+        /// Deletes the given profile including its linked data
         /// </summary>
         public static void DeleteT1PROFIAndLinkedData(T1PROFI t1profi)
         {
@@ -23,7 +23,7 @@ namespace GameTimeNext.Core.Application.DataManagers
 
             DeleteCoverImage(t1profi);
 
-            // Profil löschen
+            // Delete profile
             txprofi.Delete(t1profi.PFID);
         }
 
@@ -149,7 +149,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         }
 
         /// <summary>
-        /// Gibt zurück, ob es sich bei dem Profil um ein externes Spiel handelt (Konsolen, Mobile, etc.)
+        /// Returns whether the profile is an external game (consoles, mobile, etc.)
         /// </summary>
         /// <param name="pfid"></param>
         /// <returns></returns>
@@ -175,7 +175,7 @@ namespace GameTimeNext.Core.Application.DataManagers
 
         private static void DeleteAllLinkedT1GRPPOs(T1PROFI t1profi)
         {
-            // Zugehörige Daten löschen
+            // Delete linked data
             TXGRPPO txgrppo = new TXGRPPO();
             List<T1GRPPO> t1grppos = txgrppo.ReadAll();
 
@@ -189,7 +189,7 @@ namespace GameTimeNext.Core.Application.DataManagers
 
         private static void DeleteAllLinkedT1SESSIs(T1PROFI t1profi)
         {
-            // Zugehörige Daten löschen
+            // Delete linked data
             List<T1SESSI> t1sessis = GetAllSessions(t1profi);
 
             foreach (T1SESSI t1sessi in t1sessis)
@@ -227,10 +227,10 @@ namespace GameTimeNext.Core.Application.DataManagers
         {
             UIXQuery query = new UIXQuery(K1GRPPO.Name, AppEnvironment.GetDataBaseManager().GetConnection());
 
-            // Felder hinzufügen
+            // Add fields
             query.AddField(K1GRPPO.Name, K1GRPPO.Fields.GRID);
 
-            // Where Restriktionen
+            // Where restrictions
             query.AddWhere(K1GRPPO.Name, K1GRPPO.Fields.PFID, QueryCompareType.EQUALS, pfid);
 
             return query;

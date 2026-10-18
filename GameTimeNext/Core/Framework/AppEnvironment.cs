@@ -174,7 +174,7 @@ namespace GameTimeNext.Core.Framework
         // [------------------------------------------------]
         private static void HandleBackup()
         {
-            // Backup hier einspielen
+            // Restore backup here
             if (GetAppConfig().AppSettings.BackupType == BackupType.IMPORT_BACKUP)
             {
                 try
@@ -186,7 +186,7 @@ namespace GameTimeNext.Core.Framework
                     InformationList.Add(new InformationListItem(CFMBOXIcon.Error, "Could not import backupfile:\n" + GetAppConfig().AppSettings.BackupImportPath + "."));
                 }
 
-                // Hier nochmal AppConfig laden, da vorher durch Backupimport überschrieben
+                // Reload AppConfig here because it was overwritten by the backup import
                 LoadAppConfig();
             }
             else
