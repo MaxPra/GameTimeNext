@@ -267,7 +267,6 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
 
                         // Insert
                         code.BeginBlock($"private void Insert({classNameT1} obj)");
-                        // OFDO: Find all places where CRAT and CHAT are being set unneccessarily
                         code.AddLine("obj.CRAT = DateTime.Now;");
                         code.AddLine("obj.CHAT = DateTime.Now;");
                         code.AddLine("using SQLiteCommand cmd = _connection.CreateCommand();");

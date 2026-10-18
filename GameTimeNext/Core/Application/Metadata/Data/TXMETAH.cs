@@ -26,10 +26,6 @@ namespace GameTimeNext.Core.Application.Metadata.Data
         {
             T1METAH obj = new T1METAH();
 
-            DateTime now = DateTime.Now;
-            obj.CRAT = now;
-            obj.CHAT = now;
-
             obj.State = UIXTableObjectState.New;
 
             return obj;
@@ -49,10 +45,6 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             copy.GENER = source.GENER;
             copy.CRUS = FnOpSys.GetCurrentUserName();
             copy.CHUS = FnOpSys.GetCurrentUserName();
-
-            DateTime now = DateTime.Now;
-            copy.CRAT = now;
-            copy.CHAT = now;
 
             copy.State = UIXTableObjectState.New;
 

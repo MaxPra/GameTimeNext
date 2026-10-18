@@ -26,10 +26,6 @@ namespace GameTimeNext.Core.Application.Metadata.Data
         {
             T1METAP obj = new T1METAP();
 
-            DateTime now = DateTime.Now;
-            obj.CRAT = now;
-            obj.CHAT = now;
-
             obj.State = UIXTableObjectState.New;
 
             return obj;
@@ -52,10 +48,6 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             copy.AUTOI = source.AUTOI;
             copy.CRUS = source.CRUS;
             copy.CHUS = source.CHUS;
-
-            DateTime now = DateTime.Now;
-            copy.CRAT = now;
-            copy.CHAT = now;
 
             copy.DEFAK = source.DEFAK;
             copy.DEFVL = source.DEFVL;
