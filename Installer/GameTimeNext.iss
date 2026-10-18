@@ -13,7 +13,7 @@
 #endif
 
 #define BuildDirectory "out"
-#define BinDirectory "..\GameTimeNext\bin\Release\net10.0-windows"
+#define BinDirectory "..\GameTimeNext\bin\Release\net10.0-windows10.0.26100.0"
 
 [Setup]
 AppId={{AA642EDE-2EA3-4C94-8325-0E112FA8FBF5}
