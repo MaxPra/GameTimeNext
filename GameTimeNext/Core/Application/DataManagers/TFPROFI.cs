@@ -137,6 +137,19 @@ namespace GameTimeNext.Core.Application.DataManagers
             return 0;
         }
 
+        public static double GetTotalGameTimeInMinutes(long pfid)
+        {
+            UIXQuery query = new UIXQuery(K1SESSI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
+            query.AddSum(K1SESSI.Name, K1SESSI.Fields.PLTI, "TotalPlaytime");
+            query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PFID, QueryCompareType.EQUALS, pfid);
+
+            using (var reader = query.Execute())
+                if (reader.Read())
+                    return UIXQuery.GetDouble(reader, "TotalPlaytime");
+
+            return 0;
+        }
+
         public static string GetProfileName(long pfid)
         {
             TXPROFI txprofi = new TXPROFI();

@@ -11,7 +11,7 @@ namespace GameTimeNext.Core.Framework.UI
     /// the particles of the changed digits scatter and reassemble into the new digit.
     /// The clock slowly wanders across the screen to prevent burn-in.
     /// </summary>
-    internal sealed class CFBlackoutParticleClock : FrameworkElement
+    internal sealed class CFBlackoutParticleClock : CFBlackoutAnimationBase
     {
         private const string TimeFormat = "HH:mm";
         private const double GlyphEmSize = 200d;
@@ -21,6 +21,7 @@ namespace GameTimeNext.Core.Framework.UI
         private const int BrushLevels = 32;
         private const double WanderSpeed = 25d;
         private const double ClockOpacity = 0.75;
+        private const double FadeInDuration = 1.2d;
         private const double SpringStrength = 26d;
         private const double Damping = 7.5d;
 
@@ -123,7 +124,11 @@ namespace GameTimeNext.Core.Framework.UI
         {
             IsHitTestVisible = false;
             Focusable = false;
-            Opacity = ClockOpacity;
+            Opacity = 0;
+
+            // Moving text: without this WPF snaps the glyphs to whole pixels and the text stutters
+            TextOptions.SetTextHintingMode(this, TextHintingMode.Animated);
+            TextOptions.SetTextRenderingMode(this, TextRenderingMode.Grayscale);
 
             // Assign particles to fixed character slots (H H : m m)
             int total = 0;
@@ -170,7 +175,7 @@ namespace GameTimeNext.Core.Framework.UI
             velocityY = random.NextDouble() > 0.5 ? WanderSpeed * 0.75 : -WanderSpeed * 0.75;
         }
 
-        public void Start()
+        public override void Start()
         {
             if (isRunning)
             {
@@ -182,7 +187,7 @@ namespace GameTimeNext.Core.Framework.UI
             CompositionTarget.Rendering += OnRendering;
         }
 
-        public void Stop()
+        public override void Stop()
         {
             if (!isRunning)
             {
@@ -206,7 +211,8 @@ namespace GameTimeNext.Core.Framework.UI
                 return;
             }
 
-            double dt = Math.Min(0.1, (args.RenderingTime - lastRenderingTime).TotalSeconds);
+            // Small cap: a dropped frame slows the motion down a bit instead of making it jump
+            double dt = Math.Min(0.05, (args.RenderingTime - lastRenderingTime).TotalSeconds);
             lastRenderingTime = args.RenderingTime;
 
             Update(dt);
@@ -220,6 +226,13 @@ namespace GameTimeNext.Core.Framework.UI
         private void Update(double dt)
         {
             time += dt;
+
+            // Smooth fade-in after the blackout transition
+            if (time <= FadeInDuration + 0.1)
+            {
+                double t = Math.Clamp(time / FadeInDuration, 0, 1);
+                Opacity = ClockOpacity * t * t * (3 - 2 * t);
+            }
 
             string text = DateTime.Now.ToString(TimeFormat, CultureInfo.InvariantCulture);
             if (text != currentText)
