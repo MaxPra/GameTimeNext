@@ -21,7 +21,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
 
             public static void ExportCsvFileFor(SQLiteConnection connection, UIXTableObjectBase obj, ImportType importType, string? outputDirectoryPath = null)
             {
-                if (!FnSystem.IsDebug()) return;
+                if (!FnSystem.IsDebug() || FnSystem.RunWithUserPermissions()) return;
                 if (obj is null || !obj.IsDevSynced) return;
 
                 string tableName = obj.GetType().Name;
@@ -38,7 +38,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
             // OFDO (#OF001): Maybe split Metadata export and others
             public static void ExportCsvFileFor(SQLiteConnection connection, string tableName, ImportType importType, string? outputDirectoryPath = null)
             {
-                if (!FnSystem.IsDebug()) return;
+                if (!FnSystem.IsDebug() || FnSystem.RunWithUserPermissions()) return;
 
                 TableSchema? tS = SchemaGenerator.GenerateSingleFromMetadata(tableName);
                 if (tS is null) return;

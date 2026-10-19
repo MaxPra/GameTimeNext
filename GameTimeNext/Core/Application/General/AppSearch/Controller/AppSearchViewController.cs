@@ -185,7 +185,7 @@ namespace GameTimeNext.Core.Application.General.AppSearch.Controller
             foreach (var app in applications)
             {
                 // CreateImportPackage is excluded (except in debug/dev mode)
-                if (app.ClassName != typeof(CreateImportPackageApp).FullName! && app.ClassName != typeof(MetadataApp).FullName! || FnSystem.IsDebug())
+                if (app.ClassName != typeof(CreateImportPackageApp).FullName! && app.ClassName != typeof(MetadataApp).FullName! || (FnSystem.IsDebug() && !FnSystem.RunWithUserPermissions()))
                 {
                     sortedApplications.Add(app);
                 }

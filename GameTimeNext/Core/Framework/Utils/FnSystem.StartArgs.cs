@@ -8,6 +8,14 @@ namespace GameTimeNext.Core.Framework.Utils
         // -m <modi_key> : Start the application with a specific modi key.
         // -minimized : Start the application minimized.
         // --force-metadata-migration : Force the application to perform metadata migration on startup.
+        // --force-user-perms : Force the application to act if ran as Release build, but with debug paths.
+
+        #region Quick Access Start Arguments
+        public static bool RunWithUserPermissions()
+        {
+            return AppEnvironment.StartArguments.ContainsKey("force-user-perms");
+        }
+        #endregion
 
         public static void ParseStartArguments(string[] args)
         {

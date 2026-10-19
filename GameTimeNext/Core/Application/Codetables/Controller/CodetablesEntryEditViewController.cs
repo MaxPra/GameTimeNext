@@ -235,7 +235,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
                 AddViewError(GetWnd().TxbTextNumber, FnErrorMessage.ErrorMessage.IsRequired.GetMessage("Text number"));
             }
 
-            if (GetWnd().TxbTextNumber.Text.StartsWith("D_") && !FnSystem.IsDebug() && t1ctabh!.NRANA)
+            if (GetWnd().TxbTextNumber.Text.StartsWith("D_") && (!FnSystem.IsDebug() || FnSystem.RunWithUserPermissions()) && t1ctabh!.NRANA)
             {
                 AddViewError(GetWnd().TxbTextNumber, FnErrorMessage.ErrorMessage.IsRequired.GetMessage("Text number", "_D", "only for deverloper-entries"));
             }
