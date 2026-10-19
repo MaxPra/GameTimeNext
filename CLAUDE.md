@@ -49,6 +49,12 @@ Inside a module:
 - `ViewIndicator` encodes the view mode: `CN` = create new, `ED` = edit, `SE` = select.
 - `CF<Name>App.cs` — static helper functions for a module (formatting, dialogs, etc.).
 
+### UI conventions
+- **View margins:** the main window's tab content area (`ModernTabControlStyle`) insets every view by 12 px, aligned with the tab bar. Root grids of views use `Style="{StaticResource View.Root}"` (`UI/Styles/Views/WindowStyle.xaml`) instead of their own outer margin: no margin inside a tab, `20,16,20,20` when the same view is opened in its own window. This works via the inherited attached property `ViewHost.IsTabContent`, set by the tab control.
+- **Toolbars** (search fields, filters, action buttons above a list) sit in a `Card` border with `Padding="16"`.
+- **Layout logic goes into attached properties in `Core/Framework/UI/`, not into code-behind**, e.g. `ClipBehaviors.CornerRadius` (rounded clip that follows the size), `ScrollFade.Length` (fades scrolled content at the top/bottom edge while more content is beyond it), `TileLayout.AutoSize`, `TextBoxBehaviors`.
+- Spacing that must scroll with the content belongs on the items panel (e.g. `WrapPanel Margin`), not on `ListBox.Padding`: the default template applies the padding outside the scrolled area and shrinks the viewport.
+
 ### Data layer (SQLite)
 Tables use 7-char names (`T1` prefix + 5 chars, e.g. `T1PROFI`, `T1PLTHR`, `T1SESSI`, `T1CTABH/D`, `T1METAH/P`), with a prefix per class role, and columns use 4-char codes. For table `T1SESSI`:
 - `TableObjects/T1SESSI.cs` — row object (`UIXTableObjectBase`) with change tracking (`HasChanged`, `AcceptChanges`, `State`), uppercase column properties marked `[UIXSignatureField(n)]`.
