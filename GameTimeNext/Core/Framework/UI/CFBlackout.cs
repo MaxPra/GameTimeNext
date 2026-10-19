@@ -1,9 +1,7 @@
 ﻿using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.Utils;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
 
@@ -11,10 +9,8 @@ namespace GameTimeNext.Core.Framework.UI
 {
     internal static class CFBlackout
     {
-        private static string BlackoutLabelText = AppConfig.Root.ApplicationName;
         private static readonly List<Window> blackoutWindows = new();
         private static readonly List<Action> movementStops = new();
-        private static readonly Random random = new();
         private static bool isActive = false;
 
         public static void ToggleBlackout(Window owner)
@@ -204,7 +200,7 @@ namespace GameTimeNext.Core.Framework.UI
 
             if (showMovingLabel)
             {
-                AddMovingLabel(wnd, widthDip, heightDip);
+                AddParticleClock(wnd);
             }
 
             wnd.Cursor = System.Windows.Input.Cursors.None;
@@ -218,88 +214,21 @@ namespace GameTimeNext.Core.Framework.UI
             return wnd;
         }
 
-        private static void AddMovingLabel(Window wnd, double widthDip, double heightDip)
+        private static void AddParticleClock(Window wnd)
         {
-            var canvas = new Canvas
-            {
-                Background = Brushes.Black,
-                IsHitTestVisible = false
-            };
-
-            var label = new TextBlock
-            {
-                Text = BlackoutLabelText,
-                Foreground = new SolidColorBrush(Color.FromRgb(20, 20, 20)),
-                FontWeight = FontWeights.SemiBold,
-                FontSize = Math.Max(24, Math.Min(widthDip, heightDip) * 0.06),
-                Opacity = 0.50,
-                IsHitTestVisible = false
-            };
-
-            canvas.Children.Add(label);
-            wnd.Content = canvas;
-
-            wnd.Loaded += (_, _) => StartMovingLabelAnimation(wnd, canvas, label);
-        }
-
-        private static void StartMovingLabelAnimation(Window wnd, Canvas canvas, TextBlock label)
-        {
-            var margin = 20d;
-            var x = Math.Max(margin, (canvas.ActualWidth - label.ActualWidth) * 0.5);
-            var y = Math.Max(margin, (canvas.ActualHeight - label.ActualHeight) * 0.5);
-
-            var velocityX = random.NextDouble() > 0.5 ? 85d : -85d;
-            var velocityY = random.NextDouble() > 0.5 ? 64d : -64d;
-            var lastRenderingTime = TimeSpan.Zero;
-
-            Canvas.SetLeft(label, x);
-            Canvas.SetTop(label, y);
-
-            EventHandler renderHandler = (_, args) =>
-            {
-                if (args is not RenderingEventArgs renderingArgs)
-                {
-                    return;
-                }
-
-                if (lastRenderingTime == TimeSpan.Zero)
-                {
-                    lastRenderingTime = renderingArgs.RenderingTime;
-                    return;
-                }
-
-                var elapsed = (renderingArgs.RenderingTime - lastRenderingTime).TotalSeconds;
-                lastRenderingTime = renderingArgs.RenderingTime;
-
-                var maxX = Math.Max(margin, canvas.ActualWidth - label.ActualWidth - margin);
-                var maxY = Math.Max(margin, canvas.ActualHeight - label.ActualHeight - margin);
-
-                x += velocityX * elapsed;
-                y += velocityY * elapsed;
-
-                if (x <= margin || x >= maxX)
-                {
-                    velocityX = -velocityX;
-                    x = Math.Clamp(x, margin, maxX);
-                }
-
-                if (y <= margin || y >= maxY)
-                {
-                    velocityY = -velocityY;
-                    y = Math.Clamp(y, margin, maxY);
-                }
-
-                Canvas.SetLeft(label, x);
-                Canvas.SetTop(label, y);
-            };
+            var clock = new CFBlackoutParticleClock();
+            wnd.Content = clock;
 
             void StopAnimation()
             {
-                CompositionTarget.Rendering -= renderHandler;
+                clock.Stop();
             }
 
-            CompositionTarget.Rendering += renderHandler;
-            movementStops.Add(StopAnimation);
+            wnd.Loaded += (_, _) =>
+            {
+                clock.Start();
+                movementStops.Add(StopAnimation);
+            };
 
             wnd.Closed += (_, _) =>
             {

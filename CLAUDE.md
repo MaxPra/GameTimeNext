@@ -4,15 +4,22 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-GameTimeNext is a Windows-only WPF desktop app (.NET `net10.0-windows`, x64) for tracking game playtime, launching games, and managing playthroughs. It succeeds GameTimeX (`../GameTimeX`).
+GameTimeNext is a Windows-only WPF desktop app (.NET `net10.0-windows`, x64) for tracking game playtime, launching games, and managing profiles/playthroughs. Data is stored locally in SQLite. It succeeds GameTimeX (`../GameTimeX`) and includes a migration path from it (`Core/Application/GTXMigration`).
 
 ## Build & checks
 
-- Build: `dotnet build GameTimeNext.slnx` (from repo root). The solution references **`../UIX.ViewController.Engine`**, a sibling repository that must be checked out next to this one; much of the base framework (`UIXApplication`, `UIXViewControllerBase`, `UIXTableObjectBase`, `UIXQuery`, `FnString`, `FnLog`, …) lives there, not here.
-- Run: `dotnet run --project GameTimeNext/GameTimeNext.csproj`.
+The solution references **`../UIX.ViewController.Engine`**, a sibling repository that must be checked out next to this one (both are in `GameTimeNext.slnx`); the build fails without it. Much of the base framework (`UIXApplication`, `UIXViewControllerBase`, `UIXTableObjectBase`, `UIXQuery`, `FnString`, `FnLog`, …) lives there, not here.
+
+```bash
+dotnet build GameTimeNext.slnx
+dotnet run --project GameTimeNext/GameTimeNext.csproj
+dotnet run --project GameTimeNext/GameTimeNext.csproj -- minimized   # start hidden, no splash
+```
+
 - Code rules check: `python Scripts/cleancode.py` — enforces where certain string literals (`"GameTimeNext"`, `"MaxPra"`, …) and identifiers (`DirectorySeparatorChar`) may appear, with per-file allowed counts. If a new occurrence is legitimate, add it to the allowlist in the script.
-- There is no test suite (`GameTimeNext.Tests` contains only build output).
-- Installer: Inno Setup script at `Installer/GameTimeNext.iss`. Version is set in `GameTimeNext.csproj` (`VersionSemantic`, `VersionTag`, `BuildDate`); release notes go in `Core/Application/UpdateChanges/UpdateChanges_v*.txt` (`_vNEXT.txt` for unreleased).
+- There is no test suite (`GameTimeNext.Tests` contains only build output). `RemoteMonitoring/` and `GameTimeNext.Shared/` are untracked work-in-progress folders and are not in the solution.
+- Installer: Inno Setup script at `Installer/GameTimeNext.iss`.
+- Version is set in `GameTimeNext.csproj` (`VersionSemantic`, `VersionTag`, `BuildDate`). Release notes go in `Core/Application/UpdateChanges/UpdateChanges_v*.txt` (`_vNEXT.txt` for unreleased); each file has to be listed as `Content` in the csproj.
 
 ## Code rules
 
@@ -27,33 +34,51 @@ From `Scripts/unallowed_code.md` and `.github/copilot-instructions.md`:
 ## Architecture
 
 ### Layout
-- `GameTimeNext/Core/Framework/` — app-wide infrastructure: `AppEnvironment` (global service locator: config, DB manager, background processes, started apps), `ApplicationLauncher` (opens apps as tabs), `Config/`, `DataBase/`, external integrations (`SteamGridDB`, `Igdb`, `GitHub`, `LauncherIntegration`), `Utils/` (`Fn*` static helpers).
+- `GameTimeNext/Core/Framework/` — app-wide infrastructure: `AppEnvironment` (global service locator: config, DB manager, current profile, background processes, started apps), `ApplicationLauncher` (opens apps as tabs), `Config/`, `DataBase/`, external integrations (`SteamGridDB`, `Igdb`/Twitch, `GitHub` version check, `LauncherIntegration`), `Utils/` (`Fn*` static helpers).
 - `GameTimeNext/Core/Application/<Module>/` — one folder per feature module (Profiles, Playthroughs, Dashboard, Codetables, Settings, Metadata, …).
 - `devsync/` — CSV snapshots of dev-synced tables (codetables, metadata) committed to the repo.
 
 ### Modules ("applications")
-Each module is a `UIXApplication` subclass (`<Name>App.cs`) that creates its views in `InitializeApplicationOutput()` and wires each view to a controller. Modules implementing `IUIXApplicationStarter` can be hosted in a tab; `ApplicationLauncher.LaunchApplication` instantiates them by type name via reflection. Inside a module:
+Each module is a `UIXApplication` subclass (`<Name>App.cs`) that creates its views in `InitializeApplicationOutput()` and wires each view to a controller. It holds the table objects being edited (e.g. `PlaythroughEditApp.T1plthr`) and exposes entry methods like `Edit(...)` / `CreateNew(...)` that take a result callback. Modules implementing `IUIXApplicationStarter` can be hosted in a tab; `ApplicationLauncher.LaunchApplication` instantiates them by type name via reflection. Top-level launchable modules are registered in `Core/Application/StartableApps.json` (code, name, fully qualified class name).
+
+Inside a module:
 - `Views/` — XAML views; `Controller/` — `UIXViewControllerBase` subclasses; `ViewModel(s)/` — WPF view models.
-- Controllers follow a fixed lifecycle of overrides: `Init`, `BuildFirstImpl`, `BuildImpl`, `FillViewImpl`, `CheckImpl`, `FillDBOImpl`, `SaveDBOImpl`, `TriggeredEvent`, `DataWrapperSelectionChangedImpl`. `Init` registers data sources/identifiers (`AddSource`, `AddIdentifier`).
+- Controllers follow a fixed lifecycle of overrides: `Init`, `BuildFirstImpl`, `BuildImpl`, `FillViewImpl`, `CheckImpl`, `FillDBOImpl`, `SaveDBOImpl`, `TriggeredEvent`, `DataWrapperSelectionChangedImpl`. `Init` registers data sources/identifiers (`AddSource`, `AddIdentifier("T1XXXXX", obj)`). Validation reports errors via `AddViewError`. Results are returned through a nested `UIXViewReturn` subclass.
+- **Event handlers are bound by reflection, by naming convention.** A method named `EV_<x:Name>` (e.g. `EV_btnSave`) handles that control's event, and `EV_<name>_CtxtOpening` handles its context menu opening. Renaming a control in XAML silently breaks its handler.
+- Views bind controls to table fields with `uixprops:UIXAttachedProperty.Path="T1PLTHR.PTDE"`; the framework moves values between view and object.
 - `ViewIndicator` encodes the view mode: `CN` = create new, `ED` = edit, `SE` = select.
 - `CF<Name>App.cs` — static helper functions for a module (formatting, dialogs, etc.).
 
 ### Data layer (SQLite)
-Tables use 6-char names with a prefix per class role, e.g. for table `T1SESSI`:
-- `TableObjects/T1SESSI.cs` — row object (`UIXTableObjectBase`), 4-char uppercase column properties marked `[UIXSignatureField(n)]`.
+Tables use 7-char names (`T1` prefix + 5 chars, e.g. `T1PROFI`, `T1PLTHR`, `T1SESSI`, `T1CTABH/D`, `T1METAH/P`), with a prefix per class role, and columns use 4-char codes. For table `T1SESSI`:
+- `TableObjects/T1SESSI.cs` — row object (`UIXTableObjectBase`) with change tracking (`HasChanged`, `AcceptChanges`, `State`), uppercase column properties marked `[UIXSignatureField(n)]`.
 - `TableObjects/K1SESSI.cs` — constants for table and field names; use these with `UIXQuery` instead of string literals.
 - `DataManagers/TXSESSIBasic.cs` — generated CRUD (`CreateNew`, `Read`, `Save`, `Delete`, …). **Do not hand-edit**; it is regenerated.
 - `DataManagers/TXSESSI.cs` — hand-written subclass of `TX…Basic` for overrides; never overwritten by the generator.
-- `DataManagers/TFSESSI.cs` — hand-written static query/business functions for the table.
+- `DataManagers/TFSESSI.cs` — hand-written static query/business functions for the table (e.g. `TFPLTHR.GetCurrentPlaythrough`).
 
 Schema is metadata-driven: table definitions live in metadata tables `T1METAH` (header) / `T1METAP` (positions), editable in the Metadata module. `MigrationFactory.Metadata.CodeGenerator.GenerateFor(T1METAH)` generates the T1/K1/TXBasic/TX classes; if a file with that name already exists in the solution it is overwritten in place (except `TX*.cs`), otherwise it is written to `%LOCALAPPDATA%/<Publisher>/GameTimeNext/dev/genClass/`.
 
 The metadata tables themselves are not rows in `T1METAH`/`T1METAP`; their schema is hard-coded in `MigrationFactory.Metadata.METADATA`. `CodeGenerator.GenerateForMetadata()` (button "Generate classes of the metadata tables" in the Metadata view) generates their classes from that definition into `Core/Application/Metadata/Data/`, following the same T1/K1/TXBasic/TX pattern. To change a metadata table, edit `METADATA`, then regenerate. Generated `TX*Basic` classes take an optional `SQLiteConnection` in the constructor (used when migrating into another database), and set `CRUS`/`CHUS` on insert/update when the table has those fields.
 
-`MigrationFactory` (`Core/Framework/DataBase/Migration/`, partial class split by concern) handles schema diff/migration from metadata, CSV import/export (`ToCsv`/`FromCsv`), and import packages. `ImportType.DevSync` and `MetadataGenerator` only run in debug builds. In debug, saving a table object with `IsDevSynced == true` re-exports its CSV into `devsync/`.
+`MigrationFactory` (`Core/Framework/DataBase/Migration/`, partial class split by concern) handles schema diff/migration from metadata, CSV import/export (`ToCsv`/`FromCsv`), and import packages.
+
+### DevSync (debug only)
+For tables marked as dev-synced in metadata (`IsDevSynced`), saving a table object in debug re-exports its CSV into `devsync/<TABLE>.csv`, and on startup `MigrationFactory.FromCsv.MigrateTables(ImportType.DevSync)` re-imports these CSVs. `ImportType.DevSync` and `MetadataGenerator` only run when `FnSystem.IsDebug()` is true (a DEBUG build plus an attached debugger or a running `devenv`). This keeps reference data (codetables, metadata) in sync across developers through git, so the CSVs under `devsync/` are source-controlled data, not throwaway output.
 
 ### Startup & versioned migrations
-`App.xaml.cs` `OnStartup`: file-system migration → load `AppConfig` → init `DataBaseManager` → `AppEnvironment.Initalize()` → start `MainApp`. Version-specific data migrations are `MigTask_<version>_<seq>` classes (subclassing `MigTaskBase`) registered in order in `MigrationTasks/MigrationManager.Migrate()`.
+`App.xaml.cs` `OnStartup`: single-instance check → parse start args into `AppEnvironment.StartArguments` → file-system migration → load `AppConfig` → init logging (`FnLog`) and `DataBaseManager` → `AppEnvironment.Initalize()` → start `MainApp`.
+
+`AppEnvironment.Initalize()` order: backup → `MigrationFactory.Metadata.MigrateTables()` (schema from metadata) → startable apps → changelog → import packages → DevSync CSV import (debug only) → `MigrationManager.Migrate()` → seed `T1GROUP`.
+
+Version-specific data migrations are `MigTask_<version>_<seq>` classes (subclassing `MigTaskBase`) registered in order in `MigrationTasks/MigrationManager.Migrate()`.
+
+### Runtime
+- Background processes: `GameRunningProcess` (polls every 500 ms to detect running game executables and switch profiles) and `GlobalKeyInputProcess` (global hotkeys, e.g. Ctrl+M quick launch). They are stopped on exit, and an auto-backup is created then.
+
+## Repo conventions
+
+- `.claude/settings.json` denies reading or editing `bin/`, `obj/`, and `.github/`, and denies `git push` and `git reset`.
 
 ## Project skills
 
