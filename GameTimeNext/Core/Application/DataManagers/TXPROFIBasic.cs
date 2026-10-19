@@ -11,9 +11,20 @@ namespace GameTimeNext.Core.Application.DataManagers
 {
     public class TXPROFIBasic
     {
+        private readonly SQLiteConnection? _connectionOverride;
+
         protected SQLiteConnection _connection
         {
-            get => AppEnvironment.GetDataBaseManager().GetConnection();
+            get => _connectionOverride ?? AppEnvironment.GetDataBaseManager().GetConnection();
+        }
+
+        public TXPROFIBasic()
+        {
+        }
+
+        public TXPROFIBasic(SQLiteConnection connection)
+        {
+            _connectionOverride = connection;
         }
 
         #region Methods PUBLIC
