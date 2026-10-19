@@ -80,6 +80,9 @@ namespace GameTimeNext.Core.Application.General.Controller
                 GetWindow().WindowState = GetApp().StartMinimized
                     ? WindowState.Minimized
                     : WindowState.Maximized;
+
+                // Only reveal the window once it has its final state (no flicker)
+                GetApp().SetMainWindowCloaked(false);
             }, DispatcherPriority.ApplicationIdle);
 
             System.Windows.Application.Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
