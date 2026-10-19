@@ -58,75 +58,96 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <Grid Grid.Row="0" Margin="0,0,0,12">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
+                <!--  Toolbar: narrowing the list (search, filter) on the left, actions (refresh, add) on the right  -->
+                <Border
+                    Grid.Row="0"
+                    Margin="0,0,16,12"
+                    Padding="16"
+                    Style="{StaticResource Card}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
 
-                    <TextBox
-                        x:Name="tbSearchProfileName"
-                        Grid.Column="0"
-                        Width="320"
-                        Height="38"
-                        Margin="10,0,0,0"
-                        VerticalAlignment="Center"
-                        Style="{StaticResource TextBox.Default}"
-                        Tag="Search for name"
-                        ToolTip="Search for name" />
-
-                    <Grid
-                        Grid.Column="1"
-                        Margin="10,0,0,0"
-                        VerticalAlignment="Center">
-                        <Button
-                            x:Name="BtnFilter"
+                        <TextBox
+                            x:Name="tbSearchProfileName"
+                            Grid.Column="0"
+                            Width="320"
                             VerticalAlignment="Center"
+                            Style="{StaticResource TextBox.Default}"
+                            Tag="Search for name"
+                            ToolTip="Search for name" />
+
+                        <Grid Grid.Column="2" VerticalAlignment="Center">
+                            <Button
+                                x:Name="BtnFilter"
+                                VerticalAlignment="Center"
+                                Style="{StaticResource Button.Icon}">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontFamily="Segoe MDL2 Assets"
+                                    FontSize="14"
+                                    Text="" />
+                            </Button>
+
+                            <Popup
+                                x:Name="PopFilter"
+                                AllowsTransparency="True"
+                                Placement="Right"
+                                PlacementTarget="{Binding ElementName=BtnFilter}"
+                                StaysOpen="True">
+                                <Border
+                                    Padding="12"
+                                    Style="{StaticResource ModernPopupCardStyle}">
+                                    <ContentPresenter x:Name="CPFilter" />
+                                </Border>
+                            </Popup>
+                        </Grid>
+
+                        <Button
+                            x:Name="BtnRefresh"
+                            Grid.Column="4"
+                            VerticalAlignment="Center"
+                            ToolTip="Refresh profiles"
                             Style="{StaticResource Button.Icon}">
                             <TextBlock
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
                                 FontFamily="Segoe MDL2 Assets"
                                 FontSize="14"
-                                Text="" />
+                                Text="&#xE72C;" />
                         </Button>
 
-                        <Popup
-                            x:Name="PopFilter"
-                            AllowsTransparency="True"
-                            Placement="Right"
-                            PlacementTarget="{Binding ElementName=BtnFilter}"
-                            StaysOpen="True">
-                            <Border
-                                Padding="12"
-                                Style="{StaticResource ModernPopupCardStyle}">
-                                <ContentPresenter x:Name="CPFilter" />
-                            </Border>
-                        </Popup>
+                        <Button
+                            x:Name="BtnAddProfile"
+                            Grid.Column="6"
+                            VerticalAlignment="Center"
+                            ToolTip="Add profile"
+                            Style="{StaticResource Button.Icon}">
+                            <Image
+                                Width="16"
+                                Height="16"
+                                Source="/UI/Ressources/GTN_ICON_ADD_PROFILE.png"
+                                Stretch="Uniform" />
+                        </Button>
                     </Grid>
-
-                    <Button
-                        x:Name="BtnAddProfile"
-                        Grid.Column="3"
-                        Margin="0,0,16,0"
-                        VerticalAlignment="Center"
-                        ToolTip="Add profile"
-                        Style="{StaticResource Button.Icon}">
-                        <Image
-                            Width="16"
-                            Height="16"
-                            Source="/UI/Ressources/GTN_ICON_ADD_PROFILE.png"
-                            Stretch="Uniform" />
-                    </Button>
-                </Grid>
+                </Border>
 
                 <ListBox
                     x:Name="ListBoxProfiles"
+                    ui:ScrollFade.Length="80"
                     ui:TileLayout.AutoSize="True"
                     Grid.Row="1"
-                    Padding="{StaticResource TileListPaddingTopOnly}"
+                    Margin="-12,12,0,0"
+                    Padding="0"
+                    ClipToBounds="True"
                     Background="Transparent"
                     BorderThickness="0"
                     ItemsSource="{Binding T1Profis}"
@@ -137,7 +158,8 @@
 
                     <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <WrapPanel />
+                            <!--  Spacing on the panel, not as ListBox padding: it has to scroll with the tiles instead of shrinking the viewport  -->
+                            <WrapPanel Margin="0,-18,0,26" />
                         </ItemsPanelTemplate>
                     </ListBox.ItemsPanel>
 
@@ -192,8 +214,6 @@
             Grid.Column="0"
             Style="{StaticResource GameStartOverlayHostStyle}"
             Visibility="Collapsed" />
-
-        <Border Grid.Column="1" Background="{DynamicResource Brush.Border}" />
 
         <Border
             Grid.Column="2"

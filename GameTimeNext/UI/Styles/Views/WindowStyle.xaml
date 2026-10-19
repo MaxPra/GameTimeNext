@@ -73,8 +73,21 @@
 
     <SolidColorBrush x:Key="Brush.Window.TitleBarTranslucent" Color="#33000000" />
 
+    <!--
+        Root grid of a view: outer margin when shown in its own window, none inside a main window tab
+        (the tab content area already insets it, see ModernTabControlStyle).
+    -->
+    <Style x:Key="View.Root" TargetType="Grid">
+        <Setter Property="Margin" Value="20,16,20,20" />
+        <Style.Triggers>
+            <Trigger Property="ui:ViewHost.IsTabContent" Value="True">
+                <Setter Property="Margin" Value="0" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
     <!--  How strongly the blurred wallpaper shows through the dark background (GTNWindow.UseWallpaperBackground)  -->
-    <sys:Double x:Key="Window.WallpaperOpacity">0.42</sys:Double>
+    <sys:Double x:Key="Window.WallpaperOpacity">0.3</sys:Double>
     <SolidColorBrush x:Key="Brush.Window.BorderTranslucent" Color="#1FFFFFFF" />
 
     <Style x:Key="GTNWindowStyle" TargetType="{x:Type baseViews:GTNWindow}">

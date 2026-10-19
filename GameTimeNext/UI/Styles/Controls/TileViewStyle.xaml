@@ -23,7 +23,8 @@
 
     <Thickness x:Key="TileListPadding">26</Thickness>
 
-    <Thickness x:Key="TileListPaddingTopOnly">0,26,0,26</Thickness>
+    <!--  No top padding: the tile spacing alone matches the gap to the left window edge  -->
+    <Thickness x:Key="TileListPaddingBottomOnly">0,0,0,26</Thickness>
 
     <!--
         Tiles follow the card design (CardStyles.xaml): same corner radius, lit edge instead of a strong sheen,

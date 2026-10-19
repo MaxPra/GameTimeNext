@@ -1,7 +1,8 @@
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI">
 
     <!--
         Profile detail ("game sheet"):
@@ -18,6 +19,8 @@
     <Style x:Key="ProfileDetail.Root" TargetType="Grid">
         <Setter Property="Background" Value="{DynamicResource Brush.Surface}" />
         <Setter Property="ClipToBounds" Value="True" />
+        <!--  Rounded panel corners, same radius as cards and tiles  -->
+        <Setter Property="ui:ClipBehaviors.CornerRadius" Value="6" />
     </Style>
 
     <!--  ===== Backdrop =====  -->

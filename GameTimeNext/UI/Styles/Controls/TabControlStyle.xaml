@@ -186,6 +186,8 @@
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="VerticalContentAlignment" Value="Stretch" />
         <Setter Property="uiFramework:TabControlBehaviors.EnableSelectionSwoosh" Value="True" />
+        <!--  Views inside the tabs drop their own outer margin, the content area below provides it (View.Root)  -->
+        <Setter Property="uiFramework:ViewHost.IsTabContent" Value="True" />
 
         <Setter Property="ItemsPanel">
             <Setter.Value>
@@ -259,7 +261,8 @@
                             </Border>
 
                             <!--  Tab content  -->
-                            <Grid Grid.Row="1" Margin="0,12,12,12" ClipToBounds="True">
+                            <!--  Same side inset as the tab track, so every view lines up with it  -->
+                            <Grid Grid.Row="1" Margin="12" ClipToBounds="True">
                                 <ContentControl
                                     x:Name="SelectedContentHost"
                                     HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"

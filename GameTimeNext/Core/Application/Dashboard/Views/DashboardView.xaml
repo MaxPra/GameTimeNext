@@ -14,7 +14,7 @@
     d:DesignWidth="1150"
     mc:Ignorable="d">
 
-    <Grid Margin="28,20,28,28">
+    <Grid Style="{StaticResource View.Root}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="18" />

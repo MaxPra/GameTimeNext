@@ -535,6 +535,14 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         }
 
         /// <summary>
+        /// Button Refresh
+        /// </summary>
+        protected async Task EV_BtnRefresh()
+        {
+            await BuildProfilesListBoxAsync(AppEnvironment.CurrentPfid);
+        }
+
+        /// <summary>
         /// Button Filter
         /// </summary>
         public void EV_BtnFilter()
