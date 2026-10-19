@@ -141,7 +141,6 @@
                     x:Name="BtnGenerateAll"
                     Grid.Column="10"
                     VerticalAlignment="Center"
-                    IsDefault="True"
                     ToolTip="Generate all Metadata"
                     Style="{StaticResource Button.Icon}">
                     <TextBlock
@@ -156,7 +155,6 @@
                     x:Name="BtnGenerateMetadataTables"
                     Grid.Column="12"
                     VerticalAlignment="Center"
-                    IsDefault="True"
                     ToolTip="Generate classes of the metadata tables (T1METAH, T1METAP)"
                     Style="{StaticResource Button.Icon}">
                     <TextBlock
@@ -171,7 +169,6 @@
                     x:Name="BtnOpenLog"
                     Grid.Column="14"
                     VerticalAlignment="Center"
-                    IsDefault="True"
                     ToolTip="Open log"
                     Style="{StaticResource Button.Icon}">
                     <TextBlock
@@ -186,7 +183,6 @@
                     x:Name="BtnOpenGenClass"
                     Grid.Column="16"
                     VerticalAlignment="Center"
-                    IsDefault="True"
                     ToolTip="Open genClass folder"
                     Style="{StaticResource Button.Icon}">
                     <TextBlock

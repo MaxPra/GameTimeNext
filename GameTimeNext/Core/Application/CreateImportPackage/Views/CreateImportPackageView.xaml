@@ -17,26 +17,12 @@
     <Grid Style="{StaticResource View.Root}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="16" />
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="18" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Orientation="Vertical">
-            <TextBlock
-                FontSize="24"
-                FontWeight="Bold"
-                Foreground="{DynamicResource Brush.TextPrimary}"
-                Text="Create Import Package" />
-            <TextBlock
-                Margin="0,4,0,0"
-                Foreground="{DynamicResource Brush.TextSecondary}"
-                Text="Choose an import type and output location, then execute the import." />
-        </StackPanel>
-
         <Border
-            Grid.Row="2"
+            Grid.Row="0"
             Padding="18"
             Style="{StaticResource Card}">
             <Grid>
@@ -109,7 +95,7 @@
 
         <Button
             x:Name="BtnExecute"
-            Grid.Row="4"
+            Grid.Row="2"
             Width="148"
             Height="38"
             HorizontalAlignment="Left"

@@ -23,31 +23,13 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <!--  ===== Header =====  -->
-        <Grid Grid.Row="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
+        <!--  ===== Toolbar: time span selection =====  -->
+        <Border
+            Grid.Row="0"
+            Padding="16"
+            Style="{StaticResource Card}">
 
-            <StackPanel
-                Grid.Column="0"
-                VerticalAlignment="Center"
-                Orientation="Vertical">
-                <TextBlock
-                    FontSize="26"
-                    FontWeight="Bold"
-                    Foreground="{DynamicResource Brush.TextPrimary}"
-                    Text="Dashboard" />
-                <TextBlock
-                    Margin="0,2,0,0"
-                    FontSize="13"
-                    FontWeight="Normal"
-                    Foreground="{DynamicResource Brush.TextSecondary}"
-                    Text="Overview of your playtime and statistics" />
-            </StackPanel>
-
-            <Grid Grid.Column="1">
+            <Grid HorizontalAlignment="Left">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="8" />
@@ -130,7 +112,7 @@
                         Text="&#xE72C;" />
                 </Button>
             </Grid>
-        </Grid>
+        </Border>
 
         <!--  ===== Top Row: Most played + Last played =====  -->
         <Grid Grid.Row="2">
