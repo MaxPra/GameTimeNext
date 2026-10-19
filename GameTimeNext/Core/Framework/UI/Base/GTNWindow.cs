@@ -22,6 +22,9 @@ namespace GameTimeNext.Core.Framework.UI.Base
         private const int WM_GETMINMAXINFO = 0x0024;
         private const int MONITOR_DEFAULTTONEAREST = 0x00000002;
 
+        private IntPtr _hwnd;
+        private HwndSource? _hwndSource;
+
         private FrameworkElement? _titleBar;
         private Button? _closeButton;
         private Button? _minButton;
@@ -146,6 +149,69 @@ namespace GameTimeNext.Core.Framework.UI.Base
             set => SetValue(SubtitleProperty, value);
         }
 
+        /// <summary>
+        /// Translucent window with a blurred backdrop (Windows 11 acrylic). The main window turns it off while the
+        /// dynamic background is shown. Can be switched at runtime.
+        /// </summary>
+        public static readonly DependencyProperty UseBackdropBlurProperty =
+            DependencyProperty.Register(
+                nameof(UseBackdropBlur),
+                typeof(bool),
+                typeof(GTNWindow),
+                new PropertyMetadata(true, OnUseBackdropBlurChanged));
+
+        public bool UseBackdropBlur
+        {
+            get => (bool)GetValue(UseBackdropBlurProperty);
+            set => SetValue(UseBackdropBlurProperty, value);
+        }
+
+        /// <summary>
+        /// Uses the blurred desktop wallpaper (DesktopWallpaper) as base of the window background, tinted with the
+        /// normal background. Meant for the main window; has no effect while there is no wallpaper.
+        /// </summary>
+        public static readonly DependencyProperty UseWallpaperBackgroundProperty =
+            DependencyProperty.Register(
+                nameof(UseWallpaperBackground),
+                typeof(bool),
+                typeof(GTNWindow),
+                new PropertyMetadata(false));
+
+        public bool UseWallpaperBackground
+        {
+            get => (bool)GetValue(UseWallpaperBackgroundProperty);
+            set => SetValue(UseWallpaperBackgroundProperty, value);
+        }
+
+        private static readonly DependencyPropertyKey IsBackdropActivePropertyKey =
+            DependencyProperty.RegisterReadOnly(
+                nameof(IsBackdropActive),
+                typeof(bool),
+                typeof(GTNWindow),
+                new PropertyMetadata(false));
+
+        /// <summary>
+        /// True when the blurred backdrop could be enabled (the window style switches to translucent surfaces then).
+        /// </summary>
+        public static readonly DependencyProperty IsBackdropActiveProperty = IsBackdropActivePropertyKey.DependencyProperty;
+
+        public bool IsBackdropActive => (bool)GetValue(IsBackdropActiveProperty);
+
+        private static readonly DependencyPropertyKey IsNativeFrameActivePropertyKey =
+            DependencyProperty.RegisterReadOnly(
+                nameof(IsNativeFrameActive),
+                typeof(bool),
+                typeof(GTNWindow),
+                new PropertyMetadata(false));
+
+        /// <summary>
+        /// True when DWM rounds the corners of the opaque window (Windows 11). The window style then keeps a minimal
+        /// DWM frame instead of a rounded window region, so DWM draws the native drop shadow.
+        /// </summary>
+        public static readonly DependencyProperty IsNativeFrameActiveProperty = IsNativeFrameActivePropertyKey.DependencyProperty;
+
+        public bool IsNativeFrameActive => (bool)GetValue(IsNativeFrameActiveProperty);
+
         public GTNWindow()
         {
             WindowStyle = WindowStyle.None;
@@ -159,9 +225,119 @@ namespace GameTimeNext.Core.Framework.UI.Base
         {
             base.OnSourceInitialized(e);
 
-            var hwnd = new WindowInteropHelper(this).Handle;
-            var source = HwndSource.FromHwnd(hwnd);
-            source?.AddHook(WndProc);
+            _hwnd = new WindowInteropHelper(this).Handle;
+            _hwndSource = HwndSource.FromHwnd(_hwnd);
+            _hwndSource?.AddHook(WndProc);
+
+            UpdateFrame();
+        }
+
+        private static void OnUseBackdropBlurChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is GTNWindow window)
+                window.UpdateFrame();
+        }
+
+        /// <summary>
+        /// Applies UseBackdropBlur to the window frame: acrylic backdrop if possible, otherwise the opaque window with
+        /// the native frame (Windows 11). Does nothing before the window handle exists.
+        /// </summary>
+        private void UpdateFrame()
+        {
+            if (_hwndSource == null)
+                return;
+
+            bool backdropActive = UseBackdropBlur && TryEnableBackdropBlur(_hwnd, _hwndSource);
+
+            if (!backdropActive && IsBackdropActive)
+                DisableBackdropBlur(_hwnd);
+
+            // Style triggers switch the WindowChrome (glass frame) and the surfaces accordingly
+            SetValue(IsBackdropActivePropertyKey, backdropActive);
+            SetValue(IsNativeFrameActivePropertyKey, !backdropActive && TryEnableNativeFrame(_hwnd));
+        }
+
+        /// <summary>Removes the acrylic system backdrop again.</summary>
+        private static void DisableBackdropBlur(IntPtr hwnd)
+        {
+            try
+            {
+                int backdrop = DWMSBT_NONE;
+                DwmSetWindowAttribute(hwnd, DWMWA_SYSTEMBACKDROP_TYPE, ref backdrop, sizeof(int));
+            }
+            catch (DllNotFoundException)
+            {
+            }
+            catch (EntryPointNotFoundException)
+            {
+            }
+        }
+
+        /// <summary>
+        /// Lets DWM round the corners of the opaque window (Windows 11). Without it the rounding needs a window region,
+        /// which suppresses the DWM drop shadow.
+        /// </summary>
+        private static bool TryEnableNativeFrame(IntPtr hwnd)
+        {
+            if (Environment.OSVersion.Version.Build < MinBuildRoundedCorners)
+                return false;
+
+            try
+            {
+                int darkMode = 1;
+                DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, ref darkMode, sizeof(int));
+
+                int cornerPreference = DWMWCP_ROUND;
+                return DwmSetWindowAttribute(hwnd, DWMWA_WINDOW_CORNER_PREFERENCE, ref cornerPreference, sizeof(int)) == 0;
+            }
+            catch (DllNotFoundException)
+            {
+                return false;
+            }
+            catch (EntryPointNotFoundException)
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Lets DWM draw the acrylic system backdrop behind the window (Windows 11 22H2+).
+        /// WPF then renders onto a transparent surface; the window style provides the translucent tint.
+        /// </summary>
+        private static bool TryEnableBackdropBlur(IntPtr hwnd, HwndSource source)
+        {
+            if (Environment.OSVersion.Version.Build < MinBuildSystemBackdrop)
+                return false;
+
+            try
+            {
+                int darkMode = 1;
+                DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, ref darkMode, sizeof(int));
+
+                int cornerPreference = DWMWCP_ROUND;
+                DwmSetWindowAttribute(hwnd, DWMWA_WINDOW_CORNER_PREFERENCE, ref cornerPreference, sizeof(int));
+
+                int backdrop = DWMSBT_TRANSIENTWINDOW;
+                if (DwmSetWindowAttribute(hwnd, DWMWA_SYSTEMBACKDROP_TYPE, ref backdrop, sizeof(int)) != 0)
+                    return false;
+
+                // The backdrop is only visible where the frame extends into the client area and WPF doesn't paint
+                var margins = new MARGINS { cxLeftWidth = -1, cxRightWidth = -1, cyTopHeight = -1, cyBottomHeight = -1 };
+                DwmExtendFrameIntoClientArea(hwnd, ref margins);
+
+                if (source.CompositionTarget != null)
+                    source.CompositionTarget.BackgroundColor = Colors.Transparent;
+
+                return true;
+            }
+            catch (DllNotFoundException)
+            {
+                return false;
+            }
+            catch (EntryPointNotFoundException)
+            {
+                return false;
+            }
         }
 
         public override void OnApplyTemplate()
@@ -597,5 +773,31 @@ namespace GameTimeNext.Core.Framework.UI.Base
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         private static extern bool GetMonitorInfo(IntPtr hMonitor, ref MONITORINFO lpmi);
+
+        // --- Backdrop blur (DWM) ---
+
+        private const int MinBuildSystemBackdrop = 22621;
+        private const int MinBuildRoundedCorners = 22000;
+        private const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
+        private const int DWMWA_WINDOW_CORNER_PREFERENCE = 33;
+        private const int DWMWA_SYSTEMBACKDROP_TYPE = 38;
+        private const int DWMWCP_ROUND = 2;
+        private const int DWMSBT_NONE = 1;
+        private const int DWMSBT_TRANSIENTWINDOW = 3;
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct MARGINS
+        {
+            public int cxLeftWidth;
+            public int cxRightWidth;
+            public int cyTopHeight;
+            public int cyBottomHeight;
+        }
+
+        [DllImport("dwmapi.dll")]
+        private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attribute, ref int value, int size);
+
+        [DllImport("dwmapi.dll")]
+        private static extern int DwmExtendFrameIntoClientArea(IntPtr hwnd, ref MARGINS margins);
     }
 }

@@ -5,12 +5,8 @@
     xmlns:uixcontrols="clr-namespace:UIX.ViewController.Engine.FrameworkElements.UserControls;assembly=UIX.ViewController.Engine"
     MinWidth="560">
 
-    <Border
-        Padding="16"
-        Background="{DynamicResource Brush.Surface}"
-        BorderBrush="{DynamicResource Brush.Border}"
-        BorderThickness="0"
-        CornerRadius="{StaticResource DefaultCornerRadius}">
+    <!--  Shown inside the filter popup (ModernPopupCardStyle), which provides surface and padding  -->
+    <Border Padding="4" Background="Transparent">
 
         <Grid>
             <Grid.RowDefinitions>
@@ -21,8 +17,8 @@
 
             <TextBlock
                 Grid.Row="0"
-                Margin="0,0,0,12"
-                FontSize="18"
+                Margin="0,0,0,16"
+                FontSize="16"
                 FontWeight="SemiBold"
                 Foreground="{DynamicResource Brush.TextPrimary}"
                 Text="Library filters" />
@@ -36,9 +32,10 @@
                 <StackPanel Grid.Column="0" Margin="0,0,18,0">
                     <TextBlock
                         Margin="0,0,0,8"
+                        FontSize="13"
                         FontWeight="SemiBold"
-                        Foreground="{DynamicResource Brush.Accent}"
-                        Text="TAGS" />
+                        Foreground="{DynamicResource Brush.TextPrimary}"
+                        Text="Tags" />
 
                     <Grid Margin="0,0,0,10">
                         <Grid.ColumnDefinitions>
@@ -49,7 +46,6 @@
                         <TextBox
                             x:Name="TxtSearchTag"
                             Grid.Column="0"
-                            Height="30"
                             Margin="0,0,8,0"
                             Style="{StaticResource TextBox.Default}"
                             Tag="Search tags"
@@ -58,8 +54,8 @@
                         <Button
                             x:Name="btnDisableAllTags"
                             Grid.Column="1"
-                            Width="40"
-                            ToolTip="Disable all tags">
+                            ToolTip="Disable all tags"
+                            Style="{StaticResource Button.Icon}">
                             <TextBlock
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
@@ -70,13 +66,11 @@
                     </Grid>
 
                     <Border
-                        Padding="10"
-                        BorderBrush="{DynamicResource Brush.Border}"
-                        BorderThickness="1"
-                        CornerRadius="{StaticResource DefaultCornerRadius}">
+                        Padding="4"
+                        Style="{StaticResource Card.Inset}">
 
                         <ScrollViewer
-                            MaxHeight="250"
+                            MaxHeight="260"
                             HorizontalScrollBarVisibility="Disabled"
                             VerticalScrollBarVisibility="Auto">
 
@@ -90,10 +84,9 @@
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <CheckBox
-                                            Margin="0,0,0,6"
                                             Content="{Binding ItemObject.GRNA}"
                                             IsChecked="{Binding COISSEL, Mode=TwoWay}"
-                                            Style="{StaticResource CheckBox.Left}" />
+                                            Style="{StaticResource CheckBox.ListItem}" />
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
@@ -104,15 +97,17 @@
                 <StackPanel Grid.Column="1">
                     <TextBlock
                         Margin="0,0,0,8"
+                        FontSize="13"
                         FontWeight="SemiBold"
-                        Foreground="{DynamicResource Brush.Accent}"
-                        Text="STATE" />
+                        Foreground="{DynamicResource Brush.TextPrimary}"
+                        Text="State" />
+
+                    <!--  Same height as the tag search row, so both lists start at the same line  -->
+                    <Border Height="{StaticResource Control.Height}" Margin="0,0,0,10" />
 
                     <Border
-                        Padding="10"
-                        BorderBrush="{DynamicResource Brush.Border}"
-                        BorderThickness="1"
-                        CornerRadius="{StaticResource DefaultCornerRadius}">
+                        Padding="4"
+                        Style="{StaticResource Card.Inset}">
 
                         <ItemsControl ItemsSource="{Binding States}">
                             <ItemsControl.ItemsPanel>
@@ -124,10 +119,9 @@
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <CheckBox
-                                        Margin="0,0,0,6"
                                         Content="{Binding ItemObject.GRNA}"
                                         IsChecked="{Binding COISSEL, Mode=TwoWay}"
-                                        Style="{StaticResource CheckBox.Left}" />
+                                        Style="{StaticResource CheckBox.ListItem}" />
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
@@ -137,23 +131,21 @@
 
             <StackPanel
                 Grid.Row="2"
-                Margin="0,14,0,0"
+                Margin="0,16,0,0"
                 HorizontalAlignment="Right"
                 Orientation="Horizontal">
 
                 <Button
                     x:Name="BtnCancel"
                     Width="90"
-                    Height="34"
                     Margin="0,0,10,0"
                     Content="Cancel" />
 
                 <Button
                     x:Name="BtnApply"
                     Width="90"
-                    Height="34"
                     Content="Apply"
-                    Style="{StaticResource Button.Secondary}" />
+                    Style="{StaticResource Button.Primary}" />
             </StackPanel>
         </Grid>
     </Border>

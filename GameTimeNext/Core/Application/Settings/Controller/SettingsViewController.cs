@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using GameTimeNext.Core.Application.General;
+using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Profiles.BackgroundProcesses;
 using GameTimeNext.Core.Application.Settings.Views;
 using GameTimeNext.Core.Application.TableObjects;
@@ -48,6 +49,8 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             }
 
             FnControls.SetEnabled(GetView().cbAutoStartMinimized, !FnSystem.IsDebug());
+
+            FillComboboxBackgroundSource();
         }
 
         protected override void BuildImpl()
@@ -134,6 +137,9 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             GetView().cbShowTextOnBlackout.IsChecked = _appSettings.EnableFullBlackoutText;
             GetView().cbAutoStartMinimized.IsChecked = _appSettings.AutoStartMinimized;
             GetView().cbAllowProfileSpecificStyleChanges.IsChecked = _appSettings!.AllowProfileSpecificStyleChanges;
+            GetView().cmbBackgroundSource.SelectedValue = _appSettings.BackgroundSource;
+            if (GetView().cmbBackgroundSource.SelectedItem == null)
+                GetView().cmbBackgroundSource.SelectedValue = string.Empty;
             GetView().txbSteamGridDbApiKey.Text = _appSettings!.SteamGridDbKey;
 
             // Backup
@@ -148,6 +154,28 @@ namespace GameTimeNext.Core.Application.Settings.Controller
 
             GetView().cbRemindTakeBreak.IsChecked = _appSettings.BreakReminder;
             GetView().txbBreakReminderHours.Text = _appSettings.BreakReminderHrs.ToString(CultureInfo.CurrentCulture);
+        }
+
+        private void FillComboboxBackgroundSource()
+        {
+            // Empty entry disables the dynamic background
+            UIXManualCodetable uIXManualCodetable = new UIXManualCodetable();
+            uIXManualCodetable.AddAdditionalEntry("(None)");
+
+            TXCTABD txctabd = new TXCTABD();
+            List<T1CTABD> entrys = txctabd.GetEntries(BackgroundSource.CODETABLE);
+
+            foreach (T1CTABD entry in entrys)
+            {
+                uIXManualCodetable.AddEntry(entry.TXNUM, entry.DESCR);
+            }
+
+            uIXManualCodetable.ApplyTo(GetView().cmbBackgroundSource);
+        }
+
+        private string GetSelectedBackgroundSource()
+        {
+            return GetView().cmbBackgroundSource.SelectedValue as string ?? string.Empty;
         }
 
         private void FillTabMonitoring()
@@ -168,6 +196,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             _appSettings!.EnableFullBlackoutText = GetView().cbShowTextOnBlackout.IsChecked == true;
             _appSettings!.AutoStartMinimized = GetView().cbAutoStartMinimized.IsChecked == true;
             _appSettings!.AllowProfileSpecificStyleChanges = GetView().cbAllowProfileSpecificStyleChanges.IsChecked == true;
+            _appSettings!.BackgroundSource = GetSelectedBackgroundSource();
             _appSettings!.SteamGridDbKey = GetView().txbSteamGridDbApiKey.Text;
             _appSettings!.BackupExportPath = GetView().txbBackupExportPath.Text;
             _appSettings!.AutoBackup = GetView().cbAutoBackup.IsChecked == true;
@@ -373,6 +402,8 @@ namespace GameTimeNext.Core.Application.Settings.Controller
         {
             if (GetView().cbAllowProfileSpecificStyleChanges.IsChecked == false)
                 FnTheme.ApplyDefaultTheme();
+
+            FnTheme.ApplyWallpaperBackground(GetSelectedBackgroundSource());
         }
     }
 }

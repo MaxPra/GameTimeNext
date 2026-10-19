@@ -50,9 +50,7 @@
         <Border
             Grid.Row="2"
             Padding="16"
-            BorderBrush="{DynamicResource Brush.Border}"
-            BorderThickness="1"
-            CornerRadius="{StaticResource DefaultCornerRadius}">
+            Style="{StaticResource Card}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -78,9 +76,7 @@
                 <Border
                     Grid.Row="2"
                     Padding="10"
-                    BorderBrush="{DynamicResource Brush.Border}"
-                    BorderThickness="1"
-                    CornerRadius="{StaticResource DefaultCornerRadius}">
+                    Style="{StaticResource Card.Inset}">
 
                     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
 

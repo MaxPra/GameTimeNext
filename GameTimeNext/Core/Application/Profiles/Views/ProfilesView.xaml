@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:GameTimeNext.Core.Application.Profiles.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI"
     xmlns:uix="clr-namespace:UIX.ViewController.Engine.FrameworkElements.UserControls;assembly=UIX.ViewController.Engine"
     HorizontalAlignment="Stretch"
     VerticalAlignment="Stretch"
@@ -20,12 +21,13 @@
         Background="Transparent">
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="73*" />
             <ColumnDefinition Width="2" />
+            <!--  Grows with the window (bigger cover on large screens), the detail view adapts its header to the height  -->
             <ColumnDefinition
-                Width="420"
-                MinWidth="420"
-                MaxWidth="1000" />
+                Width="27*"
+                MinWidth="300"
+                MaxWidth="460" />
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
@@ -36,6 +38,20 @@
             Grid.Column="0"
             Padding="0"
             Background="Transparent">
+            <!--  Frosted glass behind the monitoring overlay  -->
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Visibility, ElementName=MonitoringOverlay}" Value="Visible">
+                            <Setter Property="Effect">
+                                <Setter.Value>
+                                    <BlurEffect KernelType="Gaussian" Radius="12" RenderingBias="Performance" />
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -67,9 +83,8 @@
                         VerticalAlignment="Center">
                         <Button
                             x:Name="BtnFilter"
-                            Width="38"
-                            Height="38"
-                            VerticalAlignment="Center">
+                            VerticalAlignment="Center"
+                            Style="{StaticResource Button.Icon}">
                             <TextBlock
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
@@ -86,10 +101,6 @@
                             StaysOpen="True">
                             <Border
                                 Padding="12"
-                                Background="{DynamicResource Brush.Surface}"
-                                BorderBrush="{DynamicResource Brush.Border}"
-                                BorderThickness="1"
-                                CornerRadius="{StaticResource DefaultCornerRadius}"
                                 Style="{StaticResource ModernPopupCardStyle}">
                                 <ContentPresenter x:Name="CPFilter" />
                             </Border>
@@ -99,11 +110,10 @@
                     <Button
                         x:Name="BtnAddProfile"
                         Grid.Column="3"
-                        Width="38"
-                        Height="38"
                         Margin="0,0,16,0"
                         VerticalAlignment="Center"
-                        ToolTip="Add profile">
+                        ToolTip="Add profile"
+                        Style="{StaticResource Button.Icon}">
                         <Image
                             Width="16"
                             Height="16"
@@ -114,6 +124,7 @@
 
                 <ListBox
                     x:Name="ListBoxProfiles"
+                    ui:TileLayout.AutoSize="True"
                     Grid.Row="1"
                     Padding="{StaticResource TileListPaddingTopOnly}"
                     Background="Transparent"
@@ -144,7 +155,6 @@
                                                 <TextBlock
                                                     FontFamily="Segoe MDL2 Assets"
                                                     FontSize="14"
-                                                    Foreground="{DynamicResource Brush.TextSecondary}"
                                                     Text="" />
                                             </MenuItem.Icon>
                                         </MenuItem>
@@ -159,7 +169,6 @@
                                                 <TextBlock
                                                     FontFamily="Segoe MDL2 Assets"
                                                     FontSize="14"
-                                                    Foreground="{DynamicResource Brush.TextSecondary}"
                                                     Text="" />
                                             </MenuItem.Icon>
                                         </MenuItem>
@@ -184,15 +193,7 @@
             Style="{StaticResource GameStartOverlayHostStyle}"
             Visibility="Collapsed" />
 
-        <GridSplitter
-            Grid.Column="1"
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch"
-            Background="{DynamicResource Brush.Border}"
-            Cursor="SizeWE"
-            ResizeBehavior="PreviousAndNext"
-            ResizeDirection="Columns"
-            ShowsPreview="False" />
+        <Border Grid.Column="1" Background="{DynamicResource Brush.Border}" />
 
         <Border
             Grid.Column="2"

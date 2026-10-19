@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI"
     Title="GameTimeNext"
     Width="640"
     Height="360"
@@ -14,16 +15,32 @@
     ShowInTaskbar="False"
     WindowStartupLocation="CenterScreen"
     WindowStyle="None"
+    ui:AcrylicBlur.IsEnabled="True"
     mc:Ignorable="d">
 
+    <!--
+        Glass like the sub windows: acrylic blur behind the window (AcrylicBlur on the window),
+        tinted with the app background and accent glow. The blur fills the whole window and gets the
+        system corner radius (8), so no outer margin / shadow here. Without blur the opaque app background is used.
+    -->
     <Border
-        Padding="30"
-        Background="{DynamicResource Brush.Surface}"
-        BorderBrush="{DynamicResource Brush.Border}"
+        BorderBrush="{StaticResource Brush.Popup.GlassBorder}"
         BorderThickness="1"
-        CornerRadius="{StaticResource DefaultCornerRadius}">
+        CornerRadius="{StaticResource Popup.CornerRadius}"
+        SnapsToDevicePixels="True">
+        <Border.Style>
+            <Style TargetType="Border">
+                <!--  Without blur the translucent tint would show the desktop unblurred  -->
+                <Setter Property="Background" Value="{DynamicResource Brush.ProfileDetailView.Background}" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Path=(ui:AcrylicBlur.IsActive), RelativeSource={RelativeSource AncestorType=Window}}" Value="True">
+                        <Setter Property="Background" Value="{DynamicResource Brush.Window.Translucent}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Border.Style>
 
-        <Grid>
+        <Grid Margin="32,28,32,22">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
@@ -34,33 +51,44 @@
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Orientation="Horizontal">
-                <Border
-                    Width="150"
-                    Height="150"
-                    Padding="0"
-                    Background="#14FFFFFF"
-                    BorderBrush="{DynamicResource Brush.Border}"
-                    BorderThickness="0.5"
-                    CornerRadius="{DynamicResource DefaultCornerRadius}">
-                    <Image Source="/UI/Ressources/GTN_CLS_ICON.png" Stretch="Uniform" />
-                </Border>
 
-                <StackPanel Margin="20,0,0,0" VerticalAlignment="Center">
+                <!--  Logo: rounded image with a lit edge (the image itself is the surface, no frame around it)  -->
+                <Grid Width="120" Height="120">
+                    <Border
+                        Background="#FF000000"
+                        CornerRadius="{StaticResource Card.CornerRadius}"
+                        Effect="{StaticResource Effect.Popup}" />
+                    <Border CornerRadius="{StaticResource Card.CornerRadius}" RenderOptions.BitmapScalingMode="HighQuality">
+                        <Border.Background>
+                            <ImageBrush ImageSource="/UI/Ressources/GTN_CLS_ICON.png" Stretch="UniformToFill" />
+                        </Border.Background>
+                    </Border>
+                    <Border
+                        BorderBrush="{StaticResource Brush.Card.Border}"
+                        BorderThickness="1"
+                        CornerRadius="{StaticResource Card.CornerRadius}" />
+                </Grid>
+
+                <StackPanel Margin="28,0,0,0" VerticalAlignment="Center">
                     <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
                         <TextBlock
-                            FontSize="28"
+                            VerticalAlignment="Center"
+                            FontSize="30"
                             FontWeight="SemiBold"
                             Foreground="{DynamicResource Brush.TextPrimary}"
                             Text="GameTimeNext" />
 
                         <Border
-                            Margin="10,0,0,0"
+                            Margin="12,0,0,0"
                             Padding="8,2"
-                            Background="{DynamicResource Brush.Accent}"
-                            CornerRadius="{StaticResource DefaultCornerRadius}">
+                            VerticalAlignment="Center"
+                            Background="{StaticResource Brush.Accent.Muted}"
+                            BorderBrush="{StaticResource Brush.Accent.Outline}"
+                            BorderThickness="1"
+                            CornerRadius="{StaticResource Item.CornerRadius}">
                             <TextBlock
                                 FontSize="11"
-                                FontWeight="Bold"
+                                FontWeight="SemiBold"
                                 Foreground="{DynamicResource Brush.TextPrimary}"
                                 Text="BETA" />
                         </Border>
@@ -69,12 +97,19 @@
                             x:Name="DevBadge"
                             Margin="6,0,0,0"
                             Padding="8,2"
-                            Background="#FF8B0000"
-                            CornerRadius="{StaticResource DefaultCornerRadius}">
+                            VerticalAlignment="Center"
+                            BorderThickness="1"
+                            CornerRadius="{StaticResource Item.CornerRadius}">
+                            <Border.Background>
+                                <SolidColorBrush Opacity="0.18" Color="{DynamicResource Color.Danger}" />
+                            </Border.Background>
+                            <Border.BorderBrush>
+                                <SolidColorBrush Opacity="0.6" Color="{DynamicResource Color.Danger}" />
+                            </Border.BorderBrush>
                             <TextBlock
                                 FontSize="11"
-                                FontWeight="Bold"
-                                Foreground="White"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource Brush.TextPrimary}"
                                 Text="DEV-Mode" />
                         </Border>
                     </StackPanel>
@@ -82,38 +117,86 @@
                     <TextBlock
                         Margin="0,6,0,0"
                         FontSize="13"
-                        FontWeight="Medium"
                         Foreground="{DynamicResource Brush.TextSecondary}"
                         Text="by CryLoud Studios" />
 
                     <TextBlock
                         x:Name="txtDevelopmentPathActive"
-                        Margin="0,10,0,0"
-                        FontSize="14"
-                        Foreground="#FF8B0000"
+                        Margin="0,12,0,0"
+                        FontSize="12"
+                        Foreground="{DynamicResource Brush.Danger}"
                         Text="Developmentpaths active!" />
                 </StackPanel>
             </StackPanel>
 
             <!--  Footer  -->
             <Grid Grid.Row="1" Margin="0,20,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="12" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
+                <!--  Indeterminate loading line: an accent segment sliding over a hairline track  -->
+                <Border
+                    Grid.Row="0"
+                    Grid.ColumnSpan="2"
+                    Height="2"
+                    Background="{StaticResource Brush.Card.Divider}"
+                    ClipToBounds="True"
+                    CornerRadius="1">
+                    <Border
+                        Width="140"
+                        HorizontalAlignment="Left"
+                        CornerRadius="1">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                <GradientStop Offset="0" Color="Transparent" />
+                                <GradientStop Offset="0.5" Color="{DynamicResource Color.AccentHover}" />
+                                <GradientStop Offset="1" Color="Transparent" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Border.RenderTransform>
+                            <TranslateTransform x:Name="LoadingLineTransform" X="-140" />
+                        </Border.RenderTransform>
+                        <Border.Triggers>
+                            <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+                                <BeginStoryboard>
+                                    <Storyboard RepeatBehavior="Forever">
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="LoadingLineTransform"
+                                            Storyboard.TargetProperty="X"
+                                            From="-140"
+                                            To="580"
+                                            Duration="0:0:1.6">
+                                            <DoubleAnimation.EasingFunction>
+                                                <SineEase EasingMode="EaseInOut" />
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Border.Triggers>
+                    </Border>
+                </Border>
+
                 <TextBlock
+                    Grid.Row="2"
                     FontSize="12"
-                    Foreground="{DynamicResource Brush.TextDisabled}"
+                    Foreground="{DynamicResource Brush.TextSecondary}"
                     Text="Initializing..." />
 
                 <TextBlock
+                    Grid.Row="2"
                     Grid.Column="1"
                     FontSize="12"
-                    Foreground="{DynamicResource Brush.TextDisabled}"
+                    Foreground="{DynamicResource Brush.TextSecondary}"
                     Text="{Binding AppVersion, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
             </Grid>
-
         </Grid>
     </Border>
 </Window>

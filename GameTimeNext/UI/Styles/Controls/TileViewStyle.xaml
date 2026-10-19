@@ -2,42 +2,61 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:converter="clr-namespace:GameTimeNext.Core.Application.Profiles.Converter"
-    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI">
 
     <converter:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
 
-    <sys:Double x:Key="TileWidth">210</sys:Double>
-    <sys:Double x:Key="TileHeight">300</sys:Double>
+    <!--  Base size; with TileLayout.AutoSize on the list the actual size is derived from it to fill each row  -->
+    <sys:Double x:Key="TileWidth">246</sys:Double>
+    <!--  Cover area is 2:3 (246 x 369) so the whole cover is visible, plus 61 for the title bar (rows 315*:52*)  -->
+    <sys:Double x:Key="TileHeight">430</sys:Double>
 
-    <Thickness x:Key="TileOuterPadding">30</Thickness>
+    <!--  Space around the tile; the gap between two tiles is 2 x (TileOuterPadding + TileItemMargin)  -->
+    <Thickness x:Key="TileOuterPadding">12</Thickness>
 
     <sys:Double x:Key="TileGapValue">12</sys:Double>
     <sys:Double x:Key="TileGapHalf">6</sys:Double>
 
-    <Thickness x:Key="TileItemMargin">6,6,6,20</Thickness>
+    <!--  Uniform, so the gap between tiles is the same horizontally and vertically  -->
+    <Thickness x:Key="TileItemMargin">6</Thickness>
 
     <Thickness x:Key="TileListPadding">26</Thickness>
 
     <Thickness x:Key="TileListPaddingTopOnly">0,26,0,26</Thickness>
 
-    <CornerRadius x:Key="TileCornerRadius">2</CornerRadius>
-    <CornerRadius x:Key="TileImageCornerRadius">2,2,0,0</CornerRadius>
-    <CornerRadius x:Key="TileTitleCornerRadius">0,0,2,2</CornerRadius>
+    <!--
+        Tiles follow the card design (CardStyles.xaml): same corner radius, lit edge instead of a strong sheen,
+        title bar on the control surface, selection as accent tint + accent edge (text stays neutral).
+    -->
+    <CornerRadius x:Key="TileCornerRadius">6</CornerRadius>
+    <CornerRadius x:Key="TileImageCornerRadius">6,6,0,0</CornerRadius>
+    <CornerRadius x:Key="TileTitleCornerRadius">0,0,6,6</CornerRadius>
 
-    <sys:Double x:Key="TileGlassOpacityNormal">0.18</sys:Double>
-    <sys:Double x:Key="TileGlassOpacityHover">0.36</sys:Double>
-    <sys:Double x:Key="TileSheenOpacityNormal">0.08</sys:Double>
-    <sys:Double x:Key="TileSheenOpacityHover">0.45</sys:Double>
-    <sys:Double x:Key="TileShadowOpacityNormal">0.28</sys:Double>
-    <sys:Double x:Key="TileShadowOpacityHover">0.40</sys:Double>
+    <!--  Title bar surface (= Brush.Popup.Background) and the hairline between cover and title  -->
+    <SolidColorBrush x:Key="Brush.TileTitleSurface" Color="#FF17171D" />
+    <SolidColorBrush x:Key="Brush.TileTitleDivider" Color="#12FFFFFF" />
+    <!--  Platform badge on the cover: dark glass, so it works on every cover  -->
+    <SolidColorBrush x:Key="Brush.TileBadgeBackground" Color="#A6000000" />
+    <SolidColorBrush x:Key="Brush.TileBadgeBorder" Color="#24FFFFFF" />
+
+    <sys:Double x:Key="TileGlassOpacityNormal">0.00</sys:Double>
+    <sys:Double x:Key="TileGlassOpacityHover">0.10</sys:Double>
+    <sys:Double x:Key="TileSheenOpacityNormal">0.00</sys:Double>
+    <sys:Double x:Key="TileSheenOpacityHover">0.16</sys:Double>
+    <!--  Shadow layer opacity (the layer needs a fill, otherwise the DropShadowEffect has nothing to cast)  -->
+    <sys:Double x:Key="TileShadowOpacityNormal">0.55</sys:Double>
+    <sys:Double x:Key="TileShadowOpacityHover">0.80</sys:Double>
 
     <sys:Double x:Key="TileTitleAccentOpacityNormal">0.00</sys:Double>
     <sys:Double x:Key="TileTitleAccentOpacitySelected">1.00</sys:Double>
     <sys:Double x:Key="TileAccentStrokeOpacityNormal">0.00</sys:Double>
     <sys:Double x:Key="TileAccentStrokeOpacitySelected">1.00</sys:Double>
 
-    <sys:Double x:Key="TileTiltAngleHover">-8</sys:Double>
-    <sys:Double x:Key="TileAccentGlowOpacityHover">0.95</sys:Double>
+    <sys:Double x:Key="TileHoverStrokeOpacityHover">1.00</sys:Double>
+
+    <sys:Double x:Key="TileTiltAngleHover">-5</sys:Double>
+    <sys:Double x:Key="TileAccentGlowOpacityHover">0.40</sys:Double>
 
     <LinearGradientBrush x:Key="Brush.TileGlassFx" StartPoint="0,0" EndPoint="1,1">
         <GradientStop Offset="0" Color="#66FFFFFF" />
@@ -49,12 +68,6 @@
     <LinearGradientBrush x:Key="Brush.TileSheenFx" StartPoint="0,0" EndPoint="0,1">
         <GradientStop Offset="0" Color="#70FFFFFF" />
         <GradientStop Offset="0.22" Color="#22FFFFFF" />
-        <GradientStop Offset="1" Color="#00FFFFFF" />
-    </LinearGradientBrush>
-
-    <LinearGradientBrush x:Key="Brush.TileInnerStrokeFx" StartPoint="0,0" EndPoint="0,1">
-        <GradientStop Offset="0" Color="#2EFFFFFF" />
-        <GradientStop Offset="0.35" Color="#16FFFFFF" />
         <GradientStop Offset="1" Color="#00FFFFFF" />
     </LinearGradientBrush>
 
@@ -104,6 +117,12 @@
                                 Storyboard.TargetProperty="Opacity"
                                 To="{StaticResource TileShadowOpacityHover}"
                                 Duration="0:0:0.18" />
+                            <DoubleAnimation
+                                EasingFunction="{StaticResource EaseOut}"
+                                Storyboard.TargetName="HoverStroke"
+                                Storyboard.TargetProperty="Opacity"
+                                To="{StaticResource TileHoverStrokeOpacityHover}"
+                                Duration="0:0:0.18" />
 
                             <DoubleAnimation
                                 EasingFunction="{StaticResource EaseOut}"
@@ -144,6 +163,12 @@
                                 Storyboard.TargetName="ShadowLayer"
                                 Storyboard.TargetProperty="Opacity"
                                 To="{StaticResource TileShadowOpacityNormal}"
+                                Duration="0:0:0.18" />
+                            <DoubleAnimation
+                                EasingFunction="{StaticResource EaseIn}"
+                                Storyboard.TargetName="HoverStroke"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0"
                                 Duration="0:0:0.18" />
 
                             <DoubleAnimation
@@ -206,13 +231,14 @@
 
                         <Grid
                             x:Name="Root"
-                            Width="{StaticResource TileWidth}"
-                            Height="{StaticResource TileHeight}"
+                            Width="{Binding Path=(ui:TileLayout.TileWidth), RelativeSource={RelativeSource TemplatedParent}}"
+                            Height="{Binding Path=(ui:TileLayout.TileHeight), RelativeSource={RelativeSource TemplatedParent}}"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center">
 
                             <Border
                                 x:Name="ShadowLayer"
+                                Background="{DynamicResource Brush.TileBackground}"
                                 CornerRadius="{StaticResource TileCornerRadius}"
                                 IsHitTestVisible="False"
                                 Opacity="{StaticResource TileShadowOpacityNormal}">
@@ -271,8 +297,12 @@
 
                             <Viewport3D ClipToBounds="False" IsHitTestVisible="False">
                                 <Viewport3D.Camera>
+                                    <!--
+                                        FieldOfView = 2 * atan(0.7 / 4.2): the visible width at z = 0 is exactly the mesh width (1.4),
+                                        so the card is rendered 1:1 within Root and does not overlap the gap between tiles.
+                                    -->
                                     <PerspectiveCamera
-                                        FieldOfView="16"
+                                        FieldOfView="18.9246"
                                         LookDirection="0,0,-4.2"
                                         Position="0,0,4.2"
                                         UpDirection="0,1,0" />
@@ -290,7 +320,7 @@
                                 <Viewport2DVisual3D>
                                     <Viewport2DVisual3D.Geometry>
                                         <MeshGeometry3D
-                                            Positions="-0.7,-1,0  0.7,-1,0  0.7,1,0  -0.7,1,0"
+                                            Positions="-0.7,-1.2236,0  0.7,-1.2236,0  0.7,1.2236,0  -0.7,1.2236,0"
                                             TextureCoordinates="0,1 1,1 1,0 0,0"
                                             TriangleIndices="0 1 2  0 2 3" />
                                     </Viewport2DVisual3D.Geometry>
@@ -303,7 +333,7 @@
                                         <Transform3DGroup>
                                             <RotateTransform3D
                                                 CenterX="0"
-                                                CenterY="1"
+                                                CenterY="1.2236"
                                                 CenterZ="0">
                                                 <RotateTransform3D.Rotation>
                                                     <AxisAngleRotation3D
@@ -318,8 +348,8 @@
                                     <Viewport2DVisual3D.Visual>
                                         <Border
                                             x:Name="Card"
-                                            Width="{StaticResource TileWidth}"
-                                            Height="{StaticResource TileHeight}"
+                                            Width="{Binding Width, ElementName=Root}"
+                                            Height="{Binding Height, ElementName=Root}"
                                             Background="{DynamicResource Brush.TileBackground}"
                                             BorderThickness="0"
                                             ClipToBounds="True"
@@ -327,25 +357,27 @@
                                             SnapsToDevicePixels="True">
                                             <Grid ClipToBounds="True">
                                                 <Grid.RowDefinitions>
-                                                    <RowDefinition Height="*" />
-                                                    <RowDefinition Height="52" />
+                                                    <!--
+                                                        Proportional (315:52) so the cover area stays 2:3 at any tile size.
+                                                        Mesh half-height above = 0.7 * TileHeight / TileWidth; update both when changing the base size.
+                                                    -->
+                                                    <RowDefinition Height="315*" />
+                                                    <RowDefinition Height="52*" />
                                                 </Grid.RowDefinitions>
 
+                                                <!--  ImageBrush instead of Image + fixed Clip: the corner radius then follows any tile size  -->
                                                 <Border
                                                     Grid.Row="0"
-                                                    ClipToBounds="True"
-                                                    CornerRadius="{StaticResource TileImageCornerRadius}">
-                                                    <Image
-                                                        RenderOptions.BitmapScalingMode="HighQuality"
-                                                        Source="{Binding COCOVIM}"
-                                                        Stretch="UniformToFill">
-                                                        <Image.Clip>
-                                                            <RectangleGeometry
-                                                                RadiusX="2"
-                                                                RadiusY="2"
-                                                                Rect="0,0,210,248" />
-                                                        </Image.Clip>
-                                                    </Image>
+                                                    CornerRadius="{StaticResource TileImageCornerRadius}"
+                                                    RenderOptions.BitmapScalingMode="HighQuality">
+                                                    <Border.Background>
+                                                        <!--  Top/Left like the former Image: overflow is cut at the bottom/right, not on both sides  -->
+                                                        <ImageBrush
+                                                            AlignmentX="Left"
+                                                            AlignmentY="Top"
+                                                            ImageSource="{Binding COCOVIM}"
+                                                            Stretch="UniformToFill" />
+                                                    </Border.Background>
                                                 </Border>
 
                                                 <Border
@@ -364,15 +396,15 @@
                                                 <Border
                                                     Grid.Row="0"
                                                     Margin="0,8,8,0"
-                                                    Padding="10,6"
+                                                    Padding="7"
                                                     HorizontalAlignment="Right"
                                                     VerticalAlignment="Top"
                                                     Panel.ZIndex="4"
-                                                    CornerRadius="3"
+                                                    Background="{StaticResource Brush.TileBadgeBackground}"
+                                                    BorderBrush="{StaticResource Brush.TileBadgeBorder}"
+                                                    BorderThickness="1"
+                                                    CornerRadius="{StaticResource Control.CornerRadius}"
                                                     IsHitTestVisible="False">
-                                                    <Border.Background>
-                                                        <SolidColorBrush Opacity="0.78" Color="{DynamicResource Color.Accent}" />
-                                                    </Border.Background>
                                                     <Border.Style>
                                                         <Style TargetType="Border">
                                                             <Setter Property="Visibility" Value="Visible" />
@@ -384,28 +416,30 @@
                                                         </Style>
                                                     </Border.Style>
                                                     <Image
-                                                        Width="26"
-                                                        Height="26"
+                                                        Width="22"
+                                                        Height="22"
+                                                        RenderOptions.BitmapScalingMode="HighQuality"
                                                         Source="{Binding COPLFPA}" />
                                                 </Border>
 
                                                 <Border
                                                     x:Name="TitleHost"
                                                     Grid.Row="1"
-                                                    Background="{DynamicResource Brush.TileTitleBackground}"
+                                                    Background="{StaticResource Brush.TileTitleSurface}"
                                                     CornerRadius="{StaticResource TileTitleCornerRadius}"
                                                     SnapsToDevicePixels="True">
                                                     <Grid>
+                                                        <!--  Selection: accent tint like selected list entries (Brush.Item.Selected)  -->
                                                         <Border
                                                             x:Name="TitleAccent"
-                                                            Background="{DynamicResource Brush.Accent}"
+                                                            Background="{StaticResource Brush.Item.Selected}"
                                                             CornerRadius="{StaticResource TileTitleCornerRadius}"
                                                             Opacity="{StaticResource TileTitleAccentOpacityNormal}" />
 
                                                         <Border
                                                             Height="1"
                                                             VerticalAlignment="Top"
-                                                            Background="#30FFFFFF" />
+                                                            Background="{StaticResource Brush.TileTitleDivider}" />
 
                                                         <Grid Margin="12,10">
                                                             <Grid.ColumnDefinitions>
@@ -456,18 +490,28 @@
                                                     x:Name="InnerStroke"
                                                     Grid.RowSpan="2"
                                                     Background="Transparent"
-                                                    BorderBrush="{StaticResource Brush.TileInnerStrokeFx}"
+                                                    BorderBrush="{StaticResource Brush.Control.Edge}"
+                                                    BorderThickness="1"
+                                                    CornerRadius="{StaticResource TileCornerRadius}"
+                                                    IsHitTestVisible="False" />
+
+                                                <!--  Hover: accent outline like interactive cards (Card.Interactive)  -->
+                                                <Border
+                                                    x:Name="HoverStroke"
+                                                    Grid.RowSpan="2"
+                                                    Background="Transparent"
+                                                    BorderBrush="{StaticResource Brush.Accent.Outline}"
                                                     BorderThickness="1"
                                                     CornerRadius="{StaticResource TileCornerRadius}"
                                                     IsHitTestVisible="False"
-                                                    Opacity="0.85" />
+                                                    Opacity="0" />
 
                                                 <Border
                                                     x:Name="AccentStroke"
                                                     Grid.RowSpan="2"
                                                     Background="Transparent"
                                                     BorderBrush="{DynamicResource Brush.AccentHover}"
-                                                    BorderThickness="1"
+                                                    BorderThickness="1.5"
                                                     CornerRadius="{StaticResource TileCornerRadius}"
                                                     IsHitTestVisible="False"
                                                     Opacity="{StaticResource TileAccentStrokeOpacityNormal}" />

@@ -4,19 +4,25 @@
     xmlns:uixbehaviors="clr-namespace:GameTimeNext.Core.Framework.UI.Behaviors"
     xmlns:uixsel="clr-namespace:UIX.ViewController.Engine.FrameworkElements.Selectors;assembly=UIX.ViewController.Engine">
 
+    <!--
+        DataGrid in the card design (see CardStyles.xaml): glass card as container, muted column headers
+        above a hairline, no alternating rows. Hovered / selected rows are tinted with the accent like
+        list, menu and drop down entries.
+    -->
     <Style TargetType="{x:Type DataGrid}">
-        <Setter Property="Background" Value="{DynamicResource Brush.Surface}" />
+        <Setter Property="Background" Value="{StaticResource Brush.Card.Background}" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
+        <Setter Property="BorderBrush" Value="{StaticResource Brush.Card.Border}" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="RowBackground" Value="{DynamicResource Brush.Surface}" />
-        <Setter Property="AlternatingRowBackground" Value="{DynamicResource Brush.Background}" />
-        <Setter Property="AlternationCount" Value="2" />
+        <Setter Property="Padding" Value="6,0,6,6" />
+        <Setter Property="RowBackground" Value="Transparent" />
+        <Setter Property="AlternatingRowBackground" Value="Transparent" />
+        <Setter Property="AlternationCount" Value="0" />
         <Setter Property="GridLinesVisibility" Value="None" />
         <Setter Property="HeadersVisibility" Value="Column" />
         <Setter Property="RowHeaderWidth" Value="0" />
         <Setter Property="ColumnHeaderHeight" Value="40" />
-        <Setter Property="RowHeight" Value="40" />
+        <Setter Property="RowHeight" Value="36" />
         <Setter Property="FontSize" Value="13" />
         <Setter Property="SelectionMode" Value="Single" />
         <Setter Property="SelectionUnit" Value="FullRow" />
@@ -37,9 +43,11 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type DataGrid}">
                     <Border
+                        Padding="{TemplateBinding Padding}"
                         Background="{TemplateBinding Background}"
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="{StaticResource Card.CornerRadius}"
                         SnapsToDevicePixels="True">
                         <ScrollViewer
                             x:Name="DG_ScrollViewer"
@@ -63,7 +71,8 @@
                                         <DataGridColumnHeadersPresenter
                                             Grid.Row="0"
                                             Grid.Column="0"
-                                            Background="{DynamicResource Brush.Surface}" />
+                                            Margin="0,0,0,4"
+                                            Background="Transparent" />
 
                                         <ScrollContentPresenter
                                             Grid.Row="1"
@@ -74,6 +83,7 @@
                                             x:Name="PART_VerticalScrollBar"
                                             Grid.Row="1"
                                             Grid.Column="1"
+                                            Margin="4,0,0,0"
                                             Maximum="{TemplateBinding ScrollableHeight}"
                                             Orientation="Vertical"
                                             ViewportSize="{TemplateBinding ViewportHeight}"
@@ -160,11 +170,12 @@
     </Style>
 
     <Style TargetType="{x:Type DataGridColumnHeader}">
-        <Setter Property="Background" Value="{DynamicResource Brush.Surface}" />
-        <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}" />
+        <Setter Property="BorderBrush" Value="{StaticResource Brush.Card.Divider}" />
         <Setter Property="BorderThickness" Value="0,0,0,1" />
-        <Setter Property="Padding" Value="14,0,14,0" />
+        <Setter Property="Padding" Value="12,0,12,0" />
+        <Setter Property="FontSize" Value="12" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="HorizontalContentAlignment" Value="Left" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
@@ -187,7 +198,7 @@
 
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="HeaderBorder" Property="Background" Value="{DynamicResource Brush.Background}" />
+                            <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
                         </Trigger>
 
                         <Trigger Property="IsEnabled" Value="False">
@@ -203,6 +214,7 @@
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+        <Setter Property="Margin" Value="0" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="ValidationErrorTemplate" Value="{x:Null}" />
         <Setter Property="Cursor" Value="Hand" />
@@ -210,63 +222,55 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type DataGridRow}">
-                    <Border
-                        x:Name="RowBorder"
-                        Margin="0"
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="#26FFFFFF"
-                        BorderThickness="0,0,0,1"
-                        SnapsToDevicePixels="True">
-                        <Grid>
-                            <DataGridCellsPresenter />
+                    <Grid SnapsToDevicePixels="True">
+                        <!--  Hairline between rows, drawn in the gap below the (rounded) row background  -->
+                        <Border
+                            Height="1"
+                            VerticalAlignment="Bottom"
+                            Background="{StaticResource Brush.Card.Divider}"
+                            SnapsToDevicePixels="True" />
 
-                            <Border
-                                x:Name="SelectionBar"
-                                Width="3"
-                                HorizontalAlignment="Left"
-                                Background="Transparent" />
-                        </Grid>
-                    </Border>
+                        <Border
+                            x:Name="RowBorder"
+                            Margin="0,1"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="{StaticResource Item.CornerRadius}"
+                            SnapsToDevicePixels="True">
+                            <Grid>
+                                <DataGridCellsPresenter />
+
+                                <!--  Accent marker of the selected row  -->
+                                <Border
+                                    x:Name="SelectionBar"
+                                    Width="3"
+                                    Margin="0,9"
+                                    HorizontalAlignment="Left"
+                                    Background="{DynamicResource Brush.Accent}"
+                                    CornerRadius="1.5"
+                                    Opacity="0" />
+                            </Grid>
+                        </Border>
+                    </Grid>
 
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="RowBorder" Property="Background" Value="{DynamicResource Brush.Background}" />
+                            <Setter TargetName="RowBorder" Property="Background" Value="{StaticResource Brush.Item.Hover}" />
                         </Trigger>
 
                         <Trigger Property="IsSelected" Value="True">
-                            <Setter TargetName="RowBorder" Property="Background">
-                                <Setter.Value>
-                                    <SolidColorBrush Opacity="0.16" Color="{DynamicResource Color.Accent}" />
-                                </Setter.Value>
-                            </Setter>
-                            <Setter TargetName="SelectionBar" Property="Background" Value="{DynamicResource Brush.Accent}" />
+                            <Setter TargetName="RowBorder" Property="Background" Value="{StaticResource Brush.Item.Selected}" />
+                            <Setter TargetName="SelectionBar" Property="Opacity" Value="1" />
                             <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
                         </Trigger>
 
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="IsSelected" Value="True" />
-                                <Condition Property="IsMouseOver" Value="True" />
-                            </MultiTrigger.Conditions>
-                            <Setter TargetName="RowBorder" Property="Background">
-                                <Setter.Value>
-                                    <SolidColorBrush Opacity="0.22" Color="{DynamicResource Color.Accent}" />
-                                </Setter.Value>
-                            </Setter>
-                            <Setter TargetName="SelectionBar" Property="Background" Value="{DynamicResource Brush.AccentHover}" />
-                        </MultiTrigger>
-
+                        <!--  Selected, but the grid has no focus: keep the marker, weaker tint  -->
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsSelected" Value="True" />
                                 <Condition Property="Selector.IsSelectionActive" Value="False" />
+                                <Condition Property="IsMouseOver" Value="False" />
                             </MultiTrigger.Conditions>
-                            <Setter TargetName="RowBorder" Property="Background">
-                                <Setter.Value>
-                                    <SolidColorBrush Opacity="0.13" Color="{DynamicResource Color.Accent}" />
-                                </Setter.Value>
-                            </Setter>
-                            <Setter TargetName="SelectionBar" Property="Background" Value="{DynamicResource Brush.Accent}" />
+                            <Setter TargetName="RowBorder" Property="Background" Value="{StaticResource Brush.Item.Hover}" />
                         </MultiTrigger>
 
                         <Trigger Property="IsEnabled" Value="False">
@@ -283,7 +287,7 @@
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Padding" Value="14,0,14,0" />
+        <Setter Property="Padding" Value="12,0,12,0" />
         <Setter Property="HorizontalContentAlignment" Value="Left" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />

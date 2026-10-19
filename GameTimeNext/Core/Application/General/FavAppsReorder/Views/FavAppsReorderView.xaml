@@ -19,10 +19,8 @@
     <Grid Margin="20">
         <!--  Applications List  -->
         <Border
-            Background="{DynamicResource Brush.Surface}"
-            BorderBrush="{DynamicResource Brush.Border}"
-            BorderThickness="1"
-            CornerRadius="{StaticResource DefaultCornerRadius}">
+            Padding="0"
+            Style="{StaticResource Card}">
             <ListView
                 x:Name="lvFavAppsReorder"
                 AllowDrop="True"

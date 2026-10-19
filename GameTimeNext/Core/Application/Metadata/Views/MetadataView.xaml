@@ -25,16 +25,15 @@
         <Border
             Grid.Row="0"
             Padding="16"
-            Background="{DynamicResource Brush.Surface}"
-            BorderBrush="{DynamicResource Brush.Border}"
-            BorderThickness="1"
-            CornerRadius="{StaticResource DefaultCornerRadius}">
+            Style="{StaticResource Card}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="32" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="32" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="8" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="8" />
                     <ColumnDefinition Width="Auto" />
@@ -112,10 +111,9 @@
                 <Button
                     x:Name="BtnAdd"
                     Grid.Column="6"
-                    Width="38"
-                    Height="38"
                     VerticalAlignment="Center"
-                    ToolTip="Add metadata">
+                    ToolTip="Add metadata"
+                    Style="{StaticResource Button.Icon}">
                     <TextBlock
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
@@ -127,11 +125,10 @@
                 <Button
                     x:Name="BtnRefresh"
                     Grid.Column="8"
-                    Width="38"
-                    Height="38"
                     VerticalAlignment="Center"
                     IsDefault="True"
-                    ToolTip="Refresh metadata">
+                    ToolTip="Refresh metadata"
+                    Style="{StaticResource Button.Icon}">
                     <TextBlock
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
@@ -143,11 +140,10 @@
                 <Button
                     x:Name="BtnGenerateAll"
                     Grid.Column="10"
-                    Width="38"
-                    Height="38"
                     VerticalAlignment="Center"
                     IsDefault="True"
-                    ToolTip="Generate all Metadata">
+                    ToolTip="Generate all Metadata"
+                    Style="{StaticResource Button.Icon}">
                     <TextBlock
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
@@ -159,10 +155,10 @@
                 <Button
                     x:Name="BtnGenerateMetadataTables"
                     Grid.Column="12"
-                    Width="38"
-                    Height="38"
                     VerticalAlignment="Center"
-                    ToolTip="Generate classes of the metadata tables (T1METAH, T1METAP)">
+                    IsDefault="True"
+                    ToolTip="Generate classes of the metadata tables (T1METAH, T1METAP)"
+                    Style="{StaticResource Button.Icon}">
                     <TextBlock
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
@@ -174,11 +170,10 @@
                 <Button
                     x:Name="BtnOpenLog"
                     Grid.Column="14"
-                    Width="38"
-                    Height="38"
                     VerticalAlignment="Center"
                     IsDefault="True"
-                    ToolTip="Open log">
+                    ToolTip="Open log"
+                    Style="{StaticResource Button.Icon}">
                     <TextBlock
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
@@ -190,11 +185,10 @@
                 <Button
                     x:Name="BtnOpenGenClass"
                     Grid.Column="16"
-                    Width="38"
-                    Height="38"
                     VerticalAlignment="Center"
                     IsDefault="True"
-                    ToolTip="Open genClass folder">
+                    ToolTip="Open genClass folder"
+                    Style="{StaticResource Button.Icon}">
                     <TextBlock
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"

@@ -30,10 +30,7 @@
         <Border
             Grid.Row="0"
             Padding="16"
-            Background="{DynamicResource Brush.Surface}"
-            BorderBrush="{DynamicResource Brush.Border}"
-            BorderThickness="1"
-            CornerRadius="{StaticResource DefaultCornerRadius}">
+            Style="{StaticResource Card}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -159,9 +156,8 @@
                         <Button
                             x:Name="BtnAdd"
                             Grid.Column="1"
-                            Width="38"
-                            Height="36"
-                            ToolTip="Add field">
+                            ToolTip="Add field"
+                            Style="{StaticResource Button.Icon}">
                             <TextBlock
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
@@ -173,10 +169,9 @@
                         <Button
                             x:Name="BtnRefresh"
                             Grid.Column="5"
-                            Width="38"
-                            Height="36"
                             IsDefault="True"
-                            ToolTip="Refresh fields">
+                            ToolTip="Refresh fields"
+                            Style="{StaticResource Button.Icon}">
                             <TextBlock
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
@@ -188,9 +183,8 @@
                         <Button
                             x:Name="BtnGenerate"
                             Grid.Column="3"
-                            Width="38"
-                            Height="36"
-                            ToolTip="Generate fields">
+                            ToolTip="Generate fields"
+                            Style="{StaticResource Button.Icon}">
                             <TextBlock
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"

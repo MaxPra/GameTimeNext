@@ -22,50 +22,32 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <!--  Search Bar  -->
-        <Border
-            Grid.Row="0"
-            Height="40"
-            Margin="0,0,0,12"
-            Background="{DynamicResource Brush.TextBox.Background}"
-            BorderBrush="{DynamicResource Brush.Border}"
-            BorderThickness="1"
-            CornerRadius="{StaticResource DefaultCornerRadius}">
-            <Grid Margin="12,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
+        <!--  Search Bar: one TextBox with the icon inside, so hover/focus outline wraps the whole bar  -->
+        <Grid Grid.Row="0" Margin="0,0,0,12">
+            <TextBox
+                x:Name="txbSearch"
+                Height="40"
+                MinHeight="40"
+                Padding="36,6,11,6"
+                FontSize="13"
+                Tag="Search applications..." />
 
-                <TextBlock
-                    Grid.Column="0"
-                    Margin="0,0,8,0"
-                    VerticalAlignment="Center"
-                    FontFamily="Segoe MDL2 Assets"
-                    FontSize="14"
-                    Foreground="{DynamicResource Brush.TextSecondary}"
-                    Text="&#xE721;" />
-
-                <TextBox
-                    x:Name="txbSearch"
-                    Grid.Column="1"
-                    VerticalAlignment="Center"
-                    Background="Transparent"
-                    BorderThickness="0"
-                    CaretBrush="{DynamicResource Brush.TextPrimary}"
-                    FontSize="13"
-                    Foreground="{DynamicResource Brush.TextPrimary}"
-                    Tag="Search applications..." />
-            </Grid>
-        </Border>
+            <TextBlock
+                Margin="14,0,0,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                FontFamily="Segoe MDL2 Assets"
+                FontSize="14"
+                Foreground="{DynamicResource Brush.TextSecondary}"
+                IsHitTestVisible="False"
+                Text="&#xE721;" />
+        </Grid>
 
         <!--  Applications List  -->
         <Border
             Grid.Row="1"
-            Background="{DynamicResource Brush.Surface}"
-            BorderBrush="{DynamicResource Brush.Border}"
-            BorderThickness="1"
-            CornerRadius="{StaticResource DefaultCornerRadius}">
+            Padding="0"
+            Style="{StaticResource Card}">
             <ListView
                 x:Name="lvApplicationSearch"
                 Background="Transparent"

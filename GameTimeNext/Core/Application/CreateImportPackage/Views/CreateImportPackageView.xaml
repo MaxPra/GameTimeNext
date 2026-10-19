@@ -38,10 +38,7 @@
         <Border
             Grid.Row="2"
             Padding="18"
-            Background="{DynamicResource Brush.Surface}"
-            BorderBrush="{DynamicResource Brush.Border}"
-            BorderThickness="1"
-            CornerRadius="{StaticResource DefaultCornerRadius}">
+            Style="{StaticResource Card}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -97,9 +94,8 @@
                     <Button
                         x:Name="BtnBrowseOutputPath"
                         Grid.Column="2"
-                        Width="38"
-                        Height="36"
-                        ToolTip="Browse output folder">
+                        ToolTip="Browse output folder"
+                        Style="{StaticResource Button.Icon}">
                         <TextBlock
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"

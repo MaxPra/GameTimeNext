@@ -47,7 +47,7 @@
                             <Border
                                 Grid.Row="0"
                                 Padding="16"
-                                CornerRadius="10">
+                                Style="{StaticResource Card}">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
@@ -165,11 +165,8 @@
                                         <Button
                                             x:Name="btnAddPlatformWizard"
                                             Grid.Column="2"
-                                            Width="36"
-                                            Height="36"
-                                            MinHeight="36"
-                                            Padding="0"
-                                            ToolTip="Add Platform through wizard">
+                                            ToolTip="Add Platform through wizard"
+                                            Style="{StaticResource Button.Icon}">
                                             <Viewbox
                                                 Width="18"
                                                 Height="18"
@@ -238,11 +235,8 @@
                                 x:Name="pnlSteamLinkState"
                                 Grid.Row="0"
                                 Padding="12,10"
-                                Background="#0DFFFFFF"
-                                BorderBrush="#24FFFFFF"
-                                BorderThickness="1"
-                                CornerRadius="10"
-                                Visibility="Visible">
+                                Visibility="Visible"
+                                Style="{StaticResource Card}">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />
@@ -283,7 +277,7 @@
                                 x:Name="pnlSteamSettings"
                                 Grid.Row="2"
                                 Padding="16"
-                                CornerRadius="10">
+                                Style="{StaticResource Card}">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
@@ -335,7 +329,7 @@
                         <Border
                             x:Name="pnlGroups"
                             Padding="16"
-                            CornerRadius="10">
+                            Style="{StaticResource Card}">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
@@ -385,7 +379,7 @@
                             <Border
                                 Grid.Row="0"
                                 Padding="16"
-                                CornerRadius="10">
+                                Style="{StaticResource Card}">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
@@ -443,7 +437,7 @@
                             <Border
                                 Grid.Row="2"
                                 Padding="16"
-                                CornerRadius="10">
+                                Style="{StaticResource Card}">
                                 <Grid x:Name="grdAccentColorSettings">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
@@ -478,7 +472,7 @@
                                             Opacity="0.8"
                                             Text="Accent colors" />
 
-                                        <UniformGrid Grid.Row="2" Columns="3">
+                                        <StackPanel Grid.Row="2" Orientation="Horizontal">
                                             <ToggleButton x:Name="tglAccent1" Style="{StaticResource ProfileAccentColorToggleButtonStyle}" />
 
                                             <ToggleButton x:Name="tglAccent2" Style="{StaticResource ProfileAccentColorToggleButtonStyle}" />
@@ -487,7 +481,7 @@
                                                 x:Name="tglAccent3"
                                                 Margin="0"
                                                 Style="{StaticResource ProfileAccentColorToggleButtonStyle}" />
-                                        </UniformGrid>
+                                        </StackPanel>
                                     </Grid>
                                 </Grid>
                             </Border>

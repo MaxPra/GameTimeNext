@@ -43,6 +43,9 @@
 
   * Full blackout can now be toggled via hotkey while monitoring a console game.
 
+  * Added the option "Dynamic Background" (Settings > Appearance): a blurred image is used as background of the main window.
+    The background source can be chosen: the current Windows wallpaper or the cover of the selected profile.
+
 
   BUG FIXES
   _________

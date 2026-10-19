@@ -84,6 +84,10 @@ namespace GameTimeNext.Core.Application.TableObjects
         [UIXSignatureField(23)]
         public bool EnableTwitchIGDB { get; set; }
 
+        /// <summary>Entry of codetable bG for the blurred main window background; empty disables it.</summary>
+        [UIXSignatureField(24)]
+        public string BackgroundSource { get; set; }
+
 
 
         public AppSettings()
@@ -92,6 +96,7 @@ namespace GameTimeNext.Core.Application.TableObjects
             ActivateBlackoutKeyCombination = false;
             EnableFullBlackoutText = true;
             AllowProfileSpecificStyleChanges = false;
+            BackgroundSource = string.Empty;
 
             MonitoringKeyActive = false;
             ShowToastNotification = false;

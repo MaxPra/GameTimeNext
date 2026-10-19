@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI"
     xmlns:uix="clr-namespace:UIX.ViewController.Engine.FrameworkElements.UserControls;assembly=UIX.ViewController.Engine"
     HorizontalAlignment="Stretch"
     VerticalAlignment="Stretch"
@@ -69,10 +70,9 @@
                     <Button
                         x:Name="BtnDecreaseTimeSpan"
                         Grid.Column="0"
-                        Width="40"
-                        Height="36"
                         VerticalAlignment="Center"
-                        ToolTip="Decrease Time Span">
+                        ToolTip="Decrease Time Span"
+                        Style="{StaticResource Button.Icon}">
                         <TextBlock
                             FontFamily="Segoe MDL2 Assets"
                             FontSize="9"
@@ -92,10 +92,9 @@
                     <Button
                         x:Name="BtnIncreaseTimeSpan"
                         Grid.Column="4"
-                        Width="40"
-                        Height="36"
                         VerticalAlignment="Center"
-                        ToolTip="Increase Time Span">
+                        ToolTip="Increase Time Span"
+                        Style="{StaticResource Button.Icon}">
                         <TextBlock
                             FontFamily="Segoe MDL2 Assets"
                             FontSize="9"
@@ -122,10 +121,9 @@
                 <Button
                     x:Name="BtnRefresh"
                     Grid.Column="4"
-                    Width="40"
-                    Height="36"
                     VerticalAlignment="Center"
-                    ToolTip="Refresh">
+                    ToolTip="Refresh"
+                    Style="{StaticResource Button.Icon}">
                     <TextBlock
                         FontFamily="Segoe MDL2 Assets"
                         FontSize="9"
@@ -146,10 +144,8 @@
             <Border
                 x:Name="MostPlayedCard"
                 Grid.Column="0"
-                Background="{DynamicResource Brush.Surface}"
-                BorderBrush="{DynamicResource Brush.Border}"
-                BorderThickness="1"
-                CornerRadius="{StaticResource DefaultCornerRadius}">
+                Padding="0"
+                Style="{StaticResource Card}">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -210,30 +206,19 @@
                                     </Image>
                                 </Border>
 
-                                <!--  Gradient overlay at bottom  -->
-                                <Border ClipToBounds="True" CornerRadius="{StaticResource DefaultCornerRadius}">
-                                    <Border.Background>
-                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                            <GradientStop Offset="0.6" Color="Transparent" />
-                                            <GradientStop Offset="1" Color="#CC000000" />
-                                        </LinearGradientBrush>
-                                    </Border.Background>
-                                </Border>
-
-                                <!--  Rank badge  -->
+                                <!--  Hairline edge (2 units = ~1px after Viewbox scaling, radius matches the image clip), light at the top like the glass surfaces  -->
                                 <Border
-                                    Margin="0,10,10,0"
-                                    Padding="8,4"
-                                    HorizontalAlignment="Right"
-                                    VerticalAlignment="Top"
-                                    Background="{DynamicResource Brush.Accent}"
-                                    CornerRadius="{StaticResource DefaultCornerRadius}">
-                                    <TextBlock
-                                        FontSize="13"
-                                        FontWeight="Bold"
-                                        Foreground="White"
-                                        Text="#1" />
-                                </Border>
+                                    BorderBrush="{StaticResource Brush.Control.Edge}"
+                                    BorderThickness="2"
+                                    CornerRadius="8"
+                                    IsHitTestVisible="False" />
+
+                                <!--  Holographic foil: rainbow bands through fine wave lines, drifts slowly, follows and lights up at the mouse  -->
+                                <Border
+                                    ui:HoloShine.IsEnabled="True"
+                                    ui:HoloShine.PatternSize="110"
+                                    ui:HoloShine.RimThickness="3"
+                                    CornerRadius="8" />
                             </Grid>
                         </Viewbox>
 
@@ -263,10 +248,7 @@
                                 Grid.Row="2"
                                 Padding="10,8"
                                 HorizontalAlignment="Left"
-                                Background="{DynamicResource Brush.Background}"
-                                BorderBrush="{DynamicResource Brush.Border}"
-                                BorderThickness="1"
-                                CornerRadius="10">
+                                Style="{StaticResource Card.Inset}">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />
@@ -337,10 +319,8 @@
             <Border
                 Grid.Column="2"
                 Height="{Binding ElementName=MostPlayedCard, Path=ActualHeight}"
-                Background="{DynamicResource Brush.Surface}"
-                BorderBrush="{DynamicResource Brush.Border}"
-                BorderThickness="1"
-                CornerRadius="{StaticResource DefaultCornerRadius}">
+                Padding="0"
+                Style="{StaticResource Card}">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -430,10 +410,7 @@
                                 Grid.Row="2"
                                 Padding="8,4"
                                 HorizontalAlignment="Left"
-                                Background="{DynamicResource Brush.Background}"
-                                BorderBrush="{DynamicResource Brush.Border}"
-                                BorderThickness="1"
-                                CornerRadius="8">
+                                Style="{StaticResource Card.Inset}">
                                 <TextBlock
                                     x:Name="txtLastPlayedDate"
                                     FontSize="11"
@@ -446,10 +423,7 @@
                                 Grid.Row="4"
                                 Padding="8,6"
                                 HorizontalAlignment="Left"
-                                Background="{DynamicResource Brush.Background}"
-                                BorderBrush="{DynamicResource Brush.Border}"
-                                BorderThickness="1"
-                                CornerRadius="8">
+                                Style="{StaticResource Card.Inset}">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock
                                         Margin="0,0,6,0"
@@ -489,10 +463,8 @@
             <!--  Last played  -->
             <Border
                 Grid.Column="0"
-                Background="{DynamicResource Brush.Surface}"
-                BorderBrush="{DynamicResource Brush.Border}"
-                BorderThickness="1"
-                CornerRadius="{StaticResource DefaultCornerRadius}">
+                Padding="0"
+                Style="{StaticResource Card}">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -537,10 +509,7 @@
                             <DataTemplate>
                                 <Border
                                     Padding="10,8"
-                                    Background="{DynamicResource Brush.Background}"
-                                    BorderBrush="{DynamicResource Brush.Border}"
-                                    BorderThickness="1"
-                                    CornerRadius="10">
+                                    Style="{StaticResource Card.Inset}">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="72" />
@@ -598,10 +567,8 @@
             <!--  Playtime overview  -->
             <Border
                 Grid.Column="2"
-                Background="{DynamicResource Brush.Surface}"
-                BorderBrush="{DynamicResource Brush.Border}"
-                BorderThickness="1"
-                CornerRadius="{StaticResource DefaultCornerRadius}">
+                Padding="0"
+                Style="{StaticResource Card}">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -646,10 +613,7 @@
                             Grid.Row="0"
                             Grid.Column="0"
                             Padding="14,12"
-                            Background="{DynamicResource Brush.Background}"
-                            BorderBrush="{DynamicResource Brush.Border}"
-                            BorderThickness="1"
-                            CornerRadius="{StaticResource DefaultCornerRadius}">
+                            Style="{StaticResource Card.Inset}">
                             <StackPanel Orientation="Vertical">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock
@@ -682,10 +646,7 @@
                             Grid.Row="0"
                             Grid.Column="2"
                             Padding="14,12"
-                            Background="{DynamicResource Brush.Background}"
-                            BorderBrush="{DynamicResource Brush.Border}"
-                            BorderThickness="1"
-                            CornerRadius="{StaticResource DefaultCornerRadius}">
+                            Style="{StaticResource Card.Inset}">
                             <StackPanel Orientation="Vertical">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock
@@ -719,10 +680,7 @@
                             Grid.Column="0"
                             Grid.ColumnSpan="3"
                             Padding="14,12"
-                            Background="{DynamicResource Brush.Background}"
-                            BorderBrush="{DynamicResource Brush.Border}"
-                            BorderThickness="1"
-                            CornerRadius="{StaticResource DefaultCornerRadius}">
+                            Style="{StaticResource Card.Inset}">
                             <StackPanel Orientation="Vertical">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock
@@ -759,10 +717,8 @@
             <!--  Overall statistics  -->
             <Border
                 Grid.Column="4"
-                Background="{DynamicResource Brush.Surface}"
-                BorderBrush="{DynamicResource Brush.Border}"
-                BorderThickness="1"
-                CornerRadius="{StaticResource DefaultCornerRadius}">
+                Padding="0"
+                Style="{StaticResource Card}">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -802,10 +758,7 @@
                         <Border
                             Grid.Row="0"
                             Padding="12,10"
-                            Background="{DynamicResource Brush.Background}"
-                            BorderBrush="{DynamicResource Brush.Border}"
-                            BorderThickness="1"
-                            CornerRadius="10">
+                            Style="{StaticResource Card.Inset}">
                             <StackPanel Orientation="Vertical">
                                 <TextBlock
                                     FontSize="11"
@@ -825,10 +778,7 @@
                         <Border
                             Grid.Row="2"
                             Padding="12,10"
-                            Background="{DynamicResource Brush.Background}"
-                            BorderBrush="{DynamicResource Brush.Border}"
-                            BorderThickness="1"
-                            CornerRadius="10">
+                            Style="{StaticResource Card.Inset}">
                             <StackPanel Orientation="Vertical">
                                 <TextBlock
                                     FontSize="11"

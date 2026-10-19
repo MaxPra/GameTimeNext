@@ -71,6 +71,9 @@ namespace GameTimeNext
 
             AppEnvironment.LoadAppConfig();
 
+            // Blurred background image (desktop wallpaper or profile cover) as base of the window background (setting)
+            FnTheme.ApplyWallpaperBackground(AppEnvironment.GetAppConfig().AppSettings.BackgroundSource);
+
             FnLog.AddInfo("MainApp", "*** Initializing Application... ***");
 
             FnLog.AddInfo("MainApp", "Initiating Databasemanager...");

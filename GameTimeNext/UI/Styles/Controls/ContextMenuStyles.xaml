@@ -1,29 +1,20 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+    <!--
+        Context menus use the popup surface (Popup.Surface, PopupStyle.xaml): glass where supported,
+        entries tinted with the accent on hover.
+    -->
     <Style x:Key="ModernContextMenuStyle" TargetType="{x:Type ContextMenu}">
-        <Setter Property="Background" Value="{DynamicResource Brush.Surface}" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
-        <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="Padding" Value="6" />
+        <Setter Property="Padding" Value="4" />
+        <Setter Property="MinWidth" Value="200" />
+        <Setter Property="FontSize" Value="13" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
-        <Setter Property="HasDropShadow" Value="True" />
+        <Setter Property="HasDropShadow" Value="False" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ContextMenu}">
-                    <Border
-                        Padding="{TemplateBinding Padding}"
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}"
-                        CornerRadius="{StaticResource DefaultCornerRadius}">
-                        <Border.Effect>
-                            <DropShadowEffect
-                                BlurRadius="18"
-                                Direction="270"
-                                Opacity="0.25"
-                                ShadowDepth="6" />
-                        </Border.Effect>
+                    <Border Padding="{TemplateBinding Padding}" Style="{StaticResource Popup.Surface}">
                         <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle" />
                     </Border>
                 </ControlTemplate>
@@ -34,8 +25,9 @@
     <Style x:Key="ModernContextMenuItemStyle" TargetType="{x:Type MenuItem}">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
-        <Setter Property="Padding" Value="12,10" />
-        <Setter Property="Margin" Value="0,2,0,2" />
+        <Setter Property="Padding" Value="8,0" />
+        <Setter Property="MinHeight" Value="32" />
+        <Setter Property="Margin" Value="0,1" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="Cursor" Value="Hand" />
@@ -46,24 +38,27 @@
                         <Border
                             x:Name="RootBorder"
                             Background="{TemplateBinding Background}"
-                            CornerRadius="{StaticResource DefaultCornerRadius}"
+                            CornerRadius="{StaticResource Item.CornerRadius}"
                             SnapsToDevicePixels="True">
                             <Grid Margin="{TemplateBinding Padding}">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="26" />
+                                    <ColumnDefinition Width="20" />
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="20" />
                                 </Grid.ColumnDefinitions>
 
+                                <!--  Icons are muted and light up with the entry (only for icons without an own foreground)  -->
                                 <ContentPresenter
+                                    x:Name="IconHost"
                                     Grid.Column="0"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    ContentSource="Icon" />
+                                    ContentSource="Icon"
+                                    TextElement.Foreground="{DynamicResource Brush.TextSecondary}" />
 
                                 <ContentPresenter
                                     Grid.Column="1"
-                                    Margin="10,0,0,0"
+                                    Margin="10,0,12,0"
                                     VerticalAlignment="Center"
                                     ContentSource="Header"
                                     RecognizesAccessKey="True" />
@@ -75,7 +70,7 @@
                                     VerticalAlignment="Center"
                                     FontFamily="Segoe MDL2 Assets"
                                     FontSize="10"
-                                    Foreground="{TemplateBinding Foreground}"
+                                    Foreground="{DynamicResource Brush.TextSecondary}"
                                     Text="&#xE76C;"
                                     Visibility="Collapsed" />
                             </Grid>
@@ -86,22 +81,14 @@
                             AllowsTransparency="True"
                             Focusable="False"
                             IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}"
+                            HorizontalOffset="6"
                             Placement="Right"
                             PopupAnimation="{DynamicResource {x:Static SystemParameters.MenuPopupAnimationKey}}"
-                            VerticalOffset="-6">
+                            VerticalOffset="-5">
                             <Border
-                                Padding="6"
-                                Background="{StaticResource Brush.Surface}"
-                                BorderBrush="{StaticResource Brush.Border}"
-                                BorderThickness="1"
-                                CornerRadius="{StaticResource DefaultCornerRadius}">
-                                <Border.Effect>
-                                    <DropShadowEffect
-                                        BlurRadius="18"
-                                        Direction="270"
-                                        Opacity="0.25"
-                                        ShadowDepth="6" />
-                                </Border.Effect>
+                                MinWidth="200"
+                                Padding="4"
+                                Style="{StaticResource Popup.Surface}">
                                 <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Cycle" />
                             </Border>
                         </Popup>
@@ -113,12 +100,16 @@
                         </Trigger>
 
                         <Trigger Property="IsHighlighted" Value="True">
-                            <Setter TargetName="RootBorder" Property="Background" Value="{DynamicResource Brush.Accent}" />
+                            <Setter TargetName="RootBorder" Property="Background" Value="{StaticResource Brush.Item.Hover}" />
+                            <Setter TargetName="IconHost" Property="TextElement.Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+                            <Setter TargetName="ArrowGlyph" Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
                             <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
                         </Trigger>
 
                         <Trigger Property="IsSubmenuOpen" Value="True">
-                            <Setter TargetName="RootBorder" Property="Background" Value="{DynamicResource Brush.AccentHover}" />
+                            <Setter TargetName="RootBorder" Property="Background" Value="{StaticResource Brush.Item.Selected}" />
+                            <Setter TargetName="IconHost" Property="TextElement.Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+                            <Setter TargetName="ArrowGlyph" Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
                             <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
                         </Trigger>
 
@@ -133,14 +124,14 @@
     </Style>
 
     <Style x:Key="ModernContextMenuSeparatorStyle" TargetType="{x:Type Separator}">
-        <Setter Property="Margin" Value="8,6,8,6" />
+        <Setter Property="Margin" Value="8,4" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Separator}">
                     <Border
                         Height="1"
-                        Background="{DynamicResource Brush.Border}"
-                        Opacity="0.65" />
+                        Background="{StaticResource Brush.Card.Divider}"
+                        SnapsToDevicePixels="True" />
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
