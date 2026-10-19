@@ -8,6 +8,10 @@
 
 <br>
 
+**🚧 We are currently putting the finishing touches on GameTimeNext — Version 1.0.0 is planned for November 19, 2026.**
+
+<br>
+
 <img width="100%" alt="GameTimeNext Banner" src="https://github.com/user-attachments/assets/9de07a22-b098-499a-8755-e5c1e5ce13f0" />
 
 <br>

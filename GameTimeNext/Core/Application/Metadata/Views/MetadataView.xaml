@@ -140,7 +140,6 @@
                     Width="38"
                     Height="38"
                     VerticalAlignment="Center"
-                    IsDefault="True"
                     ToolTip="Open genClass folder">
                     <TextBlock
                         HorizontalAlignment="Center"

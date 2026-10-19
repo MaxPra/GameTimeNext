@@ -2,6 +2,7 @@
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework.Utils;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
 
@@ -10,8 +11,15 @@ namespace GameTimeNext.Core.Framework.UI
     internal static class CFBlackout
     {
         private static readonly List<Window> blackoutWindows = new();
-        private static readonly List<Action> movementStops = new();
+        private static readonly List<CFBlackoutTransitionWindow> transitionWindows = new();
+        private static readonly List<Window> closingWindows = new();
         private static bool isActive = false;
+
+        // Animation shown on the full blackout (will become a user setting later)
+        private static readonly BlackoutAnimationType blackoutAnimation = BlackoutAnimationType.ParticleProfileCover;
+
+        // Particle transition when the blackout is turned on/off
+        private static readonly bool useTransitions = true;
 
         public static void ToggleBlackout(Window owner)
         {
@@ -32,6 +40,8 @@ namespace GameTimeNext.Core.Framework.UI
                 return;
             }
 
+            CancelTransitions();
+
             bool showMovingLabel = AppEnvironment.GetAppConfig().AppSettings.EnableFullBlackoutText && !consoleMode;
             CreateWindowsForMonitors(owner, monitor => true, showMovingLabel: showMovingLabel);
             FnDisplay.MoveMouseToVirtualBottomRight();
@@ -48,6 +58,7 @@ namespace GameTimeNext.Core.Framework.UI
                 return;
             }
 
+            CancelTransitions();
             CreateWindowsForMonitors(owner, monitor => !monitor.IsPrimary, showMovingLabel: false);
 
             if (manageCursor)
@@ -69,11 +80,11 @@ namespace GameTimeNext.Core.Framework.UI
 
             if (dispatcher.CheckAccess())
             {
-                CloseAllWindows();
+                CloseAllWindowsAnimated();
             }
             else
             {
-                dispatcher.Invoke(CloseAllWindows);
+                dispatcher.Invoke(CloseAllWindowsAnimated);
             }
 
             FnDisplay.UnclipMouse();
@@ -123,42 +134,167 @@ namespace GameTimeNext.Core.Framework.UI
             {
                 var wnd = BuildBlackoutWindow(owner, monitor, showMovingLabel);
                 blackoutWindows.Add(wnd);
-                wnd.Show();
+
+                if (useTransitions)
+                {
+                    ShowWithTransition(owner, wnd);
+                }
+                else
+                {
+                    wnd.Show();
+                }
             }
         }
 
-        private static void CloseAllWindows()
+        /// <summary>
+        /// Plays the "burn in" transition over the live desktop. Once the screen is completely black,
+        /// the running transition surface (black + embers) moves into the opaque blackout window as an overlay
+        /// and the expensive transparent transition window is closed. The overlay then fades out its black
+        /// over the starting blackout content, so both never render as two full screen windows at the same time.
+        /// </summary>
+        private static void ShowWithTransition(Window owner, Window wnd)
         {
-            StopMovementTimers();
+            var transition = new CFBlackoutTransitionWindow(owner, GetBounds(wnd), BlackoutTransitionMode.In);
+            transitionWindows.Add(transition);
+
+            transition.Covered += () =>
+            {
+                if (!blackoutWindows.Contains(wnd))
+                {
+                    CloseTransition(transition);
+                    return;
+                }
+
+                var surface = transition.DetachSurface();
+                var root = (Grid)wnd.Content;
+                root.Children.Add(surface);
+
+                surface.Finished += () =>
+                {
+                    surface.Stop();
+                    root.Children.Remove(surface);
+                };
+                wnd.Closed += (_, _) => surface.Stop();
+
+                bool handedOver = false;
+                void HandOver()
+                {
+                    if (handedOver)
+                    {
+                        return;
+                    }
+
+                    handedOver = true;
+                    CloseTransition(transition);
+                    surface.Release();
+                }
+
+                wnd.ContentRendered += (_, _) => HandOver();
+                wnd.Show();
+
+                // Fallback in case ContentRendered is not raised
+                wnd.Dispatcher.BeginInvoke(DispatcherPriority.ContextIdle, new Action(HandOver));
+            };
+            transition.Completed += () => CloseTransition(transition);
+
+            transition.Show();
+        }
+
+        /// <summary>
+        /// Covers the blackout window with a fully black transition window, closes the blackout window
+        /// and then burns a hole into the black until the desktop is completely visible again.
+        /// </summary>
+        private static void HideWithTransition(Window wnd)
+        {
+            // The hole must not start burning before the blackout window is gone,
+            // otherwise the blackout window would be visible through it
+            var transition = new CFBlackoutTransitionWindow(wnd.Owner, GetBounds(wnd), BlackoutTransitionMode.Out, startImmediately: false);
+            transitionWindows.Add(transition);
+            closingWindows.Add(wnd);
+
+            bool handedOver = false;
+            void HandOver()
+            {
+                if (handedOver || !transitionWindows.Contains(transition))
+                {
+                    return;
+                }
+
+                handedOver = true;
+                closingWindows.Remove(wnd);
+                CloseQuietly(wnd);
+                transition.Begin();
+            }
+
+            transition.ContentRendered += (_, _) => HandOver();
+            transition.Completed += () => CloseTransition(transition);
+
+            transition.Show();
+
+            // Fallback in case ContentRendered is not raised
+            transition.Dispatcher.BeginInvoke(DispatcherPriority.ContextIdle, new Action(HandOver));
+        }
+
+        private static Rect GetBounds(Window wnd)
+        {
+            return new Rect(wnd.Left, wnd.Top, wnd.Width, wnd.Height);
+        }
+
+        private static void CloseTransition(CFBlackoutTransitionWindow transition)
+        {
+            transitionWindows.Remove(transition);
+            CloseQuietly(transition);
+        }
+
+        /// <summary>
+        /// Immediately ends all running transitions (e.g. the blackout is toggled again while one is still playing).
+        /// </summary>
+        private static void CancelTransitions()
+        {
+            foreach (var transition in transitionWindows.ToList())
+            {
+                CloseQuietly(transition);
+            }
+
+            transitionWindows.Clear();
+
+            foreach (var window in closingWindows.ToList())
+            {
+                CloseQuietly(window);
+            }
+
+            closingWindows.Clear();
+        }
+
+        private static void CloseQuietly(Window window)
+        {
+            try
+            {
+                window.Close();
+            }
+            catch
+            {
+            }
+        }
+
+        private static void CloseAllWindowsAnimated()
+        {
+            // A blackout that is still burning in gets cancelled without an outro
+            CancelTransitions();
 
             foreach (var window in blackoutWindows.ToList())
             {
-                try
+                if (useTransitions && window.IsVisible)
                 {
-                    window.Close();
+                    HideWithTransition(window);
                 }
-                catch
+                else
                 {
+                    CloseQuietly(window);
                 }
             }
 
             blackoutWindows.Clear();
-        }
-
-        private static void StopMovementTimers()
-        {
-            foreach (var stop in movementStops.ToList())
-            {
-                try
-                {
-                    stop();
-                }
-                catch
-                {
-                }
-            }
-
-            movementStops.Clear();
         }
 
         private static Window BuildBlackoutWindow(Window owner, FnDisplay.MonitorInfoData monitor, bool showMovingLabel)
@@ -198,9 +334,13 @@ namespace GameTimeNext.Core.Framework.UI
                 WindowStartupLocation = WindowStartupLocation.Manual
             };
 
+            // Root grid: blackout content + (temporarily) the transition overlay on top
+            var root = new Grid();
+            wnd.Content = root;
+
             if (showMovingLabel)
             {
-                AddParticleClock(wnd);
+                AddBlackoutAnimation(wnd, root);
             }
 
             wnd.Cursor = System.Windows.Input.Cursors.None;
@@ -214,27 +354,28 @@ namespace GameTimeNext.Core.Framework.UI
             return wnd;
         }
 
-        private static void AddParticleClock(Window wnd)
+        private static CFBlackoutAnimationBase CreateBlackoutAnimation()
         {
-            var clock = new CFBlackoutParticleClock();
-            wnd.Content = clock;
-
-            void StopAnimation()
+            if (blackoutAnimation == BlackoutAnimationType.ParticleProfileCover)
             {
-                clock.Stop();
+                // Falls back to the clock if no profile is selected or it has no cover
+                var cover = CFBlackoutParticleCover.TryCreate();
+                if (cover != null)
+                {
+                    return cover;
+                }
             }
 
-            wnd.Loaded += (_, _) =>
-            {
-                clock.Start();
-                movementStops.Add(StopAnimation);
-            };
+            return new CFBlackoutParticleClock();
+        }
 
-            wnd.Closed += (_, _) =>
-            {
-                StopAnimation();
-                movementStops.Remove(StopAnimation);
-            };
+        private static void AddBlackoutAnimation(Window wnd, Grid root)
+        {
+            var animation = CreateBlackoutAnimation();
+            root.Children.Add(animation);
+
+            wnd.Loaded += (_, _) => animation.Start();
+            wnd.Closed += (_, _) => animation.Stop();
         }
     }
 }
