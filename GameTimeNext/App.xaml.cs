@@ -89,9 +89,25 @@ namespace GameTimeNext
             FnLog.AddInfo("MainApp", "Deleting old backups...");
             FileHandler.DeleteOldBackupFiles();
 
+            // Start argument -optimizecovers: shrink existing profile covers
+            if (AppEnvironment.StartArguments.ContainsKey("optimizecovers"))
+                OptimizeProfileCovers();
+
             // Auf neue Version (Github) prüfen
             FnLog.AddInfo("MainApp", "Checking for new version (Github)...");
             CheckForNewVersion();
+        }
+
+        private void OptimizeProfileCovers()
+        {
+            FnLog.AddInfo("MainApp", "Optimizing profile covers...");
+
+            (int optimizedCount, long savedBytes) = Core.Application.Profiles.CFProfilesEditApp.OptimizeAllProfileCovers();
+
+            string message = $"{optimizedCount} profile cover(s) optimized, {savedBytes / 1024.0 / 1024.0:0.0} MB saved.";
+
+            FnLog.AddInfo("MainApp", message);
+            AppEnvironment.InformationList.Add(new InformationListItem(Core.Framework.UI.Dialogs.CFMBOXIcon.Info, message));
         }
 
         protected override void OnExit(ExitEventArgs e)

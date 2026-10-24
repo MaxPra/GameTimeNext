@@ -1,5 +1,6 @@
 ﻿using GameTimeNext.Core.Application.Profiles.Views;
 using GameTimeNext.Core.Framework.Config;
+using GameTimeNext.Core.Framework.Logging;
 using System.IO;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media.Imaging;
@@ -24,6 +25,45 @@ namespace GameTimeNext.Core.Application.Profiles
         public static void SaveProfileCover(BitmapSource source, string path)
         {
             FnImage.SaveAsJpeg(FnImage.DownscaleToFit(source, ProfileCoverMaxWidth, ProfileCoverMaxHeight), path, ProfileCoverJpegQuality);
+        }
+
+        /// <summary>
+        /// Re-saves every existing profile cover in the cover format (JPEG, max. cover size).
+        /// File names stay the same, so PPFN doesn't need to change.
+        /// </summary>
+        /// <returns>Number of optimized covers and the saved bytes</returns>
+        public static (int optimizedCount, long savedBytes) OptimizeAllProfileCovers()
+        {
+            int optimizedCount = 0;
+            long savedBytes = 0;
+
+            foreach (string path in Directory.GetFiles(AppConfig.Storage.ProfileCoversDirectoryPath))
+            {
+                string tempPath = path + ".tmp";
+
+                try
+                {
+                    // Save to a temp file first, so the original stays intact if anything fails
+                    SaveProfileCover(FnImage.Load(path), tempPath);
+
+                    long oldSize = new FileInfo(path).Length;
+                    long newSize = new FileInfo(tempPath).Length;
+
+                    File.Move(tempPath, path, true);
+
+                    optimizedCount++;
+                    savedBytes += oldSize - newSize;
+
+                    FnLog.AddInfo("CoverOptimization", $"Optimized {Path.GetFileName(path)}: {oldSize / 1024} KB -> {newSize / 1024} KB");
+                }
+                catch (Exception ex)
+                {
+                    try { File.Delete(tempPath); } catch { }
+                    FnLog.AddWarning("CoverOptimization", $"Could not optimize {Path.GetFileName(path)}", ex);
+                }
+            }
+
+            return (optimizedCount, savedBytes);
         }
 
         /// <summary>
