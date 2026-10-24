@@ -176,7 +176,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
             // Default
             if (dataType.IsDefaultAllowed && dataType.IsNumeric && GetWnd().chbDefault.IsChecked.Equals(true))
-                if (!FnControls.ContainsOnlyNumericValue(GetWnd().txbDefault))
+                if (!FnControls.ContainsOnlyNumericValue(GetWnd().txbDefault, dataType))
                     AddViewError(GetWnd().txbDefault, FnErrorMessage.ErrorMessage.OnlyNumeric.GetMessage());
         }
 
@@ -202,10 +202,10 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
                 }
                 GetWnd().chbDefaultBool.IsChecked = defaultBool;
             }
-            else
+            else if (!FnString.IsNullEmptyOrWhitespace(selectedDataType))
             {
-                // Textbox
-                GetWnd().txbDefault.Text = GetApp().T1METAP!.DEFVL;
+                // Textbox (DEFVL is stored in CSV format, the view shows it in the current culture)
+                GetWnd().txbDefault.Text = (string)UIXSqliteDataType.Convert(UIXSqliteDataType.ConversionType.CSV, UIXSqliteDataType.ConversionType.UI, GetApp().T1METAP!.DEFVL, UIXSqliteDataType.GetByKey(selectedDataType))!;
             }
         }
 
@@ -214,15 +214,20 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
             string selectedDataType = GetWnd().cmbDataType.SelectedValue?.ToString() ?? string.Empty;
 
             // DEFVL
-            if (selectedDataType.Equals("06"))
+            if (!GetWnd().chbDefault.IsChecked.Equals(true))
+            {
+                // No default
+                GetApp().T1METAP!.DEFVL = string.Empty;
+            }
+            else if (selectedDataType.Equals("06"))
             {
                 // Checkbox
                 GetApp().T1METAP!.DEFVL = (string)UIXSqliteDataType.Convert(UIXSqliteDataType.ConversionType.CSharp, UIXSqliteDataType.ConversionType.CSV, GetWnd().chbDefaultBool.IsChecked.Equals(true))!;
             }
             else
             {
-                // Textbox
-                GetApp().T1METAP!.DEFVL = GetWnd().txbDefault.Text;
+                // Textbox (validated in CheckImpl)
+                GetApp().T1METAP!.DEFVL = (string)UIXSqliteDataType.Convert(UIXSqliteDataType.ConversionType.UI, UIXSqliteDataType.ConversionType.CSV, GetWnd().txbDefault.Text, UIXSqliteDataType.GetByKey(selectedDataType))!;
             }
         }
 
@@ -248,6 +253,15 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
         protected override void Event_Maximize()
         {
+        }
+
+        protected void EV_chbDefault()
+        {
+            if (GetWnd().chbDefault.IsChecked.Equals(true))
+                return;
+
+            GetWnd().txbDefault.Text = string.Empty;
+            GetWnd().chbDefaultBool.IsChecked = false;
         }
 
         protected void EV_BtnSave()

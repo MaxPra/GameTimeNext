@@ -114,7 +114,14 @@ namespace GameTimeNext.Core.Framework.UI
             var lastSelectedItem = GetLastSelectedItem(tabControl);
             SetLastSelectedItem(tabControl, selectedItem);
 
-            if (selectedItem is null || ReferenceEquals(selectedItem, lastSelectedItem))
+            if (selectedItem is null)
+            {
+                // Last tab closed: hide the runner instead of leaving it at the old position
+                AnimateSelectionRunner(tabControl, animate: false);
+                return;
+            }
+
+            if (ReferenceEquals(selectedItem, lastSelectedItem))
                 return;
 
             tabControl.Dispatcher.BeginInvoke(new Action(() => AnimateSelectionRunner(tabControl, animate: true)), System.Windows.Threading.DispatcherPriority.Render);
@@ -159,8 +166,20 @@ namespace GameTimeNext.Core.Framework.UI
             if (tabControl.Template.FindName("TabTrackContentHost", tabControl) is not FrameworkElement trackHost)
                 return;
 
+            if (runner.RenderTransform is not TranslateTransform runnerTransform)
+            {
+                runnerTransform = new TranslateTransform();
+                runner.RenderTransform = runnerTransform;
+            }
+
             if (tabControl.SelectedItem is null)
+            {
+                runner.BeginAnimation(FrameworkElement.WidthProperty, null);
+                runnerTransform.BeginAnimation(TranslateTransform.XProperty, null);
+                runner.Width = 0;
+                runnerTransform.X = 0;
                 return;
+            }
 
             if (tabControl.ItemContainerGenerator.ContainerFromItem(tabControl.SelectedItem) is not FrameworkElement selectedTab)
                 return;
@@ -171,12 +190,6 @@ namespace GameTimeNext.Core.Framework.UI
             var selectedOrigin = selectedTab.TransformToVisual(trackHost).Transform(new Point(0, 0));
             var targetX = selectedOrigin.X;
             var targetWidth = selectedTab.ActualWidth;
-
-            if (runner.RenderTransform is not TranslateTransform runnerTransform)
-            {
-                runnerTransform = new TranslateTransform();
-                runner.RenderTransform = runnerTransform;
-            }
 
             var currentRunnerWidth = (double)runner.GetValue(FrameworkElement.WidthProperty);
             var currentRunnerX = (double)runnerTransform.GetValue(TranslateTransform.XProperty);

@@ -89,7 +89,7 @@ namespace GameTimeNext.Core.Framework.DataBase
             bool migrationNeeded = false;
             if (!oldIds.ContainsKey("External"))
                 migrationNeeded = true;
-            if (!migrationNeeded && !oldIds["External"].Equals("6"))
+            if (!migrationNeeded && oldIds["External"] != 6)
                 migrationNeeded = true;
 
             if (migrationNeeded)
@@ -171,29 +171,59 @@ namespace GameTimeNext.Core.Framework.DataBase
             Dictionary<string, int> newIds = new Dictionary<string, int>();
             GetT1groupIds(ref newIds);
 
-            using SQLiteCommand cmdUpdate = _connection.CreateCommand();
-            cmdUpdate.CommandText = "UPDATE T1GRPPO SET GRID = @NEWGRID WHERE GRID = @OLDGRID;";
-            SQLiteParameter parNewGrid = cmdUpdate.Parameters.Add("@NEWGRID", DbType.Int32);
-            SQLiteParameter parUpdateOldGrid = cmdUpdate.Parameters.Add("@OLDGRID", DbType.Int32);
-
-            using SQLiteCommand cmdDelete = _connection.CreateCommand();
-            cmdDelete.CommandText = "DELETE FROM T1GRPPO WHERE GRID = @OLDGRID;";
-            SQLiteParameter parDeleteOldGrid = cmdDelete.Parameters.Add("@OLDGRID", DbType.Int32);
+            List<KeyValuePair<int, int>> remaps = new List<KeyValuePair<int, int>>();
+            List<int> removedIds = new List<int>();
 
             foreach (var oldId in oldIds)
             {
                 if (newIds.TryGetValue(oldId.Key, out int newValue))
                 {
-                    parNewGrid.Value = newValue;
-                    parUpdateOldGrid.Value = oldId.Value;
-                    cmdUpdate.ExecuteNonQuery();
+                    if (newValue != oldId.Value)
+                        remaps.Add(new KeyValuePair<int, int>(oldId.Value, newValue));
                 }
                 else
                 {
-                    parDeleteOldGrid.Value = oldId.Value;
+                    removedIds.Add(oldId.Value);
+                }
+            }
+
+            using SQLiteTransaction transaction = _connection.BeginTransaction();
+
+            // Delete first: a removed old ID may equal the new ID of a remapped group
+            using (SQLiteCommand cmdDelete = _connection.CreateCommand())
+            {
+                cmdDelete.Transaction = transaction;
+                cmdDelete.CommandText = "DELETE FROM T1GRPPO WHERE GRID = @OLDGRID;";
+                SQLiteParameter parDeleteOldGrid = cmdDelete.Parameters.Add("@OLDGRID", DbType.Int32);
+
+                foreach (int removedId in removedIds)
+                {
+                    parDeleteOldGrid.Value = removedId;
                     cmdDelete.ExecuteNonQuery();
                 }
             }
+
+            // One statement for all remaps: every row is mapped exactly once, so crossing IDs (1 -> 2, 2 -> 1) stay correct
+            if (remaps.Count > 0)
+            {
+                using SQLiteCommand cmdUpdate = _connection.CreateCommand();
+                cmdUpdate.Transaction = transaction;
+
+                List<string> whens = new List<string>();
+                List<string> oldGrids = new List<string>();
+                for (int i = 0; i < remaps.Count; i++)
+                {
+                    whens.Add($"WHEN @OLDGRID{i} THEN @NEWGRID{i}");
+                    oldGrids.Add($"@OLDGRID{i}");
+                    cmdUpdate.Parameters.Add($"@OLDGRID{i}", DbType.Int32).Value = remaps[i].Key;
+                    cmdUpdate.Parameters.Add($"@NEWGRID{i}", DbType.Int32).Value = remaps[i].Value;
+                }
+
+                cmdUpdate.CommandText = $"UPDATE T1GRPPO SET GRID = CASE GRID {String.Join(" ", whens)} END WHERE GRID IN ({String.Join(", ", oldGrids)});";
+                cmdUpdate.ExecuteNonQuery();
+            }
+
+            transaction.Commit();
         }
 
         private void EnsureDefaultValuesT1groupConditions()

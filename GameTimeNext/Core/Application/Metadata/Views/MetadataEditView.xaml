@@ -18,7 +18,7 @@
     WindowStartupLocation="CenterOwner"
     mc:Ignorable="d">
 
-    <Grid Margin="20,16,20,20">
+    <Grid Style="{StaticResource View.Root}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="16" />
@@ -127,7 +127,7 @@
 
         <TabControl x:Name="tabControl" Grid.Row="2">
             <TabItem Header="Fields">
-                <Grid Margin="10">
+                <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="12" />

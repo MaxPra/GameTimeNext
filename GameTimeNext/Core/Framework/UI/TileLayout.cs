@@ -1,3 +1,4 @@
+using GameTimeNext.Core.Framework.Utils;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -69,7 +70,7 @@ namespace GameTimeNext.Core.Framework.UI
 
             itemsControl.Loaded += (_, _) =>
             {
-                ScrollViewer? scrollViewer = FindDescendant<ScrollViewer>(itemsControl);
+                ScrollViewer? scrollViewer = FnVisualTree.FindDescendant<ScrollViewer>(itemsControl);
                 if (scrollViewer == null)
                     return;
 
@@ -158,24 +159,6 @@ namespace GameTimeNext.Core.Framework.UI
             }
 
             return knownWidth > 0 ? knownWidth : SystemParameters.VerticalScrollBarWidth;
-        }
-
-        private static T? FindDescendant<T>(DependencyObject parent) where T : DependencyObject
-        {
-            int count = VisualTreeHelper.GetChildrenCount(parent);
-
-            for (int i = 0; i < count; i++)
-            {
-                DependencyObject child = VisualTreeHelper.GetChild(parent, i);
-
-                if (child is T match)
-                    return match;
-
-                if (FindDescendant<T>(child) is T nested)
-                    return nested;
-            }
-
-            return null;
         }
     }
 }

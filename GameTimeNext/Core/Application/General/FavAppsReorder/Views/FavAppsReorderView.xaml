@@ -16,7 +16,7 @@
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
 
-    <Grid Margin="20">
+    <Grid Style="{StaticResource View.Root}">
         <!--  Applications List  -->
         <Border
             Padding="0"

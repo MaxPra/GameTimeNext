@@ -16,10 +16,8 @@
     WindowStartupLocation="CenterOwner"
     mc:Ignorable="d">
 
-    <Grid Margin="18">
+    <Grid Style="{StaticResource View.Root}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="16" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="8" />
             <RowDefinition Height="Auto" />
@@ -29,32 +27,21 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0">
-            <TextBlock
-                FontSize="20"
-                FontWeight="SemiBold"
-                Text="Steam import" />
-            <TextBlock
-                Margin="0,4,0,0"
-                Opacity="0.75"
-                Text="Search and select a game from your Steam library." />
-        </StackPanel>
-
         <TextBlock
-            Grid.Row="2"
+            Grid.Row="0"
             Opacity="0.8"
             Text="Search" />
 
         <TextBox
             x:Name="TxbSearch"
-            Grid.Row="4"
+            Grid.Row="2"
             Height="36"
             VerticalContentAlignment="Center"
             ToolTip="Type to filter the list" />
 
         <DataGrid
             x:Name="dgSteamGames"
-            Grid.Row="6"
+            Grid.Row="4"
             AutoGenerateColumns="False"
             CanUserAddRows="False"
             CanUserDeleteRows="False"
@@ -73,7 +60,7 @@
             </DataGrid.Columns>
         </DataGrid>
 
-        <Grid Grid.Row="8">
+        <Grid Grid.Row="6">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
