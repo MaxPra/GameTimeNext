@@ -5,7 +5,7 @@ namespace GameTimeNext.Core.Framework.Utils
         /// <summary>
         /// Placeholder for values that do not exist (e.g. never played, no estimate set).
         /// </summary>
-        public const string NoValue = "—";
+        public const string NoValue = "-";
 
         /// <summary>
         /// Formats a duration in minutes as "##h ##m" (e.g. "05h 07m").

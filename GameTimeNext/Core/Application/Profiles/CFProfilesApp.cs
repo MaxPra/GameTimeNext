@@ -9,27 +9,6 @@ namespace GameTimeNext.Core.Application.Profiles
 {
     public class CFProfilesApp
     {
-        public static string FormatGameTimeHours(double gameTime)
-        {
-
-            string returnedFormat = "";
-
-            if (gameTime == 0)
-            {
-                return "n.A.";
-            }
-
-            double gameTimeHours = gameTime / 60.0;
-            double roundedHours = Math.Round(gameTimeHours, 1);
-
-            returnedFormat = roundedHours.ToString("0.#") + " h";
-
-            if (roundedHours < 1)
-                returnedFormat = "< 1 h";
-
-            return returnedFormat;
-        }
-
         public static string FormatGameTimeMinutes(double gameTime)
         {
             string returnedFormat = "";
