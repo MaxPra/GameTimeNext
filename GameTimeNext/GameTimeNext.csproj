@@ -13,6 +13,7 @@
 		<OutputType>WinExe</OutputType>
 
 		<ApplicationIcon>UI\Ressources\GTN_APP_ICON.ico</ApplicationIcon>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<Configurations>Debug;Release;GTXMigTest</Configurations>
 	</PropertyGroup>
 
@@ -84,6 +85,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\UIX.ViewController.Engine\UIX.ViewController.Engine.csproj" />
+    <ProjectReference Include="..\..\UIXMonitorTweaks\UIXMonitorTweaks.csproj" />
   </ItemGroup>
 
   <ItemGroup>
