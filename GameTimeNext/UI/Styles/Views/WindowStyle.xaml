@@ -4,7 +4,91 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:baseViews="clr-namespace:GameTimeNext.Core.Framework.UI.Base"
-    xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework">
+    xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI"
+    xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!--
+        Windows with backdrop blur (GTNWindow.IsBackdropActive; main window without dynamic background): "tinted glass".
+        The acrylic alone turns into a gray veil over colorless content (settings, code tables, ...),
+        so it is tinted with the application background and the accent glow of the main window.
+        Opacity of the layers below = how much of the blurred content shines through.
+    -->
+    <DrawingBrush x:Key="Brush.Window.Translucent" Stretch="Fill">
+        <DrawingBrush.Drawing>
+            <DrawingGroup>
+                <!--  App background (same gradient as the main window), mostly opaque  -->
+                <GeometryDrawing>
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,1,1" />
+                    </GeometryDrawing.Geometry>
+                    <GeometryDrawing.Brush>
+                        <LinearGradientBrush Opacity="0.82" StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Offset="0" Color="{DynamicResource Color.Background}" />
+                            <GradientStop Offset="0.30" Color="#0C0C12" />
+                            <GradientStop Offset="0.62" Color="#0E0E15" />
+                            <GradientStop Offset="1" Color="{DynamicResource Color.Background}" />
+                        </LinearGradientBrush>
+                    </GeometryDrawing.Brush>
+                </GeometryDrawing>
+
+                <!--  Accent tint, top left (stronger than in the main window, the glass needs the color)  -->
+                <GeometryDrawing>
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,1,1" />
+                    </GeometryDrawing.Geometry>
+                    <GeometryDrawing.Brush>
+                        <RadialGradientBrush
+                            Center="0.2,0.1"
+                            GradientOrigin="0.2,0.1"
+                            Opacity="0.22"
+                            RadiusX="1.1"
+                            RadiusY="1.1">
+                            <GradientStop Offset="0" Color="{DynamicResource Color.Accent}" />
+                            <GradientStop Offset="1" Color="Transparent" />
+                        </RadialGradientBrush>
+                    </GeometryDrawing.Brush>
+                </GeometryDrawing>
+
+                <!--  Accent tint, bottom right  -->
+                <GeometryDrawing>
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,1,1" />
+                    </GeometryDrawing.Geometry>
+                    <GeometryDrawing.Brush>
+                        <RadialGradientBrush
+                            Center="0.9,0.9"
+                            GradientOrigin="0.9,0.9"
+                            Opacity="0.10"
+                            RadiusX="1"
+                            RadiusY="1">
+                            <GradientStop Offset="0" Color="{DynamicResource Color.AccentHover}" />
+                            <GradientStop Offset="1" Color="Transparent" />
+                        </RadialGradientBrush>
+                    </GeometryDrawing.Brush>
+                </GeometryDrawing>
+            </DrawingGroup>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
+
+    <SolidColorBrush x:Key="Brush.Window.TitleBarTranslucent" Color="#33000000" />
+
+    <!--
+        Root grid of a view: outer margin when shown in its own window, none inside a main window tab
+        (the tab content area already insets it, see ModernTabControlStyle).
+    -->
+    <Style x:Key="View.Root" TargetType="Grid">
+        <Setter Property="Margin" Value="20,16,20,20" />
+        <Style.Triggers>
+            <Trigger Property="ui:ViewHost.IsTabContent" Value="True">
+                <Setter Property="Margin" Value="0" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!--  How strongly the blurred wallpaper shows through the dark background (GTNWindow.UseWallpaperBackground)  -->
+    <sys:Double x:Key="Window.WallpaperOpacity">0.3</sys:Double>
+    <SolidColorBrush x:Key="Brush.Window.BorderTranslucent" Color="#1FFFFFFF" />
 
     <Style x:Key="GTNWindowStyle" TargetType="{x:Type baseViews:GTNWindow}">
         <Setter Property="WindowStyle" Value="None" />
@@ -21,6 +105,7 @@
                     UseAeroCaptionButtons="False" />
             </Setter.Value>
         </Setter>
+
 
         <Setter Property="Template">
             <Setter.Value>
@@ -39,17 +124,41 @@
                                 <ScaleTransform x:Name="ScaleTf" ScaleX="1" ScaleY="1" />
                             </Border.RenderTransform>
 
-                            <Border ClipToBounds="True" CornerRadius="10">
+                            <Border
+                                x:Name="ClipBorder"
+                                ClipToBounds="True"
+                                CornerRadius="10">
                                 <Grid x:Name="LayoutRoot" SnapsToDevicePixels="True">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="36" />
                                         <RowDefinition Height="*" />
                                     </Grid.RowDefinitions>
 
+                                    <!--
+                                        Blurred desktop wallpaper (UseWallpaperBackground) between the window background and the content.
+                                        Partly transparent, so the dark background tints it; the vignette calms the edges.
+                                    -->
                                     <Border
+                                        x:Name="WallpaperLayer"
+                                        Grid.RowSpan="2"
+                                        Background="{DynamicResource Brush.App.Wallpaper}"
+                                        IsHitTestVisible="False"
+                                        Opacity="{StaticResource Window.WallpaperOpacity}"
+                                        Visibility="Collapsed" />
+
+                                    <Border
+                                        x:Name="WallpaperVignette"
+                                        Grid.RowSpan="2"
+                                        Background="{DynamicResource GradientBrush.ProfileDetailView.Vignette}"
+                                        IsHitTestVisible="False"
+                                        Visibility="Collapsed" />
+
+                                    <!--  Title bar with a thin accent line below  -->
+                                    <Border
+                                        x:Name="TitleBarHost"
                                         Grid.Row="0"
                                         Background="{DynamicResource Brush.Surface}"
-                                        BorderBrush="{DynamicResource Brush.Border}"
+                                        BorderBrush="{StaticResource Brush.Accent.Muted}"
                                         BorderThickness="0,0,0,1"
                                         SnapsToDevicePixels="True">
 
@@ -130,97 +239,110 @@
                                                 HorizontalAlignment="Right"
                                                 VerticalAlignment="Center"
                                                 Orientation="Horizontal">
+                                                <!--
+                                                    Caption buttons: the chrome glyphs of Segoe Fluent Icons (hinted for caption buttons, crisp at any DPI).
+                                                    The icon font is set on the TextBlocks, not on the buttons, so tooltips keep the normal font.
+                                                -->
                                                 <Button
                                                     x:Name="PART_MinButton"
-                                                    Width="24"
-                                                    Height="24"
-                                                    Margin="0,0,4,0"
-                                                    Content="&#xE921;"
-                                                    Style="{StaticResource TitleBarMinButtonStyle}" />
+                                                    Margin="0,0,2,0"
+                                                    Style="{StaticResource TitleBarMinButtonStyle}">
+                                                    <TextBlock
+                                                        FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                                        FontSize="12"
+                                                        Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                                        Text="&#xE921;" />
+                                                </Button>
 
                                                 <Button
                                                     x:Name="PART_MaxButton"
-                                                    Width="24"
-                                                    Height="24"
-                                                    Margin="0,0,4,0"
-                                                    Content="&#xE922;"
-                                                    Style="{StaticResource TitleBarMaxButtonStyle}" />
+                                                    Margin="0,0,2,0"
+                                                    Style="{StaticResource TitleBarMaxButtonStyle}">
+                                                    <Grid>
+                                                        <TextBlock
+                                                            x:Name="MaxIcon"
+                                                            FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                                        FontSize="12"
+                                                        Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                                            Text="&#xE922;" />
+                                                        <!--  Restore (maximized)  -->
+                                                        <TextBlock
+                                                            x:Name="RestoreIcon"
+                                                            FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                                        FontSize="12"
+                                                        Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                                            Text="&#xE923;"
+                                                            Visibility="Collapsed" />
+                                                    </Grid>
+                                                </Button>
 
-                                                <Button
-                                                    x:Name="PART_CloseButton"
-                                                    Width="24"
-                                                    Height="24"
-                                                    Content="&#xE8BB;"
-                                                    Style="{StaticResource TitleBarCloseButtonStyle}" />
+                                                <Button x:Name="PART_CloseButton" Style="{StaticResource TitleBarCloseButtonStyle}">
+                                                    <TextBlock
+                                                        FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                                        FontSize="12"
+                                                        Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                                        Text="&#xE8BB;" />
+                                                </Button>
                                             </StackPanel>
                                         </Grid>
                                     </Border>
 
                                     <Grid Grid.Row="1">
                                         <ContentPresenter
+                                            x:Name="WindowContentHost"
                                             Margin="0"
                                             HorizontalAlignment="Stretch"
                                             VerticalAlignment="Stretch"
                                             Content="{TemplateBinding Content}"
                                             ContentTemplate="{TemplateBinding ContentTemplate}" />
 
+                                        <!--
+                                            Busy indicator (UIXLoader): the window content is blurred and dimmed (trigger below),
+                                            a glass card in the middle shows the particle ring and the text.
+                                        -->
                                         <Grid
                                             x:Name="PART_Loader"
                                             Panel.ZIndex="999"
-                                            Background="#8A000000"
+                                            Background="#59000000"
                                             Visibility="Collapsed">
 
                                             <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition Height="Auto" />
-                                                    <RowDefinition Height="14" />
-                                                    <RowDefinition Height="Auto" />
-                                                </Grid.RowDefinitions>
+                                                <!--  Shadow shape behind the card (an effect on the card would blur the text)  -->
+                                                <Border
+                                                    Background="#FF000000"
+                                                    CornerRadius="12"
+                                                    Effect="{StaticResource Effect.Popup}"
+                                                    IsHitTestVisible="False"
+                                                    Opacity="0.35" />
 
-                                                <Grid
-                                                    Grid.Row="0"
-                                                    Width="72"
-                                                    Height="72"
-                                                    RenderTransformOrigin="0.5,0.5">
-                                                    <Grid.RenderTransform>
-                                                        <RotateTransform x:Name="LoaderSpinnerRotate" Angle="0" />
-                                                    </Grid.RenderTransform>
+                                                <Border
+                                                    MinWidth="200"
+                                                    Padding="28,18,28,22"
+                                                    Background="{DynamicResource Brush.Card.Background}"
+                                                    BorderBrush="{DynamicResource Brush.Card.Border}"
+                                                    BorderThickness="1"
+                                                    CornerRadius="12">
+                                                    <StackPanel>
+                                                        <ui:CFParticleSpinner
+                                                            Width="120"
+                                                            Height="120"
+                                                            HorizontalAlignment="Center" />
 
-                                                    <Path
-                                                        Data="M 12,36 A 24,24 0 0 1 60,36"
-                                                        Stroke="#23FFFFFF"
-                                                        StrokeEndLineCap="Round"
-                                                        StrokeStartLineCap="Round"
-                                                        StrokeThickness="4" />
-
-                                                    <Path
-                                                        Data="M 12,36 A 24,24 0 0 1 60,36"
-                                                        Stroke="{DynamicResource Brush.Accent}"
-                                                        StrokeEndLineCap="Round"
-                                                        StrokeStartLineCap="Round"
-                                                        StrokeThickness="4.2">
-                                                        <Path.Effect>
-                                                            <DropShadowEffect
-                                                                BlurRadius="9"
-                                                                Opacity="0.45"
-                                                                ShadowDepth="0"
-                                                                Color="{DynamicResource Color.Accent}" />
-                                                        </Path.Effect>
-                                                    </Path>
-                                                </Grid>
-
-                                                <TextBlock
-                                                    x:Name="LoaderTextBlock"
-                                                    Grid.Row="2"
-                                                    HorizontalAlignment="Center"
-                                                    VerticalAlignment="Center"
-                                                    FontSize="13"
-                                                    FontWeight="SemiBold"
-                                                    Foreground="{DynamicResource Brush.TextPrimary}"
-                                                    Opacity="0.95"
-                                                    Text=""
-                                                    TextAlignment="Center"
-                                                    Visibility="Visible" />
+                                                        <TextBlock
+                                                            x:Name="LoaderTextBlock"
+                                                            MaxWidth="320"
+                                                            Margin="0,4,0,0"
+                                                            HorizontalAlignment="Center"
+                                                            FontSize="13"
+                                                            FontWeight="SemiBold"
+                                                            Foreground="{DynamicResource Brush.TextPrimary}"
+                                                            Opacity="0.95"
+                                                            Text=""
+                                                            TextAlignment="Center"
+                                                            TextWrapping="Wrap"
+                                                            Visibility="Visible" />
+                                                    </StackPanel>
+                                                </Border>
                                             </Grid>
                                         </Grid>
                                     </Grid>
@@ -273,27 +395,49 @@
                             <Setter TargetName="PART_SubtitleHost" Property="Visibility" Value="Collapsed" />
                         </Trigger>
 
+                        <Trigger Property="UseWallpaperBackground" Value="True">
+                            <Setter TargetName="WallpaperLayer" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="WallpaperVignette" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="TitleBarHost" Property="Background" Value="{StaticResource Brush.Window.TitleBarTranslucent}" />
+                        </Trigger>
+
+                        <Trigger Property="IsBackdropActive" Value="True">
+                            <Setter TargetName="RootBorder" Property="Background" Value="{StaticResource Brush.Window.Translucent}" />
+                            <Setter TargetName="RootBorder" Property="BorderBrush" Value="{StaticResource Brush.Window.BorderTranslucent}" />
+                            <!--  match the rounding DWM applies to the window  -->
+                            <Setter TargetName="RootBorder" Property="CornerRadius" Value="8" />
+                            <Setter TargetName="ClipBorder" Property="CornerRadius" Value="8" />
+                            <Setter TargetName="TitleBarHost" Property="Background" Value="{StaticResource Brush.Window.TitleBarTranslucent}" />
+                        </Trigger>
+
+                        <Trigger Property="IsNativeFrameActive" Value="True">
+                            <!--  match the rounding DWM applies to the window  -->
+                            <Setter TargetName="RootBorder" Property="CornerRadius" Value="8" />
+                            <Setter TargetName="ClipBorder" Property="CornerRadius" Value="8" />
+                        </Trigger>
+
                         <Trigger Property="WindowState" Value="Maximized">
+                            <Setter TargetName="MaxIcon" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="RestoreIcon" Property="Visibility" Value="Visible" />
                             <Setter TargetName="RootBorder" Property="BorderThickness" Value="0" />
                             <Setter TargetName="RootBorder" Property="CornerRadius" Value="0" />
                             <Setter TargetName="LayoutRoot" Property="Margin" Value="0" />
                         </Trigger>
 
                         <Trigger SourceName="PART_Loader" Property="Visibility" Value="Visible">
+                            <!--  Frosted glass: blur the content behind the busy indicator  -->
+                            <Setter TargetName="WindowContentHost" Property="Effect">
+                                <Setter.Value>
+                                    <BlurEffect KernelType="Gaussian" Radius="10" RenderingBias="Performance" />
+                                </Setter.Value>
+                            </Setter>
                             <Trigger.EnterActions>
                                 <BeginStoryboard x:Name="LoaderSlotsStoryboard">
                                     <Storyboard RepeatBehavior="Forever">
-                                        <DoubleAnimation
-                                            Storyboard.TargetName="LoaderSpinnerRotate"
-                                            Storyboard.TargetProperty="Angle"
-                                            From="0"
-                                            To="360"
-                                            Duration="0:0:0.9" />
-
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="LoaderTextBlock" Storyboard.TargetProperty="Opacity">
-                                            <SplineDoubleKeyFrame KeyTime="0:0:0.0" Value="0.84" />
-                                            <SplineDoubleKeyFrame KeyTime="0:0:0.45" Value="1.0" />
-                                            <SplineDoubleKeyFrame KeyTime="0:0:0.9" Value="0.84" />
+                                            <SplineDoubleKeyFrame KeyTime="0:0:0.0" Value="0.75" />
+                                            <SplineDoubleKeyFrame KeyTime="0:0:1.1" Value="1.0" />
+                                            <SplineDoubleKeyFrame KeyTime="0:0:2.2" Value="0.75" />
                                         </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </BeginStoryboard>
@@ -307,6 +451,39 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+
+        <Style.Triggers>
+            <!--
+                Minimal DWM frame instead of the rounded window region (GlassFrameThickness 0): DWM rounds the corners
+                and draws the native drop shadow. The opaque content covers the 1px glass.
+            -->
+            <Trigger Property="IsNativeFrameActive" Value="True">
+                <Setter Property="shell:WindowChrome.WindowChrome">
+                    <Setter.Value>
+                        <shell:WindowChrome
+                            CaptionHeight="36"
+                            CornerRadius="8"
+                            GlassFrameThickness="0,0,0,1"
+                            ResizeBorderThickness="6"
+                            UseAeroCaptionButtons="False" />
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+
+            <Trigger Property="IsBackdropActive" Value="True">
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="shell:WindowChrome.WindowChrome">
+                    <Setter.Value>
+                        <shell:WindowChrome
+                            CaptionHeight="36"
+                            CornerRadius="8"
+                            GlassFrameThickness="-1"
+                            ResizeBorderThickness="6"
+                            UseAeroCaptionButtons="False" />
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
 </ResourceDictionary>

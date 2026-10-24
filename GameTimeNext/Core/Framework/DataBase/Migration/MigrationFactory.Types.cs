@@ -223,16 +223,14 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 if (forCsharp)
                     sD = $"\"";
 
-                if (DEFAK)
+                // Default set by Metadata (DEFVL is stored in CSV format); an empty value falls back to the type default below
+                object? valueDefault = DEFAK
+                    ? UIXSqliteDataType.Convert(UIXSqliteDataType.ConversionType.CSV, UIXSqliteDataType.ConversionType.CSharp, DEFVL, DATYP)
+                    : null;
+
+                if (valueDefault is not null)
                 {
-                    // Default set by Metadata (DEFVL is stored in CSV format)
-                    if (DATYP.Key.Equals("06") && forCsharp)
-                        return UIXSqliteDataType.Convert(UIXSqliteDataType.ConversionType.CSV, UIXSqliteDataType.ConversionType.CSharp, DEFVL, DATYP) is true ? "true" : "false";
-
-                    object? valueSqlite = UIXSqliteDataType.Convert(UIXSqliteDataType.ConversionType.CSV, UIXSqliteDataType.ConversionType.Sqlite, DEFVL, DATYP);
-                    string valueString = Convert.ToString(valueSqlite, CultureInfo.InvariantCulture) ?? string.Empty;
-
-                    return $"{sD}{valueString}{sD}";
+                    return forCsharp ? ToCsharpLiteral(valueDefault) : ToSqlLiteral(valueDefault);
                 }
                 else
                 {
@@ -263,6 +261,39 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
             #endregion
 
             #region Methods PRIVATE
+            // C# expression for a property initializer of the generated table class
+            private static string ToCsharpLiteral(object value)
+            {
+                switch (value)
+                {
+                    case string valString:
+                        return "\"" + valString.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\r", "\\r").Replace("\n", "\\n").Replace("\t", "\\t") + "\"";
+                    case bool valBool:
+                        return valBool ? "true" : "false";
+                    case int valInt:
+                        return valInt.ToString(CultureInfo.InvariantCulture);
+                    case long valLong:
+                        return valLong.ToString(CultureInfo.InvariantCulture) + "L";
+                    case double valDouble:
+                        return valDouble.ToString("R", CultureInfo.InvariantCulture) + "d";
+                    case DateTime valDate:
+                        return $"new DateTime({valDate.Year}, {valDate.Month}, {valDate.Day}, {valDate.Hour}, {valDate.Minute}, {valDate.Second})";
+                    default:
+                        throw new NotImplementedException($"No C# literal implemented for \"{value.GetType().Name}\".");
+                }
+            }
+
+            // SQL literal for the DEFAULT clause: numbers and booleans unquoted, text quoted with escaped quotes
+            private string ToSqlLiteral(object value)
+            {
+                object? valueSqlite = UIXSqliteDataType.Convert(UIXSqliteDataType.ConversionType.CSharp, UIXSqliteDataType.ConversionType.Sqlite, value, DATYP);
+
+                if (valueSqlite is string valString)
+                    return $"'{valString.Replace("'", "''")}'";
+
+                return Convert.ToString(valueSqlite, CultureInfo.InvariantCulture) ?? string.Empty;
+            }
+
             private static string ToCsvValue(object? valFrom)
             {
                 return (string)UIXSqliteDataType.Convert(UIXSqliteDataType.ConversionType.CSharp, UIXSqliteDataType.ConversionType.CSV, valFrom)!;

@@ -1,6 +1,5 @@
 ﻿using GameTimeNext.Core.Framework.Utils;
 using System.IO;
-using System.Security.Policy;
 using System.Text.Json.Serialization;
 using UIX.ViewController.Engine.Utils;
 
@@ -217,6 +216,22 @@ namespace GameTimeNext.Core.Framework.Config
             public static string BackupDirectoryPath
             {
                 get => ReturnEnsureDirectoryExists(Path.Combine(_tempDirectoryPath, "backup"));
+            }
+        }
+
+        /// <summary>
+        /// Paths of Windows itself (read only, never created by the app).
+        /// </summary>
+        public static class Windows
+        {
+            /// <summary>
+            /// Copy of the current desktop wallpaper kept by Windows. Also exists for slideshow / Spotlight,
+            /// where the wallpaper setting doesn't point to a single file.
+            /// </summary>
+            [JsonIgnore]
+            public static string TranscodedWallpaperFilePath
+            {
+                get => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Microsoft", "Windows", "Themes", "TranscodedWallpaper");
             }
         }
 

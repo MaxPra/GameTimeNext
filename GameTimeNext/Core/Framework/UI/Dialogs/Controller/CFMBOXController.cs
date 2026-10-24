@@ -1,5 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls.Primitives;
+using Button = System.Windows.Controls.Button;
+using Control = System.Windows.Controls.Control;
 using System.Windows.Input;
 using System.Windows.Media;
 using UIX.ViewController.Engine.Controller;
@@ -162,7 +164,7 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
 
             if (type == CFMBOXType.Memotext)
             {
-                GetWnd().SvMessage.Visibility = Visibility.Collapsed;
+                GetWnd().SpText.Visibility = Visibility.Collapsed;
                 GetWnd().TxbMemotext.Text = message;
                 GetWnd().TxbMemotext.Visibility = Visibility.Visible;
 
@@ -183,21 +185,44 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
             else
             {
                 GetWnd().TxbMemotext.Visibility = Visibility.Collapsed;
-                GetWnd().TbMessage.Text = message;
-                GetWnd().SvMessage.Visibility = Visibility.Visible;
+                ApplyMessage(message);
+                GetWnd().SpText.Visibility = Visibility.Visible;
 
                 GetWnd().SizeToContent = SizeToContent.Height;
                 GetWnd().ResizeMode = ResizeMode.NoResize;
-                GetWnd().Width = 560;
-                GetWnd().MinWidth = 560;
-                GetWnd().MinHeight = 220;
+                GetWnd().Width = 460;
+                GetWnd().MinWidth = 460;
+                GetWnd().MinHeight = 0;
                 GetWnd().MaxWidth = 820;
                 GetWnd().MaxHeight = 700;
             }
 
             ConfigureButtons(buttons);
+            HighlightDefaultButton();
             ApplyIcon(icon);
             PrepareStartupPosition();
+        }
+
+        /// <summary>
+        /// Multi-line messages with a short first line are split into a headline and a muted body text.
+        /// </summary>
+        private void ApplyMessage(string message)
+        {
+            message = (message ?? string.Empty).Replace("\r\n", "\n").Trim();
+
+            int lineBreak = message.IndexOf('\n');
+            if (lineBreak > 0 && lineBreak <= 120)
+            {
+                GetWnd().TbHeadline.Text = message.Substring(0, lineBreak).Trim();
+                GetWnd().TbHeadline.Visibility = Visibility.Visible;
+                GetWnd().TbMessage.Text = message.Substring(lineBreak + 1).Trim();
+                GetWnd().TbMessage.SetResourceReference(System.Windows.Controls.TextBlock.ForegroundProperty, "Brush.TextSecondary");
+                return;
+            }
+
+            GetWnd().TbHeadline.Visibility = Visibility.Collapsed;
+            GetWnd().TbMessage.Text = message;
+            GetWnd().TbMessage.SetResourceReference(System.Windows.Controls.TextBlock.ForegroundProperty, "Brush.TextPrimary");
         }
 
         private static string DeriveTitleFromIcon(CFMBOXIcon icon)
@@ -331,6 +356,28 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
             _button3Result = CFMBOXResult.None;
         }
 
+        private void HighlightDefaultButton()
+        {
+            CFMBOXResult defaultResult = GetDefaultResult();
+
+            foreach (Button button in new[] { GetWnd().BtnButton1, GetWnd().BtnButton2, GetWnd().BtnButton3 })
+            {
+                button.ClearValue(Control.BackgroundProperty);
+                button.ClearValue(Control.BorderBrushProperty);
+            }
+
+            Button? defaultButton = defaultResult == _button1Result ? GetWnd().BtnButton1
+                : defaultResult == _button2Result ? GetWnd().BtnButton2
+                : defaultResult == _button3Result ? GetWnd().BtnButton3
+                : null;
+
+            if (defaultButton == null)
+                return;
+
+            defaultButton.SetResourceReference(Control.BackgroundProperty, "Brush.Accent");
+            defaultButton.SetResourceReference(Control.BorderBrushProperty, "Brush.AccentHover");
+        }
+
         private void SetNextButton(CFMBOXResult result)
         {
             if (GetWnd().BtnButton1.Visibility != Visibility.Visible)
@@ -374,41 +421,40 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
 
         private void ApplyIcon(CFMBOXIcon icon)
         {
-            GetWnd().BdIconHost.BorderBrush = TryFindBrush("Brush.Border", Color.FromRgb(96, 100, 108));
-            GetWnd().TbIconGlyph.Foreground = TryFindBrush("Brush.TextPrimary", Color.FromRgb(242, 245, 248));
-
+            // Segoe Fluent / MDL2 glyphs: Info, Unknown, Warning, ErrorBadge, Completed
             switch (icon)
             {
                 case CFMBOXIcon.Info:
-                    GetWnd().TbIconGlyph.Text = "i";
-                    GetWnd().BdIconHost.Background = TryFindBrush("Brush.Accent", Color.FromRgb(139, 30, 36));
+                    GetWnd().TbIconGlyph.Text = "";
+                    GetWnd().TbIconGlyph.Foreground = TryFindBrush("Brush.TextSecondary", Color.FromRgb(148, 148, 155));
                     break;
 
                 case CFMBOXIcon.Question:
-                    GetWnd().TbIconGlyph.Text = "?";
-                    GetWnd().BdIconHost.Background = TryFindBrush("Brush.Warning", Color.FromRgb(241, 196, 15));
+                    GetWnd().TbIconGlyph.Text = "";
+                    GetWnd().TbIconGlyph.Foreground = TryFindBrush("Brush.TextSecondary", Color.FromRgb(148, 148, 155));
                     break;
 
                 case CFMBOXIcon.Warning:
-                    GetWnd().TbIconGlyph.Text = "!";
-                    GetWnd().BdIconHost.Background = TryFindBrush("Brush.Warning", Color.FromRgb(241, 196, 15));
+                    GetWnd().TbIconGlyph.Text = "";
+                    GetWnd().TbIconGlyph.Foreground = TryFindBrush("Brush.Warning", Color.FromRgb(255, 167, 38));
                     break;
 
                 case CFMBOXIcon.Error:
-                    GetWnd().TbIconGlyph.Text = "×";
-                    GetWnd().BdIconHost.Background = TryFindBrush("Brush.Danger", Color.FromRgb(231, 76, 60));
+                    GetWnd().TbIconGlyph.Text = "";
+                    GetWnd().TbIconGlyph.Foreground = TryFindBrush("Brush.Danger", Color.FromRgb(255, 76, 102));
                     break;
 
                 case CFMBOXIcon.Success:
-                    GetWnd().TbIconGlyph.Text = "✓";
-                    GetWnd().BdIconHost.Background = TryFindBrush("Brush.Success", Color.FromRgb(46, 204, 113));
+                    GetWnd().TbIconGlyph.Text = "";
+                    GetWnd().TbIconGlyph.Foreground = TryFindBrush("Brush.Success", Color.FromRgb(46, 224, 137));
                     break;
 
                 default:
                     GetWnd().TbIconGlyph.Text = string.Empty;
-                    GetWnd().BdIconHost.Background = TryFindBrush("Brush.Accent", Color.FromRgb(139, 30, 36));
                     break;
             }
+
+            GetWnd().BdIconHost.Visibility = icon == CFMBOXIcon.None ? Visibility.Collapsed : Visibility.Visible;
         }
 
         private void FocusDefaultButton()

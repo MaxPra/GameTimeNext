@@ -120,6 +120,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             AppEnvironment.CurrentPfid = selectedTableObject.PFID;
 
+            FnTheme.ApplyProfileBackground(selectedTableObject);
+
             GetView().ListBoxProfiles.ScrollIntoView(selectedProfi);
 
             if (!selectedTableObject.ACAC)
@@ -172,11 +174,13 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                         _dataWrapper!.TableObject = new TXPROFI().CreateNew();
                         GetApp().ProfilesDetailView.Visibility = Visibility.Hidden;
                         AppEnvironment.CurrentPfid = 0;
+                        FnTheme.ApplyProfileBackground(null);
                     }
                     else
                     {
                         GetApp().ProfilesDetailView.Visibility = Visibility.Visible;
                         AppEnvironment.CurrentPfid = (_profilesSubGridViewModel.SelectedT1Profi?.ItemObject as T1PROFI)?.PFID ?? 0;
+                        FnTheme.ApplyProfileBackground(_dataWrapper!.TableObject);
                     }
 
 
@@ -538,6 +542,14 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         #region Internal Events
         protected async Task EV_tbSearchProfileName()
+        {
+            await BuildProfilesListBoxAsync(AppEnvironment.CurrentPfid);
+        }
+
+        /// <summary>
+        /// Button Refresh
+        /// </summary>
+        protected async Task EV_BtnRefresh()
         {
             await BuildProfilesListBoxAsync(AppEnvironment.CurrentPfid);
         }

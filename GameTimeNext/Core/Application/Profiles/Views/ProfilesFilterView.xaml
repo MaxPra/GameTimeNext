@@ -10,16 +10,17 @@
 
         <Style x:Key="FilterGroupHeader" TargetType="TextBlock">
             <Setter Property="Margin" Value="0,0,0,8" />
+            <Setter Property="FontSize" Value="13" />
             <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
         </Style>
 
-        <Style x:Key="FilterGroupBorder" TargetType="Border">
-            <Setter Property="Padding" Value="10,10,10,4" />
+        <Style
+            x:Key="FilterGroupBorder"
+            BasedOn="{StaticResource Card.Inset}"
+            TargetType="Border">
+            <Setter Property="Padding" Value="4" />
             <Setter Property="Margin" Value="0,0,0,14" />
-            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="CornerRadius" Value="{StaticResource DefaultCornerRadius}" />
         </Style>
 
         <!--  Checkbox list for tags and fixed options  -->
@@ -27,16 +28,15 @@
             <StackPanel Visibility="{Binding IsVisible, Converter={StaticResource BoolToVisibility}}">
                 <CheckBox
                     x:Name="Cb"
-                    Margin="0,0,0,6"
                     Content="{Binding Name}"
                     IsChecked="{Binding IsChecked, Mode=TwoWay}"
-                    Style="{StaticResource CheckBox.Left}"
+                    Style="{StaticResource CheckBox.ListItem}"
                     ToolTip="{Binding ToolTip}" />
 
                 <!--  Separates special entries from the real tags  -->
                 <Border
                     Height="1"
-                    Margin="0,2,0,8"
+                    Margin="10,4,10,4"
                     Background="{DynamicResource Brush.Border}"
                     Visibility="{Binding IsSpecial, Converter={StaticResource BoolToVisibility}}" />
             </StackPanel>
@@ -50,12 +50,8 @@
         </DataTemplate>
     </uixcontrols:UIXUserControlBase.Resources>
 
-    <Border
-        Padding="16"
-        Background="{DynamicResource Brush.Surface}"
-        BorderBrush="{DynamicResource Brush.Border}"
-        BorderThickness="0"
-        CornerRadius="{StaticResource DefaultCornerRadius}">
+    <!--  Shown inside the filter popup (ModernPopupCardStyle), which provides surface and padding  -->
+    <Border Padding="4" Background="Transparent">
 
         <Grid>
             <Grid.RowDefinitions>
@@ -68,14 +64,14 @@
             <TextBlock
                 Grid.Row="0"
                 Margin="0,0,0,4"
-                FontSize="18"
+                FontSize="16"
                 FontWeight="SemiBold"
                 Foreground="{DynamicResource Brush.TextPrimary}"
                 Text="Library filters" />
 
             <TextBlock
                 Grid.Row="1"
-                Margin="0,0,0,12"
+                Margin="0,0,0,16"
                 Foreground="{DynamicResource Brush.TextSecondary}"
                 Text="Checked entries are shown. Uncheck what you want to hide."
                 TextWrapping="Wrap" />
@@ -96,7 +92,7 @@
                     <TextBlock
                         DockPanel.Dock="Top"
                         Style="{StaticResource FilterGroupHeader}"
-                        Text="TAGS" />
+                        Text="Tags" />
 
                     <Grid Margin="0,0,0,10" DockPanel.Dock="Top">
                         <Grid.ColumnDefinitions>
@@ -108,7 +104,6 @@
                         <TextBox
                             x:Name="TxtSearchTag"
                             Grid.Column="0"
-                            Height="30"
                             Margin="0,0,8,0"
                             Style="{StaticResource TextBox.Default}"
                             Tag="Search tags"
@@ -117,7 +112,6 @@
                         <Button
                             x:Name="BtnSelectAllTags"
                             Grid.Column="1"
-                            Height="30"
                             Margin="0,0,6,0"
                             Padding="10,0"
                             Content="All"
@@ -126,13 +120,12 @@
                         <Button
                             x:Name="BtnSelectNoTags"
                             Grid.Column="2"
-                            Height="30"
                             Padding="10,0"
                             Content="None"
                             ToolTip="Uncheck all (visible) tags" />
                     </Grid>
 
-                    <Border Margin="0,0,0,14" Style="{StaticResource FilterGroupBorder}">
+                    <Border Style="{StaticResource FilterGroupBorder}">
                         <ScrollViewer
                             HorizontalScrollBarVisibility="Disabled"
                             VerticalScrollBarVisibility="Auto">
@@ -143,22 +136,22 @@
 
                 <!--  Fixed options  -->
                 <StackPanel x:Name="SpOptions" Grid.Column="1">
-                    <TextBlock Style="{StaticResource FilterGroupHeader}" Text="PROGRESS" />
+                    <TextBlock Style="{StaticResource FilterGroupHeader}" Text="Progress" />
                     <Border Style="{StaticResource FilterGroupBorder}">
                         <ItemsControl ItemTemplate="{StaticResource FilterItemTemplate}" ItemsSource="{Binding Progress}" />
                     </Border>
 
-                    <TextBlock Style="{StaticResource FilterGroupHeader}" Text="AVAILABILITY" />
+                    <TextBlock Style="{StaticResource FilterGroupHeader}" Text="Availability" />
                     <Border Style="{StaticResource FilterGroupBorder}">
                         <ItemsControl ItemTemplate="{StaticResource FilterItemTemplate}" ItemsSource="{Binding Availability}" />
                     </Border>
 
-                    <TextBlock Style="{StaticResource FilterGroupHeader}" Text="SOURCE" />
+                    <TextBlock Style="{StaticResource FilterGroupHeader}" Text="Source" />
                     <Border Style="{StaticResource FilterGroupBorder}">
                         <ItemsControl ItemTemplate="{StaticResource FilterItemTemplate}" ItemsSource="{Binding Source}" />
                     </Border>
 
-                    <TextBlock Style="{StaticResource FilterGroupHeader}" Text="OPTIONS" />
+                    <TextBlock Style="{StaticResource FilterGroupHeader}" Text="Options" />
                     <Border Padding="10" Style="{StaticResource FilterGroupBorder}">
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -204,7 +197,6 @@
             <Grid Grid.Row="3" Margin="0,4,0,0">
                 <Button
                     x:Name="BtnReset"
-                    Height="34"
                     Padding="14,0"
                     HorizontalAlignment="Left"
                     Content="Reset"
@@ -214,16 +206,14 @@
                     <Button
                         x:Name="BtnCancel"
                         Width="90"
-                        Height="34"
                         Margin="0,0,10,0"
                         Content="Cancel" />
 
                     <Button
                         x:Name="BtnApply"
                         Width="90"
-                        Height="34"
                         Content="Apply"
-                        Style="{StaticResource Button.Secondary}" />
+                        Style="{StaticResource Button.Primary}" />
                 </StackPanel>
             </Grid>
         </Grid>

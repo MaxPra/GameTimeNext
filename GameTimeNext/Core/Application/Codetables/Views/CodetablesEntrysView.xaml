@@ -20,7 +20,7 @@
     WindowStartupLocation="CenterOwner"
     mc:Ignorable="d">
 
-    <Grid Margin="20,16,20,20">
+    <Grid Style="{StaticResource View.Root}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="16" />
@@ -30,10 +30,7 @@
         <Border
             Grid.Row="0"
             Padding="16"
-            Background="{DynamicResource Brush.Surface}"
-            BorderBrush="{DynamicResource Brush.Border}"
-            BorderThickness="1"
-            CornerRadius="{StaticResource DefaultCornerRadius}">
+            Style="{StaticResource Card}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="130" />
@@ -80,10 +77,7 @@
         <Border
             Grid.Row="2"
             Padding="16"
-            Background="{DynamicResource Brush.Surface}"
-            BorderBrush="{DynamicResource Brush.Border}"
-            BorderThickness="1"
-            CornerRadius="{StaticResource DefaultCornerRadius}">
+            Style="{StaticResource Card}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -102,9 +96,8 @@
                     <Button
                         x:Name="BtnAdd"
                         Grid.Column="1"
-                        Width="38"
-                        Height="36"
-                        ToolTip="Add entry">
+                        ToolTip="Add entry"
+                        Style="{StaticResource Button.Icon}">
                         <TextBlock
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
@@ -116,10 +109,9 @@
                     <Button
                         x:Name="BtnRefresh"
                         Grid.Column="3"
-                        Width="38"
-                        Height="36"
                         IsDefault="True"
-                        ToolTip="Refresh entries">
+                        ToolTip="Refresh entries"
+                        Style="{StaticResource Button.Icon}">
                         <TextBlock
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"

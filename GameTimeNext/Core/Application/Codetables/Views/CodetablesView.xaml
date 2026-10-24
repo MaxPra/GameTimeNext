@@ -18,7 +18,7 @@
     d:DesignWidth="1100"
     mc:Ignorable="d">
 
-    <Grid Margin="20,16,20,20">
+    <Grid Style="{StaticResource View.Root}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="16" />
@@ -28,10 +28,7 @@
         <Border
             Grid.Row="0"
             Padding="16"
-            Background="{DynamicResource Brush.Surface}"
-            BorderBrush="{DynamicResource Brush.Border}"
-            BorderThickness="1"
-            CornerRadius="{StaticResource DefaultCornerRadius}">
+            Style="{StaticResource Card}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -102,10 +99,9 @@
                     x:Name="BtnAddCodetable"
                     Grid.Row="0"
                     Grid.Column="4"
-                    Width="38"
-                    Height="38"
                     VerticalAlignment="Center"
-                    ToolTip="Create new codetable">
+                    ToolTip="Create new codetable"
+                    Style="{StaticResource Button.Icon}">
                     <TextBlock
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
@@ -118,11 +114,10 @@
                     x:Name="BtnRefresh"
                     Grid.Row="0"
                     Grid.Column="6"
-                    Width="38"
-                    Height="38"
                     VerticalAlignment="Center"
                     IsDefault="True"
-                    ToolTip="Refresh codetables">
+                    ToolTip="Refresh codetables"
+                    Style="{StaticResource Button.Icon}">
                     <TextBlock
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"

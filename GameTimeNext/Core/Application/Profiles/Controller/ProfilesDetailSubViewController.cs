@@ -1,4 +1,4 @@
-﻿
+
 using System.Globalization;
 using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Profiles.DataWrapper;
@@ -185,7 +185,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             if (t1plthr == null)
                 return;
 
-            GetView().txPlaythrough.Text = t1plthr.PTDE + ":";
+            GetView().txPlaythrough.Text = t1plthr.PTDE;
         }
 
         private void FillLastSessionGameTime()
@@ -358,20 +358,29 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             switch (t1profi.ETTY)
             {
                 case EstimatedTimeTypes.EST_TIME_MAIN:
-                    GetView().txEstMain.FontWeight = FontWeights.Bold;
-                    GetView().lblEstMain.FontWeight = FontWeights.Bold;
+                    SetEstimateHighlighted(GetView().lblEstMain, GetView().txEstMain, true);
                     break;
 
                 case EstimatedTimeTypes.EST_TIME_MAIN_EXTRA:
-                    GetView().lblEstExtra.FontWeight = FontWeights.Bold;
-                    GetView().txEstExtra.FontWeight = FontWeights.Bold;
+                    SetEstimateHighlighted(GetView().lblEstExtra, GetView().txEstExtra, true);
                     break;
 
                 case EstimatedTimeTypes.EST_TIME_COMPLETIONIST:
-                    GetView().lblEstCompletionist.FontWeight = FontWeights.Bold;
-                    GetView().txEstCompletionist.FontWeight = FontWeights.Bold;
+                    SetEstimateHighlighted(GetView().lblEstCompletionist, GetView().txEstCompletionist, true);
                     break;
             }
+        }
+
+        /// <summary>
+        /// Marks the estimate the progress is based on (labels are muted by default).
+        /// </summary>
+        private static void SetEstimateHighlighted(System.Windows.Controls.TextBlock label, System.Windows.Controls.TextBlock value, bool isHighlighted)
+        {
+            FontWeight fontWeight = isHighlighted ? FontWeights.Bold : FontWeights.Normal;
+
+            label.FontWeight = fontWeight;
+            value.FontWeight = fontWeight;
+            label.SetResourceReference(System.Windows.Controls.TextBlock.ForegroundProperty, isHighlighted ? "Brush.TextPrimary" : "Brush.TextSecondary");
         }
 
         public void SetProgress(double percent)
@@ -380,21 +389,16 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             GetView().txtProgress.Text = $"~ {percent:0}%";
 
-            double maxWidth = GetView().pnlProgressContainer.ActualWidth;
-            GetView().pnlProgress.Width = maxWidth * (percent / 100.0);
+            // Relative scale instead of a fixed width, so the fill follows the card when the detail view resizes
+            GetView().pnlProgress.RenderTransform = new System.Windows.Media.ScaleTransform(percent / 100.0, 1);
         }
 
         private void ResetView()
         {
             // Reset styles first
-            GetView().txEstMain.FontWeight = FontWeights.Normal;
-            GetView().lblEstMain.FontWeight = FontWeights.Normal;
-
-            GetView().lblEstExtra.FontWeight = FontWeights.Normal;
-            GetView().txEstExtra.FontWeight = FontWeights.Normal;
-
-            GetView().lblEstCompletionist.FontWeight = FontWeights.Normal;
-            GetView().txEstCompletionist.FontWeight = FontWeights.Normal;
+            SetEstimateHighlighted(GetView().lblEstMain, GetView().txEstMain, false);
+            SetEstimateHighlighted(GetView().lblEstExtra, GetView().txEstExtra, false);
+            SetEstimateHighlighted(GetView().lblEstCompletionist, GetView().txEstCompletionist, false);
 
             SetProgress(0);
         }

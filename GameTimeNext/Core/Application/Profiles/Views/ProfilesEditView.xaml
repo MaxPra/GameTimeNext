@@ -19,18 +19,16 @@
     WindowStartupLocation="CenterOwner"
     mc:Ignorable="d">
 
-    <Grid Margin="18">
+    <Grid Style="{StaticResource View.Root}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="16" />
             <RowDefinition Height="*" />
             <RowDefinition Height="16" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <TabControl x:Name="tabControl" Grid.Row="2">
+        <TabControl x:Name="tabControl" Grid.Row="0">
             <TabItem Header="General">
-                <Grid Margin="10">
+                <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
@@ -47,7 +45,7 @@
                             <Border
                                 Grid.Row="0"
                                 Padding="16"
-                                CornerRadius="10">
+                                Style="{StaticResource Card}">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
@@ -165,11 +163,8 @@
                                         <Button
                                             x:Name="btnAddPlatformWizard"
                                             Grid.Column="2"
-                                            Width="36"
-                                            Height="36"
-                                            MinHeight="36"
-                                            Padding="0"
-                                            ToolTip="Add Platform through wizard">
+                                            ToolTip="Add Platform through wizard"
+                                            Style="{StaticResource Button.Icon}">
                                             <Viewbox
                                                 Width="18"
                                                 Height="18"
@@ -209,7 +204,7 @@
             </TabItem>
 
             <TabItem Header="Steam">
-                <Grid Margin="10">
+                <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="16" />
@@ -238,11 +233,8 @@
                                 x:Name="pnlSteamLinkState"
                                 Grid.Row="0"
                                 Padding="12,10"
-                                Background="#0DFFFFFF"
-                                BorderBrush="#24FFFFFF"
-                                BorderThickness="1"
-                                CornerRadius="10"
-                                Visibility="Visible">
+                                Visibility="Visible"
+                                Style="{StaticResource Card}">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />
@@ -283,7 +275,7 @@
                                 x:Name="pnlSteamSettings"
                                 Grid.Row="2"
                                 Padding="16"
-                                CornerRadius="10">
+                                Style="{StaticResource Card}">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
@@ -330,12 +322,12 @@
             </TabItem>
 
             <TabItem Header="Tags">
-                <Grid Margin="10">
+                <Grid>
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
                         <Border
                             x:Name="pnlGroups"
                             Padding="16"
-                            CornerRadius="10">
+                            Style="{StaticResource Card}">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
@@ -373,7 +365,7 @@
             </TabItem>
 
             <TabItem Header="Image">
-                <Grid Margin="10">
+                <Grid>
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
                         <Grid>
                             <Grid.RowDefinitions>
@@ -385,7 +377,7 @@
                             <Border
                                 Grid.Row="0"
                                 Padding="16"
-                                CornerRadius="10">
+                                Style="{StaticResource Card}">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
@@ -443,7 +435,7 @@
                             <Border
                                 Grid.Row="2"
                                 Padding="16"
-                                CornerRadius="10">
+                                Style="{StaticResource Card}">
                                 <Grid x:Name="grdAccentColorSettings">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
@@ -478,7 +470,7 @@
                                             Opacity="0.8"
                                             Text="Accent colors" />
 
-                                        <UniformGrid Grid.Row="2" Columns="3">
+                                        <StackPanel Grid.Row="2" Orientation="Horizontal">
                                             <ToggleButton x:Name="tglAccent1" Style="{StaticResource ProfileAccentColorToggleButtonStyle}" />
 
                                             <ToggleButton x:Name="tglAccent2" Style="{StaticResource ProfileAccentColorToggleButtonStyle}" />
@@ -487,7 +479,7 @@
                                                 x:Name="tglAccent3"
                                                 Margin="0"
                                                 Style="{StaticResource ProfileAccentColorToggleButtonStyle}" />
-                                        </UniformGrid>
+                                        </StackPanel>
                                     </Grid>
                                 </Grid>
                             </Border>
@@ -497,7 +489,7 @@
             </TabItem>
         </TabControl>
 
-        <Grid Grid.Row="4" Margin="16,0,16,0">
+        <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />

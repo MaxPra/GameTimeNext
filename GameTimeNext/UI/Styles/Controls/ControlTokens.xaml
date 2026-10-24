@@ -1,0 +1,101 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!--
+        Shared design tokens for all controls (buttons, inputs, popups, ...).
+        Calm and flat: no gradients or glows, 1px borders only where they carry meaning (inputs),
+        the accent color marks the primary action, focus and selection.
+        Loaded before the control styles so they can use these with StaticResource.
+    -->
+
+    <!--  ===== Shape =====  -->
+
+    <CornerRadius x:Key="Control.CornerRadius">6</CornerRadius>
+    <CornerRadius x:Key="Popup.CornerRadius">8</CornerRadius>
+    <CornerRadius x:Key="Item.CornerRadius">4</CornerRadius>
+
+    <sys:Double x:Key="Control.Height">36</sys:Double>
+    <Thickness x:Key="Control.BorderThickness">1</Thickness>
+
+    <!--  ===== Buttons =====  -->
+
+    <SolidColorBrush x:Key="Brush.Control.Background" Color="#FF1E1E26" />
+    <!--  Lit top edge: separates controls from dark / translucent backgrounds (together with Effect.Control)  -->
+    <LinearGradientBrush x:Key="Brush.Control.Edge" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="#26FFFFFF" />
+        <GradientStop Offset="1" Color="#06FFFFFF" />
+    </LinearGradientBrush>
+    <!--  Overlays on top of any fill (works for neutral and accent buttons alike)  -->
+    <SolidColorBrush x:Key="Brush.Control.HoverOverlay" Color="#12FFFFFF" />
+    <SolidColorBrush x:Key="Brush.Control.PressedOverlay" Color="#26000000" />
+
+    <!--  ===== Inputs (TextBox, ComboBox, ...) =====  -->
+
+    <SolidColorBrush x:Key="Brush.Input.Background" Color="#FF0E0E12" />
+    <SolidColorBrush x:Key="Brush.Input.BackgroundHover" Color="#FF111116" />
+    <SolidColorBrush x:Key="Brush.Input.Border" Color="#FF292932" />
+    <SolidColorBrush x:Key="Brush.Input.BorderHover" Color="#FF383843" />
+
+    <!--
+        ===== Accent tints =====
+        Follow the (profile dependent) accent color at runtime. Used for interaction states:
+        hover outlines, hovered/selected items, the active navigation entry, ...
+        Text stays neutral: the accent is too dark for readable text on the dark surfaces.
+    -->
+    <SolidColorBrush
+        x:Key="Brush.Accent.Subtle"
+        Opacity="0.18"
+        Color="{DynamicResource Color.Accent}" />
+    <SolidColorBrush
+        x:Key="Brush.Accent.Muted"
+        Opacity="0.32"
+        Color="{DynamicResource Color.Accent}" />
+    <SolidColorBrush
+        x:Key="Brush.Accent.Outline"
+        Opacity="0.75"
+        Color="{DynamicResource Color.AccentHover}" />
+
+    <!--  ===== Popups (ComboBox drop down, context menu, tooltip, ...) =====  -->
+
+    <SolidColorBrush x:Key="Brush.Popup.Background" Color="#FF17171D" />
+    <SolidColorBrush x:Key="Brush.Popup.Border" Color="#FF26262F" />
+    <!--  Glass popups (PopupGlass): tint over the blurred background, lit edge like the cards  -->
+    <SolidColorBrush x:Key="Brush.Popup.Glass" Color="#B817171D" />
+    <LinearGradientBrush x:Key="Brush.Popup.GlassBorder" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="#2EFFFFFF" />
+        <GradientStop Offset="1" Color="#10FFFFFF" />
+    </LinearGradientBrush>
+    <!--  Hovered / selected entries in lists, menus and the navigation are tinted with the accent  -->
+    <SolidColorBrush
+        x:Key="Brush.Item.Hover"
+        Opacity="0.18"
+        Color="{DynamicResource Color.Accent}" />
+    <SolidColorBrush
+        x:Key="Brush.Item.Selected"
+        Opacity="0.32"
+        Color="{DynamicResource Color.Accent}" />
+
+    <!--
+        Soft shadow below controls (buttons, inputs, check boxes) so they lift off the background.
+        Only applied to background shapes, never to elements containing text (would blur the text).
+    -->
+    <DropShadowEffect
+        x:Key="Effect.Control"
+        BlurRadius="10"
+        Direction="270"
+        Opacity="0.55"
+        RenderingBias="Performance"
+        ShadowDepth="2"
+        Color="#FF000000" />
+
+    <DropShadowEffect
+        x:Key="Effect.Popup"
+        BlurRadius="18"
+        Direction="270"
+        Opacity="0.45"
+        ShadowDepth="4"
+        Color="#FF000000" />
+
+</ResourceDictionary>

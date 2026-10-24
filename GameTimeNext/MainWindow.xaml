@@ -6,6 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:subviews="clr-namespace:GameTimeNext.Core.Application.Profiles.Views"
     xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI.Base"
+    xmlns:uiFramework="clr-namespace:GameTimeNext.Core.Framework.UI"
     Title="GameTimeNXT"
     Width="1350"
     Height="1000"
@@ -81,6 +82,8 @@
         <TabControl
             x:Name="MainTabControl"
             Grid.Row="2"
+            uiFramework:TabControlBehaviors.AddButtonToolTip="Open application menu (Ctrl+M)"
+            uiFramework:TabControlBehaviors.ShowAddButton="True"
             Padding="0"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"

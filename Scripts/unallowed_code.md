@@ -1,3 +1,4 @@
 - !Directory.Exists followed by Directory.Create -> FnDirectory.EnsureDirectoryExists
 - String.IsNullOrWhitespace -> FnString.IsNullEmptyOrWhitespace
 - String.IsNullOrEmpty -> FnString.IsNullEmptyOrWhitespace
+- Logic in code-behind (*.xaml.cs, beyond InitializeComponent) -> controller of the module (e.g. MainWindowController) or a reusable attached property / helper in Core/Framework/UI, enabled from XAML / styles

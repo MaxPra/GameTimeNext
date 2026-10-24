@@ -16,13 +16,11 @@
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
 
-    <Grid Margin="20">
+    <Grid Style="{StaticResource View.Root}">
         <!--  Applications List  -->
         <Border
-            Background="{DynamicResource Brush.Surface}"
-            BorderBrush="{DynamicResource Brush.Border}"
-            BorderThickness="1"
-            CornerRadius="{StaticResource DefaultCornerRadius}">
+            Padding="0"
+            Style="{StaticResource Card}">
             <ListView
                 x:Name="lvFavAppsReorder"
                 AllowDrop="True"

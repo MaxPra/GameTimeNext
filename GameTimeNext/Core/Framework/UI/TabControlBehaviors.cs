@@ -20,6 +20,50 @@ namespace GameTimeNext.Core.Framework.UI
         public static void SetEnableSelectionSwoosh(DependencyObject obj, bool value)
             => obj.SetValue(EnableSelectionSwooshProperty, value);
 
+        /// <summary>
+        /// Shows a "+" button after the last tab (template part BtnTabAdd). Its click is dispatched to the
+        /// window controller like any other named button (EV_BtnTabAdd).
+        /// </summary>
+        public static readonly DependencyProperty ShowAddButtonProperty =
+            DependencyProperty.RegisterAttached(
+                "ShowAddButton",
+                typeof(bool),
+                typeof(TabControlBehaviors),
+                new PropertyMetadata(false));
+
+        public static bool GetShowAddButton(DependencyObject obj)
+            => (bool)obj.GetValue(ShowAddButtonProperty);
+
+        public static void SetShowAddButton(DependencyObject obj, bool value)
+            => obj.SetValue(ShowAddButtonProperty, value);
+
+        /// <summary>Tooltip of the "+" button.</summary>
+        public static readonly DependencyProperty AddButtonToolTipProperty =
+            DependencyProperty.RegisterAttached(
+                "AddButtonToolTip",
+                typeof(string),
+                typeof(TabControlBehaviors),
+                new PropertyMetadata(null));
+
+        public static string? GetAddButtonToolTip(DependencyObject obj)
+            => (string?)obj.GetValue(AddButtonToolTipProperty);
+
+        public static void SetAddButtonToolTip(DependencyObject obj, string? value)
+            => obj.SetValue(AddButtonToolTipProperty, value);
+
+        private static readonly DependencyProperty LastSelectedItemProperty =
+            DependencyProperty.RegisterAttached(
+                "LastSelectedItem",
+                typeof(object),
+                typeof(TabControlBehaviors),
+                new PropertyMetadata(null));
+
+        private static object? GetLastSelectedItem(DependencyObject obj)
+            => obj.GetValue(LastSelectedItemProperty);
+
+        private static void SetLastSelectedItem(DependencyObject obj, object? value)
+            => obj.SetValue(LastSelectedItemProperty, value);
+
         private static void OnEnableSelectionSwooshChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is not TabControl tabControl)
@@ -44,6 +88,7 @@ namespace GameTimeNext.Core.Framework.UI
             if (sender is not TabControl tabControl)
                 return;
 
+            SetLastSelectedItem(tabControl, tabControl.SelectedItem);
             AnimateSelectionRunner(tabControl, animate: false);
         }
 
@@ -60,7 +105,23 @@ namespace GameTimeNext.Core.Framework.UI
             if (sender is not TabControl tabControl)
                 return;
 
-            if (e.OriginalSource is not TabControl && e.OriginalSource is not TabItem)
+            // SelectionChanged bubbles: ignore events from nested selectors (inner TabControls, ComboBoxes, ...).
+            if (!ReferenceEquals(e.OriginalSource, tabControl))
+                return;
+
+            // Only animate when a different tab actually became selected (not on item reorder/re-add of the same tab).
+            var selectedItem = tabControl.SelectedItem;
+            var lastSelectedItem = GetLastSelectedItem(tabControl);
+            SetLastSelectedItem(tabControl, selectedItem);
+
+            if (selectedItem is null)
+            {
+                // Last tab closed: hide the runner instead of leaving it at the old position
+                AnimateSelectionRunner(tabControl, animate: false);
+                return;
+            }
+
+            if (ReferenceEquals(selectedItem, lastSelectedItem))
                 return;
 
             tabControl.Dispatcher.BeginInvoke(new Action(() => AnimateSelectionRunner(tabControl, animate: true)), System.Windows.Threading.DispatcherPriority.Render);
@@ -105,8 +166,20 @@ namespace GameTimeNext.Core.Framework.UI
             if (tabControl.Template.FindName("TabTrackContentHost", tabControl) is not FrameworkElement trackHost)
                 return;
 
+            if (runner.RenderTransform is not TranslateTransform runnerTransform)
+            {
+                runnerTransform = new TranslateTransform();
+                runner.RenderTransform = runnerTransform;
+            }
+
             if (tabControl.SelectedItem is null)
+            {
+                runner.BeginAnimation(FrameworkElement.WidthProperty, null);
+                runnerTransform.BeginAnimation(TranslateTransform.XProperty, null);
+                runner.Width = 0;
+                runnerTransform.X = 0;
                 return;
+            }
 
             if (tabControl.ItemContainerGenerator.ContainerFromItem(tabControl.SelectedItem) is not FrameworkElement selectedTab)
                 return;
@@ -117,12 +190,6 @@ namespace GameTimeNext.Core.Framework.UI
             var selectedOrigin = selectedTab.TransformToVisual(trackHost).Transform(new Point(0, 0));
             var targetX = selectedOrigin.X;
             var targetWidth = selectedTab.ActualWidth;
-
-            if (runner.RenderTransform is not TranslateTransform runnerTransform)
-            {
-                runnerTransform = new TranslateTransform();
-                runner.RenderTransform = runnerTransform;
-            }
 
             var currentRunnerWidth = (double)runner.GetValue(FrameworkElement.WidthProperty);
             var currentRunnerX = (double)runnerTransform.GetValue(TranslateTransform.XProperty);

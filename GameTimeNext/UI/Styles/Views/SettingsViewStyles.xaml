@@ -98,8 +98,12 @@
                             VerticalAlignment="Top"
                             Background="Transparent"
                             BorderThickness="0">
+                            <!--
+                                Deliberately not named PART_SelectedContentHost: with that name WPF moves keyboard focus
+                                into the content on a tab click, which scrolls the first focusable element to the top.
+                            -->
                             <ContentPresenter
-                                x:Name="PART_SelectedContentHost"
+                                x:Name="SelectedContentHost"
                                 Margin="0"
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Top"

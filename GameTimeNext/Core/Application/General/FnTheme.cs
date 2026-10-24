@@ -1,4 +1,7 @@
-﻿using System.Windows.Media;
+﻿using GameTimeNext.Core.Application.Settings;
+using GameTimeNext.Core.Application.TableObjects;
+using GameTimeNext.Core.Framework.UI;
+using System.Windows.Media;
 using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.General
@@ -59,6 +62,52 @@ namespace GameTimeNext.Core.Application.General
             SetBrushColor("Brush.Accent", "#3498e5");
             SetBrushColor("Brush.AccentHover", "#1a7fcb");
             SetBrushColor("Brush.AccentPressed", "#15629e");
+        }
+
+        /// <summary>
+        /// Switches the blurred background image as base of the main window background (setting BackgroundSource,
+        /// codetable bG): the desktop wallpaper, the cover of the selected profile, or none for an empty source.
+        /// Works at startup (before the main window exists) and at runtime.
+        /// </summary>
+        public static void ApplyWallpaperBackground(string backgroundSource)
+        {
+            var app = System.Windows.Application.Current;
+
+            bool enabled = IsDynamicBackgroundEnabled(backgroundSource);
+            bool useProfileCover = enabled && backgroundSource == BackgroundSource.PROFILE;
+            bool useDesktopWallpaper = enabled && !useProfileCover;
+
+            // Both share one resource: disable first, so the newly enabled source isn't removed afterwards
+            if (!useDesktopWallpaper)
+                DesktopWallpaper.SetEnabled(app, false);
+
+            if (!useProfileCover)
+                ProfileCoverBackground.SetEnabled(app, false);
+
+            DesktopWallpaper.SetEnabled(app, useDesktopWallpaper);
+            ProfileCoverBackground.SetEnabled(app, useProfileCover);
+
+            // Without dynamic background the main window is translucent (acrylic)
+            foreach (MainWindow mainWindow in app.Windows.OfType<MainWindow>())
+            {
+                mainWindow.UseWallpaperBackground = enabled;
+                mainWindow.UseBackdropBlur = !enabled;
+            }
+        }
+
+        /// <summary>True if a background source is set (an empty source disables the dynamic background).</summary>
+        public static bool IsDynamicBackgroundEnabled(string backgroundSource)
+        {
+            return !FnString.IsNullEmptyOrWhitespace(backgroundSource);
+        }
+
+        /// <summary>
+        /// Passes the cover of the selected profile (null for none) to the profile background
+        /// (only visible with BackgroundSource PROFILE).
+        /// </summary>
+        public static void ApplyProfileBackground(T1PROFI? t1profi)
+        {
+            ProfileCoverBackground.SetCover(System.Windows.Application.Current, t1profi?.PPFN ?? string.Empty);
         }
 
         private static void SetBrushColor(string key, string colorHex)

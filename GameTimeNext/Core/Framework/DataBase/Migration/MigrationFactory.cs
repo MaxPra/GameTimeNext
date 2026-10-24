@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Data.SQLite;
+using System.IO;
 using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Framework.DataBase.Migration
@@ -11,6 +12,22 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
         private const string _SQL_TRANSACTION_ROLLBACK = "ROLLBACK;";
         private const string _SQL_PRIMARYKEY_OFF = "PRAGMA foreign_keys = OFF;";
         private const string _SQL_PRIMARYKEY_ON = "PRAGMA foreign_keys = ON;";
+
+        /// <summary>
+        /// Rebuilds an existing table from its metadata definition and keeps its data (same procedure as a schema ALTER).
+        /// Removes everything the metadata does not define, e.g. legacy foreign keys.
+        /// </summary>
+        /// <returns>False if the table does not exist or the rebuild failed (rolled back).</returns>
+        public static bool RebuildTableFromMetadata(string tableName, SQLiteConnection connection)
+        {
+            TableSchema? schemaBefore = SchemaGenerator.GenerateFromActualDatabase(connection)
+                                                       .SingleOrDefault(tS => tS.MENAM.Equals(tableName, StringComparison.OrdinalIgnoreCase));
+            if (schemaBefore is null) return false;
+
+            TableSchema schemaAfter = SchemaGenerator.GenerateFromMetadata(tableName, connection).Single();
+
+            return new MigrationAction(MigrationActionType.ALTER, schemaBefore, schemaAfter).Migrate(connection);
+        }
 
         private static void CopyDirectory(string sourceDirectoryPath, string destinationDirectoryPath)
         {

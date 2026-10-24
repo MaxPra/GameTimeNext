@@ -39,7 +39,11 @@ namespace GameTimeNext.Core.Application.General.Controller
 
         protected override void BuildFirstImpl()
         {
-
+            // Setting "Dynamic Background" (at runtime via FnTheme.ApplyWallpaperBackground)
+            // Without dynamic background the main window is translucent (acrylic)
+            bool isDynamicBackground = FnTheme.IsDynamicBackgroundEnabled(AppEnvironment.GetAppConfig().AppSettings.BackgroundSource);
+            GetWindow().UseWallpaperBackground = isDynamicBackground;
+            GetWindow().UseBackdropBlur = !isDynamicBackground;
         }
 
         protected override async Task BuildFirstImplAsync()
@@ -106,12 +110,25 @@ namespace GameTimeNext.Core.Application.General.Controller
         {
             if (e.KeyboardDevice.Modifiers.HasFlag(ModifierKeys.Control) && e.Key == Key.M)
             {
-                AppSearchApp? appSearch = GetApp().GetApplication<AppSearchApp>(UIXApplicationStartTarget.Window);
-                appSearch?.Search();
+                OpenAppMenu();
                 return true;
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// "+" after the open applications in the main tab control (template part of the tab control style).
+        /// </summary>
+        protected void EV_BtnTabAdd()
+        {
+            OpenAppMenu();
+        }
+
+        private void OpenAppMenu()
+        {
+            AppSearchApp? appSearch = GetApp().GetApplication<AppSearchApp>(UIXApplicationStartTarget.Window);
+            appSearch?.Search();
         }
 
         protected override void TriggeredEvent(FrameworkElement source, string eventName)
