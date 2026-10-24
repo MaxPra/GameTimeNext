@@ -10,9 +10,10 @@
     <Color x:Key="Color.TextDisabled">#FF6F6F7F</Color>
 
     <!--  ===== Accent Colors =====  -->
-    <Color x:Key="Color.Accent">#7B6E73</Color>
-    <Color x:Key="Color.AccentHover">#8C7F84</Color>
-    <Color x:Key="Color.AccentPressed">#675C60</Color>
+    <!--  Default accent, keep in sync with FnTheme.ApplyDefaultTheme()  -->
+    <Color x:Key="Color.Accent">#3498E5</Color>
+    <Color x:Key="Color.AccentHover">#1A7FCB</Color>
+    <Color x:Key="Color.AccentPressed">#15629E</Color>
 
     <!--<Color x:Key="Color.Accent">#7BFF00</Color>
     <Color x:Key="Color.AccentHover">#66D900</Color>

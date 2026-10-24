@@ -2,6 +2,7 @@
 using GameTimeNext.Core.Framework.Config;
 using System.IO;
 using System.Windows.Controls.Primitives;
+using System.Windows.Media.Imaging;
 using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Profiles
@@ -11,6 +12,19 @@ namespace GameTimeNext.Core.Application.Profiles
     /// </summary>
     public class CFProfilesEditApp
     {
+        // Covers are displayed at max. 300x450, so 600x900 still looks sharp on high DPI screens
+        public const int ProfileCoverMaxWidth = 600;
+        public const int ProfileCoverMaxHeight = 900;
+        public const int ProfileCoverJpegQuality = 85;
+
+        /// <summary>
+        /// Saves a profile cover as JPEG, downscaled (never upscaled) to the max. cover size.
+        /// Use this for every cover that ends up in the profile covers folder.
+        /// </summary>
+        public static void SaveProfileCover(BitmapSource source, string path)
+        {
+            FnImage.SaveAsJpeg(FnImage.DownscaleToFit(source, ProfileCoverMaxWidth, ProfileCoverMaxHeight), path, ProfileCoverJpegQuality);
+        }
 
         /// <summary>
         /// Kopiert das übergebene Cover zum App Coverordner

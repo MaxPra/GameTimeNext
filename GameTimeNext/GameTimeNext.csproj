@@ -7,6 +7,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>UI\Ressources\GTN_APP_ICON.ico</ApplicationIcon>
+    <Configurations>Debug;Release;GTXMigTest</Configurations>
   </PropertyGroup>
 
 	<PropertyGroup>
@@ -67,8 +68,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="SixLabors.ImageSharp" Version="4.1.3" />
-    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="3.1.3" />
     <!-- Native e_sqlite3 library required by System.Data.SQLite 2.x -->
     <PackageReference Include="SourceGear.sqlite3" Version="3.53.4" />
     <PackageReference Include="System.Data.SQLite" Version="2.0.2" />
