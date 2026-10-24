@@ -1,10 +1,12 @@
 {
     "permissions": {
         "additionalDirectories": [
-            "X:/MaxPra/UIX.ViewController.Engine"
+            "X:/MaxPra/UIX.ViewController.Engine",
+            "X:/MaxPra/UIXMonitorTweaks"
         ],
         "ask": [
-            "Edit(//x/MaxPra/UIX.ViewController.Engine/**)"
+            "Edit(//x/MaxPra/UIX.ViewController.Engine/**)",
+            "Edit(//x/MaxPra/UIXMonitorTweaks/**)"
         ],
         "deny": [
             "Read(//x/MaxPra/UIX.ViewController.Engine/**/bin/**)",
@@ -12,7 +14,14 @@
             "Read(//x/MaxPra/UIX.ViewController.Engine/**/.github/**)",
             "Edit(//x/MaxPra/UIX.ViewController.Engine/**/bin/**)",
             "Edit(//x/MaxPra/UIX.ViewController.Engine/**/obj/**)",
-            "Edit(//x/MaxPra/UIX.ViewController.Engine/**/.github/**)"
+            "Edit(//x/MaxPra/UIX.ViewController.Engine/**/.github/**)",
+
+            "Read(//x/MaxPra/UIXMonitorTweaks/**/bin/**)",
+            "Read(//x/MaxPra/UIXMonitorTweaks/**/obj/**)",
+            "Read(//x/MaxPra/UIXMonitorTweaks/**/.github/**)",
+            "Edit(//x/MaxPra/UIXMonitorTweaks/**/bin/**)",
+            "Edit(//x/MaxPra/UIXMonitorTweaks/**/obj/**)",
+            "Edit(//x/MaxPra/UIXMonitorTweaks/**/.github/**)"
         ]
     }
 }
