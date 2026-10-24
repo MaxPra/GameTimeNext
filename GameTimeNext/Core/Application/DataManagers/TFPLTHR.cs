@@ -31,6 +31,58 @@ namespace GameTimeNext.Core.Application.DataManagers
             return maxPTID;
         }
 
+        /// <summary>
+        /// Returns the PFIDs of all profiles that have at least one completed playthrough
+        /// </summary>
+        public static HashSet<long> GetPfidsWithCompletedPlaythrough()
+        {
+            return GetPfidsWithPlaythrough(completed: true, cancelled: false, paused: false);
+        }
+
+        /// <summary>
+        /// Returns the PFIDs of all profiles that have a current playthrough
+        /// (not completed, cancelled or paused - same criteria as HasCurrentPlaythrough)
+        /// </summary>
+        public static HashSet<long> GetPfidsWithCurrentPlaythrough()
+        {
+            return GetPfidsWithPlaythrough(completed: false, cancelled: false, paused: false);
+        }
+
+        /// <summary>
+        /// Returns the PFIDs of all profiles that have at least one paused playthrough
+        /// </summary>
+        public static HashSet<long> GetPfidsWithPausedPlaythrough()
+        {
+            return GetPfidsWithPlaythrough(completed: false, cancelled: false, paused: true);
+        }
+
+        private static HashSet<long> GetPfidsWithPlaythrough(bool completed, bool cancelled, bool paused)
+        {
+            HashSet<long> pfids = new HashSet<long>();
+
+            UIXQuery query = new UIXQuery(K1PLTHR.Name, AppEnvironment.GetDataBaseManager().GetConnection());
+            query.SetDistinct(true);
+            query.AddField(K1PLTHR.Name, K1PLTHR.Fields.PFID);
+            query.AddWhere(K1PLTHR.Name, K1PLTHR.Fields.PTCO, QueryCompareType.EQUALS, completed);
+
+            // A completed playthrough counts regardless of the other flags
+            if (!completed)
+            {
+                query.AddWhere(K1PLTHR.Name, K1PLTHR.Fields.PTCA, QueryCompareType.EQUALS, cancelled);
+                query.AddWhere(K1PLTHR.Name, K1PLTHR.Fields.PTPA, QueryCompareType.EQUALS, paused);
+            }
+
+            using (var reader = query.Execute())
+            {
+                while (reader.Read())
+                {
+                    pfids.Add(UIXQuery.GetInt64(reader, K1PLTHR.Name, K1PLTHR.Fields.PFID));
+                }
+            }
+
+            return pfids;
+        }
+
         public static T1PLTHR GetCurrentPlaythrough(long pfid)
         {
             return new TXPLTHR().Read(GetCurrentPlaythroughPtid(pfid));
@@ -118,6 +170,19 @@ namespace GameTimeNext.Core.Application.DataManagers
                 }
             }
             return sessions;
+        }
+
+        public static double GetPlaytimeInMinutes(long ptid)
+        {
+            UIXQuery query = new UIXQuery(K1SESSI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
+            query.AddSum(K1SESSI.Name, K1SESSI.Fields.PLTI, "TotalPlaytime");
+            query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PTID, QueryCompareType.EQUALS, ptid);
+
+            using (var reader = query.Execute())
+                if (reader.Read())
+                    return UIXQuery.GetDouble(reader, "TotalPlaytime");
+
+            return 0;
         }
 
         public static void DeletePlaythroughAndSessions(long ptid)

@@ -2,19 +2,18 @@
 using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.General;
 using GameTimeNext.Core.Application.MigrationTasks;
+using GameTimeNext.Core.Application.Profiles;
 using GameTimeNext.Core.Application.Profiles.Components;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.Utils;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Drawing;
-using SixLabors.ImageSharp.Drawing.Processing;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
 using System.Data.SQLite;
 using System.IO;
 using System.Text;
+using System.Windows;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using UIX.ViewController.Engine.FrameworkElements.Loader;
 using UIX.ViewController.Engine.Migration.Types;
 using UIX.ViewController.Engine.Utils;
@@ -447,79 +446,108 @@ namespace GameTimeNext.Core.Application.GTXMigration
             int bottomThicknessLeft = 80;
             int bottomThicknessRight = 140;
 
-            using (Image<Rgba32> src = Image.Load<Rgba32>(inputPath))
+            BitmapSource src = FnImage.Load(inputPath);
+            Size imageSize = FnImage.GetFitSize(src, maxImageSize, maxImageSize);
+
+            double x = Math.Floor((targetW - imageSize.Width) / 2);
+            double y = Math.Floor((targetH - imageSize.Height) / 2);
+
+            List<Color> particleColors = GetParticleColors(inputPath);
+            int seed = GetStableSeed(System.IO.Path.GetFileName(inputPath));
+
+            BitmapSource canvas = FnImage.Render(targetW, targetH, dc =>
             {
-                using (Image<Rgba32> img = src.Clone())
-                {
-                    img.Mutate(ctx =>
-                    {
-                        ResizeOptions opt = new ResizeOptions();
-                        opt.Size = new Size(maxImageSize, maxImageSize);
-                        opt.Mode = ResizeMode.Max;
-                        opt.Position = AnchorPositionMode.Center;
+                Rect canvasRect = new Rect(0, 0, targetW, targetH);
 
-                        ctx.Resize(opt);
-                    });
+                dc.DrawRectangle(new SolidColorBrush(Color.FromRgb(18, 18, 18)), null, canvasRect);
 
-                    Color background = Color.FromRgba(18, 18, 18, 255);
+                // Subtle particles in the empty background around the image
+                FnImage.DrawParticles(dc, new RectangleGeometry(canvasRect), particleColors, seed, 120, 10);
 
-                    using (Image<Rgba32> canvas = new Image<Rgba32>(targetW, targetH, background))
-                    {
-                        int x = (targetW - img.Width) / 2;
-                        int y = (targetH - img.Height) / 2;
+                dc.DrawImage(src, new Rect(new Point(x, y), imageSize));
 
-                        canvas.Mutate(ctx =>
-                        {
-                            ctx.DrawImage(img, new Point(x, y), 1f);
+                DrawSlantedOverlays(
+                    dc,
+                    targetW,
+                    targetH,
+                    topThicknessLeft,
+                    topThicknessRight,
+                    bottomThicknessLeft,
+                    bottomThicknessRight,
+                    particleColors,
+                    seed
+                );
+            });
 
-                            DrawSlantedOverlays(
-                                ctx,
-                                targetW,
-                                targetH,
-                                topThicknessLeft,
-                                topThicknessRight,
-                                bottomThicknessLeft,
-                                bottomThicknessRight
-                            );
-                        });
-
-                        canvas.Save(outputPath);
-                    }
-                }
-            }
+            CFProfilesEditApp.SaveProfileCover(canvas, outputPath);
         }
 
         private static void DrawSlantedOverlays(
-            IImageProcessingContext ctx,
+            DrawingContext dc,
             int targetW,
             int targetH,
             int topThicknessLeft,
             int topThicknessRight,
             int bottomThicknessLeft,
-            int bottomThicknessRight)
+            int bottomThicknessRight,
+            IReadOnlyList<Color> particleColors,
+            int seed)
         {
-            Color overlayBlack = Color.FromRgba(0, 0, 0, 220);
-            Color edgeBlack = Color.FromRgba(0, 0, 0, 255);
+            Brush overlayBrush = new SolidColorBrush(Color.FromArgb(220, 0, 0, 0));
+            Pen edgePen = new Pen(Brushes.Black, 3);
 
-            IPath topShape = new Polygon(new LinearLineSegment(
-                new PointF(0, 0),
-                new PointF(targetW, 0),
-                new PointF(targetW, topThicknessRight),
-                new PointF(0, topThicknessLeft)
-            ));
-            ctx.Fill(overlayBlack, topShape);
+            Geometry topShape = FnImage.CreatePolygon(
+                new Point(0, 0),
+                new Point(targetW, 0),
+                new Point(targetW, topThicknessRight),
+                new Point(0, topThicknessLeft)
+            );
 
-            ctx.DrawLine(edgeBlack, 3f, new PointF(0, topThicknessLeft), new PointF(targetW, topThicknessRight));
+            Geometry bottomShape = FnImage.CreatePolygon(
+                new Point(0, targetH),
+                new Point(targetW, targetH),
+                new Point(targetW, targetH - bottomThicknessRight),
+                new Point(0, targetH - bottomThicknessLeft)
+            );
 
-            IPath bottomShape = new Polygon(new LinearLineSegment(
-                new PointF(0, targetH),
-                new PointF(targetW, targetH),
-                new PointF(targetW, targetH - bottomThicknessRight),
-                new PointF(0, targetH - bottomThicknessLeft)
-            ));
-            ctx.Fill(overlayBlack, bottomShape);
+            dc.DrawGeometry(overlayBrush, null, topShape);
+            FnImage.DrawParticles(dc, topShape, particleColors, seed + 1, 140, 16);
+            dc.DrawLine(edgePen, new Point(0, topThicknessLeft), new Point(targetW, topThicknessRight));
 
-            ctx.DrawLine(edgeBlack, 3f, new PointF(0, targetH - bottomThicknessLeft), new PointF(targetW, targetH - bottomThicknessRight));
+            dc.DrawGeometry(overlayBrush, null, bottomShape);
+            FnImage.DrawParticles(dc, bottomShape, particleColors, seed + 2, 140, 16);
+            dc.DrawLine(edgePen, new Point(0, targetH - bottomThicknessLeft), new Point(targetW, targetH - bottomThicknessRight));
+        }
+
+        private static List<Color> GetParticleColors(string imagePath)
+        {
+            try
+            {
+                return FnImage.GetTopAccentColors(imagePath, 3);
+            }
+            catch
+            {
+                return new List<Color> { Colors.SteelBlue, Colors.SlateGray, Colors.LightSteelBlue };
+            }
+        }
+
+        /// <summary>
+        /// FNV-1a hash, stable across runs (unlike string.GetHashCode), so a cover always gets the same particles.
+        /// </summary>
+        private static int GetStableSeed(string value)
+        {
+            unchecked
+            {
+                uint hash = 2166136261;
+
+                foreach (char c in value)
+                {
+                    hash ^= c;
+                    hash *= 16777619;
+                }
+
+                return (int)hash;
+            }
         }
 
         private static bool IsImageFile(string path)

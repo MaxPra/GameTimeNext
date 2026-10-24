@@ -22,6 +22,10 @@
   * The application can now only be started once (single instance).
 
   * IGDB integration can now be disabled in the settings.
+  
+  * The playthrough overview now shows the total playtime of each playthrough.
+
+  * Reworked the library filters.
 
 
   NEW FEATURES

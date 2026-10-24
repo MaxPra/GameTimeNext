@@ -9,6 +9,7 @@ using GameTimeNext.Core.Framework.Utils;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls.Primitives;
+using System.Windows.Media.Imaging;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements.UserControls;
 using UIX.ViewController.Engine.Runnables;
@@ -22,6 +23,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         private readonly string _coversFolder = AppConfig.Temp.SteamGridDBCoversDirectoryPath;
         private readonly int _coversPerPage = 12;
+
+        // Shared by current page and prefetch, allows a whole page to load in parallel
+        private readonly SemaphoreSlim _downloadSemaphore = new SemaphoreSlim(12);
 
         private int _currentPage = 0;
 
@@ -205,14 +209,38 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
         }
 
-        protected void EV_btnApply()
+        protected async Task EV_btnApply()
         {
             SteamGridDBImage selected = _profilesSteamGridDBViewModel?.SelectedImage as SteamGridDBImage;
 
             if (selected == null)
                 return;
 
-            GetViewReturn<ProfilesSteamGridDBViewReturn>().SelectedImagePath = selected.Path;
+            GetApp().Loader.Begin();
+
+            try
+            {
+                // Only now download the full resolution image of the chosen cover
+                if (!File.Exists(selected.FullImagePath))
+                    await _client.DownloadCoverAsync(selected.FullImageUrl, selected.FullImagePath);
+            }
+            catch (Exception)
+            {
+                GetApp().Loader.Stop();
+
+                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(
+                    "Error",
+                    "An error occured while downloading the cover.",
+                    CFMBOXResult.Ok,
+                    CFMBOXIcon.Error
+                );
+
+                return;
+            }
+
+            GetApp().Loader.Stop();
+
+            GetViewReturn<ProfilesSteamGridDBViewReturn>().SelectedImagePath = selected.FullImagePath;
             GetViewReturn<ProfilesSteamGridDBViewReturn>().Canceled = false;
 
             Exit(true);
@@ -252,14 +280,20 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             {
                 SteamGridDBPage currentPage = _sgdbPages[_currentPage];
 
-                if (!currentPage.Downloaded)
-                    await DownloadPageAsync(currentPage);
+                // Reuses a running (prefetch) download instead of starting a second one
+                currentPage.DownloadTask ??= DownloadPageAsync(currentPage);
+                await currentPage.DownloadTask;
 
                 BuildSGCoverList(currentPage.Images);
                 Build();
+
+                PrefetchPage(_currentPage + 1);
             }
             catch (Exception)
             {
+                // Allow a retry the next time the page is shown
+                _sgdbPages[_currentPage].DownloadTask = null;
+
                 GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(
                     "Error",
                     "An error occured while loading the page.",
@@ -285,13 +319,28 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             View.DataContext = _profilesSteamGridDBViewModel;
         }
 
-        private async Task DownloadPageAsync(SteamGridDBPage page)
+        /// <summary>
+        /// Downloads the given page in the background, so switching to it is instant.
+        /// </summary>
+        private void PrefetchPage(int pageIndex)
         {
-            if (page == null || page.Downloaded)
+            if (pageIndex < 0 || pageIndex >= _sgdbPages.Count)
                 return;
 
-            using SemaphoreSlim semaphore = new SemaphoreSlim(6);
+            SteamGridDBPage page = _sgdbPages[pageIndex];
 
+            if (page.DownloadTask != null)
+                return;
+
+            page.DownloadTask = DownloadPageAsync(page);
+
+            // On error reset, the page is downloaded again when it gets shown
+            page.DownloadTask.ContinueWith(t => page.DownloadTask = null,
+                CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
+        }
+
+        private async Task DownloadPageAsync(SteamGridDBPage page)
+        {
             SteamGridDBImage[] downloadedImages = new SteamGridDBImage[page.PageItems.Count];
             List<Task> downloadTasks = new List<Task>();
 
@@ -305,27 +354,28 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
                 downloadTasks.Add(Task.Run(async () =>
                 {
-                    await semaphore.WaitAsync();
+                    await _downloadSemaphore.WaitAsync();
 
                     try
                     {
-                        string fileName = BuildImageFileName(_currentPage, itemIndex, grid);
-                        string path = Path.Combine(_coversFolder, fileName);
-
-                        if (!File.Exists(path))
-                            await _client.DownloadFileAsync(grid.Url, path);
+                        string fileName = BuildImageFileName(page.PageIndex, itemIndex, grid);
 
                         SteamGridDBImage image = new SteamGridDBImage
                         {
-                            BitmapImage = FnImage.LoadImageWithoutLock(path, 200, 300),
-                            Path = path
+                            BitmapImage = await DownloadThumbnailAsync(grid, Path.GetFileNameWithoutExtension(fileName)),
+                            FullImageUrl = grid.Url,
+                            FullImagePath = Path.Combine(_coversFolder, fileName)
                         };
 
                         downloadedImages[itemIndex] = image;
                     }
+                    catch (Exception)
+                    {
+                        // Skip single broken covers instead of failing the whole page
+                    }
                     finally
                     {
-                        semaphore.Release();
+                        _downloadSemaphore.Release();
                     }
                 }));
             }
@@ -335,8 +385,44 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             page.Images = downloadedImages
                 .Where(x => x != null)
                 .ToList();
+        }
 
-            page.Downloaded = true;
+        /// <summary>
+        /// Downloads the small preview of a grid for the selection list.
+        /// Falls back to the full image if there is no thumbnail or it can't be decoded.
+        /// </summary>
+        private async Task<BitmapImage> DownloadThumbnailAsync(SgdbGrid grid, string baseFileName)
+        {
+            List<string> urls = new List<string>();
+
+            if (!string.IsNullOrWhiteSpace(grid.Thumb))
+                urls.Add(grid.Thumb);
+
+            urls.Add(grid.Url!);
+
+            Exception? lastError = null;
+
+            foreach (string url in urls)
+            {
+                // Keep the original file extension, the thumbnail is stored without re-encoding
+                string extension = Path.GetExtension(new Uri(url).AbsolutePath);
+                string path = Path.Combine(_coversFolder, $"{baseFileName}_thumb{extension}");
+
+                try
+                {
+                    if (!File.Exists(path))
+                        await _client.DownloadFileAsync(url, path);
+
+                    return FnImage.LoadImageWithoutLock(path, 200, 300)!;
+                }
+                catch (Exception ex)
+                {
+                    lastError = ex;
+                    try { File.Delete(path); } catch { }
+                }
+            }
+
+            throw lastError!;
         }
 
         private string BuildImageFileName(int pageIndex, int itemIndex, SgdbGrid grid)
@@ -387,18 +473,23 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
                 _sgdbPages.Add(new SteamGridDBPage
                 {
+                    PageIndex = _sgdbPages.Count,
                     PageItems = pageItems,
-                    Images = new List<SteamGridDBImage>(),
-                    Downloaded = false
+                    Images = new List<SteamGridDBImage>()
                 });
             }
         }
 
         private class SteamGridDBPage
         {
+            public int PageIndex { get; set; }
             public List<SgdbGrid> PageItems { get; set; } = new List<SgdbGrid>();
             public List<SteamGridDBImage> Images { get; set; } = new List<SteamGridDBImage>();
-            public bool Downloaded { get; set; } = false;
+
+            /// <summary>
+            /// Running or finished download of this page, null if not started yet
+            /// </summary>
+            public Task? DownloadTask { get; set; }
         }
 
         private ProfilesSteamGridDBApp GetApp()

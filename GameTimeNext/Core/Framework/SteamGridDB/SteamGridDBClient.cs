@@ -1,8 +1,8 @@
 ﻿using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.Utils;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Jpeg;
+using GameTimeNext.Core.Application.Profiles;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
@@ -111,21 +111,76 @@ namespace GameTimeNext.Core.Framework.SteamGridDB
         }
 
 
+        /// <summary>
+        /// Downloads the file as it is (no re-encoding), e.g. thumbnails for the selection grid.
+        /// </summary>
         public async Task DownloadFileAsync(string fileUrl, string targetPath, CancellationToken cancellationToken = default)
+        {
+            EnsureTargetDirectoryExists(targetPath);
+
+            // Write to a temp file first, so an aborted download never looks like a cached file
+            string partPath = targetPath + ".part";
+
+            using (var response = await _downloadClient.GetAsync(fileUrl, HttpCompletionOption.ResponseHeadersRead, cancellationToken))
+            {
+                response.EnsureSuccessStatusCode();
+
+                await using var input = await response.Content.ReadAsStreamAsync(cancellationToken);
+                await using var output = File.Create(partPath);
+                await input.CopyToAsync(output, cancellationToken);
+            }
+
+            File.Move(partPath, targetPath, true);
+        }
+
+        /// <summary>
+        /// Downloads an image and saves it as profile cover (downscaled JPEG).
+        /// </summary>
+        public async Task DownloadCoverAsync(string fileUrl, string targetPath, CancellationToken cancellationToken = default)
+        {
+            EnsureTargetDirectoryExists(targetPath);
+
+            using MemoryStream buffer = await DownloadAsync(fileUrl, cancellationToken);
+
+            CFProfilesEditApp.SaveProfileCover(FnImage.Load(buffer), targetPath);
+        }
+
+        private static void EnsureTargetDirectoryExists(string targetPath)
         {
             string? directory = Path.GetDirectoryName(targetPath);
 
             if (!FnString.IsNullEmptyOrWhitespace(directory))
                 FnDirectory.EnsureDirectoryExists(directory!);
+        }
 
-            using var httpClient = new HttpClient();
+        /// <summary>
+        /// Shared client for image downloads. Reusing it keeps connections (and TLS sessions) to the CDN alive,
+        /// instead of a new handshake for every single image.
+        /// </summary>
+        private static readonly HttpClient _downloadClient = CreateDownloadClient();
+
+        private static HttpClient CreateDownloadClient()
+        {
+            SocketsHttpHandler handler = new SocketsHttpHandler
+            {
+                PooledConnectionLifetime = TimeSpan.FromMinutes(5),
+                MaxConnectionsPerServer = 16,
+                AutomaticDecompression = DecompressionMethods.All
+            };
+
+            HttpClient httpClient = new HttpClient(handler);
             httpClient.Timeout = TimeSpan.FromSeconds(20);
             httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " + AppConfig.Root.ApplicationName + " / 1.0"
             );
             httpClient.DefaultRequestHeaders.Accept.ParseAdd("*/*");
 
-            using var response = await httpClient.GetAsync(
+            return httpClient;
+        }
+
+        private static async Task<MemoryStream> DownloadAsync(string fileUrl, CancellationToken cancellationToken)
+        {
+            using var response = await _downloadClient.GetAsync(
                 fileUrl,
                 HttpCompletionOption.ResponseHeadersRead,
                 cancellationToken
@@ -135,16 +190,12 @@ namespace GameTimeNext.Core.Framework.SteamGridDB
 
             await using var input = await response.Content.ReadAsStreamAsync(cancellationToken);
 
-            using Image image = await Image.LoadAsync(input, cancellationToken);
+            // Buffer the download, WIC decoding needs a seekable stream
+            MemoryStream buffer = new MemoryStream();
+            await input.CopyToAsync(buffer, cancellationToken);
+            buffer.Position = 0;
 
-            await image.SaveAsJpegAsync(
-                targetPath,
-                new JpegEncoder
-                {
-                    Quality = 80
-                },
-                cancellationToken
-            );
+            return buffer;
         }
     }
 
