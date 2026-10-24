@@ -491,7 +491,7 @@ namespace GameTimeNext.Core.Application.GTXMigration
                         ctx.Resize(opt);
                     });
 
-                    Color background = Color.FromRgba(18, 18, 18, 255);
+                    Rgba32 background = new Rgba32(18, 18, 18, 255);
 
                     using (Image<Rgba32> canvas = new Image<Rgba32>(targetW, targetH, background))
                     {
@@ -538,8 +538,11 @@ namespace GameTimeNext.Core.Application.GTXMigration
             int bottomThicknessLeft,
             int bottomThicknessRight)
         {
-            Color overlayBlack = Color.FromRgba(0, 0, 0, 220);
-            Color edgeBlack = Color.FromRgba(0, 0, 0, 255);
+            Color overlayBlack = Color.FromPixel(new Rgba32(0, 0, 0, 220));
+            Color edgeBlack = Color.FromPixel(new Rgba32(0, 0, 0, 255));
+
+            Brush overlayBrush = Brushes.Solid(overlayBlack);
+            Pen edgePen = Pens.Solid(edgeBlack, 3f);
 
             IPath topShape = new Polygon(new LinearLineSegment(
                 new PointF(0, 0),
@@ -547,9 +550,6 @@ namespace GameTimeNext.Core.Application.GTXMigration
                 new PointF(targetW, topThicknessRight),
                 new PointF(0, topThicknessLeft)
             ));
-            ctx.Fill(overlayBlack, topShape);
-
-            ctx.DrawLine(edgeBlack, 3f, new PointF(0, topThicknessLeft), new PointF(targetW, topThicknessRight));
 
             IPath bottomShape = new Polygon(new LinearLineSegment(
                 new PointF(0, targetH),
@@ -557,9 +557,15 @@ namespace GameTimeNext.Core.Application.GTXMigration
                 new PointF(targetW, targetH - bottomThicknessRight),
                 new PointF(0, targetH - bottomThicknessLeft)
             ));
-            ctx.Fill(overlayBlack, bottomShape);
 
-            ctx.DrawLine(edgeBlack, 3f, new PointF(0, targetH - bottomThicknessLeft), new PointF(targetW, targetH - bottomThicknessRight));
+            ctx.Paint(canvas =>
+            {
+                canvas.Fill(overlayBrush, topShape);
+                canvas.DrawLine(edgePen, new[] { new PointF(0, topThicknessLeft), new PointF(targetW, topThicknessRight) });
+
+                canvas.Fill(overlayBrush, bottomShape);
+                canvas.DrawLine(edgePen, new[] { new PointF(0, targetH - bottomThicknessLeft), new PointF(targetW, targetH - bottomThicknessRight) });
+            });
         }
 
         private static bool IsImageFile(string path)
