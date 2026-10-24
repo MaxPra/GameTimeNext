@@ -4,6 +4,7 @@ using GameTimeNext.Core.Application.Playthroughs;
 using GameTimeNext.Core.Application.Profiles.BackgroundProcesses;
 using GameTimeNext.Core.Application.Profiles.Components;
 using GameTimeNext.Core.Application.Profiles.DataWrapper;
+using GameTimeNext.Core.Application.Profiles.Types;
 using GameTimeNext.Core.Application.Profiles.Viewmodel;
 using GameTimeNext.Core.Application.Profiles.Views;
 using GameTimeNext.Core.Application.TableObjects;
@@ -33,8 +34,6 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
     {
         private ProfilesSubViewDataWrapper? _dataWrapper;
         private ProfilesSubGridViewModel? _profilesSubGridViewModel;
-        private bool _playableFilter = false;
-        private bool _externalGameFilter = false;
 
         public ProfilesViewController(UIXApplication app) : base(app)
         {
@@ -144,13 +143,16 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             await Task.Run(() =>
             {
-                List<T1PROFI> T1PROFIs = GetAllFilteredProfis();
+                (List<T1PROFI> T1PROFIs, bool filterActive) = GetAllFilteredProfis();
                 List<ProfilesListBoxItem> profileItems = BuildProfileListBoxItems(T1PROFIs);
 
                 //Thread.Sleep(3000);
 
                 View.Dispatcher.Invoke(() =>
                 {
+                    // Indicator on the filter button if the list is filtered
+                    GetView().ElFilterActive.Visibility = filterActive ? Visibility.Visible : Visibility.Collapsed;
+
                     _profilesSubGridViewModel = new ProfilesSubGridViewModel();
                     _profilesSubGridViewModel.T1Profis = new System.Collections.ObjectModel.ObservableCollection<ProfilesListBoxItem>(profileItems);
 
@@ -188,11 +190,34 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             });
         }
 
-        private List<T1PROFI> GetAllFilteredProfis()
+        /// <summary>
+        /// Reads all profiles and applies the library filter.
+        /// Tags and fixed options are OR-combined within their group and AND-combined between groups.
+        /// </summary>
+        private (List<T1PROFI> Profiles, bool FilterActive) GetAllFilteredProfis()
         {
             List<T1PROFI> t1profisFiltered = new List<T1PROFI>();
+            FilterCache filter = GetApp().FilterCache;
 
-            UIXQuery query = BuildProfilesQuery();
+            // Only consider tags that still exist (deleted tags may still be stored in the filter)
+            HashSet<long> existingTagIds = new TXGROUP().ReadAll()
+                .Where(g => g.GTYP == GroupType.Tag)
+                .Select(g => g.GRID)
+                .ToHashSet();
+
+            HashSet<long> excludedTagIds = filter.ExcludedTagIds.Where(existingTagIds.Contains).ToHashSet();
+            HashSet<string> excludedOptions = filter.ExcludedOptions.ToHashSet();
+
+            Dictionary<long, HashSet<long>> tagIdsByPfid = new TXGRPPO().ReadAll()
+                .Where(g => existingTagIds.Contains(g.GRID))
+                .GroupBy(g => g.PFID)
+                .ToDictionary(g => g.Key, g => g.Select(x => x.GRID).ToHashSet());
+
+            HashSet<long> completedPfids = TFPLTHR.GetPfidsWithCompletedPlaythrough();
+            HashSet<long> currentPlaythroughPfids = TFPLTHR.GetPfidsWithCurrentPlaythrough();
+            HashSet<long> pausedPlaythroughPfids = TFPLTHR.GetPfidsWithPausedPlaythrough();
+
+            UIXQuery query = BuildProfilesQuery(filter);
 
             using (var reader = query.Execute())
             {
@@ -202,23 +227,89 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                     long pfid = UIXQuery.GetInt64(reader, K1PROFI.Name, K1PROFI.Fields.PFID);
                     T1PROFI t1profi = txprofi.Read(pfid);
 
-                    bool includeProfile = true;
+                    tagIdsByPfid.TryGetValue(pfid, out HashSet<long>? tagIds);
 
-                    if (_playableFilter)
-                        includeProfile &= FnSystem.IsExeFoundInPath(t1profi.EXGF);
+                    string progress = GetProgress(t1profi, completedPfids.Contains(pfid), currentPlaythroughPfids.Contains(pfid), pausedPlaythroughPfids.Contains(pfid));
 
-                    if (_externalGameFilter)
-                        includeProfile &= TFPROFI.IsExternalGame(t1profi.PFID);
-
-                    if (includeProfile)
+                    if (IsProfileVisible(t1profi, tagIds, progress, filter, excludedTagIds, excludedOptions))
                         t1profisFiltered.Add(t1profi);
                 }
             }
 
-            return t1profisFiltered;
+            bool filterActive = excludedTagIds.Count > 0
+                || filter.ExcludeUntagged
+                || excludedOptions.Count > 0
+                || filter.ShowArchived
+                || filter.OnlyRecentlyPlayed;
+
+            return (t1profisFiltered, filterActive);
         }
 
-        private UIXQuery BuildProfilesQuery()
+        /// <summary>
+        /// Determines the progress option of a profile (exactly one per profile)
+        /// </summary>
+        private static string GetProgress(T1PROFI t1profi, bool hasCompletedPlaythrough, bool hasCurrentPlaythrough, bool hasPausedPlaythrough)
+        {
+            // Never played (the initial playthrough is open from the start, so this has to be checked first)
+            if (t1profi.FIPL == DateTime.MinValue && !hasCompletedPlaythrough)
+                return ProfilesFilterOptions.PROGRESS_UNPLAYED;
+
+            // An open playthrough wins over completed ones (e.g. a second run)
+            if (hasCurrentPlaythrough)
+                return ProfilesFilterOptions.PROGRESS_IN_PROGRESS;
+
+            // A paused playthrough can be resumed, so it wins over completed ones as well
+            if (hasPausedPlaythrough)
+                return ProfilesFilterOptions.PROGRESS_PAUSED;
+
+            if (hasCompletedPlaythrough)
+                return ProfilesFilterOptions.PROGRESS_COMPLETED;
+
+            // Played, but only cancelled playthroughs left
+            return ProfilesFilterOptions.PROGRESS_CANCELLED;
+        }
+
+        private static bool IsProfileVisible(T1PROFI t1profi, HashSet<long>? tagIds, string progress, FilterCache filter, HashSet<long> excludedTagIds, HashSet<string> excludedOptions)
+        {
+            // -- Tags (visible if at least one of its tags is checked)
+            if (tagIds == null || tagIds.Count == 0)
+            {
+                if (filter.ExcludeUntagged)
+                    return false;
+            }
+            else if (tagIds.All(excludedTagIds.Contains))
+                return false;
+
+            // -- Progress
+            if (excludedOptions.Contains(progress))
+                return false;
+
+            // -- Availability (file system check only when needed)
+            if (excludedOptions.Contains(ProfilesFilterOptions.AVAILABILITY_PLAYABLE) || excludedOptions.Contains(ProfilesFilterOptions.AVAILABILITY_NOT_PLAYABLE))
+            {
+                string availability = FnSystem.IsExeFoundInPath(t1profi.EXGF)
+                    ? ProfilesFilterOptions.AVAILABILITY_PLAYABLE
+                    : ProfilesFilterOptions.AVAILABILITY_NOT_PLAYABLE;
+
+                if (excludedOptions.Contains(availability))
+                    return false;
+            }
+
+            // -- Source (codetable lookup only when needed)
+            if (excludedOptions.Contains(ProfilesFilterOptions.SOURCE_LOCAL) || excludedOptions.Contains(ProfilesFilterOptions.SOURCE_EXTERNAL))
+            {
+                string source = TFPROFI.IsExternalGame(t1profi)
+                    ? ProfilesFilterOptions.SOURCE_EXTERNAL
+                    : ProfilesFilterOptions.SOURCE_LOCAL;
+
+                if (excludedOptions.Contains(source))
+                    return false;
+            }
+
+            return true;
+        }
+
+        private UIXQuery BuildProfilesQuery(FilterCache filter)
         {
             UIXQuery query = new UIXQuery(K1PROFI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
             query.SetDistinct(true);
@@ -227,95 +318,25 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             query.AddField(K1PROFI.Name, K1PROFI.Fields.PFID);
 
             // Where Restrictions
-            AddWhereRestrictions(query);
+            AddWhereRestrictions(query, filter);
 
             // Order by LAPL
             query.AddOrderBy(K1PROFI.Name, K1PROFI.Fields.LAPL, OrderDirection.DESC);
             return query;
         }
 
-        private void AddWhereRestrictions(UIXQuery query)
+        private void AddWhereRestrictions(UIXQuery query, FilterCache filter)
         {
+            // -- Archived games are hidden unless explicitly requested
+            if (!filter.ShowArchived)
+                query.AddWhere(K1PROFI.Name, K1PROFI.Fields.ARCH, QueryCompareType.EQUALS, false);
 
-            ProfilesFilterViewController filterController = GetApp().ProfilesFilterView.ViewController as ProfilesFilterViewController;
-
-            // Where Restriction
-            List<T1GROUP> selectedTags = new List<T1GROUP>();
-            List<T1GROUP> selectedStates = new List<T1GROUP>();
-
-            // Selektion aus Filter Cache lesen
-            selectedTags = GetApp().FilterCache.SelectedTags;
-            selectedStates = GetApp().FilterCache.SelectedStates;
-
-            // -- Tags
-            if (selectedTags != null && selectedTags.Count > 0)
+            // -- Recently played
+            if (filter.OnlyRecentlyPlayed)
             {
-                List<long> selectedTagKeys = BuildTagListForQuery(selectedTags);
-
-                UIXQueryTable t1grppo_table = query.AddJoinTable(K1GRPPO.Name, JoinType.INNER);
-                t1grppo_table.AddJoinCondition(K1PROFI.Name, K1PROFI.Fields.PFID, QueryCompareType.EQUALS, K1GRPPO.Name, K1GRPPO.Fields.PFID);
-
-                // Alle Gruppen aus der GRPPO wo einer der selektierten Keys enthalten ist
-                query.AddWhereIn(K1GRPPO.Name, K1GRPPO.Fields.GRID, selectedTagKeys);
+                DateTime limitDate = DateTime.Now.AddDays(-ProfilesFilterOptions.RECENTLY_PLAYED_DAYS);
+                query.AddWhere(K1PROFI.Name, K1PROFI.Fields.LAPL, QueryCompareType.GREATER_THAN, limitDate);
             }
-
-            // -- States
-            if (selectedStates != null)
-            {
-
-                bool containsCompleted = false;
-                bool containsUnplayed = false;
-                bool containsCurrentlyPlaying = false;
-                bool containsPlayable = false;
-                bool containsArchived = false;
-                bool containsExternal = false;
-
-                foreach (T1GROUP group in selectedStates)
-                {
-                    if (group.GRNA == "Completed")
-                        containsCompleted = true;
-                    else if (group.GRNA == "Unplayed")
-                        containsUnplayed = true;
-                    else if (group.GRNA == "Currently Playing")
-                        containsCurrentlyPlaying = true;
-                    else if (group.GRNA == "Playable")
-                        containsPlayable = true;
-                    else if (group.GRNA == "Archived")
-                        containsArchived = true;
-                    else if (group.GRNA == "External")
-                        containsExternal = true;
-                }
-
-                if (containsUnplayed)
-                {
-                    query.AddWhere(K1PROFI.Name, K1PROFI.Fields.FIPL, QueryCompareType.EQUALS, DateTime.MinValue);
-                }
-
-                if (containsCurrentlyPlaying)
-                {
-                    DateTime limitDate = DateTime.Now.AddDays(-14);
-                    query.AddWhere(K1PROFI.Name, K1PROFI.Fields.LAPL, QueryCompareType.GREATER_THAN, limitDate);
-                }
-
-                if (containsCompleted)
-                {
-                    UIXQueryTable t1plthr_table = query.AddJoinTable(K1PLTHR.Name, JoinType.INNER);
-                    t1plthr_table.AddJoinCondition(K1PROFI.Name, K1PROFI.Fields.PFID, QueryCompareType.EQUALS, K1PLTHR.Name, K1PLTHR.Fields.PFID);
-                    query.AddWhere(K1PLTHR.Name, K1PLTHR.Fields.PTCO, QueryCompareType.EQUALS, true);
-                }
-
-                // Archiviert
-                if (containsArchived)
-                    query.AddWhere(K1PROFI.Name, K1PROFI.Fields.ARCH, QueryCompareType.EQUALS, true);
-                else
-                    query.AddWhere(K1PROFI.Name, K1PROFI.Fields.ARCH, QueryCompareType.EQUALS, false);
-
-                // Hier im Objekt speichern, da außerhalb der Methode darauf zugegriffen werden muss (Ausnahme)
-                _playableFilter = containsPlayable;
-                _externalGameFilter = containsExternal;
-            }
-            else
-                _playableFilter = false;
 
             GetView().Dispatcher.Invoke(() =>
             {
@@ -325,33 +346,6 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                     query.AddWhere(K1PROFI.Name, K1PROFI.Fields.GANA, QueryCompareType.LIKE, GetView().tbSearchProfileName.Text);
                 }
             });
-        }
-
-        private bool ContainsArchived(List<T1GROUP> selectedStates)
-        {
-            if (selectedStates == null)
-                return false;
-
-            foreach (T1GROUP selectedState in selectedStates)
-            {
-                if (selectedState.GRNA == "Archived")
-                    return true;
-            }
-
-            return false;
-        }
-
-        private List<long> BuildTagListForQuery(List<T1GROUP> selectedTags)
-        {
-
-            List<long> keyList = new List<long>();
-
-            foreach (T1GROUP tag in selectedTags)
-            {
-                keyList.Add(tag.GRID);
-            }
-
-            return keyList;
         }
 
         private void BuildContextMenu(ListBoxItem lbi, T1PROFI t1profi)
@@ -431,18 +425,36 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             // Ermittlung der zugeordneten Gruppen
             T1PROFI t1profi = new TXPROFI().Read(pfid);
 
-            List<T1GROUP> tags = TFPROFI.GetAllLinkedTags(t1profi);
+            List<long> linkedTagIds = TFPROFI.GetAllLinkedTags(t1profi).Select(t => t.GRID).ToList();
 
-            // Alle Selektionen bereinigen
-            if (tags.Count == 0)
-                GetApp().FilterCache.SelectedTags = new List<T1GROUP>();
-            else
-                GetApp().FilterCache.SelectedTags = tags;
+            // Reset everything else, so the started game is guaranteed to be visible
+            FilterCache filter = new FilterCache();
+            filter.ShowArchived = t1profi.ARCH;
 
-            // Alle States bereinigen
-            GetApp().FilterCache.SelectedStates = new List<T1GROUP>();
+            // Only show games sharing a tag with the started game (if it has tags)
+            if (linkedTagIds.Count > 0)
+            {
+                filter.ExcludeUntagged = true;
+                filter.ExcludedTagIds = new TXGROUP().ReadAll()
+                    .Where(g => g.GTYP == GroupType.Tag && !linkedTagIds.Contains(g.GRID))
+                    .Select(g => g.GRID)
+                    .ToList();
+            }
+
+            ApplyFilter(filter);
 
             await BuildProfilesListBoxAsync(pfid);
+        }
+
+        /// <summary>
+        /// Sets the filter and stores it in the config (restored on next start)
+        /// </summary>
+        private void ApplyFilter(FilterCache filter)
+        {
+            GetApp().FilterCache = filter;
+
+            AppEnvironment.GetAppConfig().FilterCache = filter;
+            AppEnvironment.SaveAppConfig();
         }
 
         #region Getter App & View
@@ -536,10 +548,6 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         /// </summary>
         public void EV_BtnFilter()
         {
-            List<T1GROUP> tags = new List<T1GROUP>();
-            List<T1GROUP> states = new List<T1GROUP>();
-            bool applied = false;
-
             if (!GetApp().ProfilesFilterView.IsShown)
             {
                 GetApp().ProfilesFilterView.ShowView(true);
@@ -547,18 +555,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 // Geschlossen per Apply
                 GetApp().ProfilesFilterView.ViewController.SetResultCallback<ProfilesFilterViewController.ProfileFilterViewReturn>(async r =>
                 {
-                    tags = r.TblGroups;
-                    states = r.States;
-                    applied = r.Applied;
-
-                    if (applied)
+                    if (r.Applied)
                     {
-                        // Filter Cache aktualisieren
-                        GetApp().FilterCache.SelectedTags = tags;
-                        GetApp().FilterCache.SelectedStates = states;
-
-                        AppEnvironment.GetAppConfig().FilterCache = GetApp().FilterCache;
-                        AppEnvironment.SaveAppConfig();
+                        ApplyFilter(r.Filter);
 
                         await BuildProfilesListBoxAsync(AppEnvironment.CurrentPfid);
                     }
@@ -781,11 +780,31 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         /// <summary>
         /// Filter Cache (Hier werden die Selektionen des Filters gespeichert)
         /// Bzw. wird der Filter Cache auch für gespeicherte Selektionen (z.b. bei Neustart der Anwendung) genutzt
+        /// Only unchecked entries are stored, so an empty filter shows the whole library
+        /// and tags created later are visible by default.
         /// </summary>
         public class FilterCache
         {
-            public List<T1GROUP> SelectedTags { get; set; }
-            public List<T1GROUP> SelectedStates { get; set; }
+            private List<long> _excludedTagIds = new List<long>();
+            private List<string> _excludedOptions = new List<string>();
+
+            /// <summary>
+            /// GRIDs of unchecked tags
+            /// </summary>
+            public List<long> ExcludedTagIds { get => _excludedTagIds; set => _excludedTagIds = value ?? new List<long>(); }
+
+            /// <summary>
+            /// Hides games without any tag
+            /// </summary>
+            public bool ExcludeUntagged { get; set; } = false;
+
+            /// <summary>
+            /// Unchecked fixed options (see ProfilesFilterOptions)
+            /// </summary>
+            public List<string> ExcludedOptions { get => _excludedOptions; set => _excludedOptions = value ?? new List<string>(); }
+
+            public bool ShowArchived { get; set; } = false;
+            public bool OnlyRecentlyPlayed { get; set; } = false;
 
             public FilterCache() { }
         }

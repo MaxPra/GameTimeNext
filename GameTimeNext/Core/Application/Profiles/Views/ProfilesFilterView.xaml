@@ -3,7 +3,52 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:uixcontrols="clr-namespace:UIX.ViewController.Engine.FrameworkElements.UserControls;assembly=UIX.ViewController.Engine"
-    MinWidth="560">
+    MinWidth="600">
+
+    <uixcontrols:UIXUserControlBase.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibility" />
+
+        <Style x:Key="FilterGroupHeader" TargetType="TextBlock">
+            <Setter Property="Margin" Value="0,0,0,8" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
+        </Style>
+
+        <Style x:Key="FilterGroupBorder" TargetType="Border">
+            <Setter Property="Padding" Value="10,10,10,4" />
+            <Setter Property="Margin" Value="0,0,0,14" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="{StaticResource DefaultCornerRadius}" />
+        </Style>
+
+        <!--  Checkbox list for tags and fixed options  -->
+        <DataTemplate x:Key="FilterItemTemplate">
+            <StackPanel Visibility="{Binding IsVisible, Converter={StaticResource BoolToVisibility}}">
+                <CheckBox
+                    x:Name="Cb"
+                    Margin="0,0,0,6"
+                    Content="{Binding Name}"
+                    IsChecked="{Binding IsChecked, Mode=TwoWay}"
+                    Style="{StaticResource CheckBox.Left}"
+                    ToolTip="{Binding ToolTip}" />
+
+                <!--  Separates special entries from the real tags  -->
+                <Border
+                    Height="1"
+                    Margin="0,2,0,8"
+                    Background="{DynamicResource Brush.Border}"
+                    Visibility="{Binding IsSpecial, Converter={StaticResource BoolToVisibility}}" />
+            </StackPanel>
+
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding IsSpecial}" Value="True">
+                    <Setter TargetName="Cb" Property="FontStyle" Value="Italic" />
+                    <Setter TargetName="Cb" Property="Opacity" Value="0.8" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+    </uixcontrols:UIXUserControlBase.Resources>
 
     <Border
         Padding="16"
@@ -15,34 +60,48 @@
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
             <TextBlock
                 Grid.Row="0"
-                Margin="0,0,0,12"
+                Margin="0,0,0,4"
                 FontSize="18"
                 FontWeight="SemiBold"
                 Foreground="{DynamicResource Brush.TextPrimary}"
                 Text="Library filters" />
 
-            <Grid Grid.Row="1">
+            <TextBlock
+                Grid.Row="1"
+                Margin="0,0,0,12"
+                Foreground="{DynamicResource Brush.TextSecondary}"
+                Text="Checked entries are shown. Uncheck what you want to hide."
+                TextWrapping="Wrap" />
+
+            <Grid Grid.Row="2">
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="3*" />
                     <ColumnDefinition Width="2*" />
-                    <ColumnDefinition Width="1*" />
                 </Grid.ColumnDefinitions>
 
-                <StackPanel Grid.Column="0" Margin="0,0,18,0">
+                <!--  Tags  -->
+                <!--  Height follows the options column, so the tag list fills the whole box  -->
+                <DockPanel
+                    Grid.Column="0"
+                    Height="{Binding ActualHeight, ElementName=SpOptions}"
+                    Margin="0,0,18,0"
+                    VerticalAlignment="Top">
                     <TextBlock
-                        Margin="0,0,0,8"
-                        FontWeight="SemiBold"
-                        Foreground="{DynamicResource Brush.Accent}"
+                        DockPanel.Dock="Top"
+                        Style="{StaticResource FilterGroupHeader}"
                         Text="TAGS" />
 
-                    <Grid Margin="0,0,0,10">
+                    <Grid Margin="0,0,0,10" DockPanel.Dock="Top">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
@@ -56,105 +115,117 @@
                             ToolTip="Search tags" />
 
                         <Button
-                            x:Name="btnDisableAllTags"
+                            x:Name="BtnSelectAllTags"
                             Grid.Column="1"
-                            Width="40"
-                            ToolTip="Disable all tags">
-                            <TextBlock
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                FontFamily="Segoe MDL2 Assets"
-                                FontSize="14"
-                                Text="&#xE711;" />
-                        </Button>
+                            Height="30"
+                            Margin="0,0,6,0"
+                            Padding="10,0"
+                            Content="All"
+                            ToolTip="Check all (visible) tags" />
+
+                        <Button
+                            x:Name="BtnSelectNoTags"
+                            Grid.Column="2"
+                            Height="30"
+                            Padding="10,0"
+                            Content="None"
+                            ToolTip="Uncheck all (visible) tags" />
                     </Grid>
 
-                    <Border
-                        Padding="10"
-                        BorderBrush="{DynamicResource Brush.Border}"
-                        BorderThickness="1"
-                        CornerRadius="{StaticResource DefaultCornerRadius}">
-
+                    <Border Margin="0,0,0,14" Style="{StaticResource FilterGroupBorder}">
                         <ScrollViewer
-                            MaxHeight="250"
                             HorizontalScrollBarVisibility="Disabled"
                             VerticalScrollBarVisibility="Auto">
-
-                            <ItemsControl ItemsSource="{Binding T1GROUPs}">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <StackPanel />
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <CheckBox
-                                            Margin="0,0,0,6"
-                                            Content="{Binding ItemObject.GRNA}"
-                                            IsChecked="{Binding COISSEL, Mode=TwoWay}"
-                                            Style="{StaticResource CheckBox.Left}" />
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
+                            <ItemsControl ItemTemplate="{StaticResource FilterItemTemplate}" ItemsSource="{Binding Tags}" />
                         </ScrollViewer>
                     </Border>
-                </StackPanel>
+                </DockPanel>
 
-                <StackPanel Grid.Column="1">
-                    <TextBlock
-                        Margin="0,0,0,8"
-                        FontWeight="SemiBold"
-                        Foreground="{DynamicResource Brush.Accent}"
-                        Text="STATE" />
+                <!--  Fixed options  -->
+                <StackPanel x:Name="SpOptions" Grid.Column="1">
+                    <TextBlock Style="{StaticResource FilterGroupHeader}" Text="PROGRESS" />
+                    <Border Style="{StaticResource FilterGroupBorder}">
+                        <ItemsControl ItemTemplate="{StaticResource FilterItemTemplate}" ItemsSource="{Binding Progress}" />
+                    </Border>
 
-                    <Border
-                        Padding="10"
-                        BorderBrush="{DynamicResource Brush.Border}"
-                        BorderThickness="1"
-                        CornerRadius="{StaticResource DefaultCornerRadius}">
+                    <TextBlock Style="{StaticResource FilterGroupHeader}" Text="AVAILABILITY" />
+                    <Border Style="{StaticResource FilterGroupBorder}">
+                        <ItemsControl ItemTemplate="{StaticResource FilterItemTemplate}" ItemsSource="{Binding Availability}" />
+                    </Border>
 
-                        <ItemsControl ItemsSource="{Binding States}">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <StackPanel />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
+                    <TextBlock Style="{StaticResource FilterGroupHeader}" Text="SOURCE" />
+                    <Border Style="{StaticResource FilterGroupBorder}">
+                        <ItemsControl ItemTemplate="{StaticResource FilterItemTemplate}" ItemsSource="{Binding Source}" />
+                    </Border>
 
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <CheckBox
-                                        Margin="0,0,0,6"
-                                        Content="{Binding ItemObject.GRNA}"
-                                        IsChecked="{Binding COISSEL, Mode=TwoWay}"
-                                        Style="{StaticResource CheckBox.Left}" />
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
+                    <TextBlock Style="{StaticResource FilterGroupHeader}" Text="OPTIONS" />
+                    <Border Padding="10" Style="{StaticResource FilterGroupBorder}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="8" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock
+                                Grid.Row="0"
+                                Grid.Column="0"
+                                VerticalAlignment="Center"
+                                Foreground="{DynamicResource Brush.TextPrimary}"
+                                Text="Show archived" />
+                            <CheckBox
+                                Grid.Row="0"
+                                Grid.Column="1"
+                                IsChecked="{Binding ShowArchived, Mode=TwoWay}"
+                                Style="{StaticResource CheckBox.Switch}"
+                                ToolTip="Also shows archived games" />
+
+                            <TextBlock
+                                Grid.Row="2"
+                                Grid.Column="0"
+                                VerticalAlignment="Center"
+                                Foreground="{DynamicResource Brush.TextPrimary}"
+                                Text="Recently played only" />
+                            <CheckBox
+                                Grid.Row="2"
+                                Grid.Column="1"
+                                IsChecked="{Binding OnlyRecentlyPlayed, Mode=TwoWay}"
+                                Style="{StaticResource CheckBox.Switch}"
+                                ToolTip="Only shows games played within the last 14 days" />
+                        </Grid>
                     </Border>
                 </StackPanel>
             </Grid>
 
-            <StackPanel
-                Grid.Row="2"
-                Margin="0,14,0,0"
-                HorizontalAlignment="Right"
-                Orientation="Horizontal">
-
+            <Grid Grid.Row="3" Margin="0,4,0,0">
                 <Button
-                    x:Name="BtnCancel"
-                    Width="90"
+                    x:Name="BtnReset"
                     Height="34"
-                    Margin="0,0,10,0"
-                    Content="Cancel" />
+                    Padding="14,0"
+                    HorizontalAlignment="Left"
+                    Content="Reset"
+                    ToolTip="Show the whole library again" />
 
-                <Button
-                    x:Name="BtnApply"
-                    Width="90"
-                    Height="34"
-                    Content="Apply"
-                    Style="{StaticResource Button.Secondary}" />
-            </StackPanel>
+                <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                    <Button
+                        x:Name="BtnCancel"
+                        Width="90"
+                        Height="34"
+                        Margin="0,0,10,0"
+                        Content="Cancel" />
+
+                    <Button
+                        x:Name="BtnApply"
+                        Width="90"
+                        Height="34"
+                        Content="Apply"
+                        Style="{StaticResource Button.Secondary}" />
+                </StackPanel>
+            </Grid>
         </Grid>
     </Border>
 </uixcontrols:UIXUserControlBase>

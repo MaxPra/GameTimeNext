@@ -12,6 +12,11 @@
 
   * The playthrough overview now shows the total playtime of each playthrough.
 
+  * Reworked the library filters: everything is checked by default and you uncheck what you want to hide.
+    States are now grouped into Progress (Unplayed, In Progress, Paused, Completed, Cancelled), Availability and Source. Games without tags can be filtered via "Untagged games".
+    Archived games and "recently played" are now separate switches, and the filter button shows a dot while a filter is active.
+    Note: previously saved filter selections are reset once.
+
 
   NEW FEATURES
   ____________
