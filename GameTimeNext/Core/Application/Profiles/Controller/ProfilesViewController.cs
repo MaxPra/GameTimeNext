@@ -677,7 +677,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             FnOpSys.OpenExplorer(t1profi.EXGF);
         }
 
-        protected void EV_ctxtCompleteProfile()
+        protected async Task EV_ctxtCompleteProfile()
         {
             T1PROFI t1profi = GetSelectedProfile();
 
@@ -688,25 +688,24 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             new TXPLTHR().Save(t1plthr);
 
-            _dataWrapper.TargetController.Open(true);
+            await BuildProfilesListBoxAsync(t1profi.PFID);
         }
 
-        protected void EV_ctxtStartNewPlaythrough()
+        protected async Task EV_ctxtStartNewPlaythrough()
         {
             T1PROFI t1profi = GetSelectedProfile();
 
             PlaythroughEditApp app = GetApp().GetApplication<PlaythroughEditApp>();
-            app.CreateNew(r =>
+            app.CreateNew(async r =>
             {
                 if (r.HasChanged)
                 {
-                    // Nochmaliges öffnen triggern
-                    _dataWrapper!.TargetController.Open(true);
+                    await BuildProfilesListBoxAsync(t1profi.PFID);
                 }
             }, t1profi);
         }
 
-        protected void EV_ctxtCancelPlaythrough()
+        protected async Task EV_ctxtCancelPlaythrough()
         {
             T1PROFI t1profi = GetSelectedProfile();
 
@@ -723,7 +722,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             new TXPLTHR().Save(t1plthr);
 
-            _dataWrapper!.TargetController.Open(true);
+            await BuildProfilesListBoxAsync(t1profi.PFID);
         }
 
         protected async Task EV_ctxtArchiveProfile()
@@ -758,12 +757,11 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 Gana = t1profi.GANA
             };
 
-            app.ShowWindow(r =>
+            app.ShowWindow(async r =>
             {
                 if (r.HasChanged)
                 {
-                    // Nochmaliges öffnen triggern
-                    _dataWrapper!.TargetController.Open(true);
+                    await BuildProfilesListBoxAsync(t1profi.PFID);
                 }
             });
         }
