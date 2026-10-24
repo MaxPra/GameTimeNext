@@ -35,6 +35,11 @@ ALLOWED_SOURCES = {
         "GameTimeNext/Core/Framework/Config/AppConfig.Paths.cs": 1,
         "GameTimeNext/App.xaml.cs": 1,
     },
+
+    "CryloudStudios": {
+        "GameTimeNext/Core/Framework/Config/AppConfig.Paths.cs": 1,
+        "GameTimeNext/App.xaml.cs": 1,
+    },
 }
 
 
