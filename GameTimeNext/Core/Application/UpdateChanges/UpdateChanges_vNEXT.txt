@@ -47,6 +47,9 @@
 
   * Full blackout can now be toggled via hotkey while monitoring a console game.
 
+  * Added a new "Screensetups" application: save which monitors are switched on, which one is
+    the primary monitor and which audio device is used, and switch between them with one click.
+
 
   BUG FIXES
   _________

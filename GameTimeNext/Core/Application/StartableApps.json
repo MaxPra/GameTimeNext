@@ -33,5 +33,10 @@
     "Code": "MET",
     "Name": "Metadata",
     "ClassName": "GameTimeNext.Core.Application.Metadata.MetadataApp"
+  },
+  {
+    "Code": "SCS",
+    "Name": "Screensetups",
+    "ClassName": "GameTimeNext.Core.Application.Screensetups.ScreensetupsApp"
   }
 ]

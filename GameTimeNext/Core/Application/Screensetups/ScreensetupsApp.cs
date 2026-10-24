@@ -1,0 +1,66 @@
+using GameTimeNext.Core.Application.Screensetups.Controller;
+using GameTimeNext.Core.Application.Screensetups.Views;
+using System.Windows.Controls;
+using UIX.ViewController.Engine.Runnables;
+using UIX.ViewController.Engine.Utils;
+
+namespace GameTimeNext.Core.Application.Screensetups
+{
+    public class ScreensetupsApp : UIXApplication, IUIXApplicationStarter
+    {
+
+        public ScreensetupsView? ScreensetupsView { get; set; }
+
+        public void Start(UIXApplication hostApplication, ContentPresenter presenter)
+        {
+            Start(hostApplication, new UIXApplicationStartOptions
+            {
+                Target = UIXApplicationStartTarget.ContentPresenter,
+                Presenter = presenter
+            });
+        }
+
+        public void Start(UIXApplication hostApplication, UIXApplicationStartOptions options)
+        {
+            HostApplication = hostApplication;
+            Loader = hostApplication.Loader;
+            CallDispatcher = hostApplication.CallDispatcher;
+
+            ScreensetupsView!.ViewIndicator.Clear();
+            ScreensetupsView!.ViewIndicator.Add("ED");
+            ScreensetupsView!.ViewController.Show(options);
+        }
+
+        public void StartWindowed()
+        {
+            ScreensetupsView!.ViewIndicator.Clear();
+            ScreensetupsView!.ViewIndicator.Add("ED");
+
+            ScreensetupsView!.ViewController.Show(
+                new UIXApplicationStartOptions
+                {
+                    Target = UIXApplicationStartTarget.Window
+                });
+        }
+
+
+        public override void InitializeApplicationOutput()
+        {
+            ScreensetupsView = new ScreensetupsView();
+            MainView = ScreensetupsView;
+            ScreensetupsView!.ViewController = new ScreensetupsViewController(this);
+
+            Icon = UIXMdlIcons.Monitor;
+        }
+
+        public override bool CanClose()
+        {
+            return base.CanClose();
+        }
+
+        public override void SetWindowProperties(UIXApplicationStartOptions options)
+        {
+            options.Dialog = true;
+        }
+    }
+}
