@@ -1,5 +1,5 @@
-﻿using GameTimeNext.Core.Framework.Config;
-using System.Reflection;
+﻿using System.Reflection;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Framework.Versioning
 {
@@ -161,7 +161,7 @@ namespace GameTimeNext.Core.Framework.Versioning
 
         private void FillFromInformationalVersion(string raw)
         {
-            raw = string.IsNullOrWhiteSpace(raw) ? "0.0.0" : raw;
+            raw = FnString.IsNullEmptyOrWhitespace(raw) ? "0.0.0" : raw;
 
             _informationalVersion = CleanInformationalVersion(raw);
             _versionText = ExtractVersionText(_informationalVersion);

@@ -1,9 +1,11 @@
+﻿using System.Globalization;
 using GameTimeNext.Core.Application.Profiles.Viewmodel;
 using GameTimeNext.Core.Application.Profiles.Views;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.SteamGridDB;
 using GameTimeNext.Core.Framework.UI.Dialogs;
+using GameTimeNext.Core.Framework.Utils;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls.Primitives;
@@ -70,7 +72,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                     return;
                 }
 
-                Directory.CreateDirectory(_coversFolder);
+                FnDirectory.EnsureDirectoryExists(_coversFolder);
 
                 BuildSteamGridDBPagesDictionary(grids);
 
@@ -170,7 +172,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             FnControls.SetEnabled(GetWnd().btnNextPage, _currentPage < _sgdbPages.Count - 1);
         }
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
         }
 
@@ -347,7 +349,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 int itemIndex = i;
                 SgdbGrid grid = page.PageItems[itemIndex];
 
-                if (grid == null || string.IsNullOrWhiteSpace(grid.Url))
+                if (grid == null || FnString.IsNullEmptyOrWhitespace(grid.Url))
                     continue;
 
                 downloadTasks.Add(Task.Run(async () =>
@@ -426,7 +428,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         private string BuildImageFileName(int pageIndex, int itemIndex, SgdbGrid grid)
         {
             string appPart = GetApp().SteamAppId != 0
-                ? GetApp().SteamAppId.ToString()
+                ? GetApp().SteamAppId.ToString(CultureInfo.InvariantCulture)
                 : SanitizeFileName(GetApp().GameName);
 
             string gridPart = "grid";
@@ -446,7 +448,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         private string SanitizeFileName(string value)
         {
-            if (string.IsNullOrWhiteSpace(value))
+            if (FnString.IsNullEmptyOrWhitespace(value))
                 return "unknown";
 
             foreach (char invalidChar in Path.GetInvalidFileNameChars())

@@ -1,15 +1,33 @@
 ﻿using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.DataBase.DevSync;
+using GameTimeNext.Core.Framework.DataBase.Migration;
 using System.Data.SQLite;
 using System.Globalization;
 using UIX.ViewController.Engine.DataBaseObjects;
+using UIX.ViewController.Engine.Migration.Types;
 using UIX.ViewController.Engine.Querying;
 
 namespace GameTimeNext.Core.Application.DataManagers
 {
     public class TXGROUPBasic
     {
+        private readonly SQLiteConnection? _connectionOverride;
+
+        protected SQLiteConnection _connection
+        {
+            get => _connectionOverride ?? AppEnvironment.GetDataBaseManager().GetConnection();
+        }
+
+        public TXGROUPBasic()
+        {
+        }
+
+        public TXGROUPBasic(SQLiteConnection connection)
+        {
+            _connectionOverride = connection;
+        }
+
+        #region Methods PUBLIC
         public virtual T1GROUP CreateNew()
         {
             T1GROUP obj = new T1GROUP();
@@ -19,47 +37,48 @@ namespace GameTimeNext.Core.Application.DataManagers
 
         public virtual void Save(T1GROUP obj)
         {
-            if (obj == null)
+            if (obj is null)
+            {
                 throw new ArgumentNullException(nameof(obj));
+            }
 
-            SQLiteConnection connection = AppEnvironment.GetDataBaseManager().GetConnection();
-            EnsureOpen(connection);
-
-            if (Exists(connection, obj))
-                Update(connection, obj);
+            if (Exists(obj))
+            {
+                Update(obj);
+            }
             else
-                Insert(connection, obj);
-
+            {
+                Insert(obj);
+            }
             obj.State = UIXTableObjectState.Available;
             obj.AcceptChanges();
-            DevSyncCsvSyncService.ExportTableFor(obj);
+            MigrationFactory.ToCsv.ExportCsvFileFor(_connection, obj, MigrationFactory.ImportType.DevSync);
         }
 
-        public virtual void Delete(long gRID)
+        public virtual void Delete(long grid)
         {
-            SQLiteConnection connection = AppEnvironment.GetDataBaseManager().GetConnection();
-            EnsureOpen(connection);
-
-            using SQLiteCommand cmd = connection.CreateCommand();
-            cmd.CommandText = "DELETE FROM T1GROUP WHERE GRID = @GRID";
-            cmd.Parameters.AddWithValue("@GRID", gRID);
+            using SQLiteCommand cmd = _connection.CreateCommand();
+            cmd.CommandText = "DELETE FROM T1GROUP WHERE GRID = @GRID;";
+            cmd.Parameters.AddWithValue("@GRID", ToDbValue(grid));
             cmd.ExecuteNonQuery();
-            DevSyncCsvSyncService.ExportTable("T1GROUP");
+            MigrationFactory.ToCsv.ExportCsvFileFor(_connection, "T1GROUP", MigrationFactory.ImportType.DevSync);
         }
 
-        public virtual T1GROUP? Read(long gRID)
+        public virtual T1GROUP? Read(long grid)
         {
-            UIXQuery query = new UIXQuery(K1GROUP.Name, AppEnvironment.GetDataBaseManager().GetConnection());
+            UIXQuery query = new UIXQuery(K1GROUP.Name, _connection);
             query.AddField(K1GROUP.Name, K1GROUP.Fields.GRID);
             query.AddField(K1GROUP.Name, K1GROUP.Fields.GRNA);
             query.AddField(K1GROUP.Name, K1GROUP.Fields.GTYP);
             query.AddField(K1GROUP.Name, K1GROUP.Fields.CRAT);
             query.AddField(K1GROUP.Name, K1GROUP.Fields.CHAT);
-            query.AddWhere(K1GROUP.Name, K1GROUP.Fields.GRID, QueryCompareType.EQUALS, gRID);
+            query.AddWhere(K1GROUP.Name, K1GROUP.Fields.GRID, QueryCompareType.EQUALS, grid);
 
             using var reader = query.Execute();
             if (!reader.Read())
+            {
                 return null;
+            }
 
             T1GROUP obj = Map(reader);
             obj.AcceptChanges();
@@ -68,7 +87,7 @@ namespace GameTimeNext.Core.Application.DataManagers
 
         public virtual List<T1GROUP> ReadAll()
         {
-            UIXQuery query = new UIXQuery(K1GROUP.Name, AppEnvironment.GetDataBaseManager().GetConnection());
+            UIXQuery query = new UIXQuery(K1GROUP.Name, _connection);
             query.AddField(K1GROUP.Name, K1GROUP.Fields.GRID);
             query.AddField(K1GROUP.Name, K1GROUP.Fields.GRNA);
             query.AddField(K1GROUP.Name, K1GROUP.Fields.GTYP);
@@ -79,7 +98,6 @@ namespace GameTimeNext.Core.Application.DataManagers
             List<T1GROUP> list = new List<T1GROUP>();
             using var reader = query.Execute();
             while (reader.Read())
-
             {
                 T1GROUP obj = Map(reader);
                 obj.AcceptChanges();
@@ -87,91 +105,66 @@ namespace GameTimeNext.Core.Application.DataManagers
             }
             return list;
         }
+        #endregion
 
-        private void Insert(SQLiteConnection connection, T1GROUP obj)
-        {
-            using SQLiteCommand cmd = connection.CreateCommand();
-            DateTime now = DateTime.Now;
-            obj.CRAT = now;
-            obj.CHAT = now;
-            cmd.CommandText = "INSERT INTO T1GROUP (GRNA, GTYP, CRAT, CHAT) VALUES (@GRNA, @GTYP, @CRAT, @CHAT)";
-            cmd.Parameters.AddWithValue("@GRNA", ToDbValue(obj.GRNA));
-            cmd.Parameters.AddWithValue("@GTYP", ToDbValue(obj.GTYP));
-            cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
-            cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
-            cmd.ExecuteNonQuery();
-            using SQLiteCommand idCmd = connection.CreateCommand();
-            idCmd.CommandText = "SELECT last_insert_rowid();";
-            obj.GRID = Convert.ToInt64(idCmd.ExecuteScalar());
-        }
-
-        private void Update(SQLiteConnection connection, T1GROUP obj)
-        {
-            using SQLiteCommand cmd = connection.CreateCommand();
-            obj.CHAT = DateTime.Now;
-            cmd.CommandText = "UPDATE T1GROUP SET GRNA = @GRNA, GTYP = @GTYP, CRAT = @CRAT, CHAT = @CHAT WHERE GRID = @GRID";
-            cmd.Parameters.AddWithValue("@GRID", ToDbValue(obj.GRID));
-            cmd.Parameters.AddWithValue("@GRNA", ToDbValue(obj.GRNA));
-            cmd.Parameters.AddWithValue("@GTYP", ToDbValue(obj.GTYP));
-            cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
-            cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
-            cmd.ExecuteNonQuery();
-        }
-
-        private bool Exists(SQLiteConnection connection, T1GROUP obj)
-        {
-            using SQLiteCommand cmd = connection.CreateCommand();
-            cmd.CommandText = "SELECT COUNT(*) FROM T1GROUP WHERE GRID = @GRID";
-            cmd.Parameters.AddWithValue("@GRID", ToDbValue(obj.GRID));
-            return Convert.ToInt64(cmd.ExecuteScalar()) > 0;
-        }
+        #region Methods PRIVATE
 
         protected static T1GROUP Map(SQLiteDataReader reader)
         {
             T1GROUP obj = new T1GROUP();
-            obj.GRID = reader.IsDBNull(0) ? 0 : Convert.ToInt64(reader.GetValue(0));
-            obj.GRNA = reader.IsDBNull(1) ? string.Empty : reader.GetString(1);
-            obj.GTYP = reader.IsDBNull(2) ? string.Empty : reader.GetString(2);
-            obj.CRAT = ParseDbDateTime(reader.GetValue(3));
-            obj.CHAT = ParseDbDateTime(reader.GetValue(4));
+            obj.GRID = UIXQuery.GetInt64(reader, K1GROUP.Name, K1GROUP.Fields.GRID);
+            obj.GRNA = UIXQuery.GetString(reader, K1GROUP.Name, K1GROUP.Fields.GRNA, def: "");
+            obj.GTYP = UIXQuery.GetString(reader, K1GROUP.Name, K1GROUP.Fields.GTYP, def: "");
+            obj.CRAT = UIXQuery.GetDateTime(reader, K1GROUP.Name, K1GROUP.Fields.CRAT);
+            obj.CHAT = UIXQuery.GetDateTime(reader, K1GROUP.Name, K1GROUP.Fields.CHAT);
             obj.State = UIXTableObjectState.Available;
             return obj;
         }
+        #endregion
 
-        private static object ToDbValue(object? value)
+        #region Methods PRIVATE
+        private void Insert(T1GROUP obj)
         {
-            if (value is bool boolValue)
-                return boolValue ? 1 : 0;
-            if (value is DateTime dt)
-                return dt.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
-            return value ?? DBNull.Value;
+            obj.CRAT = DateTime.Now;
+            obj.CHAT = DateTime.Now;
+            using SQLiteCommand cmd = _connection.CreateCommand();
+            cmd.CommandText = "INSERT INTO T1GROUP (GRNA, GTYP, CRAT, CHAT) VALUES (@GRNA, @GTYP, @CRAT, @CHAT);";
+            cmd.Parameters.AddWithValue("@GRNA", ToDbValue(obj.GRNA));
+            cmd.Parameters.AddWithValue("@GTYP", ToDbValue(obj.GTYP));
+            cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
+            cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
+            cmd.ExecuteNonQuery();
+
+            using SQLiteCommand idCmd = _connection.CreateCommand();
+            idCmd.CommandText = "SELECT last_insert_rowid();";
+            obj.GRID = Convert.ToInt64(idCmd.ExecuteScalar(), CultureInfo.InvariantCulture);
         }
 
-        private static DateTime ParseDbDateTime(object? value)
+        private void Update(T1GROUP obj)
         {
-            if (value == null || value == DBNull.Value)
-                return DateTime.MinValue;
-
-            string raw = value.ToString() ?? string.Empty;
-            if (string.IsNullOrWhiteSpace(raw))
-                return DateTime.MinValue;
-
-            if (DateTime.TryParseExact(raw, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsed))
-                return parsed;
-            if (DateTime.TryParseExact(raw, "dd.MM.yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsed))
-                return parsed;
-            if (DateTime.TryParse(raw, CultureInfo.CurrentCulture, DateTimeStyles.None, out parsed))
-                return parsed;
-            if (DateTime.TryParse(raw, CultureInfo.InvariantCulture, DateTimeStyles.None, out parsed))
-                return parsed;
-
-            return DateTime.MinValue;
+            obj.CHAT = DateTime.Now;
+            using SQLiteCommand cmd = _connection.CreateCommand();
+            cmd.CommandText = "UPDATE T1GROUP SET GRNA = @GRNA, GTYP = @GTYP, CRAT = @CRAT, CHAT = @CHAT WHERE GRID = @GRID;";
+            cmd.Parameters.AddWithValue("@GRID", ToDbValue(obj.GRID));
+            cmd.Parameters.AddWithValue("@GRNA", ToDbValue(obj.GRNA));
+            cmd.Parameters.AddWithValue("@GTYP", ToDbValue(obj.GTYP));
+            cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
+            cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
+            cmd.ExecuteNonQuery();
         }
 
-        protected static void EnsureOpen(SQLiteConnection connection)
+        private bool Exists(T1GROUP obj)
         {
-            if (connection.State != System.Data.ConnectionState.Open)
-                connection.Open();
+            using SQLiteCommand cmd = _connection.CreateCommand();
+            cmd.CommandText = "SELECT COUNT(*) FROM T1GROUP WHERE GRID = @GRID;";
+            cmd.Parameters.AddWithValue("@GRID", ToDbValue(obj.GRID));
+            return Convert.ToInt64(cmd.ExecuteScalar(), CultureInfo.InvariantCulture) > 0;
         }
+
+        private static object? ToDbValue(object? valFrom)
+        {
+            return UIXSqliteDataType.Convert(UIXSqliteDataType.ConversionType.CSharp, UIXSqliteDataType.ConversionType.Sqlite, valFrom);
+        }
+        #endregion
     }
 }

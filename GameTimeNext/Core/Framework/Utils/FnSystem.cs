@@ -65,10 +65,10 @@ namespace GameTimeNext.Core.Framework.Utils
                 }
 
                 string? exePath = Process.GetCurrentProcess().MainModule?.FileName;
-                if (string.IsNullOrWhiteSpace(exePath))
+                if (FnString.IsNullEmptyOrWhitespace(exePath))
                     exePath = Environment.ProcessPath;
 
-                if (string.IsNullOrWhiteSpace(exePath) || !File.Exists(exePath))
+                if (FnString.IsNullEmptyOrWhitespace(exePath) || !File.Exists(exePath))
                     return false;
 
                 string args = startMinimized ? " --minimized" : string.Empty;
@@ -115,7 +115,7 @@ namespace GameTimeNext.Core.Framework.Utils
                 return new List<Executable>();
 
             var ratedExecutables = executables
-                .Where(e => e != null && !string.IsNullOrWhiteSpace(e.Name))
+                .Where(e => e != null && !FnString.IsNullEmptyOrWhitespace(e.Name))
                 .Select(e => new RatedExecutable
                 {
                     Executable = e,
@@ -129,7 +129,7 @@ namespace GameTimeNext.Core.Framework.Utils
             List<Executable> result = ratedExecutables
                 .Where(x =>
                 {
-                    if (string.IsNullOrWhiteSpace(x.NormalizedName))
+                    if (FnString.IsNullEmptyOrWhitespace(x.NormalizedName))
                         return false;
 
                     if (IsHardBlocked(x.NormalizedName))
@@ -207,7 +207,7 @@ namespace GameTimeNext.Core.Framework.Utils
             var executableNames = executablesToSearch.Values
                 .SelectMany(executables => executables)
                 .Select(Path.GetFileNameWithoutExtension)
-                .Where(name => !string.IsNullOrWhiteSpace(name))
+                .Where(name => !FnString.IsNullEmptyOrWhitespace(name))
                 .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
             var runningProcesses = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
@@ -220,7 +220,7 @@ namespace GameTimeNext.Core.Framework.Utils
                         continue;
 
                     string? processPath = TryGetProcessImagePath(process.Id);
-                    if (string.IsNullOrWhiteSpace(processPath))
+                    if (FnString.IsNullEmptyOrWhitespace(processPath))
                         continue;
 
                     if (!runningProcesses.TryGetValue(process.ProcessName, out List<string>? paths))
@@ -256,7 +256,7 @@ namespace GameTimeNext.Core.Framework.Utils
         }
 
         /// <summary>
-        /// Legt das übergebene BitmapBild im App-Data Temp_cover pfad ab und gibt den kompletten Pfad und Dateinamen zurück
+        /// Stores the given bitmap image in the app data temp cover path and returns the full path and file name
         /// </summary>
         /// <param name="croppedImage"></param>
         /// <returns>Tuple (fullPath, fileName)</returns>
@@ -314,7 +314,7 @@ namespace GameTimeNext.Core.Framework.Utils
             string name = NormalizeName(exeName);
             int score = 0;
 
-            if (string.IsNullOrWhiteSpace(name))
+            if (FnString.IsNullEmptyOrWhitespace(name))
                 return -1000;
 
             if (IsHardBlocked(name))
@@ -406,7 +406,7 @@ namespace GameTimeNext.Core.Framework.Utils
 
         private static bool IsHardBlocked(string name)
         {
-            if (string.IsNullOrWhiteSpace(name))
+            if (FnString.IsNullEmptyOrWhitespace(name))
                 return true;
 
             if (HardBlockedNames.Any(blocked => name == blocked))
@@ -434,7 +434,7 @@ namespace GameTimeNext.Core.Framework.Utils
 
         private static bool LooksLikePrimaryGameExe(string name)
         {
-            if (string.IsNullOrWhiteSpace(name))
+            if (FnString.IsNullEmptyOrWhitespace(name))
                 return false;
 
             if (IsHardBlocked(name))
@@ -460,7 +460,7 @@ namespace GameTimeNext.Core.Framework.Utils
 
         private static string NormalizeName(string name)
         {
-            if (string.IsNullOrWhiteSpace(name))
+            if (FnString.IsNullEmptyOrWhitespace(name))
                 return string.Empty;
 
             name = name.Trim().ToLowerInvariant();
@@ -477,7 +477,7 @@ namespace GameTimeNext.Core.Framework.Utils
 
         private static bool ContainsToken(string input, string token)
         {
-            if (string.IsNullOrWhiteSpace(input) || string.IsNullOrWhiteSpace(token))
+            if (FnString.IsNullEmptyOrWhitespace(input) || FnString.IsNullEmptyOrWhitespace(token))
                 return false;
 
             string escapedToken = Regex.Escape(token).Replace("\\ ", @"\s+");

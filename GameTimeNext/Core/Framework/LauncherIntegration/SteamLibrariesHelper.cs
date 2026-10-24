@@ -6,7 +6,7 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
     public class SteamLibrariesHelper
     {
         /// <summary>
-        /// Liefert alle steamapps-Ordner (Standard + zusätzliche Libraries).
+        /// Returns all steamapps folders (default + additional libraries).
         /// </summary>
         public static List<string> GetLibraryPaths(string steamRoot)
         {

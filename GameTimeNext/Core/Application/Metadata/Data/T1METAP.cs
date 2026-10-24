@@ -1,5 +1,4 @@
-using UIX.ViewController.Engine.DataBaseObjects;
-using UIX.ViewController.Engine.Utils;
+﻿using UIX.ViewController.Engine.DataBaseObjects;
 
 namespace GameTimeNext.Core.Application.Metadata.Data
 {
@@ -7,89 +6,51 @@ namespace GameTimeNext.Core.Application.Metadata.Data
     {
         public override bool IsDevSynced => true;
 
-        private DateTime _crat;
-        private DateTime _chat;
-
         [UIXSignatureField(0)]
-        public string MENAM { get; set; }
+        public string MENAM { get; set; } = "";
 
         [UIXSignatureField(1)]
-        public string PONAM { get; set; }
+        public string PONAM { get; set; } = "";
 
         [UIXSignatureField(2)]
-        public string DESCR { get; set; }
+        public string DESCR { get; set; } = "";
 
         [UIXSignatureField(3)]
-        public string DATYP { get; set; }
+        public string DATYP { get; set; } = "";
 
         [UIXSignatureField(4)]
-        public int DALEN { get; set; }
+        public int DALEN { get; set; } = 0;
 
         [UIXSignatureField(5)]
-        public int PORDE { get; set; }
+        public int PORDE { get; set; } = 0;
 
         [UIXSignatureField(6)]
-        public bool PRIMK { get; set; }
+        public bool PRIMK { get; set; } = false;
 
         [UIXSignatureField(7)]
-        public bool AUTOI { get; set; }
+        public bool AUTOI { get; set; } = false;
 
         [UIXSignatureField(8)]
-        public DateTime CRAT
-        {
-            get => _crat;
-            set
-            {
-                if (_crat == value)
-                    return;
-
-                _crat = value;
-                CRUS = FnOpSys.GetCurrentUserName();
-            }
-        }
+        public DateTime CRAT { get; set; } = DateTime.MinValue;
 
         [UIXSignatureField(9)]
-        public string CRUS { get; set; }
+        public string CRUS { get; set; } = "";
 
         [UIXSignatureField(10)]
-        public DateTime CHAT
-        {
-            get => _chat;
-            set
-            {
-                if (_chat == value)
-                    return;
-
-                _chat = value;
-                CHUS = FnOpSys.GetCurrentUserName();
-            }
-        }
+        public DateTime CHAT { get; set; } = DateTime.MinValue;
 
         [UIXSignatureField(11)]
-        public string CHUS { get; set; }
+        public string CHUS { get; set; } = "";
 
-        public T1METAP()
-        {
-            MENAM = string.Empty;
-            PONAM = string.Empty;
-            DESCR = string.Empty;
-            DATYP = string.Empty;
-            DALEN = 0;
-            PORDE = 0;
-            PRIMK = false;
-            AUTOI = false;
-            CRAT = DateTime.MinValue;
-            CRUS = string.Empty;
-            CHAT = DateTime.MinValue;
-            CHUS = string.Empty;
+        [UIXSignatureField(12)]
+        public bool DEFAK { get; set; } = false;
 
-            AcceptChanges();
-        }
+        [UIXSignatureField(13)]
+        public string DEFVL { get; set; } = "";
 
         public override void Save()
         {
-            TXMETAP txmetap = new TXMETAP();
-            txmetap.Save(this);
+            new TXMETAP().Save(this);
         }
     }
 }

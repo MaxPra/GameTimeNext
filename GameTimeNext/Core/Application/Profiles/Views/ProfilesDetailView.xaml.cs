@@ -3,7 +3,7 @@
 namespace GameTimeNext.Core.Application.Profiles.Views
 {
     /// <summary>
-    /// Interaktionslogik für ProfileDetailSubView.xaml
+    /// Interaction logic for ProfileDetailSubView.xaml
     /// </summary>
     public partial class ProfilesDetailView : UIXUserControlBase
     {

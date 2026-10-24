@@ -1,21 +1,31 @@
 ﻿=============================================
-  GameTimeNext  |  Version 0.4.1 Beta
+  GameTimeNext  |  Version 1.0.0
 =============================================
 
   IMPORTANT:
-  Please iterate through every profile you've added and choose an platform (this is now a required field).
-  If you don't have any platforms available, then open the application "Codetables" and add Entrys to "iM - Images / Symbols" and "pF - Platforms".
+  Please iterate through every profile you've added and choose a platform (this is now a required field).
+  If you don't have any platforms available, then open the application "Codetables" and add entries to "iM - Images / Symbols" and "pF - Platforms".
+
+  * GameTimeNext is now installed per user (no administrator rights required).
+    Previous installations are removed automatically and your data is migrated.
 
 
   IMPROVEMENTS
   ____________
 
+  * Cleaner visual style, new app icons, new app bar animations and a new splash screen.
+
+  * Improved the dashboard.
+
+  * Improved performance of the running game detection.
+
+  * The application can now only be started once (single instance).
+
+  * IGDB integration can now be disabled in the settings.
+  
   * The playthrough overview now shows the total playtime of each playthrough.
 
-  * Reworked the library filters: everything is checked by default and you uncheck what you want to hide.
-    States are now grouped into Progress (Unplayed, In Progress, Paused, Completed, Cancelled), Availability and Source. Games without tags can be filtered via "Untagged games".
-    Archived games and "recently played" are now separate switches, and the filter button shows a dot while a filter is active.
-    Note: previously saved filter selections are reset once.
+  * Reworked the library filters.
 
 
   NEW FEATURES
@@ -28,6 +38,15 @@
 
   * Added a feature that displays an animated particle clock when all monitors are blacked out.
 
+  * Added a new "Playthroughs" application: playthroughs can be opened from a profile
+    and created, edited, completed and cancelled there.
+
+  * Playthroughs can now be paused and unpaused.
+
+  * Added a new "External" filter for profiles.
+
+  * Full blackout can now be toggled via hotkey while monitoring a console game.
+
 
   BUG FIXES
   _________
@@ -35,8 +54,16 @@
   * Fixed a bug, where Timestamps were not being updated correctly when data was saved.
 
   * Fixed a bug regarding detection of currently running games, where the application was not able 
-	to detect some games that were running in the background.
+    to detect some games that were running in the background.
 
   * Fixed a bug regarding the automatic switching of the selected application (from menu)
+
+  * Fixed a crash when reading the path of certain game processes (e.g. WARDOGS).
+
+  * Fixed start arguments being lost when the application restarts.
+
+  * Fixed choosing a cover image from disk.
+
+  * Fixed the profile filters and the playthrough type selection in the playthrough overview.
 
 =============================================

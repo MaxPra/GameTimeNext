@@ -6,10 +6,10 @@ namespace GameTimeNext.Core.Application.DataManagers
     {
         public static void DeleteCodetableAndEntries(T1CTABH t1ctabh)
         {
-            // Einträge
+            // Entries
             new TXCTABD().DeleteAllEntries(t1ctabh.TXTYP);
 
-            // Codetabelle
+            // Codetable
             new TXCTABH().Delete(t1ctabh.TXTYP);
         }
     }

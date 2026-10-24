@@ -1,6 +1,7 @@
 using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Playthroughs.Views;
 using GameTimeNext.Core.Application.TableObjects;
+using GameTimeNext.Core.Framework.Utils;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -33,7 +34,7 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
 
         protected override void BuildFirstImpl()
         {
-            // Nur bei Create New wird eine Auswahl des Typs erlaubt
+            // Selecting the type is only allowed in create-new mode
             FnControls.SetEnabled(GetView().cmbType, GetView().ViewIndicator.Contains("CN"));
 
             UIXManualCodetable mCt = new UIXManualCodetable();
@@ -55,13 +56,13 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
         {
         }
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
             if (FnString.IsNullEmptyOrWhitespace(GetView().txbDescription.Text))
-                AddViewError(GetView().txbDescription, "Invalid input: description has to be specified.");
+                AddViewError(GetView().txbDescription, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Description"));
 
             if (FnString.IsNullEmptyOrWhitespace(GetView().cmbType.SelectedValue?.ToString()!))
-                AddViewError(GetView().cmbType, "Invalid input: type has to be specified.");
+                AddViewError(GetView().cmbType, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Type"));
         }
 
         protected override void DataWrapperSelectionChangedImpl(Selector source)

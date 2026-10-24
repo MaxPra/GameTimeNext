@@ -9,6 +9,7 @@ using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements.UserControls;
 using UIX.ViewController.Engine.Runnables;
+using UIX.ViewController.Engine.Utils;
 using static GameTimeNext.Core.Application.Profiles.Controller.ProfilesViewController;
 
 namespace GameTimeNext.Core.Application.Profiles.Controller
@@ -45,7 +46,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             BuildViewModel(GetApp().FilterCache);
         }
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
         }
 
@@ -122,7 +123,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             // Only hide entries, so changes that were not applied yet are kept
             foreach (ProfilesFilterItem item in _profilesFilterViewModel.Tags)
             {
-                item.IsVisible = string.IsNullOrWhiteSpace(searchText)
+                item.IsVisible = FnString.IsNullEmptyOrWhitespace(searchText)
                     || item.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase);
             }
         }

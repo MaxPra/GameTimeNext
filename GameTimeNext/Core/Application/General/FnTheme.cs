@@ -1,4 +1,5 @@
 ﻿using System.Windows.Media;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.General
 {
@@ -6,13 +7,13 @@ namespace GameTimeNext.Core.Application.General
     {
         public static string[] CalculateAccentStateColors(string accentColorStart)
         {
-            if (string.IsNullOrWhiteSpace(accentColorStart))
+            if (FnString.IsNullEmptyOrWhitespace(accentColorStart))
                 throw new ArgumentException("Accent color is empty.", nameof(accentColorStart));
 
             if (accentColorStart.StartsWith("#"))
                 accentColorStart = accentColorStart.Substring(1);
 
-            // Unterstützt RRGGBB und AARRGGBB
+            // Supports RRGGBB and AARRGGBB
             if (accentColorStart.Length == 8)
                 accentColorStart = accentColorStart.Substring(2);
 

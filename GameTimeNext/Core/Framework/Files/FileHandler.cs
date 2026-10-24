@@ -3,6 +3,7 @@ using GameTimeNext.Core.Framework.Utils;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Framework.Files
 {
@@ -34,7 +35,7 @@ namespace GameTimeNext.Core.Framework.Files
             }
             else
             {
-                Directory.CreateDirectory(appFolderPathDev);
+                FnDirectory.EnsureDirectoryExists(appFolderPathDev);
             }
         }
 
@@ -45,12 +46,9 @@ namespace GameTimeNext.Core.Framework.Files
                 throw new DirectoryNotFoundException("Quellordner nicht gefunden: " + sourceDirectory);
             }
 
-            if (!Directory.Exists(targetDirectory))
-            {
-                Directory.CreateDirectory(targetDirectory);
-            }
+            FnDirectory.EnsureDirectoryExists(targetDirectory);
 
-            // Dateien kopieren
+            // Copy files
             string[] files = Directory.GetFiles(sourceDirectory);
 
             foreach (string file in files)
@@ -61,7 +59,7 @@ namespace GameTimeNext.Core.Framework.Files
                 File.Copy(file, targetFilePath, overwriteFiles);
             }
 
-            // Unterordner rekursiv kopieren
+            // Copy subfolders recursively
             string[] directories = Directory.GetDirectories(sourceDirectory);
 
             foreach (string directory in directories)
@@ -87,9 +85,9 @@ namespace GameTimeNext.Core.Framework.Files
         }
 
         /// <summary>
-        /// Behält alle Dateien von heute.
-        /// Von den letzten 2 Tagen vor heute bleibt jeweils nur die neueste Datei bestehen.
-        /// Alle älteren Dateien werden gelöscht.
+        /// Keeps all files from today.
+        /// For each of the last 2 days before today, only the newest file is kept.
+        /// All older files are deleted.
         /// </summary>
         public static void DeleteOldBackupFiles()
         {
@@ -102,8 +100,7 @@ namespace GameTimeNext.Core.Framework.Files
             {
                 backupPath = AppConfig.Dev.BackupDirectoryPath;
 
-                if (!Directory.Exists(backupPath))
-                    Directory.CreateDirectory(backupPath);
+                FnDirectory.EnsureDirectoryExists(backupPath);
             }
 
             if (!Directory.Exists(backupPath))
@@ -123,12 +120,12 @@ namespace GameTimeNext.Core.Framework.Files
         }
 
         /// <summary>
-        /// Ermittelt alle Dateien, die gelöscht werden sollen.
-        /// Es bleiben:
-        /// - alle Dateien von heute
-        /// - die jeweils neueste Datei von gestern
-        /// - die jeweils neueste Datei von vorgestern
-        /// Alle anderen Dateien werden zurückgegeben.
+        /// Determines all files that should be deleted.
+        /// Kept are:
+        /// - all files from today
+        /// - the newest file from yesterday
+        /// - the newest file from the day before yesterday
+        /// All other files are returned.
         /// </summary>
         /// <param name="files"></param>
         /// <param name="days"></param>
@@ -152,18 +149,18 @@ namespace GameTimeNext.Core.Framework.Files
             {
                 DateTime fileDay = dayGroup.Key;
 
-                // Alles löschen, was älter ist als der zu behaltende Zeitraum
+                // Delete everything older than the retention period
                 if (fileDay < oldestKeptDay)
                 {
                     filesToDelete.AddRange(dayGroup);
                     continue;
                 }
 
-                // Von heute alle Dateien behalten
+                // Keep all files from today
                 if (fileDay == today)
                     continue;
 
-                // Von den restlichen Tagen im 3-Tage-Fenster nur die neueste Datei behalten
+                // For the remaining days in the 3-day window, keep only the newest file
                 FileInfo? newestFileOfDay = dayGroup
                     .OrderByDescending(f => f.LastWriteTime)
                     .FirstOrDefault();

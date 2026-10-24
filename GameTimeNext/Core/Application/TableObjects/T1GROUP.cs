@@ -11,10 +11,10 @@ namespace GameTimeNext.Core.Application.TableObjects
         public long GRID { get; set; } = 0;
 
         [UIXSignatureField(1)]
-        public string GRNA { get; set; } = string.Empty;
+        public string GRNA { get; set; } = "";
 
         [UIXSignatureField(2)]
-        public string GTYP { get; set; } = string.Empty;
+        public string GTYP { get; set; } = "";
 
         [UIXSignatureField(3)]
         public DateTime CRAT { get; set; } = DateTime.MinValue;

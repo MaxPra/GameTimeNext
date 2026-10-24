@@ -1,5 +1,6 @@
 using GameTimeNext.Core.Application.CreateImportPackage.Views;
 using GameTimeNext.Core.Application.DataManagers;
+using GameTimeNext.Core.Framework.DataBase.Migration;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.Utils;
 using System.Windows;
@@ -29,10 +30,10 @@ namespace GameTimeNext.Core.Application.CreateImportPackage.Controller
         {
         }
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
             if (FnString.IsNullEmptyOrWhitespace(GetView().TxbOutputPath.Text))
-                AddViewError(GetView().TxbOutputPath, "Output path cannot be empty.");
+                AddViewError(GetView().TxbOutputPath, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Output path"));
         }
 
         protected override void DataWrapperSelectionChangedImpl(Selector source)
@@ -93,7 +94,7 @@ namespace GameTimeNext.Core.Application.CreateImportPackage.Controller
             {
                 try
                 {
-                    CFCreateImportPackageApp.CreateImportPackage(outputPath, exportType);
+                    MigrationFactory.ImportPackage.ExportPackage(outputPath, exportType);
                 }
                 catch (Exception)
                 {

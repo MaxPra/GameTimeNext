@@ -1,4 +1,5 @@
 ﻿using GameTimeNext.Core.Framework.Config;
+using GameTimeNext.Core.Framework.Utils;
 using GameTimeNext.Core.Application.Profiles;
 using System.IO;
 using System.Net;
@@ -149,7 +150,7 @@ namespace GameTimeNext.Core.Framework.SteamGridDB
             string? directory = Path.GetDirectoryName(targetPath);
 
             if (!FnString.IsNullEmptyOrWhitespace(directory))
-                Directory.CreateDirectory(directory);
+                FnDirectory.EnsureDirectoryExists(directory!);
         }
 
         /// <summary>

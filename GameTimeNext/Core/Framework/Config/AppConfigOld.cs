@@ -14,7 +14,7 @@ namespace GameTimeNext.Core.Framework.Config
 
         #region Internal
         /// <summary>
-        /// Liefert den RootFolder (Dokumente)
+        /// Returns the root folder (Documents)
         /// </summary>
         [JsonIgnore]
         public string RootFolderPath
@@ -23,7 +23,7 @@ namespace GameTimeNext.Core.Framework.Config
         }
 
         /// <summary>
-        /// Liefert den App-Folder Pfad
+        /// Returns the app folder path
         /// </summary>
         [JsonIgnore]
         public string AppFolderPath
@@ -48,7 +48,7 @@ namespace GameTimeNext.Core.Framework.Config
             {
                 string temp = SpecialDirectories.MyDocuments + @"\GameTimeNext_Backup";
 
-                // Modi
+                // Modes
                 if (AppEnvironment.StartArguments.ContainsKey("m") && !FnString.IsNullEmptyOrWhitespace(AppEnvironment.StartArguments["m"]))
                 {
                     temp += "_m" + AppEnvironment.StartArguments["m"];
@@ -89,7 +89,7 @@ namespace GameTimeNext.Core.Framework.Config
             {
                 string temp = RootFolderPath + Path.DirectorySeparatorChar + "GameTimeNXT";
 
-                // Modi
+                // Modes
                 if (AppEnvironment.StartArguments.ContainsKey("m") && !FnString.IsNullEmptyOrWhitespace(AppEnvironment.StartArguments["m"]))
                 {
                     temp += "_m" + AppEnvironment.StartArguments["m"];

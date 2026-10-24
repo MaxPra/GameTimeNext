@@ -12,7 +12,6 @@ using GameTimeNext.Core.Application.TimeMonitoring;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.LauncherIntegration;
-using GameTimeNext.Core.Framework.Logging;
 using GameTimeNext.Core.Framework.UI;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.Utils;
@@ -49,7 +48,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             GetApp().CallDispatcher.Register(this, nameof(EXEV_GameLaunched));
             GetApp().CallDispatcher.Register(this, nameof(EXEV_GameClosed));
 
-            // Loadertexte setzen
+            // Set loader texts
             GetApp().Loader.SetRandomTexts(
                                             "Preparing your gaming library...",
                                             "Checking which worlds you visited last...",
@@ -95,7 +94,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         }
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
         }
 
@@ -314,7 +313,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             UIXQuery query = new UIXQuery(K1PROFI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
             query.SetDistinct(true);
 
-            // Felder
+            // Fields
             query.AddField(K1PROFI.Name, K1PROFI.Fields.PFID);
 
             // Where Restrictions
@@ -353,7 +352,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             ContextMenuBuilder contextBuilder = UIXContextMenuFactory.Create("ProfilesListBoxContextMenu");
             contextBuilder.SetStyle(ProfilesContextMenuBuilder.contextMenuStyle);
 
-            // Prinzipiell immer Edit und Delete
+            // Always Edit and Delete in principle
             contextBuilder.AddItem("ctxtEdit", "Edit", icon: UIXContextMenuFactory.CreateMdlIcon("\uE70F"), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
             contextBuilder.AddItem("ctxtDelete", "Delete", icon: UIXContextMenuFactory.CreateMdlIcon("\uE74D"), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
 
@@ -366,7 +365,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             // Steam
             ProfilesContextMenuBuilder.BuildContextSteam(contextBuilder, t1profi);
 
-            // Archivieren
+            // Archive
             ProfilesContextMenuBuilder.BuildContextArchive(contextBuilder, t1profi);
 
 
@@ -422,7 +421,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         private async Task AdjustFiltersToStartedGameProfile(long pfid)
         {
-            // Ermittlung der zugeordneten Gruppen
+            // Determine the assigned groups
             T1PROFI t1profi = new TXPROFI().Read(pfid);
 
             List<long> linkedTagIds = TFPROFI.GetAllLinkedTags(t1profi).Select(t => t.GRID).ToList();
@@ -552,7 +551,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             {
                 GetApp().ProfilesFilterView.ShowView(true);
 
-                // Geschlossen per Apply
+                // Closed via Apply
                 GetApp().ProfilesFilterView.ViewController.SetResultCallback<ProfilesFilterViewController.ProfileFilterViewReturn>(async r =>
                 {
                     if (r.Applied)
@@ -588,7 +587,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         }
 
         /// <summary>
-        /// Kontextmenü öffnet sich
+        /// Context menu is opening
         /// </summary>
         /// <param name="target"></param>
         protected void EV_ListBoxProfiles_CtxtOpening(FrameworkElement target)
@@ -605,7 +604,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         }
 
         /// <summary>
-        /// Steam Bibliothek öffnen
+        /// Open Steam library
         /// </summary>
         protected void EV_ctxtOpenSteamLibrary()
         {
@@ -683,7 +682,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             T1PLTHR t1plthr = TFPLTHR.GetCurrentPlaythrough(t1profi.PFID);
 
-            // Playthrough als Abgeschlossen markieren
+            // Mark playthrough as completed
             t1plthr.PTCO = true;
 
             new TXPLTHR().Save(t1plthr);
@@ -717,7 +716,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             if (result == CFMBOXResult.No)
                 return;
 
-            // Playthrough canceln
+            // Cancel playthrough
             t1plthr.PTCA = true;
 
             new TXPLTHR().Save(t1plthr);
@@ -776,8 +775,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         }
 
         /// <summary>
-        /// Filter Cache (Hier werden die Selektionen des Filters gespeichert)
-        /// Bzw. wird der Filter Cache auch für gespeicherte Selektionen (z.b. bei Neustart der Anwendung) genutzt
+        /// Filter cache (stores the filter selections)
+        /// The filter cache is also used for persisted selections (e.g. after restarting the application)
         /// Only unchecked entries are stored, so an empty filter shows the whole library
         /// and tags created later are visible by default.
         /// </summary>

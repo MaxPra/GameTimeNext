@@ -5,13 +5,12 @@ using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.Files;
 using GameTimeNext.Core.Framework.GitHub;
-using GameTimeNext.Core.Framework.Logging;
 using GameTimeNext.Core.Framework.Utils;
 using System.Diagnostics;
-using System.IO;
 using System.Windows;
 using System.Windows.Threading;
 using UIX.ViewController.Engine.Runnables;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext
 {
@@ -24,7 +23,7 @@ namespace GameTimeNext
         {
             base.OnStartup(e);
 
-            // Sicherstellen, dass nur eine Instance läuft
+            // Ensure that only one instance is running
             if (!FnSystem.IsDebug() && !FnSystem.TryAcquireSingleInstance())
             {
                 Shutdown();
@@ -49,7 +48,7 @@ namespace GameTimeNext
 
             Dispatcher.CurrentDispatcher.Invoke(() => { }, DispatcherPriority.Background);
 
-            // Erst danach Fenster öffnen
+            // Only open the window afterwards
             MainApp mainApp = new MainApp();
             mainApp.SplashScreen = splash;
             mainApp.StartMinimized = startMinimized;
@@ -67,7 +66,7 @@ namespace GameTimeNext
             // FileSystem Migration
             MigTask_100b_008.MigrateFileSystem();
 
-            // Ordner erstellen
+            // Create folders
             FileHandler.CreateDevAppFolder();
 
             AppEnvironment.LoadAppConfig();
@@ -77,15 +76,15 @@ namespace GameTimeNext
             FnLog.AddInfo("MainApp", "Initiating Databasemanager...");
             AppEnvironment.InitiateDataBaseManager();
 
-            // Datenbank initialisieren
+            // Initialize database
             FnLog.AddInfo("MainApp", "Initializing database...");
             AppEnvironment.GetDataBaseManager().Initialize();
 
-            // AppEnvironment initialisieren
+            // Initialize AppEnvironment
             FnLog.AddInfo("MainApp", "Initializing application environment...");
             AppEnvironment.Initalize();
 
-            // Alte Backups löschen
+            // Delete old backups
             FnLog.AddInfo("MainApp", "Deleting old backups...");
             FileHandler.DeleteOldBackupFiles();
 
@@ -93,7 +92,7 @@ namespace GameTimeNext
             if (AppEnvironment.StartArguments.ContainsKey("optimizecovers"))
                 OptimizeProfileCovers();
 
-            // Auf neue Version (Github) prüfen
+            // Check for new version (GitHub)
             FnLog.AddInfo("MainApp", "Checking for new version (Github)...");
             CheckForNewVersion();
         }
@@ -124,9 +123,6 @@ namespace GameTimeNext
                 if (FnSystem.IsDebug())
                 {
                     backupPath = AppConfig.Dev.BackupDirectoryPath;
-
-                    if (!Directory.Exists(backupPath))
-                        Directory.CreateDirectory(backupPath);
                 }
 
                 FnLog.AddInfo(null, "Creating backup at: " + backupPath);

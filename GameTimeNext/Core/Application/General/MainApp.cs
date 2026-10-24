@@ -1,9 +1,9 @@
 ﻿using GameTimeNext.Core.Application.General.Controller;
-using GameTimeNext.Core.Framework.Logging;
 using System.Runtime.InteropServices;
 using System.Windows.Controls;
 using System.Windows.Interop;
 using UIX.ViewController.Engine.Runnables;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.General
 {

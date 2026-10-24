@@ -6,6 +6,7 @@ using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements.UserControls;
 using UIX.ViewController.Engine.Runnables;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Profiles.Controller
 {
@@ -30,7 +31,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected override void BuildImpl()
         {
-            // Sichtbarkeitssteuerung Import-Button
+            // Visibility of the import button
             GetView().BtnImport.IsEnabled = _profilesSteamImportViewModel != null && _profilesSteamImportViewModel.SteamGames.Count > 0
                                                 && _profilesSteamImportViewModel.SelectedSteamGame != null;
         }
@@ -40,7 +41,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             BuildSteamGameGrid();
         }
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
         }
 
@@ -106,7 +107,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             steamGames = GetSteamGames();
 
-            // Viewmodel befüllen
+            // Fill view model
             _profilesSteamImportViewModel = new ProfilesSteamImportViewModel();
             _profilesSteamImportViewModel.SteamGames = new System.Collections.ObjectModel.ObservableCollection<SteamGame>(steamGames);
 
@@ -123,15 +124,15 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             List<SteamGame> games = new List<SteamGame>();
 
             var root = SteamLocatorService.GetSteamRoot();
-            if (string.IsNullOrEmpty(root))
+            if (FnString.IsNullEmptyOrWhitespace(root))
             {
                 // Todo Messagebox
             }
 
-            var libs = SteamLibrariesHelper.GetLibraryPaths(root);
+            var libs = SteamLibrariesHelper.GetLibraryPaths(root!);
             games = SteamManifestHelper.ScanAllGames(libs);
 
-            // Tools/Redistributables ausblenden
+            // Hide tools/redistributables
             string[] noiseTokens =
             {
                     "steamworks", "redistributable", "proton", "steam linux runtime",
@@ -143,21 +144,21 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                            g.Name?.IndexOf(t, StringComparison.OrdinalIgnoreCase) >= 0))
                 .ToList();
 
-            // Nur vollständig installierte Spiele (StateFlags == 4)
+            // Only fully installed games (StateFlags == 4)
             games = games.Where(g => g.StateFlags == 4).ToList();
 
             games = games.Where(g => SteamManifestHelper.ResolveInstallPath(g) != null).ToList();
 
-            // Suche
-            if (!string.IsNullOrWhiteSpace(GetView().TxbSearch.Text))
+            // Search
+            if (!FnString.IsNullEmptyOrWhitespace(GetView().TxbSearch.Text))
                 games = games.Where(g => g.Name?.IndexOf(GetView().TxbSearch.Text, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
 
-            // Duplikate entfernen (pro AppID ein Eintrag; bevorzugt mit gültigem InstallPath)
+            // Remove duplicates (one entry per AppID; prefer one with a valid InstallPath)
             games = games
                 .GroupBy(g => g.AppId)
                 .Select(grp =>
-                    grp.OrderByDescending(x => !string.IsNullOrEmpty(SteamManifestHelper.ResolveInstallPath(x)))
-                       .ThenByDescending(x => !string.IsNullOrEmpty(x.InstallDir))
+                    grp.OrderByDescending(x => !FnString.IsNullEmptyOrWhitespace(SteamManifestHelper.ResolveInstallPath(x)))
+                       .ThenByDescending(x => !FnString.IsNullEmptyOrWhitespace(x.InstallDir))
                        .ThenBy(x => x.LibraryPath)
                        .First())
                 .OrderBy(g => g.Name, StringComparer.OrdinalIgnoreCase)

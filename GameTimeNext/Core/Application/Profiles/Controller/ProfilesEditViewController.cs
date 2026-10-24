@@ -1,3 +1,4 @@
+﻿using System.Globalization;
 using GameTimeNext.Core.Application.Codetables;
 using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.General;
@@ -91,7 +92,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             {
                 BuildTagGrid(GetApp().T1Profi.PFID);
 
-                // Enabled Steuerung Combobox IGDB Estimated Time
+                // Enabled state of the IGDB estimated time ComboBox
                 bool isIGDBLinkedCorrectly = !FnString.IsNullEmptyOrWhitespace(AppEnvironment.GetAppConfig().AppSettings.TwitchIGDBClientID) &&
                     !FnString.IsNullEmptyOrWhitespace(AppEnvironment.GetAppConfig().AppSettings.TwitchIGDBClientSecret);
 
@@ -109,27 +110,27 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             BuildAccentColorSection();
         }
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
             // Profile Name
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().txbProfileName.Text))
-                AddViewError(GetWnd().txbProfileName, "Invalid input: Profile name");
+                AddViewError(GetWnd().txbProfileName, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Profile name"));
 
             // Cover
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().txbImagePath.Text))
-                AddViewError(GetWnd().txbImagePath, "Invalid input: Profile cover");
+                AddViewError(GetWnd().txbImagePath, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Profile cover"));
 
             // Accent Colors
             if (GetWnd().cbUseProfileAccentColors.IsChecked == true
                 && (GetWnd().tglAccent1.IsChecked == false && GetWnd().tglAccent2.IsChecked == false && GetWnd().tglAccent3.IsChecked == false))
-                AddViewError(GetWnd().cbUseProfileAccentColors, "Invalid input: Accent colors are enabled, but no color was specified.");
+                AddViewError(GetWnd().cbUseProfileAccentColors, FnErrorMessage.ErrorMessage.MustBeSelected.GetMessage("An accent color"));
 
             if (GetWnd().cbUseProfileAccentColors.IsChecked == false
                 && (GetWnd().tglAccent1.IsChecked == true || GetWnd().tglAccent2.IsChecked == true || GetWnd().tglAccent3.IsChecked == true))
-                AddViewError(GetWnd().cbUseProfileAccentColors, "Invalid input: Accent colors are disabled, but a color was specified.");
+                AddViewError(GetWnd().cbUseProfileAccentColors, FnErrorMessage.ErrorMessage.GetCustomMessage("Accent colors are disabled, but a color was specified."));
 
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().cmbPlatform.SelectedValue.ToString()!))
-                AddViewError(GetWnd().cmbPlatform, "Invalid input: Platform is required.");
+                AddViewError(GetWnd().cmbPlatform, FnErrorMessage.ErrorMessage.IsRequired.GetMessage("Platform"));
         }
 
         protected override void DataWrapperSelectionChangedImpl(Selector source)
@@ -159,22 +160,22 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected override async Task FillDBOImplAsync()
         {
-            // Akzentfarben
+            // Accent colors
             SaveAccentColors();
-            // Erwartete Spielzeit speichern (Manuell)
+            // Save expected playtime (manual)
             FillDBOManualEstTimes();
 
             if (AppEnvironment.GetAppConfig().AppSettings.EnableTwitchIGDB)
             {
 
-                // Erwartete Spielzeiten speichern
+                // Save expected playtimes
                 _successfullyFilledEstTimes = await FillDBOEstimatedTimesIGDBAsync();
             }
 
-            // Profileinstellungen
+            // Profile settings
             FillDBOProfileSettings();
 
-            // Bild kopieren
+            // Copy image
             if (GetApp().T1Profi.HasFieldDataChanged(K1PROFI.Fields.PPFN))
                 _hasProfileCoverChanged = true;
         }
@@ -250,26 +251,26 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             if (GetApp().T1Profi.SAID == 0)
                 return;
 
-            // Profilname
+            // Profile name
             if (GetWnd().ViewIndicator.Contains("CN"))
             {
                 GetWnd().txbProfileName.Text = selectedGame.Name;
 
-                // Spielordner
+                // Game folder
                 GetWnd().txbGameFolder.Text = SteamManifestHelper.ResolveInstallPath(selectedGame);
             }
             else
             {
                 GetWnd().txbProfileName.Text = GetApp().T1Profi.GANA;
 
-                // Spielordner
+                // Game folder
                 GetWnd().txbGameFolder.Text = GetApp().T1Profi.EXGF;
             }
         }
 
         private void FillViewProfileSettings()
         {
-            // Profileinstellungen laden
+            // Load profile settings
             CProfileSettings cProfileSettings = new CProfileSettings(GetApp().T1Profi.PRSE).Dezerialize();
 
             GetWnd().cbEnableHdrOnStart.IsChecked = cProfileSettings.HDREnabled == true;
@@ -289,7 +290,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
             if (FnString.IsNullEmptyOrWhitespace(_selectedSteamGridDBImagePath) && GetWnd().ViewIndicator.Contains("ED"))
             {
-                // Aus T1PROFI lesen
+                // Read from T1PROFI
                 CAccentColorsInit cAccentColorsInit = new CAccentColorsInit(GetApp().T1Profi.ACIN);
                 cAccentColorsInit = cAccentColorsInit.Dezerialize();
 
@@ -336,7 +337,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 }
                 catch (Exception ex)
                 {
-                    // Später hier Logausgabe und so weiter
+                    // Later: logging etc. here
                 }
                 finally
                 {
@@ -349,7 +350,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
                 GetWnd().Dispatcher.Invoke(() =>
                 {
-                    // Accent Farben befüllen
+                    // Fill accent colors
                     Color color1 = Color.FromArgb(255, accentColors[0].R, accentColors[0].G, accentColors[0].B);
                     Color color2 = Color.FromArgb(255, accentColors[1].R, accentColors[1].G, accentColors[1].B);
                     Color color3 = Color.FromArgb(255, accentColors[2].R, accentColors[2].G, accentColors[2].B);
@@ -365,13 +366,13 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 });
             }
 
-            // Pfad für späteres Kopieren merken
+            // Remember path for copying later
             _coverAppDataPath = path;
         }
 
         private void FillDBOSteamImport(SteamGame selectedGame)
         {
-            // Steam App Id setzen --> Ausnahme direkt am Table Object
+            // Set Steam app ID --> exception: directly on the table object
             GetApp().T1Profi.SAID = selectedGame.AppId;
 
             GetApp().T1Profi.EXEC = string.Empty;
@@ -391,10 +392,10 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         private void FillDBOTags()
         {
-            // selektierte Gruppen auslesen
+            // Read selected groups
             List<ProfilesGroupListBoxItem> selectedGroups = _profilesEditViewModel!.T1GROUPs.Where(t => t.COISSEL).ToList();
 
-            // Alle bisherigen für dieses Profil löschen
+            // Delete all existing entries for this profile
             TXGRPPO tblmGrppo = new TXGRPPO();
             tblmGrppo.DeleteAllWherePFID(GetApp().T1Profi.PFID);
 
@@ -447,7 +448,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
                 if (GetApp().T1Profi.SAID == 0 && FnString.IsNullEmptyOrWhitespace(GetWnd().txbProfileName.Text) || combItem.Tag.ToString() == EstimatedTimeTypes.EST_TIME_NONE)
                 {
-                    // -- Befüllung
+                    // -- Filling
                     GetApp().T1Profi.ETMA = 0;
                     GetApp().T1Profi.ETME = 0;
                     GetApp().T1Profi.ETCO = 0;
@@ -467,7 +468,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 if (GetApp().T1Profi.SAID != 0)
                 {
                     int steamSourceId = igdbservice.GetSteamSourceId();
-                    gameId = await igdbservice.FindGameIdBySteamAppIdAsync(steamSourceId, GetApp().T1Profi.SAID.ToString());
+                    gameId = await igdbservice.FindGameIdBySteamAppIdAsync(steamSourceId, GetApp().T1Profi.SAID.ToString(CultureInfo.InvariantCulture));
                 }
 
                 if (gameId == null)
@@ -519,7 +520,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                     return false;
                 }
 
-                // -- Befüllung
+                // -- Filling
                 GetApp().T1Profi.ETMA = ((double)timeToBeat.Hastily!) / 60;
                 GetApp().T1Profi.ETME = ((double)timeToBeat.Normally!) / 60;
                 GetApp().T1Profi.ETCO = ((double)timeToBeat.Completely!) / 60;
@@ -554,7 +555,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         private void BuildSteamLinkSection()
         {
-            // Sichtbarkeitssteuerung Steam Linked Sektion
+            // Visibility of the Steam linked section
             if (GetApp().T1Profi.SAID == 0)
             {
                 GetWnd().pnlSteamLinkState.Visibility = Visibility.Collapsed;
@@ -570,7 +571,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         private void BuildAccentColorSection()
         {
-            // Sichtbarkeitssteuerung AccentColors
+            // Visibility of the accent colors
             if (!FnString.IsNullEmptyOrWhitespace(GetWnd().txbImagePath.Text))
             {
                 GetWnd().grdAccentColorSettings.Visibility = Visibility.Visible;
@@ -617,10 +618,10 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 }
             }
 
-            // Filtern
+            // Filter
             t1groups = t1groups.Where(s => (s.ItemObject as T1GROUP)?.GTYP == GroupType.Tag).ToList();
 
-            // Viewmodel befüllen
+            // Fill view model
             _profilesEditViewModel = new ProfilesEditViewModel();
             _profilesEditViewModel.T1GROUPs = new System.Collections.ObjectModel.ObservableCollection<ProfilesGroupListBoxItem>(t1groups);
 
@@ -635,7 +636,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
             UIXQuery query = new UIXQuery(K1GROUP.Name, AppEnvironment.GetDataBaseManager().GetConnection());
 
-            // Felder
+            // Fields
             query.AddField(K1GROUP.Name, K1GROUP.Fields.GRID);
 
             if (pfid > 0)
@@ -661,7 +662,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             if (GetWnd().cbUseProfileAccentColors.IsChecked == false)
                 return;
 
-            // -- Akzent farben (korrespondierend aus der gewählten)
+            // -- Accent colors (corresponding to the selected one)
             string[] accentColorsCalculated = FnTheme.CalculateAccentStateColors(CFProfilesEditApp.GetSelectedToggleButton(GetWnd()).Tag.ToString());
 
             Dictionary<string, string> accentColorsDic = new Dictionary<string, string>();
@@ -675,7 +676,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             GetApp().T1Profi.ACCO = cAccentColors.Serialize();
 
-            // -- Automatisch ermittelte Akzentfarben abspeichern
+            // -- Save automatically determined accent colors
             string[] accentColorsInit = new string[3];
 
             accentColorsInit[0] = GetWnd().tglAccent1.Tag.ToString()!;
@@ -773,7 +774,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
                     FillDBOSteamImport(r.SteamGame!);
 
-                    // Exe auswählen
+                    // Select executable
                     ProfilesExecutablesEditApp profilesExecutablesEditApp = GetApp().GetApplication<ProfilesExecutablesEditApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
                     profilesExecutablesEditApp.Search(SteamManifestHelper.ResolveInstallPath(r.SteamGame!), r =>
                     {
@@ -800,7 +801,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             if (!FnString.IsNullEmptyOrWhitespace(gameFolderPath))
             {
-                // Exe auswählen
+                // Select executable
                 ProfilesExecutablesEditApp profilesExecutablesEditApp = GetApp().GetApplication<ProfilesExecutablesEditApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
                 profilesExecutablesEditApp.Search(gameFolderPath, r =>
                 {
@@ -817,7 +818,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected async Task EV_btnSteamGridDb()
         {
-            // SteamGridDb API Key prüfen
+            // Check SteamGridDB API key
             if (FnString.IsNullEmptyOrWhitespace(AppEnvironment.GetAppConfig().AppSettings.SteamGridDbKey))
             {
                 CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
@@ -825,7 +826,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 return;
             }
 
-            // Steamprofilverknüpfung oder Spielnamen prüfen
+            // Check Steam profile link or game name
             if (GetApp().T1Profi.SAID == 0 && FnString.IsNullEmptyOrWhitespace(GetWnd().txbProfileName.Text))
             {
                 CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
@@ -937,7 +938,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
                 try
                 {
-                    // Altes Bild löschen
+                    // Delete old image
                     File.Delete(Path.Combine(AppConfig.Storage.ProfileCoversDirectoryPath, _oldProfileCoverFileName));
                 }
                 catch (Exception)

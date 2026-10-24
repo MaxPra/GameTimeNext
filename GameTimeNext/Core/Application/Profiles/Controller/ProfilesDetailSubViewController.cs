@@ -1,4 +1,5 @@
 ﻿
+using System.Globalization;
 using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Profiles.DataWrapper;
 using GameTimeNext.Core.Application.Profiles.Types;
@@ -81,7 +82,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             GetView().btnLaunchGame.IsEnabled = _dataWrapper!.GetTypedTableObject().SAID != 0 && GetView().btnLaunchGame.Content != "Running..." && TFPROFI.HasExecutables(_dataWrapper.GetTypedTableObject());
 
-            // -- Progressbar Sektion
+            // -- Progress bar section
             bool isIGDBLinkedCorrectly = !FnString.IsNullEmptyOrWhitespace(AppEnvironment.GetAppConfig().AppSettings.TwitchIGDBClientID) &&
                 !FnString.IsNullEmptyOrWhitespace(AppEnvironment.GetAppConfig().AppSettings.TwitchIGDBClientSecret);
 
@@ -96,7 +97,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
         }
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
         }
 
@@ -105,13 +106,13 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             // Total game time
             FillTotalGameTime();
 
-            // Heutige Spielzeit
+            // Today's playtime
             FillTodaysGameTime();
 
-            // Letzte Session
+            // Last session
             FillLastSessionGameTime();
 
-            // First und Lastplayed
+            // First and last played
             FillFirstLastDatePlayed();
 
             // Playthrough
@@ -291,11 +292,11 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
             UIXQuery query = new UIXQuery(K1PROFI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
 
-            // Felder
+            // Fields
             query.AddField(K1PROFI.Name, K1PROFI.Fields.FIPL);
             query.AddField(K1PROFI.Name, K1PROFI.Fields.LAPL);
 
-            // Where Restriktionen
+            // Where restrictions
             query.AddWhere(K1PROFI.Name, K1PROFI.Fields.PFID, QueryCompareType.EQUALS, _dataWrapper!.GetTypedTableObject().PFID);
 
             return query;
@@ -308,7 +309,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             UIXQuery query = new UIXQuery(K1PLTHR.Name, AppEnvironment.GetDataBaseManager().GetConnection());
 
-            // Felder
+            // Fields
             query.AddSum(K1SESSI.Name, K1SESSI.Fields.PLTI, "TotalPlaytimePlaythrough");
 
             // Join
@@ -326,10 +327,10 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
             UIXQuery query = new UIXQuery(K1SESSI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
 
-            // Felder hinzufügen
+            // Add fields
             query.AddSum(K1SESSI.Name, K1SESSI.Fields.PLTI, "TotalPlaytime");
 
-            // Where Restriktionen
+            // Where restrictions
             query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PFID, QueryCompareType.EQUALS, _dataWrapper!.GetTypedTableObject().PFID);
 
             return query;
@@ -337,7 +338,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         private void BuildCurrentPlaythroughPanel()
         {
-            // Sichtbarkeitssteuerung Playthrough-Box
+            // Visibility of the playthrough box
             T1PLTHR t1plthr = TFPLTHR.GetCurrentPlaythrough(_dataWrapper!.GetTypedTableObject().PFID);
 
             if (t1plthr != null && TFPLTHR.HasCurrentPlaythrough(_dataWrapper!.GetTypedTableObject().PFID) && t1plthr.PTTY != PlaythroughType.INITIAL_PLAYTHROUGH)
@@ -385,7 +386,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         private void ResetView()
         {
-            // Styles vorher zurücksetzen
+            // Reset styles first
             GetView().txEstMain.FontWeight = FontWeights.Normal;
             GetView().lblEstMain.FontWeight = FontWeights.Normal;
 
@@ -415,7 +416,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         public async void EV_btnLaunchGame()
         {
-            FnSteam.StartSteamGame(_dataWrapper!.GetTypedTableObject().SAID.ToString(), _dataWrapper!.GetTypedTableObject().PFID, GetApp());
+            FnSteam.StartSteamGame(_dataWrapper!.GetTypedTableObject().SAID.ToString(CultureInfo.InvariantCulture), _dataWrapper!.GetTypedTableObject().PFID, GetApp());
             GetView().btnLaunchGame.Content = "Launching...";
             GetView().btnLaunchGame.IsEnabled = false;
 
@@ -424,10 +425,10 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             await Task.Run(() =>
             {
-                // 30 Sekunden warten
+                // Wait 30 seconds
                 Thread.Sleep(30000);
 
-                // Sollte das Spiel in diesen 30 Sekunden nicht gestartet worden sein --> zurücksetzen des Buttons
+                // If the game has not started within these 30 seconds --> reset the button
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
                     if (!_gameRunning)

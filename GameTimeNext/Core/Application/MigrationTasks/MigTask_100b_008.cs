@@ -1,3 +1,5 @@
+using UIX.ViewController.Engine.Querying;
+
 namespace GameTimeNext.Core.Application.MigrationTasks
 {
     internal partial class MigTask_100b_008 : MigTaskBase
@@ -10,7 +12,7 @@ namespace GameTimeNext.Core.Application.MigrationTasks
         protected override void ExecuteImpl()
         {
             MigratePlaythroughTypeValues();
-            EnsureExternalConditionGroup();
+            EnsureT1plthrPtpaIsFalse();
         }
 
         private void MigratePlaythroughTypeValues()
@@ -31,16 +33,12 @@ namespace GameTimeNext.Core.Application.MigrationTasks
             command.ExecuteNonQuery();
         }
 
-        private void EnsureExternalConditionGroup()
+        private void EnsureT1plthrPtpaIsFalse()
         {
-            if (_connection == null)
-                return;
+            if (_connection is null) return;
 
-            using var command = _connection.CreateCommand();
-            command.CommandText = @"
-                INSERT INTO T1GROUP (GRNA, GTYP, CRAT, CHAT)
-                VALUES ('External', 'GTN.CONDITION', CURRENT_DATE, CURRENT_TIMESTAMP);";
-            command.ExecuteNonQuery();
+            string sql = $"UPDATE T1PLTHR SET PTPA = 0 WHERE PTPA IS NULL;";
+            UIXQuery.ExecuteCustom(sql, _connection);
         }
     }
 }

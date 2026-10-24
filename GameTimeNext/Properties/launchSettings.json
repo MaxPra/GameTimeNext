@@ -3,6 +3,10 @@
     "GameTimeNext": {
       "commandName": "Project"
     },
+    "GameTimeNext (UserMode)": {
+      "commandName": "Project",
+      "commandLineArgs": "--force-user-perms"
+    },
     "GameTimeNext (CLS)": {
       "commandName": "Project",
       "commandLineArgs": "-m CLS"

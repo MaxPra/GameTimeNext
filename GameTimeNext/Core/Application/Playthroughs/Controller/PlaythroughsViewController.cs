@@ -67,7 +67,7 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
         {
         }
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
         }
 
@@ -276,7 +276,7 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
             if (_viewModel?.SelectedRow?.RowObject is not T1PLTHR selectedT1plthr)
                 return;
 
-            // Playthrough als Abgeschlossen markieren
+            // Mark playthrough as completed
             selectedT1plthr.PTCO = true;
             selectedT1plthr.PTPA = false;
             new TXPLTHR().Save(selectedT1plthr);
@@ -298,7 +298,7 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
             if (result == CFMBOXResult.No)
                 return;
 
-            // Playthrough canceln
+            // Cancel playthrough
             selectedT1plthr.PTCA = true;
             selectedT1plthr.PTPA = false;
             new TXPLTHR().Save(selectedT1plthr);
