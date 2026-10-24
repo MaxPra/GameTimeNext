@@ -11,7 +11,7 @@ namespace GameTimeNext.Core.Application.TableObjects
         public long PFID { get; set; } = 0;
 
         [UIXSignatureField(1)]
-        public string GANA { get; set; } = string.Empty;
+        public string GANA { get; set; } = "";
 
         [UIXSignatureField(2)]
         public DateTime FIPL { get; set; } = DateTime.MinValue;
@@ -20,19 +20,19 @@ namespace GameTimeNext.Core.Application.TableObjects
         public DateTime LAPL { get; set; } = DateTime.MinValue;
 
         [UIXSignatureField(4)]
-        public string PPFN { get; set; } = string.Empty;
+        public string PPFN { get; set; } = "";
 
         [UIXSignatureField(5)]
-        public string EXGF { get; set; } = string.Empty;
+        public string EXGF { get; set; } = "";
 
         [UIXSignatureField(6)]
         public long SAID { get; set; } = 0;
 
         [UIXSignatureField(7)]
-        public string PRSE { get; set; } = string.Empty;
+        public string PRSE { get; set; } = "";
 
         [UIXSignatureField(8)]
-        public string EXEC { get; set; } = string.Empty;
+        public string EXEC { get; set; } = "";
 
         [UIXSignatureField(9)]
         public DateTime CRAT { get; set; } = DateTime.MinValue;
@@ -41,10 +41,10 @@ namespace GameTimeNext.Core.Application.TableObjects
         public DateTime CHAT { get; set; } = DateTime.MinValue;
 
         [UIXSignatureField(11)]
-        public string ACCO { get; set; } = string.Empty;
+        public string ACCO { get; set; } = "";
 
         [UIXSignatureField(12)]
-        public string ACIN { get; set; } = string.Empty;
+        public string ACIN { get; set; } = "";
 
         [UIXSignatureField(13)]
         public bool ACAC { get; set; } = false;
@@ -53,16 +53,16 @@ namespace GameTimeNext.Core.Application.TableObjects
         public long CUPT { get; set; } = 0;
 
         [UIXSignatureField(15)]
-        public double ETMA { get; set; } = 0d;
+        public double ETMA { get; set; } = 0;
 
         [UIXSignatureField(16)]
-        public double ETME { get; set; } = 0d;
+        public double ETME { get; set; } = 0;
 
         [UIXSignatureField(17)]
-        public double ETCO { get; set; } = 0d;
+        public double ETCO { get; set; } = 0;
 
         [UIXSignatureField(18)]
-        public string ETTY { get; set; } = string.Empty;
+        public string ETTY { get; set; } = "";
 
         [UIXSignatureField(19)]
         public bool ETML { get; set; } = false;
@@ -71,7 +71,7 @@ namespace GameTimeNext.Core.Application.TableObjects
         public bool ARCH { get; set; } = false;
 
         [UIXSignatureField(21)]
-        public string PLAFO { get; set; } = string.Empty;
+        public string PLAFO { get; set; } = "";
 
         public override void Save()
         {

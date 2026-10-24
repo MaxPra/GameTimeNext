@@ -14,10 +14,10 @@ namespace GameTimeNext.Core.Application.TableObjects
         public long PFID { get; set; } = 0;
 
         [UIXSignatureField(2)]
-        public string PTTY { get; set; } = string.Empty;
+        public string PTTY { get; set; } = "";
 
         [UIXSignatureField(3)]
-        public string PTDE { get; set; } = string.Empty;
+        public string PTDE { get; set; } = "";
 
         [UIXSignatureField(4)]
         public bool PTCO { get; set; } = false;

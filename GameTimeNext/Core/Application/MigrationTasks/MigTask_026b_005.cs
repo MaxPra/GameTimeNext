@@ -1,5 +1,7 @@
-﻿using GameTimeNext.Core.Framework.Config;
+﻿using System.Globalization;
+using GameTimeNext.Core.Framework.Config;
 using System.IO;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.MigrationTasks
 {
@@ -12,7 +14,7 @@ namespace GameTimeNext.Core.Application.MigrationTasks
 
         protected override void ExecuteImpl()
         {
-            // Kürze in allen T1PROFI-Einträgen das Feld PPFN auf den Dateinamen (ohne Pfad)
+            // Shorten the PPFN field in all T1PROFI entries to the file name (without path)
             var updates = new List<(long RowId, string Ppfn)>();
 
             using (var selectCmd = _connection!.CreateCommand())
@@ -28,10 +30,10 @@ namespace GameTimeNext.Core.Application.MigrationTasks
                         if (rowObj == null || rowObj == DBNull.Value)
                             continue;
 
-                        long rowid = Convert.ToInt64(rowObj);
+                        long rowid = Convert.ToInt64(rowObj, CultureInfo.InvariantCulture);
                         var ppfnObj = reader["PPFN"];
                         var ppfn = ppfnObj?.ToString();
-                        if (string.IsNullOrEmpty(ppfn))
+                        if (FnString.IsNullEmptyOrWhitespace(ppfn))
                             continue;
 
                         var fileName = Path.GetFileName(ppfn);
@@ -71,8 +73,8 @@ namespace GameTimeNext.Core.Application.MigrationTasks
                     while (reader.Read())
                     {
                         var ppfn = reader["PPFN"]?.ToString();
-                        if (!string.IsNullOrEmpty(ppfn))
-                            referencedFiles.Add(ppfn);
+                        if (!FnString.IsNullEmptyOrWhitespace(ppfn))
+                            referencedFiles.Add(ppfn!);
                     }
                 }
             }

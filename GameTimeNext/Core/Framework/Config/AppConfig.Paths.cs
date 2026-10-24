@@ -1,5 +1,6 @@
 ﻿using GameTimeNext.Core.Framework.Utils;
 using System.IO;
+using System.Security.Policy;
 using System.Text.Json.Serialization;
 using UIX.ViewController.Engine.Utils;
 
@@ -49,9 +50,60 @@ namespace GameTimeNext.Core.Framework.Config
             }
 
             [JsonIgnore]
+            public static string GenClassTableObjectsDirectoryPath
+            {
+                get => ReturnEnsureDirectoryExists(Path.Combine(GenClassDirectoryPath, "TableObjects"));
+            }
+
+            [JsonIgnore]
+            public static string GenClassDataManagersDirectoryPath
+            {
+                get => ReturnEnsureDirectoryExists(Path.Combine(GenClassDirectoryPath, "DataManagers"));
+            }
+
+            [JsonIgnore]
             public static string BackupDirectoryPath
             {
                 get => ReturnEnsureDirectoryExists(Path.Combine(DevDirectoryPath, "backup"));
+            }
+
+            [JsonIgnore]
+            public static string SolutionDirectoryPath
+            {
+                get
+                {
+                    string startingDirectoryPath = Root.ApplicationDirectoryPath;
+
+                    DirectoryInfo? current = new DirectoryInfo(startingDirectoryPath);
+                    while (current is not null)
+                    {
+                        string slnxFilePath = Path.Combine(current.FullName, $"{Root.ApplicationName}.slnx");
+                        if (File.Exists(slnxFilePath))
+                            return current.FullName;
+
+                        current = current.Parent;
+                    }
+
+                    return startingDirectoryPath;
+                }
+            }
+
+            [JsonIgnore]
+            public static string DevSyncDirectoryPath
+            {
+                get => Path.Combine(SolutionDirectoryPath, "devsync");
+            }
+
+            [JsonIgnore]
+            public static string DevSyncDefaultImagesSymbolsDirectoryPath
+            {
+                get => GetImagesAndSymbolsDirectoryPath(DevSyncDirectoryPath);
+            }
+
+            public static string GetImagesAndSymbolsDirectoryPath(string parentDirectoryPath)
+            {
+                string temp = ReturnEnsureDirectoryExists(Path.Combine(parentDirectoryPath, "imagesAndSymbols"), requireParentExists: true);
+                return ReturnEnsureDirectoryExists(Path.Combine(temp, "default"), requireParentExists: true);
             }
         }
 
@@ -64,7 +116,7 @@ namespace GameTimeNext.Core.Framework.Config
                 {
                     string temp = Root.ApplicationName;
 
-                    // Modi
+                    // Modes
                     if (AppEnvironment.StartArguments is not null && AppEnvironment.StartArguments.ContainsKey("m") && !FnString.IsNullEmptyOrWhitespace(AppEnvironment.StartArguments["m"]))
                         temp += "_m" + AppEnvironment.StartArguments["m"];
 
@@ -232,23 +284,14 @@ namespace GameTimeNext.Core.Framework.Config
 
         private static string ReturnEnsureDirectoryExists(string path, bool requireParentExists = false)
         {
-            if (!Directory.Exists(path))
-            {
-                DirectoryInfo? parentDirectoryInfo = new DirectoryInfo(path).Parent;
-                if (!requireParentExists || (parentDirectoryInfo is not null && parentDirectoryInfo.Exists))
-                    Directory.CreateDirectory(path);
-            }
+            FnDirectory.EnsureDirectoryExists(path, requireParentExists);
 
             return path;
         }
 
         private static string ReturnEnsureFileExists(string path)
         {
-            if (!File.Exists(path))
-            {
-                FileStream fs = File.Create(path);
-                fs.Close();
-            }
+            FnFile.EnsureFileExists(path);
 
             return path;
         }

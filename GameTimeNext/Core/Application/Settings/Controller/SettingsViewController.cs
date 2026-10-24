@@ -1,4 +1,5 @@
-﻿using GameTimeNext.Core.Application.General;
+﻿using System.Globalization;
+using GameTimeNext.Core.Application.General;
 using GameTimeNext.Core.Application.Profiles.BackgroundProcesses;
 using GameTimeNext.Core.Application.Settings.Views;
 using GameTimeNext.Core.Application.TableObjects;
@@ -88,16 +89,16 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             FnControls.SetEnabled(GetView().btnOpenIgdbClientSecret, GetView().cbEnableIGDBIntegration.IsChecked == true);
         }
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
             if (!FnControls.ContainsOnlyNumericValue(GetView().txbBreakReminderHours))
             {
-                AddViewError(GetView().txbBreakReminderHours, "Only numeric values allowed!");
+                AddViewError(GetView().txbBreakReminderHours, FnErrorMessage.ErrorMessage.OnlyNumeric.GetMessage());
             }
 
             if (!FnControls.ContainsOnlyNumericValue(GetView().txbSessionCleanupSeconds))
             {
-                AddViewError(GetView().txbSessionCleanupSeconds, "Only numeric values allowed!");
+                AddViewError(GetView().txbSessionCleanupSeconds, FnErrorMessage.ErrorMessage.OnlyNumeric.GetMessage());
             }
         }
 
@@ -146,7 +147,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             GetView().txbIgdbClientSecret.Text = _appSettings.TwitchIGDBClientSecret;
 
             GetView().cbRemindTakeBreak.IsChecked = _appSettings.BreakReminder;
-            GetView().txbBreakReminderHours.Text = _appSettings.BreakReminderHrs.ToString();
+            GetView().txbBreakReminderHours.Text = _appSettings.BreakReminderHrs.ToString(CultureInfo.CurrentCulture);
         }
 
         private void FillTabMonitoring()
@@ -158,7 +159,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             GetView().txbMonitoringKey.Text = _appSettings!.MonitoringKey;
             GetView().cbEnableSessionTimeQuery.IsChecked = _appSettings!.EnableSessionTimeQuery;
             GetView().cbEnableSessionCleanup.IsChecked = _appSettings!.EnableSessionCleanup;
-            GetView().txbSessionCleanupSeconds.Text = _appSettings!.SessionCleanupSeconds.ToString();
+            GetView().txbSessionCleanupSeconds.Text = _appSettings!.SessionCleanupSeconds.ToString(CultureInfo.CurrentCulture);
         }
 
         private void FillDBOGeneral()
@@ -316,8 +317,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             {
                 exportPath = AppConfig.Dev.BackupDirectoryPath;
 
-                if (!Directory.Exists(exportPath))
-                    Directory.CreateDirectory(exportPath);
+                FnDirectory.EnsureDirectoryExists(exportPath);
             }
 
             GetApp().Loader.Begin("Creating backup...");
@@ -361,10 +361,10 @@ namespace GameTimeNext.Core.Application.Settings.Controller
                 AppEnvironment.GetAppConfig().AppSettings.BackupType = BackupType.IMPORT_BACKUP;
                 AppEnvironment.GetAppConfig().AppSettings.BackupImportPath = GetView().txbBackupImportPath.Text;
 
-                // Aktuelle Einstellungen speichern
+                // Save current settings
                 SaveDBO();
 
-                // GameTimeNext neustarten
+                // Restart GameTimeNext
                 AppEnvironment.RestartGTNApplication();
             }
         }

@@ -134,7 +134,7 @@
             </Grid>
         </Grid>
 
-        <!--  ===== Top Row: Meist gespielt + Zuletzt gespielt =====  -->
+        <!--  ===== Top Row: Most played + Last played =====  -->
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1.2*" MinWidth="380" />
@@ -142,7 +142,7 @@
                 <ColumnDefinition Width="1*" MinWidth="320" />
             </Grid.ColumnDefinitions>
 
-            <!--  Meist gespielt  -->
+            <!--  Most played  -->
             <Border
                 x:Name="MostPlayedCard"
                 Grid.Column="0"
@@ -274,7 +274,7 @@
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
 
-                                    <!--  Spielzeit  -->
+                                    <!--  Playtime  -->
                                     <StackPanel Grid.Column="0" Orientation="Vertical">
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock
@@ -300,7 +300,7 @@
                                             Text="Playtime" />
                                     </StackPanel>
 
-                                    <!--  Tage gespielt  -->
+                                    <!--  Days played  -->
                                     <StackPanel Grid.Column="2" Orientation="Vertical">
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock
@@ -333,7 +333,7 @@
                 </Grid>
             </Border>
 
-            <!--  Zuletzt gespielt  -->
+            <!--  Last played  -->
             <Border
                 Grid.Column="2"
                 Height="{Binding ElementName=MostPlayedCard, Path=ActualHeight}"
@@ -486,7 +486,7 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <!--  Zuletzt gespielt  -->
+            <!--  Last played  -->
             <Border
                 Grid.Column="0"
                 Background="{DynamicResource Brush.Surface}"
@@ -595,7 +595,7 @@
                 </Grid>
             </Border>
 
-            <!--  Spielzeit Übersicht  -->
+            <!--  Playtime overview  -->
             <Border
                 Grid.Column="2"
                 Background="{DynamicResource Brush.Surface}"
@@ -641,7 +641,7 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <!--  Gesamtspielzeit  -->
+                        <!--  Total playtime  -->
                         <Border
                             Grid.Row="0"
                             Grid.Column="0"
@@ -677,7 +677,7 @@
                             </StackPanel>
                         </Border>
 
-                        <!--  Tage gespielt  -->
+                        <!--  Days played  -->
                         <Border
                             Grid.Row="0"
                             Grid.Column="2"
@@ -713,7 +713,7 @@
                             </StackPanel>
                         </Border>
 
-                        <!--  Spiele gespielt  -->
+                        <!--  Games played  -->
                         <Border
                             Grid.Row="2"
                             Grid.Column="0"
@@ -756,7 +756,7 @@
                 </Grid>
             </Border>
 
-            <!--  Gesamtstatistiken  -->
+            <!--  Overall statistics  -->
             <Border
                 Grid.Column="4"
                 Background="{DynamicResource Brush.Surface}"

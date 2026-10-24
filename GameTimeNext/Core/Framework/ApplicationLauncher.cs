@@ -41,7 +41,7 @@ namespace GameTimeNext.Core.Framework
                 VerticalAlignment = VerticalAlignment.Stretch
             };
 
-            tabItem.Tag = type.FullName!; // wichtig für BuildContextMenu/StartedApplications
+            tabItem.Tag = type.FullName!; // important for BuildContextMenu/StartedApplications
             tabItem.Content = presenter;
 
 
@@ -64,7 +64,7 @@ namespace GameTimeNext.Core.Framework
         DispatcherPriority.Background,
         new Action(() => { }));
 
-            // Wenn derzeitige gestartete App in den Favoriten "primary start" aktiviert hat, dann zurückgeben
+            // Return the currently started app if "primary start" is enabled for it in the favorites
             FavoriteApplication favoriteApplication = FnUserSettings.GetFavoriteApplication(AppEnvironment.GetAppConfig().UserSettings.FavApps, type.FullName);
             if (favoriteApplication != null && favoriteApplication.PrimaryStart)
                 return tabItem;
@@ -92,7 +92,7 @@ namespace GameTimeNext.Core.Framework
                     primaryTab = primaryTabTemp;
             }
 
-            // Am Ende den Tab mit dem primären Start selektieren
+            // Finally select the tab with the primary start
             if (primaryTab != null)
                 primaryTab.IsSelected = true;
 

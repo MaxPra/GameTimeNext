@@ -17,7 +17,7 @@ namespace GameTimeNext.Core.Framework.Utils
 
             foreach (var kvp in cExecutables.KeyValuePairs)
             {
-                // Nur aktive Exes in die Liste aufnehmen
+                // Only add active executables to the list
                 if (kvp.Value)
                     activeExes.Add(kvp.Key);
             }
@@ -27,7 +27,7 @@ namespace GameTimeNext.Core.Framework.Utils
 
 
         /// <summary>
-        /// Liefert alle Exes (auch in Unterordnern) zum übergebenen Ordnerpfad
+        /// Returns all executables (including subfolders) for the given folder path
         /// </summary>
         /// <param name="directoryPath"></param>
         /// <returns></returns>
@@ -38,10 +38,10 @@ namespace GameTimeNext.Core.Framework.Utils
             if (!Directory.Exists(directoryPath))
                 return allExes;
 
-            // Alle .exe-Dateien im angegebenen Verzeichnis und in Unterverzeichnissen abrufen
+            // Get all .exe files in the given directory and its subdirectories
             string[] exeFiles = Directory.GetFiles(directoryPath, "*.exe", SearchOption.AllDirectories);
 
-            // Alle gefundenen .exe-Dateien sammeln
+            // Collect all found .exe files
             foreach (string exeFile in exeFiles)
             {
                 allExes.Add(Path.GetFileName(exeFile));

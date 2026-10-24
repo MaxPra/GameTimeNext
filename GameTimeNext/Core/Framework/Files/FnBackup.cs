@@ -3,15 +3,16 @@ using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.Utils;
 using System.IO;
 using System.IO.Compression;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Framework.Files
 {
     public class FnBackup
     {
         /// <summary>
-        /// Erstellt ein Backup und legt es auf dem angegebenen Pfad ab
+        /// Creates a backup and stores it at the given path
         /// </summary>
-        /// <param name="expPath">Export Pfad</param>
+        /// <param name="expPath">Export path</param>
         public static async Task CreateBackupAsync(string expPath, string backuptype = BackupType.APP_START_BACKUP)
         {
             string sourceFolder = AppConfig.Storage.StorageDirectoryPath;
@@ -28,15 +29,15 @@ namespace GameTimeNext.Core.Framework.Files
 
             string tempFolderDest = AppConfig.Temp.BackupDirectoryPath;
 
-            // Appordner kopieren
+            // Copy app folder
             FnDirectory.CopyDirectory(sourceFolder, tempFolderDest, new string[] { AppConfig.Root.DatabaseFileName }, true);
 
             string dataBaseDest = Path.Combine(tempFolderDest, "Data");
 
-            // Datenbankfile backup
+            // Database file backup
             AppEnvironment.GetDataBaseManager().CreateBackup(Path.Combine(dataBaseDest, AppConfig.Root.DatabaseFileName));
 
-            // Backup Zip erstellen
+            // Create backup zip
             ZipFile.CreateFromDirectory(tempFolderDest, expPath);
 
             if (Directory.Exists(tempFolderDest))
@@ -49,9 +50,9 @@ namespace GameTimeNext.Core.Framework.Files
         }
 
         /// <summary>
-        /// Importiert ein Backup
+        /// Imports a backup
         /// </summary>
-        /// <param name="impPath">Import Pfad</param>
+        /// <param name="impPath">Import path</param>
         public static void ImportBackup(string impPath)
         {
             string extractPath = AppConfig.Storage.StorageDirectoryPath;

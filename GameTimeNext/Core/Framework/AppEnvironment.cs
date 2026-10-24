@@ -5,8 +5,7 @@ using GameTimeNext.Core.Application.Settings;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.DataBase;
-using GameTimeNext.Core.Framework.DataBase.DevSync;
-using GameTimeNext.Core.Framework.DataBase.Import;
+using GameTimeNext.Core.Framework.DataBase.Migration;
 using GameTimeNext.Core.Framework.Files;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.Utils;
@@ -100,16 +99,17 @@ namespace GameTimeNext.Core.Framework
         {
             HandleBackup();
 
+            MigrationFactory.Metadata.MigrateTables();
+
             InitializeStartableApps();
 
             CheckShowChangeLog();
 
-            DataBaseImporter.Import();
-
-            if (FnSystem.IsDebug())
-                DevSyncCsvSyncService.ImportAllFromCsv();
+            MigrationFactory.ImportPackage.ImportPackages();
+            MigrationFactory.FromCsv.MigrateTables(MigrationFactory.ImportType.DevSync);
 
             MigrationManager.Migrate();
+            GetDataBaseManager().EnsureT1groupSeeded();
 
             if (GetAppConfig().AppSettings.EnableSessionCleanup)
                 InitializeCleanup();
@@ -174,7 +174,7 @@ namespace GameTimeNext.Core.Framework
         // [------------------------------------------------]
         private static void HandleBackup()
         {
-            // Backup hier einspielen
+            // Restore backup here
             if (GetAppConfig().AppSettings.BackupType == BackupType.IMPORT_BACKUP)
             {
                 try
@@ -186,7 +186,7 @@ namespace GameTimeNext.Core.Framework
                     InformationList.Add(new InformationListItem(CFMBOXIcon.Error, "Could not import backupfile:\n" + GetAppConfig().AppSettings.BackupImportPath + "."));
                 }
 
-                // Hier nochmal AppConfig laden, da vorher durch Backupimport überschrieben
+                // Reload AppConfig here because it was overwritten by the backup import
                 LoadAppConfig();
             }
             else
@@ -199,9 +199,6 @@ namespace GameTimeNext.Core.Framework
                 if (FnSystem.IsDebug())
                 {
                     backupPath = AppConfig.Dev.BackupDirectoryPath;
-
-                    if (!Directory.Exists(backupPath))
-                        Directory.CreateDirectory(backupPath);
                 }
 
                 if (!Directory.Exists(backupPath))
@@ -269,6 +266,7 @@ namespace GameTimeNext.Core.Framework
         {
             if (!File.Exists(AppConfig.Storage.AppConfigFilePath))
             {
+                FnDirectory.EnsureDirectoryExists(AppConfig.Storage.StorageDirectoryPath);
                 FileStream fs = File.Create(AppConfig.Storage.AppConfigFilePath);
                 fs.Close();
             }

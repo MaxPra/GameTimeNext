@@ -60,7 +60,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
         {
         }
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
             CheckParameterRequired();
 
@@ -181,7 +181,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
         }
 
         /// <summary>
-        /// Steuert abhängig der Einstellungen in T1CTABH die Sichtbarkeit der zusätzlichen Parameter Controls und speichert diese in einem Dictionary für die weitere Validierung ab
+        /// Controls the visibility of the additional parameter controls depending on the T1CTABH settings and stores them in a dictionary for later validation
         /// </summary>
         /// <returns></returns>
         private Dictionary<string, ParameterControl> ControlParameterVisibility()
@@ -189,12 +189,12 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
             Dictionary<string, ParameterControl> paramControls = new Dictionary<string, ParameterControl>();
 
-            // Codetabellen-Kopf lesen
+            // Read codetable header
             T1CTABH t1ctabh = new TXCTABH().Read(GetApp().T1CTABD!.TXTYP);
 
             for (int i = 1; i <= MAX_PARAM_COUNT; i++)
             {
-                // Prüfen, ob der Parameter überhaupt aktiv ist
+                // Check whether the parameter is active at all
                 if (t1ctabh.GetValue<bool>($"PAAC{i}") == false)
                     continue;
 
@@ -232,37 +232,32 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().TxbTextNumber.Text))
             {
-                AddViewError(GetWnd().TxbTextNumber, "Text Number is required.");
+                AddViewError(GetWnd().TxbTextNumber, FnErrorMessage.ErrorMessage.IsRequired.GetMessage("Text number"));
             }
 
-            if (GetWnd().TxbTextNumber.Text.StartsWith("D_") && !FnSystem.IsDebug() && t1ctabh!.NRANA)
+            if (GetWnd().TxbTextNumber.Text.StartsWith("D_") && (!FnSystem.IsDebug() || FnSystem.RunWithUserPermissions()) && t1ctabh!.NRANA)
             {
-                AddViewError(GetWnd().TxbTextNumber, "Text Number must not start with D_ (only for developer-entrys)");
+                AddViewError(GetWnd().TxbTextNumber, FnErrorMessage.ErrorMessage.IsRequired.GetMessage("Text number", "_D", "only for deverloper-entries"));
             }
-
-            //if (!GetWnd().TxbTextNumber.Text.StartsWith("D_") && FnSystem.IsDebug() && t1ctabh!.NRANA)
-            //{
-            //    AddViewError(GetWnd().TxbTextNumber, "Text Number must start with D_");
-            //}
         }
 
         /// <summary>
-        /// Prüft, ob die zusätzlichen Parameter befüllt (falls required) und gib ggf. Fehlermeldung aus
+        /// Checks whether the additional parameters are filled (if required) and shows an error message if not
         /// </summary>
         private void CheckParameterRequired()
         {
             if (_parmControls.Count == 0)
                 return;
 
-            // Codetabellen-Kopf lesen
+            // Read codetable header
             T1CTABH t1ctabh = new TXCTABH().Read(GetApp().T1CTABD!.TXTYP);
 
             for (int i = 1; i <= _parmControls.Count; i++)
             {
                 ParameterControl paramControl = _parmControls.ElementAt(i - 1).Value;
 
-                // Bei Checkbox erfolgt keine Prüfung (auch wenn required)
-                // Das macht nämlich keinen Sinn, weil eine Checkbox nur true oder false sein kann
+                // No check for checkboxes (even if required)
+                // It makes no sense, because a checkbox can only be true or false
                 if (!paramControl.IsRequired || paramControl.Control is CheckBox)
                 {
                     continue;
@@ -281,7 +276,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
                 if (FnString.IsNullEmptyOrWhitespace(value))
                 {
-                    AddViewError(paramControl.Control!, "This Parameter is required.");
+                    AddViewError(paramControl.Control!, FnErrorMessage.ErrorMessage.IsRequired.GetMessage("Parameter"));
                 }
             }
         }

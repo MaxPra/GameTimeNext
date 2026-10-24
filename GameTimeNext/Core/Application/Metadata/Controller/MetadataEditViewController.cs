@@ -4,13 +4,17 @@ using GameTimeNext.Core.Application.Metadata.Views;
 using GameTimeNext.Core.Application.Profiles;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Config;
+using GameTimeNext.Core.Framework.DataBase.Migration;
 using GameTimeNext.Core.Framework.UI.Dialogs;
+using GameTimeNext.Core.Framework.Utils;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements;
 using UIX.ViewController.Engine.FrameworkElements.UserControls;
+using UIX.ViewController.Engine.Migration.Types;
 using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
@@ -58,22 +62,29 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
         }
 
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
+            string selectedType = GetWnd().CmbType.SelectedValue?.ToString() ?? string.Empty;
+
+            // Table object
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().TxbTableObject.Text))
-                AddViewError(GetWnd().TxbTableObject, "Table Object cannot be empty.");
+                AddViewError(GetWnd().TxbTableObject, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Table object"));
+            else if (!Regex.IsMatch(GetWnd().TxbTableObject.Text, @"^T1[A-Z0-9]*$"))
+                AddViewError(GetWnd().TxbTableObject, "Field has invalid format.");
+            else if (GetWnd().TxbTableObject.Text.Length < 7)
+                AddViewError(GetWnd().TxbTableObject, FnErrorMessage.ErrorMessage.MustExceedChars.GetMessage("Table object", "7"));
+            else if (GetWnd().TxbTableObject.Text.Length > 7)
+                AddViewError(GetWnd().TxbTableObject, FnErrorMessage.ErrorMessage.CannotExceedChars.GetMessage("Table object", "7"));
 
+            // Description
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().TxbDescription.Text))
-                AddViewError(GetWnd().TxbDescription, "Description cannot be empty.");
+                AddViewError(GetWnd().TxbDescription, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Description"));
+            else if (GetWnd().TxbDescription.Text.Length > 200)
+                AddViewError(GetWnd().TxbDescription, FnErrorMessage.ErrorMessage.CannotExceedChars.GetMessage("Description", "200"));
 
-            if (FnString.IsNullEmptyOrWhitespace(GetWnd().CmbType.SelectedValue.ToString()!))
-                AddViewError(GetWnd().CmbType, "Type must be selected.");
-
-            if (GetWnd().TxbTableObject.Text.Length > 7)
-                AddViewError(GetWnd().TxbTableObject, "Table Object cannot exceed 7 characters.");
-
-            if (GetWnd().TxbDescription.Text.Length > 200)
-                AddViewError(GetWnd().TxbDescription, "Description cannot exceed 200 characters.");
+            // Type
+            if (FnString.IsNullEmptyOrWhitespace(selectedType))
+                AddViewError(GetWnd().CmbType, FnErrorMessage.ErrorMessage.MustBeSelected.GetMessage("Type"));
         }
 
         protected override void FillViewImpl()
@@ -142,12 +153,14 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
                     string menam = UIXQuery.GetString(reader, K1METAP.Name, K1METAP.Fields.MENAM, string.Empty);
                     string ponam = UIXQuery.GetString(reader, K1METAP.Name, K1METAP.Fields.PONAM, string.Empty);
 
-                    T1METAP t1metap = txmetap.Read(menam, ponam);
+                    T1METAP? t1metap = txmetap.Read(menam, ponam);
+                    if (t1metap is null)
+                        continue;
 
                     MetadataPosDataGridRow row = GetWnd().DgFields.CreateNewRow<MetadataPosDataGridRow>();
                     row.COPONAM = t1metap.PONAM;
                     row.COMENAM = t1metap.MENAM;
-                    row.CODATYP = UIXSQLiteDataTypes.GetDefinitionByKey(t1metap.DATYP)?.Text ?? UIXSQLiteDataTypes.Text;
+                    row.CODATYP = UIXSqliteDataType.GetByKey(t1metap.DATYP).Name;
                     row.CODESCR = t1metap.DESCR;
                     row.COPRIMK = t1metap.PRIMK;
                     row.CODALEN = t1metap.DALEN;
@@ -319,11 +332,8 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
                 await Task.Run(() =>
                 {
-                    CFMetadataClassGenerator classGenerator = new CFMetadataClassGenerator();
-                    classGenerator.GenerateFor(GetApp().T1METAH!, AppConfig.Dev.GenClassDirectoryPath);
-
-                    CFMetadataTableGenerator tableGenerator = new CFMetadataTableGenerator();
-                    tableGenerator.EnsureTableFor(GetApp().T1METAH!);
+                    MigrationFactory.Metadata.CodeGenerator.GenerateFor(GetApp().T1METAH!);
+                    MigrationFactory.FromCsv.MigrateTables(MigrationFactory.ImportType.MetadataGenerator);
                 });
 
                 GetApp().T1METAH!.GENER = true;

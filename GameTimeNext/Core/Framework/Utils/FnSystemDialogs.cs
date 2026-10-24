@@ -6,7 +6,7 @@ namespace GameTimeNext.Core.Framework.Utils
     {
 
         /// <summary>
-        /// Zeigt den FileDialog von Windows
+        /// Shows the Windows file dialog
         /// </summary>
         /// <param name="title"></param>
         /// <param name="filter"></param>
@@ -31,7 +31,7 @@ namespace GameTimeNext.Core.Framework.Utils
         }
 
         /// <summary>
-        /// Zeigt den FolderDialog von Windows
+        /// Shows the Windows folder dialog
         /// </summary>
         /// <param name="title"></param>
         /// <param name="multiselect"></param>

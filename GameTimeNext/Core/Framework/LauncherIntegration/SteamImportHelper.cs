@@ -1,18 +1,19 @@
 ﻿using Microsoft.Win32;
 using System.IO;
 using System.Text.RegularExpressions;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Framework.LauncherIntegration
 {
     public class SteamImportHelper
     {
         /// <summary>
-        /// Ermittelt das Steam-Root-Verzeichnis
+        /// Determines the Steam root directory
         /// </summary>
         /// <returns></returns>
         public static string? GetSteamRoot()
         {
-            // HKCU (User) bevorzugen
+            // Prefer HKCU (user)
             using var u = Registry.CurrentUser.OpenSubKey(@"Software\Valve\Steam");
             var user = u?.GetValue("SteamPath") as string;
 
@@ -27,13 +28,13 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
         public static bool IsGameInstalledByAppId(string appId)
         {
             var root = GetSteamRoot();
-            if (string.IsNullOrWhiteSpace(root))
+            if (FnString.IsNullEmptyOrWhitespace(root))
                 return false;
 
-            var libs = SteamLibrariesHelper.GetLibraryPaths(root);
+            var libs = SteamLibrariesHelper.GetLibraryPaths(root!);
             foreach (var lib in libs)
             {
-                // Stelle sicher, dass wir genau auf ".../steamapps" zeigen
+                // Make sure we point exactly to ".../steamapps"
                 var steamappsDir = lib.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
                 if (!steamappsDir.EndsWith("steamapps", StringComparison.OrdinalIgnoreCase))
                     steamappsDir = Path.Combine(steamappsDir, "steamapps");
@@ -49,15 +50,15 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
                 if (int.TryParse(flagsStr, out var flags) && (flags & 4) != 0)
                     return true;
 
-                // 2) Vollständig geladen?
+                // 2) Fully loaded?
                 var btd = GetVdfValue(txt, "BytesToDownload");
                 var bdl = GetVdfValue(txt, "BytesDownloaded");
                 if (btd == "0" && bdl == "0" && txt.IndexOf("MountedDepots", StringComparison.OrdinalIgnoreCase) >= 0)
                     return true;
 
-                // 3) Fallback über installdir -> .../steamapps/common/<installdir>
+                // 3) Fallback via installdir -> .../steamapps/common/<installdir>
                 var installDirName = GetVdfValue(txt, "installdir");
-                if (!string.IsNullOrWhiteSpace(installDirName))
+                if (!FnString.IsNullEmptyOrWhitespace(installDirName))
                 {
                     var gameDir = Path.Combine(steamappsDir, "common", installDirName);
                     if (Directory.Exists(gameDir))
@@ -71,10 +72,10 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
             return false;
         }
 
-        // Klein helper: holt den ersten "key" "value" Eintrag aus dem ACF-Text
+        // Small helper: gets the first "key" "value" entry from the ACF text
         private static string GetVdfValue(string vdfText, string key)
         {
-            // key case-insensitiv suchen:  "key"   "value"
+            // Search key case-insensitively:  "key"   "value"
             var m = Regex.Match(vdfText, $"\"{Regex.Escape(key)}\"\\s*\"([^\"]*)\"",
                                 RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
             return m.Success ? m.Groups[1].Value.Trim() : string.Empty;

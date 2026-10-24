@@ -96,7 +96,7 @@
         </Setter>
     </Style>
 
-    <!--  Default (global): Checkbox rechts  -->
+    <!--  Default (global): checkbox on the right  -->
     <Style TargetType="{x:Type CheckBox}">
 
         <Setter Property="SnapsToDevicePixels" Value="True" />
@@ -232,7 +232,7 @@
 
     </Style>
 
-    <!--  Alternative: Checkbox links  -->
+    <!--  Alternative: checkbox on the left  -->
     <Style x:Key="CheckBox.Left" TargetType="{x:Type CheckBox}">
 
         <Setter Property="SnapsToDevicePixels" Value="True" />

@@ -16,6 +16,8 @@ namespace GameTimeNext.Core.Application.MigrationTasks
             };
 
             migrations.ForEach(mT =>mT.Execute());
+
+            AppEnvironment.AppVersion.SetAppVersionInConfig();
         }
 
         public static void RestartGTN()

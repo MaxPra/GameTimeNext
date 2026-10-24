@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Text.RegularExpressions;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Framework.LauncherIntegration
 {
@@ -13,7 +14,7 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
         private static readonly Regex rxStateFlags = new(@"""StateFlags""\s*""(\d+)""", RegexOptions.IgnoreCase);
 
         /// <summary>
-        /// Scannt alle appmanifest_*.acf in den angegebenen steamapps-Ordnern.
+        /// Scans all appmanifest_*.acf files in the given steamapps folders.
         /// </summary>
         public static List<SteamGame> ScanAllGames(IEnumerable<string> steamappsFolders)
         {
@@ -49,13 +50,13 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
         }
 
         /// <summary>
-        /// Ermittelt den erwarteten Installationspfad des Spiels.
+        /// Determines the expected installation path of the game.
         /// </summary>
         public static string? ResolveInstallPath(SteamGame g)
         {
             // <library>\common\<installdir>
             var common = Path.Combine(g.LibraryPath.Replace('/', '\\'), "common");
-            if (!string.IsNullOrWhiteSpace(g.InstallDir))
+            if (!FnString.IsNullEmptyOrWhitespace(g.InstallDir))
             {
                 var p = Path.Combine(common, g.InstallDir);
                 if (Directory.Exists(p)) return p;

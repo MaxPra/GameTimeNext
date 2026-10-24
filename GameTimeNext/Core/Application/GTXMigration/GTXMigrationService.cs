@@ -1,4 +1,5 @@
-﻿using GameTimeNext.Core.Application.DataManagers;
+﻿using System.Globalization;
+using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.General;
 using GameTimeNext.Core.Application.MigrationTasks;
 using GameTimeNext.Core.Application.Profiles;
@@ -6,6 +7,7 @@ using GameTimeNext.Core.Application.Profiles.Components;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Config;
+using GameTimeNext.Core.Framework.Utils;
 using System.Data.SQLite;
 using System.IO;
 using System.Text;
@@ -13,13 +15,13 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using UIX.ViewController.Engine.FrameworkElements.Loader;
-using UIX.ViewController.Engine.Querying;
+using UIX.ViewController.Engine.Migration.Types;
 using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.GTXMigration
 {
     /// <summary>
-    /// Für die Migration der alten GameTimeX Daten zu den neuen GameTimeNXT Daten verantwortlich
+    /// Responsible for migrating the old GameTimeX data to the new GameTimeNXT data
     /// </summary>
     public class GTXMigrationService
     {
@@ -47,14 +49,14 @@ namespace GameTimeNext.Core.Application.GTXMigration
         {
             _loader!.SetTextStep("connecting to old database");
 
-            // Verbindung zu alter Datenbank aufbauen
+            // Connect to the old database
             bool connectSuccess = ConnectToSQLite();
 
             if (!connectSuccess)
                 return;
 
             _loader.SetTextStep("migrating profile data");
-            // Profile migrieren
+            // Migrate profiles
             MigrateProfiles();
 
             _loader.SetTextStep("migrating session data");
@@ -66,10 +68,10 @@ namespace GameTimeNext.Core.Application.GTXMigration
             MigratePlaythroughs();
 
             _loader.SetTextStep("migrating profile covers");
-            // Profil Covers
+            // Profile covers
             MigrateProfileImagesToCovers();
 
-            // Alte Verbindung schließen
+            // Close old connection
             _connectionOld.Close();
 
             new MigTask_026b_005().Execute();
@@ -149,7 +151,7 @@ namespace GameTimeNext.Core.Application.GTXMigration
 
                             List<System.Windows.Media.Color> accentColorsCalc = FnImage.GetTopAccentColors(System.IO.Path.Join(_imagesFolderPath, reader.GetString(4)), 3);
                             System.Windows.Media.Color accentColor = System.Windows.Media.Color.FromArgb(255, accentColorsCalc[0].R, accentColorsCalc[0].G, accentColorsCalc[0].B);
-                            string[] accentColors = FnTheme.CalculateAccentStateColors(accentColor.ToString());
+                            string[] accentColors = FnTheme.CalculateAccentStateColors(accentColor.ToString(CultureInfo.InvariantCulture));
 
                             Dictionary<string, string> dicAccentColors = new Dictionary<string, string>();
                             dicAccentColors.Add("accent", accentColors[0]);
@@ -162,9 +164,9 @@ namespace GameTimeNext.Core.Application.GTXMigration
                             string acco = cAccentColors.Serialize();
 
                             string[] accentColorsInitArray = new string[3];
-                            accentColorsInitArray[0] = System.Windows.Media.Color.FromArgb(255, accentColorsCalc[0].R, accentColorsCalc[0].G, accentColorsCalc[0].B).ToString();
-                            accentColorsInitArray[1] = System.Windows.Media.Color.FromArgb(255, accentColorsCalc[1].R, accentColorsCalc[1].G, accentColorsCalc[1].B).ToString();
-                            accentColorsInitArray[2] = System.Windows.Media.Color.FromArgb(255, accentColorsCalc[2].R, accentColorsCalc[2].G, accentColorsCalc[2].B).ToString();
+                            accentColorsInitArray[0] = System.Windows.Media.Color.FromArgb(255, accentColorsCalc[0].R, accentColorsCalc[0].G, accentColorsCalc[0].B).ToString(CultureInfo.InvariantCulture);
+                            accentColorsInitArray[1] = System.Windows.Media.Color.FromArgb(255, accentColorsCalc[1].R, accentColorsCalc[1].G, accentColorsCalc[1].B).ToString(CultureInfo.InvariantCulture);
+                            accentColorsInitArray[2] = System.Windows.Media.Color.FromArgb(255, accentColorsCalc[2].R, accentColorsCalc[2].G, accentColorsCalc[2].B).ToString(CultureInfo.InvariantCulture);
 
                             Dictionary<string, bool> dicAccentColorsInit = new Dictionary<string, bool>();
                             dicAccentColorsInit.Add(accentColorsInitArray[0], true);
@@ -189,8 +191,8 @@ namespace GameTimeNext.Core.Application.GTXMigration
                                 insertCmd.Parameters.AddWithValue("@PFID", pfid);
                                 insertCmd.Parameters.AddWithValue("@GANA", gana);
 
-                                insertCmd.Parameters.AddWithValue("@FIPL", ToDbDateTime(fipl));
-                                insertCmd.Parameters.AddWithValue("@LAPL", ToDbDateTime(lapl));
+                                insertCmd.Parameters.AddWithValue("@FIPL", ToDbValue(fipl));
+                                insertCmd.Parameters.AddWithValue("@LAPL", ToDbValue(lapl));
 
                                 insertCmd.Parameters.AddWithValue("@PPFN", ppfn);
                                 insertCmd.Parameters.AddWithValue("@EXGF", exgf);
@@ -199,12 +201,12 @@ namespace GameTimeNext.Core.Application.GTXMigration
                                 insertCmd.Parameters.AddWithValue("@PRSE", prse);
                                 insertCmd.Parameters.AddWithValue("@EXEC", exec);
 
-                                insertCmd.Parameters.AddWithValue("@CRAT", ToDbDateTime(crat));
-                                insertCmd.Parameters.AddWithValue("@CHAT", ToDbDateTime(chat));
+                                insertCmd.Parameters.AddWithValue("@CRAT", ToDbValue(crat));
+                                insertCmd.Parameters.AddWithValue("@CHAT", ToDbValue(chat));
 
                                 insertCmd.Parameters.AddWithValue("@ACCO", acco);
                                 insertCmd.Parameters.AddWithValue("@ACIN", acin);
-                                insertCmd.Parameters.AddWithValue("@ACAC", acac ? 1 : 0);
+                                insertCmd.Parameters.AddWithValue("@ACAC", ToDbValue(acac));
 
                                 insertCmd.Parameters.AddWithValue("@CUPT", cupt);
 
@@ -231,11 +233,11 @@ namespace GameTimeNext.Core.Application.GTXMigration
 
             try
             {
-                // Gesamtanzahl ermitteln
+                // Determine total count
                 using (var countCmd = _connectionOld.CreateCommand())
                 {
                     countCmd.CommandText = "SELECT COUNT(*) FROM tblGameSessions";
-                    totalCount = Convert.ToInt32(countCmd.ExecuteScalar());
+                    totalCount = Convert.ToInt32(countCmd.ExecuteScalar(), CultureInfo.InvariantCulture);
                 }
 
                 StringBuilder sb = new StringBuilder();
@@ -260,7 +262,7 @@ namespace GameTimeNext.Core.Application.GTXMigration
 
                             _loader!.SetTextStep($"migrating session data [ {current} / {totalCount} ]");
 
-                            double plti = Convert.ToDouble(reader.GetValue(4));
+                            double plti = Convert.ToDouble(reader.GetValue(4), CultureInfo.InvariantCulture);
 
                             using (SQLiteCommand insertCmd = AppEnvironment.GetDataBaseManager().GetConnection().CreateCommand())
                             {
@@ -273,14 +275,14 @@ namespace GameTimeNext.Core.Application.GTXMigration
                                 insertCmd.Parameters.AddWithValue("@SEID", seid);
                                 insertCmd.Parameters.AddWithValue("@PFID", pfid);
 
-                                insertCmd.Parameters.AddWithValue("@PLFR", ToDbDateTime(plfr));
-                                insertCmd.Parameters.AddWithValue("@PLTO", ToDbDateTime(plto));
+                                insertCmd.Parameters.AddWithValue("@PLFR", ToDbValue(plfr));
+                                insertCmd.Parameters.AddWithValue("@PLTO", ToDbValue(plto));
 
                                 insertCmd.Parameters.AddWithValue("@PLTI", plti);
 
                                 DateTime now = DateTime.Now;
-                                insertCmd.Parameters.AddWithValue("@CRAT", ToDbDateTime(now));
-                                insertCmd.Parameters.AddWithValue("@CHAT", ToDbDateTime(now));
+                                insertCmd.Parameters.AddWithValue("@CRAT", ToDbValue(now));
+                                insertCmd.Parameters.AddWithValue("@CHAT", ToDbValue(now));
 
                                 insertCmd.Parameters.AddWithValue("@PTID", 0);
 
@@ -300,7 +302,7 @@ namespace GameTimeNext.Core.Application.GTXMigration
 
         private void MigratePlaythroughs()
         {
-            // Alle Profile lasen
+            // Read all profiles
             List<T1PROFI> t1profis = new TXPROFI().ReadAll();
 
             foreach (T1PROFI t1profi in t1profis)
@@ -318,30 +320,6 @@ namespace GameTimeNext.Core.Application.GTXMigration
             }
         }
 
-        private List<T1SESSI> GetAllT1SESSIsOrderedByPFID()
-        {
-            List<T1SESSI> t1sessis = new List<T1SESSI>();
-
-            UIXQuery query = new UIXQuery(K1SESSI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
-
-            query.AddField(K1SESSI.Name, K1SESSI.Fields.SEID);
-            query.AddField(K1SESSI.Name, K1SESSI.Fields.PFID);
-
-            query.AddOrderBy(K1SESSI.Name, K1SESSI.Fields.PFID, OrderDirection.ASC);
-
-            using (var reader = query.Execute())
-            {
-                while (reader.Read())
-                {
-                    long seid = UIXQuery.GetInt64(reader, K1SESSI.Name, K1SESSI.Fields.SEID);
-
-                    t1sessis.Add(new TXSESSI().Read(seid));
-                }
-            }
-
-            return t1sessis;
-        }
-
         private DateTime ParseOldDateTime(object value)
         {
             if (value == null || value == DBNull.Value)
@@ -351,7 +329,7 @@ namespace GameTimeNext.Core.Application.GTXMigration
 
             string str = value.ToString();
 
-            if (string.IsNullOrWhiteSpace(str))
+            if (FnString.IsNullEmptyOrWhitespace(str))
             {
                 return DateTime.MinValue;
             }
@@ -395,14 +373,9 @@ namespace GameTimeNext.Core.Application.GTXMigration
             return DateTime.MinValue;
         }
 
-        private string ToDbDateTime(DateTime value)
+        private static object? ToDbValue(object? valFrom)
         {
-            if (value == DateTime.MinValue)
-            {
-                return "0001-01-01 00:00:00";
-            }
-
-            return value.ToString("yyyy-MM-dd HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
+            return UIXSqliteDataType.Convert(UIXSqliteDataType.ConversionType.CSharp, UIXSqliteDataType.ConversionType.Sqlite, valFrom);
         }
 
         private bool MigrateProfileImagesToCovers()
@@ -437,10 +410,7 @@ namespace GameTimeNext.Core.Application.GTXMigration
                 throw new DirectoryNotFoundException("Quellordner nicht gefunden: " + sourceFolder);
             }
 
-            if (!Directory.Exists(targetFolder))
-            {
-                Directory.CreateDirectory(targetFolder);
-            }
+            FnDirectory.EnsureDirectoryExists(targetFolder);
 
             string[] files = Directory.GetFiles(sourceFolder);
             int total = files.Length;

@@ -1,3 +1,4 @@
+﻿using System.Globalization;
 using GameTimeNext.Core.Application.Profiles.Views;
 using GameTimeNext.Core.Framework.Utils;
 using System.Windows;
@@ -44,25 +45,25 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
         }
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
             if (!FnControls.ContainsOnlyNumericValue(GetWnd().txbEstTimeMain))
-                AddViewError(GetWnd().txbEstTimeMain, "Invalid input: only numeric values valid!");
+                AddViewError(GetWnd().txbEstTimeMain, FnErrorMessage.ErrorMessage.OnlyNumeric.GetMessage());
 
             if (!FnControls.ContainsOnlyNumericValue(GetWnd().txbEstTimeMainExtra))
-                AddViewError(GetWnd().txbEstTimeMainExtra, "Invalid input: only numeric values valid!");
+                AddViewError(GetWnd().txbEstTimeMainExtra, FnErrorMessage.ErrorMessage.OnlyNumeric.GetMessage());
 
             if (!FnControls.ContainsOnlyNumericValue(GetWnd().txbEstTimeCompletionist))
-                AddViewError(GetWnd().txbEstTimeCompletionist, "Invalid input: only numeric values valid!");
+                AddViewError(GetWnd().txbEstTimeCompletionist, FnErrorMessage.ErrorMessage.OnlyNumeric.GetMessage());
 
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().txbEstTimeMain.Text))
-                AddViewError(GetWnd().txbEstTimeMain, "Invalid input: please enter a value.");
+                AddViewError(GetWnd().txbEstTimeMain, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Est. time main"));
 
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().txbEstTimeMainExtra.Text))
-                AddViewError(GetWnd().txbEstTimeMainExtra, "Invalid input: please enter a value.");
+                AddViewError(GetWnd().txbEstTimeMainExtra, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Est. time extra"));
 
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().txbEstTimeCompletionist.Text))
-                AddViewError(GetWnd().txbEstTimeCompletionist, "Invalid input: please enter a value.");
+                AddViewError(GetWnd().txbEstTimeCompletionist, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Est. time completionist"));
         }
 
         protected override void DataWrapperSelectionChangedImpl(Selector source)
@@ -75,9 +76,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected override void FillViewImpl()
         {
-            GetWnd().txbEstTimeMain.Text = GetApp().ManualEstTimesCache.estTimeMain.ToString();
-            GetWnd().txbEstTimeMainExtra.Text = GetApp().ManualEstTimesCache.estTimeMainExtra.ToString();
-            GetWnd().txbEstTimeCompletionist.Text = GetApp().ManualEstTimesCache.estTimeCompletionist.ToString();
+            GetWnd().txbEstTimeMain.Text = GetApp().ManualEstTimesCache.estTimeMain.ToString(CultureInfo.CurrentCulture);
+            GetWnd().txbEstTimeMainExtra.Text = GetApp().ManualEstTimesCache.estTimeMainExtra.ToString(CultureInfo.CurrentCulture);
+            GetWnd().txbEstTimeCompletionist.Text = GetApp().ManualEstTimesCache.estTimeCompletionist.ToString(CultureInfo.CurrentCulture);
         }
 
         protected override void SaveDBOImpl()

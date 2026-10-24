@@ -45,9 +45,12 @@ namespace GameTimeNext.Core.Application.DataManagers
         {
             string query = Queries.BuildQueryDaysPlayed(timeSpanStart, timeSpanEnd, pfid);
 
-            using (var reader = UIXQuery.ExecuteCustom(query, AppEnvironment.GetDataBaseManager().GetConnection()))
+            using (var reader = UIXQuery.QueryCustom(query, AppEnvironment.GetDataBaseManager().GetConnection()))
+            {
                 if (reader.Read())
                     return UIXQuery.GetInt32(reader, "DAYS");
+                reader.Close();
+            }
 
             return 0;
         }

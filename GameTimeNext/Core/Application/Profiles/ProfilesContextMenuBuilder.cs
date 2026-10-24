@@ -43,7 +43,7 @@ namespace GameTimeNext.Core.Application.Profiles
 
         public static void BuildContextArchive(ContextMenuBuilder contextBuilder, T1PROFI t1profi)
         {
-            // Archivieren hinzufügen
+            // Add archive
             if (t1profi.ARCH)
                 contextBuilder.AddItem("ctxtUnarchiveProfile", "Unarchive profile", icon: UIXContextMenuFactory.CreateMdlIcon("\uE8B7"), itemStyle: contextMenuItemStyle);
 
