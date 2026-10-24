@@ -10,8 +10,8 @@
   IMPROVEMENTS
   ____________
 
-  * -
-  
+  * The playthrough overview now shows the total playtime of each playthrough.
+
 
   NEW FEATURES
   ____________

@@ -5,6 +5,7 @@ using GameTimeNext.Core.Application.Profiles;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.UI.Dialogs;
+using GameTimeNext.Core.Framework.Utils;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -201,6 +202,8 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
                     row.COPTCO = t1plthr.PTCO;
                     row.COPTCA = t1plthr.PTCA;
                     row.COPTPA = t1plthr.PTPA;
+                    row.COPTPLMI = TFPLTHR.GetPlaytimeInMinutes(t1plthr.PTID);
+                    row.COPTPL = FnTime.FormatMinutesAsHoursAndMinutes(row.COPTPLMI);
                     row.RowObject = t1plthr;
 
                     rows.Add(row);

@@ -8,6 +8,7 @@ using GameTimeNext.Core.Application.TimeMonitoring;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.LauncherIntegration;
+using GameTimeNext.Core.Framework.Utils;
 using System.IO;
 using System.Text;
 using System.Windows;
@@ -136,7 +137,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             {
                 if (reader.Read())
                 {
-                    GetView().txTotalGameTime.Text = CFProfilesApp.FormatGameTimeHours(UIXQuery.GetDouble(reader, "TotalPlaytime"));
+                    GetView().txTotalGameTime.Text = FnTime.FormatMinutesAsHoursAndMinutes(UIXQuery.GetDouble(reader, "TotalPlaytime"));
                 }
             }
         }
@@ -146,14 +147,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             double todaysGameTimeMinutes = TFPROFI.GetTodaysGameTimeInMinutes(_dataWrapper!.GetTypedTableObject().PFID);
 
-            StringBuilder sb = new StringBuilder();
-
-            sb.Append(CFProfilesApp.FormatGameTimeHours(todaysGameTimeMinutes));
-            sb.Append(" ");
-            sb.Append("(").Append(CFProfilesApp.FormatGameTimeMinutes(todaysGameTimeMinutes)).Append(")");
-
-
-            GetView().txPlayedToday.Text = sb.ToString();
+            GetView().txPlayedToday.Text = FnTime.FormatMinutesAsHoursAndMinutes(todaysGameTimeMinutes);
         }
 
         private void FillFirstLastDatePlayed()
@@ -178,7 +172,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             {
                 if (reader.Read())
                 {
-                    GetView().txPlaythroughTime.Text = CFProfilesApp.FormatGameTimeHours(UIXQuery.GetDouble(reader, "TotalPlaytimePlaythrough"));
+                    GetView().txPlaythroughTime.Text = FnTime.FormatMinutesAsHoursAndMinutes(UIXQuery.GetDouble(reader, "TotalPlaytimePlaythrough"));
                 }
             }
         }
@@ -198,7 +192,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             double lastSessionTime = TFSESSI.GetLastSessionGameTime(_dataWrapper!.GetTypedTableObject().PFID);
 
-            string text = CFProfilesApp.FormatGameTimeHours(lastSessionTime) + " (" + CFProfilesApp.FormatGameTimeMinutes(lastSessionTime) + ")";
+            string text = FnTime.FormatMinutesAsHoursAndMinutes(lastSessionTime);
 
             GetView().txLastSession.Text = text;
         }
@@ -222,9 +216,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                     break;
             }
 
-            GetView().txEstMain.Text = CFProfilesApp.FormatGameTimeHours(t1profi.ETMA);
-            GetView().txEstExtra.Text = CFProfilesApp.FormatGameTimeHours(t1profi.ETME);
-            GetView().txEstCompletionist.Text = CFProfilesApp.FormatGameTimeHours(t1profi.ETCO);
+            GetView().txEstMain.Text = FnTime.FormatMinutesAsHoursAndMinutes(t1profi.ETMA);
+            GetView().txEstExtra.Text = FnTime.FormatMinutesAsHoursAndMinutes(t1profi.ETME);
+            GetView().txEstCompletionist.Text = FnTime.FormatMinutesAsHoursAndMinutes(t1profi.ETCO);
         }
 
         private void FillProgressbarAndTimesCompletionist(T1PROFI t1profi)

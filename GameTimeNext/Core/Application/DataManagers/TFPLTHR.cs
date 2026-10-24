@@ -120,6 +120,19 @@ namespace GameTimeNext.Core.Application.DataManagers
             return sessions;
         }
 
+        public static double GetPlaytimeInMinutes(long ptid)
+        {
+            UIXQuery query = new UIXQuery(K1SESSI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
+            query.AddSum(K1SESSI.Name, K1SESSI.Fields.PLTI, "TotalPlaytime");
+            query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PTID, QueryCompareType.EQUALS, ptid);
+
+            using (var reader = query.Execute())
+                if (reader.Read())
+                    return UIXQuery.GetDouble(reader, "TotalPlaytime");
+
+            return 0;
+        }
+
         public static void DeletePlaythroughAndSessions(long ptid)
         {
             TXPLTHR txplthr = new TXPLTHR();

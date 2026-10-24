@@ -14,5 +14,10 @@ namespace GameTimeNext.Core.Application.Playthroughs.ViewModel
         public bool COPTPA { get; set; } = false;
 
         public string COPTTY { get; set; } = string.Empty;
+
+        public string COPTPL { get; set; } = string.Empty;
+
+        // Raw minutes, used as sort key for the formatted playtime column
+        public double COPTPLMI { get; set; } = 0;
     }
 }

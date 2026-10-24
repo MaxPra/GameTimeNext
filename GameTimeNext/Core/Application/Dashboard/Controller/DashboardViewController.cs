@@ -213,25 +213,25 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
                 ItemObject = prof,
                 COCOVIM = FnImage.LoadImageWithoutLock(Path.Combine(AppConfig.Storage.ProfileCoversDirectoryPath ?? string.Empty, prof.PPFN), 300, 450),
                 COISPLA = FnSystem.IsExeFoundInPath(prof.EXGF),
-                COCPLTI = CFDashboardApp.FormatTime(TFPROFI.GetGameTimeInMinutes(prof.PFID, timeSpanStart, timeSpanEnd))
+                COCPLTI = FnTime.FormatMinutesAsHoursAndMinutes(TFPROFI.GetGameTimeInMinutes(prof.PFID, timeSpanStart, timeSpanEnd))
             }).ToList();
         }
 
         private void FillSectionPlaytimeOverview()
         {
-            GetView().txtTotalPlaytime.Text = CFDashboardApp.FormatTime(TFPROFI.GetPlaytime(timeSpanStart, timeSpanEnd));
+            GetView().txtTotalPlaytime.Text = FnTime.FormatMinutesAsHoursAndMinutes(TFPROFI.GetPlaytime(timeSpanStart, timeSpanEnd));
             GetView().txtGamesPlayed.Text = TFPROFI.GetPlayedProfilesCount(timeSpanStart, timeSpanEnd).ToString();
             GetView().txtDaysPlayed.Text = TFPROFI.GetDaysPlayed(timeSpanStart, timeSpanEnd).ToString();
         }
 
         private void FillSectionOverallStatistics()
         {
-            GetView().txtStatPlayedToday.Text = CFDashboardApp.FormatTime(TFPROFI.GetPlaytimeToday(timeSpanStart, timeSpanEnd));
+            GetView().txtStatPlayedToday.Text = FnTime.FormatMinutesAsHoursAndMinutes(TFPROFI.GetPlaytimeToday(timeSpanStart, timeSpanEnd));
 
             {
                 // Longest Session
                 (string gana, double plti, DateTime plto) = TFPROFI.GetLongestSession(timeSpanStart, timeSpanEnd);
-                GetView().txtStatLongestSession.Text = CFDashboardApp.FormatTime(plti);
+                GetView().txtStatLongestSession.Text = FnTime.FormatMinutesAsHoursAndMinutes(plti);
                 GetView().txtStatLongestSessionGame.Text = gana;
                 GetView().txtStatLongestSessionDate.Text = $"({CFProfilesApp.FormatFirstLastDate(plto)})";
             }
@@ -242,7 +242,7 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
             (string gana, DateTime lapl, double plti, string ppfn) = TFPROFI.GetLastPlayed(timeSpanStart, timeSpanEnd);
             GetView().txtLastPlayedTitle.Text = gana;
             GetView().txtLastPlayedDate.Text = CFProfilesApp.FormatFirstLastDate(lapl);
-            GetView().txtLastPlayedTime.Text = CFDashboardApp.FormatTime(plti);
+            GetView().txtLastPlayedTime.Text = FnTime.FormatMinutesAsHoursAndMinutes(plti);
 
             BitmapImage? coverImage = FnImage.LoadImageWithoutLock(ppfn, 300, 450);
             GetView().imgLastPlayedCover.Source = coverImage;
@@ -252,7 +252,7 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
         {
             (string gana, double plti, int days, string ppfn) = TFPROFI.GetMostPlayed(timeSpanStart, timeSpanEnd);
             GetView().txtMostPlayedTitle.Text = gana;
-            GetView().txtMostPlayedPlaytime.Text = CFDashboardApp.FormatTime(plti);
+            GetView().txtMostPlayedPlaytime.Text = FnTime.FormatMinutesAsHoursAndMinutes(plti);
             GetView().txtMostPlayedDays.Text = days.ToString();
 
             BitmapImage? coverImage = FnImage.LoadImageWithoutLock(ppfn, 300, 450);
