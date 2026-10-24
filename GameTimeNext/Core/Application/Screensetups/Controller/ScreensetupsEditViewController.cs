@@ -166,7 +166,7 @@ namespace GameTimeNext.Core.Application.Screensetups.Controller
                 ScreensetupMonitorDataGridRow row = GetWnd().DgMonitors.CreateNewRow<ScreensetupMonitorDataGridRow>();
                 row.COMOID = monitor.Id;
                 row.COMONA = monitor.Name;
-                row.CONUMB = (i + 1).ToString(CultureInfo.InvariantCulture);
+                row.CONUMB = (i + 1).ToString(CultureInfo.CurrentCulture);
                 row.COSTAT = FormatMonitorState(monitor);
                 row.COISCON = true;
                 row.COMOEN = t1scrsp?.MOEN ?? (isCreateNew && monitor.IsActive);
@@ -278,7 +278,7 @@ namespace GameTimeNext.Core.Application.Screensetups.Controller
 
         protected void EV_BtnIdentify()
         {
-            IReadOnlyList<string> identifiedMonitors = UIXMonitorManager.Identify();
+            IReadOnlyList<string> identifiedMonitors = UIXMonitorManager.Identify(CFScreensetupsApp.CreateIdentifyOptions());
 
             // Identify only works on monitors that are switched on
             if (identifiedMonitors.Count == 0)

@@ -30,6 +30,8 @@ From `Scripts/unallowed_code.md` and `.github/copilot-instructions.md`:
 - Do not suppress validation on ComboBox `SelectionChanged`; tab validation must run together with field validation/adorner checks.
 - XML doc comments: concise, no icons/emojis.
 - All comments in source code (C#, XAML, scripts — in this repo and in `../UIX.ViewController.Engine`) must be in English, even when the conversation is in German.
+- **No logic in code-behind:** `*.xaml.cs` files contain only `InitializeComponent()`. View logic goes into the module's controller (for `MainWindow`: `MainWindowController`); reusable UI behavior goes into attached properties / helpers in `Core/Framework/UI/`, switched on from XAML or styles. Existing code-behind logic is legacy, not a pattern.
+- **Culture:** data (SQLite, CSV, files, IDs) uses `InvariantCulture`, the UI uses `CurrentCulture` explicitly; CA1304/CA1305 are build errors. All value conversions go through `UIXSqliteDataType.Convert` (C# / SQLite / CSV / UI). Numbers typed into the UI are parsed with `ConversionType.UI` (strict, current culture, no thousands separators) — never with `double.TryParse` and friends directly. Numeric TextBoxes bound via `UIXAttachedProperty.Path`, `FnControls.ContainsOnlyNumericValue` and `FnConvert.ToDouble` already use it.
 
 ## Architecture
 
@@ -57,11 +59,13 @@ Inside a module:
 
 ### Data layer (SQLite)
 Tables use 7-char names (`T1` prefix + 5 chars, e.g. `T1PROFI`, `T1PLTHR`, `T1SESSI`, `T1CTABH/D`, `T1METAH/P`), with a prefix per class role, and columns use 4-char codes. For table `T1SESSI`:
-- `TableObjects/T1SESSI.cs` — row object (`UIXTableObjectBase`) with change tracking (`HasChanged`, `AcceptChanges`, `State`), uppercase column properties marked `[UIXSignatureField(n)]`.
-- `TableObjects/K1SESSI.cs` — constants for table and field names; use these with `UIXQuery` instead of string literals.
-- `DataManagers/TXSESSIBasic.cs` — generated CRUD (`CreateNew`, `Read`, `Save`, `Delete`, …). **Do not hand-edit**; it is regenerated.
-- `DataManagers/TXSESSI.cs` — hand-written subclass of `TX…Basic` for overrides; never overwritten by the generator.
-- `DataManagers/TFSESSI.cs` — hand-written static query/business functions for the table (e.g. `TFPLTHR.GetCurrentPlaythrough`).
+- `TableObjects/T1SESSI.cs` — generated row object (`UIXTableObjectBase`) with change tracking (`HasChanged`, `AcceptChanges`, `State`), uppercase column properties marked `[UIXSignatureField(n)]`.
+- `TableObjects/K1SESSI.cs` — generated constants for table and field names; use these with `UIXQuery` instead of string literals.
+- `DataManagers/TXSESSIBasic.cs` — generated CRUD (`CreateNew`, `Read`, `Save`, `Delete`, …).
+- `DataManagers/TXSESSI.cs` — subclass of `TX…Basic`; the generator only creates an empty template and never overwrites it. It holds **CRUD functions only** (e.g. `TXSCRSP.DeleteAllWhereSSID`).
+- `DataManagers/TFSESSI.cs` — hand-written static query/business functions for the table (e.g. `TFPLTHR.GetCurrentPlaythrough`). Anything beyond CRUD goes here, not into `TX…`.
+
+**Never hand-edit `T1…`, `K1…` and `TX…Basic`** (also the metadata tables' classes in `Core/Application/Metadata/Data/`): the developer regenerates them through GTN (Metadata module / code generator). If one of them needs a change, change the metadata or the generator and regenerate.
 
 Schema is metadata-driven: table definitions live in metadata tables `T1METAH` (header) / `T1METAP` (positions), editable in the Metadata module. `MigrationFactory.Metadata.CodeGenerator.GenerateFor(T1METAH)` generates the T1/K1/TXBasic/TX classes; if a file with that name already exists in the solution it is overwritten in place (except `TX*.cs`), otherwise it is written to `%LOCALAPPDATA%/<Publisher>/GameTimeNext/dev/genClass/`.
 
@@ -85,6 +89,10 @@ Version-specific data migrations are `MigTask_<version>_<seq>` classes (subclass
 ## Repo conventions
 
 - `.claude/settings.json` denies reading or editing `bin/`, `obj/`, and `.github/`, and denies `git push` and `git reset`.
+- Rules agreed with a developer (coding rules, conventions, workflow rules) are always added to this file, in English and in the matching section, so every developer's AI assistant works the same way. Private assistant memory is not enough.
+- Commits and branches are done by the developers themselves: do not commit, create branches or offer to do so unless explicitly asked.
+- Change only what was asked: when one aspect of a UI element is to be changed, keep its other existing parts instead of removing or replacing them; if something really conflicts, adapt the new part around it or mention the conflict and offer the extra change.
+- "Style X like Y" means the visual look of Y (surface, glass, colors, borders), not Y's layout: keep X's own layout and content and put it on Y's surface (e.g. the identify overlay keeps the library's content on the toast glass panel).
 
 ## Project skills
 

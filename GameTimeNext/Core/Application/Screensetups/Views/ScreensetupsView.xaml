@@ -16,7 +16,7 @@
     d:DesignWidth="1100"
     mc:Ignorable="d">
 
-    <Grid Margin="20,16,20,20">
+    <Grid Style="{StaticResource View.Root}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="16" />
@@ -26,10 +26,7 @@
         <Border
             Grid.Row="0"
             Padding="16"
-            Background="{DynamicResource Brush.Surface}"
-            BorderBrush="{DynamicResource Brush.Border}"
-            BorderThickness="1"
-            CornerRadius="{StaticResource DefaultCornerRadius}">
+            Style="{StaticResource Card}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -63,10 +60,9 @@
                 <Button
                     x:Name="BtnAddScreensetup"
                     Grid.Column="2"
-                    Width="38"
-                    Height="38"
                     VerticalAlignment="Center"
-                    ToolTip="Create new screensetup">
+                    ToolTip="Create new screensetup"
+                    Style="{StaticResource Button.Icon}">
                     <TextBlock
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
@@ -78,10 +74,9 @@
                 <Button
                     x:Name="BtnIdentify"
                     Grid.Column="4"
-                    Width="38"
-                    Height="38"
                     VerticalAlignment="Center"
-                    ToolTip="Identify monitors">
+                    ToolTip="Identify monitors"
+                    Style="{StaticResource Button.Icon}">
                     <TextBlock
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
@@ -93,11 +88,10 @@
                 <Button
                     x:Name="BtnRefresh"
                     Grid.Column="6"
-                    Width="38"
-                    Height="38"
                     VerticalAlignment="Center"
                     IsDefault="True"
-                    ToolTip="Refresh screensetups">
+                    ToolTip="Refresh screensetups"
+                    Style="{StaticResource Button.Icon}">
                     <TextBlock
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
@@ -123,25 +117,26 @@
             SelectionUnit="FullRow">
             <uixsel:UIXDataGrid.Columns>
                 <DataGridTextColumn
-                    Width="220"
+                    Width="*"
+                    MinWidth="160"
                     Binding="{Binding COSSNA}"
                     Header="Name" />
                 <DataGridTextColumn
-                    Width="360"
+                    Width="1.5*"
+                    MinWidth="160"
                     Binding="{Binding COSSDE}"
                     Header="Description" />
-                <DataGridTemplateColumn Width="70">
+                <DataGridTemplateColumn Width="70" CellStyle="{StaticResource DataGridCell.Center}">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Button
                                 x:Name="BtnApplyScreensetup"
-                                Width="32"
+                                Width="28"
                                 Height="28"
-                                MinHeight="0"
-                                Padding="0"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
-                                ToolTip="Switch to this screensetup">
+                                ToolTip="Switch to this screensetup"
+                                Style="{StaticResource Button.Icon}">
                                 <TextBlock
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
@@ -153,11 +148,13 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
                 <DataGridTextColumn
-                    Width="450"
+                    Width="2*"
+                    MinWidth="200"
                     Binding="{Binding COMONI}"
                     Header="Monitors" />
                 <DataGridTextColumn
-                    Width="520"
+                    Width="2*"
+                    MinWidth="200"
                     Binding="{Binding COAUDI}"
                     Header="Audio device" />
                 <DataGridCheckBoxColumn

@@ -326,7 +326,7 @@ namespace GameTimeNext.Core.Application.Screensetups.Controller
 
         protected void EV_BtnIdentify()
         {
-            IReadOnlyList<string> identifiedMonitors = UIXMonitorManager.Identify();
+            IReadOnlyList<string> identifiedMonitors = UIXMonitorManager.Identify(CFScreensetupsApp.CreateIdentifyOptions());
 
             // Identify only works on monitors that are switched on
             if (identifiedMonitors.Count == 0)

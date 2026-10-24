@@ -173,7 +173,11 @@
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}" />
         <Setter Property="BorderBrush" Value="{StaticResource Brush.Card.Divider}" />
-        <Setter Property="BorderThickness" Value="0,0,0,1" />
+        <!--
+            Vertical column divider on the left edge, continued by the cells (DataGridCell). Left instead of right,
+            so there are lines only between columns: none before the first column and none after the last one.
+        -->
+        <Setter Property="BorderThickness" Value="1,0,0,1" />
         <Setter Property="Padding" Value="12,0,12,0" />
         <Setter Property="FontSize" Value="12" />
         <Setter Property="FontWeight" Value="SemiBold" />
@@ -208,6 +212,17 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+
+        <Style.Triggers>
+            <!--  First column: no divider before it  -->
+            <Trigger Property="DisplayIndex" Value="0">
+                <Setter Property="BorderThickness" Value="0,0,0,1" />
+            </Trigger>
+            <!--  Filler header behind the last column (no column, index -1): its left edge would be a divider after the last column  -->
+            <Trigger Property="DisplayIndex" Value="-1">
+                <Setter Property="BorderThickness" Value="0,0,0,1" />
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
     <Style TargetType="{x:Type DataGridRow}">
@@ -285,8 +300,9 @@
     <Style TargetType="{x:Type DataGridCell}">
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="BorderBrush" Value="Transparent" />
-        <Setter Property="BorderThickness" Value="0" />
+        <!--  Vertical column divider on the left edge (see DataGridColumnHeader), same hairline as the one between the rows  -->
+        <Setter Property="BorderBrush" Value="{StaticResource Brush.Card.Divider}" />
+        <Setter Property="BorderThickness" Value="1,0,0,0" />
         <Setter Property="Padding" Value="12,0,12,0" />
         <Setter Property="HorizontalContentAlignment" Value="Left" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
@@ -322,6 +338,22 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+
+        <Style.Triggers>
+            <!--  First column: no divider before it  -->
+            <DataTrigger Binding="{Binding Column.DisplayIndex, RelativeSource={RelativeSource Self}}" Value="0">
+                <Setter Property="BorderThickness" Value="0" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <!--  Cell with centered content and no padding, e.g. an icon button or a check box column (column CellStyle)  -->
+    <Style
+        x:Key="DataGridCell.Center"
+        BasedOn="{StaticResource {x:Type DataGridCell}}"
+        TargetType="{x:Type DataGridCell}">
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="Padding" Value="0" />
     </Style>
 
 </ResourceDictionary>
