@@ -203,7 +203,7 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
                     row.COPTCA = t1plthr.PTCA;
                     row.COPTPA = t1plthr.PTPA;
                     row.COPTPLMI = TFPLTHR.GetPlaytimeInMinutes(t1plthr.PTID);
-                    row.COPTPL = FnTime.FormatMinutesAsHoursAndMinutes(row.COPTPLMI);
+                    row.COPTPL = FnTime.FormatMinutesAsHoursAndMinutes(row.COPTPLMI, FnTime.NoValue);
                     row.RowObject = t1plthr;
 
                     rows.Add(row);

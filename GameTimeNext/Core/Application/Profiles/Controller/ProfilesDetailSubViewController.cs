@@ -137,7 +137,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             {
                 if (reader.Read())
                 {
-                    GetView().txTotalGameTime.Text = FnTime.FormatMinutesAsHoursAndMinutes(UIXQuery.GetDouble(reader, "TotalPlaytime"));
+                    GetView().txTotalGameTime.Text = FnTime.FormatMinutesAsHoursAndMinutes(UIXQuery.GetDouble(reader, "TotalPlaytime"), FnTime.NoValue);
                 }
             }
         }
@@ -172,7 +172,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             {
                 if (reader.Read())
                 {
-                    GetView().txPlaythroughTime.Text = FnTime.FormatMinutesAsHoursAndMinutes(UIXQuery.GetDouble(reader, "TotalPlaytimePlaythrough"));
+                    GetView().txPlaythroughTime.Text = FnTime.FormatMinutesAsHoursAndMinutes(UIXQuery.GetDouble(reader, "TotalPlaytimePlaythrough"), FnTime.NoValue);
                 }
             }
         }
@@ -192,7 +192,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             double lastSessionTime = TFSESSI.GetLastSessionGameTime(_dataWrapper!.GetTypedTableObject().PFID);
 
-            string text = FnTime.FormatMinutesAsHoursAndMinutes(lastSessionTime);
+            string text = FnTime.FormatMinutesAsHoursAndMinutes(lastSessionTime, FnTime.NoValue);
 
             GetView().txLastSession.Text = text;
         }
@@ -216,9 +216,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                     break;
             }
 
-            GetView().txEstMain.Text = FnTime.FormatMinutesAsHoursAndMinutes(t1profi.ETMA);
-            GetView().txEstExtra.Text = FnTime.FormatMinutesAsHoursAndMinutes(t1profi.ETME);
-            GetView().txEstCompletionist.Text = FnTime.FormatMinutesAsHoursAndMinutes(t1profi.ETCO);
+            GetView().txEstMain.Text = FnTime.FormatMinutesAsHoursAndMinutes(t1profi.ETMA, FnTime.NoValue);
+            GetView().txEstExtra.Text = FnTime.FormatMinutesAsHoursAndMinutes(t1profi.ETME, FnTime.NoValue);
+            GetView().txEstCompletionist.Text = FnTime.FormatMinutesAsHoursAndMinutes(t1profi.ETCO, FnTime.NoValue);
         }
 
         private void FillProgressbarAndTimesCompletionist(T1PROFI t1profi)
