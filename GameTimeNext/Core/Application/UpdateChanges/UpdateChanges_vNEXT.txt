@@ -50,6 +50,9 @@
   * Added the option "Dynamic Background" (Settings > Appearance): a blurred image is used as background of the main window.
     The background source can be chosen: the current Windows wallpaper or the cover of the selected profile.
 
+  * Added a new "Screensetups" application: save which monitors are switched on, which one is
+    the primary monitor and which audio device is used, and switch between them with one click.
+
 
   BUG FIXES
   _________
