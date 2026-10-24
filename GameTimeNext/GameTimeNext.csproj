@@ -13,6 +13,7 @@
 		<OutputType>WinExe</OutputType>
 
 		<ApplicationIcon>UI\Ressources\GTN_APP_ICON.ico</ApplicationIcon>
+		<Configurations>Debug;Release;GTXMigTest</Configurations>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -76,9 +77,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.3" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
-    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.1.7" />
+    <!-- Native e_sqlite3 library required by System.Data.SQLite 2.x -->
+    <PackageReference Include="SourceGear.sqlite3" Version="3.53.4" />
     <PackageReference Include="System.Data.SQLite" Version="2.0.2" />
   </ItemGroup>
 

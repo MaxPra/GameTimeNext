@@ -111,7 +111,7 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
                     {
                         GetView().txbDescription.Text = "Playthrough #" + (TFPLTHR.GetCurrentPlaythroughCount(GetApp().T1profi.PFID, PlaythroughType.NEW_PLAYTHROUGH) + 1);
                     }
-                    else
+                    else if (value == PlaythroughType.DLC && GetView().txbDescription.Text.StartsWith("Playthrough #"))
                     {
                         GetView().txbDescription.Text = string.Empty;
                     }

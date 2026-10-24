@@ -307,7 +307,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     }
 
                     // In debug-mode always
-                    if (FnSystem.IsDebug()) return true;
+                    if (FnSystem.IsDebug() && !FnSystem.RunWithUserPermissions()) return true;
 
                     return false;
                 }

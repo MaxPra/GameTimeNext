@@ -172,7 +172,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
             contextBuilder.AddItem("ctxtView", "View", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.View), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
 
             // Development codetables may only be deleted in debug mode
-            if (GetWnd().ViewIndicator.Contains("ED") && (!GetApp().T1CTABH!.NRANA && !t1ctabd.TXNUM.StartsWith("D_") || FnSystem.IsDebug()))
+            if (GetWnd().ViewIndicator.Contains("ED") && (!GetApp().T1CTABH!.NRANA && !t1ctabd.TXNUM.StartsWith("D_") || (FnSystem.IsDebug() && !FnSystem.RunWithUserPermissions())))
                 contextBuilder.AddItem("ctxtDelete", "Delete", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Delete), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
 
             if (contextBuilder.HasItems())

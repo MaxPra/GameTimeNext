@@ -276,13 +276,7 @@ namespace GameTimeNext.Core.Framework.Utils
 
                     pathReturn = System.IO.Path.Join(AppConfig.Temp.ProfileCoversDirectoryPath, fileNameReturn);
 
-                    BitmapEncoder encoder = new PngBitmapEncoder();
-                    encoder.Frames.Add(BitmapFrame.Create(croppedImage));
-
-                    using (FileStream stream = new FileStream(pathReturn, FileMode.Create))
-                    {
-                        encoder.Save(stream);
-                    }
+                    CFProfilesEditApp.SaveProfileCover(croppedImage, pathReturn);
                 });
 
                 if (loader != null)

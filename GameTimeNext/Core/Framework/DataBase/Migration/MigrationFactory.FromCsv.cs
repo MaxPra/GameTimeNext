@@ -28,7 +28,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
 
             private static void MigrateTables(ImportType type, SQLiteConnection? connection, MigrationActionType? overrideActionType, string? importDirectoryPathOverride = null)
             {
-                if ((type.Equals(ImportType.DevSync) || type.Equals(ImportType.MetadataGenerator)) && !FnSystem.IsDebug()) return;
+                if ((type.Equals(ImportType.DevSync) || type.Equals(ImportType.MetadataGenerator)) && (!FnSystem.IsDebug() || FnSystem.RunWithUserPermissions())) return;
 
                 // OFDO (#OF001): Continue Logging
 

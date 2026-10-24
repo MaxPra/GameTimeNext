@@ -46,8 +46,7 @@ namespace GameTimeNext.Core.Application.Profiles
 
         public override void InitializeApplicationOutput()
         {
-            _filterCache = new FilterCache();
-            _filterCache = AppEnvironment.GetAppConfig().FilterCache;
+            _filterCache = AppEnvironment.GetAppConfig().FilterCache ?? new FilterCache();
 
             // -- Profiles View (Overview)
             this.ProfilesView = new ProfilesView();

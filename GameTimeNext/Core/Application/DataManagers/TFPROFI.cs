@@ -171,6 +171,14 @@ namespace GameTimeNext.Core.Application.DataManagers
             TXPROFI txprofi = new TXPROFI();
             T1PROFI t1profi = txprofi.Read(pfid);
 
+            return IsExternalGame(t1profi);
+        }
+
+        /// <summary>
+        /// Same as IsExternalGame(long), for an already loaded profile
+        /// </summary>
+        public static bool IsExternalGame(T1PROFI t1profi)
+        {
             if (t1profi is null)
                 return false;
 
@@ -181,6 +189,9 @@ namespace GameTimeNext.Core.Application.DataManagers
                 return false;
 
             t1ctabd = new TXCTABD().Read("pT", t1ctabd.PARM1);
+
+            if (t1ctabd is null)
+                return false;
 
             // 02 => External (Console, Mobile, etc.)
             return t1ctabd.TXNUM == "02";

@@ -29,12 +29,59 @@
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
+        <Border
+            x:Name="pnlDevPathsHeader"
+            Grid.Row="0"
+            Height="26"
+            Margin="0"
+            Padding="8,2"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Top"
+            Panel.ZIndex="10"
+            Background="#FF8B0000"
+            ToolTip="DEVMODE ON: Development paths are being used."
+            Visibility="Collapsed">
+
+            <TextBlock
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                FontSize="12"
+                FontWeight="SemiBold"
+                Foreground="White"
+                Text="DEVMODE ON: Development paths are being used." />
+
+        </Border>
+
+        <Border
+            x:Name="pnlUserModeHeader"
+            Grid.Row="1"
+            Height="26"
+            Margin="0"
+            Padding="8,2"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Top"
+            Panel.ZIndex="10"
+            Background="#FF6060CB"
+            ToolTip="USERMODE ON: User mode is enabled."
+            Visibility="Collapsed">
+
+            <TextBlock
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                FontSize="12"
+                FontWeight="SemiBold"
+                Foreground="White"
+                Text="USERMODE ON: User mode is enabled." />
+
+        </Border>
+
         <TabControl
             x:Name="MainTabControl"
-            Grid.Row="1"
+            Grid.Row="2"
             uiFramework:TabControlBehaviors.AddButtonToolTip="Open application menu (Ctrl+M)"
             uiFramework:TabControlBehaviors.ShowAddButton="True"
             Padding="0"
@@ -90,36 +137,13 @@
 
         <TextBlock
             x:Name="txtEmptyTabMessage"
-            Grid.Row="1"
+            Grid.Row="2"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
             FontSize="16"
             Foreground="{DynamicResource Brush.TextPrimary}"
             Text="Press CTRL + M to open application search"
             Visibility="Collapsed" />
-
-        <Border
-            x:Name="pnlDevPathsHeader"
-            Grid.Row="0"
-            Height="26"
-            Margin="0"
-            Padding="8,2"
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Top"
-            Panel.ZIndex="10"
-            Background="#FF8B0000"
-            ToolTip="DEVMODE ON: Development paths are being used."
-            Visibility="Collapsed">
-
-            <TextBlock
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                FontSize="12"
-                FontWeight="SemiBold"
-                Foreground="White"
-                Text="DEVMODE ON: Development paths are being used." />
-
-        </Border>
 
     </Grid>
 </ui:GTNWindow>

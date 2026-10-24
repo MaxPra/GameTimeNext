@@ -97,6 +97,18 @@
                                     Text="" />
                             </Button>
 
+                            <!--  Shown when the library is filtered  -->
+                            <Ellipse
+                                x:Name="ElFilterActive"
+                                Width="9"
+                                Height="9"
+                                Margin="0,4,4,0"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Top"
+                                Fill="{DynamicResource Brush.Accent}"
+                                IsHitTestVisible="False"
+                                Visibility="Collapsed" />
+
                             <Popup
                                 x:Name="PopFilter"
                                 AllowsTransparency="True"

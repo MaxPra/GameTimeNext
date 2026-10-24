@@ -217,6 +217,11 @@
                     Width="220"
                     Binding="{Binding COPTTY}"
                     Header="Type" />
+                <DataGridTextColumn
+                    Width="140"
+                    Binding="{Binding COPTPL}"
+                    Header="Playtime"
+                    SortMemberPath="COPTPLMI" />
             </uixsel:UIXDataGrid.Columns>
         </uixsel:UIXDataGrid>
     </Grid>

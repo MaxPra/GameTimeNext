@@ -52,6 +52,7 @@ namespace GameTimeNext.Core.Application.General.Controller
             AppEnvironment.AppLauncher.TabControl = GetWindow().MainTabControl;
 
             FnControls.SetVisible(GetWindow().pnlDevPathsHeader, FnSystem.IsDebug());
+            FnControls.SetVisible(GetWindow().pnlUserModeHeader, FnSystem.IsDebug() && FnSystem.RunWithUserPermissions());
 
             BuildBetaTag();
 

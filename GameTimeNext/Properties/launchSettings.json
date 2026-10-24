@@ -3,6 +3,10 @@
     "GameTimeNext": {
       "commandName": "Project"
     },
+    "GameTimeNext (UserMode)": {
+      "commandName": "Project",
+      "commandLineArgs": "--force-user-perms"
+    },
     "GameTimeNext (CLS)": {
       "commandName": "Project",
       "commandLineArgs": "-m CLS"
@@ -10,6 +14,14 @@
     "GameTimeNext (UT)": {
       "commandName": "Project",
       "commandLineArgs": "-m UT"
+    },
+    "GameTimeNext (GTXTEST)": {
+      "commandName": "Project",
+      "commandLineArgs": "-m GTXTEST"
+    },
+    "GameTimeNext (Optimize covers)": {
+      "commandName": "Project",
+      "commandLineArgs": "-optimizecovers"
     }
   }
 }

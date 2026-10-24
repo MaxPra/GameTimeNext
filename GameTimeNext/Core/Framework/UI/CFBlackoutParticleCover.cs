@@ -2,6 +2,7 @@ using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Profiles;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework.Config;
+using GameTimeNext.Core.Framework.Utils;
 using System.Globalization;
 using System.IO;
 using System.Windows;
@@ -445,11 +446,11 @@ namespace GameTimeNext.Core.Framework.UI
         {
             try
             {
-                playtimeString = CFProfilesApp.FormatGameTimeHours(TFPROFI.GetTotalGameTimeInMinutes(currentPfid));
+                playtimeString = FnTime.FormatMinutesAsHoursAndMinutes(TFPROFI.GetTotalGameTimeInMinutes(currentPfid), FnTime.NoValue);
             }
             catch
             {
-                playtimeString = "n.A.";
+                playtimeString = FnTime.NoValue;
             }
         }
 

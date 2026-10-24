@@ -68,7 +68,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
 
                     migrationNeeded = versionRunning.IsEqualOrBiggerThan(_LAST_CHANGED_AT_VERSION) && versionRunning.IsBiggerThan(versionConfig);
                 }
-                if (!FnSystem.IsDebug() && !migrationNeeded && !AppEnvironment.StartArguments.ContainsKey("force-metadata-migration")) return;
+                if ((!FnSystem.IsDebug() || FnSystem.RunWithUserPermissions()) && !migrationNeeded && !AppEnvironment.StartArguments.ContainsKey("force-metadata-migration")) return;
                 LogInfo("Migrating...", subSystem: "Metadata", method: "MigrateTables");
 
                 if (connection is null)
