@@ -14,7 +14,6 @@
     MinHeight="600"
     d:DesignHeight="700"
     d:DesignWidth="1100"
-    ResizeMode="CanResize"
     ShowMaximizeButton="False"
     ShowMinimizeButton="False"
     WindowStartupLocation="CenterOwner"

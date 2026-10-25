@@ -12,7 +12,6 @@
     Height="760"
     MinWidth="900"
     MinHeight="680"
-    ResizeMode="CanResize"
     ShowMaximizeButton="False"
     ShowMinimizeButton="False"
     WindowStartupLocation="CenterOwner"

@@ -36,10 +36,12 @@ namespace GameTimeNext.Core.Application.Screensetups
             ScreensetupsView!.ViewIndicator.Clear();
             ScreensetupsView!.ViewIndicator.Add("ED");
 
+            // Fixed width: the view sizes itself (Width Auto) and the sub window is not resizable
             ScreensetupsView!.ViewController.Show(
                 new UIXApplicationStartOptions
                 {
-                    Target = UIXApplicationStartTarget.Window
+                    Target = UIXApplicationStartTarget.Window,
+                    WindowWidth = 1100
                 });
         }
 
