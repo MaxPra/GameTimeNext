@@ -21,6 +21,7 @@
     ApplicationSearchPlaceholder="Search Application"
     ApplicationSearchSelectedItem="{Binding SelectedApplication}"
     ShowApplicationSearch="False"
+    ShowHelpButton="True"
     Style="{StaticResource GTNWindowStyle}"
     Subtitle="BETA"
     WindowStartupLocation="CenterScreen"
@@ -135,15 +136,160 @@
 
         </TabControl>
 
-        <TextBlock
-            x:Name="txtEmptyTabMessage"
+        <!--  Welcome card while no application is open: what the user can do next  -->
+        <Border
+            x:Name="pnlEmptyTabMessage"
             Grid.Row="2"
+            Width="560"
+            Padding="36,32"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
-            FontSize="16"
-            Foreground="{DynamicResource Brush.TextPrimary}"
-            Text="Press CTRL + M to open application search"
-            Visibility="Collapsed" />
+            Style="{StaticResource Card}"
+            Visibility="Collapsed">
+            <Border.Resources>
+                <!--  Key cap, e.g. "Ctrl", "M" or the help glyph of the title bar  -->
+                <Style x:Key="EmptyState.Key" TargetType="Border">
+                    <Setter Property="MinWidth" Value="34" />
+                    <Setter Property="Height" Value="30" />
+                    <Setter Property="Padding" Value="9,0" />
+                    <Setter Property="Background" Value="{StaticResource Brush.Input.Background}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource Brush.TextBox.Border}" />
+                    <Setter Property="BorderThickness" Value="1,1,1,2" />
+                    <Setter Property="CornerRadius" Value="{StaticResource Control.CornerRadius}" />
+                </Style>
+                <Style x:Key="EmptyState.KeyText" TargetType="TextBlock">
+                    <Setter Property="HorizontalAlignment" Value="Center" />
+                    <Setter Property="VerticalAlignment" Value="Center" />
+                    <Setter Property="FontSize" Value="13" />
+                    <Setter Property="FontWeight" Value="SemiBold" />
+                    <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+                </Style>
+                <Style x:Key="EmptyState.Plus" TargetType="TextBlock">
+                    <Setter Property="Margin" Value="6,0" />
+                    <Setter Property="VerticalAlignment" Value="Center" />
+                    <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}" />
+                </Style>
+                <Style x:Key="EmptyState.Title" TargetType="TextBlock">
+                    <Setter Property="FontSize" Value="15" />
+                    <Setter Property="FontWeight" Value="SemiBold" />
+                    <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+                </Style>
+                <Style x:Key="EmptyState.Hint" TargetType="TextBlock">
+                    <Setter Property="Margin" Value="0,2,0,0" />
+                    <Setter Property="FontSize" Value="13" />
+                    <Setter Property="TextWrapping" Value="Wrap" />
+                    <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}" />
+                </Style>
+            </Border.Resources>
+
+            <StackPanel>
+                <!--  Header  -->
+                <Border
+                    Width="64"
+                    Height="64"
+                    HorizontalAlignment="Center"
+                    Background="{StaticResource Brush.Item.Selected}"
+                    CornerRadius="32">
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                        FontSize="30"
+                        Foreground="{DynamicResource Brush.Accent}"
+                        Text="&#xE7FC;" />
+                </Border>
+
+                <TextBlock
+                    Margin="0,16,0,0"
+                    HorizontalAlignment="Center"
+                    FontSize="24"
+                    FontWeight="SemiBold"
+                    Foreground="{DynamicResource Brush.TextPrimary}"
+                    Text="Welcome to GameTimeNext" />
+
+                <TextBlock
+                    Margin="0,6,0,0"
+                    HorizontalAlignment="Center"
+                    FontSize="14"
+                    Foreground="{DynamicResource Brush.TextSecondary}"
+                    Text="No application is open yet. Here is how to get going:" />
+
+                <Border
+                    Height="1"
+                    Margin="0,24"
+                    Background="{StaticResource Brush.Card.Border}" />
+
+                <!--  What the user can do: keys on the left, explanation on the right  -->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="130" />
+                        <ColumnDefinition Width="20" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="22" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="22" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <!--  Open an application  -->
+                    <StackPanel
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal">
+                        <Border Style="{StaticResource EmptyState.Key}">
+                            <TextBlock Style="{StaticResource EmptyState.KeyText}" Text="Ctrl" />
+                        </Border>
+                        <TextBlock Style="{StaticResource EmptyState.Plus}" Text="+" />
+                        <Border Style="{StaticResource EmptyState.Key}">
+                            <TextBlock Style="{StaticResource EmptyState.KeyText}" Text="M" />
+                        </Border>
+                    </StackPanel>
+                    <StackPanel Grid.Row="0" Grid.Column="2">
+                        <TextBlock Style="{StaticResource EmptyState.Title}" Text="Open an application" />
+                        <TextBlock Style="{StaticResource EmptyState.Hint}" Text="Or click + next to the tabs. Start with Profiles to add your games." />
+                    </StackPanel>
+
+                    <!--  Help on GameTimeNext: same glyph as the help button of the title bar (BtnHelp)  -->
+                    <Border
+                        Grid.Row="2"
+                        Grid.Column="0"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Style="{StaticResource EmptyState.Key}">
+                        <TextBlock
+                            FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                            Style="{StaticResource EmptyState.KeyText}"
+                            Text="&#xE897;" />
+                    </Border>
+                    <StackPanel Grid.Row="2" Grid.Column="2">
+                        <TextBlock Style="{StaticResource EmptyState.Title}" Text="Learn how GameTimeNext works" />
+                        <TextBlock Style="{StaticResource EmptyState.Hint}" Text="Click the question mark at the top right of the title bar." />
+                    </StackPanel>
+
+                    <!--  Help on an application  -->
+                    <Border
+                        Grid.Row="4"
+                        Grid.Column="0"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Style="{StaticResource EmptyState.Key}">
+                        <TextBlock
+                            FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                            Style="{StaticResource EmptyState.KeyText}"
+                            Text="&#xE962;" />
+                    </Border>
+                    <StackPanel Grid.Row="4" Grid.Column="2">
+                        <TextBlock Style="{StaticResource EmptyState.Title}" Text="Get help on an application" />
+                        <TextBlock Style="{StaticResource EmptyState.Hint}" Text="Right-click its tab and choose Help." />
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+        </Border>
 
     </Grid>
 </ui:GTNWindow>

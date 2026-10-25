@@ -136,6 +136,23 @@ namespace GameTimeNext.Core.Framework.UI.Base
             set => SetValue(ApplicationSearchPlaceholderProperty, value);
         }
 
+        /// <summary>
+        /// Shows a help button in the title bar (template part BtnHelp). Its click is dispatched to the
+        /// window controller like any other named button (EV_BtnHelp).
+        /// </summary>
+        public static readonly DependencyProperty ShowHelpButtonProperty =
+            DependencyProperty.Register(
+                nameof(ShowHelpButton),
+                typeof(bool),
+                typeof(GTNWindow),
+                new PropertyMetadata(false));
+
+        public bool ShowHelpButton
+        {
+            get => (bool)GetValue(ShowHelpButtonProperty);
+            set => SetValue(ShowHelpButtonProperty, value);
+        }
+
         public static readonly DependencyProperty SubtitleProperty =
             DependencyProperty.Register(
                 nameof(Subtitle),

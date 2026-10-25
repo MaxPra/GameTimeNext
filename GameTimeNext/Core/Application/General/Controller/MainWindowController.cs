@@ -103,7 +103,7 @@ namespace GameTimeNext.Core.Application.General.Controller
 
         protected override void BuildImpl()
         {
-            FnControls.SetVisible(GetWindow().txtEmptyTabMessage, GetWindow().MainTabControl.Items.Count == 0);
+            FnControls.SetVisible(GetWindow().pnlEmptyTabMessage, GetWindow().MainTabControl.Items.Count == 0);
         }
 
         public override bool HandleGlobalShortcut(KeyEventArgs e)
@@ -139,7 +139,7 @@ namespace GameTimeNext.Core.Application.General.Controller
 
                     if (source is TabControl)
                     {
-                        FnControls.SetVisible(GetWindow().txtEmptyTabMessage, GetWindow().MainTabControl.Items.Count == 0);
+                        FnControls.SetVisible(GetWindow().pnlEmptyTabMessage, GetWindow().MainTabControl.Items.Count == 0);
                         Event_TabChanged((TabControl)source);
                     }
                     break;
@@ -267,9 +267,25 @@ namespace GameTimeNext.Core.Application.General.Controller
 
         protected void EV_ctxtHelp(FrameworkElement target)
         {
-            if (target is not TabItem tab || !AppEnvironment.StartedApplications.TryGetValue(tab.Tag.ToString()!, out UIXApplication? application))
+            if (target is TabItem tab)
+                ShowTabHelp(tab);
+        }
+
+        protected void EV_BtnHelp()
+        {
+            ShowHelp(GetApp(), GetWindow().Title);
+        }
+
+        private void ShowTabHelp(TabItem tab)
+        {
+            if (!AppEnvironment.StartedApplications.TryGetValue(tab.Tag.ToString()!, out UIXApplication? application))
                 return;
 
+            ShowHelp(application, tab.Header.ToString()!);
+        }
+
+        private void ShowHelp(UIXApplication application, string title)
+        {
             // Read again instead of the properties loaded at the start of the app, so a changed help text shows up immediately
             UIXAppProperties properties = UIXApplication.AppPropertiesProvider?.Read(application.AppProperties.ApplicationName) ?? application.AppProperties;
 
@@ -278,7 +294,7 @@ namespace GameTimeNext.Core.Application.General.Controller
                 : properties.ApplicationHelpText;
 
             GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window)
-                .Show($"Help - {tab.Header}", helpText, CFMBOXResult.Ok, CFMBOXIcon.Info, CFMBOXType.MarkdownLarge);
+                .Show($"Help - {title}", helpText, CFMBOXResult.Ok, CFMBOXIcon.Info, CFMBOXType.MarkdownLarge);
         }
 
         protected void EV_ctxtClose(FrameworkElement target)

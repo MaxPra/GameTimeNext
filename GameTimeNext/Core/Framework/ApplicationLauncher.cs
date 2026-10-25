@@ -128,10 +128,6 @@ namespace GameTimeNext.Core.Framework
             ContextMenuBuilder contextBuilder = UIXContextMenuFactory.Create("TabContextMenu");
             contextBuilder.SetStyle(contextMenuStyle);
 
-            // Help text of the application (T1APRDH), shown as Markdown in the CFMBOX
-            contextBuilder.AddItem("ctxtHelp", "Help", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Help), itemStyle: contextMenuItemStyle);
-            contextBuilder.AddSeparator(contextMenuSeparatorStyle);
-
             if (application.IsClosable)
                 contextBuilder.AddItem("ctxtClose", "Close", icon: UIXContextMenuFactory.CreateMdlIcon("\uE8BB"), itemStyle: contextMenuItemStyle);
 
@@ -155,6 +151,11 @@ namespace GameTimeNext.Core.Framework
 
                 contextBuilder.AddItem("ctxtEditOrder", "Edit favorite apps order", icon: UIXContextMenuFactory.CreateMdlIcon("\uE7C2"), itemStyle: contextMenuItemStyle);
             }
+
+            // Help text of the application (T1APRDH), shown as Markdown in the CFMBOX
+            contextBuilder.AddSeparator(contextMenuSeparatorStyle);
+            contextBuilder.AddItem("ctxtHelp", "Help", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Help), itemStyle: contextMenuItemStyle);
+
 
             if (contextBuilder.HasItems())
                 tabItem.ContextMenu = contextBuilder.Build();
