@@ -1,0 +1,140 @@
+﻿<ui:GTNWindowView
+    x:Class="GameTimeNext.Core.Application.ApplicationProperties.Views.ApplicationPropertiesView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI.Base"
+    xmlns:uixsel="clr-namespace:UIX.ViewController.Engine.FrameworkElements.Selectors;assembly=UIX.ViewController.Engine"
+    Width="Auto"
+    Height="800"
+    HorizontalAlignment="Stretch"
+    VerticalAlignment="Stretch"
+    HorizontalContentAlignment="Stretch"
+    VerticalContentAlignment="Stretch"
+    d:DesignHeight="700"
+    d:DesignWidth="1100"
+    mc:Ignorable="d">
+
+    <Grid Style="{StaticResource View.Root}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="16" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Border
+            Grid.Row="0"
+            Padding="16"
+            Style="{StaticResource Card}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="32" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="16" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Grid Grid.Column="0" HorizontalAlignment="Left">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="14" />
+                        <ColumnDefinition Width="200" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock
+                        Grid.Column="0"
+                        VerticalAlignment="Center"
+                        Foreground="{DynamicResource Brush.TextSecondary}"
+                        Text="App name" />
+
+                    <TextBox
+                        x:Name="TxbId"
+                        Grid.Column="2"
+                        Style="{StaticResource TextBox.Default}" />
+                </Grid>
+
+                <Grid Grid.Column="2" HorizontalAlignment="Left">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="14" />
+                        <ColumnDefinition Width="340" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock
+                        Grid.Column="0"
+                        VerticalAlignment="Center"
+                        Foreground="{DynamicResource Brush.TextSecondary}"
+                        Text="Description" />
+
+                    <TextBox
+                        x:Name="TxbDescription"
+                        Grid.Column="2"
+                        Style="{StaticResource TextBox.Default}" />
+                </Grid>
+
+                <Button
+                    x:Name="BtnAddApplicationProperties"
+                    Grid.Column="4"
+                    VerticalAlignment="Center"
+                    ToolTip="Create new application properties definition"
+                    Style="{StaticResource Button.Icon}">
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontFamily="Segoe MDL2 Assets"
+                        FontSize="14"
+                        Text="&#xE710;" />
+                </Button>
+
+                <Button
+                    x:Name="BtnRefresh"
+                    Grid.Column="6"
+                    VerticalAlignment="Center"
+                    IsDefault="True"
+                    ToolTip="Refresh application properties definitions"
+                    Style="{StaticResource Button.Icon}">
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontFamily="Segoe MDL2 Assets"
+                        FontSize="14"
+                        Text="&#xE72C;" />
+                </Button>
+            </Grid>
+        </Border>
+
+        <uixsel:UIXDataGrid
+            x:Name="DgApplicationProperties"
+            Grid.Row="2"
+            AutoGenerateColumns="False"
+            CanUserAddRows="False"
+            CanUserDeleteRows="False"
+            CanUserResizeRows="False"
+            HeadersVisibility="Column"
+            IsReadOnly="True"
+            ItemsSource="{Binding ApplicationPropertiesDataGridRows}"
+            SelectedItem="{Binding SelectedRow, Mode=TwoWay}"
+            SelectionMode="Single"
+            SelectionUnit="FullRow">
+            <uixsel:UIXDataGrid.Columns>
+                <DataGridTextColumn
+                    Width="260"
+                    Binding="{Binding APAPDID}"
+                    Header="App name" />
+                <DataGridTextColumn
+                    Width="300"
+                    Binding="{Binding APAPDES}"
+                    Header="Description" />
+                <DataGridCheckBoxColumn
+                    Width="160"
+                    Binding="{Binding APAPMCP}"
+                    Header="Menu call possible" />
+            </uixsel:UIXDataGrid.Columns>
+        </uixsel:UIXDataGrid>
+    </Grid>
+</ui:GTNWindowView>

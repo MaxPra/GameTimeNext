@@ -1,3 +1,4 @@
+using GameTimeNext.Core.Application.ApplicationProperties;
 using GameTimeNext.Core.Application.CreateImportPackage;
 using GameTimeNext.Core.Application.General.AppSearch.ViewModels;
 using GameTimeNext.Core.Application.General.AppSearch.Views;
@@ -184,8 +185,8 @@ namespace GameTimeNext.Core.Application.General.AppSearch.Controller
 
             foreach (var app in applications)
             {
-                // CreateImportPackage is excluded (except in debug/dev mode)
-                if (app.ClassName != typeof(CreateImportPackageApp).FullName! && app.ClassName != typeof(MetadataApp).FullName! || (FnSystem.IsDebug() && !FnSystem.RunWithUserPermissions()))
+                // CreateImportPackage, Metadata and Application Properties Definition are excluded (except in debug/dev mode)
+                if (app.ClassName != typeof(CreateImportPackageApp).FullName! && app.ClassName != typeof(MetadataApp).FullName! && app.ClassName != typeof(ApplicationPropertiesApp).FullName! || (FnSystem.IsDebug() && !FnSystem.RunWithUserPermissions()))
                 {
                     sortedApplications.Add(app);
                 }

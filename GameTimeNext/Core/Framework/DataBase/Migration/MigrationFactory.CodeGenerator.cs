@@ -163,6 +163,8 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     CodeBuilder code = new CodeBuilder();
 
                     Dictionary<T1METAP, UIXSqliteDataType> primkFields = fields.Where(p => p.Key.PRIMK).ToDictionary();
+                    bool hasCrat = Helpers.HasField(fields, "CRAT");
+                    bool hasChat = Helpers.HasField(fields, "CHAT");
                     bool hasCrus = Helpers.HasField(fields, "CRUS");
                     bool hasChus = Helpers.HasField(fields, "CHUS");
 
@@ -316,8 +318,10 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
 
                         // Insert
                         code.BeginBlock($"private void Insert({classNameT1} obj)");
-                        code.AddLine("obj.CRAT = DateTime.Now;");
-                        code.AddLine("obj.CHAT = DateTime.Now;");
+                        if (hasCrat)
+                            code.AddLine("obj.CRAT = DateTime.Now;");
+                        if (hasChat)
+                            code.AddLine("obj.CHAT = DateTime.Now;");
                         if (hasCrus)
                             code.AddLine("obj.CRUS = FnOpSys.GetCurrentUserName();");
                         if (hasChus)
@@ -339,7 +343,8 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                         // Update
                         code.AddLine();
                         code.BeginBlock($"private void Update({classNameT1} obj)");
-                        code.AddLine("obj.CHAT = DateTime.Now;");
+                        if (hasChat)
+                            code.AddLine("obj.CHAT = DateTime.Now;");
                         if (hasChus)
                             code.AddLine("obj.CHUS = FnOpSys.GetCurrentUserName();");
                         code.AddLine("using SQLiteCommand cmd = _connection.CreateCommand();");

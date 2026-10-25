@@ -1,0 +1,192 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:uixmd="clr-namespace:UIX.ViewController.Engine.FrameworkElements.Markdown;assembly=UIX.ViewController.Engine">
+
+    <!--  Edit / Preview switch of the Markdown editor: segments on an input surface, the active one on the selection glass  -->
+    <Style x:Key="MarkdownEditor.TabButton" TargetType="{x:Type ToggleButton}">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Padding" Value="14,0" />
+        <Setter Property="Height" Value="28" />
+        <Setter Property="FontSize" Value="12.5" />
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ToggleButton}">
+                    <Border
+                        x:Name="Root"
+                        Padding="{TemplateBinding Padding}"
+                        Background="{TemplateBinding Background}"
+                        CornerRadius="{StaticResource Control.CornerRadius}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Root" Property="Background" Value="{StaticResource Brush.Item.Hover}" />
+                            <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="Root" Property="Background" Value="{StaticResource Brush.Item.Selected}" />
+                            <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--
+        Markdown editor (UIXMarkdownEditor, a multi-line TextBox): switch and image button above, the text field below
+        looks like TextBox.Default. The preview (rendered Markdown) replaces the text area while "Preview" is active.
+    -->
+    <Style TargetType="{x:Type uixmd:UIXMarkdownEditor}">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+        <Setter Property="CaretBrush" Value="{DynamicResource Brush.TextPrimary}" />
+        <Setter Property="SelectionBrush" Value="{DynamicResource Brush.Accent}" />
+        <Setter Property="SelectionOpacity" Value="0.35" />
+
+        <Setter Property="Background" Value="{DynamicResource Brush.TextBox.Background}" />
+        <Setter Property="BorderBrush" Value="{StaticResource Brush.TextBox.Border}" />
+        <Setter Property="BorderThickness" Value="{DynamicResource Thickness.TextBox.Border}" />
+
+        <Setter Property="Padding" Value="11,8" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="FontFamily" Value="Cascadia Mono, Consolas" />
+        <Setter Property="VerticalContentAlignment" Value="Top" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
+
+        <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type uixmd:UIXMarkdownEditor}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="8" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <Grid Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <Border
+                                Grid.Column="0"
+                                Padding="2"
+                                Background="{StaticResource Brush.Input.Background}"
+                                BorderBrush="{StaticResource Brush.TextBox.Border}"
+                                BorderThickness="1"
+                                CornerRadius="{StaticResource Control.CornerRadius}">
+                                <StackPanel Orientation="Horizontal">
+                                    <ToggleButton
+                                        x:Name="PART_EditTab"
+                                        Content="Edit"
+                                        Style="{StaticResource MarkdownEditor.TabButton}" />
+                                    <ToggleButton
+                                        x:Name="PART_PreviewTab"
+                                        Content="Preview"
+                                        Style="{StaticResource MarkdownEditor.TabButton}" />
+                                </StackPanel>
+                            </Border>
+
+                            <Button
+                                x:Name="PART_InsertImage"
+                                Grid.Column="2"
+                                Focusable="False"
+                                Style="{StaticResource Button.Icon}"
+                                ToolTip="Insert image (images can also be pasted or dropped into the text)">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontFamily="Segoe MDL2 Assets"
+                                    FontSize="14"
+                                    Text="&#xEB9F;" />
+                            </Button>
+                        </Grid>
+
+                        <!--  Shadow shape behind the field (an effect on Bd would blur the text)  -->
+                        <Border
+                            Grid.Row="2"
+                            Background="{StaticResource Brush.Input.Background}"
+                            CornerRadius="{StaticResource Control.CornerRadius}"
+                            Effect="{StaticResource Effect.Control}"
+                            IsHitTestVisible="False" />
+
+                        <Border
+                            x:Name="Bd"
+                            Grid.Row="2"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{StaticResource Control.CornerRadius}"
+                            SnapsToDevicePixels="True">
+                            <Grid>
+                                <ScrollViewer
+                                    x:Name="PART_ContentHost"
+                                    Margin="0"
+                                    Focusable="False" />
+
+                                <FlowDocumentScrollViewer
+                                    x:Name="PART_Preview"
+                                    Margin="{TemplateBinding Padding}"
+                                    Focusable="False"
+                                    HorizontalScrollBarVisibility="Disabled"
+                                    IsToolBarVisible="False"
+                                    VerticalScrollBarVisibility="Auto"
+                                    Visibility="Collapsed" />
+                            </Grid>
+                        </Border>
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+
+                        <Trigger Property="IsPreview" Value="True">
+                            <Setter TargetName="PART_ContentHost" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="PART_Preview" Property="Visibility" Value="Visible" />
+                        </Trigger>
+
+                        <Trigger SourceName="Bd" Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Brush.TextBox.BackgroundHover}" />
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Brush.Accent.Outline}" />
+                        </Trigger>
+
+                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Brush.TextBox.BackgroundFocused}" />
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
+                            <Setter TargetName="Bd" Property="BorderThickness" Value="{DynamicResource Thickness.TextBox.BorderFocused}" />
+                        </Trigger>
+
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="{DynamicResource Brush.TextDisabled}" />
+                            <Setter TargetName="Bd" Property="Opacity" Value="0.65" />
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource Brush.TextBox.Border}" />
+                        </Trigger>
+
+                        <Trigger Property="Validation.HasError" Value="True">
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Brush.Danger}" />
+                            <Setter TargetName="Bd" Property="BorderThickness" Value="{DynamicResource Thickness.TextBox.BorderFocused}" />
+                        </Trigger>
+
+                        <!--  Read only (view mode): no images can be inserted  -->
+                        <Trigger Property="IsReadOnly" Value="True">
+                            <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}" />
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Brush.TextBox.Background}" />
+                            <Setter TargetName="PART_InsertImage" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

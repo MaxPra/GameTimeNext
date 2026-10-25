@@ -38,5 +38,10 @@
     "Code": "SCS",
     "Name": "Screensetups",
     "ClassName": "GameTimeNext.Core.Application.Screensetups.ScreensetupsApp"
+  },
+  {
+    "Code": "APD",
+    "Name": "Application Properties Definition",
+    "ClassName": "GameTimeNext.Core.Application.ApplicationProperties.ApplicationPropertiesApp"
   }
 ]

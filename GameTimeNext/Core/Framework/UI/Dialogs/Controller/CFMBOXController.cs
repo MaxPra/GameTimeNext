@@ -6,6 +6,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.Events;
+using UIX.ViewController.Engine.FrameworkElements.Markdown;
 using UIX.ViewController.Engine.FrameworkElements.Windows;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
@@ -182,7 +183,7 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
             {
                 GetWnd().SpText.Visibility = Visibility.Collapsed;
                 GetWnd().TxbMemotext.Visibility = Visibility.Collapsed;
-                GetWnd().FdsvMarkdown.Document = MarkdownRenderer.ToFlowDocument(message);
+                GetWnd().FdsvMarkdown.Document = UIXMarkdownRenderer.ToFlowDocument(message);
                 GetWnd().BdMarkdown.Visibility = Visibility.Visible;
 
                 // Wrapped text has no natural width: fixed reading width, the height follows the content up to a maximum

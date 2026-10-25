@@ -89,3 +89,7 @@ T1SCRSP;MOEN;Monitor Enabled;06;0;5;0;0;2026-10-24 21:04:32;prage;2026-10-24 21:
 T1SCRSP;MOPR;Is Primary Monitor;06;0;6;0;0;2026-10-24 21:04:47;prage;2026-10-24 21:04:47;prage;0;0
 T1SCRSP;CRAT;Created At;05;0;7;0;0;2026-10-24 21:04:58;prage;2026-10-24 21:04:58;prage;0;
 T1SCRSP;CHAT;Changed At;05;0;8;0;0;2026-10-24 21:05:09;prage;2026-10-24 21:05:09;prage;0;
+T1APRDH;APDID;Application Properties Definition ID;01;300;1;1;0;2026-10-25 15:33:21;prage;2026-10-25 15:33:21;prage;0;
+T1APRDH;APDES;Application Description;01;300;2;0;0;2026-10-25 15:33:49;prage;2026-10-25 15:33:49;prage;0;
+T1APRDH;APHPT;Application Help Text;07;0;3;0;0;2026-10-25 15:34:38;prage;2026-10-25 15:34:38;prage;0;
+T1APRDH;APMCP;App Menu Call posisble;06;0;4;0;0;2026-10-25 15:35:25;prage;2026-10-25 15:35:25;prage;0;
