@@ -231,5 +231,7 @@
                 </StackPanel>
             </ScrollViewer>
         </DockPanel>
+
+        <Border Style="{StaticResource ProfileDetail.Edge}" />
     </Grid>
 </uixcontrols:UIXUserControlBase>

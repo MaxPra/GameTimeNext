@@ -16,11 +16,21 @@
 
     <Thickness x:Key="ProfileDetail.SideMargin">16,0,16,0</Thickness>
 
+    <!--  Glass panel like the cards (translucent light over the window background), not an opaque surface  -->
     <Style x:Key="ProfileDetail.Root" TargetType="Grid">
-        <Setter Property="Background" Value="{DynamicResource Brush.Surface}" />
+        <Setter Property="Background" Value="{StaticResource Brush.Card.Background}" />
         <Setter Property="ClipToBounds" Value="True" />
         <!--  Rounded panel corners, same radius as cards and tiles  -->
         <Setter Property="ui:ClipBehaviors.CornerRadius" Value="6" />
+    </Style>
+
+    <!--  Lit edge of the glass panel, on top of everything (the root grid itself has no border)  -->
+    <Style x:Key="ProfileDetail.Edge" TargetType="Border">
+        <Setter Property="BorderBrush" Value="{StaticResource Brush.Card.Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{StaticResource Card.CornerRadius}" />
+        <Setter Property="IsHitTestVisible" Value="False" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
     </Style>
 
     <!--  ===== Backdrop =====  -->
@@ -146,12 +156,12 @@
 
     <!--  ===== Actions =====  -->
 
-    <!--  Pinned at the bottom; the separator shows that the content above can scroll underneath  -->
+    <!--  Pinned at the bottom; the separator shows that the content above can scroll underneath. Transparent: the glass panel shows through  -->
     <Style x:Key="ProfileDetail.ActionBar" TargetType="Border">
         <Setter Property="Padding" Value="0,14,0,16" />
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
+        <Setter Property="BorderBrush" Value="{StaticResource Brush.Card.Divider}" />
         <Setter Property="BorderThickness" Value="0,1,0,0" />
-        <Setter Property="Background" Value="{DynamicResource Brush.Surface}" />
+        <Setter Property="Background" Value="Transparent" />
     </Style>
 
 </ResourceDictionary>
