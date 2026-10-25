@@ -129,8 +129,10 @@ namespace GameTimeNext.Core.Framework.UI
             if (tabControl.Template.FindName("SelectedContentHost", tabControl) is not FrameworkElement contentHost)
                 return;
 
-            if (contentHost.RenderTransform is not TranslateTransform contentTransform)
+            if (contentHost.RenderTransform is not TranslateTransform)
                 return;
+
+            TranslateTransform contentTransform = GetAnimatableTranslateTransform(contentHost);
 
             contentHost.BeginAnimation(UIElement.OpacityProperty, null);
             contentTransform.BeginAnimation(TranslateTransform.XProperty, null);
@@ -158,6 +160,27 @@ namespace GameTimeNext.Core.Framework.UI
             contentTransform.BeginAnimation(TranslateTransform.XProperty, slideAnimation);
         }
 
+        /// <summary>
+        /// Returns the element's TranslateTransform in an animatable state: unnamed freezables in templates are frozen,
+        /// so a frozen (or missing) transform is replaced by a modifiable one.
+        /// </summary>
+        private static TranslateTransform GetAnimatableTranslateTransform(UIElement element)
+        {
+            if (element.RenderTransform is TranslateTransform { IsFrozen: false } transform)
+                return transform;
+
+            var modifiable = element.RenderTransform is TranslateTransform frozen
+                ? frozen.Clone()
+                : new TranslateTransform();
+
+            element.RenderTransform = modifiable;
+            return modifiable;
+        }
+
+        /// <summary>
+        /// Moves the template part SelectionRunner to the selected tab (inside TabTrackContentHost).
+        /// Horizontal tab strips animate its width and X, vertical ones (TabStripPlacement Left / Right) its height and Y.
+        /// </summary>
         private static void AnimateSelectionRunner(TabControl tabControl, bool animate)
         {
             if (tabControl.Template.FindName("SelectionRunner", tabControl) is not FrameworkElement runner)
@@ -166,72 +189,75 @@ namespace GameTimeNext.Core.Framework.UI
             if (tabControl.Template.FindName("TabTrackContentHost", tabControl) is not FrameworkElement trackHost)
                 return;
 
-            if (runner.RenderTransform is not TranslateTransform runnerTransform)
-            {
-                runnerTransform = new TranslateTransform();
-                runner.RenderTransform = runnerTransform;
-            }
+            TranslateTransform runnerTransform = GetAnimatableTranslateTransform(runner);
+
+            bool vertical = tabControl.TabStripPlacement is Dock.Left or Dock.Right;
+            DependencyProperty sizeProperty = vertical ? FrameworkElement.HeightProperty : FrameworkElement.WidthProperty;
+            DependencyProperty offsetProperty = vertical ? TranslateTransform.YProperty : TranslateTransform.XProperty;
 
             if (tabControl.SelectedItem is null)
             {
-                runner.BeginAnimation(FrameworkElement.WidthProperty, null);
-                runnerTransform.BeginAnimation(TranslateTransform.XProperty, null);
-                runner.Width = 0;
-                runnerTransform.X = 0;
+                runner.BeginAnimation(sizeProperty, null);
+                runnerTransform.BeginAnimation(offsetProperty, null);
+                runner.SetValue(sizeProperty, 0d);
+                runnerTransform.SetValue(offsetProperty, 0d);
                 return;
             }
 
             if (tabControl.ItemContainerGenerator.ContainerFromItem(tabControl.SelectedItem) is not FrameworkElement selectedTab)
                 return;
 
-            if (selectedTab.ActualWidth <= 0 || trackHost.ActualWidth <= 0)
+            double selectedSize = vertical ? selectedTab.ActualHeight : selectedTab.ActualWidth;
+            double trackSize = vertical ? trackHost.ActualHeight : trackHost.ActualWidth;
+
+            if (selectedSize <= 0 || trackSize <= 0)
                 return;
 
             var selectedOrigin = selectedTab.TransformToVisual(trackHost).Transform(new Point(0, 0));
-            var targetX = selectedOrigin.X;
-            var targetWidth = selectedTab.ActualWidth;
+            var targetOffset = vertical ? selectedOrigin.Y : selectedOrigin.X;
+            var targetSize = selectedSize;
 
-            var currentRunnerWidth = (double)runner.GetValue(FrameworkElement.WidthProperty);
-            var currentRunnerX = (double)runnerTransform.GetValue(TranslateTransform.XProperty);
+            var currentRunnerSize = (double)runner.GetValue(sizeProperty);
+            var currentRunnerOffset = (double)runnerTransform.GetValue(offsetProperty);
 
-            if (double.IsNaN(currentRunnerWidth) || currentRunnerWidth < 0)
-                currentRunnerWidth = 0;
+            if (double.IsNaN(currentRunnerSize) || currentRunnerSize < 0)
+                currentRunnerSize = 0;
 
-            if (double.IsNaN(currentRunnerX))
-                currentRunnerX = 0;
+            if (double.IsNaN(currentRunnerOffset))
+                currentRunnerOffset = 0;
 
-            runner.BeginAnimation(FrameworkElement.WidthProperty, null);
-            runnerTransform.BeginAnimation(TranslateTransform.XProperty, null);
+            runner.BeginAnimation(sizeProperty, null);
+            runnerTransform.BeginAnimation(offsetProperty, null);
 
-            runner.Width = currentRunnerWidth;
-            runnerTransform.X = currentRunnerX;
+            runner.SetValue(sizeProperty, currentRunnerSize);
+            runnerTransform.SetValue(offsetProperty, currentRunnerOffset);
 
-            if (!animate || runner.Width <= 0)
+            if (!animate || currentRunnerSize <= 0)
             {
-                runner.Width = targetWidth;
-                runnerTransform.X = targetX;
+                runner.SetValue(sizeProperty, targetSize);
+                runnerTransform.SetValue(offsetProperty, targetOffset);
                 return;
             }
 
             var duration = TimeSpan.FromMilliseconds(260);
             var easing = new CubicEase { EasingMode = EasingMode.EaseInOut };
 
-            var widthAnimation = new DoubleAnimation
+            var sizeAnimation = new DoubleAnimation
             {
-                To = targetWidth,
+                To = targetSize,
                 Duration = duration,
                 EasingFunction = easing
             };
 
             var moveAnimation = new DoubleAnimation
             {
-                To = targetX,
+                To = targetOffset,
                 Duration = duration,
                 EasingFunction = easing
             };
 
-            runner.BeginAnimation(FrameworkElement.WidthProperty, widthAnimation);
-            runnerTransform.BeginAnimation(TranslateTransform.XProperty, moveAnimation);
+            runner.BeginAnimation(sizeProperty, sizeAnimation);
+            runnerTransform.BeginAnimation(offsetProperty, moveAnimation);
         }
     }
 }

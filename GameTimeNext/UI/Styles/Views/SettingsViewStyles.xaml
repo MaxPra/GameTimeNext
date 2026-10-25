@@ -1,7 +1,9 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI">
 
     <SolidColorBrush x:Key="Brush.SettingsTab.NormalBackground" Color="Transparent" />
-    <SolidColorBrush x:Key="Brush.SettingsTab.HoverBackground" Color="#111117" />
     <SolidColorBrush x:Key="Brush.SettingsTab.SelectedBackground" Color="Transparent" />
     <SolidColorBrush x:Key="Brush.SettingsTab.Separator" Color="#2A2A34" />
     <SolidColorBrush x:Key="Brush.SettingsTab.Edge" Color="#2A2A34" />
@@ -67,6 +69,9 @@
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Padding" Value="0" />
+        <!--  Vertical strip: the selection runner slides up / down (TabControlBehaviors), like the main tabs  -->
+        <Setter Property="TabStripPlacement" Value="Left" />
+        <Setter Property="ui:TabControlBehaviors.EnableSelectionSwoosh" Value="True" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type TabControl}">
@@ -79,11 +84,31 @@
 
                         <!--  Left navigation  -->
                         <Border Grid.Column="0" Background="Transparent">
-                            <TabPanel
-                                Margin="0"
-                                Background="Transparent"
-                                IsItemsHost="True"
-                                KeyboardNavigation.TabIndex="1" />
+                            <Grid x:Name="TabTrackContentHost" VerticalAlignment="Top">
+                                <!--  Selection: glass surface with an accent bar, glides to the selected entry  -->
+                                <Border
+                                    x:Name="SelectionRunner"
+                                    Height="0"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Top"
+                                    Background="{StaticResource Brush.Item.Selected}"
+                                    CornerRadius="{StaticResource Control.CornerRadius}"
+                                    IsHitTestVisible="False">
+                                    <!--  Named: unnamed freezables in templates get frozen and can't be animated  -->
+                                    <Border.RenderTransform>
+                                        <TranslateTransform x:Name="SelectionRunnerTransform" />
+                                    </Border.RenderTransform>
+                                    <Border
+                                        Width="4"
+                                        Margin="0,9"
+                                        HorizontalAlignment="Left"
+                                        Background="{DynamicResource Brush.Accent}"
+                                        CornerRadius="1" />
+                                </Border>
+
+                                <!--  StackPanel instead of TabPanel: TabPanel lays tabs out in rows and doesn't size the entries reliably  -->
+                                <StackPanel IsItemsHost="True" KeyboardNavigation.TabIndex="1" />
+                            </Grid>
                         </Border>
 
                         <Border
@@ -102,12 +127,17 @@
                                 Deliberately not named PART_SelectedContentHost: with that name WPF moves keyboard focus
                                 into the content on a tab click, which scrolls the first focusable element to the top.
                             -->
+                            <!--  The transform is used by TabControlBehaviors for the content transition on a page change  -->
                             <ContentPresenter
                                 x:Name="SelectedContentHost"
                                 Margin="0"
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Top"
-                                ContentSource="SelectedContent" />
+                                ContentSource="SelectedContent">
+                                <ContentPresenter.RenderTransform>
+                                    <TranslateTransform x:Name="SelectedContentTransform" />
+                                </ContentPresenter.RenderTransform>
+                            </ContentPresenter>
                         </Border>
                     </Grid>
                 </ControlTemplate>
@@ -129,57 +159,35 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type TabItem}">
+                    <!--
+                        Hover: neutral glass highlight over the whole entry, like list / menu entries and the main tabs.
+                        The selection (glass + accent bar) is the SelectionRunner of the tab control, which slides between the entries.
+                    -->
                     <Border
                         x:Name="RootBorder"
                         Height="{TemplateBinding Height}"
                         Background="{TemplateBinding Background}"
-                        CornerRadius="{StaticResource DefaultCornerRadius}"
+                        CornerRadius="{StaticResource Control.CornerRadius}"
                         SnapsToDevicePixels="True">
-
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="4" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-
-                            <Border
-                                x:Name="SelectionBar"
-                                Grid.Column="0"
-                                Margin="0,9,0,9"
-                                Background="Transparent"
-                                CornerRadius="1" />
-
-                            <Border
-                                x:Name="ItemBackground"
-                                Grid.Column="1"
-                                Background="{StaticResource Brush.SettingsTab.NormalBackground}"
-                                BorderBrush="Transparent"
-                                BorderThickness="0"
-                                CornerRadius="0">
-                                <Grid>
-                                    <ContentPresenter
-                                        Margin="12,0,12,0"
-                                        HorizontalAlignment="Left"
-                                        VerticalAlignment="Center"
-                                        ContentSource="Header"
-                                        RecognizesAccessKey="True" />
-                                </Grid>
-                            </Border>
-                        </Grid>
+                        <!--  Left: room for the accent bar of the runner  -->
+                        <ContentPresenter
+                            Margin="16,0,12,0"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            ContentSource="Header"
+                            RecognizesAccessKey="True" />
                     </Border>
 
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="ItemBackground" Property="Background" Value="{StaticResource Brush.SettingsTab.HoverBackground}" />
-                            <Setter TargetName="ItemBackground" Property="BorderBrush" Value="Transparent" />
+                            <Setter TargetName="RootBorder" Property="Background" Value="{StaticResource Brush.Item.Hover}" />
                             <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
                             <Setter TargetName="RootBorder" Property="Cursor" Value="Hand" />
                         </Trigger>
 
+                        <!--  No hover on the selected entry: the runner already highlights it  -->
                         <Trigger Property="IsSelected" Value="True">
-                            <Setter TargetName="SelectionBar" Property="Background" Value="{DynamicResource Brush.Accent}" />
-                            <Setter TargetName="ItemBackground" Property="Background" Value="{StaticResource Brush.SettingsTab.SelectedBackground}" />
-                            <Setter TargetName="ItemBackground" Property="BorderBrush" Value="Transparent" />
+                            <Setter TargetName="RootBorder" Property="Background" Value="{StaticResource Brush.SettingsTab.SelectedBackground}" />
                             <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
                             <Setter Property="FontWeight" Value="SemiBold" />
                         </Trigger>
