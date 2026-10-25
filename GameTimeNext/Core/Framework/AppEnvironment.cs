@@ -223,7 +223,7 @@ namespace GameTimeNext.Core.Framework
             // Start argument -showchangelog: always show the unreleased changes (vNEXT), to check the changelog dialog
             if (AppEnvironment.StartArguments.ContainsKey("showchangelog"))
             {
-                AddChangeLogInformation("UpdateChanges_vNEXT.txt");
+                AddChangeLogInformation("UpdateChanges_vNEXT");
                 return;
             }
 
@@ -244,20 +244,26 @@ namespace GameTimeNext.Core.Framework
                 if (currentVersion.IsBeta)
                     sb.Append("beta");
 
-                sb.Append(".txt");
-
                 AddChangeLogInformation(sb.ToString());
             }
         }
 
-        /// <summary>Queues the given changelog file (Core/Application/UpdateChanges) to be shown as memo text after start.</summary>
-        private static void AddChangeLogInformation(string fileName)
+        /// <summary>
+        /// Queues the changelog (Core/Application/UpdateChanges, file name without extension) to be shown after start:
+        /// a Markdown file (.md) rendered as formatted text, otherwise the plain text file (.txt, older versions) as memo text.
+        /// </summary>
+        private static void AddChangeLogInformation(string baseFileName)
         {
+            string directory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Core", "Application", "UpdateChanges");
+            string markdownPath = Path.Combine(directory, baseFileName + ".md");
+            bool isMarkdown = File.Exists(markdownPath);
+
+            string fileName = baseFileName + (isMarkdown ? ".md" : ".txt");
             string text = string.Empty;
 
             try
             {
-                text = File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Core", "Application", "UpdateChanges", fileName));
+                text = File.ReadAllText(Path.Combine(directory, fileName));
             }
             catch (Exception)
             {
@@ -267,8 +273,11 @@ namespace GameTimeNext.Core.Framework
             if (FnString.IsNullEmptyOrWhitespace(text))
                 return;
 
-            InformationListItem infoListItem = new InformationListItem(CFMBOXIcon.Info, fileName, text);
-            infoListItem.MBoxType = CFMBOXType.Memotext;
+            // Markdown brings its own heading (version), so the title only names the dialog
+            string title = isMarkdown ? "What's new" : fileName;
+
+            InformationListItem infoListItem = new InformationListItem(CFMBOXIcon.Info, title, text);
+            infoListItem.MBoxType = isMarkdown ? CFMBOXType.Markdown : CFMBOXType.Memotext;
             infoListItem.Buttons = CFMBOXResult.Ok;
 
             InformationList.Add(infoListItem);

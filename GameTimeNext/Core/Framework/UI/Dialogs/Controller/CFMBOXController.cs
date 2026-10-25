@@ -36,7 +36,10 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
     public enum CFMBOXType
     {
         Default = 0,
-        Memotext = 1
+        Memotext = 1,
+
+        /// <summary>Markdown rendered like on GitHub (headings, lists, code, tables, links), e.g. the changelog.</summary>
+        Markdown = 2
     }
 
     internal class CFMBOXController : UIXWindowControllerBase
@@ -61,6 +64,9 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
         private const double MemotextMaxWidth = 1000;
         private const double MemotextMaxHeight = 800;
         private const double MemotextMaxScreenShare = 0.85;
+
+        // Markdown dialog: comfortable reading width (wrapped text has no natural width)
+        private const double MarkdownWidth = 780;
 
         public CFMBOXController(UIXApplication app) : base(app)
         {
@@ -170,7 +176,28 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
 
             GetWnd().Title = title;
 
-            if (type == CFMBOXType.Memotext)
+            GetWnd().BdMarkdown.Visibility = Visibility.Collapsed;
+
+            if (type == CFMBOXType.Markdown)
+            {
+                GetWnd().SpText.Visibility = Visibility.Collapsed;
+                GetWnd().TxbMemotext.Visibility = Visibility.Collapsed;
+                GetWnd().FdsvMarkdown.Document = MarkdownRenderer.ToFlowDocument(message);
+                GetWnd().BdMarkdown.Visibility = Visibility.Visible;
+
+                // Wrapped text has no natural width: fixed reading width, the height follows the content up to a maximum
+                Rect workArea = (_owner != null ? FnDisplay.GetWorkArea(_owner) : null) ?? SystemParameters.WorkArea;
+
+                GetWnd().SizeToContent = SizeToContent.Height;
+                GetWnd().ResizeMode = ResizeMode.CanResize;
+                GetWnd().Width = Math.Max(MemotextMinWidth, Math.Min(MarkdownWidth, workArea.Width * MemotextMaxScreenShare));
+                GetWnd().Height = double.NaN;
+                GetWnd().MinWidth = MemotextMinWidth;
+                GetWnd().MinHeight = MemotextMinHeight;
+                GetWnd().MaxWidth = Math.Max(MemotextMinWidth, Math.Min(MemotextMaxWidth, workArea.Width * MemotextMaxScreenShare));
+                GetWnd().MaxHeight = Math.Max(MemotextMinHeight, Math.Min(MemotextMaxHeight, workArea.Height * MemotextMaxScreenShare));
+            }
+            else if (type == CFMBOXType.Memotext)
             {
                 GetWnd().SpText.Visibility = Visibility.Collapsed;
                 GetWnd().TxbMemotext.Text = message;
@@ -207,6 +234,11 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
             ConfigureButtons(buttons);
             HighlightDefaultButton();
             ApplyIcon(icon);
+
+            // Markdown brings its own headings, the icon column would only take away width
+            if (type == CFMBOXType.Markdown)
+                GetWnd().BdIconHost.Visibility = Visibility.Collapsed;
+
             PrepareStartupPosition();
         }
 

@@ -103,6 +103,20 @@
                 TextWrapping="Wrap"
                 VerticalScrollBarVisibility="Auto"
                 Visibility="Collapsed" />
+
+            <!--  Markdown (CFMBOXType.Markdown): rendered document directly on the glass, like a GitHub page  -->
+            <Border
+                x:Name="BdMarkdown"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                Visibility="Collapsed">
+                <FlowDocumentScrollViewer
+                    x:Name="FdsvMarkdown"
+                    Focusable="False"
+                    HorizontalScrollBarVisibility="Disabled"
+                    IsToolBarVisible="False"
+                    VerticalScrollBarVisibility="Auto" />
+            </Border>
         </Grid>
 
         <!--  Footer: translucent inset band so the window glass shows through (rounded like the window corners)  -->

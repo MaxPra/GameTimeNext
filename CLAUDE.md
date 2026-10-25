@@ -19,7 +19,7 @@ dotnet run --project GameTimeNext/GameTimeNext.csproj -- minimized   # start hid
 - Code rules check: `python Scripts/cleancode.py` — enforces where certain string literals (`"GameTimeNext"`, `"MaxPra"`, …) and identifiers (`DirectorySeparatorChar`) may appear, with per-file allowed counts. If a new occurrence is legitimate, add it to the allowlist in the script.
 - There is no test suite (`GameTimeNext.Tests` contains only build output). `RemoteMonitoring/` and `GameTimeNext.Shared/` are untracked work-in-progress folders and are not in the solution.
 - Installer: Inno Setup script at `Installer/GameTimeNext.iss`.
-- Version is set in `GameTimeNext.csproj` (`VersionSemantic`, `VersionTag`, `BuildDate`). Release notes go in `Core/Application/UpdateChanges/UpdateChanges_v*.txt` (`_vNEXT.txt` for unreleased); each file has to be listed as `Content` in the csproj.
+- Version is set in `GameTimeNext.csproj` (`VersionSemantic`, `VersionTag`, `BuildDate`). Release notes go in `Core/Application/UpdateChanges/UpdateChanges_v*.md` (`_vNEXT.md` for unreleased), written in GitHub Markdown (alerts like `> [!IMPORTANT]` are supported); each file has to be listed as `Content` in the csproj. They are shown after an update in the CFMBOX (`CFMBOXType.Markdown`, rendered by `Core/Framework/UI/MarkdownRenderer.cs`); older versions are plain `.txt` (shown as memo text). Start profile "Show changelog vNEXT" (`-showchangelog`) always shows `_vNEXT` to check the result.
 
 ## Code rules
 
