@@ -278,7 +278,7 @@ namespace GameTimeNext.Core.Application.General.Controller
                 : properties.ApplicationHelpText;
 
             GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window)
-                .Show($"Help - {tab.Header}", helpText, CFMBOXResult.Ok, CFMBOXIcon.Info, CFMBOXType.Markdown);
+                .Show($"Help - {tab.Header}", helpText, CFMBOXResult.Ok, CFMBOXIcon.Info, CFMBOXType.MarkdownLarge);
         }
 
         protected void EV_ctxtClose(FrameworkElement target)
