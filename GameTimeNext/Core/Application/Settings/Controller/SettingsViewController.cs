@@ -400,8 +400,8 @@ namespace GameTimeNext.Core.Application.Settings.Controller
 
         protected void EV_btnSave()
         {
-            if (GetView().cbAllowProfileSpecificStyleChanges.IsChecked == false)
-                FnTheme.ApplyDefaultTheme();
+            // Default accent when disabled, the current profile's accent when enabled
+            FnTheme.ApplyProfileAccentColors(AppEnvironment.GetCurrentProfile());
 
             FnTheme.ApplyWallpaperBackground(GetSelectedBackgroundSource());
         }

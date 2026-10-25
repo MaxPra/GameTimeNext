@@ -82,8 +82,8 @@
                             Margin="12,0,0,0"
                             Padding="8,2"
                             VerticalAlignment="Center"
-                            Background="{StaticResource Brush.Accent.Muted}"
-                            BorderBrush="{StaticResource Brush.Accent.Outline}"
+                            Background="{DynamicResource Brush.Accent.Muted}"
+                            BorderBrush="{DynamicResource Brush.Accent.Outline}"
                             BorderThickness="1"
                             CornerRadius="{StaticResource Item.CornerRadius}">
                             <TextBlock

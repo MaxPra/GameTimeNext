@@ -176,7 +176,7 @@
 
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{StaticResource Brush.Accent.Outline}" />
+                            <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource Brush.Accent.Outline}" />
                         </Trigger>
 
                         <Trigger Property="IsKeyboardFocusWithin" Value="True">

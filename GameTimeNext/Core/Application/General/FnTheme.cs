@@ -1,5 +1,7 @@
-﻿using GameTimeNext.Core.Application.Settings;
+﻿using GameTimeNext.Core.Application.Profiles.Components;
+using GameTimeNext.Core.Application.Settings;
 using GameTimeNext.Core.Application.TableObjects;
+using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.UI;
 using System.Windows.Media;
 using UIX.ViewController.Engine.Utils;
@@ -42,26 +44,118 @@ namespace GameTimeNext.Core.Application.General
             return new[] { accent, hover, pressed };
         }
 
+        private const string ColorAccent = "Color.Accent";
+        private const string ColorAccentHover = "Color.AccentHover";
+        private const string ColorAccentPressed = "Color.AccentPressed";
+
+        /// <summary>
+        /// Shared resources derived from the accent colors, with the accent color key each one follows.
+        /// A DynamicResource inside a shared Freezable resource (brush in a ResourceDictionary) is resolved only once,
+        /// so these keep the default accent unless they are replaced here. They must be referenced with DynamicResource:
+        /// a StaticResource keeps the old instance (styles freeze the brushes of their setters, so they cannot be
+        /// changed in place either). Every new accent-derived brush in a ResourceDictionary has to be added to this list.
+        /// For gradient brushes the first gradient stop is the accent.
+        /// </summary>
+        private static readonly (string ResourceKey, string ColorKey)[] AccentResources =
+        {
+            ("Brush.Accent", ColorAccent),
+            ("Brush.AccentHover", ColorAccentHover),
+            ("Brush.AccentPressed", ColorAccentPressed),
+            ("Brush.Accent.Subtle", ColorAccent),
+            ("Brush.Accent.Muted", ColorAccent),
+            ("Brush.Accent.Outline", ColorAccentHover),
+            ("Brush.LoaderAccent", ColorAccent),
+            ("Brush.LoaderAccentHover", ColorAccentHover),
+            ("Brush.LoaderAccentPressed", ColorAccentPressed),
+            ("Brush.SteamGridDB.Accent", ColorAccent),
+            ("Brush.SteamGridDB.AccentHover", ColorAccentHover),
+            ("Brush.SteamGridDB.AccentPressed", ColorAccentPressed),
+            ("GradientBrush.ProfileDetailView.AccentGlowPrimary", ColorAccent),
+            ("GradientBrush.ProfileDetailView.AccentGlowSecondary", ColorAccentHover),
+            ("GradientBrush.Window.AccentGlowPrimary", ColorAccent),
+            ("GradientBrush.Window.AccentGlowSecondary", ColorAccentHover),
+        };
+
+        // Default accent colors from Colors.xaml, captured before they are overridden for the first time
+        private static Dictionary<string, Color>? _defaultAccentColors;
+
         public static void ApplyThemeColors(Dictionary<string, string> dicAccentColors)
         {
-            SetColorResource("Color.Accent", dicAccentColors["accent"]);
-            SetColorResource("Color.AccentHover", dicAccentColors["hover"]);
-            SetColorResource("Color.AccentPressed", dicAccentColors["pressed"]);
-
-            SetBrushColor("Brush.Accent", dicAccentColors["accent"]);
-            SetBrushColor("Brush.AccentHover", dicAccentColors["hover"]);
-            SetBrushColor("Brush.AccentPressed", dicAccentColors["pressed"]);
+            ApplyAccentColors(
+                ToColor(dicAccentColors["accent"]),
+                ToColor(dicAccentColors["hover"]),
+                ToColor(dicAccentColors["pressed"]));
         }
 
+        /// <summary>Resets the accent colors to the defaults defined in Colors.xaml.</summary>
         public static void ApplyDefaultTheme()
         {
-            SetColorResource("Color.Accent", "#3498e5");
-            SetColorResource("Color.AccentHover", "#1a7fcb");
-            SetColorResource("Color.AccentPressed", "#15629e");
+            Dictionary<string, Color> defaults = GetDefaultAccentColors();
+            ApplyAccentColors(defaults[ColorAccent], defaults[ColorAccentHover], defaults[ColorAccentPressed]);
+        }
 
-            SetBrushColor("Brush.Accent", "#3498e5");
-            SetBrushColor("Brush.AccentHover", "#1a7fcb");
-            SetBrushColor("Brush.AccentPressed", "#15629e");
+        /// <summary>
+        /// Applies the accent colors of the profile if it uses its own accent colors and profile specific styles
+        /// are allowed in the settings, otherwise the default accent colors (null for no profile).
+        /// </summary>
+        public static void ApplyProfileAccentColors(T1PROFI? t1profi)
+        {
+            Dictionary<string, string>? profileColors = null;
+
+            if (t1profi != null
+                && t1profi.ACAC
+                && !FnString.IsNullEmptyOrWhitespace(t1profi.ACCO)
+                && AppEnvironment.GetAppConfig().AppSettings.AllowProfileSpecificStyleChanges)
+            {
+                profileColors = new CAccentColors(t1profi.ACCO).Dezerialize()?.AccentColors;
+            }
+
+            if (profileColors != null
+                && profileColors.ContainsKey("accent")
+                && profileColors.ContainsKey("hover")
+                && profileColors.ContainsKey("pressed"))
+            {
+                ApplyThemeColors(profileColors);
+                return;
+            }
+
+            ApplyDefaultTheme();
+        }
+
+        private static void ApplyAccentColors(Color accent, Color hover, Color pressed)
+        {
+            GetDefaultAccentColors();
+
+            var colors = new Dictionary<string, Color>
+            {
+                [ColorAccent] = accent,
+                [ColorAccentHover] = hover,
+                [ColorAccentPressed] = pressed,
+            };
+
+            // Color resources: for DynamicResource references in elements and templates
+            foreach (var (key, color) in colors)
+                System.Windows.Application.Current.Resources[key] = color;
+
+            foreach (var (resourceKey, colorKey) in AccentResources)
+                SetAccentResourceColor(resourceKey, colors[colorKey]);
+        }
+
+        private static Dictionary<string, Color> GetDefaultAccentColors()
+        {
+            if (_defaultAccentColors != null)
+                return _defaultAccentColors;
+
+            var resources = System.Windows.Application.Current.Resources;
+
+            _defaultAccentColors = new Dictionary<string, Color>
+            {
+                [ColorAccent] = (Color)resources[ColorAccent],
+                [ColorAccentHover] = (Color)resources[ColorAccentHover],
+                [ColorAccentPressed] = (Color)resources[ColorAccentPressed],
+            };
+
+            return _defaultAccentColors;
         }
 
         /// <summary>
@@ -110,24 +204,40 @@ namespace GameTimeNext.Core.Application.General
             ProfileCoverBackground.SetCover(System.Windows.Application.Current, t1profi?.PPFN ?? string.Empty);
         }
 
-        private static void SetBrushColor(string key, string colorHex)
+        /// <summary>
+        /// Replaces the brush with a copy in the new color (application resources, so DynamicResource references
+        /// update). Opacity and the other gradient stops are kept.
+        /// </summary>
+        private static void SetAccentResourceColor(string key, Color color)
         {
-            Color color = (Color)ColorConverter.ConvertFromString(colorHex);
             var resources = System.Windows.Application.Current.Resources;
+            Brush? copy = null;
 
-            if (resources[key] is SolidColorBrush brush && !brush.IsFrozen)
+            switch (resources[key])
             {
-                brush.Color = color;
-                return;
+                case SolidColorBrush solidBrush:
+                    SolidColorBrush solidCopy = solidBrush.CloneCurrentValue();
+                    solidCopy.Color = color;
+                    copy = solidCopy;
+                    break;
+
+                case GradientBrush gradientBrush when gradientBrush.GradientStops.Count > 0:
+                    GradientBrush gradientCopy = gradientBrush.CloneCurrentValue();
+                    gradientCopy.GradientStops[0].Color = color;
+                    copy = gradientCopy;
+                    break;
             }
 
-            resources[key] = new SolidColorBrush(color);
+            if (copy == null)
+                return;
+
+            copy.Freeze();
+            resources[key] = copy;
         }
 
-        private static void SetColorResource(string key, string colorHex)
+        private static Color ToColor(string colorHex)
         {
-            Color color = (Color)ColorConverter.ConvertFromString(colorHex);
-            System.Windows.Application.Current.Resources[key] = color;
+            return (Color)ColorConverter.ConvertFromString(colorHex);
         }
     }
 }

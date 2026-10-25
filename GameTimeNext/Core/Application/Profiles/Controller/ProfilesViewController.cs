@@ -124,16 +124,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             GetView().ListBoxProfiles.ScrollIntoView(selectedProfi);
 
-            if (!selectedTableObject.ACAC)
-                return;
-
-            if (FnString.IsNullEmptyOrWhitespace(selectedTableObject.ACCO))
-                return;
-
-            if (!AppEnvironment.GetAppConfig().AppSettings.AllowProfileSpecificStyleChanges)
-                return;
-
-            FnTheme.ApplyThemeColors(new CAccentColors(selectedTableObject.ACCO).Dezerialize().AccentColors);
+            // Falls back to the default accent, so a profile without own colors doesn't keep the previous profile's
+            FnTheme.ApplyProfileAccentColors(selectedTableObject);
         }
         #endregion
 
@@ -175,17 +167,15 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                         GetApp().ProfilesDetailView.Visibility = Visibility.Hidden;
                         AppEnvironment.CurrentPfid = 0;
                         FnTheme.ApplyProfileBackground(null);
+                        FnTheme.ApplyProfileAccentColors(null);
                     }
                     else
                     {
                         GetApp().ProfilesDetailView.Visibility = Visibility.Visible;
                         AppEnvironment.CurrentPfid = (_profilesSubGridViewModel.SelectedT1Profi?.ItemObject as T1PROFI)?.PFID ?? 0;
                         FnTheme.ApplyProfileBackground(_dataWrapper!.TableObject);
+                        FnTheme.ApplyProfileAccentColors(_dataWrapper!.TableObject);
                     }
-
-
-                    if (!FnString.IsNullEmptyOrWhitespace(_dataWrapper!.TableObject.ACCO) && AppEnvironment.GetAppConfig().AppSettings.AllowProfileSpecificStyleChanges)
-                        FnTheme.ApplyThemeColors(new CAccentColors(_dataWrapper!.TableObject.ACCO).Dezerialize().AccentColors);
 
                     GetApp().Loader.Stop();
 

@@ -321,6 +321,11 @@ namespace GameTimeNext.Core.Framework.UI.Base
                 if (DwmSetWindowAttribute(hwnd, DWMWA_SYSTEMBACKDROP_TYPE, ref backdrop, sizeof(int)) != 0)
                     return false;
 
+                // No native caption fill behind the translucent title bar (shows as a differently tinted band
+                // above the bottom of the title bar); the title bar is drawn by the template
+                int captionColor = DWMWA_COLOR_NONE;
+                DwmSetWindowAttribute(hwnd, DWMWA_CAPTION_COLOR, ref captionColor, sizeof(int));
+
                 // The backdrop is only visible where the frame extends into the client area and WPF doesn't paint
                 var margins = new MARGINS { cxLeftWidth = -1, cxRightWidth = -1, cyTopHeight = -1, cyBottomHeight = -1 };
                 DwmExtendFrameIntoClientArea(hwnd, ref margins);
@@ -781,6 +786,8 @@ namespace GameTimeNext.Core.Framework.UI.Base
         private const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
         private const int DWMWA_WINDOW_CORNER_PREFERENCE = 33;
         private const int DWMWA_SYSTEMBACKDROP_TYPE = 38;
+        private const int DWMWA_CAPTION_COLOR = 35;
+        private const int DWMWA_COLOR_NONE = unchecked((int)0xFFFFFFFE);
         private const int DWMWCP_ROUND = 2;
         private const int DWMSBT_NONE = 1;
         private const int DWMSBT_TRANSIENTWINDOW = 3;

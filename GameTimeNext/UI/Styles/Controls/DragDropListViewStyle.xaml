@@ -85,11 +85,7 @@
 
                         <!--  Selected  -->
                         <Trigger Property="IsSelected" Value="True">
-                            <Setter TargetName="Bd" Property="Background">
-                                <Setter.Value>
-                                    <SolidColorBrush Opacity="0.15" Color="{DynamicResource Color.Accent}" />
-                                </Setter.Value>
-                            </Setter>
+                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource Brush.Item.Selected}" />
                         </Trigger>
 
                         <!--  Disabled  -->

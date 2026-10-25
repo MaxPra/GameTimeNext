@@ -428,7 +428,7 @@
                                                     CornerRadius="{StaticResource TileTitleCornerRadius}"
                                                     SnapsToDevicePixels="True">
                                                     <Grid>
-                                                        <!--  Selection: accent tint like selected list entries (Brush.Item.Selected)  -->
+                                                        <!--  Selection: highlight like selected list entries (Brush.Item.Selected)  -->
                                                         <Border
                                                             x:Name="TitleAccent"
                                                             Background="{StaticResource Brush.Item.Selected}"
@@ -499,7 +499,7 @@
                                                     x:Name="HoverStroke"
                                                     Grid.RowSpan="2"
                                                     Background="Transparent"
-                                                    BorderBrush="{StaticResource Brush.Accent.Outline}"
+                                                    BorderBrush="{DynamicResource Brush.Accent.Outline}"
                                                     BorderThickness="1"
                                                     CornerRadius="{StaticResource TileCornerRadius}"
                                                     IsHitTestVisible="False"

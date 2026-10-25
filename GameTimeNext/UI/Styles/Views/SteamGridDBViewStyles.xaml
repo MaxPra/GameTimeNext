@@ -67,7 +67,7 @@
                                     x:Name="SelectedBorder"
                                     Margin="0"
                                     Background="Transparent"
-                                    BorderBrush="{StaticResource Brush.SteamGridDB.Accent}"
+                                    BorderBrush="{DynamicResource Brush.SteamGridDB.Accent}"
                                     BorderThickness="3"
                                     CornerRadius="{DynamicResource DefaultCornerRadius}"
                                     IsHitTestVisible="False"
@@ -84,7 +84,7 @@
                         </Trigger>
 
                         <Trigger Property="IsSelected" Value="True">
-                            <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{StaticResource Brush.SteamGridDB.Accent}" />
+                            <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource Brush.SteamGridDB.Accent}" />
                             <Setter TargetName="SelectedBorder" Property="Opacity" Value="1" />
                             <Setter TargetName="SelectionGlow" Property="Opacity" Value="1" />
                         </Trigger>
@@ -94,7 +94,7 @@
                                 <Condition Property="IsSelected" Value="True" />
                                 <Condition Property="IsMouseOver" Value="True" />
                             </MultiTrigger.Conditions>
-                            <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{StaticResource Brush.SteamGridDB.Accent}" />
+                            <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource Brush.SteamGridDB.Accent}" />
                             <Setter TargetName="HoverOverlay" Property="Opacity" Value="1" />
                             <Setter TargetName="SelectedBorder" Property="Opacity" Value="1" />
                             <Setter TargetName="SelectionGlow" Property="Opacity" Value="1" />

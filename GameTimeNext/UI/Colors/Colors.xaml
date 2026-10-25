@@ -10,7 +10,12 @@
     <Color x:Key="Color.TextDisabled">#FF6F6F7F</Color>
 
     <!--  ===== Accent Colors =====  -->
-    <!--  Default accent, keep in sync with FnTheme.ApplyDefaultTheme()  -->
+    <!--
+        Default accent (FnTheme.ApplyDefaultTheme reads it from here). Profiles can override it at runtime.
+        Brushes in ResourceDictionaries derived from these colors must be registered in FnTheme.AccentResources
+        and referenced with DynamicResource: a DynamicResource inside a shared brush resource does not follow
+        runtime changes, FnTheme replaces these brushes instead.
+    -->
     <Color x:Key="Color.Accent">#3498E5</Color>
     <Color x:Key="Color.AccentHover">#1A7FCB</Color>
     <Color x:Key="Color.AccentPressed">#15629E</Color>

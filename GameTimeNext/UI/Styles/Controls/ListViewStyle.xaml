@@ -100,11 +100,7 @@
 
                         <!--  Selected  -->
                         <Trigger Property="IsSelected" Value="True">
-                            <Setter TargetName="Bd" Property="Background">
-                                <Setter.Value>
-                                    <SolidColorBrush Opacity="0.15" Color="{DynamicResource Color.Accent}" />
-                                </Setter.Value>
-                            </Setter>
+                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource Brush.Item.Selected}" />
                             <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
                             <Setter TargetName="Bd" Property="BorderThickness" Value="1" />
                             <Setter TargetName="GlowBorder" Property="Opacity" Value="0.4" />
@@ -117,11 +113,7 @@
                                 <Condition Property="IsSelected" Value="True" />
                                 <Condition Property="IsMouseOver" Value="True" />
                             </MultiTrigger.Conditions>
-                            <Setter TargetName="Bd" Property="Background">
-                                <Setter.Value>
-                                    <SolidColorBrush Opacity="0.20" Color="{DynamicResource Color.Accent}" />
-                                </Setter.Value>
-                            </Setter>
+                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource Brush.Card.BackgroundHover}" />
                             <Setter TargetName="GlowBorder" Property="Opacity" Value="0.5" />
                             <Setter TargetName="Sheen" Property="Opacity" Value="0.30" />
                         </MultiTrigger>

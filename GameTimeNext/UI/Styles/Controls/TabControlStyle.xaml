@@ -166,7 +166,7 @@
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="Bg" Property="Background" Value="{DynamicResource Brush.Card.BackgroundHover}" />
-                            <Setter TargetName="Bg" Property="BorderBrush" Value="{StaticResource Brush.Accent.Outline}" />
+                            <Setter TargetName="Bg" Property="BorderBrush" Value="{DynamicResource Brush.Accent.Outline}" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
                             <Setter TargetName="Bg" Property="Background" Value="{StaticResource Brush.Item.Selected}" />
@@ -216,7 +216,11 @@
                             </Grid.RowDefinitions>
 
                             <!--  Segmented tab track  -->
-                            <!--  Recessed track; the selection runner is a lighter surface with a thin accent line  -->
+                            <!--
+                                Recessed track; the selection runner is a lighter glass surface (card look, neutral
+                                instead of accent tinted) with a thin accent line. Card brushes via DynamicResource:
+                                CardStyles.xaml is merged later.
+                            -->
                             <Border
                                 x:Name="TabTrackHost"
                                 Grid.Row="0"
@@ -231,8 +235,9 @@
                                         Width="0"
                                         HorizontalAlignment="Left"
                                         VerticalAlignment="Stretch"
-                                        Background="{StaticResource Brush.Item.Selected}"
-                                        BorderThickness="0"
+                                        Background="{DynamicResource Brush.Card.BackgroundHover}"
+                                        BorderBrush="{DynamicResource Brush.Card.Border}"
+                                        BorderThickness="1"
                                         CornerRadius="{StaticResource Control.CornerRadius}"
                                         IsHitTestVisible="False">
                                         <Border.RenderTransform>

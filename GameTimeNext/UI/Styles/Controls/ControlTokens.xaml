@@ -40,7 +40,7 @@
 
     <!--
         ===== Accent tints =====
-        Follow the (profile dependent) accent color at runtime. Used for interaction states:
+        Follow the (profile dependent) accent color at runtime via FnTheme.AccentResources. Used for interaction states:
         hover outlines, hovered/selected items, the active navigation entry, ...
         Text stays neutral: the accent is too dark for readable text on the dark surfaces.
     -->
@@ -67,15 +67,12 @@
         <GradientStop Offset="0" Color="#2EFFFFFF" />
         <GradientStop Offset="1" Color="#10FFFFFF" />
     </LinearGradientBrush>
-    <!--  Hovered / selected entries in lists, menus and the navigation are tinted with the accent  -->
-    <SolidColorBrush
-        x:Key="Brush.Item.Hover"
-        Opacity="0.18"
-        Color="{DynamicResource Color.Accent}" />
-    <SolidColorBrush
-        x:Key="Brush.Item.Selected"
-        Opacity="0.32"
-        Color="{DynamicResource Color.Accent}" />
+    <!--
+        Hovered / selected entries in lists, menus and the navigation: neutral glass highlight like the cards
+        (an accent tinted surface looks muddy on the dark backgrounds, the accent is reserved for lines and outlines)
+    -->
+    <SolidColorBrush x:Key="Brush.Item.Hover" Color="#0FFFFFFF" />
+    <SolidColorBrush x:Key="Brush.Item.Selected" Color="#1FFFFFFF" />
 
     <!--
         Soft shadow below controls (buttons, inputs, check boxes) so they lift off the background.

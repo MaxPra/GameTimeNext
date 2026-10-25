@@ -184,7 +184,7 @@
         <Style.Triggers>
             <!--  Accent outline on hover (drawn by the background border, so the content doesn't move)  -->
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="BorderBrush" Value="{StaticResource Brush.Accent.Outline}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Outline}" />
                 <Setter Property="BorderThickness" Value="1" />
             </Trigger>
         </Style.Triggers>
