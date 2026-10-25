@@ -10,6 +10,7 @@
 ## Improvements
 
 - Cleaner visual style, new app icons, new app bar animations and a new splash screen.
+- New application icon (desktop, taskbar, start menu and installer).
 - Improved the dashboard.
 - Improved performance of the running game detection.
 - The application can now only be started once (single instance).
