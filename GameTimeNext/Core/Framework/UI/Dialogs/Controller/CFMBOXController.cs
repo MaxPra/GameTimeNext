@@ -55,6 +55,13 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
         private bool _isInternalMove;
         private Window? _owner;
 
+        // Memo text dialog (e.g. changelog): sized to the text within these bounds
+        private const double MemotextMinWidth = 460;
+        private const double MemotextMinHeight = 220;
+        private const double MemotextMaxWidth = 1000;
+        private const double MemotextMaxHeight = 800;
+        private const double MemotextMaxScreenShare = 0.85;
+
         public CFMBOXController(UIXApplication app) : base(app)
         {
         }
@@ -169,19 +176,18 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
                 GetWnd().TxbMemotext.Text = message;
                 GetWnd().TxbMemotext.Visibility = Visibility.Visible;
 
-                var lines = message.Split('\n').Length;
-                var contentHeight = Math.Max(80, (lines * 20) + 18);
-                var screenMax = (int)SystemParameters.WorkArea.Height - 100;
-                var targetHeight = Math.Min(contentHeight + 178, screenMax);
+                // Size follows the text (longest line / number of lines), limited to a sensible maximum;
+                // beyond that the text scrolls inside the window
+                Rect workArea = (_owner != null ? FnDisplay.GetWorkArea(_owner) : null) ?? SystemParameters.WorkArea;
 
-                GetWnd().SizeToContent = SizeToContent.Manual;
+                GetWnd().SizeToContent = SizeToContent.WidthAndHeight;
                 GetWnd().ResizeMode = ResizeMode.CanResize;
-                GetWnd().Width = 720;
-                GetWnd().Height = targetHeight;
-                GetWnd().MinWidth = 500;
-                GetWnd().MinHeight = 220;
-                GetWnd().MaxWidth = double.PositiveInfinity;
-                GetWnd().MaxHeight = double.PositiveInfinity;
+                GetWnd().Width = double.NaN;
+                GetWnd().Height = double.NaN;
+                GetWnd().MinWidth = MemotextMinWidth;
+                GetWnd().MinHeight = MemotextMinHeight;
+                GetWnd().MaxWidth = Math.Max(MemotextMinWidth, Math.Min(MemotextMaxWidth, workArea.Width * MemotextMaxScreenShare));
+                GetWnd().MaxHeight = Math.Max(MemotextMinHeight, Math.Min(MemotextMaxHeight, workArea.Height * MemotextMaxScreenShare));
             }
             else
             {

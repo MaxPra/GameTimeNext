@@ -399,6 +399,38 @@ namespace GameTimeNext.Core.Framework.UI.Base
             }
         }
 
+        protected override void OnContentRendered(EventArgs e)
+        {
+            base.OnContentRendered(e);
+            RefitSizeToContent();
+        }
+
+        /// <summary>
+        /// With WindowChrome the first SizeToContent pass still includes the standard window frame, which the chrome
+        /// removes afterwards: the window ends up a few pixels too large and the glass shows as a strip at the right /
+        /// bottom edge. Re-triggering SizeToContent once the chrome is applied fits the window to its content; the center
+        /// is kept so the window doesn't shift.
+        /// </summary>
+        private void RefitSizeToContent()
+        {
+            SizeToContent mode = SizeToContent;
+            if (mode == SizeToContent.Manual || WindowState != WindowState.Normal)
+                return;
+
+            double oldWidth = ActualWidth;
+            double oldHeight = ActualHeight;
+
+            SizeToContent = SizeToContent.Manual;
+            SizeToContent = mode;
+            UpdateLayout();
+
+            if (!double.IsNaN(Left))
+                Left += (oldWidth - ActualWidth) / 2d;
+
+            if (!double.IsNaN(Top))
+                Top += (oldHeight - ActualHeight) / 2d;
+        }
+
         protected override void OnStateChanged(EventArgs e)
         {
             base.OnStateChanged(e);

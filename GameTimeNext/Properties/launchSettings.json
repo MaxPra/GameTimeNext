@@ -22,6 +22,10 @@
     "GameTimeNext (Optimize covers)": {
       "commandName": "Project",
       "commandLineArgs": "-optimizecovers"
+    },
+    "GameTimeNext (Show changelog vNEXT)": {
+      "commandName": "Project",
+      "commandLineArgs": "-showchangelog"
     }
   }
 }

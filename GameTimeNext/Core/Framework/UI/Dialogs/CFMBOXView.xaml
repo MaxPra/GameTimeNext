@@ -98,9 +98,9 @@
                 FontFamily="Consolas"
                 FontSize="13"
                 Foreground="{DynamicResource Brush.TextPrimary}"
-                HorizontalScrollBarVisibility="Auto"
+                HorizontalScrollBarVisibility="Disabled"
                 IsReadOnly="True"
-                TextWrapping="NoWrap"
+                TextWrapping="Wrap"
                 VerticalScrollBarVisibility="Auto"
                 Visibility="Collapsed" />
         </Grid>

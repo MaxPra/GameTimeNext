@@ -220,6 +220,13 @@ namespace GameTimeNext.Core.Framework
 
         private static void CheckShowChangeLog()
         {
+            // Start argument -showchangelog: always show the unreleased changes (vNEXT), to check the changelog dialog
+            if (AppEnvironment.StartArguments.ContainsKey("showchangelog"))
+            {
+                AddChangeLogInformation("UpdateChanges_vNEXT.txt");
+                return;
+            }
+
             string versionOldRaw = AppEnvironment.GetAppConfig().AppVersion;
 
             AppVersion versionOld = new AppVersion();
@@ -239,27 +246,32 @@ namespace GameTimeNext.Core.Framework
 
                 sb.Append(".txt");
 
-                string text = string.Empty;
-
-                try
-                {
-                    text = File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Core", "Application", "UpdateChanges", sb.ToString()));
-                }
-                catch (Exception)
-                {
-                    return;
-                }
-
-                if (FnString.IsNullEmptyOrWhitespace(text))
-                    return;
-
-                InformationListItem infoListItem = new InformationListItem(CFMBOXIcon.Info, sb.ToString(), text);
-                infoListItem.MBoxType = CFMBOXType.Memotext;
-                infoListItem.Buttons = CFMBOXResult.Ok;
-
-                InformationList.Add(infoListItem);
-
+                AddChangeLogInformation(sb.ToString());
             }
+        }
+
+        /// <summary>Queues the given changelog file (Core/Application/UpdateChanges) to be shown as memo text after start.</summary>
+        private static void AddChangeLogInformation(string fileName)
+        {
+            string text = string.Empty;
+
+            try
+            {
+                text = File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Core", "Application", "UpdateChanges", fileName));
+            }
+            catch (Exception)
+            {
+                return;
+            }
+
+            if (FnString.IsNullEmptyOrWhitespace(text))
+                return;
+
+            InformationListItem infoListItem = new InformationListItem(CFMBOXIcon.Info, fileName, text);
+            infoListItem.MBoxType = CFMBOXType.Memotext;
+            infoListItem.Buttons = CFMBOXResult.Ok;
+
+            InformationList.Add(infoListItem);
         }
 
         public static void LoadAppConfig()
