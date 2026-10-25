@@ -9,6 +9,7 @@ using UIX.ViewController.Engine.Events;
 using UIX.ViewController.Engine.FrameworkElements.Windows;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
+using GameTimeNext.Core.Framework.Utils;
 
 namespace GameTimeNext.Core.Framework.UI.Dialogs
 {
@@ -240,7 +241,8 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
 
         private void Wnd_Loaded(object? sender, RoutedEventArgs e)
         {
-            ClampToOwner();
+            // Now with the real size (SizeToContent), centered within the owner on its monitor
+            CenterInOwnerArea();
             FocusDefaultButton();
         }
 
@@ -534,45 +536,86 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
 
         private void PrepareStartupPosition()
         {
-            if (_owner == null)
+            if (GetOwnerArea() == null)
             {
                 GetWnd().WindowStartupLocation = WindowStartupLocation.CenterScreen;
                 return;
             }
 
             GetWnd().WindowStartupLocation = WindowStartupLocation.Manual;
+            CenterInOwnerArea();
+        }
 
-            double ownerLeft = _owner.Left;
-            double ownerTop = _owner.Top;
-            double ownerWidth = _owner.ActualWidth > 0 ? _owner.ActualWidth : _owner.Width;
-            double ownerHeight = _owner.ActualHeight > 0 ? _owner.ActualHeight : _owner.Height;
+        /// <summary>
+        /// Area the dialog is centered in and kept inside: the owner's actual bounds (Window.Left/Top are the restore
+        /// position for a maximized owner, e.g. on a monitor that was switched off), limited to the work area of the
+        /// owner's monitor, so the modal dialog is always visible. Null if the owner can't be used (none, hidden, minimized).
+        /// </summary>
+        private Rect? GetOwnerArea()
+        {
+            if (_owner == null || !_owner.IsVisible || _owner.WindowState == WindowState.Minimized)
+                return null;
 
-            double wndWidth = GetWnd().Width;
-            double wndHeight = GetWnd().Height;
+            Rect? ownerBounds = FnDisplay.GetWindowBounds(_owner);
+            Rect? workArea = FnDisplay.GetWorkArea(_owner);
 
-            GetWnd().Left = ownerLeft + ((ownerWidth - wndWidth) / 2d);
-            GetWnd().Top = ownerTop + ((ownerHeight - wndHeight) / 2d);
+            if (ownerBounds == null || workArea == null)
+                return null;
+
+            Rect visibleOwnerArea = Rect.Intersect(ownerBounds.Value, workArea.Value);
+
+            // Owner (almost) outside its monitor: use the whole work area
+            if (visibleOwnerArea.IsEmpty || visibleOwnerArea.Width < 100 || visibleOwnerArea.Height < 100)
+                return workArea;
+
+            return visibleOwnerArea;
+        }
+
+        private void CenterInOwnerArea()
+        {
+            if (GetOwnerArea() is not Rect area)
+                return;
+
+            double wndWidth = GetDialogWidth();
+            double wndHeight = GetDialogHeight();
+
+            _isInternalMove = true;
+            GetWnd().Left = area.Left + ((area.Width - wndWidth) / 2d);
+            GetWnd().Top = area.Top + ((area.Height - wndHeight) / 2d);
+            _isInternalMove = false;
 
             ClampToOwner();
         }
 
+        // Before the first layout the size may be NaN (SizeToContent): fall back to the minimum size
+        private double GetDialogWidth()
+        {
+            if (GetWnd().ActualWidth > 0)
+                return GetWnd().ActualWidth;
+
+            return double.IsNaN(GetWnd().Width) ? GetWnd().MinWidth : GetWnd().Width;
+        }
+
+        private double GetDialogHeight()
+        {
+            if (GetWnd().ActualHeight > 0)
+                return GetWnd().ActualHeight;
+
+            return double.IsNaN(GetWnd().Height) ? Math.Max(GetWnd().MinHeight, 200) : GetWnd().Height;
+        }
+
         private void ClampToOwner()
         {
-            if (_owner == null)
+            if (GetOwnerArea() is not Rect area)
                 return;
 
-            double ownerLeft = _owner.Left;
-            double ownerTop = _owner.Top;
-            double ownerWidth = _owner.ActualWidth > 0 ? _owner.ActualWidth : _owner.Width;
-            double ownerHeight = _owner.ActualHeight > 0 ? _owner.ActualHeight : _owner.Height;
+            double currentWidth = GetDialogWidth();
+            double currentHeight = GetDialogHeight();
 
-            double currentWidth = GetWnd().ActualWidth > 0 ? GetWnd().ActualWidth : GetWnd().Width;
-            double currentHeight = GetWnd().ActualHeight > 0 ? GetWnd().ActualHeight : GetWnd().Height;
-
-            double minLeft = ownerLeft;
-            double minTop = ownerTop;
-            double maxLeft = ownerLeft + ownerWidth - currentWidth;
-            double maxTop = ownerTop + ownerHeight - currentHeight;
+            double minLeft = area.Left;
+            double minTop = area.Top;
+            double maxLeft = area.Right - currentWidth;
+            double maxTop = area.Bottom - currentHeight;
 
             if (maxLeft < minLeft)
                 maxLeft = minLeft;
@@ -580,8 +623,8 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
             if (maxTop < minTop)
                 maxTop = minTop;
 
-            double newLeft = GetWnd().Left;
-            double newTop = GetWnd().Top;
+            double newLeft = double.IsNaN(GetWnd().Left) ? minLeft : GetWnd().Left;
+            double newTop = double.IsNaN(GetWnd().Top) ? minTop : GetWnd().Top;
 
             if (newLeft < minLeft)
                 newLeft = minLeft;
