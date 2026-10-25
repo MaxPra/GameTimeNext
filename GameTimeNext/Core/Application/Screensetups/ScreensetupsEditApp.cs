@@ -16,6 +16,11 @@ namespace GameTimeNext.Core.Application.Screensetups
         // Screensetup whose monitors are taken over when copying (ViewIndicator "CO")
         public long CopySourceSSID { get; set; } = 0;
 
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(ScreensetupsEditApp));
+        }
+
         public override void InitializeApplicationOutput()
         {
             ScreensetupsEditView = new ScreensetupsEditView();

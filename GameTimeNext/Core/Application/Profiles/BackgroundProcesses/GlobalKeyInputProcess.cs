@@ -187,6 +187,11 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
             return list.FirstOrDefault(x => x.Value == value).Key;
         }
 
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(GlobalKeyInputProcess));
+        }
+
         public override void InitializeApplicationOutput()
         {
         }

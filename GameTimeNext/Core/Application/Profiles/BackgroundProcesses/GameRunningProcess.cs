@@ -235,6 +235,11 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
             return !(currentProfileRunning.countNotRunning == currentProfileRunning.executables.Count);
         }
 
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(GameRunningProcess));
+        }
+
         public override void InitializeApplicationOutput()
         {
         }

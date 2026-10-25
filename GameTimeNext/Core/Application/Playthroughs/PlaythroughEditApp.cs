@@ -43,6 +43,11 @@ namespace GameTimeNext.Core.Application.Playthroughs
             _playthroughEditViewController!.Show(options);
         }
 
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(PlaythroughEditApp));
+        }
+
         public override void InitializeApplicationOutput()
         {
             _playthroughEditView = new PlaythroughEditView();

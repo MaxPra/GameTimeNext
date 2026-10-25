@@ -13,6 +13,11 @@ namespace GameTimeNext.Core.Application.ApplicationProperties
         public ApplicationPropertiesEditViewController? ApplicationPropertiesEditViewController { get; set; }
         public T1APRDH? T1APRDH { get; set; } = new T1APRDH();
 
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(ApplicationPropertiesEditApp));
+        }
+
         public override void InitializeApplicationOutput()
         {
             ApplicationPropertiesEditView = new ApplicationPropertiesEditView();

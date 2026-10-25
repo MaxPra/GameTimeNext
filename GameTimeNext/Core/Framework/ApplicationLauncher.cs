@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Threading;
 using UIX.ViewController.Engine.FrameworkElements;
 using UIX.ViewController.Engine.Runnables;
+using UIX.ViewController.Engine.Utils;
 using static UIX.ViewController.Engine.FrameworkElements.UIXContextMenuFactory;
 
 namespace GameTimeNext.Core.Framework
@@ -126,6 +127,10 @@ namespace GameTimeNext.Core.Framework
 
             ContextMenuBuilder contextBuilder = UIXContextMenuFactory.Create("TabContextMenu");
             contextBuilder.SetStyle(contextMenuStyle);
+
+            // Help text of the application (T1APRDH), shown as Markdown in the CFMBOX
+            contextBuilder.AddItem("ctxtHelp", "Help", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Help), itemStyle: contextMenuItemStyle);
+            contextBuilder.AddSeparator(contextMenuSeparatorStyle);
 
             if (application.IsClosable)
                 contextBuilder.AddItem("ctxtClose", "Close", icon: UIXContextMenuFactory.CreateMdlIcon("\uE8BB"), itemStyle: contextMenuItemStyle);

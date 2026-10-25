@@ -10,6 +10,11 @@ namespace GameTimeNext.Core.Application.Profiles
         private ProfilesSteamImportView? _profilesSteamImportView = null;
         private ProfilesSteamImportViewController? _profilesSteamImportViewController = null;
 
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(ProfilesSteamImportApp));
+        }
+
         public override void InitializeApplicationOutput()
         {
             _profilesSteamImportView = new ProfilesSteamImportView();

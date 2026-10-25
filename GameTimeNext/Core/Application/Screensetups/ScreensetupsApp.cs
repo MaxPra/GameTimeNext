@@ -46,6 +46,11 @@ namespace GameTimeNext.Core.Application.Screensetups
         }
 
 
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(ScreensetupsApp));
+        }
+
         public override void InitializeApplicationOutput()
         {
             ScreensetupsView = new ScreensetupsView();

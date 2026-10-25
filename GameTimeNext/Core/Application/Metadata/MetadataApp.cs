@@ -28,6 +28,11 @@ namespace GameTimeNext.Core.Application.Metadata
             MetadataView!.ViewController.Show(options);
         }
 
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(MetadataApp));
+        }
+
         public override void InitializeApplicationOutput()
         {
             MetadataView = new MetadataView();

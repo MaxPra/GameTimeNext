@@ -8,6 +8,11 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
         private CFMBOXView? _cfmboxView;
         private CFMBOXController? _cfmboxController;
 
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(CFMBOX));
+        }
+
         public override void InitializeApplicationOutput()
         {
             _cfmboxView = new CFMBOXView();

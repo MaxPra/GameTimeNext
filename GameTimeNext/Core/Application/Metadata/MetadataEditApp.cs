@@ -11,6 +11,11 @@ namespace GameTimeNext.Core.Application.Metadata
         public MetadataEditViewController? MetadataEditViewController { get; set; }
         public T1METAH? T1METAH { get; set; } = new T1METAH();
 
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(MetadataEditApp));
+        }
+
         public override void InitializeApplicationOutput()
         {
             MetadataEditView = new MetadataEditView();

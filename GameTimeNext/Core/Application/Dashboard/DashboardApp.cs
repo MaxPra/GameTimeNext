@@ -29,6 +29,11 @@ namespace GameTimeNext.Core.Application.Dashboard
             DashboardView.ViewController.Show(options);
         }
 
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(DashboardApp));
+        }
+
         public override void InitializeApplicationOutput()
         {
             this.DashboardView = new DashboardView();

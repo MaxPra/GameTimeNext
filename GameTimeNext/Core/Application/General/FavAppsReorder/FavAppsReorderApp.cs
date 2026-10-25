@@ -11,6 +11,11 @@ namespace GameTimeNext.Core.Application.General.FavAppsReorder
 
         public Action<FavAppsReorderViewController.FavAppsRecorderViewReturn>? AppResult { get; set; } = null;
 
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(FavAppsReorderApp));
+        }
+
         public override void InitializeApplicationOutput()
         {
             FavAppsReorderView = new FavAppsReorderView();

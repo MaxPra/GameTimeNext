@@ -46,6 +46,11 @@ namespace GameTimeNext.Core.Application.Codetables
         }
 
 
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(CodetablesApp));
+        }
+
         public override void InitializeApplicationOutput()
         {
             CodetablesView = new CodetablesView();

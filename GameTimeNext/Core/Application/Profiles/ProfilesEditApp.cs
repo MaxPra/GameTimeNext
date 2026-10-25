@@ -39,6 +39,11 @@ namespace GameTimeNext.Core.Application.Profiles
 
         public ProfilesManualEstTimesCache ManualEstTimesCache { get; set; } = new ProfilesManualEstTimesCache();
 
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(ProfilesEditApp));
+        }
+
         public override void InitializeApplicationOutput()
         {
             _profilesEditView = new ProfilesEditView();

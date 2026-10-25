@@ -22,6 +22,11 @@ namespace GameTimeNext.Core.Application.General
 
         }
 
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(MainApp));
+        }
+
         public override void InitializeApplicationOutput()
         {
             // -- Main-Window

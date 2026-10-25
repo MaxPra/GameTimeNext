@@ -265,6 +265,22 @@ namespace GameTimeNext.Core.Application.General.Controller
             AppEnvironment.InformationList.Clear();
         }
 
+        protected void EV_ctxtHelp(FrameworkElement target)
+        {
+            if (target is not TabItem tab || !AppEnvironment.StartedApplications.TryGetValue(tab.Tag.ToString()!, out UIXApplication? application))
+                return;
+
+            // Read again instead of the properties loaded at the start of the app, so a changed help text shows up immediately
+            UIXAppProperties properties = UIXApplication.AppPropertiesProvider?.Read(application.AppProperties.ApplicationName) ?? application.AppProperties;
+
+            string helpText = FnString.IsNullEmptyOrWhitespace(properties.ApplicationHelpText)
+                ? "No help is available for this application yet."
+                : properties.ApplicationHelpText;
+
+            GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window)
+                .Show($"Help - {tab.Header}", helpText, CFMBOXResult.Ok, CFMBOXIcon.Info, CFMBOXType.Markdown);
+        }
+
         protected void EV_ctxtClose(FrameworkElement target)
         {
             TabItem tab = (TabItem)target;

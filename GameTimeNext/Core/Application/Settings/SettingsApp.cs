@@ -14,6 +14,11 @@ namespace GameTimeNext.Core.Application.Settings
 
         public SettingsView? SettingsView { get { return _settingsView; } set { _settingsView = value; } }
 
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(SettingsApp));
+        }
+
         public override void InitializeApplicationOutput()
         {
             _settingsView = new SettingsView();

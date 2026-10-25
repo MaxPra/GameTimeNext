@@ -45,6 +45,11 @@ namespace GameTimeNext.Core.Application.Playthroughs
             PlaythroughsView!.ViewController.Show(options);
         }
 
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(PlaythroughsApp));
+        }
+
         public override void InitializeApplicationOutput()
         {
             PlaythroughsView = new PlaythroughsView();

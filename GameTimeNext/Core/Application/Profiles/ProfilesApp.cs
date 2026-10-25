@@ -44,6 +44,11 @@ namespace GameTimeNext.Core.Application.Profiles
             ProfilesView.ViewController.Show(options);
         }
 
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(ProfilesApp));
+        }
+
         public override void InitializeApplicationOutput()
         {
             _filterCache = AppEnvironment.GetAppConfig().FilterCache ?? new FilterCache();

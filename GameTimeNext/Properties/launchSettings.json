@@ -15,6 +15,10 @@
       "commandName": "Project",
       "commandLineArgs": "-m UT"
     },
+    "GameTimeNext (DEMO)": {
+      "commandName": "Project",
+      "commandLineArgs": "-m DEMO"
+    },
     "GameTimeNext (GTXTEST)": {
       "commandName": "Project",
       "commandLineArgs": "-m GTXTEST"

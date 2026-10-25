@@ -45,6 +45,11 @@ namespace GameTimeNext.Core.Application.ApplicationProperties
                 });
         }
 
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(ApplicationPropertiesApp));
+        }
+
         public override void InitializeApplicationOutput()
         {
             ApplicationPropertiesView = new ApplicationPropertiesView();

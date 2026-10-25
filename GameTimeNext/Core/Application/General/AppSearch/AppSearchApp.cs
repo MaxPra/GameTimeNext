@@ -10,6 +10,11 @@ namespace GameTimeNext.Core.Application.General.AppSearch
         public AppSearchView? AppSearchView { get; set; } = null;
         public AppSearchViewController? AppSearchViewController { get; set; } = null;
 
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(AppSearchApp));
+        }
+
         public override void InitializeApplicationOutput()
         {
             AppSearchView = new AppSearchView();

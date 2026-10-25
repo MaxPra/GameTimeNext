@@ -13,6 +13,11 @@ namespace GameTimeNext.Core.Application.Codetables
         public CodetablesEditViewController? CodetablesEditViewController { get; set; }
         public T1CTABH? T1CTABH { get; set; } = new T1CTABH();
 
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(CodetablesEditApp));
+        }
+
         public override void InitializeApplicationOutput()
         {
             CodetablesEditView = new CodetablesEditView();

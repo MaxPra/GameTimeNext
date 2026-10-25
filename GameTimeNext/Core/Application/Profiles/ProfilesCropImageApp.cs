@@ -24,6 +24,11 @@ namespace GameTimeNext.Core.Application.Profiles
             }
         }
 
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(ProfilesCropImageApp));
+        }
+
         public override void InitializeApplicationOutput()
         {
             _profilesCropImageView = new ProfilesCropImageView();

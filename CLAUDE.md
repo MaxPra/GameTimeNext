@@ -13,8 +13,7 @@ The solution references **`../UIX.ViewController.Engine`**, a sibling repository
 ```bash
 dotnet build GameTimeNext.slnx
 dotnet run --project GameTimeNext/GameTimeNext.csproj
-dotnet run --project GameTimeNext/GameTimeNext.csproj -- minimized   # start hidden, no splash
-```
+dotnet run --project GameTimeNext/GameTimeNext.csproj -- minimized   # start hidden, no splash```
 
 - Code rules check: `python Scripts/cleancode.py` — enforces where certain string literals (`"GameTimeNext"`, `"MaxPra"`, …) and identifiers (`DirectorySeparatorChar`) may appear, with per-file allowed counts. If a new occurrence is legitimate, add it to the allowlist in the script.
 - There is no test suite (`GameTimeNext.Tests` contains only build output). `RemoteMonitoring/` and `GameTimeNext.Shared/` are untracked work-in-progress folders and are not in the solution.
@@ -43,6 +42,8 @@ From `Scripts/unallowed_code.md` and `.github/copilot-instructions.md`:
 
 ### Modules ("applications")
 Each module is a `UIXApplication` subclass (`<Name>App.cs`) that creates its views in `InitializeApplicationOutput()` and wires each view to a controller. It holds the table objects being edited (e.g. `PlaythroughEditApp.T1plthr`) and exposes entry methods like `Edit(...)` / `CreateNew(...)` that take a result callback. Modules implementing `IUIXApplicationStarter` can be hosted in a tab; `ApplicationLauncher.LaunchApplication` instantiates them by type name via reflection. Top-level launchable modules are registered in `Core/Application/StartableApps.json` (code, name, fully qualified class name).
+
+Every application (also dialogs, edit apps and background processes) must override `InitializeAppInfo()` and call `ReadFromAppProperties(nameof(<ClassName>))` there; it runs in the constructor before `InitializeApplicationOutput()`. The properties (`AppProperties`: `ApplicationName`, `ApplicationDescription`, `ApplicationHelpText` as Markdown, `IsMenuCallPossible`) are maintained in the module "Application Properties Definition" (table `T1APRDH`, ID = class name). The engine only knows `IUIXAppPropertiesProvider`; GameTimeNext registers `Core/Framework/AppPropertiesProvider.cs` in `App.xaml.cs` after `AppEnvironment.Initalize()`. Applications created before that, or without a definition, get properties that only contain their name.
 
 Inside a module:
 - `Views/` — XAML views; `Controller/` — `UIXViewControllerBase` subclasses; `ViewModel(s)/` — WPF view models.

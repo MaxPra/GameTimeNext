@@ -12,6 +12,11 @@ namespace GameTimeNext.Core.Application.CreateImportPackage
 
         public CreateImportPackageViewController? CreateImportPackageViewController { get; set; }
 
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(CreateImportPackageApp));
+        }
+
         public override void InitializeApplicationOutput()
         {
             CreateImportPackageView = new CreateImportPackageView();

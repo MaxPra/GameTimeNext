@@ -12,6 +12,11 @@ namespace GameTimeNext.Core.Application.Profiles
         private ProfilesExecutablesEditView? _profilesEditExecutablesView = null;
         private ProfilesExecutablesEditViewController? _profilesEditExecutablesViewController = null;
 
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(ProfilesExecutablesEditApp));
+        }
+
         public override void InitializeApplicationOutput()
         {
             _profilesEditExecutablesView = new ProfilesExecutablesEditView();

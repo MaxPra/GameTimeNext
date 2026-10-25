@@ -87,6 +87,9 @@ namespace GameTimeNext
             FnLog.AddInfo("MainApp", "Initializing application environment...");
             AppEnvironment.Initalize();
 
+            // Only now: T1APRDH exists after the metadata migration in Initalize; earlier applications get the fallback properties
+            UIXApplication.AppPropertiesProvider = new AppPropertiesProvider();
+
             // Delete old backups
             FnLog.AddInfo("MainApp", "Deleting old backups...");
             FileHandler.DeleteOldBackupFiles();
