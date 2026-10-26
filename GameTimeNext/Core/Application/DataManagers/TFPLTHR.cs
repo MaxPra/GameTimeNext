@@ -1,6 +1,9 @@
 ﻿using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
+using GameTimeNext.Core.Framework.UI.Dialogs;
 using UIX.ViewController.Engine.Querying;
+using UIX.ViewController.Engine.Runnables;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.DataManagers
 {
@@ -200,5 +203,77 @@ namespace GameTimeNext.Core.Application.DataManagers
             txplthr.Delete(ptid);
         }
 
+        public static void UpdatePlaythroughStatus(UIXApplication app, ref T1PLTHR t1plthr, PlaythroughStatus status, T1PLTHR? currentT1plthr = null)
+        {
+            string question = string.Empty;
+            switch (status)
+            {
+                case PlaythroughStatus.Open:
+                    if (!t1plthr.PTPA) break;
+
+                    question = "Do you really want to unpause this playthrough?";
+                    if (currentT1plthr is not null)
+                        question += "\n\nInformation: Your current playthrough will be paused!";
+                    break;
+                case PlaythroughStatus.Completed:
+                    question = "Do you really want to complete your current playthrough?\nYou won't be able to undo this action!";
+                    break;
+                case PlaythroughStatus.Canceled:
+                    question = "Do you really want to cancel your current playthrough?\nYou won't be able to undo this action!\n\nInformation: The gametime of this playthrough will be added to your overall gametime!";
+                    break;
+                case PlaythroughStatus.Paused:
+                    question = "Do you really want to pause this playthrough?";
+                    break;
+            }
+
+            if (!FnString.IsNullEmptyOrWhitespace(question))
+            {
+                CFMBOXResult result = app.GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Question", question, CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
+                if (result == CFMBOXResult.No) return;
+            }
+
+            switch (status)
+            {
+                case PlaythroughStatus.Open:
+                    t1plthr.PTCO = false;
+                    t1plthr.PTCA = false;
+                    t1plthr.PTPA = false;
+
+                    // Pause current playthrough
+                    if (currentT1plthr is not null)
+                    {
+                        currentT1plthr.PTCO = false;
+                        currentT1plthr.PTCA = false;
+                        currentT1plthr.PTPA = true;
+                        new TXPLTHR().Save(currentT1plthr);
+                    }
+                    break;
+                case PlaythroughStatus.Completed:
+                    t1plthr.PTCO = true;
+                    t1plthr.PTCA = false;
+                    t1plthr.PTPA = false;
+                    break;
+                case PlaythroughStatus.Canceled:
+                    t1plthr.PTCO = false;
+                    t1plthr.PTCA = true;
+                    t1plthr.PTPA = false;
+                    break;
+                case PlaythroughStatus.Paused:
+                    t1plthr.PTCO = false;
+                    t1plthr.PTCA = false;
+                    t1plthr.PTPA = true;
+                    break;
+            }
+
+            new TXPLTHR().Save(t1plthr);
+        }
+
+        public enum PlaythroughStatus
+        {
+            Open,
+            Completed,
+            Canceled,
+            Paused
+        }
     }
 }

@@ -368,10 +368,7 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
             if (_viewModel?.SelectedRow?.RowObject is not T1PLTHR selectedT1plthr)
                 return;
 
-            // Mark playthrough as completed
-            selectedT1plthr.PTCO = true;
-            selectedT1plthr.PTPA = false;
-            new TXPLTHR().Save(selectedT1plthr);
+            TFPLTHR.UpdatePlaythroughStatus(GetApp(), ref selectedT1plthr, TFPLTHR.PlaythroughStatus.Completed);
 
             await BuildDataGridAsync();
 
@@ -384,16 +381,7 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
             if (_viewModel?.SelectedRow?.RowObject is not T1PLTHR selectedT1plthr)
                 return;
 
-            string text = "Do you really want to cancel your current playthrough?\nYou won't be able to undo this action!\n\nInformation: The gametime of this playthrough will be added to your overall gametime!";
-            CFMBOXResult result = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Question", text, CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
-
-            if (result == CFMBOXResult.No)
-                return;
-
-            // Cancel playthrough
-            selectedT1plthr.PTCA = true;
-            selectedT1plthr.PTPA = false;
-            new TXPLTHR().Save(selectedT1plthr);
+            TFPLTHR.UpdatePlaythroughStatus(GetApp(), ref selectedT1plthr, TFPLTHR.PlaythroughStatus.Canceled);
 
             await BuildDataGridAsync();
 
@@ -405,15 +393,7 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
             if (_viewModel?.SelectedRow?.RowObject is not T1PLTHR selectedT1plthr)
                 return;
 
-            string text = "Do you really want to pause this playthrough?";
-            CFMBOXResult result = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Question", text, CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
-
-            if (result == CFMBOXResult.No)
-                return;
-
-            // Pause playthrough
-            selectedT1plthr.PTPA = true;
-            new TXPLTHR().Save(selectedT1plthr);
+            TFPLTHR.UpdatePlaythroughStatus(GetApp(), ref selectedT1plthr, TFPLTHR.PlaythroughStatus.Paused);
 
             await BuildDataGridAsync();
 
@@ -426,25 +406,7 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
                 return;
 
             T1PLTHR currentPlaythrough = TFPLTHR.GetCurrentPlaythrough(selectedT1plthr.PFID);
-            string text = "Do you really want to unpause this playthrough?";
-
-            if (currentPlaythrough is not null)
-                text += "\n\nInformation: Your current playthrough will be paused!";
-
-            CFMBOXResult result = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Question", text, CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
-            if (result == CFMBOXResult.No)
-                return;
-
-            // Pause current playthrough
-            if (currentPlaythrough is not null)
-            {
-                currentPlaythrough.PTPA = true;
-                new TXPLTHR().Save(currentPlaythrough);
-            }
-
-            // Unpause selected playthrough
-            selectedT1plthr.PTPA = false;
-            new TXPLTHR().Save(selectedT1plthr);
+            TFPLTHR.UpdatePlaythroughStatus(GetApp(), ref selectedT1plthr, TFPLTHR.PlaythroughStatus.Open, currentT1plthr: currentPlaythrough);
 
             await BuildDataGridAsync();
 

@@ -132,7 +132,7 @@ namespace GameTimeNext.Core.Application.DataManagers
                     }
                     else if (plto > timeSpanEnd)
                     {
-                        playtime += (timeSpanEnd - plfr).TotalMinutes;
+                        playtime += Math.Max((timeSpanEnd - plfr).TotalMinutes, 0);
                     }
                 }
 

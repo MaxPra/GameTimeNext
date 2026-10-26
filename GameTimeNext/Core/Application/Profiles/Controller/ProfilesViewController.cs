@@ -681,13 +681,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         protected async Task EV_ctxtCompleteProfile()
         {
             T1PROFI t1profi = GetSelectedProfile();
-
             T1PLTHR t1plthr = TFPLTHR.GetCurrentPlaythrough(t1profi.PFID);
 
-            // Mark playthrough as completed
-            t1plthr.PTCO = true;
-
-            new TXPLTHR().Save(t1plthr);
+            TFPLTHR.UpdatePlaythroughStatus(GetApp(), ref t1plthr, TFPLTHR.PlaythroughStatus.Completed);
 
             await BuildProfilesListBoxAsync(t1profi.PFID);
         }
@@ -709,19 +705,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         protected async Task EV_ctxtCancelPlaythrough()
         {
             T1PROFI t1profi = GetSelectedProfile();
-
             T1PLTHR t1plthr = TFPLTHR.GetCurrentPlaythrough(t1profi.PFID);
 
-            string text = "Do you really want to cancel your current playthrough?\nYou won't be able to undo this action!\n\nInformation: The gametime of this playthrough will be added to your overall gametime!";
-            CFMBOXResult result = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Question", text, CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
-
-            if (result == CFMBOXResult.No)
-                return;
-
-            // Cancel playthrough
-            t1plthr.PTCA = true;
-
-            new TXPLTHR().Save(t1plthr);
+            TFPLTHR.UpdatePlaythroughStatus(GetApp(), ref t1plthr, TFPLTHR.PlaythroughStatus.Canceled);
 
             await BuildProfilesListBoxAsync(t1profi.PFID);
         }

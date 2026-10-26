@@ -303,7 +303,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             });
         }
 
-        protected void btnOpenIgdbClientSecret()
+        protected void EV_btnOpenIgdbClientSecret()
         {
             Process.Start(new ProcessStartInfo
             {
@@ -381,7 +381,10 @@ namespace GameTimeNext.Core.Application.Settings.Controller
         protected async Task EV_btnImportBackup()
         {
             if (!File.Exists(GetView().txbBackupImportPath.Text))
+            {
                 GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Error", "Chosen import file doesn't exist!", CFMBOXResult.Ok, CFMBOXIcon.Error);
+                return;
+            }
 
             CFMBOXResult result = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Info", "The application will be restarted now and will then importing the backup.\nYour current Settings will be saved now.\nDo you want to proceed?", CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Info);
 
