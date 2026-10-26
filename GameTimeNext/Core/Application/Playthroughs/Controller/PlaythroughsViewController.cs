@@ -16,6 +16,7 @@ using UIX.ViewController.Engine.FrameworkElements.UserControls;
 using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
+using UIX.ViewController.Engine.Viewmodel;
 using static UIX.ViewController.Engine.FrameworkElements.UIXContextMenuFactory;
 
 namespace GameTimeNext.Core.Application.Playthroughs.Controller
@@ -132,7 +133,12 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
             ContextMenuBuilder contextBuilder = UIXContextMenuFactory.Create("PlaythroughDataGridContextMenu");
             contextBuilder.SetStyle(ProfilesContextMenuBuilder.contextMenuStyle);
 
-            T1PLTHR t1plthr = (T1PLTHR)ptRow.RowObject!;
+            // Profile rows have no actions
+            if (ptRow.RowObject is not T1PLTHR t1plthr)
+            {
+                dgRow.ContextMenu = null;
+                return;
+            }
 
             contextBuilder.AddItem("ctxtEdit", "Edit", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Edit), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
 
@@ -163,9 +169,15 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
         {
             GetApp().Loader.Begin();
 
+            // Profiles the user collapsed stay collapsed after a refresh
+            HashSet<UIXStructureKey> collapsedKeys = GetView().DgPlaythroughs.TreeRows
+                .Where(r => r.HasChildren && !r.IsExpanded)
+                .Select(r => r.StructureKey)
+                .ToHashSet();
+
             await Task.Run(() =>
             {
-                List<PlaythroughDataGridRow> rows = BuildRowsPlaythroughs();
+                List<PlaythroughDataGridRow> rows = BuildRowsPlaythroughs(collapsedKeys);
 
                 View.Dispatcher.Invoke(() =>
                 {
@@ -179,9 +191,13 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
             });
         }
 
-        private List<PlaythroughDataGridRow> BuildRowsPlaythroughs()
+        /// <summary>
+        /// Builds the tree rows: one row per profile (ordered by name) with its playthroughs below.
+        /// </summary>
+        private List<PlaythroughDataGridRow> BuildRowsPlaythroughs(HashSet<UIXStructureKey> collapsedKeys)
         {
             List<PlaythroughDataGridRow> rows = new List<PlaythroughDataGridRow>();
+            Dictionary<long, PlaythroughDataGridRow> profileRows = new Dictionary<long, PlaythroughDataGridRow>();
 
             UIXQuery query = BuildQueryPlaythroughs();
 
@@ -195,9 +211,17 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
                     TXPLTHR txplthr = new TXPLTHR();
                     T1PLTHR t1plthr = txplthr.Read(ptid);
 
+                    if (!profileRows.TryGetValue(t1plthr.PFID, out PlaythroughDataGridRow? profileRow))
+                    {
+                        profileRow = BuildProfileRow(t1plthr.PFID, collapsedKeys);
+                        profileRows.Add(t1plthr.PFID, profileRow);
+                        rows.Add(profileRow);
+                    }
+
                     PlaythroughDataGridRow row = GetView().DgPlaythroughs.CreateNewRow<PlaythroughDataGridRow>();
-                    row.COGANA = TFPROFI.GetProfileName(t1plthr.PFID);
-                    row.COPTDE = t1plthr.PTDE;
+                    row.StructureKey = profileRow.StructureKey.Add(t1plthr.PTID);
+                    row.IsPlaythroughRow = true;
+                    row.CONAME = t1plthr.PTDE;
                     row.COPTTY = TFCTABD.GetDescription("pL", t1plthr.PTTY);
                     row.COPTCO = t1plthr.PTCO;
                     row.COPTCA = t1plthr.PTCA;
@@ -207,10 +231,29 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
                     row.RowObject = t1plthr;
 
                     rows.Add(row);
+
+                    profileRow.COPTPLMI += row.COPTPLMI;
                 }
             }
 
+            // Profile playtime: sum of the listed playthroughs
+            foreach (PlaythroughDataGridRow profileRow in profileRows.Values)
+                profileRow.COPTPL = FnTime.FormatMinutesAsHoursAndMinutes(profileRow.COPTPLMI, FnTime.NoValue);
+
             return rows;
+        }
+
+        private PlaythroughDataGridRow BuildProfileRow(long pfid, HashSet<UIXStructureKey> collapsedKeys)
+        {
+            T1PROFI t1profi = new TXPROFI().Read(pfid);
+
+            PlaythroughDataGridRow row = GetView().DgPlaythroughs.CreateNewRow<PlaythroughDataGridRow>();
+            row.StructureKey = new UIXStructureKey().Add(pfid);
+            row.IsExpanded = !collapsedKeys.Contains(row.StructureKey);
+            row.CONAME = t1profi?.GANA ?? string.Empty;
+            row.RowObject = t1profi;
+
+            return row;
         }
 
         private UIXQuery BuildQueryPlaythroughs()
@@ -219,14 +262,18 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
 
             query.AddField(K1PLTHR.Name, K1PLTHR.Fields.PTID);
 
+            // Profile join for the name filter and the order of the profile rows
+            UIXQueryTable table_profiles = query.AddJoinTable(K1PROFI.Name, JoinType.INNER);
+            table_profiles.AddJoinCondition(K1PLTHR.Name, K1PLTHR.Fields.PFID, QueryCompareType.EQUALS, K1PROFI.Name, K1PROFI.Fields.PFID);
+
+            query.AddOrderBy(K1PROFI.Name, K1PROFI.Fields.GANA, OrderDirection.ASC);
+            query.AddOrderBy(K1PLTHR.Name, K1PLTHR.Fields.PTID, OrderDirection.ASC);
+
             View.Dispatcher.Invoke(() =>
             {
 
                 if (!FnString.IsNullEmptyOrWhitespace(GetView().TxbProfileName.Text))
                 {
-                    UIXQueryTable table_profiles = query.AddJoinTable(K1PROFI.Name, JoinType.INNER);
-                    table_profiles.AddJoinCondition(K1PLTHR.Name, K1PLTHR.Fields.PFID, QueryCompareType.EQUALS, K1PROFI.Name, K1PROFI.Fields.PFID);
-
                     query.AddWhere(K1PROFI.Name, K1PROFI.Fields.GANA, QueryCompareType.LIKE, GetView().TxbProfileName.Text);
                 }
 

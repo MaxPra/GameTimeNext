@@ -179,7 +179,7 @@
             </Grid>
         </Border>
 
-        <uixsel:UIXDataGrid
+        <uixsel:UIXTreeGrid
             x:Name="DgPlaythroughs"
             Grid.Row="2"
             AutoGenerateColumns="False"
@@ -192,27 +192,60 @@
             SelectedItem="{Binding SelectedRow, Mode=TwoWay}"
             SelectionMode="Single"
             SelectionUnit="FullRow">
-            <uixsel:UIXDataGrid.Columns>
-                <DataGridTextColumn
-                    Width="260"
-                    Binding="{Binding COGANA}"
-                    Header="Profile Name" />
-                <DataGridTextColumn
-                    Width="300"
-                    Binding="{Binding COPTDE}"
-                    Header="Description" />
-                <DataGridCheckBoxColumn
-                    Width="120"
-                    Binding="{Binding COPTCO}"
-                    Header="Completed" />
-                <DataGridCheckBoxColumn
-                    Width="120"
-                    Binding="{Binding COPTPA}"
-                    Header="Paused" />
-                <DataGridCheckBoxColumn
-                    Width="120"
-                    Binding="{Binding COPTCA}"
-                    Header="Canceled" />
+            <uixsel:UIXTreeGrid.Resources>
+                <BooleanToVisibilityConverter x:Key="BoolToVisibility" />
+            </uixsel:UIXTreeGrid.Resources>
+
+            <uixsel:UIXTreeGrid.Columns>
+                <!--  Tree column: profile name on profile rows, description on playthrough rows  -->
+                <uixsel:UIXTreeGridTextColumn
+                    Width="560"
+                    Binding="{Binding CONAME}"
+                    Header="Profile / Playthrough">
+                    <uixsel:UIXTreeGridTextColumn.ElementStyle>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="VerticalAlignment" Value="Center" />
+                            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsPlaythroughRow}" Value="False">
+                                    <Setter Property="FontWeight" Value="SemiBold" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </uixsel:UIXTreeGridTextColumn.ElementStyle>
+                </uixsel:UIXTreeGridTextColumn>
+
+                <!--  Check boxes only on playthrough rows  -->
+                <DataGridTemplateColumn Width="120" Header="Completed">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox
+                                IsChecked="{Binding COPTCO, Mode=OneWay}"
+                                Style="{StaticResource DataGrid.CheckBox.Display}"
+                                Visibility="{Binding IsPlaythroughRow, Converter={StaticResource BoolToVisibility}}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Width="120" Header="Paused">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox
+                                IsChecked="{Binding COPTPA, Mode=OneWay}"
+                                Style="{StaticResource DataGrid.CheckBox.Display}"
+                                Visibility="{Binding IsPlaythroughRow, Converter={StaticResource BoolToVisibility}}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Width="120" Header="Canceled">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox
+                                IsChecked="{Binding COPTCA, Mode=OneWay}"
+                                Style="{StaticResource DataGrid.CheckBox.Display}"
+                                Visibility="{Binding IsPlaythroughRow, Converter={StaticResource BoolToVisibility}}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
                 <DataGridTextColumn
                     Width="220"
                     Binding="{Binding COPTTY}"
@@ -222,7 +255,7 @@
                     Binding="{Binding COPTPL}"
                     Header="Playtime"
                     SortMemberPath="COPTPLMI" />
-            </uixsel:UIXDataGrid.Columns>
-        </uixsel:UIXDataGrid>
+            </uixsel:UIXTreeGrid.Columns>
+        </uixsel:UIXTreeGrid>
     </Grid>
 </ui:GTNWindowView>
