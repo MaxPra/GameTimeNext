@@ -134,6 +134,27 @@
                 </Grid>
 
                 <Grid
+                    Grid.Row="2"
+                    Grid.Column="4"
+                    HorizontalAlignment="Left">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="130" />
+                        <ColumnDefinition Width="14" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock
+                        Grid.Column="0"
+                        Foreground="{DynamicResource Brush.TextSecondary}"
+                        Text="Paused" />
+
+                    <CheckBox
+                        x:Name="ChbPaused"
+                        Grid.Column="2"
+                        VerticalAlignment="Center" />
+                </Grid>
+
+                <Grid
                     Grid.Row="0"
                     Grid.Column="4"
                     HorizontalAlignment="Left">

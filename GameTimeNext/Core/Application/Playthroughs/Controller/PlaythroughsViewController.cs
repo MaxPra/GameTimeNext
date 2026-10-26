@@ -169,15 +169,9 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
         {
             GetApp().Loader.Begin();
 
-            // Profiles the user collapsed stay collapsed after a refresh
-            HashSet<UIXStructureKey> collapsedKeys = GetView().DgPlaythroughs.TreeRows
-                .Where(r => r.HasChildren && !r.IsExpanded)
-                .Select(r => r.StructureKey)
-                .ToHashSet();
-
             await Task.Run(() =>
             {
-                List<PlaythroughDataGridRow> rows = BuildRowsPlaythroughs(collapsedKeys);
+                List<PlaythroughDataGridRow> rows = BuildRows();
 
                 View.Dispatcher.Invoke(() =>
                 {
@@ -194,10 +188,9 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
         /// <summary>
         /// Builds the tree rows: one row per profile (ordered by name) with its playthroughs below.
         /// </summary>
-        private List<PlaythroughDataGridRow> BuildRowsPlaythroughs(HashSet<UIXStructureKey> collapsedKeys)
+        private List<PlaythroughDataGridRow> BuildRows()
         {
             List<PlaythroughDataGridRow> rows = new List<PlaythroughDataGridRow>();
-            Dictionary<long, PlaythroughDataGridRow> profileRows = new Dictionary<long, PlaythroughDataGridRow>();
 
             UIXQuery query = BuildQueryPlaythroughs();
 
@@ -205,55 +198,77 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
             {
                 while (reader.Read())
                 {
-
                     long ptid = UIXQuery.GetInt64(reader, K1PLTHR.Name, K1PLTHR.Fields.PTID);
 
-                    TXPLTHR txplthr = new TXPLTHR();
-                    T1PLTHR t1plthr = txplthr.Read(ptid);
+                    T1PLTHR t1plthr = new TXPLTHR().Read(ptid);
 
-                    if (!profileRows.TryGetValue(t1plthr.PFID, out PlaythroughDataGridRow? profileRow))
-                    {
-                        profileRow = BuildProfileRow(t1plthr.PFID, collapsedKeys);
-                        profileRows.Add(t1plthr.PFID, profileRow);
-                        rows.Add(profileRow);
-                    }
+                    long pfid = BuildRowsProfiles(rows, t1plthr.PFID);
 
-                    PlaythroughDataGridRow row = GetView().DgPlaythroughs.CreateNewRow<PlaythroughDataGridRow>();
-                    row.StructureKey = profileRow.StructureKey.Add(t1plthr.PTID);
-                    row.IsPlaythroughRow = true;
-                    row.CONAME = t1plthr.PTDE;
-                    row.COPTTY = TFCTABD.GetDescription("pL", t1plthr.PTTY);
-                    row.COPTCO = t1plthr.PTCO;
-                    row.COPTCA = t1plthr.PTCA;
-                    row.COPTPA = t1plthr.PTPA;
-                    row.COPTPLMI = TFPLTHR.GetPlaytimeInMinutes(t1plthr.PTID);
-                    row.COPTPL = FnTime.FormatMinutesAsHoursAndMinutes(row.COPTPLMI, FnTime.NoValue);
-                    row.RowObject = t1plthr;
-
-                    rows.Add(row);
-
-                    profileRow.COPTPLMI += row.COPTPLMI;
+                    BuildRowsPlaythroughs(rows, pfid, t1plthr);
                 }
             }
-
-            // Profile playtime: sum of the listed playthroughs
-            foreach (PlaythroughDataGridRow profileRow in profileRows.Values)
-                profileRow.COPTPL = FnTime.FormatMinutesAsHoursAndMinutes(profileRow.COPTPLMI, FnTime.NoValue);
 
             return rows;
         }
 
-        private PlaythroughDataGridRow BuildProfileRow(long pfid, HashSet<UIXStructureKey> collapsedKeys)
+        /// <summary>
+        /// Adds the parent row of the profile, if it does not exist yet, and returns the PFID.
+        /// </summary>
+        private long BuildRowsProfiles(List<PlaythroughDataGridRow> rows, long pfid)
         {
+            UIXStructureKey structureKey = new UIXStructureKey().Add(pfid);
+
+            if (rows.Exists(r => r.StructureKey == structureKey))
+                return pfid;
+
             T1PROFI t1profi = new TXPROFI().Read(pfid);
 
             PlaythroughDataGridRow row = GetView().DgPlaythroughs.CreateNewRow<PlaythroughDataGridRow>();
-            row.StructureKey = new UIXStructureKey().Add(pfid);
-            row.IsExpanded = !collapsedKeys.Contains(row.StructureKey);
+            row.StructureKey = structureKey;
+            // Initially expanded; after a refresh the grid restores the state the user left
+            row.IsExpanded = true;
             row.CONAME = t1profi?.GANA ?? string.Empty;
+            row.COPTPLMI = GetProfilePlaytimeInMinutes(pfid);
+            row.COPTPL = FnTime.FormatMinutesAsHoursAndMinutes(row.COPTPLMI, FnTime.NoValue);
             row.RowObject = t1profi;
 
-            return row;
+            rows.Add(row);
+
+            return pfid;
+        }
+
+        /// <summary>
+        /// Playtime of the profile: sum of the sessions of its playthroughs that match the filters of the list.
+        /// </summary>
+        private double GetProfilePlaytimeInMinutes(long pfid)
+        {
+            UIXQuery query = BuildQueryProfilePlaytime(pfid);
+
+            using (var reader = query.Execute())
+                if (reader.Read())
+                    return UIXQuery.GetDouble(reader, "TotalPlaytime");
+
+            return 0;
+        }
+
+        /// <summary>
+        /// Adds the row of the playthrough below its profile.
+        /// </summary>
+        private void BuildRowsPlaythroughs(List<PlaythroughDataGridRow> rows, long pfid, T1PLTHR t1plthr)
+        {
+            PlaythroughDataGridRow row = GetView().DgPlaythroughs.CreateNewRow<PlaythroughDataGridRow>();
+            row.StructureKey = new UIXStructureKey().Add(pfid).Add(t1plthr.PTID);
+            row.IsPlaythroughRow = true;
+            row.CONAME = t1plthr.PTDE;
+            row.COPTTY = TFCTABD.GetDescription("pL", t1plthr.PTTY);
+            row.COPTCO = t1plthr.PTCO;
+            row.COPTCA = t1plthr.PTCA;
+            row.COPTPA = t1plthr.PTPA;
+            row.COPTPLMI = TFPLTHR.GetPlaytimeInMinutes(t1plthr.PTID);
+            row.COPTPL = FnTime.FormatMinutesAsHoursAndMinutes(row.COPTPLMI, FnTime.NoValue);
+            row.RowObject = t1plthr;
+
+            rows.Add(row);
         }
 
         private UIXQuery BuildQueryPlaythroughs()
@@ -269,6 +284,35 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
             query.AddOrderBy(K1PROFI.Name, K1PROFI.Fields.GANA, OrderDirection.ASC);
             query.AddOrderBy(K1PLTHR.Name, K1PLTHR.Fields.PTID, OrderDirection.ASC);
 
+            AddWherePlaythroughFilters(query);
+
+            return query;
+        }
+
+        private UIXQuery BuildQueryProfilePlaytime(long pfid)
+        {
+            UIXQuery query = new UIXQuery(K1SESSI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
+
+            query.AddSum(K1SESSI.Name, K1SESSI.Fields.PLTI, "TotalPlaytime");
+
+            UIXQueryTable table_playthroughs = query.AddJoinTable(K1PLTHR.Name, JoinType.INNER);
+            table_playthroughs.AddJoinCondition(K1SESSI.Name, K1SESSI.Fields.PTID, QueryCompareType.EQUALS, K1PLTHR.Name, K1PLTHR.Fields.PTID);
+
+            UIXQueryTable table_profiles = query.AddJoinTable(K1PROFI.Name, JoinType.INNER);
+            table_profiles.AddJoinCondition(K1PLTHR.Name, K1PLTHR.Fields.PFID, QueryCompareType.EQUALS, K1PROFI.Name, K1PROFI.Fields.PFID);
+
+            query.AddWhere(K1PLTHR.Name, K1PLTHR.Fields.PFID, QueryCompareType.EQUALS, pfid);
+
+            AddWherePlaythroughFilters(query);
+
+            return query;
+        }
+
+        /// <summary>
+        /// Filters of the toolbar. The query has to join T1PLTHR and T1PROFI.
+        /// </summary>
+        private void AddWherePlaythroughFilters(UIXQuery query)
+        {
             View.Dispatcher.Invoke(() =>
             {
 
@@ -294,12 +338,13 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
                 if (GetView().ChbCanceled.IsChecked == true)
                     query.AddWhere(K1PLTHR.Name, K1PLTHR.Fields.PTCA, QueryCompareType.EQUALS, true);
 
+                if (GetView().ChbPaused.IsChecked == true)
+                    query.AddWhere(K1PLTHR.Name, K1PLTHR.Fields.PTPA, QueryCompareType.EQUALS, true);
+
                 if (GetApp().AppRunSelections.Pfid > 0)
                     query.AddWhere(K1PLTHR.Name, K1PLTHR.Fields.PFID, QueryCompareType.EQUALS, GetApp().AppRunSelections.Pfid);
 
             });
-
-            return query;
         }
 
         protected void EV_ctxtEdit()
