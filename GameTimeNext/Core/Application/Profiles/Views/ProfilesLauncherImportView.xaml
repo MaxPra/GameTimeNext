@@ -85,8 +85,7 @@
                 Grid.Column="3"
                 Width="140"
                 Height="36"
-                Content="Import"
-                IsDefault="True" />
+                Content="Import" />
         </Grid>
     </Grid>
 </ui:GTNWindowView>

@@ -5,7 +5,8 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration.Rockstar
 {
     /// <summary>
     /// Rockstar Games Launcher. Game ID = name of the game's registry key (e.g. "Grand Theft Auto V").
-    /// Installed games are read from the registry and started through the launcher with their folder.
+    /// Installed games are read from the registry. The game is started with its own starter in the game folder
+    /// (as its desktop shortcut does), which signs in through the Rockstar Games Launcher and then starts the game.
     /// </summary>
     public class RockstarLauncher : LauncherIntegrationBase
     {
@@ -17,6 +18,8 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration.Rockstar
         public override string LauncherType => "RSG";
 
         public override bool SupportsImport => true;
+
+        public override bool SupportsLaunchArguments => true;
 
         public override List<LauncherGame> GetInstalledGames()
         {
@@ -30,7 +33,7 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration.Rockstar
                 string installPath = GetInstallPath(gameId);
 
                 // A game has its executable directly in its folder (e.g. GTA5.exe, RDR2.exe)
-                if (!Directory.Exists(installPath) || !Directory.EnumerateFiles(installPath, "*.exe").Any())
+                if (FnString.IsNullEmptyOrWhitespace(GetStartExecutable(installPath)))
                     continue;
 
                 games.Add(new LauncherGame(LauncherType, gameId, gameId, installPath));
@@ -41,12 +44,14 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration.Rockstar
 
         public override bool IsGameInstalled(string gameId)
         {
-            return Directory.Exists(GetInstallPath(gameId)) && File.Exists(GetLauncherExe());
+            return !FnString.IsNullEmptyOrWhitespace(GetStartExecutable(GetInstallPath(gameId)));
         }
 
         public override void StartGame(string gameId, string launchArgs)
         {
-            StartShell(GetLauncherExe(), $"-launchTitleInFolder \"{GetInstallPath(gameId)}\"");
+            string installPath = GetInstallPath(gameId);
+
+            StartShell(GetStartExecutable(installPath), launchArgs, installPath);
         }
 
         private static string GetInstallPath(string gameId)
@@ -54,11 +59,20 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration.Rockstar
             return NormalizeFolder(GetLocalMachineValue($@"{RockstarKey}\{gameId}", "InstallFolder"));
         }
 
-        private static string GetLauncherExe()
+        /// <summary>
+        /// Returns the starter of the game (e.g. PlayGTAV.exe), otherwise the game executable itself
+        /// (the biggest executable in the game folder). Empty if the folder contains no executable.
+        /// </summary>
+        private static string GetStartExecutable(string installPath)
         {
-            string launcherFolder = GetLocalMachineValue($@"{RockstarKey}\Launcher", "InstallFolder");
+            if (FnString.IsNullEmptyOrWhitespace(installPath) || !Directory.Exists(installPath))
+                return string.Empty;
 
-            return FnString.IsNullEmptyOrWhitespace(launcherFolder) ? string.Empty : Path.Combine(launcherFolder, "Launcher.exe");
+            string[] executables = Directory.GetFiles(installPath, "*.exe");
+
+            string? starter = executables.FirstOrDefault(e => Path.GetFileName(e).StartsWith("Play", StringComparison.OrdinalIgnoreCase));
+
+            return starter ?? executables.OrderByDescending(e => new FileInfo(e).Length).FirstOrDefault() ?? string.Empty;
         }
     }
 }

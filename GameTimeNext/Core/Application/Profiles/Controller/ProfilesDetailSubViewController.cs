@@ -9,6 +9,7 @@ using GameTimeNext.Core.Application.TimeMonitoring;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.LauncherIntegration;
+using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.Utils;
 using System.Globalization;
 using System.IO;
@@ -28,6 +29,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         private ProfilesViewController? _profilesViewController;
 
         private bool _gameRunning = false;
+        private bool _gameLaunching = false;
 
         public ProfilesDetailSubViewController(UIXApplication app) : base(app)
         {
@@ -45,17 +47,27 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         public void UpdateUIGameRunning()
         {
-            GetView().btnLaunchGame.Content = "Running...";
-            GetView().btnLaunchGame.IsEnabled = false;
+            GetView().btnLaunchGame.Content = "Quit game";
+            GetView().btnLaunchGame.IsEnabled = true;
             _gameRunning = true;
+            _gameLaunching = false;
         }
 
         public void UpdateUIGameClosed()
         {
             GetView().btnLaunchGame.Content = "Launch game";
-            GetView().btnLaunchGame.IsEnabled = true;
+            GetView().btnLaunchGame.IsEnabled = FnLauncher.CanLaunch(_dataWrapper!.GetTypedTableObject());
             ((ProfilesView)_profilesViewController!.View).LaunchingOverlay.Visibility = Visibility.Collapsed;
             _gameRunning = false;
+            _gameLaunching = false;
+        }
+
+        private void UpdateUIGameLaunching()
+        {
+            GetView().btnLaunchGame.Content = "Cancel launch";
+            GetView().btnLaunchGame.IsEnabled = true;
+            ((ProfilesView)_profilesViewController!.View).LaunchingOverlay.Visibility = Visibility.Visible;
+            _gameLaunching = true;
         }
 
         protected override void Init()
@@ -80,7 +92,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             GetView().imgProfileCover.Source = FnImage.LoadImageWithoutLock(Path.Combine(AppConfig.Storage.ProfileCoversDirectoryPath, _dataWrapper!.GetTypedTableObject().PPFN), 300, 450);
 
-            GetView().btnLaunchGame.IsEnabled = FnLauncher.CanLaunch(_dataWrapper!.GetTypedTableObject()) && GetView().btnLaunchGame.Content != "Running...";
+            GetView().btnLaunchGame.IsEnabled = _gameRunning || _gameLaunching || FnLauncher.CanLaunch(_dataWrapper!.GetTypedTableObject());
 
             // -- Progress bar section
             //bool isIGDBLinkedCorrectly = !FnString.IsNullEmptyOrWhitespace(AppEnvironment.GetAppConfig().AppSettings.TwitchIGDBClientID) &&
@@ -431,29 +443,40 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         }
 
+        /// <summary>
+        /// Launch game / Cancel launch / Quit game
+        /// </summary>
         public async void EV_btnLaunchGame()
         {
-            FnLauncher.StartGame(_dataWrapper!.GetTypedTableObject(), GetApp());
-            GetView().btnLaunchGame.Content = "Launching...";
-            GetView().btnLaunchGame.IsEnabled = false;
+            T1PROFI t1profi = _dataWrapper!.GetTypedTableObject();
 
-            ProfilesViewController? profilesViewController = _dataWrapper.SourceController as ProfilesViewController;
-            ((ProfilesView)profilesViewController!.View).LaunchingOverlay.Visibility = Visibility.Visible;
-
-            await Task.Run(() =>
+            if (_gameRunning)
             {
-                // Wait 30 seconds
-                Thread.Sleep(30000);
+                QuitGame(t1profi);
+                return;
+            }
 
-                // If the game has not started within these 30 seconds --> reset the button
-                System.Windows.Application.Current.Dispatcher.Invoke(() =>
-                {
-                    if (!_gameRunning)
-                    {
-                        UpdateUIGameClosed();
-                    }
-                });
-            });
+            if (_gameLaunching)
+            {
+                FnLauncher.CancelLaunch(t1profi);
+                UpdateUIGameClosed();
+                return;
+            }
+
+            UpdateUIGameLaunching();
+
+            // Not installed or cancelled meanwhile; otherwise the running game detection switches to "Quit game"
+            if (!await FnLauncher.StartGameAsync(t1profi, GetApp()) && _gameLaunching)
+                UpdateUIGameClosed();
+        }
+
+        private void QuitGame(T1PROFI t1profi)
+        {
+            CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window);
+            CFMBOXResult result = cfmbox.Show(GetErrorMessage("PRO0008", t1profi.GANA), CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
+
+            if (result == CFMBOXResult.Yes)
+                FnLauncher.QuitGame(t1profi);
         }
 
         protected void EV_btnStartMonitoring()

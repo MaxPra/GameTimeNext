@@ -2,6 +2,8 @@ using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Profiles.Components;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework.UI.Dialogs;
+using GameTimeNext.Core.Framework.Utils;
+using System.Diagnostics;
 using System.Globalization;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
@@ -13,6 +15,9 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
     /// </summary>
     public static class FnLauncher
     {
+        // Set while the launch waits for the profile settings (e.g. HDR) before the launcher is started
+        private static CancellationTokenSource? _launchCancellation;
+
         /// <summary>
         /// Returns the integration of the profile's launcher, null if the profile has none.
         /// </summary>
@@ -83,19 +88,20 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
 
         /// <summary>
         /// Applies the profile settings (e.g. HDR) and starts the game through its launcher.
+        /// Returns false if the game isn't installed or the launch was cancelled before the launcher was started.
         /// </summary>
-        public static async void StartGame(T1PROFI t1profi, UIXApplication app)
+        public static async Task<bool> StartGameAsync(T1PROFI t1profi, UIXApplication app)
         {
             ILauncherIntegration? launcher = GetLauncher(t1profi);
 
             if (launcher == null)
-                return;
+                return false;
 
             if (!launcher.IsGameInstalled(t1profi.LNID))
             {
                 CFMBOX cfmbox = app.GetApplication<CFMBOX>(UIXApplicationStartTarget.Window);
                 cfmbox.Show(cfmbox.GetErrorMessage("GLO0017", GetLauncherName(t1profi.LNTY)), CFMBOXResult.Ok, CFMBOXIcon.Info);
-                return;
+                return false;
             }
 
             CProfileSettings cProfileSettings = new CProfileSettings(t1profi.PRSE).Dezerialize();
@@ -103,9 +109,64 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
             // Apply profile settings first
             CFGameStarter.ActivateProfileSettings(cProfileSettings);
 
-            await Task.Delay(5000);
+            _launchCancellation = new CancellationTokenSource();
+
+            try
+            {
+                await Task.Delay(5000, _launchCancellation.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                return false;
+            }
+            finally
+            {
+                _launchCancellation.Dispose();
+                _launchCancellation = null;
+            }
 
             launcher.StartGame(t1profi.LNID, launcher.SupportsLaunchArguments ? cProfileSettings.LaunchArgs.Trim() : string.Empty);
+            return true;
+        }
+
+        /// <summary>
+        /// Cancels the launch of the game: if the launcher wasn't started yet, the game isn't started at all,
+        /// otherwise the already running processes of the game are ended. The profile settings (e.g. HDR) are reset.
+        /// </summary>
+        public static void CancelLaunch(T1PROFI t1profi)
+        {
+            _launchCancellation?.Cancel();
+
+            QuitGame(t1profi);
+
+            CFGameStarter.DeactivateProfileSettings(new CProfileSettings(t1profi.PRSE).Dezerialize());
+        }
+
+        /// <summary>
+        /// Ends all running processes of the game (its active executables in the game folder), like Steam's "Stop".
+        /// The running game detection notices the end and resets the profile settings.
+        /// </summary>
+        public static void QuitGame(T1PROFI t1profi)
+        {
+            if (FnString.IsNullEmptyOrWhitespace(t1profi.EXGF))
+                return;
+
+            foreach (Process process in FnSystem.GetProcessesWithPathPart(FnExecutables.GetAllActiveExecutablesFromDBObj(t1profi), t1profi.EXGF))
+            {
+                try
+                {
+                    process.Kill(entireProcessTree: true);
+                }
+                catch (Exception ex)
+                {
+                    // e.g. the game runs elevated or has already exited
+                    FnLog.AddWarning(nameof(FnLauncher), $"Could not end process {process.ProcessName}", ex);
+                }
+                finally
+                {
+                    process.Dispose();
+                }
+            }
         }
 
         public static void OpenInLauncher(T1PROFI t1profi)

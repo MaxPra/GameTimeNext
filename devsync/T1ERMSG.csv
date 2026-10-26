@@ -43,3 +43,5 @@ GLO0020;The dev folder was created from the production app folder.;;2026-10-26 1
 GLO0021;Version &1 is available.\n\nDo you want to open GitHub to download it now?;;2026-10-26 19:00:00;prage;2026-10-26 19:00:00;prage
 SET0002;The automatic backup could not be created, because the backup path does not exist:\n&1;;2026-10-26 19:00:00;prage;2026-10-26 19:00:00;prage
 PRO0007;&1 profile cover(s) optimized, &2 MB saved.;;2026-10-26 19:00:00;prage;2026-10-26 19:00:00;prage
+PRO0008;"Quit &1?
+Unsaved progress will be lost.";;2026-10-26 17:44:32;prage;2026-10-26 17:44:32;prage
