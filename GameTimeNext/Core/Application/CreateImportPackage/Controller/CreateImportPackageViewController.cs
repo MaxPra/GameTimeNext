@@ -3,7 +3,7 @@ using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.DataBase.Migration;
 using GameTimeNext.Core.Framework.UI.Dialogs;
-using GameTimeNext.Core.Framework.Utils;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
@@ -74,17 +74,21 @@ namespace GameTimeNext.Core.Application.CreateImportPackage.Controller
 
             GetApp().Loader.Begin("Creating Import Package...");
 
-            // OFODI: Find Path automatically
-            string outputPath = @"X:\MaxPra\GameTimeNext\GameTimeNext\ImportPackages";
-
             bool error = false;
 
             await Task.Run(() =>
             {
                 try
                 {
-                    // OFDOI: Delete previous packages (until IP rework)
-                    MigrationFactory.ImportPackage.ExportPackage(outputPath);
+                    string outputDirPath = AppConfig.Dev.ImportPackagesDirectoryPath;
+
+                    if (Directory.Exists(outputDirPath))
+                    {
+                        Directory.Delete(outputDirPath, true);
+                        FnDirectory.EnsureDirectoryExists(outputDirPath);
+                    }
+
+                    MigrationFactory.ImportPackage.ExportPackage(outputDirPath);
                 }
                 catch (Exception)
                 {
@@ -110,7 +114,28 @@ namespace GameTimeNext.Core.Application.CreateImportPackage.Controller
 
         protected async Task EV_btnTestImport()
         {
-            // OFDOI: EV_btnTestImport
+            CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
+
+            try
+            {
+                GetApp().Loader.Begin();
+                GetApp().Loader.SetText("Inmidst of testing ^^");
+
+                bool useProdDb = GetView().chbUseProdDb.IsChecked.Equals(true);
+                GetApp().StartTestImportPackage(useProdDb);
+                cfmbox.Show(GetErrorMessage("IMP0001"), CFMBOXResult.Ok, CFMBOXIcon.Info);
+                GetApp().EndTestImportPackage();
+            }
+            catch (Exception ex)
+            {
+                string errMsg = GetErrorMessage("GLO0012", "testing the import package");
+                cfmbox.Show(errMsg, CFMBOXResult.Ok, CFMBOXIcon.Error);
+                FnLog.AddError(this, errMsg, ex);
+            }
+            finally
+            {
+                GetApp().Loader.Stop();
+            }
         }
     }
 }

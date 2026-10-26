@@ -14,7 +14,6 @@
 
 		<ApplicationIcon>UI\Ressources\GTN_APP_ICON.ico</ApplicationIcon>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
-		<Configurations>Debug;Release;GTXMigTest</Configurations>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -30,112 +29,27 @@
 		<InformationalVersion>$(VersionSemantic)-$(VersionTag)+$(BuildDate)</InformationalVersion>
 	</PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="Core\Application\UpdateChanges\UpdateChanges_v0.2.4beta.txt" />
-    <None Remove="UI\Ressources\GTN_APP_ICON.ico" />
-    <None Remove="UI\Ressources\GTN_ICON_ADD_PROFILE.png" />
-    <None Remove="UI\Ressources\GTN_ICON_CLSMP.png" />
-    <None Remove="UI\Ressources\GTN_ICON_CLSOF.png" />
-    <None Remove="UI\Ressources\GTN_ICON_MONITOR_KEY.png" />
-    <None Remove="UI\Ressources\GTN_ICON_PLAYABLE.png" />
-    <None Remove="UI\Ressources\ICON_DEBUG.png" />
-  </ItemGroup>
+	<ItemGroup>
+		<!-- Changelogs (UpdateChanges_v*), read from the output directory at startup -->
+		<None Remove="Core\Application\UpdateChanges\**" />
+		<Content Include="Core\Application\UpdateChanges\**" CopyToOutputDirectory="PreserveNewest" />
 
-  <ItemGroup>
-    <Content Include="Core\Application\UpdateChanges\UpdateChanges_v0.3.3beta.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Core\Application\UpdateChanges\UpdateChanges_vNEXT.md">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Core\Application\UpdateChanges\UpdateChanges_v0.4.0beta.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Core\Application\UpdateChanges\UpdateChanges_v0.3.2beta.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Core\Application\UpdateChanges\UpdateChanges_v0.3.1beta.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Core\Application\UpdateChanges\UpdateChanges_v0.3.0beta.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Core\Application\UpdateChanges\UpdateChanges_v0.2.8beta.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Core\Application\UpdateChanges\UpdateChanges_v0.2.7beta.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Core\Application\UpdateChanges\UpdateChanges_v0.2.6beta.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Core\Application\UpdateChanges\UpdateChanges_v0.2.5beta.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="UI\Ressources\GTN_APP_ICON.ico">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
+		<!-- Images, referenced as pack URIs (/UI/Ressources/...) -->
+		<None Remove="UI\Ressources\**" />
+		<Resource Include="UI\Ressources\**" CopyToOutputDirectory="PreserveNewest" />
 
-  <ItemGroup>
-    <!-- Native e_sqlite3 library required by System.Data.SQLite 2.x -->
-    <PackageReference Include="SourceGear.sqlite3" Version="3.53.4" />
-    <PackageReference Include="System.Data.SQLite" Version="2.0.2" />
-  </ItemGroup>
+		<None Update="Core\Application\StartableApps.json" CopyToOutputDirectory="PreserveNewest" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\UIX.ViewController.Engine\UIX.ViewController.Engine.csproj" />
-    <ProjectReference Include="..\..\UIXMonitorTweaks\UIXMonitorTweaks.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<!-- Native e_sqlite3 library required by System.Data.SQLite 2.x -->
+		<PackageReference Include="SourceGear.sqlite3" Version="3.53.4" />
+		<PackageReference Include="System.Data.SQLite" Version="2.0.2" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Content Include="Core\Application\UpdateChanges\UpdateChanges_v0.2.4beta.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Resource Include="UI\Ressources\GTN_APP_ICON.ico">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="UI\Ressources\GTN_ICON_ADD_PROFILE.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="UI\Ressources\GTN_ICON_CLSMP.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="UI\Ressources\GTN_ICON_CLSOF.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="UI\Ressources\GTN_ICON_MONITOR_KEY.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="UI\Ressources\GTN_ICON_PLAYABLE.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="UI\Ressources\ICON_DEBUG.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="UI\Ressources\GTN_CLS_ICON.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Core\Application\CreateImportPackage\ViewModels\" />
-    <Folder Include="Core\Application\Metadata\ViewModel\" />
-    <Folder Include="Core\Application\Settings\Viewmodels\" />
-    <Folder Include="Core\Framework\ErrorHandling\" />
-    <Folder Include="Core\Framework\UI\AttachedProperties\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Core\Application\StartableApps.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="ImportPackages\Import_Package_452c6973071d4ac2b05cc85d76d0dd75.zip">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="ImportPackages\Import_Package_771bda2cca634e29b88d7f85868d9609.zip">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\UIX.ViewController.Engine\UIX.ViewController.Engine.csproj" />
+		<ProjectReference Include="..\..\UIXMonitorTweaks\UIXMonitorTweaks.csproj" />
+	</ItemGroup>
 
 </Project>

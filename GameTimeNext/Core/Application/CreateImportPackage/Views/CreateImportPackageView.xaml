@@ -15,49 +15,91 @@
     mc:Ignorable="d">
 
     <Grid Style="{StaticResource View.Root}">
+        <Grid.Resources>
+            <Style BasedOn="{StaticResource CheckBox.Switch}" TargetType="{x:Type CheckBox}" />
+        </Grid.Resources>
+        
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="16" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="8" />
-            <ColumnDefinition Width="Auto" />
-        </Grid.ColumnDefinitions>
 
-        <Button
-            x:Name="btnExecute"
+        <Border
             Grid.Row="0"
-            Grid.Column="0"
-            Width="148"
-            Height="38"
-            HorizontalAlignment="Left"
-            IsDefault="True">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock
-                    Margin="0,0,6,0"
-                    VerticalAlignment="Center"
-                    FontFamily="Segoe MDL2 Assets"
-                    Text="&#xE768;" />
-                <TextBlock VerticalAlignment="Center" Text="Execute" />
-            </StackPanel>
-        </Button>
+            Padding="16"
+            Style="{StaticResource Card}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
 
-        <Button
-            x:Name="btnTestImport"
-            Grid.Row="0"
-            Grid.Column="2"
-            Width="148"
-            Height="38"
-            HorizontalAlignment="Left"
-            IsDefault="True">
-            <StackPanel Orientation="Horizontal">
+                <Button
+                    x:Name="btnExecute"
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Width="148"
+                    Height="38"
+                    HorizontalAlignment="Left">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock
+                            Margin="0,0,6,0"
+                            VerticalAlignment="Center"
+                            FontFamily="Segoe MDL2 Assets"
+                            Text="&#xE768;" />
+                        <TextBlock VerticalAlignment="Center" Text="Execute" />
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </Border>
+
+        <Border
+            Grid.Row="2"
+            Padding="16"
+            Style="{StaticResource Card}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="16" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
                 <TextBlock
-                    Margin="0,0,6,0"
+                    Grid.Column="0"
                     VerticalAlignment="Center"
-                    FontFamily="Segoe MDL2 Assets"
-                    Text="&#xE9D9;" />
-                <TextBlock VerticalAlignment="Center" Text="Test Import" />
-            </StackPanel>
-        </Button>
+                    Foreground="{DynamicResource Brush.TextSecondary}"
+                    Text="Use prod database" />
+
+                <CheckBox
+                    x:Name="chbUseProdDb"
+                    Grid.Column="2"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center" />
+
+                <Button
+                    x:Name="btnTestImport"
+                    Grid.Column="4"
+                    Width="148"
+                    Height="38"
+                    HorizontalAlignment="Left">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock
+                            Margin="0,0,6,0"
+                            VerticalAlignment="Center"
+                            FontFamily="Segoe MDL2 Assets"
+                            Text="&#xE9D9;" />
+                        <TextBlock VerticalAlignment="Center" Text="Test Import" />
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </Border>
+        
     </Grid>
 </uix:UIXUserControlBase>

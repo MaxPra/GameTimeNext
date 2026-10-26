@@ -20,10 +20,10 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 MigrateTables(type, connection, MigrationActionType.CREATE);
             }
 
-            public static void MigrateTables(ImportType type, string? importDirectoryPathOverride = null)
+            public static void MigrateTables(ImportType type, SQLiteConnection? connection = null, string? importDirectoryPathOverride = null)
             {
                 LogInfo($"Running (ImportType: \"{type.ToString()}\")...", subSystem: "FromCsv", method: "MigrateTables");
-                MigrateTables(type, null, null, importDirectoryPathOverride: importDirectoryPathOverride);
+                MigrateTables(type, connection, null, importDirectoryPathOverride: importDirectoryPathOverride);
             }
 
             private static void MigrateTables(ImportType type, SQLiteConnection? connection, MigrationActionType? overrideActionType, string? importDirectoryPathOverride = null)

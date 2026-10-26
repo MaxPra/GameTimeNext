@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using GameTimeNext.Core.Application.Metadata.Data;
+﻿using GameTimeNext.Core.Application.Metadata.Data;
 using GameTimeNext.Core.Framework.Config;
 using System.IO;
 using System.Text;
@@ -562,13 +561,15 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     {
                         try
                         {
-                            // OFDOI: Fix Exception
                             DirectoryInfo slnDirInfo = new DirectoryInfo(AppConfig.Dev.SolutionDirectoryPath);
-                            return slnDirInfo.GetFiles(fileName, new EnumerationOptions()
+                            List<FileInfo> fileInfos = slnDirInfo.GetFiles(fileName, new EnumerationOptions()
                             {
                                 MatchCasing = MatchCasing.CaseInsensitive,
                                 RecurseSubdirectories = true
-                            }).Single().FullName;
+                            }).ToList();
+                            if (fileInfos.Count != 1) return null;
+
+                            return fileInfos.Single().FullName;
                         }
                         catch{
                             return null;

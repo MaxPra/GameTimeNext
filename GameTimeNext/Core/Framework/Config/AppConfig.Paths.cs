@@ -104,6 +104,24 @@ namespace GameTimeNext.Core.Framework.Config
                 string temp = ReturnEnsureDirectoryExists(Path.Combine(parentDirectoryPath, "imagesAndSymbols"), requireParentExists: true);
                 return ReturnEnsureDirectoryExists(Path.Combine(temp, "default"), requireParentExists: true);
             }
+
+            [JsonIgnore]
+            public static string ImportPackagesDirectoryPath
+            {
+                get => ReturnEnsureDirectoryExists(Path.Combine(SolutionDirectoryPath, "GameTimeNext", "ImportPackages"));
+            }
+
+            [JsonIgnore]
+            public static string ImportPackageTestDirectoryPath
+            {
+                get => ReturnEnsureDirectoryExists(Path.Combine(DevDirectoryPath, "importPackageTest"));
+            }
+
+            [JsonIgnore]
+            public static string ImportPackageTestFilePath
+            {
+                get => Path.Combine(ImportPackageTestDirectoryPath, Root.DatabaseFileName);
+            }
         }
 
         public static class Storage
@@ -183,6 +201,12 @@ namespace GameTimeNext.Core.Framework.Config
             public static string AppConfigFilePath
             {
                 get => Path.Combine(StorageDirectoryPath, Root.AppConfigFileName);
+            }
+
+            [JsonIgnore]
+            public static string NormalDatabaseFilePath
+            {
+                get => Path.Combine(NormalStorageDirectoryPath, Root.DatabaseFileName);
             }
 
             [JsonIgnore]
