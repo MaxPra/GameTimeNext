@@ -109,6 +109,13 @@ namespace GameTimeNext.Core.Framework.UI
             if (!ReferenceEquals(e.OriginalSource, tabControl))
                 return;
 
+            // Decide after the current synchronous work: FnControls.LoadTabContent (engine, e.g. during validation on save)
+            // selects every tab once and then restores the original one, which must not count as a tab change.
+            tabControl.Dispatcher.BeginInvoke(new Action(() => OnSelectionSettled(tabControl)), System.Windows.Threading.DispatcherPriority.DataBind);
+        }
+
+        private static void OnSelectionSettled(TabControl tabControl)
+        {
             // Only animate when a different tab actually became selected (not on item reorder/re-add of the same tab).
             var selectedItem = tabControl.SelectedItem;
             var lastSelectedItem = GetLastSelectedItem(tabControl);
