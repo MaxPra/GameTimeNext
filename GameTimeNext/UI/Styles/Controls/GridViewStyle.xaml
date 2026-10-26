@@ -169,6 +169,59 @@
         <Setter Property="CellStyle" Value="{DynamicResource {x:Type DataGridCell}}" />
     </Style>
 
+    <!--  Tree grid (engine UIXTreeGrid): same card look as UIXDataGrid  -->
+    <Style
+        x:Key="{x:Type uixsel:UIXTreeGrid}"
+        BasedOn="{StaticResource {x:Type uixsel:UIXDataGrid}}"
+        TargetType="{x:Type uixsel:UIXTreeGrid}">
+        <Setter Property="IndentSize" Value="18" />
+        <Setter Property="RowStyle" Value="{DynamicResource TreeGrid.Row}" />
+    </Style>
+
+    <!--  Expander of the tree column: muted chevron like the column headers, primary text color on hover  -->
+    <Style TargetType="{x:Type uixsel:UIXTreeGridExpander}">
+        <Setter Property="Width" Value="18" />
+        <Setter Property="Height" Value="18" />
+        <Setter Property="Margin" Value="0,0,4,0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type uixsel:UIXTreeGridExpander}">
+                    <Border Background="{TemplateBinding Background}" CornerRadius="{StaticResource Item.CornerRadius}">
+                        <Path
+                            x:Name="Chevron"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Data="M 0,0 L 4,4 L 0,8"
+                            RenderTransformOrigin="0.5,0.5"
+                            Stroke="{TemplateBinding Foreground}"
+                            StrokeEndLineCap="Round"
+                            StrokeLineJoin="Round"
+                            StrokeStartLineCap="Round"
+                            StrokeThickness="1.5" />
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="Chevron" Property="RenderTransform">
+                                <Setter.Value>
+                                    <RotateTransform Angle="90" />
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style TargetType="{x:Type DataGridColumnHeader}">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}" />
@@ -295,6 +348,21 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+
+    <!--
+        Row of a UIXTreeGrid: parent rows (rows with children) get the darker inset tone of the card, so they read as
+        group headers and stay distinct from the white hover / selection tint, which still applies on top.
+    -->
+    <Style
+        x:Key="TreeGrid.Row"
+        BasedOn="{StaticResource {x:Type DataGridRow}}"
+        TargetType="{x:Type DataGridRow}">
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding HasChildren}" Value="True">
+                <Setter Property="Background" Value="{StaticResource Brush.Card.Inset}" />
+            </DataTrigger>
+        </Style.Triggers>
     </Style>
 
     <Style TargetType="{x:Type DataGridCell}">

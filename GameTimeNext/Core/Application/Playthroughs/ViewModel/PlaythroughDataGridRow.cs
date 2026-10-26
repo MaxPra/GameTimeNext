@@ -2,12 +2,15 @@
 
 namespace GameTimeNext.Core.Application.Playthroughs.ViewModel
 {
-    public class PlaythroughDataGridRow : UIXDataGridRow
+    /// <summary>
+    /// Row of the playthroughs tree: a profile (RowObject T1PROFI) with its playthroughs (RowObject T1PLTHR) below.
+    /// </summary>
+    public class PlaythroughDataGridRow : UIXTreeGridRow
     {
+        public bool IsPlaythroughRow { get; set; } = false;
 
-        public string COGANA { get; set; } = string.Empty;
-
-        public string COPTDE { get; set; } = string.Empty;
+        // Profile name on profile rows, playthrough description on playthrough rows
+        public string CONAME { get; set; } = string.Empty;
 
         public bool COPTCO { get; set; } = false;
         public bool COPTCA { get; set; } = false;
