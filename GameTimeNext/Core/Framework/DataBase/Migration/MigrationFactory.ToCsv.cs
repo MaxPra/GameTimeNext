@@ -22,6 +22,13 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
             public static void ExportCsvFileFor(SQLiteConnection connection, UIXTableObjectBase obj, ImportType importType, string? outputDirectoryPath = null)
             {
                 string tableName = obj.GetType().Name;
+
+                if (importType.Equals(ImportType.ImportPackages))
+                {
+                    T1METAH t1metah = (T1METAH)obj;
+                    tableName = t1metah.MENAM;
+                }
+
                 ExportCsvFileFor(connection, tableName, importType, outputDirectoryPath: outputDirectoryPath);
             }
 
