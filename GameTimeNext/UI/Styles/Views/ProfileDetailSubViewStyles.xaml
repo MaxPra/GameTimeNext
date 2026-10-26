@@ -98,6 +98,19 @@
         <Setter Property="VerticalAlignment" Value="Bottom" />
     </Style>
 
+    <!--  Profile rating above the title: small stars + value  -->
+    <Style x:Key="ProfileDetail.Rating" TargetType="StackPanel">
+        <Setter Property="Orientation" Value="Horizontal" />
+        <Setter Property="Margin" Value="0,0,0,6" />
+    </Style>
+
+    <Style x:Key="ProfileDetail.RatingValue" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Margin" Value="6,0,0,0" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
     <Style x:Key="ProfileDetail.Title" TargetType="TextBlock">
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
         <Setter Property="FontSize" Value="20" />

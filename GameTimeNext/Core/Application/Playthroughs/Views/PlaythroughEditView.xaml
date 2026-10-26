@@ -4,20 +4,22 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:fui="clr-namespace:GameTimeNext.Core.Framework.UI"
     xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI.Base"
+    xmlns:uixmd="clr-namespace:UIX.ViewController.Engine.FrameworkElements.Markdown;assembly=UIX.ViewController.Engine"
     xmlns:uixprops="clr-namespace:UIX.ViewController.Engine.AttachedProperties;assembly=UIX.ViewController.Engine"
     Title="Playthrough"
     Width="760"
-    Height="250"
     MinWidth="760"
-    MinHeight="250"
     ShowMaximizeButton="False"
     ShowMinimizeButton="False"
+    SizeToContent="Height"
     WindowStartupLocation="CenterOwner"
     mc:Ignorable="d">
 
     <Grid Style="{StaticResource View.Root}">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="16" />
             <RowDefinition Height="Auto" />
@@ -31,6 +33,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="12" />
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
@@ -74,12 +77,43 @@
                     SelectedIndex="0"
                     SelectedValue=""
                     SelectedValuePath="Tag" />
+
+                <!--  Rating: hidden in create-new mode (the spacing is a margin, so nothing remains)  -->
+                <TextBlock
+                    x:Name="lblRating"
+                    Grid.Row="3"
+                    Grid.Column="0"
+                    Margin="0,12,0,0"
+                    VerticalAlignment="Center"
+                    Foreground="{DynamicResource Brush.TextSecondary}"
+                    Text="Rating" />
+
+                <fui:StarRating
+                    x:Name="rtgRating"
+                    Grid.Row="3"
+                    Grid.Column="2"
+                    Margin="0,12,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center" />
             </Grid>
         </Border>
 
+        <!--  Spacing above as margin, so nothing remains when it is hidden (create-new mode)  -->
+        <GroupBox
+            x:Name="grpRatingComment"
+            Grid.Row="1"
+            Margin="0,16,0,0"
+            Header="Rating comment"
+            Style="{StaticResource GroupBox.Card}">
+            <uixmd:UIXMarkdownEditor
+                x:Name="txbRatingComment"
+                Height="300"
+                uixprops:UIXAttachedProperty.Path="T1PLTHR.PTRC" />
+        </GroupBox>
+
         <Button
             x:Name="btnSave"
-            Grid.Row="2"
+            Grid.Row="3"
             Width="140"
             Height="36"
             HorizontalAlignment="Right"

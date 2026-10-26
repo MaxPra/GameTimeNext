@@ -3,6 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:fui="clr-namespace:GameTimeNext.Core.Framework.UI"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:uixcontrols="clr-namespace:UIX.ViewController.Engine.FrameworkElements.UserControls;assembly=UIX.ViewController.Engine"
     xmlns:uixprops="clr-namespace:UIX.ViewController.Engine.AttachedProperties;assembly=UIX.ViewController.Engine"
@@ -60,6 +61,11 @@
                         </Border>
 
                         <StackPanel Grid.Column="1" Style="{StaticResource ProfileDetail.HeaderText}">
+                            <!--  Average of the rated playthroughs, hidden while none is rated  -->
+                            <StackPanel x:Name="pnlRating" Style="{StaticResource ProfileDetail.Rating}">
+                                <fui:StarRating x:Name="rtgProfileRating" Style="{StaticResource StarRating.Small}" />
+                                <TextBlock x:Name="txProfileRating" Style="{StaticResource ProfileDetail.RatingValue}" />
+                            </StackPanel>
                             <TextBlock uixprops:UIXAttachedProperty.Path="T1PROFI.GANA" Style="{StaticResource ProfileDetail.Title}" />
                             <TextBlock Style="{StaticResource Card.Caption}" Text="Total playtime" />
                             <TextBlock x:Name="txTotalGameTime" Style="{StaticResource ProfileDetail.HeroValue}" />

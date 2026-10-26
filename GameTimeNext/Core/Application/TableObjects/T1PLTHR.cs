@@ -29,15 +29,21 @@ namespace GameTimeNext.Core.Application.TableObjects
         public bool PTPA { get; set; } = false;
 
         [UIXSignatureField(7)]
-        public DateTime CRAT { get; set; } = DateTime.MinValue;
+        public int PTRA { get; set; } = 0;
 
         [UIXSignatureField(8)]
-        public string CRUS { get; set; } = "";
+        public string PTRC { get; set; } = "";
 
         [UIXSignatureField(9)]
-        public DateTime CHAT { get; set; } = DateTime.MinValue;
+        public DateTime CRAT { get; set; } = DateTime.MinValue;
 
         [UIXSignatureField(10)]
+        public string CRUS { get; set; } = "";
+
+        [UIXSignatureField(11)]
+        public DateTime CHAT { get; set; } = DateTime.MinValue;
+
+        [UIXSignatureField(12)]
         public string CHUS { get; set; } = "";
 
         public override void Save()

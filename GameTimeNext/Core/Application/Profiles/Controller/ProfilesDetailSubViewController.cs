@@ -1,5 +1,6 @@
 
 using GameTimeNext.Core.Application.DataManagers;
+using GameTimeNext.Core.Application.Playthroughs;
 using GameTimeNext.Core.Application.Profiles.DataWrapper;
 using GameTimeNext.Core.Application.Profiles.Types;
 using GameTimeNext.Core.Application.Profiles.Views;
@@ -120,6 +121,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             // Progressbar
             FillProgressbarAndTimes();
+
+            // Rating
+            FillProfileRating();
         }
 
         protected override void FillDBOImpl()
@@ -185,6 +189,16 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 return;
 
             GetView().txPlaythrough.Text = t1plthr.PTDE;
+        }
+
+        private void FillProfileRating()
+        {
+            double rating = TFPLTHR.GetProfileRating(_dataWrapper!.GetTypedTableObject().PFID);
+
+            FnControls.SetVisible(GetView().pnlRating, rating > 0);
+
+            GetView().rtgProfileRating.Value = rating;
+            GetView().txProfileRating.Text = CFPlaythroughsApp.FormatRatingAsStars(rating);
         }
 
         private void FillLastSessionGameTime()

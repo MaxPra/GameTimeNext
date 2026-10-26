@@ -13,6 +13,8 @@
             public const string PTCO = "PTCO";
             public const string PTCA = "PTCA";
             public const string PTPA = "PTPA";
+            public const string PTRA = "PTRA";
+            public const string PTRC = "PTRC";
             public const string CRAT = "CRAT";
             public const string CRUS = "CRUS";
             public const string CHAT = "CHAT";

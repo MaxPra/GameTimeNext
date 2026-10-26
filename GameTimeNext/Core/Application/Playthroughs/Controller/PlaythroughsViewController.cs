@@ -133,7 +133,16 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
             ContextMenuBuilder contextBuilder = UIXContextMenuFactory.Create("PlaythroughDataGridContextMenu");
             contextBuilder.SetStyle(ProfilesContextMenuBuilder.contextMenuStyle);
 
-            // Profile rows have no actions
+            // Profile rows: start a new playthrough (only while none is running, same as in the profiles view)
+            if (ptRow.RowObject is T1PROFI t1profi)
+            {
+                if (!TFPLTHR.HasCurrentPlaythrough(t1profi.PFID))
+                    contextBuilder.AddItem("ctxtStartNewPlaythrough", "Start new playthrough", icon: UIXContextMenuFactory.CreateMdlIcon(""), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
+
+                dgRow.ContextMenu = contextBuilder.HasItems() ? contextBuilder.Build() : null;
+                return;
+            }
+
             if (ptRow.RowObject is not T1PLTHR t1plthr)
             {
                 dgRow.ContextMenu = null;
@@ -361,6 +370,24 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
                 await BuildDataGridAsync();
 
             }, selectedT1plthr);
+        }
+
+        protected void EV_ctxtStartNewPlaythrough()
+        {
+            if (_viewModel?.SelectedRow?.RowObject is not T1PROFI selectedT1profi)
+                return;
+
+            PlaythroughEditApp editApp = GetApp().GetApplication<PlaythroughEditApp>();
+            editApp.CreateNew(async (r) =>
+            {
+                if (!r.HasChanged)
+                    return;
+
+                await BuildDataGridAsync();
+
+                GetViewReturn<PlaythroughsViewReturn>().HasChanged = true;
+
+            }, selectedT1profi);
         }
 
         protected async Task EV_ctxtCompletePlaythrough()

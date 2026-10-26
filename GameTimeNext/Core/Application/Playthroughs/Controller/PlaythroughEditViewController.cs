@@ -37,6 +37,12 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
             // Selecting the type is only allowed in create-new mode
             FnControls.SetEnabled(GetView().cmbType, GetView().ViewIndicator.Contains("CN"));
 
+            // A playthrough that has not been played yet can't be rated
+            bool isRatingVisible = !GetView().ViewIndicator.Contains("CN");
+            FnControls.SetVisible(GetView().lblRating, isRatingVisible);
+            FnControls.SetVisible(GetView().rtgRating, isRatingVisible);
+            FnControls.SetVisible(GetView().grpRatingComment, isRatingVisible);
+
             UIXManualCodetable mCt = new UIXManualCodetable();
 
             List<T1CTABD> t1ctabds = new TXCTABD().GetEntries("pL");
@@ -84,11 +90,12 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
 
         protected override void FillDBOImpl()
         {
+            GetApp().T1plthr.PTRA = CFPlaythroughsApp.ToRatingValue(GetView().rtgRating.Value);
         }
 
         protected override void FillViewImpl()
         {
-
+            GetView().rtgRating.Value = GetApp().T1plthr.PTRA;
         }
 
         protected override void SaveDBOImpl()

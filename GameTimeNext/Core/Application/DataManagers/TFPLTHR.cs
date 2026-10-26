@@ -1,4 +1,5 @@
-﻿using GameTimeNext.Core.Application.TableObjects;
+﻿using GameTimeNext.Core.Application.Playthroughs;
+using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using UIX.ViewController.Engine.Querying;
@@ -266,6 +267,30 @@ namespace GameTimeNext.Core.Application.DataManagers
             }
 
             new TXPLTHR().Save(t1plthr);
+
+            // Optional rating after a playthrough has ended, can simply be skipped
+            if (status == PlaythroughStatus.Completed || status == PlaythroughStatus.Canceled)
+                app.GetApplication<PlaythroughRatingApp>().Rate(null, t1plthr);
+        }
+
+        /// <summary>
+        /// Rating of a profile: average of all rated playthroughs (PTRA scale, 1 to 10), 0 if none is rated.
+        /// Completed and canceled playthroughs count the same.
+        /// </summary>
+        public static double GetProfileRating(long pfid)
+        {
+            UIXQuery query = new UIXQuery(K1PLTHR.Name, AppEnvironment.GetDataBaseManager().GetConnection());
+
+            query.AddAggregate(UIXQuery.AggregateFunc.AVG, K1PLTHR.Name, K1PLTHR.Fields.PTRA, alias: "K1PLTHR_AVG_PTRA");
+
+            query.AddWhere(K1PLTHR.Name, K1PLTHR.Fields.PFID, QueryCompareType.EQUALS, pfid);
+            query.AddWhere(K1PLTHR.Name, K1PLTHR.Fields.PTRA, QueryCompareType.GREATER_THAN, 0);
+
+            using (var reader = query.Execute())
+                if (reader.Read())
+                    return UIXQuery.GetDouble(reader, "K1PLTHR_AVG_PTRA");
+
+            return 0;
         }
 
         public enum PlaythroughStatus

@@ -1,0 +1,25 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI">
+
+    <!--  Star rating: filled part in the profile accent, empty part as white glass  -->
+    <Style TargetType="{x:Type ui:StarRating}">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
+        <Setter Property="EmptyFill" Value="#33FFFFFF" />
+        <Setter Property="StarSize" Value="28" />
+        <Setter Property="StarSpacing" Value="6" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+    </Style>
+
+    <!--  Small, display only (e.g. profile header)  -->
+    <Style
+        x:Key="StarRating.Small"
+        BasedOn="{StaticResource {x:Type ui:StarRating}}"
+        TargetType="{x:Type ui:StarRating}">
+        <Setter Property="StarSize" Value="16" />
+        <Setter Property="StarSpacing" Value="3" />
+        <Setter Property="IsReadOnly" Value="True" />
+    </Style>
+
+</ResourceDictionary>
