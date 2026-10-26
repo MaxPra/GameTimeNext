@@ -1,22 +1,44 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI">
 
-    <SolidColorBrush x:Key="Brush.SteamGridDB.CardBackground" Color="#0C0F16" />
-    <SolidColorBrush x:Key="Brush.SteamGridDB.CardBackgroundHover" Color="#121722" />
-    <SolidColorBrush x:Key="Brush.SteamGridDB.CardBorder" Color="#323847" />
-    <SolidColorBrush x:Key="Brush.SteamGridDB.CardBorderHover" Color="#495267" />
+    <!--
+        Cover selection follows the library tiles (TileViewStyle.xaml): cover on the tile surface with a lit edge and a soft shadow,
+        hover as accent outline + sheen + slight lift, selection as accent edge + accent glow + check badge.
+    -->
+    <CornerRadius x:Key="SteamGridDB.CoverCornerRadius">6</CornerRadius>
+    <!--  Space around a cover (lift and shadow); the gap between two covers is twice this value  -->
+    <Thickness x:Key="SteamGridDB.CoverOuterPadding">8</Thickness>
 
-    <SolidColorBrush x:Key="Brush.SteamGridDB.Accent" Color="{DynamicResource Color.Accent}" />
-    <SolidColorBrush x:Key="Brush.SteamGridDB.AccentHover" Color="{DynamicResource Color.AccentHover}" />
-    <SolidColorBrush x:Key="Brush.SteamGridDB.AccentPressed" Color="{DynamicResource Color.AccentPressed}" />
+    <sys:Double x:Key="SteamGridDB.CoverLiftHover">-4</sys:Double>
+    <sys:Double x:Key="SteamGridDB.CoverShadowOpacityNormal">0.55</sys:Double>
+    <sys:Double x:Key="SteamGridDB.CoverShadowOpacityHover">0.85</sys:Double>
+    <sys:Double x:Key="SteamGridDB.CoverSheenOpacityHover">0.14</sys:Double>
+
+    <!--  Check badge on the selected cover: dark glass ring around the accent fill, so it works on every cover  -->
+    <SolidColorBrush x:Key="Brush.SteamGridDB.BadgeBorder" Color="#A6000000" />
+    <SolidColorBrush x:Key="Brush.SteamGridDB.BadgeTick" Color="#FFFFFFFF" />
+
+    <LinearGradientBrush x:Key="Brush.SteamGridDB.CoverSheen" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="#70FFFFFF" />
+        <GradientStop Offset="0.22" Color="#22FFFFFF" />
+        <GradientStop Offset="1" Color="#00FFFFFF" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="Brush.SteamGridDB.CoverShade" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="#2C000000" />
+        <GradientStop Offset="0.28" Color="#00000000" />
+    </LinearGradientBrush>
 
     <Style x:Key="SteamGridDBCoverListBoxItemStyle" TargetType="{x:Type ListBoxItem}">
-        <Setter Property="Margin" Value="0,0,16,16" />
+        <Setter Property="Margin" Value="0" />
         <Setter Property="Padding" Value="0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="VerticalContentAlignment" Value="Stretch" />
-        <Setter Property="Background" Value="{StaticResource Brush.SteamGridDB.CardBackground}" />
-        <Setter Property="BorderBrush" Value="{StaticResource Brush.SteamGridDB.CardBorder}" />
-        <Setter Property="BorderThickness" Value="2" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
@@ -24,84 +46,296 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                    <Grid
-                        Width="170"
-                        Height="255"
+
+                    <ControlTemplate.Resources>
+                        <CubicEase x:Key="EaseOut" EasingMode="EaseOut" />
+                        <CubicEase x:Key="EaseIn" EasingMode="EaseIn" />
+
+                        <Storyboard x:Key="SbHoverIn" FillBehavior="HoldEnd">
+                            <DoubleAnimation
+                                EasingFunction="{StaticResource EaseOut}"
+                                Storyboard.TargetName="Lift"
+                                Storyboard.TargetProperty="Y"
+                                To="{StaticResource SteamGridDB.CoverLiftHover}"
+                                Duration="0:0:0.18" />
+                            <DoubleAnimation
+                                EasingFunction="{StaticResource EaseOut}"
+                                Storyboard.TargetName="ShadowLayer"
+                                Storyboard.TargetProperty="Opacity"
+                                To="{StaticResource SteamGridDB.CoverShadowOpacityHover}"
+                                Duration="0:0:0.18" />
+                            <DoubleAnimation
+                                EasingFunction="{StaticResource EaseOut}"
+                                Storyboard.TargetName="Sheen"
+                                Storyboard.TargetProperty="Opacity"
+                                To="{StaticResource SteamGridDB.CoverSheenOpacityHover}"
+                                Duration="0:0:0.18" />
+                            <DoubleAnimation
+                                EasingFunction="{StaticResource EaseOut}"
+                                Storyboard.TargetName="HoverStroke"
+                                Storyboard.TargetProperty="Opacity"
+                                To="1"
+                                Duration="0:0:0.18" />
+                        </Storyboard>
+
+                        <Storyboard x:Key="SbHoverOut" FillBehavior="HoldEnd">
+                            <DoubleAnimation
+                                EasingFunction="{StaticResource EaseIn}"
+                                Storyboard.TargetName="Lift"
+                                Storyboard.TargetProperty="Y"
+                                To="0"
+                                Duration="0:0:0.18" />
+                            <DoubleAnimation
+                                EasingFunction="{StaticResource EaseIn}"
+                                Storyboard.TargetName="ShadowLayer"
+                                Storyboard.TargetProperty="Opacity"
+                                To="{StaticResource SteamGridDB.CoverShadowOpacityNormal}"
+                                Duration="0:0:0.18" />
+                            <DoubleAnimation
+                                EasingFunction="{StaticResource EaseIn}"
+                                Storyboard.TargetName="Sheen"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0"
+                                Duration="0:0:0.18" />
+                            <DoubleAnimation
+                                EasingFunction="{StaticResource EaseIn}"
+                                Storyboard.TargetName="HoverStroke"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0"
+                                Duration="0:0:0.18" />
+                        </Storyboard>
+
+                        <Storyboard x:Key="SbSelectIn" FillBehavior="HoldEnd">
+                            <DoubleAnimation
+                                EasingFunction="{StaticResource EaseOut}"
+                                Storyboard.TargetName="AccentStroke"
+                                Storyboard.TargetProperty="Opacity"
+                                To="1"
+                                Duration="0:0:0.18" />
+                            <DoubleAnimation
+                                EasingFunction="{StaticResource EaseOut}"
+                                Storyboard.TargetName="AccentGlow"
+                                Storyboard.TargetProperty="Opacity"
+                                To="1"
+                                Duration="0:0:0.18" />
+                            <DoubleAnimation
+                                EasingFunction="{StaticResource EaseOut}"
+                                Storyboard.TargetName="Badge"
+                                Storyboard.TargetProperty="Opacity"
+                                To="1"
+                                Duration="0:0:0.18" />
+                            <DoubleAnimation
+                                Storyboard.TargetName="BadgeScale"
+                                Storyboard.TargetProperty="ScaleX"
+                                To="1"
+                                Duration="0:0:0.22">
+                                <DoubleAnimation.EasingFunction>
+                                    <BackEase Amplitude="0.4" EasingMode="EaseOut" />
+                                </DoubleAnimation.EasingFunction>
+                            </DoubleAnimation>
+                            <DoubleAnimation
+                                Storyboard.TargetName="BadgeScale"
+                                Storyboard.TargetProperty="ScaleY"
+                                To="1"
+                                Duration="0:0:0.22">
+                                <DoubleAnimation.EasingFunction>
+                                    <BackEase Amplitude="0.4" EasingMode="EaseOut" />
+                                </DoubleAnimation.EasingFunction>
+                            </DoubleAnimation>
+                        </Storyboard>
+
+                        <Storyboard x:Key="SbSelectOut" FillBehavior="HoldEnd">
+                            <DoubleAnimation
+                                EasingFunction="{StaticResource EaseIn}"
+                                Storyboard.TargetName="AccentStroke"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0"
+                                Duration="0:0:0.18" />
+                            <DoubleAnimation
+                                EasingFunction="{StaticResource EaseIn}"
+                                Storyboard.TargetName="AccentGlow"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0"
+                                Duration="0:0:0.18" />
+                            <DoubleAnimation
+                                EasingFunction="{StaticResource EaseIn}"
+                                Storyboard.TargetName="Badge"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0"
+                                Duration="0:0:0.12" />
+                            <DoubleAnimation
+                                EasingFunction="{StaticResource EaseIn}"
+                                Storyboard.TargetName="BadgeScale"
+                                Storyboard.TargetProperty="ScaleX"
+                                To="0.6"
+                                Duration="0:0:0.12" />
+                            <DoubleAnimation
+                                EasingFunction="{StaticResource EaseIn}"
+                                Storyboard.TargetName="BadgeScale"
+                                Storyboard.TargetProperty="ScaleY"
+                                To="0.6"
+                                Duration="0:0:0.12" />
+                        </Storyboard>
+                    </ControlTemplate.Resources>
+
+                    <Border
+                        x:Name="HitSurface"
+                        Padding="{StaticResource SteamGridDB.CoverOuterPadding}"
+                        Background="Transparent"
                         SnapsToDevicePixels="True">
-                        <Border
-                            x:Name="SelectionGlow"
-                            Margin="-3"
-                            Background="Transparent"
-                            CornerRadius="{DynamicResource DefaultCornerRadius}"
-                            IsHitTestVisible="False"
-                            Opacity="0">
-                            <Border.Effect>
-                                <DropShadowEffect
-                                    BlurRadius="22"
-                                    Opacity="0.45"
-                                    ShadowDepth="0"
-                                    Color="{DynamicResource Color.Accent}" />
-                            </Border.Effect>
-                        </Border>
 
-                        <Border
-                            x:Name="OuterBorder"
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="{DynamicResource DefaultCornerRadius}"
-                            SnapsToDevicePixels="True">
+                        <!--  Named "Root": TileLayout.AutoSize measures it to fill each row  -->
+                        <Grid
+                            x:Name="Root"
+                            Width="{Binding Path=(ui:TileLayout.TileWidth), RelativeSource={RelativeSource TemplatedParent}}"
+                            Height="{Binding Path=(ui:TileLayout.TileHeight), RelativeSource={RelativeSource TemplatedParent}}">
+                            <Grid.RenderTransform>
+                                <TranslateTransform x:Name="Lift" Y="0" />
+                            </Grid.RenderTransform>
 
-                            <Grid ClipToBounds="True">
+                            <Border
+                                x:Name="ShadowLayer"
+                                Background="{DynamicResource Brush.TileBackground}"
+                                CornerRadius="{StaticResource SteamGridDB.CoverCornerRadius}"
+                                IsHitTestVisible="False"
+                                Opacity="{StaticResource SteamGridDB.CoverShadowOpacityNormal}">
+                                <Border.Effect>
+                                    <DropShadowEffect
+                                        BlurRadius="18"
+                                        Direction="270"
+                                        Opacity="1"
+                                        RenderingBias="Quality"
+                                        ShadowDepth="6"
+                                        Color="#FF000000" />
+                                </Border.Effect>
+                            </Border>
+
+                            <!--  The layer needs a fill, otherwise the DropShadowEffect has nothing to cast; the cover hides the fill  -->
+                            <Border
+                                x:Name="AccentGlow"
+                                Background="{DynamicResource Brush.Accent}"
+                                CornerRadius="{StaticResource SteamGridDB.CoverCornerRadius}"
+                                IsHitTestVisible="False"
+                                Opacity="0">
+                                <Border.Effect>
+                                    <DropShadowEffect
+                                        BlurRadius="26"
+                                        Opacity="0.75"
+                                        RenderingBias="Quality"
+                                        ShadowDepth="0"
+                                        Color="{DynamicResource Color.Accent}" />
+                                </Border.Effect>
+                            </Border>
+
+                            <Border
+                                Background="{DynamicResource Brush.TileBackground}"
+                                CornerRadius="{StaticResource SteamGridDB.CoverCornerRadius}">
                                 <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                            </Border>
 
-                                <Border
-                                    x:Name="HoverOverlay"
-                                    Margin="0"
-                                    Background="#10FFFFFF"
-                                    CornerRadius="{DynamicResource DefaultCornerRadius}"
-                                    IsHitTestVisible="False"
-                                    Opacity="0" />
+                            <Border
+                                Background="{StaticResource Brush.SteamGridDB.CoverShade}"
+                                CornerRadius="{StaticResource SteamGridDB.CoverCornerRadius}"
+                                IsHitTestVisible="False" />
 
-                                <Border
-                                    x:Name="SelectedBorder"
-                                    Margin="0"
-                                    Background="Transparent"
-                                    BorderBrush="{DynamicResource Brush.SteamGridDB.Accent}"
-                                    BorderThickness="3"
-                                    CornerRadius="{DynamicResource DefaultCornerRadius}"
-                                    IsHitTestVisible="False"
-                                    Opacity="0" />
-                            </Grid>
-                        </Border>
-                    </Grid>
+                            <Border
+                                x:Name="Sheen"
+                                Background="{StaticResource Brush.SteamGridDB.CoverSheen}"
+                                CornerRadius="{StaticResource SteamGridDB.CoverCornerRadius}"
+                                IsHitTestVisible="False"
+                                Opacity="0" />
+
+                            <Border
+                                BorderBrush="{StaticResource Brush.Control.Edge}"
+                                BorderThickness="1"
+                                CornerRadius="{StaticResource SteamGridDB.CoverCornerRadius}"
+                                IsHitTestVisible="False" />
+
+                            <!--  Hover: accent outline like interactive cards (Card.Interactive)  -->
+                            <Border
+                                x:Name="HoverStroke"
+                                BorderBrush="{DynamicResource Brush.Accent.Outline}"
+                                BorderThickness="1"
+                                CornerRadius="{StaticResource SteamGridDB.CoverCornerRadius}"
+                                IsHitTestVisible="False"
+                                Opacity="0" />
+
+                            <Border
+                                x:Name="AccentStroke"
+                                BorderBrush="{DynamicResource Brush.AccentHover}"
+                                BorderThickness="2"
+                                CornerRadius="{StaticResource SteamGridDB.CoverCornerRadius}"
+                                IsHitTestVisible="False"
+                                Opacity="0" />
+
+                            <Border
+                                x:Name="Badge"
+                                Width="26"
+                                Height="26"
+                                Margin="0,8,8,0"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Top"
+                                Background="{DynamicResource Brush.Accent}"
+                                BorderBrush="{StaticResource Brush.SteamGridDB.BadgeBorder}"
+                                BorderThickness="2"
+                                CornerRadius="13"
+                                IsHitTestVisible="False"
+                                Opacity="0"
+                                RenderTransformOrigin="0.5,0.5">
+                                <Border.RenderTransform>
+                                    <ScaleTransform x:Name="BadgeScale" ScaleX="0.6" ScaleY="0.6" />
+                                </Border.RenderTransform>
+                                <Path
+                                    Width="11"
+                                    Height="9"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Data="{StaticResource Geometry.CheckBox.Tick}"
+                                    Stretch="Uniform"
+                                    Stroke="{StaticResource Brush.SteamGridDB.BadgeTick}"
+                                    StrokeEndLineCap="Round"
+                                    StrokeLineJoin="Round"
+                                    StrokeStartLineCap="Round"
+                                    StrokeThickness="2.2" />
+                            </Border>
+                        </Grid>
+                    </Border>
 
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="OuterBorder" Property="Background" Value="{StaticResource Brush.SteamGridDB.CardBackgroundHover}" />
-                            <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{StaticResource Brush.SteamGridDB.CardBorderHover}" />
-                            <Setter TargetName="HoverOverlay" Property="Opacity" Value="1" />
+                            <Setter Property="Panel.ZIndex" Value="10" />
+                            <Trigger.EnterActions>
+                                <BeginStoryboard
+                                    x:Name="BsHoverIn"
+                                    HandoffBehavior="SnapshotAndReplace"
+                                    Storyboard="{StaticResource SbHoverIn}" />
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard
+                                    x:Name="BsHoverOut"
+                                    HandoffBehavior="SnapshotAndReplace"
+                                    Storyboard="{StaticResource SbHoverOut}" />
+                            </Trigger.ExitActions>
                         </Trigger>
 
                         <Trigger Property="IsSelected" Value="True">
-                            <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource Brush.SteamGridDB.Accent}" />
-                            <Setter TargetName="SelectedBorder" Property="Opacity" Value="1" />
-                            <Setter TargetName="SelectionGlow" Property="Opacity" Value="1" />
+                            <Setter Property="Panel.ZIndex" Value="5" />
+                            <Trigger.EnterActions>
+                                <BeginStoryboard
+                                    x:Name="BsSelectIn"
+                                    HandoffBehavior="SnapshotAndReplace"
+                                    Storyboard="{StaticResource SbSelectIn}" />
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard
+                                    x:Name="BsSelectOut"
+                                    HandoffBehavior="SnapshotAndReplace"
+                                    Storyboard="{StaticResource SbSelectOut}" />
+                            </Trigger.ExitActions>
                         </Trigger>
 
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="IsSelected" Value="True" />
-                                <Condition Property="IsMouseOver" Value="True" />
-                            </MultiTrigger.Conditions>
-                            <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource Brush.SteamGridDB.Accent}" />
-                            <Setter TargetName="HoverOverlay" Property="Opacity" Value="1" />
-                            <Setter TargetName="SelectedBorder" Property="Opacity" Value="1" />
-                            <Setter TargetName="SelectionGlow" Property="Opacity" Value="1" />
-                        </MultiTrigger>
-
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="OuterBorder" Property="Opacity" Value="0.55" />
+                            <Setter TargetName="Root" Property="Opacity" Value="0.55" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -110,12 +344,20 @@
     </Style>
 
     <Style x:Key="SteamGridDBCoverListBoxStyle" TargetType="{x:Type ListBox}">
+        <Style.Resources>
+            <!--  Base cover size (2:3 like the SteamGridDB grids) for TileLayout.AutoSize; overrides the library tile size  -->
+            <sys:Double x:Key="TileWidth">180</sys:Double>
+            <sys:Double x:Key="TileHeight">270</sys:Double>
+        </Style.Resources>
+
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="ItemContainerStyle" Value="{StaticResource SteamGridDBCoverListBoxItemStyle}" />
         <Setter Property="ScrollViewer.CanContentScroll" Value="False" />
+        <Setter Property="ui:TileLayout.AutoSize" Value="True" />
+        <Setter Property="ui:ScrollFade.Length" Value="40" />
 
         <Setter Property="Template">
             <Setter.Value>

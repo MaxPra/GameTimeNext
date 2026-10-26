@@ -25,53 +25,37 @@
 
         <Border
             Grid.Row="0"
-            Padding="16"
-            Background="#08FFFFFF"
-            BorderBrush="#1FFFFFFF"
-            BorderThickness="1"
-            CornerRadius="{DynamicResource DefaultCornerRadius}">
-            <Grid>
-                <ListBox
-                    x:Name="lbSteamGridCovers"
-                    ItemsSource="{Binding Images}"
-                    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                    ScrollViewer.VerticalScrollBarVisibility="Auto"
-                    SelectedItem="{Binding SelectedImage, Mode=TwoWay}"
-                    SelectionMode="Single"
-                    Style="{StaticResource SteamGridDBCoverListBoxStyle}">
-                    <ListBox.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel />
-                        </ItemsPanelTemplate>
-                    </ListBox.ItemsPanel>
+            Padding="12,8"
+            Style="{StaticResource Card}">
+            <ListBox
+                x:Name="lbSteamGridCovers"
+                ItemsSource="{Binding Images}"
+                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                ScrollViewer.VerticalScrollBarVisibility="Auto"
+                SelectedItem="{Binding SelectedImage, Mode=TwoWay}"
+                SelectionMode="Single"
+                Style="{StaticResource SteamGridDBCoverListBoxStyle}">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <!--
+                            Spacing on the panel, not as ListBox padding: room for lift and glow that scrolls with the covers.
+                            Vertical only: TileLayout.AutoSize does not know a horizontal panel margin, the last column would wrap.
+                        -->
+                        <WrapPanel Margin="0,4" />
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
 
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <Grid
-                                Width="170"
-                                Height="270"
-                                ClipToBounds="True"
-                                SnapsToDevicePixels="True"
-                                UseLayoutRounding="True">
-                                <Border
-                                    Margin="0"
-                                    Background="#0A0D14"
-                                    ClipToBounds="True"
-                                    CornerRadius="{StaticResource DefaultCornerRadius}">
-                                    <Image
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        RenderOptions.BitmapScalingMode="HighQuality"
-                                        SnapsToDevicePixels="True"
-                                        Source="{Binding BitmapImage}"
-                                        Stretch="UniformToFill"
-                                        UseLayoutRounding="True" />
-                                </Border>
-                            </Grid>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-            </Grid>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <!--  ImageBrush instead of Image + clip: the corner radius follows any cover size  -->
+                        <Border CornerRadius="{StaticResource SteamGridDB.CoverCornerRadius}" RenderOptions.BitmapScalingMode="HighQuality">
+                            <Border.Background>
+                                <ImageBrush ImageSource="{Binding BitmapImage}" Stretch="UniformToFill" />
+                            </Border.Background>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
         </Border>
 
         <Grid Grid.Row="2">
