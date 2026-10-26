@@ -10,6 +10,7 @@ using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.Igdb;
 using GameTimeNext.Core.Framework.LauncherIntegration;
+using GameTimeNext.Core.Framework.LauncherIntegration.Link;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.Utils;
 using System.Globalization;
@@ -105,8 +106,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
             ControlBlackoutCheckboxProtection();
 
-            BuildSteamRelatedSettings();
-            BuildSteamLinkSection();
+            BuildLauncherSection();
             BuildAccentColorSection();
         }
 
@@ -185,9 +185,6 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
             using (SuppressRunEventPipeline())
             {
-                if (GetWnd().ViewIndicator.Contains("ED"))
-                    FillViewSteamImport(null!);
-
                 FillComboboxPlayTypes();
 
                 FillViewProfileSettings();
@@ -245,27 +242,15 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             }
         }
 
-        private void FillViewSteamImport(SteamGame selectedGame)
+        private void FillViewLinkedGame(LauncherGame game)
         {
-
-            if (GetApp().T1Profi.SAID == 0)
-                return;
-
             // Profile name
             if (GetWnd().ViewIndicator.Contains("CN"))
-            {
-                GetWnd().txbProfileName.Text = selectedGame.Name;
+                GetWnd().txbProfileName.Text = game.Name;
 
-                // Game folder
-                GetWnd().txbGameFolder.Text = SteamManifestHelper.ResolveInstallPath(selectedGame);
-            }
-            else
-            {
-                GetWnd().txbProfileName.Text = GetApp().T1Profi.GANA;
-
-                // Game folder
-                GetWnd().txbGameFolder.Text = GetApp().T1Profi.EXGF;
-            }
+            // Game folder (the executables were reset for it)
+            if (!FnString.IsNullEmptyOrWhitespace(game.InstallPath))
+                GetWnd().txbGameFolder.Text = game.InstallPath;
         }
 
         private void FillViewProfileSettings()
@@ -283,7 +268,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             ControlBlackoutCheckboxProtection();
 
-            GetWnd().txbSteamArgs.Text = cProfileSettings.SteamGameArgs.Replace(";", " ");
+            GetWnd().txbLaunchArgs.Text = cProfileSettings.LaunchArgs;
         }
 
         private void FillViewAccentColors()
@@ -370,14 +355,6 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             _coverAppDataPath = path;
         }
 
-        private void FillDBOSteamImport(SteamGame selectedGame)
-        {
-            // Set Steam app ID --> exception: directly on the table object
-            GetApp().T1Profi.SAID = selectedGame.AppId;
-
-            GetApp().T1Profi.EXEC = string.Empty;
-        }
-
         private void FillDBOManualEstTimes()
         {
             ComboBoxItem combItem = GetWnd().cmbEstimatedTimeType.SelectedItem as ComboBoxItem;
@@ -415,7 +392,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             CProfileSettings cProfileSettings = new CProfileSettings();
 
             cProfileSettings.HDREnabled = GetWnd().cbEnableHdrOnStart.IsChecked == true;
-            cProfileSettings.SteamGameArgs = GetWnd().txbSteamArgs.Text.Replace(" ", ";");
+            cProfileSettings.LaunchArgs = GetWnd().txbLaunchArgs.Text.Trim();
 
             cProfileSettings.OverrideGlobalBlackout = GetWnd().cbOverrideGlobalBlackout.IsChecked == true;
             cProfileSettings.BlackoutSideMonitors =
@@ -446,7 +423,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
                 ComboBoxItem combItem = GetWnd().cmbEstimatedTimeType.SelectedItem as ComboBoxItem;
 
-                if (GetApp().T1Profi.SAID == 0 && FnString.IsNullEmptyOrWhitespace(GetWnd().txbProfileName.Text) || combItem.Tag.ToString() == EstimatedTimeTypes.EST_TIME_NONE)
+                long steamAppId = FnLauncher.GetSteamAppId(GetApp().T1Profi);
+
+                if (steamAppId == 0 && FnString.IsNullEmptyOrWhitespace(GetWnd().txbProfileName.Text) || combItem.Tag.ToString() == EstimatedTimeTypes.EST_TIME_NONE)
                 {
                     // -- Filling
                     GetApp().T1Profi.ETMA = 0;
@@ -465,10 +444,10 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
                 int? gameId = null;
 
-                if (GetApp().T1Profi.SAID != 0)
+                if (steamAppId != 0)
                 {
                     int steamSourceId = igdbservice.GetSteamSourceId();
-                    gameId = await igdbservice.FindGameIdBySteamAppIdAsync(steamSourceId, GetApp().T1Profi.SAID.ToString(CultureInfo.InvariantCulture));
+                    gameId = await igdbservice.FindGameIdBySteamAppIdAsync(steamSourceId, steamAppId.ToString(CultureInfo.InvariantCulture));
                 }
 
                 if (gameId == null)
@@ -553,19 +532,19 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             uIXManualCodetable.ApplyTo(GetWnd().cmbPlatform);
         }
 
-        private void BuildSteamLinkSection()
+        private void BuildLauncherSection()
         {
-            // Visibility of the Steam linked section
-            if (GetApp().T1Profi.SAID == 0)
-            {
-                GetWnd().pnlSteamLinkState.Visibility = Visibility.Collapsed;
-                GetWnd().pnlSteamSettings.Visibility = Visibility.Collapsed;
-            }
-            else
-            {
+            T1PROFI t1profi = GetApp().T1Profi;
+            bool isLinked = FnLauncher.IsLinked(t1profi);
 
-                GetWnd().pnlSteamLinkState.Visibility = Visibility.Visible;
-                GetWnd().pnlSteamSettings.Visibility = Visibility.Visible;
+            FnControls.SetVisible(GetWnd().pnlLauncherLinkState, isLinked);
+            FnControls.SetVisible(GetWnd().pnlLauncherSettings, isLinked);
+            FnControls.SetVisible(GetWnd().grdLaunchArgs, FnLauncher.GetLauncher(t1profi)?.SupportsLaunchArguments == true);
+
+            if (isLinked)
+            {
+                GetWnd().txtLauncherLinkStatus.Text = $"Linked with {FnLauncher.GetLauncherName(t1profi.LNTY)}";
+                GetWnd().txtLauncherGameId.Text = t1profi.LNID;
             }
         }
 
@@ -579,18 +558,6 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             else
             {
                 GetWnd().grdAccentColorSettings.Visibility = Visibility.Collapsed;
-            }
-        }
-
-        private void BuildSteamRelatedSettings()
-        {
-            if (GetApp().T1Profi.SAID == 0)
-            {
-                GetWnd().pnlSteamSettings.Visibility = Visibility.Collapsed;
-            }
-            else
-            {
-                GetWnd().pnlSteamSettings.Visibility = Visibility.Visible;
             }
         }
 
@@ -764,33 +731,49 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             return (ProfilesEditView)View;
         }
 
-        protected void EV_BtnSteamImport()
+        private void LinkGame(LauncherGame game)
         {
-            ProfilesSteamImportApp app = GetApp().GetApplication<ProfilesSteamImportApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
-            app.Search(r =>
+            FnLauncher.LinkGame(GetApp().T1Profi, game);
+
+            // Select executable
+            if (!FnString.IsNullEmptyOrWhitespace(game.InstallPath))
+                SearchExecutables(game.InstallPath);
+
+            using (SuppressRunEventPipeline())
+                FillViewLinkedGame(game);
+
+            Build();
+        }
+
+        private void SearchExecutables(string gameFolderPath)
+        {
+            ProfilesExecutablesEditApp profilesExecutablesEditApp = GetApp().GetApplication<ProfilesExecutablesEditApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
+            profilesExecutablesEditApp.Search(gameFolderPath, r =>
             {
                 if (!r.Canceled)
                 {
-
-                    FillDBOSteamImport(r.SteamGame!);
-
-                    // Select executable
-                    ProfilesExecutablesEditApp profilesExecutablesEditApp = GetApp().GetApplication<ProfilesExecutablesEditApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
-                    profilesExecutablesEditApp.Search(SteamManifestHelper.ResolveInstallPath(r.SteamGame!), r =>
-                    {
-                        if (!r.Canceled)
-                        {
-                            FillDBOExecutables(r.SelectedExecutables);
-                        }
-
-                    });
-
-                    using (SuppressRunEventPipeline())
-                        FillViewSteamImport(r.SteamGame!);
-
-                    Build();
+                    FillDBOExecutables(r.SelectedExecutables);
                 }
+
             });
+        }
+
+        protected void EV_btnLauncherImport()
+        {
+            ProfilesLauncherImportApp app = GetApp().GetApplication<ProfilesLauncherImportApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
+            app.Search(r =>
+            {
+                if (!r.Canceled)
+                    LinkGame(r.Game!);
+            });
+        }
+
+        protected void EV_btnLinkFile()
+        {
+            string filePath = FnSystemDialogs.ShowFileDialog("Choose game or shortcut", "Programs and shortcuts (*.exe;*.lnk;*.url)|*.exe;*.lnk;*.url", false);
+
+            if (!FnString.IsNullEmptyOrWhitespace(filePath))
+                LinkGame(LinkLauncher.CreateGame(filePath));
         }
 
         protected void EV_btnBrowseGameFolder()
@@ -802,15 +785,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             if (!FnString.IsNullEmptyOrWhitespace(gameFolderPath))
             {
                 // Select executable
-                ProfilesExecutablesEditApp profilesExecutablesEditApp = GetApp().GetApplication<ProfilesExecutablesEditApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
-                profilesExecutablesEditApp.Search(gameFolderPath, r =>
-                {
-                    if (!r.Canceled)
-                    {
-                        FillDBOExecutables(r.SelectedExecutables);
-                    }
-
-                });
+                SearchExecutables(gameFolderPath);
 
                 GetWnd().txbGameFolder.Text = gameFolderPath;
             }
@@ -827,7 +802,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             }
 
             // Check Steam profile link or game name
-            if (GetApp().T1Profi.SAID == 0 && FnString.IsNullEmptyOrWhitespace(GetWnd().txbProfileName.Text))
+            long steamAppId = FnLauncher.GetSteamAppId(GetApp().T1Profi);
+
+            if (steamAppId == 0 && FnString.IsNullEmptyOrWhitespace(GetWnd().txbProfileName.Text))
             {
                 CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
                 cfmbox.Show(GetErrorMessage("PRO0003"), CFMBOXResult.Ok, CFMBOXIcon.Info);
@@ -835,7 +812,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             }
 
             ProfilesSteamGridDBApp app = GetApp().GetApplication<ProfilesSteamGridDBApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
-            app.Search(GetApp(), GetApp().T1Profi.SAID, GetWnd().txbProfileName.Text, r =>
+            app.Search(GetApp(), steamAppId, GetWnd().txbProfileName.Text, r =>
             {
                 if (!r.Canceled)
                 {
@@ -851,9 +828,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 }
             });
         }
-        protected void EV_btnUnlinkSteamProfile()
+        protected void EV_btnUnlinkLauncher()
         {
-            GetApp().T1Profi.SAID = 0;
+            FnLauncher.Unlink(GetApp().T1Profi);
         }
 
         protected async Task EV_btnBrowseLocalImage()

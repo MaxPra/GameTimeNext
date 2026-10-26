@@ -184,9 +184,9 @@ namespace GameTimeNext.Core.Application.GTXMigration
                             {
                                 insertCmd.CommandText =
                                     "INSERT INTO T1PROFI " +
-                                    "(PFID, GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, CRAT, CHAT, ACCO, ACIN, ACAC, CUPT, ETMA, ETME, ETCO, ETML, ARCH) " +
+                                    "(PFID, GANA, FIPL, LAPL, PPFN, EXGF, LNTY, LNID, SAID, PRSE, EXEC, CRAT, CHAT, ACCO, ACIN, ACAC, CUPT, ETMA, ETME, ETCO, ETML, ARCH) " +
                                     "VALUES " +
-                                    "(@PFID, @GANA, @FIPL, @LAPL, @PPFN, @EXGF, @SAID, @PRSE, @EXEC, @CRAT, @CHAT, @ACCO, @ACIN, @ACAC, @CUPT, 0, 0, 0, 0, 0);";
+                                    "(@PFID, @GANA, @FIPL, @LAPL, @PPFN, @EXGF, @LNTY, @LNID, @SAID, @PRSE, @EXEC, @CRAT, @CHAT, @ACCO, @ACIN, @ACAC, @CUPT, 0, 0, 0, 0, 0);";
 
                                 insertCmd.Parameters.AddWithValue("@PFID", pfid);
                                 insertCmd.Parameters.AddWithValue("@GANA", gana);
@@ -197,6 +197,8 @@ namespace GameTimeNext.Core.Application.GTXMigration
                                 insertCmd.Parameters.AddWithValue("@PPFN", ppfn);
                                 insertCmd.Parameters.AddWithValue("@EXGF", exgf);
 
+                                insertCmd.Parameters.AddWithValue("@LNTY", said != 0 ? "STEAM" : string.Empty);
+                                insertCmd.Parameters.AddWithValue("@LNID", said != 0 ? said.ToString(CultureInfo.InvariantCulture) : string.Empty);
                                 insertCmd.Parameters.AddWithValue("@SAID", said);
                                 insertCmd.Parameters.AddWithValue("@PRSE", prse);
                                 insertCmd.Parameters.AddWithValue("@EXEC", exec);

@@ -6,7 +6,7 @@ namespace GameTimeNext.Core.Application.Profiles.Components
     {
 
         public bool HDREnabled { get; set; } = false;
-        public string SteamGameArgs { get; set; } = string.Empty;
+        public string LaunchArgs { get; set; } = string.Empty;
 
         public bool OverrideGlobalBlackout { get; set; } = false;
         public bool BlackoutSideMonitors { get; set; } = false;

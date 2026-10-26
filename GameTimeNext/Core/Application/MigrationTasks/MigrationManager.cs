@@ -14,6 +14,7 @@ namespace GameTimeNext.Core.Application.MigrationTasks
                 new MigTask_033b_007(),
                 new MigTask_100b_008(),
                 new MigTask_100b_009(),
+                new MigTask_100b_010(),
             };
 
             migrations.ForEach(mT =>mT.Execute());

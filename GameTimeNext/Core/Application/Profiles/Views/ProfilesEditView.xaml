@@ -202,7 +202,7 @@
                 </Grid>
             </TabItem>
 
-            <TabItem Header="Steam">
+            <TabItem Header="Launcher">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -210,15 +210,26 @@
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
-                    <Button
-                        x:Name="BtnSteamImport"
+                    <StackPanel
                         Grid.Row="0"
-                        Width="140"
-                        Height="34"
                         HorizontalAlignment="Right"
                         VerticalAlignment="Top"
-                        Content="Steam import"
-                        ToolTip="Import game data from Steam" />
+                        Orientation="Horizontal">
+                        <Button
+                            x:Name="btnLinkFile"
+                            Width="140"
+                            Height="34"
+                            Content="Link file…"
+                            ToolTip="Start the game with an executable, a shortcut or a URI" />
+
+                        <Button
+                            x:Name="btnLauncherImport"
+                            Width="140"
+                            Height="34"
+                            Margin="10,0,0,0"
+                            Content="Launcher import"
+                            ToolTip="Import an installed game from a launcher" />
+                    </StackPanel>
 
                     <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
                         <Grid>
@@ -229,7 +240,7 @@
                             </Grid.RowDefinitions>
 
                             <Border
-                                x:Name="pnlSteamLinkState"
+                                x:Name="pnlLauncherLinkState"
                                 Grid.Row="0"
                                 Padding="12,10"
                                 Visibility="Visible"
@@ -254,24 +265,30 @@
                                         VerticalAlignment="Center"
                                         Orientation="Vertical">
                                         <TextBlock
-                                            x:Name="txtSteamLinkStatus"
+                                            x:Name="txtLauncherLinkStatus"
                                             FontWeight="SemiBold"
-                                            Text="Linked with Steam" />
+                                            Text="Linked with launcher" />
+
+                                        <TextBlock
+                                            x:Name="txtLauncherGameId"
+                                            Margin="0,2,0,0"
+                                            Opacity="0.8"
+                                            TextTrimming="CharacterEllipsis" />
                                     </StackPanel>
 
                                     <Button
-                                        x:Name="btnUnlinkSteamProfile"
+                                        x:Name="btnUnlinkLauncher"
                                         Grid.Column="4"
                                         Width="110"
                                         Height="30"
                                         VerticalAlignment="Center"
                                         Content="Remove link"
-                                        ToolTip="Remove Steam link from this profile" />
+                                        ToolTip="Remove the launcher link from this profile" />
                                 </Grid>
                             </Border>
 
                             <Border
-                                x:Name="pnlSteamSettings"
+                                x:Name="pnlLauncherSettings"
                                 Grid.Row="2"
                                 Padding="16"
                                 Style="{StaticResource Card}">
@@ -288,14 +305,14 @@
                                         Grid.Row="0"
                                         FontSize="14"
                                         FontWeight="SemiBold"
-                                        Text="Steam settings" />
+                                        Text="Launch settings" />
 
                                     <CheckBox
                                         x:Name="cbEnableHdrOnStart"
                                         Grid.Row="2"
                                         Content="Enable HDR on game start" />
 
-                                    <Grid Grid.Row="4">
+                                    <Grid x:Name="grdLaunchArgs" Grid.Row="4">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="8" />
@@ -305,13 +322,13 @@
                                         <TextBlock
                                             Grid.Row="0"
                                             Opacity="0.8"
-                                            Text="Steam launch arguments" />
+                                            Text="Launch arguments" />
 
                                         <TextBox
-                                            x:Name="txbSteamArgs"
+                                            x:Name="txbLaunchArgs"
                                             Grid.Row="2"
                                             Height="36"
-                                            ToolTip="Additional Steam launch arguments (e.g. -novid -fullscreen)" />
+                                            ToolTip="Additional launch arguments (e.g. -novid -fullscreen)" />
                                     </Grid>
                                 </Grid>
                             </Border>

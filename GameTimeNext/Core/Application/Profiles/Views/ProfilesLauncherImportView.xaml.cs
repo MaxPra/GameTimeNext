@@ -3,11 +3,11 @@
 namespace GameTimeNext.Core.Application.Profiles.Views
 {
     /// <summary>
-    /// Interaction logic for ProfilesSteamImportView.xaml
+    /// Interaction logic for ProfilesLauncherImportView.xaml
     /// </summary>
-    public partial class ProfilesSteamImportView : GTNWindowView
+    public partial class ProfilesLauncherImportView : GTNWindowView
     {
-        public ProfilesSteamImportView()
+        public ProfilesLauncherImportView()
         {
             InitializeComponent();
         }

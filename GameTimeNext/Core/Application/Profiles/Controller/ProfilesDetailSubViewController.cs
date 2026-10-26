@@ -80,7 +80,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             GetView().imgProfileCover.Source = FnImage.LoadImageWithoutLock(Path.Combine(AppConfig.Storage.ProfileCoversDirectoryPath, _dataWrapper!.GetTypedTableObject().PPFN), 300, 450);
 
-            GetView().btnLaunchGame.IsEnabled = _dataWrapper!.GetTypedTableObject().SAID != 0 && GetView().btnLaunchGame.Content != "Running..." && TFPROFI.HasExecutables(_dataWrapper.GetTypedTableObject());
+            GetView().btnLaunchGame.IsEnabled = FnLauncher.CanLaunch(_dataWrapper!.GetTypedTableObject()) && GetView().btnLaunchGame.Content != "Running...";
 
             // -- Progress bar section
             //bool isIGDBLinkedCorrectly = !FnString.IsNullEmptyOrWhitespace(AppEnvironment.GetAppConfig().AppSettings.TwitchIGDBClientID) &&
@@ -433,7 +433,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         public async void EV_btnLaunchGame()
         {
-            FnSteam.StartSteamGame(_dataWrapper!.GetTypedTableObject().SAID.ToString(CultureInfo.InvariantCulture), _dataWrapper!.GetTypedTableObject().PFID, GetApp());
+            FnLauncher.StartGame(_dataWrapper!.GetTypedTableObject(), GetApp());
             GetView().btnLaunchGame.Content = "Launching...";
             GetView().btnLaunchGame.IsEnabled = false;
 
