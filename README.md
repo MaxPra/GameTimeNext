@@ -167,7 +167,7 @@ To enable cover artwork:
 | ✅ | **Playthroughs** | Full playthrough management application — rename, complete, and organize playthroughs directly (playthroughs already existed in earlier versions; full management UI arrives in v1.0.0) |
 | ✅ | **Remote Monitoring** | Manage GameTimeMonitoring remotely via phone — starts a local server, accessible via a website within your home network |
 | ✅ | **UI/UX** | New UI refinements for a cleaner, more modern look |
-| 🚧 | **Platforms** | Epic Games integration, additional launcher support |
+| ✅ | **Platforms** | Epic Games integration, additional launcher support |
 | ✅ | **Usability** | Built-in help system |
 | ✅ | **Personalization** | Local game rating system |
 
