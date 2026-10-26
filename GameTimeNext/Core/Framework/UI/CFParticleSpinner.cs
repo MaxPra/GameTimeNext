@@ -10,7 +10,13 @@ namespace GameTimeNext.Core.Framework.UI
         Ring,
 
         /// <summary>A large rounded play triangle instead of the ring; room for an icon in its middle (game time tracking).</summary>
-        PlayButton
+        PlayButton,
+
+        /// <summary>
+        /// Two counter-rotating rings while warp streaks shoot outwards through them; room for an icon in the middle
+        /// (game launch).
+        /// </summary>
+        Launch
     }
 
     /// <summary>
@@ -24,6 +30,14 @@ namespace GameTimeNext.Core.Framework.UI
         private const int RingParticleCount = 110;
         private const int TriangleParticleCount = 130;
         private const int DustParticleCount = 26;
+        private const int LaunchOuterParticleCount = 100;
+        private const int LaunchInnerParticleCount = 64;
+        private const int WarpStreakCount = 64;
+        private const double LaunchInnerRingRadius = 0.7;
+
+        /// <summary>Warp streaks are born in this distance around the center and vanish at WarpStreakEnd.</summary>
+        private const double WarpStreakStart = 0.25;
+        private const double WarpStreakEnd = 1.65;
         private const int BrushLevels = 32;
         private const int TrackSamples = 720;
 
@@ -33,6 +47,7 @@ namespace GameTimeNext.Core.Framework.UI
         /// </summary>
         private const double RingRadiusFactor = 0.62;
         private const double PlayButtonUnitFactor = 0.56;
+        private const double LaunchUnitFactor = 0.52;
         private const double BaseHeadSpeed = 3.4;
         private const double TailLength = 2.2;
         private const double SpringStrength = 30d;
@@ -74,12 +89,16 @@ namespace GameTimeNext.Core.Framework.UI
 
         private readonly SolidColorBrush[] dotBrushes = new SolidColorBrush[BrushLevels];
         private readonly RadialGradientBrush[] glowBrushes = new RadialGradientBrush[BrushLevels];
+        private readonly Pen[] streakPens = new Pen[BrushLevels];
         private Color? brushAccent;
 
         private readonly Random random = new();
         private Track[] tracks = Array.Empty<Track>();
         private Particle[] particles = Array.Empty<Particle>();
-        private readonly Dust[] dust = new Dust[DustParticleCount];
+        private Dust[] dust = new Dust[DustParticleCount];
+
+        /// <summary>The dust flies outwards as warp streaks instead of floating around (Launch).</summary>
+        private bool IsWarp => Shape == CFParticleSpinnerShape.Launch;
 
         /// <summary>Speed factor of the comet head and the breathing (1 = busy indicator; lower values feel calmer).</summary>
         public static readonly DependencyProperty SpeedProperty =
@@ -107,6 +126,20 @@ namespace GameTimeNext.Core.Framework.UI
         {
             get => (CFParticleSpinnerShape)GetValue(ShapeProperty);
             set => SetValue(ShapeProperty, value);
+        }
+
+        /// <summary>The warp streaks (Shape Launch) fly inwards and slow down towards the center (game quits).</summary>
+        public static readonly DependencyProperty ReverseProperty =
+            DependencyProperty.Register(
+                nameof(Reverse),
+                typeof(bool),
+                typeof(CFParticleSpinner),
+                new PropertyMetadata(false));
+
+        public bool Reverse
+        {
+            get => (bool)GetValue(ReverseProperty);
+            set => SetValue(ReverseProperty, value);
         }
 
         private bool isRunning;
@@ -152,16 +185,37 @@ namespace GameTimeNext.Core.Framework.UI
         /// <summary>Builds the tracks of the current shape and distributes the particles along them.</summary>
         private void BuildShape()
         {
-            bool isPlayButton = Shape == CFParticleSpinnerShape.PlayButton;
+            int[] particleCounts;
 
-            tracks = isPlayButton
-                ? new[] { CreateRoundedPolygonTrack(PlayTriangle, PlayCornerRadius, bulge: 0.16, spread: 0.12, headOffset: 0) }
-                : new[] { CreateRingTrack() };
+            switch (Shape)
+            {
+                case CFParticleSpinnerShape.PlayButton:
+                    tracks = new[] { CreateRoundedPolygonTrack(PlayTriangle, PlayCornerRadius, bulge: 0.16, spread: 0.12, headOffset: 0) };
+                    particleCounts = new[] { TriangleParticleCount };
+                    break;
+
+                case CFParticleSpinnerShape.Launch:
+                    // The inner ring runs the other way round, its comet head starts opposite of the outer one
+                    tracks = new[]
+                    {
+                        CreateRingTrack(1, clockwise: true, bulge: 0.2, spread: 0.12, headOffset: 0),
+                        CreateRingTrack(LaunchInnerRingRadius, clockwise: false, bulge: 0.14, spread: 0.08, headOffset: 0.5)
+                    };
+                    particleCounts = new[] { LaunchOuterParticleCount, LaunchInnerParticleCount };
+                    break;
+
+                default:
+                    tracks = new[] { CreateRingTrack(1, clockwise: true, bulge: 0.22, spread: 0.16, headOffset: 0) };
+                    particleCounts = new[] { RingParticleCount };
+                    break;
+            }
+
+            dust = new Dust[IsWarp ? WarpStreakCount : DustParticleCount];
 
             var particleList = new List<Particle>();
             for (int t = 0; t < tracks.Length; t++)
             {
-                int count = isPlayButton ? TriangleParticleCount : RingParticleCount;
+                int count = particleCounts[t];
 
                 for (int i = 0; i < count; i++)
                 {
@@ -180,19 +234,20 @@ namespace GameTimeNext.Core.Framework.UI
             ResetParticles();
         }
 
-        private static Track CreateRingTrack()
+        /// <summary>Ring with the given radius; the comet head runs clockwise or counter-clockwise along it.</summary>
+        private static Track CreateRingTrack(double radius, bool clockwise, double bulge, double spread, double headOffset)
         {
             var points = new Point[TrackSamples];
             var normals = new Vector[TrackSamples];
 
             for (int k = 0; k < TrackSamples; k++)
             {
-                double angle = k / (double)TrackSamples * Math.PI * 2;
+                double angle = k / (double)TrackSamples * Math.PI * 2 * (clockwise ? 1 : -1);
                 normals[k] = new Vector(Math.Cos(angle), Math.Sin(angle));
-                points[k] = new Point(normals[k].X, normals[k].Y);
+                points[k] = new Point(normals[k].X * radius, normals[k].Y * radius);
             }
 
-            return new Track { Points = points, Normals = normals, Bulge = 0.22, Spread = 0.16, HeadOffset = 0 };
+            return new Track { Points = points, Normals = normals, Bulge = bulge, Spread = spread, HeadOffset = headOffset };
         }
 
         /// <summary>
@@ -302,6 +357,13 @@ namespace GameTimeNext.Core.Framework.UI
 
             for (int i = 0; i < dust.Length; i++)
             {
+                if (IsWarp)
+                {
+                    // Spread over the whole way at once, so the streaks don't start as one wave
+                    dust[i] = CreateWarpStreak(WarpStreakStart + random.NextDouble() * (WarpStreakEnd - WarpStreakStart));
+                    continue;
+                }
+
                 dust[i] = new Dust
                 {
                     X = (random.NextDouble() * 2 - 1) * 1.4,
@@ -311,6 +373,19 @@ namespace GameTimeNext.Core.Framework.UI
                     Phase = random.NextDouble() * Math.PI * 2
                 };
             }
+        }
+
+        /// <summary>Warp streak at the given distance from the center in a random direction.</summary>
+        private Dust CreateWarpStreak(double distance)
+        {
+            double angle = random.NextDouble() * Math.PI * 2;
+
+            return new Dust
+            {
+                X = Math.Cos(angle) * distance,
+                Y = Math.Sin(angle) * distance,
+                Phase = random.NextDouble() * Math.PI * 2
+            };
         }
 
         private void OnRendering(object? sender, EventArgs e)
@@ -379,6 +454,25 @@ namespace GameTimeNext.Core.Framework.UI
             for (int i = 0; i < dust.Length; i++)
             {
                 ref var d = ref dust[i];
+
+                if (IsWarp)
+                {
+                    // Accelerates outwards, a new streak is born in the middle when it has left the shape;
+                    // reversed it comes from outside, slows down towards the middle and is born outside again
+                    bool reverse = Reverse;
+                    double distance = Math.Sqrt(d.X * d.X + d.Y * d.Y);
+                    double speed = WarpSpeed(distance) * dt * Speed * (reverse ? -1 : 1);
+                    d.X += d.X / distance * speed;
+                    d.Y += d.Y / distance * speed;
+
+                    if (!reverse && distance > WarpStreakEnd)
+                        d = CreateWarpStreak(WarpStreakStart + random.NextDouble() * 0.15);
+                    else if (reverse && distance < WarpStreakStart)
+                        d = CreateWarpStreak(WarpStreakEnd - random.NextDouble() * 0.15);
+
+                    continue;
+                }
+
                 d.X += d.VX * dt;
                 d.Y += d.VY * dt;
 
@@ -387,6 +481,12 @@ namespace GameTimeNext.Core.Framework.UI
                 if (d.Y < -1.5) d.Y += 3;
                 if (d.Y > 1.5) d.Y -= 3;
             }
+        }
+
+        /// <summary>Speed of a warp streak (units per second) at the given distance from the center.</summary>
+        private static double WarpSpeed(double distance)
+        {
+            return 0.25 + distance * distance * 1.6;
         }
 
         /// <summary>
@@ -423,6 +523,10 @@ namespace GameTimeNext.Core.Framework.UI
                 var glow = new RadialGradientBrush(glowColor, transparent);
                 glow.Freeze();
                 glowBrushes[i] = glow;
+
+                var streak = new Pen(dot, 1.6) { StartLineCap = PenLineCap.Round, EndLineCap = PenLineCap.Round };
+                streak.Freeze();
+                streakPens[i] = streak;
             }
         }
 
@@ -443,7 +547,12 @@ namespace GameTimeNext.Core.Framework.UI
 
             double cx = ActualWidth / 2;
             double cy = ActualHeight / 2;
-            double unitFactor = Shape == CFParticleSpinnerShape.PlayButton ? PlayButtonUnitFactor : RingRadiusFactor;
+            double unitFactor = Shape switch
+            {
+                CFParticleSpinnerShape.PlayButton => PlayButtonUnitFactor,
+                CFParticleSpinnerShape.Launch => LaunchUnitFactor,
+                _ => RingRadiusFactor
+            };
             double scale = Math.Min(ActualWidth, ActualHeight) / 2 * unitFactor;
             double dotSize = scale / 30;
 
@@ -451,6 +560,13 @@ namespace GameTimeNext.Core.Framework.UI
             for (int i = 0; i < dust.Length; i++)
             {
                 ref var d = ref dust[i];
+
+                if (IsWarp)
+                {
+                    DrawWarpStreak(dc, d, cx, cy, scale);
+                    continue;
+                }
+
                 double brightness = 0.1 + 0.14 * (0.5 + 0.5 * Math.Sin(time * 0.9 + d.Phase));
                 int level = (int)(brightness * (BrushLevels - 1));
                 dc.DrawEllipse(dotBrushes[level], null, new Point(cx + d.X * scale, cy + d.Y * scale), dotSize * 0.7, dotSize * 0.7);
@@ -478,6 +594,27 @@ namespace GameTimeNext.Core.Framework.UI
 
                 dc.DrawEllipse(dotBrushes[level], null, point, radius, radius);
             }
+        }
+
+        /// <summary>
+        /// Line from the streak's position back to where it comes from (the center, reversed the outside);
+        /// the faster the streak, the longer the line. Fades in after its birth and out before it vanishes.
+        /// </summary>
+        private void DrawWarpStreak(DrawingContext dc, in Dust d, double cx, double cy, double scale)
+        {
+            double distance = Math.Sqrt(d.X * d.X + d.Y * d.Y);
+            double progress = Math.Clamp((distance - WarpStreakStart) / (WarpStreakEnd - WarpStreakStart), 0, 1);
+            double length = (0.03 + WarpSpeed(distance) * 0.09) * (Reverse ? -1 : 1);
+
+            double fade = Math.Sin(progress * Math.PI);
+            double twinkle = 0.1 * Math.Sin(time * 3 + d.Phase);
+            double brightness = Math.Clamp(0.12 + fade * 0.7 + twinkle, 0, 1);
+            int level = (int)(brightness * (BrushLevels - 1));
+
+            var head = new Point(cx + d.X * scale, cy + d.Y * scale);
+            var tail = new Point(cx + (d.X - d.X / distance * length) * scale, cy + (d.Y - d.Y / distance * length) * scale);
+
+            dc.DrawLine(streakPens[level], tail, head);
         }
     }
 }

@@ -67,9 +67,9 @@
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <CheckBox
-                                        Margin="0,0,0,6"
                                         Content="{Binding Name}"
-                                        IsChecked="{Binding IsSelected, Mode=TwoWay}" />
+                                        IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                        Style="{StaticResource CheckBox.ListItem}" />
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>

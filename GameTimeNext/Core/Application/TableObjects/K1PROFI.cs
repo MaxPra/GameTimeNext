@@ -12,6 +12,8 @@
             public const string LAPL = "LAPL";
             public const string PPFN = "PPFN";
             public const string EXGF = "EXGF";
+            public const string LNTY = "LNTY";
+            public const string LNID = "LNID";
             public const string SAID = "SAID";
             public const string PRSE = "PRSE";
             public const string EXEC = "EXEC";

@@ -355,8 +355,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             // Playthrough
             ProfilesContextMenuBuilder.BuildContextPlayhtrougths(contextBuilder, t1profi);
 
-            // Steam
-            ProfilesContextMenuBuilder.BuildContextSteam(contextBuilder, t1profi);
+            // Launcher
+            ProfilesContextMenuBuilder.BuildContextLauncher(contextBuilder, t1profi);
 
             // Archive
             ProfilesContextMenuBuilder.BuildContextArchive(contextBuilder, t1profi);
@@ -605,13 +605,13 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         }
 
         /// <summary>
-        /// Open Steam library
+        /// Show the game in the library of its launcher
         /// </summary>
-        protected void EV_ctxtOpenSteamLibrary()
+        protected void EV_ctxtOpenInLauncher()
         {
             T1PROFI t1profi = GetSelectedProfile();
 
-            FnSteam.OpenSteamLibrary(t1profi.SAID);
+            FnLauncher.OpenInLauncher(t1profi);
         }
 
         protected void EV_ctxtEdit()

@@ -1,12 +1,16 @@
-﻿using System.IO;
+using System.Globalization;
+using System.IO;
 using System.Text.RegularExpressions;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Framework.LauncherIntegration
+namespace GameTimeNext.Core.Framework.LauncherIntegration.Steam
 {
-    public record SteamGame(uint AppId, string Name, string InstallDir, string LibraryPath, uint StateFlags = 0);
+    internal record SteamManifest(uint AppId, string Name, string InstallDir, string LibraryPath, uint StateFlags = 0);
 
-    internal static class SteamManifestHelper
+    /// <summary>
+    /// Reads the appmanifest_*.acf files of the Steam libraries.
+    /// </summary>
+    internal static class SteamManifestReader
     {
         private static readonly Regex rxAppId = new(@"""appid""\s*""(\d+)""", RegexOptions.IgnoreCase);
         private static readonly Regex rxName = new(@"""name""\s*""([^""]+)""", RegexOptions.IgnoreCase);
@@ -16,9 +20,9 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
         /// <summary>
         /// Scans all appmanifest_*.acf files in the given steamapps folders.
         /// </summary>
-        public static List<SteamGame> ScanAllGames(IEnumerable<string> steamappsFolders)
+        public static List<SteamManifest> ScanAllGames(IEnumerable<string> steamappsFolders)
         {
-            var result = new List<SteamGame>();
+            var result = new List<SteamManifest>();
 
             foreach (var steamapps in steamappsFolders)
             {
@@ -35,14 +39,14 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
 
                     if (!idMatch.Success || !nmMatch.Success) continue;
 
-                    uint.TryParse(idMatch.Groups[1].Value, out var appid);
+                    uint.TryParse(idMatch.Groups[1].Value, CultureInfo.InvariantCulture, out var appid);
                     var name = nmMatch.Groups[1].Value;
                     var installdir = dirMatch.Success ? dirMatch.Groups[1].Value : string.Empty;
                     uint stateFlags = 0;
                     if (stateFlagsMatch.Success)
-                        uint.TryParse(stateFlagsMatch.Groups[1].Value, out stateFlags);
+                        uint.TryParse(stateFlagsMatch.Groups[1].Value, CultureInfo.InvariantCulture, out stateFlags);
 
-                    result.Add(new SteamGame(appid, name, installdir, steamapps, stateFlags));
+                    result.Add(new SteamManifest(appid, name, installdir, steamapps, stateFlags));
                 }
             }
 
@@ -52,7 +56,7 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
         /// <summary>
         /// Determines the expected installation path of the game.
         /// </summary>
-        public static string? ResolveInstallPath(SteamGame g)
+        public static string? ResolveInstallPath(SteamManifest g)
         {
             // <library>\common\<installdir>
             var common = Path.Combine(g.LibraryPath.Replace('/', '\\'), "common");
@@ -63,6 +67,17 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
             }
 
             return Directory.Exists(common) ? common : null;
+        }
+
+        /// <summary>
+        /// Gets the first "key" "value" entry from the ACF text
+        /// </summary>
+        public static string GetVdfValue(string vdfText, string key)
+        {
+            // Search key case-insensitively:  "key"   "value"
+            var m = Regex.Match(vdfText, $"\"{Regex.Escape(key)}\"\\s*\"([^\"]*)\"",
+                                RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+            return m.Success ? m.Groups[1].Value.Trim() : string.Empty;
         }
     }
 }

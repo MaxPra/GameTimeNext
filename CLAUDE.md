@@ -33,6 +33,7 @@ From `Scripts/unallowed_code.md` and `.github/copilot-instructions.md`:
 - **`x:Name` in XAML** always starts with the control type as a lowercase prefix, followed by a PascalCase name (e.g. `btnSave`, `txbDescription`, `cmbParam`, `chbPaused`, `lblTitle`). Only `PART_*` names required by WPF control templates are exempt. Existing names with an uppercase prefix (`BtnSave`, `TxbDescription`, …) are legacy and are being renamed; when renaming, also rename the matching `EV_<x:Name>` handlers and all code references.
 - All comments in source code (C#, XAML, scripts — in this repo and in `../UIX.ViewController.Engine`) must be in English, even when the conversation is in German.
 - **No logic in code-behind:** `*.xaml.cs` files contain only `InitializeComponent()`. View logic goes into the module's controller (for `MainWindow`: `MainWindowController`); reusable UI behavior goes into attached properties / helpers in `Core/Framework/UI/`, switched on from XAML or styles. Existing code-behind logic is legacy, not a pattern.
+- **Codetable keys** are compared directly as string literals (e.g. `t1profi.LNTY == "STEAM"`); don't create an enum or constant class per codetable entry.
 - **Culture:** data (SQLite, CSV, files, IDs) uses `InvariantCulture`, the UI uses `CurrentCulture` explicitly; CA1304/CA1305 are build errors. All value conversions go through `UIXSqliteDataType.Convert` (C# / SQLite / CSV / UI). Numbers typed into the UI are parsed with `ConversionType.UI` (strict, current culture, no thousands separators) — never with `double.TryParse` and friends directly. Numeric TextBoxes bound via `UIXAttachedProperty.Path`, `FnControls.ContainsOnlyNumericValue` and `FnConvert.ToDouble` already use it.
 
 ## Architecture
@@ -92,6 +93,9 @@ For tables marked as dev-synced in metadata (`IsDevSynced`), saving a table obje
 `AppEnvironment.Initalize()` order: backup → `MigrationFactory.Metadata.MigrateTables()` (schema from metadata) → startable apps → changelog → import packages → DevSync CSV import (debug only) → `MigrationManager.Migrate()` → seed `T1GROUP`.
 
 Version-specific data migrations are `MigTask_<version>_<seq>` classes (subclassing `MigTaskBase`) registered in order in `MigrationTasks/MigrationManager.Migrate()`.
+
+### Launcher integration
+A profile is linked with a launcher by `T1PROFI.LNTY` (launcher type, key of codetable `lT`) and `T1PROFI.LNID` (game ID in that launcher: Steam app ID, file path for `LINK`, ...); launch arguments are `CProfileSettings.LaunchArgs` in `PRSE`. Each launcher is an `ILauncherIntegration` (`Core/Framework/LauncherIntegration/<Launcher>/`, based on `LauncherIntegrationBase`) that returns its codetable key in `LauncherType` and declares its features (`SupportsImport`, `SupportsLaunchArguments`, `SupportsOpenInLauncher`); new launchers are registered in `LauncherRegistry`. Modules only use the facade `FnLauncher` (link/unlink, installed games of all launchers, start with profile settings such as HDR, cancel the launch, quit the running game, open in library) and adapt their UI to the features, never to a specific launcher. Running game detection (`GameRunningProcess`) doesn't depend on the launcher, it uses `EXGF`/`EXEC`. `T1PROFI.SAID` is legacy: `MigTask_100b_010` moves it to `LNTY`/`LNID`.
 
 ### Runtime
 - Background processes: `GameRunningProcess` (polls every 500 ms to detect running game executables and switch profiles) and `GlobalKeyInputProcess` (global hotkeys, e.g. Ctrl+M quick launch). They are stopped on exit, and an auto-backup is created then.

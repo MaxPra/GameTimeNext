@@ -247,12 +247,42 @@ namespace GameTimeNext.Core.Framework.Utils
         public static bool IsProcessRunningWithPathPart(IReadOnlyDictionary<string, List<string>> runningProcesses, string executable, string partialPath)
         {
             string executableName = Path.GetFileNameWithoutExtension(executable);
-            string normalizedPartialPath = Path.GetFullPath(partialPath)
-                .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            string normalizedPartialPath = NormalizePathPart(partialPath);
 
             return runningProcesses.TryGetValue(executableName, out List<string>? processPaths) &&
                 processPaths.Any(processPath =>
                     processPath.IndexOf(normalizedPartialPath, StringComparison.OrdinalIgnoreCase) >= 0);
+        }
+
+        /// <summary>
+        /// Returns the running processes of the given executables whose path contains partialPath (e.g. the game folder).
+        /// The caller disposes the processes.
+        /// </summary>
+        public static List<Process> GetProcessesWithPathPart(IEnumerable<string> executables, string partialPath)
+        {
+            List<Process> result = new List<Process>();
+            string normalizedPartialPath = NormalizePathPart(partialPath);
+
+            foreach (string executable in executables)
+            {
+                foreach (Process process in Process.GetProcessesByName(Path.GetFileNameWithoutExtension(executable)))
+                {
+                    string? processPath = TryGetProcessImagePath(process.Id);
+
+                    if (processPath != null && processPath.IndexOf(normalizedPartialPath, StringComparison.OrdinalIgnoreCase) >= 0)
+                        result.Add(process);
+                    else
+                        process.Dispose();
+                }
+            }
+
+            return result;
+        }
+
+        private static string NormalizePathPart(string partialPath)
+        {
+            return Path.GetFullPath(partialPath)
+                .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
         }
 
         /// <summary>
