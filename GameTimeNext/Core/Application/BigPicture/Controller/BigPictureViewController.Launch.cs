@@ -2,6 +2,7 @@
 using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework.LauncherIntegration;
+using GameTimeNext.Core.Framework.Utils;
 using System.Windows;
 using UIX.ViewController.Engine.Utils;
 
@@ -13,6 +14,13 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
     public partial class BigPictureViewController
     {
         private const string QuittingTag = "Quitting";
+
+        // A launched game whose window opens behind the mode is brought to the front for this long
+        private static readonly TimeSpan LaunchFrontTimeout = TimeSpan.FromSeconds(90);
+        private static readonly TimeSpan LaunchFrontInterval = TimeSpan.FromSeconds(1);
+
+        // Incremented to stop a running BringLaunchedGameToFront (return to the mode, end of the game)
+        private int _launchFrontVersion;
 
         private long _runningPfid;
         private T1PROFI? _launchingProfile;
@@ -82,6 +90,40 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
                 _isQuitting = false;
                 HideLaunchOverlay();
                 UpdateRunningState();
+            }
+        }
+
+        /// <summary>
+        /// Windows doesn't always let a launched game take the focus from the mode (mostly games that start in a window):
+        /// its window opens behind the mode and can't be reached with the controller. For a while after the start, the
+        /// game window is brought to the front whenever the mode is in front instead of it; this also covers a splash
+        /// or launcher window of the game that is followed by the real one. A launcher dialog in front of the mode
+        /// (e.g. a cloud save conflict) keeps its focus.
+        /// </summary>
+        private async void BringLaunchedGameToFront(long pfid)
+        {
+            int version = ++_launchFrontVersion;
+
+            T1PROFI? t1profi = new TXPROFI().Read(pfid);
+
+            if (t1profi == null)
+                return;
+
+            DateTime end = DateTime.Now + LaunchFrontTimeout;
+
+            while (DateTime.Now < end && version == _launchFrontVersion && _runningPfid == pfid && GetApp().IsOpen)
+            {
+                IntPtr gameWindow = FnLauncher.FindGameWindow(t1profi);
+                Window? window = Window.GetWindow(View);
+
+                if (gameWindow != IntPtr.Zero && !FnForeground.IsForeground(gameWindow)
+                    && window != null && (window.IsActive || FnForeground.IsVisibleOnTop(window)))
+                {
+                    FnLog.AddInfo(GetApp(), $"Window of {t1profi.GANA} brought in front of the Big Picture mode");
+                    FnForeground.BringToFront(gameWindow);
+                }
+
+                await Task.Delay(LaunchFrontInterval);
             }
         }
 

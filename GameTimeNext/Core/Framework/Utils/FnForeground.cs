@@ -85,7 +85,92 @@ namespace GameTimeNext.Core.Framework.Utils
             return windowAtCenter != IntPtr.Zero && GetAncestor(windowAtCenter, GA_ROOT) == hwnd;
         }
 
+        /// <summary>
+        /// True if the window is the foreground window.
+        /// </summary>
+        public static bool IsForeground(IntPtr hwnd)
+        {
+            return hwnd != IntPtr.Zero && GetForegroundWindow() == hwnd;
+        }
+
+        /// <summary>
+        /// The main window of a group of processes (e.g. the executables of a game): the largest visible top level window
+        /// without owner that isn't a tool window, also when it is minimized. Process.MainWindowHandle only looks at one
+        /// process and takes the first visible window, which may be a splash or helper window.
+        /// </summary>
+        public static IntPtr FindMainWindow(IEnumerable<int> processIds)
+        {
+            HashSet<uint> ids = processIds.Select(id => (uint)id).ToHashSet();
+
+            IntPtr mainWindow = IntPtr.Zero;
+            long mainWindowArea = 0;
+
+            if (ids.Count == 0)
+                return mainWindow;
+
+            EnumWindows((hwnd, _) =>
+            {
+                GetWindowThreadProcessId(hwnd, out uint processId);
+
+                if (!ids.Contains(processId) || !IsWindowVisible(hwnd) || GetWindow(hwnd, GW_OWNER) != IntPtr.Zero)
+                    return true;
+
+                if ((GetWindowLongPtr(hwnd, GWL_EXSTYLE).ToInt64() & WS_EX_TOOLWINDOW) != 0)
+                    return true;
+
+                long area = GetRestoredArea(hwnd);
+
+                if (area > mainWindowArea)
+                {
+                    mainWindow = hwnd;
+                    mainWindowArea = area;
+                }
+
+                return true;
+            }, IntPtr.Zero);
+
+            return mainWindow;
+        }
+
+        /// <summary>
+        /// Minimizes a window of another application without waiting for it (a hanging game doesn't block the caller).
+        /// The window loses the focus with it.
+        /// </summary>
+        public static void Minimize(IntPtr hwnd)
+        {
+            if (hwnd != IntPtr.Zero && !IsIconic(hwnd))
+                ShowWindowAsync(hwnd, SW_MINIMIZE);
+        }
+
+        /// <summary>
+        /// Size of the window in its normal state: a minimized window only has the size of its caption.
+        /// </summary>
+        private static long GetRestoredArea(IntPtr hwnd)
+        {
+            RECT rect;
+
+            if (IsIconic(hwnd))
+            {
+                WINDOWPLACEMENT placement = new WINDOWPLACEMENT { length = Marshal.SizeOf<WINDOWPLACEMENT>() };
+
+                if (!GetWindowPlacement(hwnd, ref placement))
+                    return 0;
+
+                rect = placement.rcNormalPosition;
+            }
+            else if (!GetWindowRect(hwnd, out rect))
+            {
+                return 0;
+            }
+
+            return (long)Math.Max(0, rect.Right - rect.Left) * Math.Max(0, rect.Bottom - rect.Top);
+        }
+
+        private const int SW_MINIMIZE = 6;
         private const int SW_RESTORE = 9;
+        private const uint GW_OWNER = 4;
+        private const int GWL_EXSTYLE = -20;
+        private const long WS_EX_TOOLWINDOW = 0x00000080;
         private const uint GA_ROOT = 2;
         private const byte VK_MENU = 0x12;
         private const uint KEYEVENTF_EXTENDEDKEY = 0x0001;
@@ -106,6 +191,37 @@ namespace GameTimeNext.Core.Framework.Utils
             public int X;
             public int Y;
         }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct WINDOWPLACEMENT
+        {
+            public int length;
+            public int flags;
+            public int showCmd;
+            public POINT ptMinPosition;
+            public POINT ptMaxPosition;
+            public RECT rcNormalPosition;
+        }
+
+        private delegate bool EnumWindowsProc(IntPtr hwnd, IntPtr lParam);
+
+        [DllImport("user32.dll")]
+        private static extern bool EnumWindows(EnumWindowsProc lpEnumFunc, IntPtr lParam);
+
+        [DllImport("user32.dll")]
+        private static extern bool IsWindowVisible(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetWindow(IntPtr hWnd, uint uCmd);
+
+        [DllImport("user32.dll", EntryPoint = "GetWindowLongPtrW")]
+        private static extern IntPtr GetWindowLongPtr(IntPtr hWnd, int nIndex);
+
+        [DllImport("user32.dll")]
+        private static extern bool GetWindowPlacement(IntPtr hWnd, ref WINDOWPLACEMENT lpwndpl);
+
+        [DllImport("user32.dll")]
+        private static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
 
         [DllImport("user32.dll")]
         private static extern IntPtr GetForegroundWindow();

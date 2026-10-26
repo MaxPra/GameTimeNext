@@ -9,6 +9,7 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Threading;
 using UIX.ViewController.Engine.FrameworkElements.Windows;
 using UIX.ViewController.Engine.Utils;
 
@@ -23,6 +24,8 @@ namespace GameTimeNext.Core.Framework.UI.Base
         private Rect _boundsBeforeFullScreen = Rect.Empty;
 
         private const int WM_GETMINMAXINFO = 0x0024;
+        private const int WM_DISPLAYCHANGE = 0x007E;
+        private const int MONITOR_DEFAULTTOPRIMARY = 0x00000001;
         private const int MONITOR_DEFAULTTONEAREST = 0x00000002;
 
         private IntPtr _hwnd;
@@ -322,7 +325,21 @@ namespace GameTimeNext.Core.Framework.UI.Base
             // A normal window would get rounded corners from DWM (Windows 11)
             SetCornerPreference(_hwnd, DWMWCP_DONOTROUND);
 
-            IntPtr monitor = MonitorFromWindow(_hwnd, MONITOR_DEFAULTTONEAREST);
+            PlaceFullScreen(MonitorFromWindow(_hwnd, MONITOR_DEFAULTTONEAREST));
+        }
+
+        /// <summary>
+        /// Moves the full screen window to the primary monitor, e.g. after a screensetup switched the monitors.
+        /// Does nothing outside full screen.
+        /// </summary>
+        public void MoveFullScreenToPrimaryMonitor()
+        {
+            if (IsFullScreen && _hwnd != IntPtr.Zero)
+                PlaceFullScreen(MonitorFromPoint(new POINT(), MONITOR_DEFAULTTOPRIMARY));
+        }
+
+        private void PlaceFullScreen(IntPtr monitor)
+        {
             var monitorInfo = new MONITORINFO { cbSize = Marshal.SizeOf<MONITORINFO>() };
 
             if (monitor == IntPtr.Zero || !GetMonitorInfo(monitor, ref monitorInfo))
@@ -872,6 +889,15 @@ namespace GameTimeNext.Core.Framework.UI.Base
                 handled = false;
             }
 
+            // Monitors switched on / off or resolution changed: Windows moves the window off a switched off monitor,
+            // but keeps its old size; full screen covers the monitor it is on now (after Windows has moved it)
+            if (msg == WM_DISPLAYCHANGE && IsFullScreen)
+                Dispatcher.BeginInvoke(() =>
+                {
+                    if (IsFullScreen)
+                        PlaceFullScreen(MonitorFromWindow(_hwnd, MONITOR_DEFAULTTONEAREST));
+                }, DispatcherPriority.Background);
+
             return IntPtr.Zero;
         }
 
@@ -937,6 +963,9 @@ namespace GameTimeNext.Core.Framework.UI.Base
 
         [DllImport("user32.dll")]
         private static extern IntPtr MonitorFromWindow(IntPtr hwnd, int dwFlags);
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr MonitorFromPoint(POINT pt, int dwFlags);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         private static extern bool GetMonitorInfo(IntPtr hMonitor, ref MONITORINFO lpmi);

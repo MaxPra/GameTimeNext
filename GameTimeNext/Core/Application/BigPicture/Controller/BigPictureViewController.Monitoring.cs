@@ -175,7 +175,22 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
                 return;
 
             if (!FnLauncher.SwitchToGame(t1profi))
-                new ToastMessage("Game not found", $"The window of {t1profi.GANA} could not be found.").Show();
+                new ToastMessage("Game not found", $"The window of {t1profi.GANA} could not be found.\nMinimize the Big Picture mode in its menu to reach it.").Show();
+        }
+
+        /// <summary>
+        /// Menu "Minimize": shows what is behind the mode (e.g. a game window that can't be found). The Xbox button or
+        /// View + Menu bring the mode back.
+        /// </summary>
+        private void MinimizeBigPicture()
+        {
+            Window? window = Window.GetWindow(View);
+
+            if (window == null)
+                return;
+
+            FnLog.AddInfo(GetApp(), "Big Picture mode minimized");
+            window.WindowState = WindowState.Minimized;
         }
         #endregion
     }

@@ -2,8 +2,10 @@
 using GameTimeNext.Core.Application.BigPicture.Views;
 using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Profiles.BackgroundProcesses;
+using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Config;
+using GameTimeNext.Core.Framework.LauncherIntegration;
 using GameTimeNext.Core.Framework.UI;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.UserInput;
@@ -354,7 +356,7 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
             if (isReturnCombination)
             {
                 FnLog.AddInfo(GetApp(), "Back to the Big Picture mode by controller");
-                ReturnToFront(window);
+                ReturnFromGame(window);
                 return;
             }
 
@@ -431,6 +433,24 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
 
             if (input != null)
                 HandleInput(input.Value);
+        }
+
+        /// <summary>
+        /// Xbox button / View + Menu in a game: the game is minimized first. Otherwise it may keep the focus (Windows
+        /// doesn't always hand it over) and still react to the controller while the mode is operated; most games stop
+        /// reading the controller once they are minimized. A to "Back to the game" restores it.
+        /// </summary>
+        private void ReturnFromGame(Window window)
+        {
+            // The user left the game on purpose: a launched game is not brought to the front anymore
+            _launchFrontVersion++;
+
+            T1PROFI? t1profi = _runningPfid == 0 ? null : new TXPROFI().Read(_runningPfid);
+
+            if (t1profi != null && !FnLauncher.MinimizeGame(t1profi))
+                FnLog.AddInfo(GetApp(), $"No window of {t1profi.GANA} found to minimize for the Big Picture mode");
+
+            ReturnToFront(window);
         }
 
         /// <summary>
@@ -645,10 +665,13 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
 
             HideLaunchOverlay();
             UpdateRunningState();
+
+            BringLaunchedGameToFront(pfid);
         }
 
         protected async Task EXEV_BigPictureGameClosed(long pfid)
         {
+            _launchFrontVersion++;
             _runningPfid = 0;
             _launchingProfile = null;
             _isQuitting = false;

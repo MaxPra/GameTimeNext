@@ -229,43 +229,51 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
         /// </summary>
         public static bool SwitchToGame(T1PROFI t1profi)
         {
-            if (FnString.IsNullEmptyOrWhitespace(t1profi.EXGF))
+            IntPtr gameWindow = FindGameWindow(t1profi);
+
+            if (gameWindow == IntPtr.Zero)
+            {
+                FnLog.AddInfo(nameof(FnLauncher), $"No window of {t1profi.GANA} found to switch to");
                 return false;
+            }
+
+            FnForeground.BringToFront(gameWindow);
+            return true;
+        }
+
+        /// <summary>
+        /// Minimizes the window of the running game, so it loses the focus and most games stop reading the controller
+        /// (e.g. when the Big Picture mode comes back to the front). Returns false if no window of the game was found.
+        /// </summary>
+        public static bool MinimizeGame(T1PROFI t1profi)
+        {
+            IntPtr gameWindow = FindGameWindow(t1profi);
+
+            if (gameWindow == IntPtr.Zero)
+                return false;
+
+            FnForeground.Minimize(gameWindow);
+            return true;
+        }
+
+        /// <summary>
+        /// The main window of the running game (largest window of its executables), IntPtr.Zero if it has none (yet).
+        /// </summary>
+        public static IntPtr FindGameWindow(T1PROFI t1profi)
+        {
+            if (FnString.IsNullEmptyOrWhitespace(t1profi.EXGF))
+                return IntPtr.Zero;
 
             List<Process> processes = FnSystem.GetProcessesWithPathPart(FnExecutables.GetAllActiveExecutablesFromDBObj(t1profi), t1profi.EXGF);
 
             try
             {
-                IntPtr gameWindow = processes
-                    .Select(p => SafeMainWindowHandle(p))
-                    .FirstOrDefault(h => h != IntPtr.Zero);
-
-                if (gameWindow == IntPtr.Zero)
-                {
-                    FnLog.AddInfo(nameof(FnLauncher), $"No window of {t1profi.GANA} found to switch to");
-                    return false;
-                }
-
-                FnForeground.BringToFront(gameWindow);
-                return true;
+                return FnForeground.FindMainWindow(processes.Select(p => p.Id).ToList());
             }
             finally
             {
                 foreach (Process process in processes)
                     process.Dispose();
-            }
-        }
-
-        private static IntPtr SafeMainWindowHandle(Process process)
-        {
-            try
-            {
-                return process.HasExited ? IntPtr.Zero : process.MainWindowHandle;
-            }
-            catch (InvalidOperationException)
-            {
-                // Exited meanwhile
-                return IntPtr.Zero;
             }
         }
 

@@ -27,6 +27,8 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
         private const string OptionQuitGame = "quitgame";
         private const string OptionKeepPlaying = "keepplaying";
         private const string OptionFilter = "filter";
+        private const string OptionScreensetup = "screensetup";
+        private const string OptionMinimize = "minimize";
 
         // Game menu (X) option keys
         private const string OptionGamePlay = "game.play";
@@ -56,6 +58,7 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
             Main,
             Game,
             QuitGame,
+            Screensetup,
             MessageBox
         }
 
@@ -65,14 +68,22 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
         #region Menu
         private void OpenMainMenu()
         {
-            OpenMenu(MenuKind.Main, "\uE700", AppConfig.Root.ApplicationName, string.Empty, new List<BigPictureMenuOption>
+            List<BigPictureMenuOption> options = new List<BigPictureMenuOption>
             {
                 new BigPictureMenuOption(OptionResume, "Resume", "\uE768"),
                 new BigPictureMenuOption(OptionFilter, "Filter", "\uE71C"),
-                new BigPictureMenuOption(OptionRefresh, "Refresh library", "\uE72C"),
-                new BigPictureMenuOption(OptionExit, "Exit Big Picture", "\uE73F"),
-                new BigPictureMenuOption(OptionQuitApplication, "Quit " + AppConfig.Root.ApplicationName, "\uE7E8")
-            });
+                new BigPictureMenuOption(OptionRefresh, "Refresh library", "\uE72C")
+            };
+
+            if (HasScreensetups())
+                options.Add(new BigPictureMenuOption(OptionScreensetup, "Screen setup", "\uE7F4"));
+
+            // Way out when a window (e.g. of a game) is hidden behind the mode; the Xbox button or View + Menu bring it back
+            options.Add(new BigPictureMenuOption(OptionMinimize, "Minimize", "\uE921"));
+            options.Add(new BigPictureMenuOption(OptionExit, "Exit Big Picture", "\uE73F"));
+            options.Add(new BigPictureMenuOption(OptionQuitApplication, "Quit " + AppConfig.Root.ApplicationName, "\uE7E8"));
+
+            OpenMenu(MenuKind.Main, "\uE700", AppConfig.Root.ApplicationName, string.Empty, options);
         }
 
         /// <summary>
@@ -198,8 +209,15 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
             }
 
             T1PROFI? menuGame = _menuGame;
+            MenuKind menuKind = _menuKind;
 
             CloseMenu();
+
+            if (menuKind == MenuKind.Screensetup)
+            {
+                _ = ApplyScreensetupAsync(key);
+                return;
+            }
 
             switch (key)
             {
@@ -233,6 +251,14 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
 
                 case OptionRefresh:
                     _ = LoadLibraryAsync();
+                    break;
+
+                case OptionScreensetup:
+                    OpenScreensetupMenu();
+                    break;
+
+                case OptionMinimize:
+                    MinimizeBigPicture();
                     break;
 
                 case OptionExit:
