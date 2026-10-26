@@ -1,8 +1,11 @@
-﻿using GameTimeNext.Core.Application.General.AppSearch;
+﻿using GameTimeNext.Core.Application.BigPicture;
+using GameTimeNext.Core.Application.DataManagers;
+using GameTimeNext.Core.Application.General.AppSearch;
 using GameTimeNext.Core.Application.General.FavAppsReorder;
 using GameTimeNext.Core.Application.General.UserSettings;
 using GameTimeNext.Core.Application.General.ViewModels;
 using GameTimeNext.Core.Application.GTXMigration;
+using GameTimeNext.Core.Application.Profiles;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.UI.Dialogs;
@@ -26,6 +29,9 @@ namespace GameTimeNext.Core.Application.General.Controller
 
         private MainWindowViewModel? _mainWindowViewModel = null;
 
+        // Created when the Big Picture mode is opened the first time, then reused
+        private BigPictureApp? _bigPictureApp = null;
+
         public MainWindowController(UIXApplication app) : base(app)
         {
         }
@@ -35,6 +41,7 @@ namespace GameTimeNext.Core.Application.General.Controller
             GetApp().RootController = this;
 
             GetApp().CallDispatcher.Register(this, nameof(EXEV_SwitchToApplication));
+            GetApp().CallDispatcher.Register(this, nameof(EXEV_ExitBigPicture));
         }
 
         protected override void BuildFirstImpl()
@@ -86,6 +93,10 @@ namespace GameTimeNext.Core.Application.General.Controller
                     ? WindowState.Minimized
                     : WindowState.Maximized;
 
+                // Start argument --bigpicture: open directly in the Big Picture mode (still cloaked, so no flicker)
+                if (!GetApp().StartMinimized && AppEnvironment.StartArguments.ContainsKey("bigpicture"))
+                    EnterBigPicture();
+
                 // Only reveal the window once it has its final state (no flicker)
                 GetApp().SetMainWindowCloaked(false);
             }, DispatcherPriority.ApplicationIdle);
@@ -108,6 +119,10 @@ namespace GameTimeNext.Core.Application.General.Controller
 
         public override bool HandleGlobalShortcut(KeyEventArgs e)
         {
+            // The Big Picture mode covers the tabs: it gets the keyboard, the shortcuts of the tabs are off
+            if (_bigPictureApp?.IsOpen == true)
+                return _bigPictureApp.HandleKey(e);
+
             if (e.KeyboardDevice.Modifiers.HasFlag(ModifierKeys.Control) && e.Key == Key.M)
             {
                 OpenAppMenu();
@@ -123,6 +138,62 @@ namespace GameTimeNext.Core.Application.General.Controller
         protected void EV_BtnTabAdd()
         {
             OpenAppMenu();
+        }
+
+        /// <summary>
+        /// Big Picture button of the title bar (template part of the window style).
+        /// </summary>
+        protected void EV_btnBigPicture()
+        {
+            EnterBigPicture();
+        }
+
+        /// <summary>
+        /// Switches the window to full screen and shows the Big Picture mode over the tabs.
+        /// </summary>
+        private void EnterBigPicture()
+        {
+            if (_bigPictureApp?.IsOpen == true)
+                return;
+
+            // The running game detection needs the profiles application (GameRunningProcess)
+            EnsureProfilesAppStarted();
+
+            _bigPictureApp ??= GetApp().GetApplication<BigPictureApp>();
+
+            GetWindow().IsFullScreen = true;
+            _bigPictureApp.Start(GetApp(), GetWindow().cpBigPicture);
+
+            FnLog.AddInfo("MainApp", "Big Picture mode opened");
+        }
+
+        /// <summary>
+        /// BigPictureViewController: back to the normal window with its tabs.
+        /// </summary>
+        protected void EXEV_ExitBigPicture()
+        {
+            if (_bigPictureApp?.IsOpen != true)
+                return;
+
+            _bigPictureApp.Close();
+            GetWindow().IsFullScreen = false;
+
+            // The mode colored the window with the selected game: back to the profile selected in the profiles view
+            FnTheme.ApplyProfileAccentColors(AppEnvironment.CurrentPfid == 0 ? null : new TXPROFI().Read(AppEnvironment.CurrentPfid));
+
+            FnLog.AddInfo("MainApp", "Big Picture mode closed");
+        }
+
+        private void EnsureProfilesAppStarted()
+        {
+            string className = typeof(ProfilesApp).FullName!;
+
+            if (AppEnvironment.IsApplicationRunning(className))
+                return;
+
+            string tabName = AppEnvironment.AvailableApplications.FirstOrDefault(a => a.ClassName == className)?.Name ?? "Profiles";
+
+            AppEnvironment.AppLauncher.LaunchApplication(className, GetApp(), tabName);
         }
 
         private void OpenAppMenu()

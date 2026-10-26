@@ -8,6 +8,11 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
         private CFMBOXView? _cfmboxView;
         private CFMBOXController? _cfmboxController;
 
+        /// <summary>
+        /// While set (Big Picture mode), messages are shown by it instead of the dialog window.
+        /// </summary>
+        public static ICFMBOXPresenter? Presenter { get; set; }
+
         protected override void InitializeAppInfo()
         {
             ReadFromAppProperties(nameof(CFMBOX));
@@ -50,6 +55,11 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
 
         public CFMBOXResult Show(string title, string message, CFMBOXResult buttons, CFMBOXIcon icon, Window? owner, CFMBOXType type = CFMBOXType.Default)
         {
+            CFMBOXResult? presentedResult = Presenter?.Show(title, message, buttons, icon, type);
+
+            if (presentedResult.HasValue)
+                return presentedResult.Value;
+
             CreateFreshDialog();
             return _cfmboxController!.ShowDialog(title, message, buttons, icon, owner, type);
         }

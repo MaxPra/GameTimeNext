@@ -21,6 +21,7 @@
     ApplicationSearchPlaceholder="Search Application"
     ApplicationSearchSelectedItem="{Binding SelectedApplication}"
     ShowApplicationSearch="False"
+    ShowBigPictureButton="True"
     ShowHelpButton="True"
     Style="{StaticResource GTNWindowStyle}"
     Subtitle="BETA"
@@ -290,6 +291,14 @@
                 </Grid>
             </StackPanel>
         </Border>
+
+        <!--  Big Picture mode (BigPictureApp): full screen layer over the tabs, shown while the mode is active  -->
+        <ContentPresenter
+            x:Name="cpBigPicture"
+            Grid.Row="0"
+            Grid.RowSpan="3"
+            Panel.ZIndex="100"
+            Visibility="Collapsed" />
 
     </Grid>
 </ui:GTNWindow>

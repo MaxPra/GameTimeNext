@@ -18,6 +18,9 @@ namespace GameTimeNext.Core.Framework.UI.Base
     {
         private bool _allowClose;
         private bool _suppressSearchTextSync;
+        private WindowState _windowStateBeforeFullScreen = WindowState.Maximized;
+        private ResizeMode _resizeModeBeforeFullScreen = ResizeMode.CanResize;
+        private Rect _boundsBeforeFullScreen = Rect.Empty;
 
         private const int WM_GETMINMAXINFO = 0x0024;
         private const int MONITOR_DEFAULTTONEAREST = 0x00000002;
@@ -153,6 +156,40 @@ namespace GameTimeNext.Core.Framework.UI.Base
             set => SetValue(ShowHelpButtonProperty, value);
         }
 
+        /// <summary>
+        /// Shows the Big Picture button in the title bar (template part btnBigPicture). Like the help button, its click is
+        /// dispatched to the window controller (EV_btnBigPicture).
+        /// </summary>
+        public static readonly DependencyProperty ShowBigPictureButtonProperty =
+            DependencyProperty.Register(
+                nameof(ShowBigPictureButton),
+                typeof(bool),
+                typeof(GTNWindow),
+                new PropertyMetadata(false));
+
+        public bool ShowBigPictureButton
+        {
+            get => (bool)GetValue(ShowBigPictureButtonProperty);
+            set => SetValue(ShowBigPictureButtonProperty, value);
+        }
+
+        /// <summary>
+        /// Borderless full screen over the whole monitor (also over the taskbar), without title bar. The window state
+        /// before is restored when it is switched off again.
+        /// </summary>
+        public static readonly DependencyProperty IsFullScreenProperty =
+            DependencyProperty.Register(
+                nameof(IsFullScreen),
+                typeof(bool),
+                typeof(GTNWindow),
+                new PropertyMetadata(false, OnIsFullScreenChanged));
+
+        public bool IsFullScreen
+        {
+            get => (bool)GetValue(IsFullScreenProperty);
+            set => SetValue(IsFullScreenProperty, value);
+        }
+
         public static readonly DependencyProperty SubtitleProperty =
             DependencyProperty.Register(
                 nameof(Subtitle),
@@ -253,6 +290,82 @@ namespace GameTimeNext.Core.Framework.UI.Base
         {
             if (d is GTNWindow window)
                 window.UpdateFrame();
+        }
+
+        private static void OnIsFullScreenChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is not GTNWindow window)
+                return;
+
+            if ((bool)e.NewValue)
+                window.EnterFullScreen();
+            else
+                window.LeaveFullScreen();
+        }
+
+        /// <summary>
+        /// Full screen is a normal (not maximized) window without resize frame, placed exactly over the monitor:
+        /// Windows maximizes a resizable window only to the work area, the taskbar area would stay uncovered.
+        /// </summary>
+        private void EnterFullScreen()
+        {
+            _windowStateBeforeFullScreen = WindowState == WindowState.Minimized ? WindowState.Maximized : WindowState;
+            _resizeModeBeforeFullScreen = ResizeMode;
+            _boundsBeforeFullScreen = RestoreBounds;
+
+            ResizeMode = ResizeMode.NoResize;
+            WindowState = WindowState.Normal;
+
+            if (_hwnd == IntPtr.Zero)
+                return;
+
+            // A normal window would get rounded corners from DWM (Windows 11)
+            SetCornerPreference(_hwnd, DWMWCP_DONOTROUND);
+
+            IntPtr monitor = MonitorFromWindow(_hwnd, MONITOR_DEFAULTTONEAREST);
+            var monitorInfo = new MONITORINFO { cbSize = Marshal.SizeOf<MONITORINFO>() };
+
+            if (monitor == IntPtr.Zero || !GetMonitorInfo(monitor, ref monitorInfo))
+                return;
+
+            RECT bounds = monitorInfo.rcMonitor;
+            SetWindowPos(_hwnd, IntPtr.Zero, bounds.left, bounds.top, bounds.right - bounds.left, bounds.bottom - bounds.top, SWP_NOZORDER | SWP_FRAMECHANGED);
+        }
+
+        private void LeaveFullScreen()
+        {
+            if (_hwnd != IntPtr.Zero)
+                SetCornerPreference(_hwnd, DWMWCP_ROUND);
+
+            ResizeMode = _resizeModeBeforeFullScreen;
+
+            // Back to the normal bounds first, so restoring a maximized window later returns to them
+            if (!_boundsBeforeFullScreen.IsEmpty)
+            {
+                Left = _boundsBeforeFullScreen.Left;
+                Top = _boundsBeforeFullScreen.Top;
+                Width = _boundsBeforeFullScreen.Width;
+                Height = _boundsBeforeFullScreen.Height;
+            }
+
+            WindowState = _windowStateBeforeFullScreen;
+        }
+
+        private static void SetCornerPreference(IntPtr hwnd, int preference)
+        {
+            if (Environment.OSVersion.Version.Build < MinBuildRoundedCorners)
+                return;
+
+            try
+            {
+                DwmSetWindowAttribute(hwnd, DWMWA_WINDOW_CORNER_PREFERENCE, ref preference, sizeof(int));
+            }
+            catch (DllNotFoundException)
+            {
+            }
+            catch (EntryPointNotFoundException)
+            {
+            }
         }
 
         /// <summary>
@@ -837,7 +950,13 @@ namespace GameTimeNext.Core.Framework.UI.Base
         private const int DWMWA_SYSTEMBACKDROP_TYPE = 38;
         private const int DWMWA_CAPTION_COLOR = 35;
         private const int DWMWA_COLOR_NONE = unchecked((int)0xFFFFFFFE);
+        private const int DWMWCP_DONOTROUND = 1;
         private const int DWMWCP_ROUND = 2;
+        private const uint SWP_NOZORDER = 0x0004;
+        private const uint SWP_FRAMECHANGED = 0x0020;
+
+        [DllImport("user32.dll")]
+        private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, uint uFlags);
         private const int DWMSBT_NONE = 1;
         private const int DWMSBT_TRANSIENTWINDOW = 3;
 

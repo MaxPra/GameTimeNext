@@ -31,8 +31,14 @@
 - Added the option **Dynamic Background** (*Settings > Appearance*): a blurred image is used as background of the main window.
   The background source can be chosen: the current Windows wallpaper or the cover of the selected profile.
 - Added a new **Screensetups** application: save which monitors are switched on, which one is the primary monitor and which audio device is used, and switch between them with one click.
+- Added the **Big Picture mode** for the TV: your library in full screen with large covers, operated with a game controller (Xbox / XInput), the keyboard or the mouse.
+  Open it with the controller icon in the title bar, or start GameTimeNext directly in it with the start argument `--bigpicture`.
+  The selected game is shown large with its playtimes and current playthrough; LB / RB switch between your recently played games, the whole library and the search.
+  Search your library with the on-screen keyboard (Y), start or stop monitoring and quit games from the game options (X), black out all monitors (View), and switch between a running game and Big Picture with the Xbox button or View + Menu.
 
 ## Bug fixes
+
+- **Launch game** is only enabled when the game can really be started (its executable exists in the game folder).
 
 - Fixed a bug where timestamps were not being updated correctly when data was saved.
 - Fixed a bug regarding detection of currently running games, where the application was not able to detect some games that were running in the background.

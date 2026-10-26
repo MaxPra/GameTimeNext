@@ -19,6 +19,11 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
 
         private int _lastBreakReminderBlock = -1;
 
+        /// <summary>
+        /// PFID of the game that is running right now, 0 if none.
+        /// </summary>
+        public long RunningPfid => _currentProfileRunning?.pfid ?? 0;
+
         public GameRunningProcess() : base()
         {
         }
@@ -62,6 +67,9 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
                                 CallDispatcher!.Trigger("EXEV_SwitchProfile");
                                 CallDispatcher.Trigger("EXEV_GameLaunched");
 
+                                // BigPictureViewController, only registered while the Big Picture mode is open
+                                TriggerIfRegistered("EXEV_BigPictureGameLaunched", t1profi.PFID);
+
                             }
 
                             if (!_currentProfileRunning.executables.Contains(executable))
@@ -97,6 +105,9 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
 
                                 CallDispatcher!.Trigger("EXEV_GameClosed");
 
+                                // BigPictureViewController, only registered while the Big Picture mode is open
+                                TriggerIfRegistered("EXEV_BigPictureGameClosed", _currentProfileRunning.pfid);
+
                                 _currentProfileRunning = new CurrentProfileRunning();
                             }
 
@@ -108,6 +119,12 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
 
         protected override void OnStop()
         {
+        }
+
+        private void TriggerIfRegistered(string methodName, long pfid)
+        {
+            if (CallDispatcher!.IsRegistered(methodName))
+                CallDispatcher.Trigger(methodName, pfid);
         }
 
         public void Initialize(List<T1PROFI> profiles)
