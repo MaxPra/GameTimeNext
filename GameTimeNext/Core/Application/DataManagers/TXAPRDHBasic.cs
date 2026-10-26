@@ -6,6 +6,7 @@ using System.Globalization;
 using UIX.ViewController.Engine.DataBaseObjects;
 using UIX.ViewController.Engine.Migration.Types;
 using UIX.ViewController.Engine.Querying;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.DataManagers
 {
@@ -84,6 +85,10 @@ namespace GameTimeNext.Core.Application.DataManagers
             query.AddField(K1APRDH.Name, K1APRDH.Fields.APDES);
             query.AddField(K1APRDH.Name, K1APRDH.Fields.APHPT);
             query.AddField(K1APRDH.Name, K1APRDH.Fields.APMCP);
+            query.AddField(K1APRDH.Name, K1APRDH.Fields.CRAT);
+            query.AddField(K1APRDH.Name, K1APRDH.Fields.CRUS);
+            query.AddField(K1APRDH.Name, K1APRDH.Fields.CHAT);
+            query.AddField(K1APRDH.Name, K1APRDH.Fields.CHUS);
             query.AddWhere(K1APRDH.Name, K1APRDH.Fields.APDID, QueryCompareType.EQUALS, apdid);
 
             using var reader = query.Execute();
@@ -104,6 +109,10 @@ namespace GameTimeNext.Core.Application.DataManagers
             query.AddField(K1APRDH.Name, K1APRDH.Fields.APDES);
             query.AddField(K1APRDH.Name, K1APRDH.Fields.APHPT);
             query.AddField(K1APRDH.Name, K1APRDH.Fields.APMCP);
+            query.AddField(K1APRDH.Name, K1APRDH.Fields.CRAT);
+            query.AddField(K1APRDH.Name, K1APRDH.Fields.CRUS);
+            query.AddField(K1APRDH.Name, K1APRDH.Fields.CHAT);
+            query.AddField(K1APRDH.Name, K1APRDH.Fields.CHUS);
             query.AddOrderBy(K1APRDH.Name, K1APRDH.Fields.APDID, OrderDirection.ASC);
 
             List<T1APRDH> list = new List<T1APRDH>();
@@ -127,6 +136,10 @@ namespace GameTimeNext.Core.Application.DataManagers
             obj.APDES = UIXQuery.GetString(reader, K1APRDH.Name, K1APRDH.Fields.APDES, def: "");
             obj.APHPT = UIXQuery.GetString(reader, K1APRDH.Name, K1APRDH.Fields.APHPT, def: "");
             obj.APMCP = UIXQuery.GetBool(reader, K1APRDH.Name, K1APRDH.Fields.APMCP);
+            obj.CRAT = UIXQuery.GetDateTime(reader, K1APRDH.Name, K1APRDH.Fields.CRAT);
+            obj.CRUS = UIXQuery.GetString(reader, K1APRDH.Name, K1APRDH.Fields.CRUS, def: "");
+            obj.CHAT = UIXQuery.GetDateTime(reader, K1APRDH.Name, K1APRDH.Fields.CHAT);
+            obj.CHUS = UIXQuery.GetString(reader, K1APRDH.Name, K1APRDH.Fields.CHUS, def: "");
             obj.State = UIXTableObjectState.Available;
             return obj;
         }
@@ -135,23 +148,37 @@ namespace GameTimeNext.Core.Application.DataManagers
         #region Methods PRIVATE
         private void Insert(T1APRDH obj)
         {
+            obj.CRAT = DateTime.Now;
+            obj.CHAT = DateTime.Now;
+            obj.CRUS = FnOpSys.GetCurrentUserName();
+            obj.CHUS = FnOpSys.GetCurrentUserName();
             using SQLiteCommand cmd = _connection.CreateCommand();
-            cmd.CommandText = "INSERT INTO T1APRDH (APDID, APDES, APHPT, APMCP) VALUES (@APDID, @APDES, @APHPT, @APMCP);";
+            cmd.CommandText = "INSERT INTO T1APRDH (APDID, APDES, APHPT, APMCP, CRAT, CRUS, CHAT, CHUS) VALUES (@APDID, @APDES, @APHPT, @APMCP, @CRAT, @CRUS, @CHAT, @CHUS);";
             cmd.Parameters.AddWithValue("@APDID", ToDbValue(obj.APDID));
             cmd.Parameters.AddWithValue("@APDES", ToDbValue(obj.APDES));
             cmd.Parameters.AddWithValue("@APHPT", ToDbValue(obj.APHPT));
             cmd.Parameters.AddWithValue("@APMCP", ToDbValue(obj.APMCP));
+            cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
+            cmd.Parameters.AddWithValue("@CRUS", ToDbValue(obj.CRUS));
+            cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
+            cmd.Parameters.AddWithValue("@CHUS", ToDbValue(obj.CHUS));
             cmd.ExecuteNonQuery();
         }
 
         private void Update(T1APRDH obj)
         {
+            obj.CHAT = DateTime.Now;
+            obj.CHUS = FnOpSys.GetCurrentUserName();
             using SQLiteCommand cmd = _connection.CreateCommand();
-            cmd.CommandText = "UPDATE T1APRDH SET APDID = @APDID, APDES = @APDES, APHPT = @APHPT, APMCP = @APMCP WHERE APDID = @APDID;";
+            cmd.CommandText = "UPDATE T1APRDH SET APDID = @APDID, APDES = @APDES, APHPT = @APHPT, APMCP = @APMCP, CRAT = @CRAT, CRUS = @CRUS, CHAT = @CHAT, CHUS = @CHUS WHERE APDID = @APDID;";
             cmd.Parameters.AddWithValue("@APDID", ToDbValue(obj.APDID));
             cmd.Parameters.AddWithValue("@APDES", ToDbValue(obj.APDES));
             cmd.Parameters.AddWithValue("@APHPT", ToDbValue(obj.APHPT));
             cmd.Parameters.AddWithValue("@APMCP", ToDbValue(obj.APMCP));
+            cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
+            cmd.Parameters.AddWithValue("@CRUS", ToDbValue(obj.CRUS));
+            cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
+            cmd.Parameters.AddWithValue("@CHUS", ToDbValue(obj.CHUS));
             cmd.ExecuteNonQuery();
         }
 

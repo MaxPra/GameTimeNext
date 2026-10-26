@@ -6,6 +6,7 @@ using System.Globalization;
 using UIX.ViewController.Engine.DataBaseObjects;
 using UIX.ViewController.Engine.Migration.Types;
 using UIX.ViewController.Engine.Querying;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.DataManagers
 {
@@ -86,7 +87,9 @@ namespace GameTimeNext.Core.Application.DataManagers
             query.AddField(K1SCRSH.Name, K1SCRSH.Fields.ADID);
             query.AddField(K1SCRSH.Name, K1SCRSH.Fields.ADNA);
             query.AddField(K1SCRSH.Name, K1SCRSH.Fields.CRAT);
+            query.AddField(K1SCRSH.Name, K1SCRSH.Fields.CRUS);
             query.AddField(K1SCRSH.Name, K1SCRSH.Fields.CHAT);
+            query.AddField(K1SCRSH.Name, K1SCRSH.Fields.CHUS);
             query.AddWhere(K1SCRSH.Name, K1SCRSH.Fields.SSID, QueryCompareType.EQUALS, ssid);
 
             using var reader = query.Execute();
@@ -109,7 +112,9 @@ namespace GameTimeNext.Core.Application.DataManagers
             query.AddField(K1SCRSH.Name, K1SCRSH.Fields.ADID);
             query.AddField(K1SCRSH.Name, K1SCRSH.Fields.ADNA);
             query.AddField(K1SCRSH.Name, K1SCRSH.Fields.CRAT);
+            query.AddField(K1SCRSH.Name, K1SCRSH.Fields.CRUS);
             query.AddField(K1SCRSH.Name, K1SCRSH.Fields.CHAT);
+            query.AddField(K1SCRSH.Name, K1SCRSH.Fields.CHUS);
             query.AddOrderBy(K1SCRSH.Name, K1SCRSH.Fields.SSID, OrderDirection.ASC);
 
             List<T1SCRSH> list = new List<T1SCRSH>();
@@ -135,7 +140,9 @@ namespace GameTimeNext.Core.Application.DataManagers
             obj.ADID = UIXQuery.GetString(reader, K1SCRSH.Name, K1SCRSH.Fields.ADID, def: "");
             obj.ADNA = UIXQuery.GetString(reader, K1SCRSH.Name, K1SCRSH.Fields.ADNA, def: "");
             obj.CRAT = UIXQuery.GetDateTime(reader, K1SCRSH.Name, K1SCRSH.Fields.CRAT);
+            obj.CRUS = UIXQuery.GetString(reader, K1SCRSH.Name, K1SCRSH.Fields.CRUS, def: "");
             obj.CHAT = UIXQuery.GetDateTime(reader, K1SCRSH.Name, K1SCRSH.Fields.CHAT);
+            obj.CHUS = UIXQuery.GetString(reader, K1SCRSH.Name, K1SCRSH.Fields.CHUS, def: "");
             obj.State = UIXTableObjectState.Available;
             return obj;
         }
@@ -146,14 +153,18 @@ namespace GameTimeNext.Core.Application.DataManagers
         {
             obj.CRAT = DateTime.Now;
             obj.CHAT = DateTime.Now;
+            obj.CRUS = FnOpSys.GetCurrentUserName();
+            obj.CHUS = FnOpSys.GetCurrentUserName();
             using SQLiteCommand cmd = _connection.CreateCommand();
-            cmd.CommandText = "INSERT INTO T1SCRSH (SSNA, SSDE, ADID, ADNA, CRAT, CHAT) VALUES (@SSNA, @SSDE, @ADID, @ADNA, @CRAT, @CHAT);";
+            cmd.CommandText = "INSERT INTO T1SCRSH (SSNA, SSDE, ADID, ADNA, CRAT, CRUS, CHAT, CHUS) VALUES (@SSNA, @SSDE, @ADID, @ADNA, @CRAT, @CRUS, @CHAT, @CHUS);";
             cmd.Parameters.AddWithValue("@SSNA", ToDbValue(obj.SSNA));
             cmd.Parameters.AddWithValue("@SSDE", ToDbValue(obj.SSDE));
             cmd.Parameters.AddWithValue("@ADID", ToDbValue(obj.ADID));
             cmd.Parameters.AddWithValue("@ADNA", ToDbValue(obj.ADNA));
             cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
+            cmd.Parameters.AddWithValue("@CRUS", ToDbValue(obj.CRUS));
             cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
+            cmd.Parameters.AddWithValue("@CHUS", ToDbValue(obj.CHUS));
             cmd.ExecuteNonQuery();
 
             using SQLiteCommand idCmd = _connection.CreateCommand();
@@ -164,15 +175,18 @@ namespace GameTimeNext.Core.Application.DataManagers
         private void Update(T1SCRSH obj)
         {
             obj.CHAT = DateTime.Now;
+            obj.CHUS = FnOpSys.GetCurrentUserName();
             using SQLiteCommand cmd = _connection.CreateCommand();
-            cmd.CommandText = "UPDATE T1SCRSH SET SSNA = @SSNA, SSDE = @SSDE, ADID = @ADID, ADNA = @ADNA, CRAT = @CRAT, CHAT = @CHAT WHERE SSID = @SSID;";
+            cmd.CommandText = "UPDATE T1SCRSH SET SSNA = @SSNA, SSDE = @SSDE, ADID = @ADID, ADNA = @ADNA, CRAT = @CRAT, CRUS = @CRUS, CHAT = @CHAT, CHUS = @CHUS WHERE SSID = @SSID;";
             cmd.Parameters.AddWithValue("@SSID", ToDbValue(obj.SSID));
             cmd.Parameters.AddWithValue("@SSNA", ToDbValue(obj.SSNA));
             cmd.Parameters.AddWithValue("@SSDE", ToDbValue(obj.SSDE));
             cmd.Parameters.AddWithValue("@ADID", ToDbValue(obj.ADID));
             cmd.Parameters.AddWithValue("@ADNA", ToDbValue(obj.ADNA));
             cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
+            cmd.Parameters.AddWithValue("@CRUS", ToDbValue(obj.CRUS));
             cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
+            cmd.Parameters.AddWithValue("@CHUS", ToDbValue(obj.CHUS));
             cmd.ExecuteNonQuery();
         }
 

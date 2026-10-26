@@ -31,22 +31,22 @@ namespace GameTimeNext.Core.Application.Metadata.Data
         public bool AUTOI { get; set; } = false;
 
         [UIXSignatureField(8)]
-        public DateTime CRAT { get; set; } = DateTime.MinValue;
-
-        [UIXSignatureField(9)]
-        public string CRUS { get; set; } = "";
-
-        [UIXSignatureField(10)]
-        public DateTime CHAT { get; set; } = DateTime.MinValue;
-
-        [UIXSignatureField(11)]
-        public string CHUS { get; set; } = "";
-
-        [UIXSignatureField(12)]
         public bool DEFAK { get; set; } = false;
 
-        [UIXSignatureField(13)]
+        [UIXSignatureField(9)]
         public string DEFVL { get; set; } = "";
+
+        [UIXSignatureField(10)]
+        public DateTime CRAT { get; set; } = DateTime.MinValue;
+
+        [UIXSignatureField(11)]
+        public string CRUS { get; set; } = "";
+
+        [UIXSignatureField(12)]
+        public DateTime CHAT { get; set; } = DateTime.MinValue;
+
+        [UIXSignatureField(13)]
+        public string CHUS { get; set; } = "";
 
         public override void Save()
         {

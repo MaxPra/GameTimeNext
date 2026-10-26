@@ -562,6 +562,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     {
                         try
                         {
+                            // OFDOI: Fix Exception
                             DirectoryInfo slnDirInfo = new DirectoryInfo(AppConfig.Dev.SolutionDirectoryPath);
                             return slnDirInfo.GetFiles(fileName, new EnumerationOptions()
                             {

@@ -14,19 +14,19 @@ namespace GameTimeNext.Core.Application.TableObjects
         public string ERMSG { get; set; } = "";
 
         [UIXSignatureField(2)]
-        public DateTime CRAT { get; set; } = DateTime.MinValue;
+        public string ERHIN { get; set; } = "";
 
         [UIXSignatureField(3)]
-        public string CRUS { get; set; } = "";
+        public DateTime CRAT { get; set; } = DateTime.MinValue;
 
         [UIXSignatureField(4)]
-        public DateTime CHAT { get; set; } = DateTime.MinValue;
+        public string CRUS { get; set; } = "";
 
         [UIXSignatureField(5)]
-        public string CHUS { get; set; } = "";
+        public DateTime CHAT { get; set; } = DateTime.MinValue;
 
         [UIXSignatureField(6)]
-        public string ERHIN { get; set; } = "";
+        public string CHUS { get; set; } = "";
 
         public override void Save()
         {

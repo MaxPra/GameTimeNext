@@ -6,6 +6,7 @@ using System.Globalization;
 using UIX.ViewController.Engine.DataBaseObjects;
 using UIX.ViewController.Engine.Migration.Types;
 using UIX.ViewController.Engine.Querying;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.DataManagers
 {
@@ -87,7 +88,9 @@ namespace GameTimeNext.Core.Application.DataManagers
             query.AddField(K1SCRSP.Name, K1SCRSP.Fields.MOEN);
             query.AddField(K1SCRSP.Name, K1SCRSP.Fields.MOPR);
             query.AddField(K1SCRSP.Name, K1SCRSP.Fields.CRAT);
+            query.AddField(K1SCRSP.Name, K1SCRSP.Fields.CRUS);
             query.AddField(K1SCRSP.Name, K1SCRSP.Fields.CHAT);
+            query.AddField(K1SCRSP.Name, K1SCRSP.Fields.CHUS);
             query.AddWhere(K1SCRSP.Name, K1SCRSP.Fields.SPID, QueryCompareType.EQUALS, spid);
 
             using var reader = query.Execute();
@@ -111,7 +114,9 @@ namespace GameTimeNext.Core.Application.DataManagers
             query.AddField(K1SCRSP.Name, K1SCRSP.Fields.MOEN);
             query.AddField(K1SCRSP.Name, K1SCRSP.Fields.MOPR);
             query.AddField(K1SCRSP.Name, K1SCRSP.Fields.CRAT);
+            query.AddField(K1SCRSP.Name, K1SCRSP.Fields.CRUS);
             query.AddField(K1SCRSP.Name, K1SCRSP.Fields.CHAT);
+            query.AddField(K1SCRSP.Name, K1SCRSP.Fields.CHUS);
             query.AddOrderBy(K1SCRSP.Name, K1SCRSP.Fields.SPID, OrderDirection.ASC);
 
             List<T1SCRSP> list = new List<T1SCRSP>();
@@ -138,7 +143,9 @@ namespace GameTimeNext.Core.Application.DataManagers
             obj.MOEN = UIXQuery.GetBool(reader, K1SCRSP.Name, K1SCRSP.Fields.MOEN);
             obj.MOPR = UIXQuery.GetBool(reader, K1SCRSP.Name, K1SCRSP.Fields.MOPR);
             obj.CRAT = UIXQuery.GetDateTime(reader, K1SCRSP.Name, K1SCRSP.Fields.CRAT);
+            obj.CRUS = UIXQuery.GetString(reader, K1SCRSP.Name, K1SCRSP.Fields.CRUS, def: "");
             obj.CHAT = UIXQuery.GetDateTime(reader, K1SCRSP.Name, K1SCRSP.Fields.CHAT);
+            obj.CHUS = UIXQuery.GetString(reader, K1SCRSP.Name, K1SCRSP.Fields.CHUS, def: "");
             obj.State = UIXTableObjectState.Available;
             return obj;
         }
@@ -149,15 +156,19 @@ namespace GameTimeNext.Core.Application.DataManagers
         {
             obj.CRAT = DateTime.Now;
             obj.CHAT = DateTime.Now;
+            obj.CRUS = FnOpSys.GetCurrentUserName();
+            obj.CHUS = FnOpSys.GetCurrentUserName();
             using SQLiteCommand cmd = _connection.CreateCommand();
-            cmd.CommandText = "INSERT INTO T1SCRSP (SSID, MOID, MONA, MOEN, MOPR, CRAT, CHAT) VALUES (@SSID, @MOID, @MONA, @MOEN, @MOPR, @CRAT, @CHAT);";
+            cmd.CommandText = "INSERT INTO T1SCRSP (SSID, MOID, MONA, MOEN, MOPR, CRAT, CRUS, CHAT, CHUS) VALUES (@SSID, @MOID, @MONA, @MOEN, @MOPR, @CRAT, @CRUS, @CHAT, @CHUS);";
             cmd.Parameters.AddWithValue("@SSID", ToDbValue(obj.SSID));
             cmd.Parameters.AddWithValue("@MOID", ToDbValue(obj.MOID));
             cmd.Parameters.AddWithValue("@MONA", ToDbValue(obj.MONA));
             cmd.Parameters.AddWithValue("@MOEN", ToDbValue(obj.MOEN));
             cmd.Parameters.AddWithValue("@MOPR", ToDbValue(obj.MOPR));
             cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
+            cmd.Parameters.AddWithValue("@CRUS", ToDbValue(obj.CRUS));
             cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
+            cmd.Parameters.AddWithValue("@CHUS", ToDbValue(obj.CHUS));
             cmd.ExecuteNonQuery();
 
             using SQLiteCommand idCmd = _connection.CreateCommand();
@@ -168,8 +179,9 @@ namespace GameTimeNext.Core.Application.DataManagers
         private void Update(T1SCRSP obj)
         {
             obj.CHAT = DateTime.Now;
+            obj.CHUS = FnOpSys.GetCurrentUserName();
             using SQLiteCommand cmd = _connection.CreateCommand();
-            cmd.CommandText = "UPDATE T1SCRSP SET SSID = @SSID, MOID = @MOID, MONA = @MONA, MOEN = @MOEN, MOPR = @MOPR, CRAT = @CRAT, CHAT = @CHAT WHERE SPID = @SPID;";
+            cmd.CommandText = "UPDATE T1SCRSP SET SSID = @SSID, MOID = @MOID, MONA = @MONA, MOEN = @MOEN, MOPR = @MOPR, CRAT = @CRAT, CRUS = @CRUS, CHAT = @CHAT, CHUS = @CHUS WHERE SPID = @SPID;";
             cmd.Parameters.AddWithValue("@SPID", ToDbValue(obj.SPID));
             cmd.Parameters.AddWithValue("@SSID", ToDbValue(obj.SSID));
             cmd.Parameters.AddWithValue("@MOID", ToDbValue(obj.MOID));
@@ -177,7 +189,9 @@ namespace GameTimeNext.Core.Application.DataManagers
             cmd.Parameters.AddWithValue("@MOEN", ToDbValue(obj.MOEN));
             cmd.Parameters.AddWithValue("@MOPR", ToDbValue(obj.MOPR));
             cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
+            cmd.Parameters.AddWithValue("@CRUS", ToDbValue(obj.CRUS));
             cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
+            cmd.Parameters.AddWithValue("@CHUS", ToDbValue(obj.CHUS));
             cmd.ExecuteNonQuery();
         }
 

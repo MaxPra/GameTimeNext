@@ -83,11 +83,11 @@ namespace GameTimeNext.Core.Application.DataManagers
             UIXQuery query = new UIXQuery(K1ERMSG.Name, _connection);
             query.AddField(K1ERMSG.Name, K1ERMSG.Fields.ERMNR);
             query.AddField(K1ERMSG.Name, K1ERMSG.Fields.ERMSG);
+            query.AddField(K1ERMSG.Name, K1ERMSG.Fields.ERHIN);
             query.AddField(K1ERMSG.Name, K1ERMSG.Fields.CRAT);
             query.AddField(K1ERMSG.Name, K1ERMSG.Fields.CRUS);
             query.AddField(K1ERMSG.Name, K1ERMSG.Fields.CHAT);
             query.AddField(K1ERMSG.Name, K1ERMSG.Fields.CHUS);
-            query.AddField(K1ERMSG.Name, K1ERMSG.Fields.ERHIN);
             query.AddWhere(K1ERMSG.Name, K1ERMSG.Fields.ERMNR, QueryCompareType.EQUALS, ermnr);
 
             using var reader = query.Execute();
@@ -106,11 +106,11 @@ namespace GameTimeNext.Core.Application.DataManagers
             UIXQuery query = new UIXQuery(K1ERMSG.Name, _connection);
             query.AddField(K1ERMSG.Name, K1ERMSG.Fields.ERMNR);
             query.AddField(K1ERMSG.Name, K1ERMSG.Fields.ERMSG);
+            query.AddField(K1ERMSG.Name, K1ERMSG.Fields.ERHIN);
             query.AddField(K1ERMSG.Name, K1ERMSG.Fields.CRAT);
             query.AddField(K1ERMSG.Name, K1ERMSG.Fields.CRUS);
             query.AddField(K1ERMSG.Name, K1ERMSG.Fields.CHAT);
             query.AddField(K1ERMSG.Name, K1ERMSG.Fields.CHUS);
-            query.AddField(K1ERMSG.Name, K1ERMSG.Fields.ERHIN);
             query.AddOrderBy(K1ERMSG.Name, K1ERMSG.Fields.ERMNR, OrderDirection.ASC);
 
             List<T1ERMSG> list = new List<T1ERMSG>();
@@ -132,11 +132,11 @@ namespace GameTimeNext.Core.Application.DataManagers
             T1ERMSG obj = new T1ERMSG();
             obj.ERMNR = UIXQuery.GetString(reader, K1ERMSG.Name, K1ERMSG.Fields.ERMNR, def: "");
             obj.ERMSG = UIXQuery.GetString(reader, K1ERMSG.Name, K1ERMSG.Fields.ERMSG, def: "");
+            obj.ERHIN = UIXQuery.GetString(reader, K1ERMSG.Name, K1ERMSG.Fields.ERHIN, def: "");
             obj.CRAT = UIXQuery.GetDateTime(reader, K1ERMSG.Name, K1ERMSG.Fields.CRAT);
             obj.CRUS = UIXQuery.GetString(reader, K1ERMSG.Name, K1ERMSG.Fields.CRUS, def: "");
             obj.CHAT = UIXQuery.GetDateTime(reader, K1ERMSG.Name, K1ERMSG.Fields.CHAT);
             obj.CHUS = UIXQuery.GetString(reader, K1ERMSG.Name, K1ERMSG.Fields.CHUS, def: "");
-            obj.ERHIN = UIXQuery.GetString(reader, K1ERMSG.Name, K1ERMSG.Fields.ERHIN, def: "");
             obj.State = UIXTableObjectState.Available;
             return obj;
         }
@@ -150,14 +150,14 @@ namespace GameTimeNext.Core.Application.DataManagers
             obj.CRUS = FnOpSys.GetCurrentUserName();
             obj.CHUS = FnOpSys.GetCurrentUserName();
             using SQLiteCommand cmd = _connection.CreateCommand();
-            cmd.CommandText = "INSERT INTO T1ERMSG (ERMNR, ERMSG, CRAT, CRUS, CHAT, CHUS, ERHIN) VALUES (@ERMNR, @ERMSG, @CRAT, @CRUS, @CHAT, @CHUS, @ERHIN);";
+            cmd.CommandText = "INSERT INTO T1ERMSG (ERMNR, ERMSG, ERHIN, CRAT, CRUS, CHAT, CHUS) VALUES (@ERMNR, @ERMSG, @ERHIN, @CRAT, @CRUS, @CHAT, @CHUS);";
             cmd.Parameters.AddWithValue("@ERMNR", ToDbValue(obj.ERMNR));
             cmd.Parameters.AddWithValue("@ERMSG", ToDbValue(obj.ERMSG));
+            cmd.Parameters.AddWithValue("@ERHIN", ToDbValue(obj.ERHIN));
             cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
             cmd.Parameters.AddWithValue("@CRUS", ToDbValue(obj.CRUS));
             cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
             cmd.Parameters.AddWithValue("@CHUS", ToDbValue(obj.CHUS));
-            cmd.Parameters.AddWithValue("@ERHIN", ToDbValue(obj.ERHIN));
             cmd.ExecuteNonQuery();
         }
 
@@ -166,14 +166,14 @@ namespace GameTimeNext.Core.Application.DataManagers
             obj.CHAT = DateTime.Now;
             obj.CHUS = FnOpSys.GetCurrentUserName();
             using SQLiteCommand cmd = _connection.CreateCommand();
-            cmd.CommandText = "UPDATE T1ERMSG SET ERMNR = @ERMNR, ERMSG = @ERMSG, CRAT = @CRAT, CRUS = @CRUS, CHAT = @CHAT, CHUS = @CHUS, ERHIN = @ERHIN WHERE ERMNR = @ERMNR;";
+            cmd.CommandText = "UPDATE T1ERMSG SET ERMNR = @ERMNR, ERMSG = @ERMSG, ERHIN = @ERHIN, CRAT = @CRAT, CRUS = @CRUS, CHAT = @CHAT, CHUS = @CHUS WHERE ERMNR = @ERMNR;";
             cmd.Parameters.AddWithValue("@ERMNR", ToDbValue(obj.ERMNR));
             cmd.Parameters.AddWithValue("@ERMSG", ToDbValue(obj.ERMSG));
+            cmd.Parameters.AddWithValue("@ERHIN", ToDbValue(obj.ERHIN));
             cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
             cmd.Parameters.AddWithValue("@CRUS", ToDbValue(obj.CRUS));
             cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
             cmd.Parameters.AddWithValue("@CHUS", ToDbValue(obj.CHUS));
-            cmd.Parameters.AddWithValue("@ERHIN", ToDbValue(obj.ERHIN));
             cmd.ExecuteNonQuery();
         }
 

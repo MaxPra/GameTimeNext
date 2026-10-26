@@ -141,6 +141,8 @@
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="8" />
                             <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
                         <TextBox
@@ -166,8 +168,34 @@
                         </Button>
 
                         <Button
-                            x:Name="BtnRefresh"
+                            x:Name="btnAutoReorder"
+                            Grid.Column="3"
+                            ToolTip="Auto-Reorder"
+                            Style="{StaticResource Button.Icon}">
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                FontFamily="Segoe MDL2 Assets"
+                                FontSize="14"
+                                Text="&#xE8CB;" />
+                        </Button>
+
+                        <Button
+                            x:Name="BtnGenerate"
                             Grid.Column="5"
+                            ToolTip="Generate fields"
+                            Style="{StaticResource Button.Icon}">
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                FontFamily="Segoe MDL2 Assets"
+                                FontSize="14"
+                                Text="&#xE8B8;" />
+                        </Button>
+
+                        <Button
+                            x:Name="BtnRefresh"
+                            Grid.Column="7"
                             IsDefault="True"
                             ToolTip="Refresh fields"
                             Style="{StaticResource Button.Icon}">
@@ -177,19 +205,6 @@
                                 FontFamily="Segoe MDL2 Assets"
                                 FontSize="14"
                                 Text="&#xE72C;" />
-                        </Button>
-
-                        <Button
-                            x:Name="BtnGenerate"
-                            Grid.Column="3"
-                            ToolTip="Generate fields"
-                            Style="{StaticResource Button.Icon}">
-                            <TextBlock
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                FontFamily="Segoe MDL2 Assets"
-                                FontSize="14"
-                                Text="&#xE8B8;" />
                         </Button>
                     </Grid>
 
@@ -211,6 +226,10 @@
                                 Width="0.2*"
                                 Binding="{Binding COPONAM}"
                                 Header="Field" />
+                            <DataGridTextColumn
+                                Width="0.1*"
+                                Binding="{Binding COPORDE}"
+                                Header="Order" />
                             <DataGridTextColumn
                                 Width="0.45*"
                                 Binding="{Binding CODESCR}"

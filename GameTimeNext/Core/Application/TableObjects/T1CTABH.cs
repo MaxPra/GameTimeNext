@@ -47,22 +47,28 @@ namespace GameTimeNext.Core.Application.TableObjects
         public string PACT2 { get; set; } = "";
 
         [UIXSignatureField(13)]
-        public DateTime CRAT { get; set; } = DateTime.MinValue;
-
-        [UIXSignatureField(14)]
-        public DateTime CHAT { get; set; } = DateTime.MinValue;
-
-        [UIXSignatureField(15)]
         public bool NRANA { get; set; } = false;
 
-        [UIXSignatureField(16)]
+        [UIXSignatureField(14)]
         public bool EXPRT { get; set; } = false;
 
-        [UIXSignatureField(17)]
+        [UIXSignatureField(15)]
         public string PTOL1 { get; set; } = "";
 
-        [UIXSignatureField(18)]
+        [UIXSignatureField(16)]
         public string PTOL2 { get; set; } = "";
+
+        [UIXSignatureField(17)]
+        public DateTime CRAT { get; set; } = DateTime.MinValue;
+
+        [UIXSignatureField(18)]
+        public string CRUS { get; set; } = "";
+
+        [UIXSignatureField(19)]
+        public DateTime CHAT { get; set; } = DateTime.MinValue;
+
+        [UIXSignatureField(20)]
+        public string CHUS { get; set; } = "";
 
         public override void Save()
         {

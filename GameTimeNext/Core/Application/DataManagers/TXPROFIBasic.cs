@@ -6,6 +6,7 @@ using System.Globalization;
 using UIX.ViewController.Engine.DataBaseObjects;
 using UIX.ViewController.Engine.Migration.Types;
 using UIX.ViewController.Engine.Querying;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.DataManagers
 {
@@ -89,8 +90,6 @@ namespace GameTimeNext.Core.Application.DataManagers
             query.AddField(K1PROFI.Name, K1PROFI.Fields.SAID);
             query.AddField(K1PROFI.Name, K1PROFI.Fields.PRSE);
             query.AddField(K1PROFI.Name, K1PROFI.Fields.EXEC);
-            query.AddField(K1PROFI.Name, K1PROFI.Fields.CRAT);
-            query.AddField(K1PROFI.Name, K1PROFI.Fields.CHAT);
             query.AddField(K1PROFI.Name, K1PROFI.Fields.ACCO);
             query.AddField(K1PROFI.Name, K1PROFI.Fields.ACIN);
             query.AddField(K1PROFI.Name, K1PROFI.Fields.ACAC);
@@ -102,6 +101,10 @@ namespace GameTimeNext.Core.Application.DataManagers
             query.AddField(K1PROFI.Name, K1PROFI.Fields.ETML);
             query.AddField(K1PROFI.Name, K1PROFI.Fields.ARCH);
             query.AddField(K1PROFI.Name, K1PROFI.Fields.PLAFO);
+            query.AddField(K1PROFI.Name, K1PROFI.Fields.CRAT);
+            query.AddField(K1PROFI.Name, K1PROFI.Fields.CRUS);
+            query.AddField(K1PROFI.Name, K1PROFI.Fields.CHAT);
+            query.AddField(K1PROFI.Name, K1PROFI.Fields.CHUS);
             query.AddWhere(K1PROFI.Name, K1PROFI.Fields.PFID, QueryCompareType.EQUALS, pfid);
 
             using var reader = query.Execute();
@@ -127,8 +130,6 @@ namespace GameTimeNext.Core.Application.DataManagers
             query.AddField(K1PROFI.Name, K1PROFI.Fields.SAID);
             query.AddField(K1PROFI.Name, K1PROFI.Fields.PRSE);
             query.AddField(K1PROFI.Name, K1PROFI.Fields.EXEC);
-            query.AddField(K1PROFI.Name, K1PROFI.Fields.CRAT);
-            query.AddField(K1PROFI.Name, K1PROFI.Fields.CHAT);
             query.AddField(K1PROFI.Name, K1PROFI.Fields.ACCO);
             query.AddField(K1PROFI.Name, K1PROFI.Fields.ACIN);
             query.AddField(K1PROFI.Name, K1PROFI.Fields.ACAC);
@@ -140,6 +141,10 @@ namespace GameTimeNext.Core.Application.DataManagers
             query.AddField(K1PROFI.Name, K1PROFI.Fields.ETML);
             query.AddField(K1PROFI.Name, K1PROFI.Fields.ARCH);
             query.AddField(K1PROFI.Name, K1PROFI.Fields.PLAFO);
+            query.AddField(K1PROFI.Name, K1PROFI.Fields.CRAT);
+            query.AddField(K1PROFI.Name, K1PROFI.Fields.CRUS);
+            query.AddField(K1PROFI.Name, K1PROFI.Fields.CHAT);
+            query.AddField(K1PROFI.Name, K1PROFI.Fields.CHUS);
             query.AddOrderBy(K1PROFI.Name, K1PROFI.Fields.PFID, OrderDirection.ASC);
 
             List<T1PROFI> list = new List<T1PROFI>();
@@ -168,8 +173,6 @@ namespace GameTimeNext.Core.Application.DataManagers
             obj.SAID = UIXQuery.GetInt64(reader, K1PROFI.Name, K1PROFI.Fields.SAID);
             obj.PRSE = UIXQuery.GetString(reader, K1PROFI.Name, K1PROFI.Fields.PRSE, def: "");
             obj.EXEC = UIXQuery.GetString(reader, K1PROFI.Name, K1PROFI.Fields.EXEC, def: "");
-            obj.CRAT = UIXQuery.GetDateTime(reader, K1PROFI.Name, K1PROFI.Fields.CRAT);
-            obj.CHAT = UIXQuery.GetDateTime(reader, K1PROFI.Name, K1PROFI.Fields.CHAT);
             obj.ACCO = UIXQuery.GetString(reader, K1PROFI.Name, K1PROFI.Fields.ACCO, def: "");
             obj.ACIN = UIXQuery.GetString(reader, K1PROFI.Name, K1PROFI.Fields.ACIN, def: "");
             obj.ACAC = UIXQuery.GetBool(reader, K1PROFI.Name, K1PROFI.Fields.ACAC);
@@ -181,6 +184,10 @@ namespace GameTimeNext.Core.Application.DataManagers
             obj.ETML = UIXQuery.GetBool(reader, K1PROFI.Name, K1PROFI.Fields.ETML);
             obj.ARCH = UIXQuery.GetBool(reader, K1PROFI.Name, K1PROFI.Fields.ARCH);
             obj.PLAFO = UIXQuery.GetString(reader, K1PROFI.Name, K1PROFI.Fields.PLAFO, def: "");
+            obj.CRAT = UIXQuery.GetDateTime(reader, K1PROFI.Name, K1PROFI.Fields.CRAT);
+            obj.CRUS = UIXQuery.GetString(reader, K1PROFI.Name, K1PROFI.Fields.CRUS, def: "");
+            obj.CHAT = UIXQuery.GetDateTime(reader, K1PROFI.Name, K1PROFI.Fields.CHAT);
+            obj.CHUS = UIXQuery.GetString(reader, K1PROFI.Name, K1PROFI.Fields.CHUS, def: "");
             obj.State = UIXTableObjectState.Available;
             return obj;
         }
@@ -191,8 +198,10 @@ namespace GameTimeNext.Core.Application.DataManagers
         {
             obj.CRAT = DateTime.Now;
             obj.CHAT = DateTime.Now;
+            obj.CRUS = FnOpSys.GetCurrentUserName();
+            obj.CHUS = FnOpSys.GetCurrentUserName();
             using SQLiteCommand cmd = _connection.CreateCommand();
-            cmd.CommandText = "INSERT INTO T1PROFI (GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, CRAT, CHAT, ACCO, ACIN, ACAC, CUPT, ETMA, ETME, ETCO, ETTY, ETML, ARCH, PLAFO) VALUES (@GANA, @FIPL, @LAPL, @PPFN, @EXGF, @SAID, @PRSE, @EXEC, @CRAT, @CHAT, @ACCO, @ACIN, @ACAC, @CUPT, @ETMA, @ETME, @ETCO, @ETTY, @ETML, @ARCH, @PLAFO);";
+            cmd.CommandText = "INSERT INTO T1PROFI (GANA, FIPL, LAPL, PPFN, EXGF, SAID, PRSE, EXEC, ACCO, ACIN, ACAC, CUPT, ETMA, ETME, ETCO, ETTY, ETML, ARCH, PLAFO, CRAT, CRUS, CHAT, CHUS) VALUES (@GANA, @FIPL, @LAPL, @PPFN, @EXGF, @SAID, @PRSE, @EXEC, @ACCO, @ACIN, @ACAC, @CUPT, @ETMA, @ETME, @ETCO, @ETTY, @ETML, @ARCH, @PLAFO, @CRAT, @CRUS, @CHAT, @CHUS);";
             cmd.Parameters.AddWithValue("@GANA", ToDbValue(obj.GANA));
             cmd.Parameters.AddWithValue("@FIPL", ToDbValue(obj.FIPL));
             cmd.Parameters.AddWithValue("@LAPL", ToDbValue(obj.LAPL));
@@ -201,8 +210,6 @@ namespace GameTimeNext.Core.Application.DataManagers
             cmd.Parameters.AddWithValue("@SAID", ToDbValue(obj.SAID));
             cmd.Parameters.AddWithValue("@PRSE", ToDbValue(obj.PRSE));
             cmd.Parameters.AddWithValue("@EXEC", ToDbValue(obj.EXEC));
-            cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
-            cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
             cmd.Parameters.AddWithValue("@ACCO", ToDbValue(obj.ACCO));
             cmd.Parameters.AddWithValue("@ACIN", ToDbValue(obj.ACIN));
             cmd.Parameters.AddWithValue("@ACAC", ToDbValue(obj.ACAC));
@@ -214,6 +221,10 @@ namespace GameTimeNext.Core.Application.DataManagers
             cmd.Parameters.AddWithValue("@ETML", ToDbValue(obj.ETML));
             cmd.Parameters.AddWithValue("@ARCH", ToDbValue(obj.ARCH));
             cmd.Parameters.AddWithValue("@PLAFO", ToDbValue(obj.PLAFO));
+            cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
+            cmd.Parameters.AddWithValue("@CRUS", ToDbValue(obj.CRUS));
+            cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
+            cmd.Parameters.AddWithValue("@CHUS", ToDbValue(obj.CHUS));
             cmd.ExecuteNonQuery();
 
             using SQLiteCommand idCmd = _connection.CreateCommand();
@@ -224,8 +235,9 @@ namespace GameTimeNext.Core.Application.DataManagers
         private void Update(T1PROFI obj)
         {
             obj.CHAT = DateTime.Now;
+            obj.CHUS = FnOpSys.GetCurrentUserName();
             using SQLiteCommand cmd = _connection.CreateCommand();
-            cmd.CommandText = "UPDATE T1PROFI SET GANA = @GANA, FIPL = @FIPL, LAPL = @LAPL, PPFN = @PPFN, EXGF = @EXGF, SAID = @SAID, PRSE = @PRSE, EXEC = @EXEC, CRAT = @CRAT, CHAT = @CHAT, ACCO = @ACCO, ACIN = @ACIN, ACAC = @ACAC, CUPT = @CUPT, ETMA = @ETMA, ETME = @ETME, ETCO = @ETCO, ETTY = @ETTY, ETML = @ETML, ARCH = @ARCH, PLAFO = @PLAFO WHERE PFID = @PFID;";
+            cmd.CommandText = "UPDATE T1PROFI SET GANA = @GANA, FIPL = @FIPL, LAPL = @LAPL, PPFN = @PPFN, EXGF = @EXGF, SAID = @SAID, PRSE = @PRSE, EXEC = @EXEC, ACCO = @ACCO, ACIN = @ACIN, ACAC = @ACAC, CUPT = @CUPT, ETMA = @ETMA, ETME = @ETME, ETCO = @ETCO, ETTY = @ETTY, ETML = @ETML, ARCH = @ARCH, PLAFO = @PLAFO, CRAT = @CRAT, CRUS = @CRUS, CHAT = @CHAT, CHUS = @CHUS WHERE PFID = @PFID;";
             cmd.Parameters.AddWithValue("@PFID", ToDbValue(obj.PFID));
             cmd.Parameters.AddWithValue("@GANA", ToDbValue(obj.GANA));
             cmd.Parameters.AddWithValue("@FIPL", ToDbValue(obj.FIPL));
@@ -235,8 +247,6 @@ namespace GameTimeNext.Core.Application.DataManagers
             cmd.Parameters.AddWithValue("@SAID", ToDbValue(obj.SAID));
             cmd.Parameters.AddWithValue("@PRSE", ToDbValue(obj.PRSE));
             cmd.Parameters.AddWithValue("@EXEC", ToDbValue(obj.EXEC));
-            cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
-            cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
             cmd.Parameters.AddWithValue("@ACCO", ToDbValue(obj.ACCO));
             cmd.Parameters.AddWithValue("@ACIN", ToDbValue(obj.ACIN));
             cmd.Parameters.AddWithValue("@ACAC", ToDbValue(obj.ACAC));
@@ -248,6 +258,10 @@ namespace GameTimeNext.Core.Application.DataManagers
             cmd.Parameters.AddWithValue("@ETML", ToDbValue(obj.ETML));
             cmd.Parameters.AddWithValue("@ARCH", ToDbValue(obj.ARCH));
             cmd.Parameters.AddWithValue("@PLAFO", ToDbValue(obj.PLAFO));
+            cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
+            cmd.Parameters.AddWithValue("@CRUS", ToDbValue(obj.CRUS));
+            cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
+            cmd.Parameters.AddWithValue("@CHUS", ToDbValue(obj.CHUS));
             cmd.ExecuteNonQuery();
         }
 

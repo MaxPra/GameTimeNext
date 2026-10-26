@@ -12,7 +12,9 @@
             public const string ADID = "ADID";
             public const string ADNA = "ADNA";
             public const string CRAT = "CRAT";
+            public const string CRUS = "CRUS";
             public const string CHAT = "CHAT";
+            public const string CHUS = "CHUS";
         }
     }
 }

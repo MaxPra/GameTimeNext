@@ -26,7 +26,13 @@ namespace GameTimeNext.Core.Application.TableObjects
         public DateTime CRAT { get; set; } = DateTime.MinValue;
 
         [UIXSignatureField(6)]
+        public string CRUS { get; set; } = "";
+
+        [UIXSignatureField(7)]
         public DateTime CHAT { get; set; } = DateTime.MinValue;
+
+        [UIXSignatureField(8)]
+        public string CHUS { get; set; } = "";
 
         public override void Save()
         {

@@ -162,6 +162,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
                     MetadataPosDataGridRow row = GetWnd().DgFields.CreateNewRow<MetadataPosDataGridRow>();
                     row.COPONAM = t1metap.PONAM;
+                    row.COPORDE = t1metap.PORDE;
                     row.COMENAM = t1metap.MENAM;
                     row.CODATYP = UIXSqliteDataType.GetByKey(t1metap.DATYP).Name;
                     row.CODESCR = t1metap.DESCR;
@@ -365,6 +366,28 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
             GetApp().T1METAH!.GENER = false;
             new TXMETAH().Save(GetApp().T1METAH!);
+
+            Build();
+        }
+
+        protected async Task EV_btnAutoReorder()
+        {
+            try
+            {
+                GetApp().Loader.Begin();
+
+                if (TFMETAP.AutoReorder(GetApp().T1METAH!.MENAM))
+                {
+                    GetApp().T1METAH!.GENER = false;
+                    new TXMETAH().Save(GetApp().T1METAH!);
+                }
+            }
+            finally
+            {
+                GetApp().Loader.Stop();
+            }
+
+            await BuildDG();
 
             Build();
         }

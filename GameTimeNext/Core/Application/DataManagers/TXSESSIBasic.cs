@@ -6,6 +6,7 @@ using System.Globalization;
 using UIX.ViewController.Engine.DataBaseObjects;
 using UIX.ViewController.Engine.Migration.Types;
 using UIX.ViewController.Engine.Querying;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.DataManagers
 {
@@ -87,7 +88,9 @@ namespace GameTimeNext.Core.Application.DataManagers
             query.AddField(K1SESSI.Name, K1SESSI.Fields.PLTO);
             query.AddField(K1SESSI.Name, K1SESSI.Fields.PLTI);
             query.AddField(K1SESSI.Name, K1SESSI.Fields.CRAT);
+            query.AddField(K1SESSI.Name, K1SESSI.Fields.CRUS);
             query.AddField(K1SESSI.Name, K1SESSI.Fields.CHAT);
+            query.AddField(K1SESSI.Name, K1SESSI.Fields.CHUS);
             query.AddWhere(K1SESSI.Name, K1SESSI.Fields.SEID, QueryCompareType.EQUALS, seid);
 
             using var reader = query.Execute();
@@ -111,7 +114,9 @@ namespace GameTimeNext.Core.Application.DataManagers
             query.AddField(K1SESSI.Name, K1SESSI.Fields.PLTO);
             query.AddField(K1SESSI.Name, K1SESSI.Fields.PLTI);
             query.AddField(K1SESSI.Name, K1SESSI.Fields.CRAT);
+            query.AddField(K1SESSI.Name, K1SESSI.Fields.CRUS);
             query.AddField(K1SESSI.Name, K1SESSI.Fields.CHAT);
+            query.AddField(K1SESSI.Name, K1SESSI.Fields.CHUS);
             query.AddOrderBy(K1SESSI.Name, K1SESSI.Fields.SEID, OrderDirection.ASC);
 
             List<T1SESSI> list = new List<T1SESSI>();
@@ -138,7 +143,9 @@ namespace GameTimeNext.Core.Application.DataManagers
             obj.PLTO = UIXQuery.GetDateTime(reader, K1SESSI.Name, K1SESSI.Fields.PLTO);
             obj.PLTI = UIXQuery.GetDouble(reader, K1SESSI.Name, K1SESSI.Fields.PLTI);
             obj.CRAT = UIXQuery.GetDateTime(reader, K1SESSI.Name, K1SESSI.Fields.CRAT);
+            obj.CRUS = UIXQuery.GetString(reader, K1SESSI.Name, K1SESSI.Fields.CRUS, def: "");
             obj.CHAT = UIXQuery.GetDateTime(reader, K1SESSI.Name, K1SESSI.Fields.CHAT);
+            obj.CHUS = UIXQuery.GetString(reader, K1SESSI.Name, K1SESSI.Fields.CHUS, def: "");
             obj.State = UIXTableObjectState.Available;
             return obj;
         }
@@ -149,15 +156,19 @@ namespace GameTimeNext.Core.Application.DataManagers
         {
             obj.CRAT = DateTime.Now;
             obj.CHAT = DateTime.Now;
+            obj.CRUS = FnOpSys.GetCurrentUserName();
+            obj.CHUS = FnOpSys.GetCurrentUserName();
             using SQLiteCommand cmd = _connection.CreateCommand();
-            cmd.CommandText = "INSERT INTO T1SESSI (PFID, PTID, PLFR, PLTO, PLTI, CRAT, CHAT) VALUES (@PFID, @PTID, @PLFR, @PLTO, @PLTI, @CRAT, @CHAT);";
+            cmd.CommandText = "INSERT INTO T1SESSI (PFID, PTID, PLFR, PLTO, PLTI, CRAT, CRUS, CHAT, CHUS) VALUES (@PFID, @PTID, @PLFR, @PLTO, @PLTI, @CRAT, @CRUS, @CHAT, @CHUS);";
             cmd.Parameters.AddWithValue("@PFID", ToDbValue(obj.PFID));
             cmd.Parameters.AddWithValue("@PTID", ToDbValue(obj.PTID));
             cmd.Parameters.AddWithValue("@PLFR", ToDbValue(obj.PLFR));
             cmd.Parameters.AddWithValue("@PLTO", ToDbValue(obj.PLTO));
             cmd.Parameters.AddWithValue("@PLTI", ToDbValue(obj.PLTI));
             cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
+            cmd.Parameters.AddWithValue("@CRUS", ToDbValue(obj.CRUS));
             cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
+            cmd.Parameters.AddWithValue("@CHUS", ToDbValue(obj.CHUS));
             cmd.ExecuteNonQuery();
 
             using SQLiteCommand idCmd = _connection.CreateCommand();
@@ -168,8 +179,9 @@ namespace GameTimeNext.Core.Application.DataManagers
         private void Update(T1SESSI obj)
         {
             obj.CHAT = DateTime.Now;
+            obj.CHUS = FnOpSys.GetCurrentUserName();
             using SQLiteCommand cmd = _connection.CreateCommand();
-            cmd.CommandText = "UPDATE T1SESSI SET PFID = @PFID, PTID = @PTID, PLFR = @PLFR, PLTO = @PLTO, PLTI = @PLTI, CRAT = @CRAT, CHAT = @CHAT WHERE SEID = @SEID;";
+            cmd.CommandText = "UPDATE T1SESSI SET PFID = @PFID, PTID = @PTID, PLFR = @PLFR, PLTO = @PLTO, PLTI = @PLTI, CRAT = @CRAT, CRUS = @CRUS, CHAT = @CHAT, CHUS = @CHUS WHERE SEID = @SEID;";
             cmd.Parameters.AddWithValue("@SEID", ToDbValue(obj.SEID));
             cmd.Parameters.AddWithValue("@PFID", ToDbValue(obj.PFID));
             cmd.Parameters.AddWithValue("@PTID", ToDbValue(obj.PTID));
@@ -177,7 +189,9 @@ namespace GameTimeNext.Core.Application.DataManagers
             cmd.Parameters.AddWithValue("@PLTO", ToDbValue(obj.PLTO));
             cmd.Parameters.AddWithValue("@PLTI", ToDbValue(obj.PLTI));
             cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
+            cmd.Parameters.AddWithValue("@CRUS", ToDbValue(obj.CRUS));
             cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
+            cmd.Parameters.AddWithValue("@CHUS", ToDbValue(obj.CHUS));
             cmd.ExecuteNonQuery();
         }
 

@@ -14,12 +14,12 @@
             public const string PORDE = "PORDE";
             public const string PRIMK = "PRIMK";
             public const string AUTOI = "AUTOI";
+            public const string DEFAK = "DEFAK";
+            public const string DEFVL = "DEFVL";
             public const string CRAT = "CRAT";
             public const string CRUS = "CRUS";
             public const string CHAT = "CHAT";
             public const string CHUS = "CHUS";
-            public const string DEFAK = "DEFAK";
-            public const string DEFVL = "DEFVL";
         }
     }
 }

@@ -221,6 +221,15 @@
                     Width="250"
                     Binding="{Binding COMTYPE}"
                     Header="Type" />
+                <DataGridTemplateColumn Width="150" Header="Generate required">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox
+                                IsChecked="{Binding COGENER, Mode=OneWay}"
+                                Style="{StaticResource DataGrid.CheckBox.Display}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
             </uixsel:UIXDataGrid.Columns>
         </uixsel:UIXDataGrid>
     </Grid>

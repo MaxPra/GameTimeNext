@@ -185,6 +185,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
                 row.COMENAM = t1metah.MENAM;
                 row.CODESCR = t1metah.DESCR;
                 row.COMTYPE = MetadataObjectTypes.GetText(t1metah.MTYPE);
+                row.COGENER = !t1metah.GENER;
                 row.RowObject = t1metah;
 
                 metadataRows.Add(row);

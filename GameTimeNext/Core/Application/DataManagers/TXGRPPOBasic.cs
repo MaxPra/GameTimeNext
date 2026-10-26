@@ -6,6 +6,7 @@ using System.Globalization;
 using UIX.ViewController.Engine.DataBaseObjects;
 using UIX.ViewController.Engine.Migration.Types;
 using UIX.ViewController.Engine.Querying;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.DataManagers
 {
@@ -84,7 +85,9 @@ namespace GameTimeNext.Core.Application.DataManagers
             query.AddField(K1GRPPO.Name, K1GRPPO.Fields.GRID);
             query.AddField(K1GRPPO.Name, K1GRPPO.Fields.PFID);
             query.AddField(K1GRPPO.Name, K1GRPPO.Fields.CRAT);
+            query.AddField(K1GRPPO.Name, K1GRPPO.Fields.CRUS);
             query.AddField(K1GRPPO.Name, K1GRPPO.Fields.CHAT);
+            query.AddField(K1GRPPO.Name, K1GRPPO.Fields.CHUS);
             query.AddWhere(K1GRPPO.Name, K1GRPPO.Fields.GPID, QueryCompareType.EQUALS, gpid);
 
             using var reader = query.Execute();
@@ -105,7 +108,9 @@ namespace GameTimeNext.Core.Application.DataManagers
             query.AddField(K1GRPPO.Name, K1GRPPO.Fields.GRID);
             query.AddField(K1GRPPO.Name, K1GRPPO.Fields.PFID);
             query.AddField(K1GRPPO.Name, K1GRPPO.Fields.CRAT);
+            query.AddField(K1GRPPO.Name, K1GRPPO.Fields.CRUS);
             query.AddField(K1GRPPO.Name, K1GRPPO.Fields.CHAT);
+            query.AddField(K1GRPPO.Name, K1GRPPO.Fields.CHUS);
             query.AddOrderBy(K1GRPPO.Name, K1GRPPO.Fields.GPID, OrderDirection.ASC);
 
             List<T1GRPPO> list = new List<T1GRPPO>();
@@ -129,7 +134,9 @@ namespace GameTimeNext.Core.Application.DataManagers
             obj.GRID = UIXQuery.GetInt64(reader, K1GRPPO.Name, K1GRPPO.Fields.GRID);
             obj.PFID = UIXQuery.GetInt64(reader, K1GRPPO.Name, K1GRPPO.Fields.PFID);
             obj.CRAT = UIXQuery.GetDateTime(reader, K1GRPPO.Name, K1GRPPO.Fields.CRAT);
+            obj.CRUS = UIXQuery.GetString(reader, K1GRPPO.Name, K1GRPPO.Fields.CRUS, def: "");
             obj.CHAT = UIXQuery.GetDateTime(reader, K1GRPPO.Name, K1GRPPO.Fields.CHAT);
+            obj.CHUS = UIXQuery.GetString(reader, K1GRPPO.Name, K1GRPPO.Fields.CHUS, def: "");
             obj.State = UIXTableObjectState.Available;
             return obj;
         }
@@ -140,12 +147,16 @@ namespace GameTimeNext.Core.Application.DataManagers
         {
             obj.CRAT = DateTime.Now;
             obj.CHAT = DateTime.Now;
+            obj.CRUS = FnOpSys.GetCurrentUserName();
+            obj.CHUS = FnOpSys.GetCurrentUserName();
             using SQLiteCommand cmd = _connection.CreateCommand();
-            cmd.CommandText = "INSERT INTO T1GRPPO (GRID, PFID, CRAT, CHAT) VALUES (@GRID, @PFID, @CRAT, @CHAT);";
+            cmd.CommandText = "INSERT INTO T1GRPPO (GRID, PFID, CRAT, CRUS, CHAT, CHUS) VALUES (@GRID, @PFID, @CRAT, @CRUS, @CHAT, @CHUS);";
             cmd.Parameters.AddWithValue("@GRID", ToDbValue(obj.GRID));
             cmd.Parameters.AddWithValue("@PFID", ToDbValue(obj.PFID));
             cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
+            cmd.Parameters.AddWithValue("@CRUS", ToDbValue(obj.CRUS));
             cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
+            cmd.Parameters.AddWithValue("@CHUS", ToDbValue(obj.CHUS));
             cmd.ExecuteNonQuery();
 
             using SQLiteCommand idCmd = _connection.CreateCommand();
@@ -156,13 +167,16 @@ namespace GameTimeNext.Core.Application.DataManagers
         private void Update(T1GRPPO obj)
         {
             obj.CHAT = DateTime.Now;
+            obj.CHUS = FnOpSys.GetCurrentUserName();
             using SQLiteCommand cmd = _connection.CreateCommand();
-            cmd.CommandText = "UPDATE T1GRPPO SET GRID = @GRID, PFID = @PFID, CRAT = @CRAT, CHAT = @CHAT WHERE GPID = @GPID;";
+            cmd.CommandText = "UPDATE T1GRPPO SET GRID = @GRID, PFID = @PFID, CRAT = @CRAT, CRUS = @CRUS, CHAT = @CHAT, CHUS = @CHUS WHERE GPID = @GPID;";
             cmd.Parameters.AddWithValue("@GPID", ToDbValue(obj.GPID));
             cmd.Parameters.AddWithValue("@GRID", ToDbValue(obj.GRID));
             cmd.Parameters.AddWithValue("@PFID", ToDbValue(obj.PFID));
             cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
+            cmd.Parameters.AddWithValue("@CRUS", ToDbValue(obj.CRUS));
             cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
+            cmd.Parameters.AddWithValue("@CHUS", ToDbValue(obj.CHUS));
             cmd.ExecuteNonQuery();
         }
 

@@ -34,7 +34,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
         protected override void BuildFirstImpl()
         {
-            FnControls.SetEnabled(GetWnd().txbOrder, GetWnd().ViewIndicator.Contains("CN"));
+            FnControls.SetEnabled(GetWnd().txbOrder, GetWnd().ViewIndicator.Contains("CN") || GetWnd().ViewIndicator.Contains("ED"));
 
             FnControls.SetEnabled(GetWnd().txbField, GetWnd().ViewIndicator.Contains("CN"));
             FnControls.SetEnabled(GetWnd().chbPrimaryKey, GetWnd().ViewIndicator.Contains("CN"));

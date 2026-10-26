@@ -8,11 +8,11 @@
         {
             public const string ERMNR = "ERMNR";
             public const string ERMSG = "ERMSG";
+            public const string ERHIN = "ERHIN";
             public const string CRAT = "CRAT";
             public const string CRUS = "CRUS";
             public const string CHAT = "CHAT";
             public const string CHUS = "CHUS";
-            public const string ERHIN = "ERHIN";
         }
     }
 }

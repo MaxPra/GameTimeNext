@@ -35,43 +35,49 @@ namespace GameTimeNext.Core.Application.TableObjects
         public string EXEC { get; set; } = "";
 
         [UIXSignatureField(9)]
-        public DateTime CRAT { get; set; } = DateTime.MinValue;
-
-        [UIXSignatureField(10)]
-        public DateTime CHAT { get; set; } = DateTime.MinValue;
-
-        [UIXSignatureField(11)]
         public string ACCO { get; set; } = "";
 
-        [UIXSignatureField(12)]
+        [UIXSignatureField(10)]
         public string ACIN { get; set; } = "";
 
-        [UIXSignatureField(13)]
+        [UIXSignatureField(11)]
         public bool ACAC { get; set; } = false;
 
-        [UIXSignatureField(14)]
+        [UIXSignatureField(12)]
         public long CUPT { get; set; } = 0;
 
-        [UIXSignatureField(15)]
+        [UIXSignatureField(13)]
         public double ETMA { get; set; } = 0;
 
-        [UIXSignatureField(16)]
+        [UIXSignatureField(14)]
         public double ETME { get; set; } = 0;
 
-        [UIXSignatureField(17)]
+        [UIXSignatureField(15)]
         public double ETCO { get; set; } = 0;
 
-        [UIXSignatureField(18)]
+        [UIXSignatureField(16)]
         public string ETTY { get; set; } = "";
 
-        [UIXSignatureField(19)]
+        [UIXSignatureField(17)]
         public bool ETML { get; set; } = false;
 
-        [UIXSignatureField(20)]
+        [UIXSignatureField(18)]
         public bool ARCH { get; set; } = false;
 
-        [UIXSignatureField(21)]
+        [UIXSignatureField(19)]
         public string PLAFO { get; set; } = "";
+
+        [UIXSignatureField(20)]
+        public DateTime CRAT { get; set; } = DateTime.MinValue;
+
+        [UIXSignatureField(21)]
+        public string CRUS { get; set; } = "";
+
+        [UIXSignatureField(22)]
+        public DateTime CHAT { get; set; } = DateTime.MinValue;
+
+        [UIXSignatureField(23)]
+        public string CHUS { get; set; } = "";
 
         public override void Save()
         {

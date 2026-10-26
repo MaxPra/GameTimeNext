@@ -90,12 +90,12 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             query.AddField(K1METAP.Name, K1METAP.Fields.PORDE);
             query.AddField(K1METAP.Name, K1METAP.Fields.PRIMK);
             query.AddField(K1METAP.Name, K1METAP.Fields.AUTOI);
+            query.AddField(K1METAP.Name, K1METAP.Fields.DEFAK);
+            query.AddField(K1METAP.Name, K1METAP.Fields.DEFVL);
             query.AddField(K1METAP.Name, K1METAP.Fields.CRAT);
             query.AddField(K1METAP.Name, K1METAP.Fields.CRUS);
             query.AddField(K1METAP.Name, K1METAP.Fields.CHAT);
             query.AddField(K1METAP.Name, K1METAP.Fields.CHUS);
-            query.AddField(K1METAP.Name, K1METAP.Fields.DEFAK);
-            query.AddField(K1METAP.Name, K1METAP.Fields.DEFVL);
             query.AddWhere(K1METAP.Name, K1METAP.Fields.MENAM, QueryCompareType.EQUALS, menam);
             query.AddWhere(K1METAP.Name, K1METAP.Fields.PONAM, QueryCompareType.EQUALS, ponam);
 
@@ -121,12 +121,12 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             query.AddField(K1METAP.Name, K1METAP.Fields.PORDE);
             query.AddField(K1METAP.Name, K1METAP.Fields.PRIMK);
             query.AddField(K1METAP.Name, K1METAP.Fields.AUTOI);
+            query.AddField(K1METAP.Name, K1METAP.Fields.DEFAK);
+            query.AddField(K1METAP.Name, K1METAP.Fields.DEFVL);
             query.AddField(K1METAP.Name, K1METAP.Fields.CRAT);
             query.AddField(K1METAP.Name, K1METAP.Fields.CRUS);
             query.AddField(K1METAP.Name, K1METAP.Fields.CHAT);
             query.AddField(K1METAP.Name, K1METAP.Fields.CHUS);
-            query.AddField(K1METAP.Name, K1METAP.Fields.DEFAK);
-            query.AddField(K1METAP.Name, K1METAP.Fields.DEFVL);
             query.AddOrderBy(K1METAP.Name, K1METAP.Fields.MENAM, OrderDirection.ASC);
             query.AddOrderBy(K1METAP.Name, K1METAP.Fields.PONAM, OrderDirection.ASC);
 
@@ -155,12 +155,12 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             obj.PORDE = UIXQuery.GetInt32(reader, K1METAP.Name, K1METAP.Fields.PORDE);
             obj.PRIMK = UIXQuery.GetBool(reader, K1METAP.Name, K1METAP.Fields.PRIMK);
             obj.AUTOI = UIXQuery.GetBool(reader, K1METAP.Name, K1METAP.Fields.AUTOI);
+            obj.DEFAK = UIXQuery.GetBool(reader, K1METAP.Name, K1METAP.Fields.DEFAK);
+            obj.DEFVL = UIXQuery.GetString(reader, K1METAP.Name, K1METAP.Fields.DEFVL, def: "");
             obj.CRAT = UIXQuery.GetDateTime(reader, K1METAP.Name, K1METAP.Fields.CRAT);
             obj.CRUS = UIXQuery.GetString(reader, K1METAP.Name, K1METAP.Fields.CRUS, def: "");
             obj.CHAT = UIXQuery.GetDateTime(reader, K1METAP.Name, K1METAP.Fields.CHAT);
             obj.CHUS = UIXQuery.GetString(reader, K1METAP.Name, K1METAP.Fields.CHUS, def: "");
-            obj.DEFAK = UIXQuery.GetBool(reader, K1METAP.Name, K1METAP.Fields.DEFAK);
-            obj.DEFVL = UIXQuery.GetString(reader, K1METAP.Name, K1METAP.Fields.DEFVL, def: "");
             obj.State = UIXTableObjectState.Available;
             return obj;
         }
@@ -174,7 +174,7 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             obj.CRUS = FnOpSys.GetCurrentUserName();
             obj.CHUS = FnOpSys.GetCurrentUserName();
             using SQLiteCommand cmd = _connection.CreateCommand();
-            cmd.CommandText = "INSERT INTO T1METAP (MENAM, PONAM, DESCR, DATYP, DALEN, PORDE, PRIMK, AUTOI, CRAT, CRUS, CHAT, CHUS, DEFAK, DEFVL) VALUES (@MENAM, @PONAM, @DESCR, @DATYP, @DALEN, @PORDE, @PRIMK, @AUTOI, @CRAT, @CRUS, @CHAT, @CHUS, @DEFAK, @DEFVL);";
+            cmd.CommandText = "INSERT INTO T1METAP (MENAM, PONAM, DESCR, DATYP, DALEN, PORDE, PRIMK, AUTOI, DEFAK, DEFVL, CRAT, CRUS, CHAT, CHUS) VALUES (@MENAM, @PONAM, @DESCR, @DATYP, @DALEN, @PORDE, @PRIMK, @AUTOI, @DEFAK, @DEFVL, @CRAT, @CRUS, @CHAT, @CHUS);";
             cmd.Parameters.AddWithValue("@MENAM", ToDbValue(obj.MENAM));
             cmd.Parameters.AddWithValue("@PONAM", ToDbValue(obj.PONAM));
             cmd.Parameters.AddWithValue("@DESCR", ToDbValue(obj.DESCR));
@@ -183,12 +183,12 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             cmd.Parameters.AddWithValue("@PORDE", ToDbValue(obj.PORDE));
             cmd.Parameters.AddWithValue("@PRIMK", ToDbValue(obj.PRIMK));
             cmd.Parameters.AddWithValue("@AUTOI", ToDbValue(obj.AUTOI));
+            cmd.Parameters.AddWithValue("@DEFAK", ToDbValue(obj.DEFAK));
+            cmd.Parameters.AddWithValue("@DEFVL", ToDbValue(obj.DEFVL));
             cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
             cmd.Parameters.AddWithValue("@CRUS", ToDbValue(obj.CRUS));
             cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
             cmd.Parameters.AddWithValue("@CHUS", ToDbValue(obj.CHUS));
-            cmd.Parameters.AddWithValue("@DEFAK", ToDbValue(obj.DEFAK));
-            cmd.Parameters.AddWithValue("@DEFVL", ToDbValue(obj.DEFVL));
             cmd.ExecuteNonQuery();
         }
 
@@ -197,7 +197,7 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             obj.CHAT = DateTime.Now;
             obj.CHUS = FnOpSys.GetCurrentUserName();
             using SQLiteCommand cmd = _connection.CreateCommand();
-            cmd.CommandText = "UPDATE T1METAP SET MENAM = @MENAM, PONAM = @PONAM, DESCR = @DESCR, DATYP = @DATYP, DALEN = @DALEN, PORDE = @PORDE, PRIMK = @PRIMK, AUTOI = @AUTOI, CRAT = @CRAT, CRUS = @CRUS, CHAT = @CHAT, CHUS = @CHUS, DEFAK = @DEFAK, DEFVL = @DEFVL WHERE MENAM = @MENAM AND PONAM = @PONAM;";
+            cmd.CommandText = "UPDATE T1METAP SET MENAM = @MENAM, PONAM = @PONAM, DESCR = @DESCR, DATYP = @DATYP, DALEN = @DALEN, PORDE = @PORDE, PRIMK = @PRIMK, AUTOI = @AUTOI, DEFAK = @DEFAK, DEFVL = @DEFVL, CRAT = @CRAT, CRUS = @CRUS, CHAT = @CHAT, CHUS = @CHUS WHERE MENAM = @MENAM AND PONAM = @PONAM;";
             cmd.Parameters.AddWithValue("@MENAM", ToDbValue(obj.MENAM));
             cmd.Parameters.AddWithValue("@PONAM", ToDbValue(obj.PONAM));
             cmd.Parameters.AddWithValue("@DESCR", ToDbValue(obj.DESCR));
@@ -206,12 +206,12 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             cmd.Parameters.AddWithValue("@PORDE", ToDbValue(obj.PORDE));
             cmd.Parameters.AddWithValue("@PRIMK", ToDbValue(obj.PRIMK));
             cmd.Parameters.AddWithValue("@AUTOI", ToDbValue(obj.AUTOI));
+            cmd.Parameters.AddWithValue("@DEFAK", ToDbValue(obj.DEFAK));
+            cmd.Parameters.AddWithValue("@DEFVL", ToDbValue(obj.DEFVL));
             cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
             cmd.Parameters.AddWithValue("@CRUS", ToDbValue(obj.CRUS));
             cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
             cmd.Parameters.AddWithValue("@CHUS", ToDbValue(obj.CHUS));
-            cmd.Parameters.AddWithValue("@DEFAK", ToDbValue(obj.DEFAK));
-            cmd.Parameters.AddWithValue("@DEFVL", ToDbValue(obj.DEFVL));
             cmd.ExecuteNonQuery();
         }
 

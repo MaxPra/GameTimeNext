@@ -19,6 +19,18 @@ namespace GameTimeNext.Core.Application.TableObjects
         [UIXSignatureField(3)]
         public bool APMCP { get; set; } = false;
 
+        [UIXSignatureField(4)]
+        public DateTime CRAT { get; set; } = DateTime.MinValue;
+
+        [UIXSignatureField(5)]
+        public string CRUS { get; set; } = "";
+
+        [UIXSignatureField(6)]
+        public DateTime CHAT { get; set; } = DateTime.MinValue;
+
+        [UIXSignatureField(7)]
+        public string CHUS { get; set; } = "";
+
         public override void Save()
         {
             new TXAPRDH().Save(this);
