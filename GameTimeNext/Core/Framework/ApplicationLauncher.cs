@@ -24,6 +24,14 @@ namespace GameTimeNext.Core.Framework
             Type type = Type.GetType(className)
         ?? throw new Exception($"Application type '{className}' not found.");
 
+            // Application is already open: switch to its tab instead of starting it again
+            TabItem? existingTab = FindApplicationTab(type.FullName!);
+            if (existingTab != null)
+            {
+                this.TabControl.SelectedItem = existingTab;
+                return null!;
+            }
+
             UIXApplication app = (UIXApplication)Activator.CreateInstance(type)!;
 
             TabItem tabItem = new TabItem
@@ -71,6 +79,14 @@ namespace GameTimeNext.Core.Framework
                 return tabItem;
             else
                 return null!;
+        }
+
+        private TabItem? FindApplicationTab(string typeFullName)
+        {
+            if (!AppEnvironment.StartedApplications.ContainsKey(typeFullName))
+                return null;
+
+            return this.TabControl.Items.OfType<TabItem>().FirstOrDefault(t => t.Tag?.ToString() == typeFullName);
         }
 
         public void StartFavorites(UIXApplication host)

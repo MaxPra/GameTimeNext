@@ -188,8 +188,8 @@
                     HorizontalAlignment="Left"
                     VerticalAlignment="Center"
                     IsDefault="True"
-                    ToolTip="Refresh playthroughs"
-                    Style="{StaticResource Button.Icon}">
+                    Style="{StaticResource Button.Icon}"
+                    ToolTip="Refresh playthroughs">
                     <TextBlock
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
