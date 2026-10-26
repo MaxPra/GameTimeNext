@@ -8,6 +8,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Framework.UI
 {
@@ -286,6 +287,9 @@ namespace GameTimeNext.Core.Framework.UI
         // Profile data
         // ------------------------------------------------------------------
 
+        /// <summary>
+        /// Samples the profile cover; the placeholder cover if the file is missing, can't be read or has no visible pixels.
+        /// </summary>
         private static CoverData? SampleCover(string coverFile)
         {
             if (string.IsNullOrWhiteSpace(coverFile))
@@ -294,15 +298,23 @@ namespace GameTimeNext.Core.Framework.UI
             }
 
             string path = Path.Combine(AppConfig.Storage.ProfileCoversDirectoryPath ?? string.Empty, coverFile);
-            if (!File.Exists(path))
+
+            CoverData? cover = File.Exists(path) ? SampleCover(() => File.OpenRead(path)) : null;
+            if (cover != null)
             {
-                return null;
+                return cover;
             }
 
+            FnLog.AddWarning("Blackout", $"Cover \"{coverFile}\" could not be sampled, the placeholder cover is used instead");
+            return SampleCover(CFProfilesApp.OpenPlaceholderCoverStream);
+        }
+
+        private static CoverData? SampleCover(Func<Stream> openCover)
+        {
             try
             {
                 int sourceWidth, sourceHeight;
-                using (var stream = File.OpenRead(path))
+                using (var stream = openCover())
                 {
                     var decoder = BitmapDecoder.Create(stream, BitmapCreateOptions.DelayCreation, BitmapCacheOption.None);
                     sourceWidth = decoder.Frames[0].PixelWidth;
@@ -323,7 +335,7 @@ namespace GameTimeNext.Core.Framework.UI
                 double cellSize = ReferenceCoverHeight / rows;
 
                 var image = new BitmapImage();
-                using (var stream = File.OpenRead(path))
+                using (var stream = openCover())
                 {
                     image.BeginInit();
                     image.CacheOption = BitmapCacheOption.OnLoad;

@@ -1,3 +1,4 @@
+using GameTimeNext.Core.Application.Profiles;
 using GameTimeNext.Core.Framework.Config;
 using System.IO;
 using System.Windows;
@@ -88,25 +89,40 @@ namespace GameTimeNext.Core.Framework.UI
             if (FnString.IsNullEmptyOrWhitespace(_coverFileName))
                 return null;
 
+            return DesktopWallpaper.Blur(CropToLandscape(LoadCover()));
+        }
+
+        /// <summary>
+        /// Cover of the selected profile, decoded small; the placeholder cover if the file is missing or can't be read.
+        /// </summary>
+        private static BitmapSource LoadCover()
+        {
             string path = Path.Combine(AppConfig.Storage.ProfileCoversDirectoryPath, _coverFileName);
 
-            if (!File.Exists(path))
-                return null;
-
-            BitmapImage cover = new BitmapImage();
-
-            using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
+            try
             {
-                cover.BeginInit();
-                cover.StreamSource = stream;
-                cover.DecodePixelWidth = DesktopWallpaper.DecodePixelWidth;
-                cover.CacheOption = BitmapCacheOption.OnLoad;
-                cover.EndInit();
+                BitmapImage cover = new BitmapImage();
+
+                using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
+                {
+                    cover.BeginInit();
+                    cover.StreamSource = stream;
+                    cover.DecodePixelWidth = DesktopWallpaper.DecodePixelWidth;
+                    cover.CacheOption = BitmapCacheOption.OnLoad;
+                    cover.EndInit();
+                }
+
+                cover.Freeze();
+
+                return cover;
             }
+            catch (Exception ex)
+            {
+                FnLog.AddWarning("MainApp", $"Cover \"{_coverFileName}\" could not be loaded as background, the placeholder cover is used instead", ex);
 
-            cover.Freeze();
-
-            return DesktopWallpaper.Blur(CropToLandscape(cover));
+                // Same 2:3 ratio as the placeholder
+                return CFProfilesApp.LoadPlaceholderCover(DesktopWallpaper.DecodePixelWidth, DesktopWallpaper.DecodePixelWidth * 3 / 2);
+            }
         }
 
         /// <summary>

@@ -1,6 +1,7 @@
 ﻿using GameTimeNext.Core.Application.BigPicture.ViewModels;
 using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.General;
+using GameTimeNext.Core.Application.Profiles;
 using GameTimeNext.Core.Application.Profiles.Types;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework.Config;
@@ -26,7 +27,7 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
         // LT / RT outside of the library: covers skipped
         private const int JumpSize = 5;
 
-        // Covers by file path, kept across reloads (after a game, a filter change) so they are only decoded once
+        // Covers by file name (PPFN), kept across reloads (after a game, a filter change) so they are only decoded once
         private readonly ConcurrentDictionary<string, BitmapImage?> _coverCache = new ConcurrentDictionary<string, BitmapImage?>();
 
         // Whether a game can really be started (scans its game folder), checked on its first use per load
@@ -97,14 +98,12 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
             return (profiles.Select(p => new LibraryEntry(p, LoadCover(p))).ToList(), filterActive);
         }
 
+        /// <summary>
+        /// Cover of the game; the placeholder cover if it is missing or can't be read (see CFProfilesApp.LoadProfileCover).
+        /// </summary>
         private BitmapImage? LoadCover(T1PROFI t1profi)
         {
-            if (FnString.IsNullEmptyOrWhitespace(t1profi.PPFN))
-                return null;
-
-            string coverPath = Path.Combine(AppConfig.Storage.ProfileCoversDirectoryPath ?? string.Empty, t1profi.PPFN);
-
-            return _coverCache.GetOrAdd(coverPath, path => File.Exists(path) ? FnImage.LoadImageWithoutLock(path, 300, 450) : null);
+            return _coverCache.GetOrAdd(t1profi.PPFN, coverFileName => CFProfilesApp.LoadProfileCover(coverFileName));
         }
         #endregion
 

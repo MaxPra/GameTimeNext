@@ -108,7 +108,7 @@ namespace GameTimeNext.Core.Framework.Config
             [JsonIgnore]
             public static string ImportPackagesDirectoryPath
             {
-                get => ReturnEnsureDirectoryExists(Path.Combine(SolutionDirectoryPath, "GameTimeNext", "ImportPackages"));
+                get => ReturnEnsureDirectoryExists(Path.Combine(SolutionDirectoryPath, Root.ApplicationName, "ImportPackages"));
             }
 
             [JsonIgnore]

@@ -424,6 +424,8 @@
                                             <ColumnDefinition Width="*" />
                                             <ColumnDefinition Width="10" />
                                             <ColumnDefinition Width="150" />
+                                            <ColumnDefinition Width="10" />
+                                            <ColumnDefinition Width="150" />
                                         </Grid.ColumnDefinitions>
 
                                         <Button
@@ -439,12 +441,19 @@
                                             Height="36"
                                             Content="SteamGridDB…"
                                             ToolTip="Open SteamGridDB picker window" />
+
+                                        <Button
+                                            x:Name="btnUsePlaceholderCover"
+                                            Grid.Column="4"
+                                            Height="36"
+                                            Content="Placeholder"
+                                            ToolTip="Use the GameTimeNext placeholder cover" />
                                     </Grid>
 
                                     <TextBlock
                                         Grid.Row="6"
                                         Opacity="0.65"
-                                        Text="Use either “Browse local…” or “SteamGridDB…” to set the image path." />
+                                        Text="Use “Browse local…”, “SteamGridDB…” or “Placeholder” to set the image path." />
                                 </Grid>
                             </Border>
 
