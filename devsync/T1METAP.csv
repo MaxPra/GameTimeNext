@@ -85,8 +85,8 @@ T1SCRSP;SPID;Screensetup Monitor Id;03;0;10;1;1;0;;2026-10-24 21:03:00;prage;202
 T1SCRSP;SSID;Screensetup Id;03;0;20;0;0;0;;2026-10-24 21:03:25;prage;2026-10-26 15:12:02;Oliver Fida
 T1SCRSP;MOID;Monitor Id;01;500;30;0;0;0;;2026-10-24 21:03:44;prage;2026-10-26 15:12:02;Oliver Fida
 T1SCRSP;MONA;Monitor Name;01;200;40;0;0;0;;2026-10-24 21:04:04;prage;2026-10-26 15:12:02;Oliver Fida
-T1SCRSP;MOEN;Monitor Enabled;06;0;50;0;0;0;0;2026-10-24 21:04:32;prage;2026-10-26 15:12:02;Oliver Fida
-T1SCRSP;MOPR;Is Primary Monitor;06;0;60;0;0;0;0;2026-10-24 21:04:47;prage;2026-10-26 15:12:02;Oliver Fida
+T1SCRSP;MOEN;Monitor Enabled;06;0;50;0;0;0;;2026-10-24 21:04:32;prage;2026-10-26 15:54:54;Oliver Fida
+T1SCRSP;MOPR;Is Primary Monitor;06;0;60;0;0;0;;2026-10-24 21:04:47;prage;2026-10-26 15:54:58;Oliver Fida
 T1SCRSP;CRAT;Created At;05;0;70;0;0;0;;2026-10-24 21:04:58;prage;2026-10-26 15:12:02;Oliver Fida
 T1SCRSP;CHAT;Changed At;05;0;90;0;0;0;;2026-10-24 21:05:09;prage;2026-10-26 15:12:02;Oliver Fida
 T1APRDH;APDID;Application Properties Definition ID;01;300;10;1;0;0;;2026-10-25 15:33:21;prage;2026-10-26 14:42:37;Oliver Fida
