@@ -214,8 +214,8 @@ namespace GameTimeNext.Core.Application.General.AppSearch.Controller
 
                 hostApplication.MainView.Dispatcher.BeginInvoke(() =>
                 {
-                    if (!AppEnvironment.StartedApplications.ContainsKey(className))
-                        AppEnvironment.AppLauncher.LaunchApplication(className, hostApplication, appName);
+                    AppEnvironment.AppLauncher.LaunchApplication(className, hostApplication, appName);
+
                 }, DispatcherPriority.ApplicationIdle);
             }
 
