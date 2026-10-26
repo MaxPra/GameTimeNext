@@ -79,19 +79,27 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     if (!type.Equals(ImportType.MetadataGenerator))
                     {
                         filePaths = Directory.GetFiles(sourceDirectoryPath, "*.csv", SearchOption.TopDirectoryOnly).ToList();
+
+                        // Metadata
                         filePathMetah = filePaths.Where(p => p.EndsWith("T1METAH.csv")).SingleOrDefault();
                         filePathMetap = filePaths.Where(p => p.EndsWith("T1METAP.csv")).SingleOrDefault();
-                        filePathsNotMetadata = filePaths.Where(p => !p.EndsWith("T1METAP.csv") && !p.EndsWith("T1METAH.csv")).ToList();
+                        if (!FnString.IsNullEmptyOrWhitespace(filePathMetah))
+                            filePaths.Remove(filePathMetah!);
+                        if (!FnString.IsNullEmptyOrWhitespace(filePathMetap))
+                            filePaths.Remove(filePathMetap!);
+
+                        // OFDO (#OF001): Order files if needed (Codetables head then details)
+                        filePathsNotMetadata = filePaths;
                     }
 
-                    // Import matadata tables data first
+                    // Import metadata tables data first
                     if (!type.Equals(ImportType.MetadataGenerator))
                     {
                         if (filePathMetah is not null)
                         {
-                            ImportFromCsv(connection, filePathMetah);
+                            ImportFromCsv(connection, filePathMetah, migPath);
                             if (filePathMetap is not null)
-                                ImportFromCsv(connection, filePathMetap);
+                                ImportFromCsv(connection, filePathMetap, migPath);
                         }
                     }
                 }
@@ -103,7 +111,9 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 {
                     // Import other tables data
                     foreach (string filePath in filePathsNotMetadata)
-                    ImportFromCsv(connection, filePath);
+                    {
+                        ImportFromCsv(connection, filePath, migPath);
+                    }
 
                     // Import imagesAndSymbols
                     ImportDefaultFiles(sourceDirectoryPath);
@@ -139,7 +149,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 });
             }
 
-            private static void ImportFromCsv(SQLiteConnection connection, string filePath)
+            private static void ImportFromCsv(SQLiteConnection connection, string filePath, MigrationPath migPath)
             {
                 string tableName = GetTableNameFromFile(filePath);
                 List<List<string>> csvLines = GetFileContent(filePath);
@@ -148,13 +158,14 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 TableSchema tS = SchemaGenerator.GenerateFromMetadata(tableName: tableName, connection: connection).Single();
                 List<ColumnSchema?> headerColumns = headers.Select(h => tS.Columns.Where(c => c.PONAM.Equals(h)).SingleOrDefault()).ToList();
 
-                UIXQuery.ExecuteCustom($"DELETE FROM {tableName};", connection);
+                if (!tableName.Equals("T1CTABD", StringComparison.InvariantCultureIgnoreCase) || migPath.Equals(MigrationPath.DevSync))
+                    UIXQuery.ExecuteCustom($"DELETE FROM {tableName};", connection);
 
                 // Do not build INSERT Statement, if nothing needs to be imported
                 if (csvLines.Count <= 1) return;
 
                 StringBuilder sb = new StringBuilder();
-                sb.Append("INSERT INTO ").Append(tableName).Append(" (");
+                sb.Append("INSERT OR IGNORE INTO ").Append(tableName).Append(" (");
 
                 bool firstHeaderAdded = false;
                 foreach (string header in headers)
@@ -300,6 +311,9 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
             {
                 string actualSourceDirectoryPath = AppConfig.Dev.GetImagesAndSymbolsDirectoryPath(sourceDirectoryPath);
                 string actualTargetDirectoryPath = AppConfig.Storage.DefaultImagesSymbolsDirectoryPath;
+
+                Directory.Delete(actualTargetDirectoryPath, true);
+                FnDirectory.EnsureDirectoryExists(actualTargetDirectoryPath);
 
                 CopyDirectory(actualSourceDirectoryPath, actualTargetDirectoryPath);
             }

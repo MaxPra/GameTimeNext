@@ -17,85 +17,17 @@
     <Grid Style="{StaticResource View.Root}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="18" />
-            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-
-        <Border
-            Grid.Row="0"
-            Padding="18"
-            Style="{StaticResource Card}">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="14" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="140" />
-                    <ColumnDefinition Width="14" />
-                    <ColumnDefinition Width="420" />
-                </Grid.ColumnDefinitions>
-
-                <TextBlock
-                    Grid.Row="0"
-                    Grid.Column="0"
-                    VerticalAlignment="Center"
-                    Foreground="{DynamicResource Brush.TextSecondary}"
-                    Text="Export Type" />
-
-                <ComboBox
-                    x:Name="CmbExportType"
-                    Grid.Row="0"
-                    Grid.Column="2"
-                    Height="36"
-                    VerticalAlignment="Center"
-                    uixprops:UIXAttachedProperty.AdditionalEntry="(All)"
-                    uixprops:UIXAttachedProperty.Source="From=T1CTABD;Where=TXTYP:eT;Text=DESCR;Value=TXNUM"
-                    SelectedIndex="0"
-                    SelectedValue=""
-                    SelectedValuePath="Tag" />
-
-                <TextBlock
-                    Grid.Row="2"
-                    Grid.Column="0"
-                    VerticalAlignment="Center"
-                    Foreground="{DynamicResource Brush.TextSecondary}"
-                    Text="Output Path" />
-
-                <Grid Grid.Row="2" Grid.Column="2">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="8" />
-                        <ColumnDefinition Width="38" />
-                    </Grid.ColumnDefinitions>
-
-                    <TextBox
-                        x:Name="TxbOutputPath"
-                        Grid.Column="0"
-                        Height="36"
-                        VerticalAlignment="Center" />
-
-                    <Button
-                        x:Name="BtnBrowseOutputPath"
-                        Grid.Column="2"
-                        ToolTip="Browse output folder"
-                        Style="{StaticResource Button.Icon}">
-                        <TextBlock
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            FontFamily="Segoe MDL2 Assets"
-                            FontSize="14"
-                            Text="&#xE838;" />
-                    </Button>
-                </Grid>
-            </Grid>
-        </Border>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="8" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
 
         <Button
-            x:Name="BtnExecute"
-            Grid.Row="2"
+            x:Name="btnExecute"
+            Grid.Row="0"
+            Grid.Column="0"
             Width="148"
             Height="38"
             HorizontalAlignment="Left"
@@ -107,6 +39,24 @@
                     FontFamily="Segoe MDL2 Assets"
                     Text="&#xE768;" />
                 <TextBlock VerticalAlignment="Center" Text="Execute" />
+            </StackPanel>
+        </Button>
+
+        <Button
+            x:Name="btnTestImport"
+            Grid.Row="0"
+            Grid.Column="2"
+            Width="148"
+            Height="38"
+            HorizontalAlignment="Left"
+            IsDefault="True">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock
+                    Margin="0,0,6,0"
+                    VerticalAlignment="Center"
+                    FontFamily="Segoe MDL2 Assets"
+                    Text="&#xE9D9;" />
+                <TextBlock VerticalAlignment="Center" Text="Test Import" />
             </StackPanel>
         </Button>
     </Grid>

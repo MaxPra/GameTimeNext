@@ -164,21 +164,35 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
             contextBuilder.SetStyle(ProfilesContextMenuBuilder.contextMenuStyle);
 
             T1CTABD t1ctabd = (T1CTABD)ctRow.RowObject!;
+            bool userCanEdit = GetUserIsAllowedToEdit(t1ctabd);
 
             // Development codetables may only be changed in debug mode
-            if (GetWnd().ViewIndicator.Contains("ED"))
+            if (userCanEdit)
                 contextBuilder.AddItem("ctxtEdit", "Edit", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Edit), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
 
             contextBuilder.AddItem("ctxtView", "View", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.View), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
 
             // Development codetables may only be deleted in debug mode
-            if (GetWnd().ViewIndicator.Contains("ED") && (!GetApp().T1CTABH!.NRANA && !t1ctabd.TXNUM.StartsWith("D_") || (FnSystem.IsDebug() && !FnSystem.RunWithUserPermissions())))
+            if (userCanEdit)
                 contextBuilder.AddItem("ctxtDelete", "Delete", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Delete), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
 
             if (contextBuilder.HasItems())
                 dgRow.ContextMenu = contextBuilder.Build();
             else
                 dgRow.ContextMenu = null;
+        }
+
+        private bool GetUserIsAllowedToEdit(T1CTABD t1ctabd)
+        {
+            if (!GetWnd().ViewIndicator.Contains("ED")) return false;
+
+            if (FnSystem.IsDebug() && !FnSystem.RunWithUserPermissions()) return true;
+
+            if (GetApp().T1CTABH.PERMI.Equals("D")) return false;
+
+            if (GetApp().T1CTABH.NRANA && t1ctabd.TXNUM.StartsWith("D_")) return false;
+
+            return true;
         }
 
         protected void EV_DgCodetableEntrys_CtxtOpening(FrameworkElement target)

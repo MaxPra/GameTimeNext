@@ -1,8 +1,6 @@
 ﻿using System.Globalization;
 using GameTimeNext.Core.Application.Metadata.Data;
 using GameTimeNext.Core.Application.Metadata.Views;
-using GameTimeNext.Core.Framework.DataBase.Migration;
-using GameTimeNext.Core.Framework.Utils;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -42,9 +40,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
             FnControls.SetEnabled(GetWnd().chbPrimaryKey, GetWnd().ViewIndicator.Contains("CN"));
             FnControls.SetEnabled(GetWnd().chbAutoIncrement, GetWnd().ViewIndicator.Contains("CN"));
 
-            FnControls.SetEnabled(GetWnd().txbDescription, GetWnd().ViewIndicator.Contains("CN"));
-
-            FnControls.SetEnabled(GetWnd().cmbDataType, GetWnd().ViewIndicator.Contains("CN"));
+            FnControls.SetEnabled(GetWnd().txbDescription, GetWnd().ViewIndicator.Contains("CN") || GetWnd().ViewIndicator.Contains("ED"));
 
             FnControls.SetEnabled(GetWnd().txbLength, GetWnd().ViewIndicator.Contains("CN"));
         }
@@ -109,7 +105,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
             }
             else
             {
-                FnControls.SetEnabled(cmbDataType, true);
+                FnControls.SetEnabled(cmbDataType, GetWnd().ViewIndicator.Contains("CN"));
 
                 FnControls.SetVisible(GetWnd().txbLength, "01".Equals(selectedDataType));
                 FnControls.SetVisible(GetWnd().lblLength, "01".Equals(selectedDataType));
@@ -145,6 +141,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
         {
             string selectedDataType = GetWnd().cmbDataType.SelectedValue?.ToString() ?? string.Empty;
             UIXSqliteDataType dataType = UIXSqliteDataType.GetByKey(selectedDataType);
+            string controlNameField = "Field";
 
             // Order
             if (!FnControls.ContainsOnlyNumericValue(GetWnd().txbOrder))
@@ -152,13 +149,13 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
             // Field
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().txbField.Text))
-                AddViewError(GetWnd().txbField, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Field"));
+                AddViewError(GetWnd().txbField, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage(controlNameField));
             else if (!Regex.IsMatch(GetWnd().txbField.Text, @"^[A-Z][A-Z0-9]*$"))
-                AddViewError(GetWnd().txbField, "Field has invalid format.");
+                AddViewError(GetWnd().txbField, FnErrorMessage.ErrorMessage.InvalidFormat.GetMessage(controlNameField));
             else if (GetWnd().txbField.Text.Length < 4)
-                AddViewError(GetWnd().txbField, FnErrorMessage.ErrorMessage.MustExceedChars.GetMessage("Field", "4"));
+                AddViewError(GetWnd().txbField, FnErrorMessage.ErrorMessage.MustExceedChars.GetMessage(controlNameField, "4"));
             else if (GetWnd().txbField.Text.Length > 5)
-                AddViewError(GetWnd().txbField, FnErrorMessage.ErrorMessage.CannotExceedChars.GetMessage("Field", "5"));
+                AddViewError(GetWnd().txbField, FnErrorMessage.ErrorMessage.CannotExceedChars.GetMessage(controlNameField, "5"));
 
             // Description
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().txbDescription.Text))

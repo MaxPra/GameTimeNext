@@ -1,6 +1,6 @@
 using GameTimeNext.Core.Application.Codetables.Views;
 using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Framework.Utils;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -67,10 +67,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
         protected override void CheckImpl()
         {
-            if (FnString.IsNullEmptyOrWhitespace(GetWnd().TxbTextType.Text))
-                AddViewError(GetWnd().TxbTextType, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Text type"));
-            if (GetWnd().TxbTextType.Text.Length > 2)
-                AddViewError(GetWnd().TxbTextType, FnErrorMessage.ErrorMessage.CannotExceedChars.GetMessage("Text type", "2"));
+            CheckTextType();
 
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().TxbDescription.Text))
                 AddViewError(GetWnd().TxbDescription, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Description"));
@@ -80,6 +77,26 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
             if (GetWnd().TxbDescription.Text.Length > 200)
                 AddViewError(GetWnd().TxbDescription, FnErrorMessage.ErrorMessage.CannotExceedChars.GetMessage("Description", "200"));
+        }
+
+        private void CheckTextType()
+        {
+            TextBox control = GetWnd().TxbTextType;
+            string value = control.Text;
+            string controlName = "Text type";
+
+            if (FnString.IsNullEmptyOrWhitespace(value))
+            {
+                AddViewError(control, FnErrorMessage.ErrorMessage.IsRequired.GetMessage(controlName));
+            }
+            if (value.Length > 2)
+            {
+                AddViewError(control, FnErrorMessage.ErrorMessage.CannotExceedChars.GetMessage(controlName, "2"));
+            }
+            else if (!Regex.IsMatch(value, @"^[a-zA-Z]*$"))
+            {
+                AddViewError(control, FnErrorMessage.ErrorMessage.InvalidFormat.GetMessage(controlName));
+            }
         }
 
         protected override void FillViewImpl()

@@ -21,17 +21,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
 
             public static void ExportCsvFileFor(SQLiteConnection connection, UIXTableObjectBase obj, ImportType importType, string? outputDirectoryPath = null)
             {
-                if (!FnSystem.IsDebug() || FnSystem.RunWithUserPermissions()) return;
-                if (obj is null || !obj.IsDevSynced) return;
-
                 string tableName = obj.GetType().Name;
-                if (importType.Equals(ImportType.ImportPackages))
-                {
-                    T1METAH t1metah = (T1METAH)obj;
-                    tableName = t1metah.MENAM;
-                    if (!t1metah.DSYNC) return;
-                }
-
                 ExportCsvFileFor(connection, tableName, importType, outputDirectoryPath: outputDirectoryPath);
             }
 
@@ -39,6 +29,9 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
             public static void ExportCsvFileFor(SQLiteConnection connection, string tableName, ImportType importType, string? outputDirectoryPath = null)
             {
                 if (!FnSystem.IsDebug() || FnSystem.RunWithUserPermissions()) return;
+                TXMETAH txmetah = new TXMETAH();
+                T1METAH? t1metah = txmetah.Read(tableName);
+                if ((t1metah is null || !t1metah.DSYNC) && !tableName.StartsWith("t1meta", StringComparison.InvariantCultureIgnoreCase)) return;
 
                 TableSchema? tS = SchemaGenerator.GenerateSingleFromMetadata(tableName);
                 if (tS is null) return;
@@ -78,24 +71,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                             values.Add(EscapeCsv(valueCsv, _CSV_SEPERATOR));
                         }
 
-                        if (tS.IsCodetableTable && !tS.IsCodetableTabd)
-                        {
-                            int indexExprt = columns.Keys.ToList().IndexOf("EXPRT");
-                            bool exprtEnabled = UIXSqliteDataType.Convert(UIXSqliteDataType.ConversionType.CSV, UIXSqliteDataType.ConversionType.CSharp, values[indexExprt], columns["EXPRT"]) is true;
-
-                            if (!exprtEnabled) continue;
-                        }
-                        if (tS.IsCodetableTabd)
-                        {
-                            int indexTxtyp = columns.Keys.ToList().IndexOf("TXTYP");
-                            string txtyp = values[indexTxtyp];
-
-                            TXCTABH txctabh = new TXCTABH();
-                            T1CTABH? t1ctabh = txctabh.Read(txtyp);
-
-                            if (t1ctabh is null) continue;
-                            if (!t1ctabh.EXPRT) continue;
-                        }
+                        if (tS.IsCodetableTabd && CheckPreventTabdExport(columns, values, importType)) continue;
 
                         csvLines.Add(String.Join(_CSV_SEPERATOR, values));
                     }
@@ -118,7 +94,30 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 File.WriteAllLines(filePath, csvLines, Encoding.UTF8);
 
                 if (tS.IsCodetableTable)
+                {
                     ExportCodetableDefaultFiles(importType, destinationDirectoryPathOverride: actualOutputDirectoryPath);
+                }
+            }
+
+            private static bool CheckPreventTabdExport(Dictionary<string, UIXSqliteDataType> columns, List<string> values, ImportType importType)
+            {
+                int indexTxtyp = columns.Keys.ToList().IndexOf("TXTYP");
+                string txtyp = values[indexTxtyp];
+
+                TXCTABH txctabh = new TXCTABH();
+                T1CTABH? t1ctabh = txctabh.Read(txtyp);
+                if (t1ctabh is null) return true;
+
+                if (importType.Equals(ImportType.DevSync)) return false; // Export everything for devSync
+
+                if (!t1ctabh.EXPRT) return true; // Export not allowed if Export is not enabled
+                if (t1ctabh.PERMI.Equals("D")) return false; // Export allowed for PERMI = D
+                if (!t1ctabh.NRANA) return true; // Export not allowed if NumberRange is false
+
+                string val = values[columns.Keys.ToList().IndexOf("TXNUM")];
+                if (val.StartsWith("D_", StringComparison.InvariantCultureIgnoreCase)) return false; // Export allowed if Textnumber starts with D_
+
+                return true; // Export not allowed fallback
             }
 
             private static void ExportCodetableDefaultFiles(ImportType importType, string? destinationDirectoryPathOverride = null)
@@ -134,7 +133,10 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 }
 
                 if (Directory.Exists(destinationDirectoryPath))
+                {
                     Directory.Delete(destinationDirectoryPath, true);
+                    FnDirectory.EnsureDirectoryExists(destinationDirectoryPath);
+                }
 
                 if (!Directory.Exists(sourceDirectoryPath))
                     return;

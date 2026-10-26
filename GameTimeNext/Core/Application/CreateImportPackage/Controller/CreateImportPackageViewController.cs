@@ -1,5 +1,6 @@
 using GameTimeNext.Core.Application.CreateImportPackage.Views;
 using GameTimeNext.Core.Application.DataManagers;
+using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.DataBase.Migration;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.Utils;
@@ -32,8 +33,6 @@ namespace GameTimeNext.Core.Application.CreateImportPackage.Controller
 
         protected override void CheckImpl()
         {
-            if (FnString.IsNullEmptyOrWhitespace(GetView().TxbOutputPath.Text))
-                AddViewError(GetView().TxbOutputPath, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Output path"));
         }
 
         protected override void DataWrapperSelectionChangedImpl(Selector source)
@@ -66,17 +65,7 @@ namespace GameTimeNext.Core.Application.CreateImportPackage.Controller
             return (CreateImportPackageView)View;
         }
 
-        protected void EV_BtnBrowseOutputPath()
-        {
-            string outputPath = FnSystemDialogs.ShowFolderDialog("Select Output Path", false);
-
-            if (FnString.IsNullEmptyOrWhitespace(outputPath))
-                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Select a valid output path!", CFMBOXResult.Ok, CFMBOXIcon.Error);
-
-            GetView().TxbOutputPath.Text = outputPath;
-        }
-
-        protected async Task EV_BtnExecute()
+        protected async Task EV_btnExecute()
         {
             Check();
 
@@ -85,8 +74,8 @@ namespace GameTimeNext.Core.Application.CreateImportPackage.Controller
 
             GetApp().Loader.Begin("Creating Import Package...");
 
-            string outputPath = GetView().TxbOutputPath.Text;
-            string exportType = GetView().CmbExportType.SelectedValue.ToString()!;
+            // OFODI: Find Path automatically
+            string outputPath = @"X:\MaxPra\GameTimeNext\GameTimeNext\ImportPackages";
 
             bool error = false;
 
@@ -94,7 +83,8 @@ namespace GameTimeNext.Core.Application.CreateImportPackage.Controller
             {
                 try
                 {
-                    MigrationFactory.ImportPackage.ExportPackage(outputPath, exportType);
+                    // OFDOI: Delete previous packages (until IP rework)
+                    MigrationFactory.ImportPackage.ExportPackage(outputPath);
                 }
                 catch (Exception)
                 {
@@ -116,8 +106,11 @@ namespace GameTimeNext.Core.Application.CreateImportPackage.Controller
             {
                 GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Import package created successfully", CFMBOXResult.Ok, CFMBOXIcon.Success);
             }
+        }
 
-
+        protected async Task EV_btnTestImport()
+        {
+            // OFDOI: EV_btnTestImport
         }
     }
 }

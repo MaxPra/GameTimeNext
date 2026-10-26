@@ -12,7 +12,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
     {
         public static class ImportPackage
         {
-            public static void ExportPackage(string outputDirectoryPath, string packageType)
+            public static void ExportPackage(string outputDirectoryPath)
             {
                 Guid packageGuid = Guid.NewGuid();
 
@@ -24,25 +24,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
 
                 try
                 {
-                    bool exportMetadata = false, exportCodetables = false;
-
-                    switch (packageType)
-                    {
-                        case "":
-                            exportMetadata = true;
-                            exportCodetables = true;
-                            break;
-                        case "mE":
-                            exportMetadata = true;
-                            break;
-                        case "cT":
-                            exportCodetables = true;
-                            break;
-                        default:
-                            throw new NotImplementedException($"ImportPackageType \"{packageType}\" is not implemented.");
-                    }
-
-                    ExportToTemp(tempDirectoryPath, exportMetadata, exportCodetables);
+                    ExportToTemp(tempDirectoryPath);
                     ZipFile.CreateFromDirectory(tempDirectoryPath, Path.Combine(outputDirectoryPath, $"{packageName}.zip"), CompressionLevel.Optimal, false);
                 }
                 finally
@@ -60,15 +42,12 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 filePaths.ForEach(p => ImportSinglePackage(p));
             }
 
-            private static void ExportToTemp(string tempDirectoryPath, bool exportMetadata, bool exportCodetables)
+            private static void ExportToTemp(string tempDirectoryPath)
             {
                 SQLiteConnection connection = AppEnvironment.GetDataBaseManager().GetConnection();
 
-                if (exportMetadata)
-                    ExportMetadataToTemp(connection, tempDirectoryPath);
-
-                if (exportCodetables)
-                    ExportCodetablesToTemp(connection, tempDirectoryPath);
+                ExportMetadataToTemp(connection, tempDirectoryPath);
+                ExportTablesToTemp(connection, tempDirectoryPath);
             }
 
             private static void ExportMetadataToTemp(SQLiteConnection connection, string tempDirectoryPath)
@@ -77,7 +56,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 ToCsv.ExportCsvFileFor(connection, "T1METAP", ImportType.ImportPackages, tempDirectoryPath);
             }
 
-            private static void ExportCodetablesToTemp(SQLiteConnection connection, string tempDirectoryPath)
+            private static void ExportTablesToTemp(SQLiteConnection connection, string tempDirectoryPath)
             {
                 TXMETAH txmetah = new TXMETAH();
                 List<T1METAH> t1metahs = txmetah.ReadAll();

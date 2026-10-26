@@ -3,10 +3,8 @@ using GameTimeNext.Core.Application.Metadata.Viewmodels;
 using GameTimeNext.Core.Application.Metadata.Views;
 using GameTimeNext.Core.Application.Profiles;
 using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.DataBase.Migration;
 using GameTimeNext.Core.Framework.UI.Dialogs;
-using GameTimeNext.Core.Framework.Utils;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -65,16 +63,17 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
         protected override void CheckImpl()
         {
             string selectedType = GetWnd().CmbType.SelectedValue?.ToString() ?? string.Empty;
+            string controlNameTableObj = "Table object";
 
             // Table object
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().TxbTableObject.Text))
-                AddViewError(GetWnd().TxbTableObject, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Table object"));
+                AddViewError(GetWnd().TxbTableObject, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage(controlNameTableObj));
             else if (!Regex.IsMatch(GetWnd().TxbTableObject.Text, @"^T1[A-Z0-9]*$"))
-                AddViewError(GetWnd().TxbTableObject, "Field has invalid format.");
+                AddViewError(GetWnd().TxbTableObject, FnErrorMessage.ErrorMessage.InvalidFormat.GetMessage(controlNameTableObj));
             else if (GetWnd().TxbTableObject.Text.Length < 7)
-                AddViewError(GetWnd().TxbTableObject, FnErrorMessage.ErrorMessage.MustExceedChars.GetMessage("Table object", "7"));
+                AddViewError(GetWnd().TxbTableObject, FnErrorMessage.ErrorMessage.MustExceedChars.GetMessage(controlNameTableObj, "7"));
             else if (GetWnd().TxbTableObject.Text.Length > 7)
-                AddViewError(GetWnd().TxbTableObject, FnErrorMessage.ErrorMessage.CannotExceedChars.GetMessage("Table object", "7"));
+                AddViewError(GetWnd().TxbTableObject, FnErrorMessage.ErrorMessage.CannotExceedChars.GetMessage(controlNameTableObj, "7"));
 
             // Description
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().TxbDescription.Text))

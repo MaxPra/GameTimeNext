@@ -228,16 +228,42 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
         private void CheckTextNumber()
         {
+            TextBox control = GetWnd().TxbTextNumber;
+            string value = control.Text;
             T1CTABH t1ctabh = new TXCTABH().Read(GetApp().T1CTABD!.TXTYP);
 
-            if (FnString.IsNullEmptyOrWhitespace(GetWnd().TxbTextNumber.Text))
+            if (FnString.IsNullEmptyOrWhitespace(value))
             {
-                AddViewError(GetWnd().TxbTextNumber, FnErrorMessage.ErrorMessage.IsRequired.GetMessage("Text number"));
+                AddViewError(control, FnErrorMessage.ErrorMessage.IsRequired.GetMessage("Textnumber"));
+            }
+            if (value.Split('_').Last().Length > 5)
+            {
+                AddViewError(control, FnErrorMessage.ErrorMessage.CannotExceedChars.GetMessage("Textnumber", "5"));
             }
 
-            if (GetWnd().TxbTextNumber.Text.StartsWith("D_") && (!FnSystem.IsDebug() || FnSystem.RunWithUserPermissions()) && t1ctabh!.NRANA)
+            if (t1ctabh!.NRANA)
             {
-                AddViewError(GetWnd().TxbTextNumber, FnErrorMessage.ErrorMessage.IsRequired.GetMessage("Text number", "_D", "only for deverloper-entries"));
+                if (FnSystem.IsDebug() && !FnSystem.RunWithUserPermissions())
+                {
+                    // Dev-Mode
+                    if (!value.StartsWith("D_") && !value.StartsWith("U_"))
+                    {
+                        AddViewError(control, FnErrorMessage.ErrorMessage.MustStartWith.GetMessage("Textnumber", "D_ or U_"));
+                    }
+                }
+                else
+                {
+                    // User-Mode
+                    if (value.StartsWith("D_"))
+                    {
+                        AddViewError(control, FnErrorMessage.ErrorMessage.CannotStartWith.GetMessage("Textnumber", "D_", "only for deverloper-entries"));
+                    }
+
+                    if (!value.StartsWith("U_"))
+                    {
+                        AddViewError(control, FnErrorMessage.ErrorMessage.MustStartWith.GetMessage("Textnumber", "U_"));
+                    }
+                }
             }
         }
 

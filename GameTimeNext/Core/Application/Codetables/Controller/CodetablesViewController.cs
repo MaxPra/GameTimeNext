@@ -183,7 +183,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
             T1CTABH t1ctabh = (T1CTABH)ctRow.RowObject!;
 
             // Development codetables may only be changed in debug mode
-            if (t1ctabh.PERMI == "D" && FnSystem.IsDebug() && !FnSystem.RunWithUserPermissions() || t1ctabh.PERMI == "U")
+            if ((t1ctabh.PERMI == "D" && FnSystem.IsDebug() && !FnSystem.RunWithUserPermissions()) || t1ctabh.PERMI == "U")
                 contextBuilder.AddItem("ctxtEdit", "Edit", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Edit), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
 
             contextBuilder.AddItem("ctxtView", "View", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.View), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);

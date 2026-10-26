@@ -72,7 +72,7 @@
                     Grid.Column="4"
                     VerticalAlignment="Center"
                     Foreground="{DynamicResource Brush.TextSecondary}"
-                    Text="Dev sync" />
+                    Text="Export (devSync and ImportPackage)" />
 
                 <CheckBox
                     x:Name="ChbDevSync"
