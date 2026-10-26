@@ -38,11 +38,18 @@
             Grid.Column="0"
             Padding="0"
             Background="Transparent">
-            <!--  Frosted glass behind the monitoring overlay  -->
+            <!--  Frosted glass behind the monitoring overlay and behind the launch card (launching overlay with the game name)  -->
             <Border.Style>
                 <Style TargetType="Border">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding Visibility, ElementName=MonitoringOverlay}" Value="Visible">
+                            <Setter Property="Effect">
+                                <Setter.Value>
+                                    <BlurEffect KernelType="Gaussian" Radius="12" RenderingBias="Performance" />
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding HasContent, ElementName=LaunchingOverlay}" Value="True">
                             <Setter Property="Effect">
                                 <Setter.Value>
                                     <BlurEffect KernelType="Gaussian" Radius="12" RenderingBias="Performance" />

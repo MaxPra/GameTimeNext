@@ -1,6 +1,7 @@
 using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Profiles.Components;
 using GameTimeNext.Core.Application.TableObjects;
+using GameTimeNext.Core.Framework.UI;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.Utils;
 using System.Diagnostics;
@@ -95,10 +96,15 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
             ILauncherIntegration? launcher = GetLauncher(t1profi);
 
             if (launcher == null)
-                return false;
-
-            if (!launcher.IsGameInstalled(t1profi.LNID))
             {
+                FnLog.AddWarning(nameof(FnLauncher), $"{t1profi.GANA} can't be started: there is no integration for launcher type '{t1profi.LNTY}'");
+                return false;
+            }
+
+            if (!IsGameInstalledSafe(launcher, t1profi))
+            {
+                FnLog.AddInfo(nameof(FnLauncher), $"{t1profi.GANA} isn't installed in launcher {launcher.LauncherType} (game ID '{t1profi.LNID}')");
+
                 CFMBOX cfmbox = app.GetApplication<CFMBOX>(UIXApplicationStartTarget.Window);
                 cfmbox.Show(cfmbox.GetErrorMessage("GLO0017", GetLauncherName(t1profi.LNTY)), CFMBOXResult.Ok, CFMBOXIcon.Info);
                 return false;
@@ -125,7 +131,24 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
                 _launchCancellation = null;
             }
 
-            launcher.StartGame(t1profi.LNID, launcher.SupportsLaunchArguments ? cProfileSettings.LaunchArgs.Trim() : string.Empty);
+            string launchArgs = launcher.SupportsLaunchArguments ? cProfileSettings.LaunchArgs.Trim() : string.Empty;
+
+            FnLog.AddInfo(nameof(FnLauncher), $"Starting {t1profi.GANA} via launcher {launcher.LauncherType} (game ID '{t1profi.LNID}', arguments '{launchArgs}')");
+
+            try
+            {
+                launcher.StartGame(t1profi.LNID, launchArgs);
+            }
+            catch (Exception ex)
+            {
+                FnLog.AddError(nameof(FnLauncher), $"Starting {t1profi.GANA} via launcher {launcher.LauncherType} failed (game ID '{t1profi.LNID}')", ex);
+
+                CFGameStarter.DeactivateProfileSettings(cProfileSettings);
+
+                new ToastMessage("Launch failed", $"{t1profi.GANA} could not be started.\nDetails are in the log.").Show();
+                return false;
+            }
+
             return true;
         }
 
@@ -135,6 +158,10 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
         /// </summary>
         public static void CancelLaunch(T1PROFI t1profi)
         {
+            FnLog.AddInfo(nameof(FnLauncher), _launchCancellation != null
+                ? $"Launch of {t1profi.GANA} cancelled before the launcher was started"
+                : $"Launch of {t1profi.GANA} cancelled, ending its running processes");
+
             _launchCancellation?.Cancel();
 
             QuitGame(t1profi);
@@ -144,29 +171,52 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
 
         /// <summary>
         /// Ends all running processes of the game (its active executables in the game folder), like Steam's "Stop".
+        /// Child processes outside of these executables (e.g. a crash reporter) are not ended.
         /// The running game detection notices the end and resets the profile settings.
+        /// Returns false if a process couldn't be ended (the game keeps running).
         /// </summary>
-        public static void QuitGame(T1PROFI t1profi)
+        public static bool QuitGame(T1PROFI t1profi)
         {
             if (FnString.IsNullEmptyOrWhitespace(t1profi.EXGF))
-                return;
+                return true;
+
+            bool allEnded = true;
 
             foreach (Process process in FnSystem.GetProcessesWithPathPart(FnExecutables.GetAllActiveExecutablesFromDBObj(t1profi), t1profi.EXGF))
             {
                 try
                 {
-                    process.Kill(entireProcessTree: true);
+                    // Already ended (e.g. the starter ends together with the game)
+                    if (process.HasExited)
+                        continue;
+
+                    FnLog.AddInfo(nameof(FnLauncher), $"Quitting {t1profi.GANA}: ending process {process.ProcessName}");
+
+                    // Without the process tree: .NET would read the parent of every process on the system for it and
+                    // throws (and catches) internally whenever one of them exits meanwhile. The game's own processes
+                    // are its executables in the game folder anyway, and they are all ended here.
+                    process.Kill();
+                }
+                catch (InvalidOperationException)
+                {
+                    // Exited between the check and the kill: nothing left to end
                 }
                 catch (Exception ex)
                 {
-                    // e.g. the game runs elevated or has already exited
+                    // e.g. the game runs elevated
                     FnLog.AddWarning(nameof(FnLauncher), $"Could not end process {process.ProcessName}", ex);
+                    allEnded = false;
                 }
                 finally
                 {
                     process.Dispose();
                 }
             }
+
+            if (!allEnded)
+                new ToastMessage("Quit failed", $"{t1profi.GANA} could not be ended completely.\nDetails are in the log.").Show();
+
+            return allEnded;
         }
 
         public static void OpenInLauncher(T1PROFI t1profi)
@@ -176,7 +226,30 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
             if (launcher == null || !launcher.SupportsOpenInLauncher)
                 return;
 
-            launcher.OpenInLauncher(t1profi.LNID);
+            try
+            {
+                launcher.OpenInLauncher(t1profi.LNID);
+            }
+            catch (Exception ex)
+            {
+                // e.g. the launcher was uninstalled and its URI isn't registered anymore
+                FnLog.AddError(nameof(FnLauncher), $"Showing {t1profi.GANA} in launcher {launcher.LauncherType} failed (game ID '{t1profi.LNID}')", ex);
+
+                new ToastMessage("Launcher not available", $"{GetLauncherName(t1profi.LNTY)} could not be opened.\nDetails are in the log.").Show();
+            }
+        }
+
+        private static bool IsGameInstalledSafe(ILauncherIntegration launcher, T1PROFI t1profi)
+        {
+            try
+            {
+                return launcher.IsGameInstalled(t1profi.LNID);
+            }
+            catch (Exception ex)
+            {
+                FnLog.AddError(nameof(FnLauncher), $"Checking the installation of {t1profi.GANA} in launcher {launcher.LauncherType} failed (game ID '{t1profi.LNID}')", ex);
+                return false;
+            }
         }
 
         private static List<LauncherGame> GetInstalledGamesSafe(ILauncherIntegration launcher)

@@ -1,5 +1,7 @@
 using System.Data.SQLite;
+using System.Globalization;
 using System.Text.Json.Nodes;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.MigrationTasks
 {
@@ -27,7 +29,10 @@ namespace GameTimeNext.Core.Application.MigrationTasks
             using SQLiteCommand command = _connection!.CreateCommand();
             command.CommandText = "UPDATE T1PROFI SET LNTY = 'STEAM', LNID = CAST(SAID AS TEXT) " +
                                   "WHERE SAID <> 0 AND IFNULL(LNTY, '') = '';";
-            command.ExecuteNonQuery();
+            int migratedProfiles = command.ExecuteNonQuery();
+
+            if (migratedProfiles > 0)
+                FnLog.AddInfo(nameof(MigTask_100b_010), $"Steam link of {migratedProfiles.ToString(CultureInfo.InvariantCulture)} profile(s) moved to the launcher link");
         }
 
         private void MigrateSteamGameArgs()
@@ -41,16 +46,26 @@ namespace GameTimeNext.Core.Application.MigrationTasks
                 using SQLiteDataReader reader = select.ExecuteReader();
                 while (reader.Read())
                 {
-                    if (JsonNode.Parse(reader.GetString(1)) is not JsonObject settings)
-                        continue;
+                    long pfid = reader.GetInt64(0);
 
-                    string steamGameArgs = settings["SteamGameArgs"]?.GetValue<string>() ?? string.Empty;
-                    settings.Remove("SteamGameArgs");
+                    try
+                    {
+                        if (JsonNode.Parse(reader.GetString(1)) is not JsonObject settings)
+                            continue;
 
-                    if (settings["LaunchArgs"] is null)
-                        settings["LaunchArgs"] = steamGameArgs.Replace(";", " ").Trim();
+                        string steamGameArgs = settings["SteamGameArgs"]?.GetValue<string>() ?? string.Empty;
+                        settings.Remove("SteamGameArgs");
 
-                    migratedSettings[reader.GetInt64(0)] = settings.ToJsonString();
+                        if (settings["LaunchArgs"] is null)
+                            settings["LaunchArgs"] = steamGameArgs.Replace(";", " ").Trim();
+
+                        migratedSettings[pfid] = settings.ToJsonString();
+                    }
+                    catch (Exception ex)
+                    {
+                        // Broken settings of one profile must not stop the startup; the profile keeps its old settings
+                        FnLog.AddWarning(nameof(MigTask_100b_010), $"Could not migrate the Steam launch arguments of profile {pfid.ToString(CultureInfo.InvariantCulture)}", ex);
+                    }
                 }
             }
 
