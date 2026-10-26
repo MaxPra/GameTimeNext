@@ -64,6 +64,19 @@ namespace GameTimeNext.Core.Application.DataManagers
             MigrationFactory.ToCsv.ExportCsvFileFor(_connection, "T1SCRSH", MigrationFactory.ImportType.DevSync);
         }
 
+        public bool Exists(T1SCRSH obj)
+        {
+            return Exists(obj.SSID);
+        }
+
+        public bool Exists(long ssid)
+        {
+            using SQLiteCommand cmd = _connection.CreateCommand();
+            cmd.CommandText = "SELECT COUNT(*) FROM T1SCRSH WHERE SSID = @SSID;";
+            cmd.Parameters.AddWithValue("@SSID", ToDbValue(ssid));
+            return Convert.ToInt64(cmd.ExecuteScalar(), CultureInfo.InvariantCulture) > 0;
+        }
+
         public virtual T1SCRSH? Read(long ssid)
         {
             UIXQuery query = new UIXQuery(K1SCRSH.Name, _connection);
@@ -111,7 +124,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         }
         #endregion
 
-        #region Methods PRIVATE
+        #region Methods PROTECTED
 
         protected static T1SCRSH Map(SQLiteDataReader reader)
         {
@@ -161,14 +174,6 @@ namespace GameTimeNext.Core.Application.DataManagers
             cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
             cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
             cmd.ExecuteNonQuery();
-        }
-
-        private bool Exists(T1SCRSH obj)
-        {
-            using SQLiteCommand cmd = _connection.CreateCommand();
-            cmd.CommandText = "SELECT COUNT(*) FROM T1SCRSH WHERE SSID = @SSID;";
-            cmd.Parameters.AddWithValue("@SSID", ToDbValue(obj.SSID));
-            return Convert.ToInt64(cmd.ExecuteScalar(), CultureInfo.InvariantCulture) > 0;
         }
 
         private static object? ToDbValue(object? valFrom)

@@ -64,6 +64,19 @@ namespace GameTimeNext.Core.Application.DataManagers
             MigrationFactory.ToCsv.ExportCsvFileFor(_connection, "T1PROFI", MigrationFactory.ImportType.DevSync);
         }
 
+        public bool Exists(T1PROFI obj)
+        {
+            return Exists(obj.PFID);
+        }
+
+        public bool Exists(long pfid)
+        {
+            using SQLiteCommand cmd = _connection.CreateCommand();
+            cmd.CommandText = "SELECT COUNT(*) FROM T1PROFI WHERE PFID = @PFID;";
+            cmd.Parameters.AddWithValue("@PFID", ToDbValue(pfid));
+            return Convert.ToInt64(cmd.ExecuteScalar(), CultureInfo.InvariantCulture) > 0;
+        }
+
         public virtual T1PROFI? Read(long pfid)
         {
             UIXQuery query = new UIXQuery(K1PROFI.Name, _connection);
@@ -141,7 +154,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         }
         #endregion
 
-        #region Methods PRIVATE
+        #region Methods PROTECTED
 
         protected static T1PROFI Map(SQLiteDataReader reader)
         {
@@ -236,14 +249,6 @@ namespace GameTimeNext.Core.Application.DataManagers
             cmd.Parameters.AddWithValue("@ARCH", ToDbValue(obj.ARCH));
             cmd.Parameters.AddWithValue("@PLAFO", ToDbValue(obj.PLAFO));
             cmd.ExecuteNonQuery();
-        }
-
-        private bool Exists(T1PROFI obj)
-        {
-            using SQLiteCommand cmd = _connection.CreateCommand();
-            cmd.CommandText = "SELECT COUNT(*) FROM T1PROFI WHERE PFID = @PFID;";
-            cmd.Parameters.AddWithValue("@PFID", ToDbValue(obj.PFID));
-            return Convert.ToInt64(cmd.ExecuteScalar(), CultureInfo.InvariantCulture) > 0;
         }
 
         private static object? ToDbValue(object? valFrom)

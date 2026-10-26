@@ -1,6 +1,8 @@
-﻿using System.Globalization;
+﻿using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Metadata.Data;
 using GameTimeNext.Core.Application.Metadata.Views;
+using GameTimeNext.Core.Application.TableObjects;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -142,6 +144,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
             string selectedDataType = GetWnd().cmbDataType.SelectedValue?.ToString() ?? string.Empty;
             UIXSqliteDataType dataType = UIXSqliteDataType.GetByKey(selectedDataType);
             string controlNameField = "Field";
+            T1METAH t1metah = new TXMETAH().Read(GetApp().T1METAP!.MENAM)!;
 
             // Order
             if (!FnControls.ContainsOnlyNumericValue(GetWnd().txbOrder))
@@ -156,6 +159,12 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
                 AddViewError(GetWnd().txbField, FnErrorMessage.ErrorMessage.MustExceedChars.GetMessage(controlNameField, "4"));
             else if (GetWnd().txbField.Text.Length > 5)
                 AddViewError(GetWnd().txbField, FnErrorMessage.ErrorMessage.CannotExceedChars.GetMessage(controlNameField, "5"));
+
+            TXMETAP txmetap = new TXMETAP();
+            if (GetWnd().ViewIndicator.Contains("CN") && txmetap.Exists(t1metah.MENAM, GetWnd().txbField.Text))
+            {
+                AddViewError(GetWnd().txbField, FnErrorMessage.ErrorMessage.AlreadyExists.GetMessage(controlNameField, GetWnd().txbField.Text));
+            }
 
             // Description
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().txbDescription.Text))

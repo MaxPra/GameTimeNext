@@ -242,6 +242,21 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                         code.AddLine($"MigrationFactory.ToCsv.ExportCsvFileFor(_connection, \"{classNameT1}\", MigrationFactory.ImportType.DevSync);");
                         code.EndBlock();
 
+                        // Exists
+                        code.AddLine();
+                        code.BeginBlock($"public bool Exists({classNameT1} obj)");
+                        code.AddLine($"return Exists({Helpers.GetMethodParamsWithoutDatatype(primkFields)});");
+                        code.EndBlock();
+
+                        code.AddLine();
+                        code.BeginBlock($"public bool Exists({Helpers.GetMethodParams(primkFields)})");
+                        // OFDO (#OF001): UIXQuery?
+                        code.AddLine("using SQLiteCommand cmd = _connection.CreateCommand();");
+                        code.AddLine($"cmd.CommandText = \"SELECT COUNT(*) FROM {classNameT1} WHERE {Helpers.GetSqlWheres(primkFields)};\";");
+                        Helpers.AddSqlParameters(code, primkFields);
+                        code.AddLine("return Convert.ToInt64(cmd.ExecuteScalar(), CultureInfo.InvariantCulture) > 0;");
+                        code.EndBlock();
+
                         // Read
                         code.AddLine();
                         code.BeginBlock($"public virtual {classNameT1}? Read({Helpers.GetMethodParams(primkFields)})");
@@ -294,7 +309,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     // Methods PROTECTED
                     {
                         code.AddLine();
-                        code.AddLine("#region Methods PRIVATE");
+                        code.AddLine("#region Methods PROTECTED");
 
                         // Map
                         code.AddLine();
@@ -353,16 +368,6 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                         code.AddLine("cmd.ExecuteNonQuery();");
                         code.EndBlock();
 
-                        // Exists
-                        code.AddLine();
-                        code.BeginBlock($"private bool Exists({classNameT1} obj)");
-                        // OFDO (#OF001): UIXQuery?
-                        code.AddLine("using SQLiteCommand cmd = _connection.CreateCommand();");
-                        code.AddLine($"cmd.CommandText = \"SELECT COUNT(*) FROM {classNameT1} WHERE {Helpers.GetSqlWheres(primkFields)};\";");
-                        Helpers.AddSqlParameters(code, primkFields, withObjPrefix: true);
-                        code.AddLine("return Convert.ToInt64(cmd.ExecuteScalar(), CultureInfo.InvariantCulture) > 0;");
-                        code.EndBlock();
-
                         // ToDbValue
                         code.AddLine();
                         code.BeginBlock("private static object? ToDbValue(object? valFrom)");
@@ -419,6 +424,18 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                         foreach (KeyValuePair<T1METAP, UIXSqliteDataType> parameter in parameters)
                         {
                             paramStrings.Add($"{parameter.Value.CsType} {parameter.Key.PONAM.ToLowerInvariant()}");
+                        }
+
+                        return String.Join(", ", paramStrings);
+                    }
+
+                    public static string GetMethodParamsWithoutDatatype(Dictionary<T1METAP, UIXSqliteDataType> parameters)
+                    {
+                        List<string> paramStrings = new List<string>();
+
+                        foreach (KeyValuePair<T1METAP, UIXSqliteDataType> parameter in parameters)
+                        {
+                            paramStrings.Add($"obj.{parameter.Key.PONAM}");
                         }
 
                         return String.Join(", ", paramStrings);

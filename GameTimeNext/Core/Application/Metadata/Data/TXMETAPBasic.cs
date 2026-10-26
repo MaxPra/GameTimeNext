@@ -65,6 +65,20 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             MigrationFactory.ToCsv.ExportCsvFileFor(_connection, "T1METAP", MigrationFactory.ImportType.DevSync);
         }
 
+        public bool Exists(T1METAP obj)
+        {
+            return Exists(obj.MENAM, obj.PONAM);
+        }
+
+        public bool Exists(string menam, string ponam)
+        {
+            using SQLiteCommand cmd = _connection.CreateCommand();
+            cmd.CommandText = "SELECT COUNT(*) FROM T1METAP WHERE MENAM = @MENAM AND PONAM = @PONAM;";
+            cmd.Parameters.AddWithValue("@MENAM", ToDbValue(menam));
+            cmd.Parameters.AddWithValue("@PONAM", ToDbValue(ponam));
+            return Convert.ToInt64(cmd.ExecuteScalar(), CultureInfo.InvariantCulture) > 0;
+        }
+
         public virtual T1METAP? Read(string menam, string ponam)
         {
             UIXQuery query = new UIXQuery(K1METAP.Name, _connection);
@@ -128,7 +142,7 @@ namespace GameTimeNext.Core.Application.Metadata.Data
         }
         #endregion
 
-        #region Methods PRIVATE
+        #region Methods PROTECTED
 
         protected static T1METAP Map(SQLiteDataReader reader)
         {
@@ -199,15 +213,6 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             cmd.Parameters.AddWithValue("@DEFAK", ToDbValue(obj.DEFAK));
             cmd.Parameters.AddWithValue("@DEFVL", ToDbValue(obj.DEFVL));
             cmd.ExecuteNonQuery();
-        }
-
-        private bool Exists(T1METAP obj)
-        {
-            using SQLiteCommand cmd = _connection.CreateCommand();
-            cmd.CommandText = "SELECT COUNT(*) FROM T1METAP WHERE MENAM = @MENAM AND PONAM = @PONAM;";
-            cmd.Parameters.AddWithValue("@MENAM", ToDbValue(obj.MENAM));
-            cmd.Parameters.AddWithValue("@PONAM", ToDbValue(obj.PONAM));
-            return Convert.ToInt64(cmd.ExecuteScalar(), CultureInfo.InvariantCulture) > 0;
         }
 
         private static object? ToDbValue(object? valFrom)

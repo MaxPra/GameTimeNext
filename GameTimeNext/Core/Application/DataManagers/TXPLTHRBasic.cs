@@ -64,6 +64,19 @@ namespace GameTimeNext.Core.Application.DataManagers
             MigrationFactory.ToCsv.ExportCsvFileFor(_connection, "T1PLTHR", MigrationFactory.ImportType.DevSync);
         }
 
+        public bool Exists(T1PLTHR obj)
+        {
+            return Exists(obj.PTID);
+        }
+
+        public bool Exists(long ptid)
+        {
+            using SQLiteCommand cmd = _connection.CreateCommand();
+            cmd.CommandText = "SELECT COUNT(*) FROM T1PLTHR WHERE PTID = @PTID;";
+            cmd.Parameters.AddWithValue("@PTID", ToDbValue(ptid));
+            return Convert.ToInt64(cmd.ExecuteScalar(), CultureInfo.InvariantCulture) > 0;
+        }
+
         public virtual T1PLTHR? Read(long ptid)
         {
             UIXQuery query = new UIXQuery(K1PLTHR.Name, _connection);
@@ -115,7 +128,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         }
         #endregion
 
-        #region Methods PRIVATE
+        #region Methods PROTECTED
 
         protected static T1PLTHR Map(SQLiteDataReader reader)
         {
@@ -171,14 +184,6 @@ namespace GameTimeNext.Core.Application.DataManagers
             cmd.Parameters.AddWithValue("@PTCA", ToDbValue(obj.PTCA));
             cmd.Parameters.AddWithValue("@PTPA", ToDbValue(obj.PTPA));
             cmd.ExecuteNonQuery();
-        }
-
-        private bool Exists(T1PLTHR obj)
-        {
-            using SQLiteCommand cmd = _connection.CreateCommand();
-            cmd.CommandText = "SELECT COUNT(*) FROM T1PLTHR WHERE PTID = @PTID;";
-            cmd.Parameters.AddWithValue("@PTID", ToDbValue(obj.PTID));
-            return Convert.ToInt64(cmd.ExecuteScalar(), CultureInfo.InvariantCulture) > 0;
         }
 
         private static object? ToDbValue(object? valFrom)

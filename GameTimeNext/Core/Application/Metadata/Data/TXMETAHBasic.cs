@@ -64,6 +64,19 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             MigrationFactory.ToCsv.ExportCsvFileFor(_connection, "T1METAH", MigrationFactory.ImportType.DevSync);
         }
 
+        public bool Exists(T1METAH obj)
+        {
+            return Exists(obj.MENAM);
+        }
+
+        public bool Exists(string menam)
+        {
+            using SQLiteCommand cmd = _connection.CreateCommand();
+            cmd.CommandText = "SELECT COUNT(*) FROM T1METAH WHERE MENAM = @MENAM;";
+            cmd.Parameters.AddWithValue("@MENAM", ToDbValue(menam));
+            return Convert.ToInt64(cmd.ExecuteScalar(), CultureInfo.InvariantCulture) > 0;
+        }
+
         public virtual T1METAH? Read(string menam)
         {
             UIXQuery query = new UIXQuery(K1METAH.Name, _connection);
@@ -115,7 +128,7 @@ namespace GameTimeNext.Core.Application.Metadata.Data
         }
         #endregion
 
-        #region Methods PRIVATE
+        #region Methods PROTECTED
 
         protected static T1METAH Map(SQLiteDataReader reader)
         {
@@ -171,14 +184,6 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
             cmd.Parameters.AddWithValue("@CHUS", ToDbValue(obj.CHUS));
             cmd.ExecuteNonQuery();
-        }
-
-        private bool Exists(T1METAH obj)
-        {
-            using SQLiteCommand cmd = _connection.CreateCommand();
-            cmd.CommandText = "SELECT COUNT(*) FROM T1METAH WHERE MENAM = @MENAM;";
-            cmd.Parameters.AddWithValue("@MENAM", ToDbValue(obj.MENAM));
-            return Convert.ToInt64(cmd.ExecuteScalar(), CultureInfo.InvariantCulture) > 0;
         }
 
         private static object? ToDbValue(object? valFrom)

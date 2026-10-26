@@ -64,6 +64,19 @@ namespace GameTimeNext.Core.Application.DataManagers
             MigrationFactory.ToCsv.ExportCsvFileFor(_connection, "T1CTABH", MigrationFactory.ImportType.DevSync);
         }
 
+        public bool Exists(T1CTABH obj)
+        {
+            return Exists(obj.TXTYP);
+        }
+
+        public bool Exists(string txtyp)
+        {
+            using SQLiteCommand cmd = _connection.CreateCommand();
+            cmd.CommandText = "SELECT COUNT(*) FROM T1CTABH WHERE TXTYP = @TXTYP;";
+            cmd.Parameters.AddWithValue("@TXTYP", ToDbValue(txtyp));
+            return Convert.ToInt64(cmd.ExecuteScalar(), CultureInfo.InvariantCulture) > 0;
+        }
+
         public virtual T1CTABH? Read(string txtyp)
         {
             UIXQuery query = new UIXQuery(K1CTABH.Name, _connection);
@@ -135,7 +148,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         }
         #endregion
 
-        #region Methods PRIVATE
+        #region Methods PROTECTED
 
         protected static T1CTABH Map(SQLiteDataReader reader)
         {
@@ -218,14 +231,6 @@ namespace GameTimeNext.Core.Application.DataManagers
             cmd.Parameters.AddWithValue("@PTOL1", ToDbValue(obj.PTOL1));
             cmd.Parameters.AddWithValue("@PTOL2", ToDbValue(obj.PTOL2));
             cmd.ExecuteNonQuery();
-        }
-
-        private bool Exists(T1CTABH obj)
-        {
-            using SQLiteCommand cmd = _connection.CreateCommand();
-            cmd.CommandText = "SELECT COUNT(*) FROM T1CTABH WHERE TXTYP = @TXTYP;";
-            cmd.Parameters.AddWithValue("@TXTYP", ToDbValue(obj.TXTYP));
-            return Convert.ToInt64(cmd.ExecuteScalar(), CultureInfo.InvariantCulture) > 0;
         }
 
         private static object? ToDbValue(object? valFrom)

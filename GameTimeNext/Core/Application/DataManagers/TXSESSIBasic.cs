@@ -64,6 +64,19 @@ namespace GameTimeNext.Core.Application.DataManagers
             MigrationFactory.ToCsv.ExportCsvFileFor(_connection, "T1SESSI", MigrationFactory.ImportType.DevSync);
         }
 
+        public bool Exists(T1SESSI obj)
+        {
+            return Exists(obj.SEID);
+        }
+
+        public bool Exists(long seid)
+        {
+            using SQLiteCommand cmd = _connection.CreateCommand();
+            cmd.CommandText = "SELECT COUNT(*) FROM T1SESSI WHERE SEID = @SEID;";
+            cmd.Parameters.AddWithValue("@SEID", ToDbValue(seid));
+            return Convert.ToInt64(cmd.ExecuteScalar(), CultureInfo.InvariantCulture) > 0;
+        }
+
         public virtual T1SESSI? Read(long seid)
         {
             UIXQuery query = new UIXQuery(K1SESSI.Name, _connection);
@@ -113,7 +126,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         }
         #endregion
 
-        #region Methods PRIVATE
+        #region Methods PROTECTED
 
         protected static T1SESSI Map(SQLiteDataReader reader)
         {
@@ -166,14 +179,6 @@ namespace GameTimeNext.Core.Application.DataManagers
             cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
             cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
             cmd.ExecuteNonQuery();
-        }
-
-        private bool Exists(T1SESSI obj)
-        {
-            using SQLiteCommand cmd = _connection.CreateCommand();
-            cmd.CommandText = "SELECT COUNT(*) FROM T1SESSI WHERE SEID = @SEID;";
-            cmd.Parameters.AddWithValue("@SEID", ToDbValue(obj.SEID));
-            return Convert.ToInt64(cmd.ExecuteScalar(), CultureInfo.InvariantCulture) > 0;
         }
 
         private static object? ToDbValue(object? valFrom)

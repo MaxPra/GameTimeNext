@@ -64,6 +64,19 @@ namespace GameTimeNext.Core.Application.DataManagers
             MigrationFactory.ToCsv.ExportCsvFileFor(_connection, "T1SCRSP", MigrationFactory.ImportType.DevSync);
         }
 
+        public bool Exists(T1SCRSP obj)
+        {
+            return Exists(obj.SPID);
+        }
+
+        public bool Exists(long spid)
+        {
+            using SQLiteCommand cmd = _connection.CreateCommand();
+            cmd.CommandText = "SELECT COUNT(*) FROM T1SCRSP WHERE SPID = @SPID;";
+            cmd.Parameters.AddWithValue("@SPID", ToDbValue(spid));
+            return Convert.ToInt64(cmd.ExecuteScalar(), CultureInfo.InvariantCulture) > 0;
+        }
+
         public virtual T1SCRSP? Read(long spid)
         {
             UIXQuery query = new UIXQuery(K1SCRSP.Name, _connection);
@@ -113,7 +126,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         }
         #endregion
 
-        #region Methods PRIVATE
+        #region Methods PROTECTED
 
         protected static T1SCRSP Map(SQLiteDataReader reader)
         {
@@ -166,14 +179,6 @@ namespace GameTimeNext.Core.Application.DataManagers
             cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
             cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
             cmd.ExecuteNonQuery();
-        }
-
-        private bool Exists(T1SCRSP obj)
-        {
-            using SQLiteCommand cmd = _connection.CreateCommand();
-            cmd.CommandText = "SELECT COUNT(*) FROM T1SCRSP WHERE SPID = @SPID;";
-            cmd.Parameters.AddWithValue("@SPID", ToDbValue(obj.SPID));
-            return Convert.ToInt64(cmd.ExecuteScalar(), CultureInfo.InvariantCulture) > 0;
         }
 
         private static object? ToDbValue(object? valFrom)

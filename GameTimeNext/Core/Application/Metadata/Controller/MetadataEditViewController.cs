@@ -75,6 +75,12 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
             else if (GetWnd().TxbTableObject.Text.Length > 7)
                 AddViewError(GetWnd().TxbTableObject, FnErrorMessage.ErrorMessage.CannotExceedChars.GetMessage(controlNameTableObj, "7"));
 
+            TXMETAH txmetah = new TXMETAH();
+            if (GetWnd().ViewIndicator.Contains("CN") && txmetah.Exists(GetWnd().TxbTableObject.Text))
+            {
+                AddViewError(GetWnd().TxbTableObject, FnErrorMessage.ErrorMessage.AlreadyExists.GetMessage(controlNameTableObj, GetWnd().TxbTableObject.Text));
+            }
+
             // Description
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().TxbDescription.Text))
                 AddViewError(GetWnd().TxbDescription, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Description"));

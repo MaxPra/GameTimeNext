@@ -64,6 +64,19 @@ namespace GameTimeNext.Core.Application.DataManagers
             MigrationFactory.ToCsv.ExportCsvFileFor(_connection, "T1GROUP", MigrationFactory.ImportType.DevSync);
         }
 
+        public bool Exists(T1GROUP obj)
+        {
+            return Exists(obj.GRID);
+        }
+
+        public bool Exists(long grid)
+        {
+            using SQLiteCommand cmd = _connection.CreateCommand();
+            cmd.CommandText = "SELECT COUNT(*) FROM T1GROUP WHERE GRID = @GRID;";
+            cmd.Parameters.AddWithValue("@GRID", ToDbValue(grid));
+            return Convert.ToInt64(cmd.ExecuteScalar(), CultureInfo.InvariantCulture) > 0;
+        }
+
         public virtual T1GROUP? Read(long grid)
         {
             UIXQuery query = new UIXQuery(K1GROUP.Name, _connection);
@@ -107,7 +120,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         }
         #endregion
 
-        #region Methods PRIVATE
+        #region Methods PROTECTED
 
         protected static T1GROUP Map(SQLiteDataReader reader)
         {
@@ -151,14 +164,6 @@ namespace GameTimeNext.Core.Application.DataManagers
             cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
             cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
             cmd.ExecuteNonQuery();
-        }
-
-        private bool Exists(T1GROUP obj)
-        {
-            using SQLiteCommand cmd = _connection.CreateCommand();
-            cmd.CommandText = "SELECT COUNT(*) FROM T1GROUP WHERE GRID = @GRID;";
-            cmd.Parameters.AddWithValue("@GRID", ToDbValue(obj.GRID));
-            return Convert.ToInt64(cmd.ExecuteScalar(), CultureInfo.InvariantCulture) > 0;
         }
 
         private static object? ToDbValue(object? valFrom)

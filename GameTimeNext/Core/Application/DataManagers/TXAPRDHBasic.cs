@@ -64,6 +64,19 @@ namespace GameTimeNext.Core.Application.DataManagers
             MigrationFactory.ToCsv.ExportCsvFileFor(_connection, "T1APRDH", MigrationFactory.ImportType.DevSync);
         }
 
+        public bool Exists(T1APRDH obj)
+        {
+            return Exists(obj.APDID);
+        }
+
+        public bool Exists(string apdid)
+        {
+            using SQLiteCommand cmd = _connection.CreateCommand();
+            cmd.CommandText = "SELECT COUNT(*) FROM T1APRDH WHERE APDID = @APDID;";
+            cmd.Parameters.AddWithValue("@APDID", ToDbValue(apdid));
+            return Convert.ToInt64(cmd.ExecuteScalar(), CultureInfo.InvariantCulture) > 0;
+        }
+
         public virtual T1APRDH? Read(string apdid)
         {
             UIXQuery query = new UIXQuery(K1APRDH.Name, _connection);
@@ -105,7 +118,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         }
         #endregion
 
-        #region Methods PRIVATE
+        #region Methods PROTECTED
 
         protected static T1APRDH Map(SQLiteDataReader reader)
         {
@@ -140,14 +153,6 @@ namespace GameTimeNext.Core.Application.DataManagers
             cmd.Parameters.AddWithValue("@APHPT", ToDbValue(obj.APHPT));
             cmd.Parameters.AddWithValue("@APMCP", ToDbValue(obj.APMCP));
             cmd.ExecuteNonQuery();
-        }
-
-        private bool Exists(T1APRDH obj)
-        {
-            using SQLiteCommand cmd = _connection.CreateCommand();
-            cmd.CommandText = "SELECT COUNT(*) FROM T1APRDH WHERE APDID = @APDID;";
-            cmd.Parameters.AddWithValue("@APDID", ToDbValue(obj.APDID));
-            return Convert.ToInt64(cmd.ExecuteScalar(), CultureInfo.InvariantCulture) > 0;
         }
 
         private static object? ToDbValue(object? valFrom)

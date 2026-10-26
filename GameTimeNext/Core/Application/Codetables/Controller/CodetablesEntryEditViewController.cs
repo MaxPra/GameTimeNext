@@ -53,7 +53,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
             FnControls.SetVisible(GetWnd().BtnSave, GetWnd().ViewIndicator.Count != 0);
 
             _parmControls = ControlParameterVisibility();
-            BuildManuelCodetableParameters();
+            BuildManualCodetableParameters();
         }
 
         protected override void BuildImpl()
@@ -144,11 +144,11 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
             FnControls.SetVisible(GetWnd().BtnSkip, runParameters.ShowSkipButton);
         }
 
-        private void BuildManuelCodetableParameters()
+        private void BuildManualCodetableParameters()
         {
             TXCTABD txctabd = new TXCTABD();
 
-            T1CTABH t1ctabh = new TXCTABH().Read(GetApp().T1CTABD!.TXTYP);
+            T1CTABH t1ctabh = new TXCTABH().Read(GetApp().T1CTABD!.TXTYP)!;
 
             for (int i = 1; i <= MAX_PARAM_COUNT; i++)
             {
@@ -190,7 +190,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
             Dictionary<string, ParameterControl> paramControls = new Dictionary<string, ParameterControl>();
 
             // Read codetable header
-            T1CTABH t1ctabh = new TXCTABH().Read(GetApp().T1CTABD!.TXTYP);
+            T1CTABH t1ctabh = new TXCTABH().Read(GetApp().T1CTABD!.TXTYP)!;
 
             for (int i = 1; i <= MAX_PARAM_COUNT; i++)
             {
@@ -230,7 +230,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
         {
             TextBox control = GetWnd().TxbTextNumber;
             string value = control.Text;
-            T1CTABH t1ctabh = new TXCTABH().Read(GetApp().T1CTABD!.TXTYP);
+            T1CTABH t1ctabh = new TXCTABH().Read(GetApp().T1CTABD!.TXTYP)!;
 
             if (FnString.IsNullEmptyOrWhitespace(value))
             {
@@ -256,7 +256,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
                     // User-Mode
                     if (value.StartsWith("D_"))
                     {
-                        AddViewError(control, FnErrorMessage.ErrorMessage.CannotStartWith.GetMessage("Textnumber", "D_", "only for deverloper-entries"));
+                        AddViewError(control, FnErrorMessage.ErrorMessage.CannotStartWith.GetMessage("Textnumber", "D_", "only for developer-entries"));
                     }
 
                     if (!value.StartsWith("U_"))
@@ -264,6 +264,12 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
                         AddViewError(control, FnErrorMessage.ErrorMessage.MustStartWith.GetMessage("Textnumber", "U_"));
                     }
                 }
+            }
+
+            TXCTABD txctabd = new TXCTABD();
+            if (GetWnd().ViewIndicator.Contains("CN") && txctabd.Exists(t1ctabh.TXTYP, value))
+            {
+                AddViewError(control, FnErrorMessage.ErrorMessage.AlreadyExists.GetMessage("Textnumber", value));
             }
         }
 
@@ -276,7 +282,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
                 return;
 
             // Read codetable header
-            T1CTABH t1ctabh = new TXCTABH().Read(GetApp().T1CTABD!.TXTYP);
+            T1CTABH t1ctabh = new TXCTABH().Read(GetApp().T1CTABD!.TXTYP)!;
 
             for (int i = 1; i <= _parmControls.Count; i++)
             {

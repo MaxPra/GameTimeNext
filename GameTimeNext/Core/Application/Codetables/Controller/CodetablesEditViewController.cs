@@ -97,6 +97,12 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
             {
                 AddViewError(control, FnErrorMessage.ErrorMessage.InvalidFormat.GetMessage(controlName));
             }
+
+            TXCTABH txctabh = new TXCTABH();
+            if (GetWnd().ViewIndicator.Contains("CN") && txctabh.Exists(value))
+            {
+                AddViewError(control, FnErrorMessage.ErrorMessage.AlreadyExists.GetMessage(controlName, value));
+            }
         }
 
         protected override void FillViewImpl()
