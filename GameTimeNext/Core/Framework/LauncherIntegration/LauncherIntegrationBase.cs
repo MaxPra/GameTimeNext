@@ -1,3 +1,4 @@
+using Microsoft.Win32;
 using System.Diagnostics;
 using UIX.ViewController.Engine.Utils;
 
@@ -45,6 +46,32 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
                 startInfo.WorkingDirectory = workingDirectory;
 
             Process.Start(startInfo);
+        }
+
+        /// <summary>
+        /// Reads a string value below HKEY_LOCAL_MACHINE, empty if the key or value doesn't exist.
+        /// </summary>
+        protected static string GetLocalMachineValue(string subKey, string valueName)
+        {
+            using RegistryKey? key = Registry.LocalMachine.OpenSubKey(subKey);
+            return key?.GetValue(valueName) as string ?? string.Empty;
+        }
+
+        /// <summary>
+        /// Returns the names of all subkeys below HKEY_LOCAL_MACHINE\subKey.
+        /// </summary>
+        protected static string[] GetLocalMachineSubKeyNames(string subKey)
+        {
+            using RegistryKey? key = Registry.LocalMachine.OpenSubKey(subKey);
+            return key?.GetSubKeyNames() ?? Array.Empty<string>();
+        }
+
+        /// <summary>
+        /// Normalizes a folder path of a launcher (forward slashes, trailing separator).
+        /// </summary>
+        protected static string NormalizeFolder(string folder)
+        {
+            return folder.Replace('/', '\\').TrimEnd('\\');
         }
     }
 }

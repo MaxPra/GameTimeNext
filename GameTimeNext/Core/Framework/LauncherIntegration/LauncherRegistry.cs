@@ -1,5 +1,10 @@
+using GameTimeNext.Core.Framework.LauncherIntegration.Epic;
+using GameTimeNext.Core.Framework.LauncherIntegration.Gog;
 using GameTimeNext.Core.Framework.LauncherIntegration.Link;
+using GameTimeNext.Core.Framework.LauncherIntegration.Rockstar;
 using GameTimeNext.Core.Framework.LauncherIntegration.Steam;
+using GameTimeNext.Core.Framework.LauncherIntegration.Ubisoft;
+using GameTimeNext.Core.Framework.LauncherIntegration.Xbox;
 
 namespace GameTimeNext.Core.Framework.LauncherIntegration
 {
@@ -11,6 +16,11 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
         private static readonly List<ILauncherIntegration> _launchers = new List<ILauncherIntegration>
         {
             new SteamLauncher(),
+            new EpicLauncher(),
+            new XboxLauncher(),
+            new GogLauncher(),
+            new UbisoftLauncher(),
+            new RockstarLauncher(),
             new LinkLauncher()
         };
 
