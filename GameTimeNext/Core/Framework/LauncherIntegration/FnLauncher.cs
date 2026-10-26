@@ -40,9 +40,13 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
             return GetLauncher(t1profi) != null && !FnString.IsNullEmptyOrWhitespace(t1profi.LNID);
         }
 
+        /// <summary>
+        /// True if the game can really be started: linked with a launcher, executables selected (needed by the running
+        /// game detection) and one of them present in the game folder.
+        /// </summary>
         public static bool CanLaunch(T1PROFI t1profi)
         {
-            return IsLinked(t1profi) && TFPROFI.HasExecutables(t1profi);
+            return IsLinked(t1profi) && TFPROFI.HasExecutables(t1profi) && FnExecutables.IsAnyActiveExecutableInstalled(t1profi);
         }
 
         /// <summary>
@@ -217,6 +221,52 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
                 new ToastMessage("Quit failed", $"{t1profi.GANA} could not be ended completely.\nDetails are in the log.").Show();
 
             return allEnded;
+        }
+
+        /// <summary>
+        /// Brings the window of the running game back to the front (e.g. from the Big Picture mode).
+        /// Returns false if no window of the game was found.
+        /// </summary>
+        public static bool SwitchToGame(T1PROFI t1profi)
+        {
+            if (FnString.IsNullEmptyOrWhitespace(t1profi.EXGF))
+                return false;
+
+            List<Process> processes = FnSystem.GetProcessesWithPathPart(FnExecutables.GetAllActiveExecutablesFromDBObj(t1profi), t1profi.EXGF);
+
+            try
+            {
+                IntPtr gameWindow = processes
+                    .Select(p => SafeMainWindowHandle(p))
+                    .FirstOrDefault(h => h != IntPtr.Zero);
+
+                if (gameWindow == IntPtr.Zero)
+                {
+                    FnLog.AddInfo(nameof(FnLauncher), $"No window of {t1profi.GANA} found to switch to");
+                    return false;
+                }
+
+                FnForeground.BringToFront(gameWindow);
+                return true;
+            }
+            finally
+            {
+                foreach (Process process in processes)
+                    process.Dispose();
+            }
+        }
+
+        private static IntPtr SafeMainWindowHandle(Process process)
+        {
+            try
+            {
+                return process.HasExited ? IntPtr.Zero : process.MainWindowHandle;
+            }
+            catch (InvalidOperationException)
+            {
+                // Exited meanwhile
+                return IntPtr.Zero;
+            }
         }
 
         public static void OpenInLauncher(T1PROFI t1profi)

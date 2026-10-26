@@ -30,6 +30,10 @@
     "GameTimeNext (Show changelog vNEXT)": {
       "commandName": "Project",
       "commandLineArgs": "-showchangelog"
+    },
+    "GameTimeNext (Big Picture)": {
+      "commandName": "Project",
+      "commandLineArgs": "--bigpicture"
     }
   }
 }

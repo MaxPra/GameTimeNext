@@ -255,6 +255,20 @@
                                                     The icon font is set on the TextBlocks, not on the buttons, so tooltips keep the normal font.
                                                 -->
 
+                                                <!--  Big Picture (ShowBigPictureButton): like the help button dispatched to the controller (EV_btnBigPicture)  -->
+                                                <Button
+                                                    x:Name="btnBigPicture"
+                                                    Margin="0,0,8,0"
+                                                    Style="{StaticResource TitleBarButtonStyle}"
+                                                    ToolTip="Big Picture mode (for TV and controller)"
+                                                    Visibility="Collapsed">
+                                                    <TextBlock
+                                                        FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                                        FontSize="14"
+                                                        Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                                        Text="&#xE7FC;" />
+                                                </Button>
+
                                                 <!--  Help (ShowHelpButton): not a PART_, the click bubbles to the window and is dispatched to the controller as EV_BtnHelp  -->
                                                 <Button
                                                     x:Name="BtnHelp"
@@ -313,7 +327,7 @@
                                         </Grid>
                                     </Border>
 
-                                    <Grid Grid.Row="1">
+                                    <Grid x:Name="ContentRoot" Grid.Row="1">
                                         <ContentPresenter
                                             x:Name="WindowContentHost"
                                             Margin="0"
@@ -417,6 +431,10 @@
                             <Setter TargetName="BtnHelp" Property="Visibility" Value="Visible" />
                         </Trigger>
 
+                        <Trigger Property="ShowBigPictureButton" Value="True">
+                            <Setter TargetName="btnBigPicture" Property="Visibility" Value="Visible" />
+                        </Trigger>
+
                         <Trigger Property="Subtitle" Value="">
                             <Setter TargetName="PART_SubtitleHost" Property="Visibility" Value="Collapsed" />
                         </Trigger>
@@ -454,6 +472,16 @@
                             <Setter TargetName="RootBorder" Property="BorderThickness" Value="0" />
                             <Setter TargetName="RootBorder" Property="CornerRadius" Value="0" />
                             <Setter TargetName="LayoutRoot" Property="Margin" Value="0" />
+                        </Trigger>
+
+                        <!--  Full screen (Big Picture): no title bar, the content takes the whole window  -->
+                        <Trigger Property="IsFullScreen" Value="True">
+                            <Setter TargetName="TitleBarHost" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="ContentRoot" Property="Grid.Row" Value="0" />
+                            <Setter TargetName="ContentRoot" Property="Grid.RowSpan" Value="2" />
+                            <Setter TargetName="RootBorder" Property="BorderThickness" Value="0" />
+                            <Setter TargetName="RootBorder" Property="CornerRadius" Value="0" />
+                            <Setter TargetName="ClipBorder" Property="CornerRadius" Value="0" />
                         </Trigger>
 
                         <Trigger SourceName="PART_Loader" Property="Visibility" Value="Visible">
@@ -514,6 +542,20 @@
                             CornerRadius="8"
                             GlassFrameThickness="-1"
                             ResizeBorderThickness="6"
+                            UseAeroCaptionButtons="False" />
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+
+            <!--  Full screen: no caption (drag area) and no resize border; last, so it wins over the frame variants above  -->
+            <Trigger Property="IsFullScreen" Value="True">
+                <Setter Property="shell:WindowChrome.WindowChrome">
+                    <Setter.Value>
+                        <shell:WindowChrome
+                            CaptionHeight="0"
+                            CornerRadius="0"
+                            GlassFrameThickness="0"
+                            ResizeBorderThickness="0"
                             UseAeroCaptionButtons="False" />
                     </Setter.Value>
                 </Setter>

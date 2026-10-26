@@ -25,6 +25,34 @@ namespace GameTimeNext.Core.Framework.Utils
             return activeExes;
         }
 
+        /// <summary>
+        /// True if at least one active executable of the profile exists in its game folder (including subfolders),
+        /// i.e. the game is installed where the profile expects it.
+        /// </summary>
+        public static bool IsAnyActiveExecutableInstalled(T1PROFI t1profi)
+        {
+            HashSet<string> activeExes = GetAllActiveExecutablesFromDBObj(t1profi).ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            if (activeExes.Count == 0)
+                return false;
+
+            EnumerationOptions options = new EnumerationOptions
+            {
+                RecurseSubdirectories = true,
+                IgnoreInaccessible = true
+            };
+
+            try
+            {
+                return Directory.EnumerateFiles(t1profi.EXGF, "*.exe", options).Any(file => activeExes.Contains(Path.GetFileName(file)));
+            }
+            catch (Exception)
+            {
+                // e.g. the drive was removed meanwhile
+                return false;
+            }
+        }
+
 
         /// <summary>
         /// Returns all executables (including subfolders) for the given folder path

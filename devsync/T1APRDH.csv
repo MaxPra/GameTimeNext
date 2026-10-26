@@ -533,6 +533,7 @@ You start and stop the recording yourself, so only real playtime counts.
 1. **Tabs**: every open app has its own tab
 2. **＋** (or **Ctrl + M**): opens another app
 3. **❓**: this help
+4. **🎮**: the Big Picture mode for TV and controller
 
 ---
 
@@ -584,3 +585,61 @@ The last three can be switched on in **Settings**.
 - Your data stays on your PC. Switch on **Auto backup** in *Settings → Backup*.
 - **Settings → Automatic start** starts GameTimeNext with Windows.
 ";0
+BigPictureApp;Big Picture mode;"# Big Picture mode
+
+Your library in full screen, made for the TV and a game controller.
+
+It has three areas: **Home** (your recently played games), **Library** (all games by name) and **Search**. Switch between them with **LB / RB**. The selected game is shown large below the row of covers: its name, the times and the current playthrough (if it isn't the initial one).
+
+---
+
+## Open and close
+
+- **Open:** click the controller icon in the title bar of GameTimeNext.
+- **Start directly in Big Picture:** start GameTimeNext with the start argument `--bigpicture` (e.g. in a shortcut).
+- **Close:** press **B** (or **Esc**) and choose **Exit Big Picture**.
+
+---
+
+## Controls
+
+| Controller | Keyboard | Does |
+|---|---|---|
+| **D-pad / left stick** | Arrow keys | Select a game |
+| **LT / RT** | | Library: jump to the previous / next letter |
+| **LB / RB** | Page Up / Page Down | Switch between home, library and search |
+| **A** | Enter | Play the selected game (while it runs: back to the game) |
+| **B** | Esc | Menu, back, cancel the launch |
+| **Y** | F3 or just start typing | Search |
+| **X** | | Options of the game: play, monitoring, quit, show in launcher |
+| **View** | | Black out all monitors, View or B again ends it |
+| | F4 | Filter (also in the menu) |
+| **Start** | Menu key | Menu |
+
+Xbox controllers and all XInput compatible controllers work. With the mouse, click a cover to select it and click it again to play.
+
+---
+
+## Search and filter
+
+- **Search (Y):** type the name with the on-screen keyboard; the results show up in the row above while you type. Move up into them to play one, down or **B** goes back to the keyboard. On the keyboard **B** deletes, **X** types a space, **Y** closes the search.
+- **Filter (menu or F4):** the filter of *Profiles*, as a list of switches: progress, availability, source, tags, archived and recently played games. **A** switches, **X** resets, **B** applies. Big Picture keeps its own filter, the one in *Profiles* doesn't change. By default everything is shown except archived games; **Filtered** at the top shows that something is left out.
+
+---
+
+## Playing
+
+The game starts through its launcher, like **Launch game** in *Profiles*. While it runs, its cover shows **Playing**. When it closes, GameTimeNext comes back to the front and shows the new playtime.
+
+**Back from a game:** press the **Xbox button** or **View + Menu** together on the controller. The same in Big Picture switches back to the running game.
+
+**Monitoring:** for games GameTimeNext doesn't detect itself (e.g. on a console), press **X** on the game and choose **Start monitoring**; **Stop monitoring** in the same place ends it. While it runs, **Monitoring** is shown at the top.
+
+> [!NOTE]
+> The Xbox button also opens the Xbox Game Bar. If you only want to come back to GameTimeNext, switch off *Settings → Gaming → Xbox Game Bar → Open Xbox Game Bar using this button on a controller* in Windows, or use **View + Menu**.
+
+> [!NOTE]
+> Only games that are linked with a launcher, have their executables selected and are installed (the executable exists in the game folder) can be started here. Set this up in **Profiles** with **Edit**.
+
+> [!TIP]
+> Messages of GameTimeNext are shown in the Big Picture style: choose with the D-pad, **A** confirms, **B** cancels.";0
