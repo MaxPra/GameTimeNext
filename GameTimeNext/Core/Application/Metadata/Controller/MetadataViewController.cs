@@ -142,7 +142,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
             CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
 
             CFMBOXResult result = cfmbox.Show(
-                "Delete metadata and generated table?",
+                GetErrorMessage("MET0001", selectedT1metah.MENAM),
                 CFMBOXResult.Yes | CFMBOXResult.No,
                 CFMBOXIcon.Question);
 
@@ -290,11 +290,11 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
                     new TXMETAH().Save(t1metah);
                 }
 
-                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Generation completed.", CFMBOXResult.Ok, CFMBOXIcon.Success);
+                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("MET0002"), CFMBOXResult.Ok, CFMBOXIcon.Success);
             }
             catch (Exception ex)
             {
-                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Generation failed", ex.Message, CFMBOXResult.Ok, CFMBOXIcon.Error);
+                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("GLO0013", "generating the classes", ex.Message), CFMBOXResult.Ok, CFMBOXIcon.Error);
             }
             finally
             {
@@ -312,11 +312,11 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
                 await Task.Run(() => MigrationFactory.Metadata.CodeGenerator.GenerateForMetadata());
 
-                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Generation completed.", CFMBOXResult.Ok, CFMBOXIcon.Success);
+                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("MET0002"), CFMBOXResult.Ok, CFMBOXIcon.Success);
             }
             catch (Exception ex)
             {
-                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Generation failed", ex.Message, CFMBOXResult.Ok, CFMBOXIcon.Error);
+                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("GLO0013", "generating the classes", ex.Message), CFMBOXResult.Ok, CFMBOXIcon.Error);
             }
             finally
             {

@@ -62,11 +62,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
                 if (grids == null || grids.Count == 0)
                 {
-                    GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(
-                        "Attention",
-                        "There were no covers found",
-                        CFMBOXResult.Ok
-                    );
+                    GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("PRO0005"), CFMBOXResult.Ok, CFMBOXIcon.Info);
 
                     Exit(true);
                     return;
@@ -78,11 +74,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
                 if (_sgdbPages.Count == 0)
                 {
-                    GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(
-                        "Attention",
-                        "There were no covers found",
-                        CFMBOXResult.Ok
-                    );
+                    GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("PRO0005"), CFMBOXResult.Ok, CFMBOXIcon.Info);
 
                     Exit(true);
                     return;
@@ -93,12 +85,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             }
             catch (Exception)
             {
-                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(
-                    "Error",
-                    "An error occured!\nTry again later!",
-                    CFMBOXResult.Ok,
-                    CFMBOXIcon.Error
-                );
+                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("GLO0012", "loading the covers from SteamGridDB"), CFMBOXResult.Ok, CFMBOXIcon.Error);
             }
             finally
             {
@@ -228,12 +215,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             {
                 GetApp().Loader.Stop();
 
-                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(
-                    "Error",
-                    "An error occured while downloading the cover.",
-                    CFMBOXResult.Ok,
-                    CFMBOXIcon.Error
-                );
+                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("GLO0012", "downloading the cover"), CFMBOXResult.Ok, CFMBOXIcon.Error);
 
                 return;
             }
@@ -294,12 +276,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 // Allow a retry the next time the page is shown
                 _sgdbPages[_currentPage].DownloadTask = null;
 
-                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(
-                    "Error",
-                    "An error occured while loading the page.",
-                    CFMBOXResult.Ok,
-                    CFMBOXIcon.Error
-                );
+                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("GLO0012", "loading the page"), CFMBOXResult.Ok, CFMBOXIcon.Error);
             }
             finally
             {

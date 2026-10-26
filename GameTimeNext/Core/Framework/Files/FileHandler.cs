@@ -31,7 +31,7 @@ namespace GameTimeNext.Core.Framework.Files
             {
                 CopyDirectory(appFolderPathNormal, appFolderPathDev, true);
 
-                AppEnvironment.InformationList.Add(new InformationListItem(UI.Dialogs.CFMBOXIcon.Info, "Dev folder was created from production app folder!"));
+                AppEnvironment.InformationList.Add(InformationListItem.FromErrorMessage(UI.Dialogs.CFMBOXIcon.Info, "GLO0020"));
             }
             else
             {

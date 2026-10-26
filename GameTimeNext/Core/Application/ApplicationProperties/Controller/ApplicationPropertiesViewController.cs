@@ -249,7 +249,7 @@ namespace GameTimeNext.Core.Application.ApplicationProperties.Controller
 
             CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window);
 
-            CFMBOXResult result = cfmbox.Show($"Are you sure you want to delete the application properties definition \"{selectedT1aprdh.APDID}\"?", CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
+            CFMBOXResult result = cfmbox.Show(GetErrorMessage("GLO0001", $"the application properties definition {selectedT1aprdh.APDID}"), CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
 
             if (result == CFMBOXResult.Yes)
             {

@@ -48,22 +48,22 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         protected override void CheckImpl()
         {
             if (!FnControls.ContainsOnlyNumericValue(GetWnd().txbEstTimeMain))
-                AddViewError(GetWnd().txbEstTimeMain, FnErrorMessage.ErrorMessage.OnlyNumeric.GetMessage());
+                AddViewError(GetWnd().txbEstTimeMain, GetErrorMessage("GLO0009"));
 
             if (!FnControls.ContainsOnlyNumericValue(GetWnd().txbEstTimeMainExtra))
-                AddViewError(GetWnd().txbEstTimeMainExtra, FnErrorMessage.ErrorMessage.OnlyNumeric.GetMessage());
+                AddViewError(GetWnd().txbEstTimeMainExtra, GetErrorMessage("GLO0009"));
 
             if (!FnControls.ContainsOnlyNumericValue(GetWnd().txbEstTimeCompletionist))
-                AddViewError(GetWnd().txbEstTimeCompletionist, FnErrorMessage.ErrorMessage.OnlyNumeric.GetMessage());
+                AddViewError(GetWnd().txbEstTimeCompletionist, GetErrorMessage("GLO0009"));
 
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().txbEstTimeMain.Text))
-                AddViewError(GetWnd().txbEstTimeMain, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Est. time main"));
+                AddViewError(GetWnd().txbEstTimeMain, GetErrorMessage("GLO0003", "Est. time main"));
 
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().txbEstTimeMainExtra.Text))
-                AddViewError(GetWnd().txbEstTimeMainExtra, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Est. time extra"));
+                AddViewError(GetWnd().txbEstTimeMainExtra, GetErrorMessage("GLO0003", "Est. time extra"));
 
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().txbEstTimeCompletionist.Text))
-                AddViewError(GetWnd().txbEstTimeCompletionist, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Est. time completionist"));
+                AddViewError(GetWnd().txbEstTimeCompletionist, GetErrorMessage("GLO0003", "Est. time completionist"));
         }
 
         protected override void DataWrapperSelectionChangedImpl(Selector source)

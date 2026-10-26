@@ -102,7 +102,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
             CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
 
-            CFMBOXResult result = cfmbox.Show("Question", $"Cancel selection of valid executables?\nSome {AppConfig.Root.ApplicationName} features may not be available for this profile afterward.", CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
+            CFMBOXResult result = cfmbox.Show(GetErrorMessage("PRO0004", AppConfig.Root.ApplicationName), CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
 
             if (result == CFMBOXResult.Yes)
             {

@@ -1,7 +1,5 @@
-﻿using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.Metadata.Data;
+﻿using GameTimeNext.Core.Application.Metadata.Data;
 using GameTimeNext.Core.Application.Metadata.Views;
-using GameTimeNext.Core.Application.TableObjects;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -148,42 +146,40 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
             // Order
             if (!FnControls.ContainsOnlyNumericValue(GetWnd().txbOrder))
-                AddViewError(GetWnd().txbOrder, FnErrorMessage.ErrorMessage.OnlyNumeric.GetMessage());
+                AddViewError(GetWnd().txbOrder, GetErrorMessage("GLO0009"));
 
             // Field
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().txbField.Text))
-                AddViewError(GetWnd().txbField, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage(controlNameField));
+                AddViewError(GetWnd().txbField, GetErrorMessage("GLO0003", controlNameField));
             else if (!Regex.IsMatch(GetWnd().txbField.Text, @"^[A-Z][A-Z0-9]*$"))
-                AddViewError(GetWnd().txbField, FnErrorMessage.ErrorMessage.InvalidFormat.GetMessage(controlNameField));
-            else if (GetWnd().txbField.Text.Length < 4)
-                AddViewError(GetWnd().txbField, FnErrorMessage.ErrorMessage.MustExceedChars.GetMessage(controlNameField, "4"));
-            else if (GetWnd().txbField.Text.Length > 5)
-                AddViewError(GetWnd().txbField, FnErrorMessage.ErrorMessage.CannotExceedChars.GetMessage(controlNameField, "5"));
+                AddViewError(GetWnd().txbField, GetErrorMessage("GLO0007", controlNameField));
+            else if (GetWnd().txbField.Text.Length < 4 || GetWnd().txbField.Text.Length > 5)
+                AddViewError(GetWnd().txbField, GetErrorMessage("GLO0006", controlNameField, 4, 5));
 
             TXMETAP txmetap = new TXMETAP();
             if (GetWnd().ViewIndicator.Contains("CN") && txmetap.Exists(t1metah.MENAM, GetWnd().txbField.Text))
             {
-                AddViewError(GetWnd().txbField, FnErrorMessage.ErrorMessage.AlreadyExists.GetMessage(controlNameField, GetWnd().txbField.Text));
+                AddViewError(GetWnd().txbField, GetErrorMessage("GLO0008", controlNameField, GetWnd().txbField.Text));
             }
 
             // Description
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().txbDescription.Text))
-                AddViewError(GetWnd().txbDescription, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Description"));
+                AddViewError(GetWnd().txbDescription, GetErrorMessage("GLO0003", "Description"));
             else if (GetWnd().txbDescription.Text.Length > 200)
-                AddViewError(GetWnd().txbDescription, FnErrorMessage.ErrorMessage.CannotExceedChars.GetMessage("Description", "200"));
+                AddViewError(GetWnd().txbDescription, GetErrorMessage("GLO0004", "Description", "200"));
 
             // Datatype
             if (FnString.IsNullEmptyOrWhitespace(selectedDataType))
-                AddViewError(GetWnd().cmbDataType, FnErrorMessage.ErrorMessage.MustBeSelected.GetMessage("Data type"));
+                AddViewError(GetWnd().cmbDataType, GetErrorMessage("GLO0003", "Data type"));
 
             // Length
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().txbLength.Text) && "01".Equals(selectedDataType))
-                AddViewError(GetWnd().txbLength, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Length"));
+                AddViewError(GetWnd().txbLength, GetErrorMessage("GLO0003", "Length"));
 
             // Default
             if (dataType.IsDefaultAllowed && dataType.IsNumeric && GetWnd().chbDefault.IsChecked.Equals(true))
                 if (!FnControls.ContainsOnlyNumericValue(GetWnd().txbDefault, dataType))
-                    AddViewError(GetWnd().txbDefault, FnErrorMessage.ErrorMessage.OnlyNumeric.GetMessage());
+                    AddViewError(GetWnd().txbDefault, GetErrorMessage("GLO0009"));
         }
 
         protected override void FillViewImpl()

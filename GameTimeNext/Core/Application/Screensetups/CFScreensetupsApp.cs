@@ -5,6 +5,7 @@ using GameTimeNext.Core.Framework.UI;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 using UIXMonitorTweaks;
 
@@ -24,7 +25,7 @@ namespace GameTimeNext.Core.Application.Screensetups
         /// <summary>
         /// Applies the monitors and the audio device of a screensetup. Returns an error message or null on success.
         /// </summary>
-        public static async Task<string?> ApplyScreensetupAsync(T1SCRSH t1scrsh)
+        public static async Task<string?> ApplyScreensetupAsync(UIXApplication app, T1SCRSH t1scrsh)
         {
             List<T1SCRSP> t1scrsps = TFSCRSP.GetMonitorsOfScreensetup(t1scrsh.SSID);
 
@@ -37,7 +38,7 @@ namespace GameTimeNext.Core.Application.Screensetups
                 .ToList();
 
             if (!targets.Any(t => t.Enabled))
-                return "None of the monitors enabled in this screensetup is connected.";
+                return app.GetErrorMessage("SCS0004");
 
             try
             {
@@ -51,7 +52,7 @@ namespace GameTimeNext.Core.Application.Screensetups
 
             // Audio after the monitors: an HDMI output only exists once its monitor is on
             if (!FnString.IsNullEmptyOrWhitespace(t1scrsh.ADID) && !GetAudioManager().SetDefaultPlaybackDevice(t1scrsh.ADID))
-                return $"The monitors have been switched, but the audio device \"{t1scrsh.ADNA}\" could not be set as default.";
+                return app.GetErrorMessage("SCS0005", t1scrsh.ADNA);
 
             AppEnvironment.GetAppConfig().UserSettings.SelectedScreensetup = t1scrsh.SSID;
             AppEnvironment.SaveAppConfig();

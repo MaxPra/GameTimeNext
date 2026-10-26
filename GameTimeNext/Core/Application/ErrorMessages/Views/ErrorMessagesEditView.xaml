@@ -1,0 +1,110 @@
+<ui:GTNWindowView
+    x:Class="GameTimeNext.Core.Application.ErrorMessages.Views.ErrorMessagesEditView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI.Base"
+    xmlns:uixprops="clr-namespace:UIX.ViewController.Engine.AttachedProperties;assembly=UIX.ViewController.Engine"
+    Title="Error Message"
+    Width="900"
+    Height="620"
+    ResizeMode="NoResize"
+    ShowMaximizeButton="False"
+    ShowMinimizeButton="False"
+    WindowStartupLocation="CenterOwner"
+    mc:Ignorable="d">
+
+    <Grid Style="{StaticResource View.Root}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="16" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <GroupBox
+            Grid.Row="0"
+            Header="General"
+            Style="{StaticResource GroupBox.Card}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="10" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    VerticalAlignment="Center"
+                    Opacity="0.8"
+                    Text="Number" />
+
+                <TextBox
+                    x:Name="txbNumber"
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Width="150"
+                    HorizontalAlignment="Left"
+                    uixprops:UIXAttachedProperty.Path="T1ERMSG.ERMNR" />
+
+                <TextBlock
+                    Grid.Row="2"
+                    Grid.Column="0"
+                    Margin="0,8,0,0"
+                    VerticalAlignment="Top"
+                    Opacity="0.8"
+                    Text="Message" />
+
+                <!--  Up to 250 characters: multi-line so the whole message stays readable  -->
+                <TextBox
+                    x:Name="txbMessage"
+                    Grid.Row="2"
+                    Grid.Column="1"
+                    Height="80"
+                    VerticalContentAlignment="Top"
+                    AcceptsReturn="True"
+                    TextWrapping="Wrap"
+                    VerticalScrollBarVisibility="Auto"
+                    uixprops:UIXAttachedProperty.Path="T1ERMSG.ERMSG" />
+            </Grid>
+        </GroupBox>
+
+        <GroupBox
+            Grid.Row="1"
+            Margin="0"
+            Header="Hint"
+            Style="{StaticResource GroupBox.Card}">
+            <TextBox
+                x:Name="txbHint"
+                Height="Auto"
+                VerticalAlignment="Stretch"
+                VerticalContentAlignment="Top"
+                AcceptsReturn="True"
+                TextWrapping="Wrap"
+                VerticalScrollBarVisibility="Auto"
+                uixprops:UIXAttachedProperty.Path="T1ERMSG.ERHIN" />
+        </GroupBox>
+
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Button
+                x:Name="btnSave"
+                Grid.Column="1"
+                Width="140"
+                Height="36"
+                Content="Save"
+                IsDefault="True" />
+        </Grid>
+    </Grid>
+</ui:GTNWindowView>

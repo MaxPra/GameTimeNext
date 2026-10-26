@@ -420,7 +420,7 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
 
             CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window);
 
-            CFMBOXResult result = cfmbox.Show("Delete Playthrough", "Are you sure you want to delete this playthrough?\nAll linked sessions will also be deleted!", CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Warning);
+            CFMBOXResult result = cfmbox.Show(GetErrorMessage("GLO0002", "this playthrough"), CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Warning);
 
             if (result == CFMBOXResult.Yes)
             {

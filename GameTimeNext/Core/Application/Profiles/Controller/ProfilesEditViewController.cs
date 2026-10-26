@@ -114,23 +114,23 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
             // Profile Name
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().txbProfileName.Text))
-                AddViewError(GetWnd().txbProfileName, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Profile name"));
+                AddViewError(GetWnd().txbProfileName, GetErrorMessage("GLO0003", "Profile name"));
 
             // Cover
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().txbImagePath.Text))
-                AddViewError(GetWnd().txbImagePath, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Profile cover"));
+                AddViewError(GetWnd().txbImagePath, GetErrorMessage("GLO0003", "Profile cover"));
 
             // Accent Colors
             if (GetWnd().cbUseProfileAccentColors.IsChecked == true
                 && (GetWnd().tglAccent1.IsChecked == false && GetWnd().tglAccent2.IsChecked == false && GetWnd().tglAccent3.IsChecked == false))
-                AddViewError(GetWnd().cbUseProfileAccentColors, FnErrorMessage.ErrorMessage.MustBeSelected.GetMessage("An accent color"));
+                AddViewError(GetWnd().cbUseProfileAccentColors, GetErrorMessage("GLO0003", "An accent color"));
 
             if (GetWnd().cbUseProfileAccentColors.IsChecked == false
                 && (GetWnd().tglAccent1.IsChecked == true || GetWnd().tglAccent2.IsChecked == true || GetWnd().tglAccent3.IsChecked == true))
-                AddViewError(GetWnd().cbUseProfileAccentColors, FnErrorMessage.ErrorMessage.GetCustomMessage("Accent colors are disabled, but a color was specified."));
+                AddViewError(GetWnd().cbUseProfileAccentColors, GetErrorMessage("PRO0001"));
 
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().cmbPlatform.SelectedValue.ToString()!))
-                AddViewError(GetWnd().cmbPlatform, FnErrorMessage.ErrorMessage.IsRequired.GetMessage("Platform"));
+                AddViewError(GetWnd().cmbPlatform, GetErrorMessage("GLO0003", "Platform"));
         }
 
         protected override void DataWrapperSelectionChangedImpl(Selector source)
@@ -482,7 +482,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 {
                     GetWnd().Dispatcher.Invoke(() =>
                     {
-                        GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Warning", "Could not find game on IGDB.", CFMBOXResult.Ok, CFMBOXIcon.Warning);
+                        GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("PRO0002"), CFMBOXResult.Ok, CFMBOXIcon.Warning);
                     });
 
                     ResetPlaytypes();
@@ -498,7 +498,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 {
                     GetWnd().Dispatcher.Invoke(() =>
                     {
-                        GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Warning", "Could not query time to beat.", CFMBOXResult.Ok, CFMBOXIcon.Warning);
+                        GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("GLO0016", "the time to beat"), CFMBOXResult.Ok, CFMBOXIcon.Warning);
                     });
 
                     ResetPlaytypes();
@@ -511,7 +511,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 {
                     GetWnd().Dispatcher.Invoke(() =>
                     {
-                        GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Warning", "Could not query time to beat.", CFMBOXResult.Ok, CFMBOXIcon.Warning);
+                        GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("GLO0016", "the time to beat"), CFMBOXResult.Ok, CFMBOXIcon.Warning);
                     });
 
                     ResetPlaytypes();
@@ -822,7 +822,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             if (FnString.IsNullEmptyOrWhitespace(AppEnvironment.GetAppConfig().AppSettings.SteamGridDbKey))
             {
                 CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
-                cfmbox.Show("No API Key found!", "No API key was found.\nPlease make sure that the API key is stored in the settings.", CFMBOXResult.Ok, CFMBOXIcon.Info);
+                cfmbox.Show(GetErrorMessage("GLO0015", "SteamGridDB"), CFMBOXResult.Ok, CFMBOXIcon.Info);
                 return;
             }
 
@@ -830,7 +830,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             if (GetApp().T1Profi.SAID == 0 && FnString.IsNullEmptyOrWhitespace(GetWnd().txbProfileName.Text))
             {
                 CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
-                cfmbox.Show("Attention!", "Please note that the SteamGridDB search is only available if a profile name is provided or the profile is linked to a Steam game.", CFMBOXResult.Ok, CFMBOXIcon.Info);
+                cfmbox.Show(GetErrorMessage("PRO0003"), CFMBOXResult.Ok, CFMBOXIcon.Info);
                 return;
             }
 

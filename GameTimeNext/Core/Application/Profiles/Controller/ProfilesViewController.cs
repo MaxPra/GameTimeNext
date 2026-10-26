@@ -2,7 +2,6 @@
 using GameTimeNext.Core.Application.General;
 using GameTimeNext.Core.Application.Playthroughs;
 using GameTimeNext.Core.Application.Profiles.BackgroundProcesses;
-using GameTimeNext.Core.Application.Profiles.Components;
 using GameTimeNext.Core.Application.Profiles.DataWrapper;
 using GameTimeNext.Core.Application.Profiles.Types;
 using GameTimeNext.Core.Application.Profiles.Viewmodel;
@@ -638,7 +637,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         protected async Task EV_ctxtDelete()
         {
             CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
-            CFMBOXResult result = cfmbox.Show("Question", "Are you sure you want to delete this profile?\nAll associated data will also be deleted.", CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
+            CFMBOXResult result = cfmbox.Show(GetErrorMessage("GLO0002", "this profile"), CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
 
             if (result == CFMBOXResult.Yes)
             {
@@ -664,14 +663,14 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             if (FnString.IsNullEmptyOrWhitespace(t1profi.EXGF))
             {
                 CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
-                cfmbox.Show("Information", "No game folder set for this profile.", CFMBOXResult.Ok, CFMBOXIcon.Info);
+                cfmbox.Show(GetErrorMessage("PRO0006"), CFMBOXResult.Ok, CFMBOXIcon.Info);
                 return;
             }
 
             if (!Directory.Exists(t1profi.EXGF))
             {
                 CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
-                cfmbox.Show("Information", "The specified game folder does not exist.", CFMBOXResult.Ok, CFMBOXIcon.Info);
+                cfmbox.Show(GetErrorMessage("GLO0014", "game folder", t1profi.EXGF), CFMBOXResult.Ok, CFMBOXIcon.Info);
                 return;
             }
 

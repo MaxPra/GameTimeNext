@@ -90,6 +90,9 @@ namespace GameTimeNext
             // Only now: T1APRDH exists after the metadata migration in Initalize; earlier applications get the fallback properties
             UIXApplication.AppPropertiesProvider = new AppPropertiesProvider();
 
+            // Same for T1ERMSG: error messages are only available from here on
+            UIXApplication.ErrorMessageProvider = new ErrorMessageProvider();
+
             // Delete old backups
             FnLog.AddInfo("MainApp", "Deleting old backups...");
             FileHandler.DeleteOldBackupFiles();
@@ -112,7 +115,7 @@ namespace GameTimeNext
             string message = $"{optimizedCount} profile cover(s) optimized, {savedBytes / 1024.0 / 1024.0:0.0} MB saved.";
 
             FnLog.AddInfo("MainApp", message);
-            AppEnvironment.InformationList.Add(new InformationListItem(Core.Framework.UI.Dialogs.CFMBOXIcon.Info, message));
+            AppEnvironment.InformationList.Add(InformationListItem.FromErrorMessage(Core.Framework.UI.Dialogs.CFMBOXIcon.Info, "PRO0007", optimizedCount, Math.Round(savedBytes / 1024.0 / 1024.0, 1)));
         }
 
         protected override void OnExit(ExitEventArgs e)
@@ -154,7 +157,7 @@ namespace GameTimeNext
             if (result.UpdateAvailable)
             {
 
-                InformationListItem infoItem = new InformationListItem(Core.Framework.UI.Dialogs.CFMBOXIcon.Question, "Version " + result.LatestVersion + " is available.\n\nDo you want to open GitHub to download now?");
+                InformationListItem infoItem = InformationListItem.FromErrorMessage(Core.Framework.UI.Dialogs.CFMBOXIcon.Question, "GLO0021", result.LatestVersion);
                 infoItem.Buttons = Core.Framework.UI.Dialogs.CFMBOXResult.Yes | Core.Framework.UI.Dialogs.CFMBOXResult.No;
                 infoItem.YesAction = () =>
                 {

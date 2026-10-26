@@ -59,10 +59,10 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
         protected override void CheckImpl()
         {
             if (FnString.IsNullEmptyOrWhitespace(GetView().txbDescription.Text))
-                AddViewError(GetView().txbDescription, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Description"));
+                AddViewError(GetView().txbDescription, GetErrorMessage("GLO0003", "Description"));
 
             if (FnString.IsNullEmptyOrWhitespace(GetView().cmbType.SelectedValue?.ToString()!))
-                AddViewError(GetView().cmbType, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Type"));
+                AddViewError(GetView().cmbType, GetErrorMessage("GLO0003", "Type"));
         }
 
         protected override void DataWrapperSelectionChangedImpl(Selector source)

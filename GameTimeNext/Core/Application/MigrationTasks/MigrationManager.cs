@@ -26,7 +26,7 @@ namespace GameTimeNext.Core.Application.MigrationTasks
             System.Windows.Application.Current.Dispatcher.Invoke(() =>
             {
                 CFMBOX cfmbox = new CFMBOX();
-                cfmbox.Show($"{AppConfig.Root.ApplicationName} will now be restarted in order to activate the new version!", CFMBOXResult.Ok, CFMBOXIcon.Info);
+                cfmbox.Show(cfmbox.GetErrorMessage("GLO0018", AppConfig.Root.ApplicationName), CFMBOXResult.Ok, CFMBOXIcon.Info);
 
                 AppEnvironment.RestartGTNApplication();
             });

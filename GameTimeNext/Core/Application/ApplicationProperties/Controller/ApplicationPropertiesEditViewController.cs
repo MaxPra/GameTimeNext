@@ -55,16 +55,16 @@ namespace GameTimeNext.Core.Application.ApplicationProperties.Controller
             string id = GetWnd().TxbId.Text;
 
             if (FnString.IsNullEmptyOrWhitespace(id))
-                AddViewError(GetWnd().TxbId, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("App name"));
+                AddViewError(GetWnd().TxbId, GetErrorMessage("GLO0003", "App name"));
             else if (id.Length > 300)
-                AddViewError(GetWnd().TxbId, FnErrorMessage.ErrorMessage.CannotExceedChars.GetMessage("App name", "300"));
+                AddViewError(GetWnd().TxbId, GetErrorMessage("GLO0004", "App name", "300"));
             else if (GetApp().T1APRDH!.State == UIXTableObjectState.New && new TXAPRDH().Read(id) != null)
-                AddViewError(GetWnd().TxbId, FnErrorMessage.ErrorMessage.GetCustomMessage($"An application properties definition with the app name \"{id}\" already exists."));
+                AddViewError(GetWnd().TxbId, GetErrorMessage("GLO0008", "App name", id));
 
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().TxbDescription.Text))
-                AddViewError(GetWnd().TxbDescription, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Description"));
+                AddViewError(GetWnd().TxbDescription, GetErrorMessage("GLO0003", "Description"));
             else if (GetWnd().TxbDescription.Text.Length > 300)
-                AddViewError(GetWnd().TxbDescription, FnErrorMessage.ErrorMessage.CannotExceedChars.GetMessage("Description", "300"));
+                AddViewError(GetWnd().TxbDescription, GetErrorMessage("GLO0004", "Description", "300"));
         }
 
         protected override void FillViewImpl()

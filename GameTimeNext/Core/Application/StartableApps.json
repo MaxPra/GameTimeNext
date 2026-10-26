@@ -43,5 +43,10 @@
     "Code": "APD",
     "Name": "Application Properties Definition",
     "ClassName": "GameTimeNext.Core.Application.ApplicationProperties.ApplicationPropertiesApp"
+  },
+  {
+    "Code": "ERM",
+    "Name": "Errormessages",
+    "ClassName": "GameTimeNext.Core.Application.ErrorMessages.ErrorMessagesApp"
   }
 ]

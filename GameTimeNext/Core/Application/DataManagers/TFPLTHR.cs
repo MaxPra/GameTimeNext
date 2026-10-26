@@ -211,24 +211,24 @@ namespace GameTimeNext.Core.Application.DataManagers
                 case PlaythroughStatus.Open:
                     if (!t1plthr.PTPA) break;
 
-                    question = "Do you really want to unpause this playthrough?";
+                    question = app.GetErrorMessage("PLT0002", "unpause");
                     if (currentT1plthr is not null)
-                        question += "\n\nInformation: Your current playthrough will be paused!";
+                        question += "\n\n" + app.GetErrorMessage("PLT0004");
                     break;
                 case PlaythroughStatus.Completed:
-                    question = "Do you really want to complete your current playthrough?\nYou won't be able to undo this action!";
+                    question = app.GetErrorMessage("PLT0003", "complete");
                     break;
                 case PlaythroughStatus.Canceled:
-                    question = "Do you really want to cancel your current playthrough?\nYou won't be able to undo this action!\n\nInformation: The gametime of this playthrough will be added to your overall gametime!";
+                    question = app.GetErrorMessage("PLT0003", "cancel") + "\n\n" + app.GetErrorMessage("PLT0005");
                     break;
                 case PlaythroughStatus.Paused:
-                    question = "Do you really want to pause this playthrough?";
+                    question = app.GetErrorMessage("PLT0002", "pause");
                     break;
             }
 
             if (!FnString.IsNullEmptyOrWhitespace(question))
             {
-                CFMBOXResult result = app.GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Question", question, CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
+                CFMBOXResult result = app.GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(question, CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
                 if (result == CFMBOXResult.No) return;
             }
 

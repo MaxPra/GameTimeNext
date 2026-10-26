@@ -70,13 +70,13 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
             CheckTextType();
 
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().TxbDescription.Text))
-                AddViewError(GetWnd().TxbDescription, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Description"));
+                AddViewError(GetWnd().TxbDescription, GetErrorMessage("GLO0003", "Description"));
 
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().CmbPermission.SelectedValue.ToString()!))
-                AddViewError(GetWnd().CmbPermission, FnErrorMessage.ErrorMessage.MustBeSelected.GetMessage("Permission"));
+                AddViewError(GetWnd().CmbPermission, GetErrorMessage("GLO0003", "Permission"));
 
             if (GetWnd().TxbDescription.Text.Length > 200)
-                AddViewError(GetWnd().TxbDescription, FnErrorMessage.ErrorMessage.CannotExceedChars.GetMessage("Description", "200"));
+                AddViewError(GetWnd().TxbDescription, GetErrorMessage("GLO0004", "Description", "200"));
         }
 
         private void CheckTextType()
@@ -87,21 +87,21 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
             if (FnString.IsNullEmptyOrWhitespace(value))
             {
-                AddViewError(control, FnErrorMessage.ErrorMessage.IsRequired.GetMessage(controlName));
+                AddViewError(control, GetErrorMessage("GLO0003", controlName));
             }
             if (value.Length > 2)
             {
-                AddViewError(control, FnErrorMessage.ErrorMessage.CannotExceedChars.GetMessage(controlName, "2"));
+                AddViewError(control, GetErrorMessage("GLO0004", controlName, "2"));
             }
             else if (!Regex.IsMatch(value, @"^[a-zA-Z]*$"))
             {
-                AddViewError(control, FnErrorMessage.ErrorMessage.InvalidFormat.GetMessage(controlName));
+                AddViewError(control, GetErrorMessage("GLO0007", controlName));
             }
 
             TXCTABH txctabh = new TXCTABH();
             if (GetWnd().ViewIndicator.Contains("CN") && txctabh.Exists(value))
             {
-                AddViewError(control, FnErrorMessage.ErrorMessage.AlreadyExists.GetMessage(controlName, value));
+                AddViewError(control, GetErrorMessage("GLO0008", controlName, value));
             }
         }
 

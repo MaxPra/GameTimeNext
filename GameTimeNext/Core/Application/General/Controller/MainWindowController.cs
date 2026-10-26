@@ -201,8 +201,7 @@ namespace GameTimeNext.Core.Application.General.Controller
                 FnLog.AddInfo("MainApp", "GameTimeX installation found. Prompting user for migration.");
 
                 CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
-                string msg = $"A GameTimeX-Installation was found.\nDo you want to migrate your profiles to {AppConfig.Root.ApplicationName}?";
-                CFMBOXResult result = cfmbox.Show("Start GameTimeX migration?", msg, CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
+                CFMBOXResult result = cfmbox.Show(GetErrorMessage("GTX0001", AppConfig.Root.ApplicationName), CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
 
                 if (result == CFMBOXResult.Yes)
                 {
@@ -222,7 +221,7 @@ namespace GameTimeNext.Core.Application.General.Controller
                         {
                             hasError = true;
                             FnLog.AddError("MainApp", "Error during GTX migration", ex);
-                            GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Migration Error", "An error occurred during migration:\n" + ex.Message, CFMBOXResult.Ok, CFMBOXIcon.Error);
+                            GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("GLO0013", "migrating from GameTimeX", ex.Message), CFMBOXResult.Ok, CFMBOXIcon.Error);
                         }
                         finally
                         {
@@ -254,9 +253,9 @@ namespace GameTimeNext.Core.Application.General.Controller
                 CFMBOXResult result;
 
                 if (informationListItem.MBoxType == CFMBOXType.Default)
-                    result = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(informationListItem.Text, informationListItem.Buttons, informationListItem.Icon, informationListItem.MBoxType);
+                    result = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(informationListItem.GetText(GetApp()), informationListItem.Buttons, informationListItem.Icon, informationListItem.MBoxType);
                 else
-                    result = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(informationListItem.Title, informationListItem.Text, informationListItem.Buttons, informationListItem.Icon, informationListItem.MBoxType);
+                    result = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(informationListItem.Title, informationListItem.GetText(GetApp()), informationListItem.Buttons, informationListItem.Icon, informationListItem.MBoxType);
 
                 if (result == CFMBOXResult.Yes)
                     informationListItem.YesAction?.Invoke();

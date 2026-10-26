@@ -1,10 +1,9 @@
-using System.Globalization;
 using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Screensetups.Viewmodels;
 using GameTimeNext.Core.Application.Screensetups.Views;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework.UI.Dialogs;
-using GameTimeNext.Core.Framework.Utils;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -60,22 +59,22 @@ namespace GameTimeNext.Core.Application.Screensetups.Controller
         protected override void CheckImpl()
         {
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().TxbName.Text))
-                AddViewError(GetWnd().TxbName, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Name"));
+                AddViewError(GetWnd().TxbName, GetErrorMessage("GLO0003", "Name"));
 
             if (GetWnd().TxbName.Text.Length > 200)
-                AddViewError(GetWnd().TxbName, FnErrorMessage.ErrorMessage.CannotExceedChars.GetMessage("Name", "200"));
+                AddViewError(GetWnd().TxbName, GetErrorMessage("GLO0004", "Name", "200"));
 
             if (GetWnd().TxbDescription.Text.Length > 200)
-                AddViewError(GetWnd().TxbDescription, FnErrorMessage.ErrorMessage.CannotExceedChars.GetMessage("Description", "200"));
+                AddViewError(GetWnd().TxbDescription, GetErrorMessage("GLO0004", "Description", "200"));
 
             List<ScreensetupMonitorDataGridRow> monitorRows = _viewModel?.MonitorDataGridRows?.ToList() ?? new List<ScreensetupMonitorDataGridRow>();
 
             if (!monitorRows.Any(r => r.COMOEN))
-                AddViewError(GetWnd().DgMonitors, FnErrorMessage.ErrorMessage.GetCustomMessage("At least one monitor must be enabled."));
+                AddViewError(GetWnd().DgMonitors, GetErrorMessage("SCS0001"));
             else if (!monitorRows.Any(r => r.COMOPR))
-                AddViewError(GetWnd().DgMonitors, FnErrorMessage.ErrorMessage.MustBeSelected.GetMessage("A primary monitor"));
+                AddViewError(GetWnd().DgMonitors, GetErrorMessage("GLO0003", "A primary monitor"));
             else if (monitorRows.Any(r => r.COMOPR && !r.COMOEN))
-                AddViewError(GetWnd().DgMonitors, FnErrorMessage.ErrorMessage.GetCustomMessage("The primary monitor must be enabled."));
+                AddViewError(GetWnd().DgMonitors, GetErrorMessage("SCS0002"));
         }
 
         protected override void FillViewImpl()
@@ -284,7 +283,7 @@ namespace GameTimeNext.Core.Application.Screensetups.Controller
             if (identifiedMonitors.Count == 0)
             {
                 CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window);
-                cfmbox.Show("No monitor could be identified, because none of them is switched on.", CFMBOXResult.Ok, CFMBOXIcon.Info);
+                cfmbox.Show(GetErrorMessage("SCS0003"), CFMBOXResult.Ok, CFMBOXIcon.Info);
             }
         }
 

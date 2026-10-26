@@ -67,29 +67,27 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
             // Table object
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().TxbTableObject.Text))
-                AddViewError(GetWnd().TxbTableObject, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage(controlNameTableObj));
+                AddViewError(GetWnd().TxbTableObject, GetErrorMessage("GLO0003", controlNameTableObj));
             else if (!Regex.IsMatch(GetWnd().TxbTableObject.Text, @"^T1[A-Z0-9]*$"))
-                AddViewError(GetWnd().TxbTableObject, FnErrorMessage.ErrorMessage.InvalidFormat.GetMessage(controlNameTableObj));
-            else if (GetWnd().TxbTableObject.Text.Length < 7)
-                AddViewError(GetWnd().TxbTableObject, FnErrorMessage.ErrorMessage.MustExceedChars.GetMessage(controlNameTableObj, "7"));
-            else if (GetWnd().TxbTableObject.Text.Length > 7)
-                AddViewError(GetWnd().TxbTableObject, FnErrorMessage.ErrorMessage.CannotExceedChars.GetMessage(controlNameTableObj, "7"));
+                AddViewError(GetWnd().TxbTableObject, GetErrorMessage("GLO0007", controlNameTableObj));
+            else if (GetWnd().TxbTableObject.Text.Length != 7)
+                AddViewError(GetWnd().TxbTableObject, GetErrorMessage("GLO0005", controlNameTableObj, 7));
 
             TXMETAH txmetah = new TXMETAH();
             if (GetWnd().ViewIndicator.Contains("CN") && txmetah.Exists(GetWnd().TxbTableObject.Text))
             {
-                AddViewError(GetWnd().TxbTableObject, FnErrorMessage.ErrorMessage.AlreadyExists.GetMessage(controlNameTableObj, GetWnd().TxbTableObject.Text));
+                AddViewError(GetWnd().TxbTableObject, GetErrorMessage("GLO0008", controlNameTableObj, GetWnd().TxbTableObject.Text));
             }
 
             // Description
             if (FnString.IsNullEmptyOrWhitespace(GetWnd().TxbDescription.Text))
-                AddViewError(GetWnd().TxbDescription, FnErrorMessage.ErrorMessage.CannotBeEmpty.GetMessage("Description"));
+                AddViewError(GetWnd().TxbDescription, GetErrorMessage("GLO0003", "Description"));
             else if (GetWnd().TxbDescription.Text.Length > 200)
-                AddViewError(GetWnd().TxbDescription, FnErrorMessage.ErrorMessage.CannotExceedChars.GetMessage("Description", "200"));
+                AddViewError(GetWnd().TxbDescription, GetErrorMessage("GLO0004", "Description", "200"));
 
             // Type
             if (FnString.IsNullEmptyOrWhitespace(selectedType))
-                AddViewError(GetWnd().CmbType, FnErrorMessage.ErrorMessage.MustBeSelected.GetMessage("Type"));
+                AddViewError(GetWnd().CmbType, GetErrorMessage("GLO0003", "Type"));
         }
 
         protected override void FillViewImpl()
@@ -295,7 +293,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
             CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
 
-            CFMBOXResult result = cfmbox.Show("Are you sure you want to delete this metadata position?", CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
+            CFMBOXResult result = cfmbox.Show(GetErrorMessage("GLO0001", "this metadata position"), CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
 
             if (result == CFMBOXResult.Yes)
             {
@@ -344,11 +342,11 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
                 GetApp().T1METAH!.GENER = true;
                 new TXMETAH().Save(GetApp().T1METAH!);
 
-                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Generation completed.", CFMBOXResult.Ok, CFMBOXIcon.Success);
+                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("MET0002"), CFMBOXResult.Ok, CFMBOXIcon.Success);
             }
             catch (Exception ex)
             {
-                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Generation failed", ex.Message, CFMBOXResult.Ok, CFMBOXIcon.Error);
+                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("GLO0013", "generating the classes", ex.Message), CFMBOXResult.Ok, CFMBOXIcon.Error);
             }
             finally
             {

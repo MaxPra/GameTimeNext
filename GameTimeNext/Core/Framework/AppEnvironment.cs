@@ -183,7 +183,7 @@ namespace GameTimeNext.Core.Framework
                 }
                 catch (Exception)
                 {
-                    InformationList.Add(new InformationListItem(CFMBOXIcon.Error, "Could not import backupfile:\n" + GetAppConfig().AppSettings.BackupImportPath + "."));
+                    InformationList.Add(InformationListItem.FromErrorMessage(CFMBOXIcon.Error, "GLO0013", "importing the backup", GetAppConfig().AppSettings.BackupImportPath));
                 }
 
                 // Reload AppConfig here because it was overwritten by the backup import
@@ -203,7 +203,7 @@ namespace GameTimeNext.Core.Framework
 
                 if (!Directory.Exists(backupPath))
                 {
-                    InformationList.Add(new InformationListItem(CFMBOXIcon.Error, "Could not create auto backup.\nBackup export path doesn't exist."));
+                    InformationList.Add(InformationListItem.FromErrorMessage(CFMBOXIcon.Error, "SET0002", backupPath));
                     return;
                 }
 
@@ -213,7 +213,7 @@ namespace GameTimeNext.Core.Framework
                 }
                 catch (Exception e)
                 {
-                    InformationList.Add(new InformationListItem(CFMBOXIcon.Error, "Something went wrong while auto-backup creation!"));
+                    InformationList.Add(InformationListItem.FromErrorMessage(CFMBOXIcon.Error, "GLO0012", "creating the automatic backup"));
                 }
             }
         }
@@ -309,7 +309,7 @@ namespace GameTimeNext.Core.Framework
 
             if (!File.Exists(jsonFilePath))
             {
-                InformationList.Add(new InformationListItem(CFMBOXIcon.Error, $"StartableApps.json not found at: {jsonFilePath}"));
+                InformationList.Add(InformationListItem.FromErrorMessage(CFMBOXIcon.Error, "GLO0014", "file StartableApps.json", jsonFilePath));
                 return;
             }
 
@@ -324,12 +324,12 @@ namespace GameTimeNext.Core.Framework
                 }
                 else
                 {
-                    InformationList.Add(new InformationListItem(CFMBOXIcon.Warning, "No applications found in StartableApps.json"));
+                    InformationList.Add(InformationListItem.FromErrorMessage(CFMBOXIcon.Warning, "GLO0019"));
                 }
             }
             catch (Exception ex)
             {
-                InformationList.Add(new InformationListItem(CFMBOXIcon.Error, $"Error loading StartableApps.json: {ex.Message}"));
+                InformationList.Add(InformationListItem.FromErrorMessage(CFMBOXIcon.Error, "GLO0013", "loading StartableApps.json", ex.Message));
             }
         }
 

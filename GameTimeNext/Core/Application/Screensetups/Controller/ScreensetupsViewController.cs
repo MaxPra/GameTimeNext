@@ -210,7 +210,7 @@ namespace GameTimeNext.Core.Application.Screensetups.Controller
 
             try
             {
-                errorMessage = await CFScreensetupsApp.ApplyScreensetupAsync(t1scrsh);
+                errorMessage = await CFScreensetupsApp.ApplyScreensetupAsync(GetApp(), t1scrsh);
             }
             finally
             {
@@ -258,7 +258,7 @@ namespace GameTimeNext.Core.Application.Screensetups.Controller
 
             CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window);
 
-            CFMBOXResult result = cfmbox.Show("Are you sure you want to delete this screensetup?", CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
+            CFMBOXResult result = cfmbox.Show(GetErrorMessage("GLO0001", "this screensetup"), CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
 
             if (result == CFMBOXResult.Yes)
             {
@@ -332,7 +332,7 @@ namespace GameTimeNext.Core.Application.Screensetups.Controller
             if (identifiedMonitors.Count == 0)
             {
                 CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window);
-                cfmbox.Show("No monitor could be identified, because none of them is switched on.", CFMBOXResult.Ok, CFMBOXIcon.Info);
+                cfmbox.Show(GetErrorMessage("SCS0003"), CFMBOXResult.Ok, CFMBOXIcon.Info);
             }
         }
 

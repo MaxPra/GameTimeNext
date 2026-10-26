@@ -52,7 +52,7 @@ namespace GameTimeNext.Core.Application.Profiles
                 tm.Show();
 
                 CFMBOX cfmbox = app.GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
-                CFMBOXResult result = cfmbox.Show("Question", "No active playthrough is set for this profile.\nCreate a new playthrough?", CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
+                CFMBOXResult result = cfmbox.Show(app.GetErrorMessage("PLT0001"), CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
 
                 if (result == CFMBOXResult.Yes)
                 {

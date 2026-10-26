@@ -234,11 +234,11 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
             if (FnString.IsNullEmptyOrWhitespace(value))
             {
-                AddViewError(control, FnErrorMessage.ErrorMessage.IsRequired.GetMessage("Textnumber"));
+                AddViewError(control, GetErrorMessage("GLO0003", "Textnumber"));
             }
             if (value.Split('_').Last().Length > 5)
             {
-                AddViewError(control, FnErrorMessage.ErrorMessage.CannotExceedChars.GetMessage("Textnumber", "5"));
+                AddViewError(control, GetErrorMessage("GLO0004", "Textnumber", "5"));
             }
 
             if (t1ctabh!.NRANA)
@@ -248,7 +248,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
                     // Dev-Mode
                     if (!value.StartsWith("D_") && !value.StartsWith("U_"))
                     {
-                        AddViewError(control, FnErrorMessage.ErrorMessage.MustStartWith.GetMessage("Textnumber", "D_ or U_"));
+                        AddViewError(control, GetErrorMessage("GLO0010", "Textnumber", "D_ or U_"));
                     }
                 }
                 else
@@ -256,12 +256,11 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
                     // User-Mode
                     if (value.StartsWith("D_"))
                     {
-                        AddViewError(control, FnErrorMessage.ErrorMessage.CannotStartWith.GetMessage("Textnumber", "D_", "only for developer-entries"));
+                        AddViewError(control, GetErrorMessage("CTA0001"));
                     }
-
-                    if (!value.StartsWith("U_"))
+                    else if (!value.StartsWith("U_"))
                     {
-                        AddViewError(control, FnErrorMessage.ErrorMessage.MustStartWith.GetMessage("Textnumber", "U_"));
+                        AddViewError(control, GetErrorMessage("GLO0010", "Textnumber", "U_"));
                     }
                 }
             }
@@ -269,7 +268,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
             TXCTABD txctabd = new TXCTABD();
             if (GetWnd().ViewIndicator.Contains("CN") && txctabd.Exists(t1ctabh.TXTYP, value))
             {
-                AddViewError(control, FnErrorMessage.ErrorMessage.AlreadyExists.GetMessage("Textnumber", value));
+                AddViewError(control, GetErrorMessage("GLO0008", "Textnumber", value));
             }
         }
 
@@ -308,7 +307,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
                 if (FnString.IsNullEmptyOrWhitespace(value))
                 {
-                    AddViewError(paramControl.Control!, FnErrorMessage.ErrorMessage.IsRequired.GetMessage("Parameter"));
+                    AddViewError(paramControl.Control!, GetErrorMessage("GLO0003", "Parameter"));
                 }
             }
         }

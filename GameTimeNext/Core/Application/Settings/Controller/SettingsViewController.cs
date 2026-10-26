@@ -96,12 +96,12 @@ namespace GameTimeNext.Core.Application.Settings.Controller
         {
             if (!FnControls.ContainsOnlyNumericValue(GetView().txbBreakReminderHours))
             {
-                AddViewError(GetView().txbBreakReminderHours, FnErrorMessage.ErrorMessage.OnlyNumeric.GetMessage());
+                AddViewError(GetView().txbBreakReminderHours, GetErrorMessage("GLO0009"));
             }
 
             if (!FnControls.ContainsOnlyNumericValue(GetView().txbSessionCleanupSeconds))
             {
-                AddViewError(GetView().txbSessionCleanupSeconds, FnErrorMessage.ErrorMessage.OnlyNumeric.GetMessage());
+                AddViewError(GetView().txbSessionCleanupSeconds, GetErrorMessage("GLO0009"));
             }
         }
 
@@ -336,7 +336,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
         {
             if (!Directory.Exists(GetView().txbBackupExportPath.Text))
             {
-                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Error", "Chosen backup path doesn't exist!", CFMBOXResult.Ok, CFMBOXIcon.Error);
+                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("GLO0014", "backup path", GetView().txbBackupExportPath.Text), CFMBOXResult.Ok, CFMBOXIcon.Error);
                 return;
             }
 
@@ -363,7 +363,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
                 {
                     GetView().Dispatcher.Invoke(() =>
                     {
-                        GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Error", "Something went wrong while backup creation!", CFMBOXResult.Ok, CFMBOXIcon.Error);
+                        GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("GLO0012", "creating the backup"), CFMBOXResult.Ok, CFMBOXIcon.Error);
                     });
 
                     success = false;
@@ -375,18 +375,18 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             });
 
             if (success)
-                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Success", "Backup was created successfully!", CFMBOXResult.Ok, CFMBOXIcon.Success);
+                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("GLO0011", "The backup"), CFMBOXResult.Ok, CFMBOXIcon.Success);
         }
 
         protected async Task EV_btnImportBackup()
         {
             if (!File.Exists(GetView().txbBackupImportPath.Text))
             {
-                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Error", "Chosen import file doesn't exist!", CFMBOXResult.Ok, CFMBOXIcon.Error);
+                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("GLO0014", "import file", GetView().txbBackupImportPath.Text), CFMBOXResult.Ok, CFMBOXIcon.Error);
                 return;
             }
 
-            CFMBOXResult result = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Info", "The application will be restarted now and will then importing the backup.\nYour current Settings will be saved now.\nDo you want to proceed?", CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Info);
+            CFMBOXResult result = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("SET0001", AppConfig.Root.ApplicationName), CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Info);
 
             if (result == CFMBOXResult.Yes)
             {
