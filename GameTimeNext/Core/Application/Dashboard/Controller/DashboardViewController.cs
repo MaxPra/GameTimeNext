@@ -246,7 +246,7 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
             GetView().txtLastPlayedTime.Text = FnTime.FormatMinutesAsHoursAndMinutes(plti, FnTime.NoValue);
 
             BitmapImage? coverImage = FnImage.LoadImageWithoutLock(ppfn, 300, 450);
-            GetView().imgLastPlayedCover.Source = coverImage;
+            GetView().ccLastPlayedCase.Content = coverImage;
         }
 
         private void FillSectionMostPlayed()
@@ -257,7 +257,7 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
             GetView().txtMostPlayedDays.Text = days.ToString(CultureInfo.CurrentCulture);
 
             BitmapImage? coverImage = FnImage.LoadImageWithoutLock(ppfn, 300, 450);
-            GetView().imgMostPlayedCover.Source = coverImage;
+            GetView().ccMostPlayedCase.Content = coverImage;
         }
 
         protected void EV_BtnRefresh()

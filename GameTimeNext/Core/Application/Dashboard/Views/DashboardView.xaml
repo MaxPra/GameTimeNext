@@ -163,45 +163,14 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <!--  Portrait cover image (2:3 ratio – 600x900)  -->
+                        <!--  Showcase: the case wide open on a plinth, the disc in front (style GameCase.Showcase, base 340 x 430)  -->
                         <Viewbox
                             Grid.Column="0"
-                            MaxWidth="280"
+                            MaxHeight="440"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Top"
                             Stretch="Uniform">
-                            <Grid Width="600" Height="900">
-                                <Border
-                                    Background="{DynamicResource Brush.Background}"
-                                    ClipToBounds="True"
-                                    CornerRadius="{StaticResource DefaultCornerRadius}">
-                                    <Image
-                                        x:Name="imgMostPlayedCover"
-                                        SnapsToDevicePixels="True"
-                                        Stretch="UniformToFill">
-                                        <Image.Clip>
-                                            <RectangleGeometry
-                                                RadiusX="8"
-                                                RadiusY="8"
-                                                Rect="0,0,600,900" />
-                                        </Image.Clip>
-                                    </Image>
-                                </Border>
-
-                                <!--  Hairline edge (2 units = ~1px after Viewbox scaling, radius matches the image clip), light at the top like the glass surfaces  -->
-                                <Border
-                                    BorderBrush="{StaticResource Brush.Control.Edge}"
-                                    BorderThickness="2"
-                                    CornerRadius="8"
-                                    IsHitTestVisible="False" />
-
-                                <!--  Holographic foil: rainbow bands through fine wave lines, drifts slowly, follows and lights up at the mouse  -->
-                                <Border
-                                    ui:HoloShine.IsEnabled="True"
-                                    ui:HoloShine.PatternSize="110"
-                                    ui:HoloShine.RimThickness="3"
-                                    CornerRadius="8" />
-                            </Grid>
+                            <ContentControl x:Name="ccMostPlayedCase" Style="{StaticResource GameCase.Showcase}" />
                         </Viewbox>
 
                         <!--  Game info on the right  -->
@@ -340,31 +309,18 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <!--  Portrait cover image (2:3 ratio – 600x900)  -->
+                        <!--  Game case (style GameCase, base 246 x 366 drawn at 280 x 417), opens while hovered  -->
                         <Viewbox
                             Grid.Column="0"
                             MaxWidth="280"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Top"
                             Stretch="Uniform">
-                            <Grid Width="600" Height="900">
-                                <Border
-                                    Background="{DynamicResource Brush.Background}"
-                                    ClipToBounds="True"
-                                    CornerRadius="{StaticResource DefaultCornerRadius}">
-                                    <Image
-                                        x:Name="imgLastPlayedCover"
-                                        SnapsToDevicePixels="True"
-                                        Stretch="UniformToFill">
-                                        <Image.Clip>
-                                            <RectangleGeometry
-                                                RadiusX="8"
-                                                RadiusY="8"
-                                                Rect="0,0,600,900" />
-                                        </Image.Clip>
-                                    </Image>
-                                </Border>
-                            </Grid>
+                            <ContentControl
+                                x:Name="ccLastPlayedCase"
+                                Width="280"
+                                Height="417"
+                                Style="{StaticResource GameCase}" />
                         </Viewbox>
 
                         <!--  Game info on the right  -->
