@@ -1,4 +1,4 @@
-using GameTimeNext.Core.Framework.Config;
+﻿using GameTimeNext.Core.Framework.Config;
 using Microsoft.Win32;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -111,14 +111,14 @@ namespace GameTimeNext.Core.Framework.UI
         }
 
         /// <summary>
-        /// Blurs the image. It is drawn larger than the result (by the blur radius on each side), so the edges
-        /// don't fade into transparency; the overhang is cut off.
+        /// Blurs the image (radius in pixels of the source, default BlurRadius). It is drawn larger than the result
+        /// (by the blur radius on each side), so the edges don't fade into transparency; the overhang is cut off.
         /// </summary>
-        internal static BitmapSource Blur(BitmapSource source)
+        internal static BitmapSource Blur(BitmapSource source, double radius = BlurRadius)
         {
             int width = source.PixelWidth;
             int height = source.PixelHeight;
-            double overhang = BlurRadius;
+            double overhang = radius;
 
             var image = new Image
             {
@@ -128,7 +128,7 @@ namespace GameTimeNext.Core.Framework.UI
                 Height = height + 2 * overhang,
                 Effect = new BlurEffect
                 {
-                    Radius = BlurRadius,
+                    Radius = radius,
                     KernelType = KernelType.Gaussian,
                     RenderingBias = RenderingBias.Quality
                 }

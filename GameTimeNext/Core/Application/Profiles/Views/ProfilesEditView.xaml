@@ -299,6 +299,8 @@
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="12" />
                                         <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="12" />
+                                        <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
 
                                     <TextBlock
@@ -312,7 +314,13 @@
                                         Grid.Row="2"
                                         Content="Enable HDR on game start" />
 
-                                    <Grid x:Name="grdLaunchArgs" Grid.Row="4">
+                                    <CheckBox
+                                        x:Name="cbPauseInBigPicture"
+                                        Grid.Row="4"
+                                        Content="Pause the game while the Big Picture mode is in front"
+                                        ToolTip="The game doesn't react to the controller while you use the Big Picture mode. Switch it off for online games or games with anti-cheat." />
+
+                                    <Grid x:Name="grdLaunchArgs" Grid.Row="6">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="8" />

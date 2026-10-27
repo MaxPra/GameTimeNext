@@ -274,6 +274,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             CProfileSettings cProfileSettings = new CProfileSettings(GetApp().T1Profi.PRSE).Dezerialize();
 
             GetWnd().cbEnableHdrOnStart.IsChecked = cProfileSettings.HDREnabled == true;
+            GetWnd().cbPauseInBigPicture.IsChecked = cProfileSettings.PauseInBigPicture;
 
             using (SuppressRunEventPipeline())
             {
@@ -408,6 +409,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             cProfileSettings.HDREnabled = GetWnd().cbEnableHdrOnStart.IsChecked == true;
             cProfileSettings.LaunchArgs = GetWnd().txbLaunchArgs.Text.Trim();
+            cProfileSettings.PauseInBigPicture = GetWnd().cbPauseInBigPicture.IsChecked == true;
 
             cProfileSettings.OverrideGlobalBlackout = GetWnd().cbOverrideGlobalBlackout.IsChecked == true;
             cProfileSettings.BlackoutSideMonitors =

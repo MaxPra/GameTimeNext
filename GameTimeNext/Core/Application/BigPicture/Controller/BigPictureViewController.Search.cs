@@ -247,6 +247,10 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
         /// </summary>
         private bool HandleSearchKey(Key key)
         {
+            // No focus navigation into the tabs below the mode
+            if (key == Key.Tab)
+                return true;
+
             if (key == Key.Enter)
             {
                 if (_games.Count > 0)

@@ -30,6 +30,12 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
         // Covers by file name (PPFN), kept across reloads (after a game, a filter change) so they are only decoded once
         private readonly ConcurrentDictionary<string, BitmapImage?> _coverCache = new ConcurrentDictionary<string, BitmapImage?>();
 
+        // Blurred backdrop and key art by cover file name, created on the first selection of a game
+        // (see CFBigPictureApp.CreateBackdrop / CreateKeyArt)
+        private readonly Dictionary<string, BlurredCover?> _blurredCoverCache = new Dictionary<string, BlurredCover?>();
+
+        private record BlurredCover(BitmapSource Backdrop, BitmapSource KeyArt);
+
         // Whether a game can really be started (scans its game folder), checked on its first use per load
         private readonly Dictionary<long, bool> _canLaunchCache = new Dictionary<long, bool>();
 
@@ -252,7 +258,7 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
             if (_isFilterActive)
             {
                 GetView().txEmptyTitle.Text = "No games match the filter";
-                GetView().txEmptyHint.Text = "Press X to change the filter.";
+                GetView().txEmptyHint.Text = $"Press {GetButtonLabel(BigPictureButton.X)} to change the filter.";
             }
             else
             {
@@ -394,8 +400,10 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
                     EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
                 });
 
-                GetView().imgBackdrop.Source = game.Cover;
-                GetView().imgKeyArt.Source = game.Cover;
+                BlurredCover? blurredCover = GetBlurredCover(game);
+
+                GetView().imgBackdrop.Source = blurredCover?.Backdrop;
+                GetView().imgKeyArt.Source = blurredCover?.KeyArt;
                 FnTheme.ApplyProfileAccentColors(t1profi);
 
                 GetView().txTitle.Text = t1profi.GANA;
@@ -408,6 +416,29 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
             }
 
             FillAction(t1profi);
+        }
+
+        private BlurredCover? GetBlurredCover(BigPictureGameTile game)
+        {
+            if (game.Cover == null)
+                return null;
+
+            if (!_blurredCoverCache.TryGetValue(game.Profile.PPFN, out BlurredCover? blurredCover))
+            {
+                try
+                {
+                    blurredCover = new BlurredCover(CFBigPictureApp.CreateBackdrop(game.Cover), CFBigPictureApp.CreateKeyArt(game.Cover));
+                }
+                catch (Exception ex)
+                {
+                    FnLog.AddWarning(GetApp(), $"Backdrop of {game.Name} could not be created", ex);
+                    blurredCover = null;
+                }
+
+                _blurredCoverCache[game.Profile.PPFN] = blurredCover;
+            }
+
+            return blurredCover;
         }
 
         private static string BuildSubtitle(T1PROFI t1profi)
@@ -484,7 +515,8 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
         private GameAction GetGameAction(T1PROFI t1profi)
         {
             if (t1profi.PFID == _runningPfid)
-                return new GameAction(_isQuitting ? "Quitting..." : "Back to the game", "\uE768", !_isQuitting, false, "Playing now  ·  X for options");
+                return new GameAction(_isQuitting ? "Quitting..." : "Back to the game", "\uE768", !_isQuitting, false,
+                    (FnLauncher.IsGamePaused ? "Paused" : "Playing now") + $"  ·  {GetButtonLabel(BigPictureButton.X)} for options");
 
             if (_runningPfid != 0)
                 return new GameAction("Play", "\uE768", false, false, TFPROFI.GetProfileName(_runningPfid) + " is running.");

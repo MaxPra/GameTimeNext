@@ -18,7 +18,11 @@
     -->
     <Grid Background="{StaticResource Brush.BigPicture.Background}" ClipToBounds="True">
 
-        <!--  Window background of GameTimeNext with its accent glow, the blurred cover of the selected game on top  -->
+        <!--
+            Window background of GameTimeNext with its accent glow, the blurred cover of the selected game on top.
+            The cover is blurred once in advance (CFBigPictureApp.CreateBackdrop): a BlurEffect here is rendered again in
+            every frame in which anything in front of it moves.
+        -->
         <Border Background="{DynamicResource GradientBrush.ProfileDetailView.Background}" IsHitTestVisible="False" />
         <Border Background="{DynamicResource GradientBrush.ProfileDetailView.AccentGlowPrimary}" IsHitTestVisible="False" />
 
@@ -27,16 +31,10 @@
             Margin="-120"
             IsHitTestVisible="False"
             Opacity="0.4"
-            Stretch="UniformToFill">
-            <Image.Effect>
-                <BlurEffect
-                    KernelType="Gaussian"
-                    Radius="90"
-                    RenderingBias="Performance" />
-            </Image.Effect>
-        </Image>
+            RenderOptions.BitmapScalingMode="Linear"
+            Stretch="UniformToFill" />
 
-        <!--  Key art: the cover of the selected game large on the right, faded into the background  -->
+        <!--  Key art: the cover of the selected game large on the right, faded into the background (softly blurred in advance, CFBigPictureApp.CreateKeyArt)  -->
         <Grid IsHitTestVisible="False">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="9*" />
@@ -94,6 +92,7 @@
                         VerticalAlignment="Center"
                         Orientation="Horizontal">
                         <ContentControl
+                            x:Name="ccPivotPrevious"
                             Margin="0,0,12,0"
                             Content="LB"
                             Style="{StaticResource BigPicture.ControllerBumper}" />
@@ -112,6 +111,7 @@
                             </ItemsControl>
                         </Border>
                         <ContentControl
+                            x:Name="ccPivotNext"
                             Margin="12,0,0,0"
                             Content="RB"
                             Style="{StaticResource BigPicture.ControllerBumper}" />
@@ -404,6 +404,7 @@
                         <Button x:Name="btnPlay" Style="{StaticResource BigPicture.PlayButton}">
                             <StackPanel Orientation="Horizontal">
                                 <ContentControl
+                                    x:Name="ccPlayButton"
                                     Background="{StaticResource Brush.BigPicture.ButtonA}"
                                     Content="A"
                                     Style="{StaticResource BigPicture.ControllerButton}" />
@@ -508,7 +509,7 @@
                 </StackPanel>
             </Grid>
 
-            <!--  Hints: what the controller buttons do right now (hidden while they do nothing)  -->
+            <!--  Hints: what the buttons do right now (hidden while they do nothing); the buttons are set by the controller for the input device last used  -->
             <StackPanel
                 Grid.Row="3"
                 Height="52"
@@ -516,12 +517,16 @@
                 HorizontalAlignment="Right"
                 Orientation="Horizontal">
                 <StackPanel x:Name="pnlHintView" Orientation="Horizontal">
-                    <ContentControl Content="VIEW" Style="{StaticResource BigPicture.ControllerBumper}" />
+                    <ContentControl
+                        x:Name="ccHintView"
+                        Content="VIEW"
+                        Style="{StaticResource BigPicture.ControllerBumper}" />
                     <TextBlock x:Name="txHintView" Style="{StaticResource BigPicture.HintText}" />
                 </StackPanel>
 
                 <StackPanel x:Name="pnlHintY" Orientation="Horizontal">
                     <ContentControl
+                        x:Name="ccHintY"
                         Background="{StaticResource Brush.BigPicture.ButtonY}"
                         Content="Y"
                         Style="{StaticResource BigPicture.ControllerButton}" />
@@ -530,6 +535,7 @@
 
                 <StackPanel x:Name="pnlHintX" Orientation="Horizontal">
                     <ContentControl
+                        x:Name="ccHintX"
                         Background="{StaticResource Brush.BigPicture.ButtonX}"
                         Content="X"
                         Style="{StaticResource BigPicture.ControllerButton}" />
@@ -538,6 +544,7 @@
 
                 <StackPanel x:Name="pnlHintA" Orientation="Horizontal">
                     <ContentControl
+                        x:Name="ccHintA"
                         Background="{StaticResource Brush.BigPicture.ButtonA}"
                         Content="A"
                         Style="{StaticResource BigPicture.ControllerButton}" />
@@ -546,6 +553,7 @@
 
                 <StackPanel x:Name="pnlHintB" Orientation="Horizontal">
                     <ContentControl
+                        x:Name="ccHintB"
                         Background="{StaticResource Brush.BigPicture.ButtonB}"
                         Content="B"
                         Style="{StaticResource BigPicture.ControllerButton}" />

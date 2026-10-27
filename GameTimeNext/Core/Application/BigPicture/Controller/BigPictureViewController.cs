@@ -3,6 +3,7 @@ using GameTimeNext.Core.Application.BigPicture.Views;
 using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Profiles.BackgroundProcesses;
 using GameTimeNext.Core.Application.TableObjects;
+using GameTimeNext.Core.Application.TimeMonitoring;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.LauncherIntegration;
@@ -43,6 +44,20 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
 
         // Init runs on every opening, the view stays the same
         private bool _isIntroHooked;
+        private bool _isDeactivationHooked;
+        private bool _isMouseHooked;
+
+        // The hints show the buttons of the input device last used; a connected game controller is shown as a
+        // PlayStation controller if one is plugged in (its input arrives as an Xbox controller through Steam Input)
+        private BigPictureInputDevice _inputDevice = BigPictureInputDevice.Keyboard;
+        private BigPictureInputDevice _gamepadDevice = BigPictureInputDevice.Xbox;
+
+        // The Xbox button may open the Xbox Game Bar, which takes the focus right after the return: no reason to resume
+        private static readonly TimeSpan PauseResumeGrace = TimeSpan.FromSeconds(2);
+
+        // Time the game gets after the return to handle the minimizing before it is suspended
+        private static readonly TimeSpan PauseDelay = TimeSpan.FromMilliseconds(600);
+        private DateTime _pausedAt;
 
         // Details of the selected game follow once the selection rests (moving stays smooth while a direction is held)
         private readonly DispatcherTimer _detailsTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(110) };
@@ -73,7 +88,14 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
         public BigPictureViewController(UIXApplication app) : base(app)
         {
             _gamepad.ButtonPressed += OnGamepadButtonPressed;
-            _gamepad.ConnectionChanged += connected => FnControls.SetVisible(GetView().txControllerConnected, connected);
+            _gamepad.ConnectionChanged += connected =>
+            {
+                FnControls.SetVisible(GetView().txControllerConnected, connected);
+
+                // A controller plugged in is about to be used; without one only keyboard and mouse are left
+                _gamepadDevice = GetGamepadDevice();
+                SetInputDevice(connected ? _gamepadDevice : BigPictureInputDevice.Keyboard);
+            };
             _clockTimer.Tick += (_, _) =>
             {
                 UpdateClock();
@@ -97,6 +119,7 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
 
             // Message boxes of the whole application are shown in the style of the mode while it is open
             CFMBOX.Presenter = this;
+            CFBigPictureApp.IsOpen = true;
 
             GetView().txApplicationName.Text = AppConfig.Root.ApplicationName;
 
@@ -114,6 +137,16 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
 
             FnControls.SetVisible(GetView().txControllerConnected, _gamepad.IsConnected);
             _gamepad.Start();
+
+            _gamepadDevice = GetGamepadDevice();
+            ApplyButtonLabels();
+
+            if (!_isMouseHooked)
+            {
+                View.PreviewMouseDown += (_, _) => SetInputDevice(BigPictureInputDevice.Keyboard);
+                View.PreviewMouseWheel += (_, _) => SetInputDevice(BigPictureInputDevice.Keyboard);
+                _isMouseHooked = true;
+            }
 
             UpdateClock();
             UpdateMonitoringChip();
@@ -219,6 +252,8 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
         /// </summary>
         public void Deactivate()
         {
+            FnLauncher.ResumePausedGame();
+            LiftLaunchCover();
             _gamepad.Stop();
             _clockTimer.Stop();
             _detailsTimer.Stop();
@@ -232,6 +267,8 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
             if (ReferenceEquals(CFMBOX.Presenter, this))
                 CFMBOX.Presenter = null;
 
+            CFBigPictureApp.IsOpen = false;
+
             EndMessageBox(null);
             CloseMenu();
             CloseFilterDrawer(apply: false);
@@ -239,8 +276,9 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
         }
 
         /// <summary>
-        /// Keyboard of the main window: arrow keys, Enter (A), Esc / Backspace (B), Page Up / Down (LB / RB), Home / End,
-        /// F3 / letters (search), F4 (filter). Keys with modifiers are left to the window (e.g. Alt+F4).
+        /// Keyboard of the main window: arrow keys, Enter (A), Esc / Backspace (B), Tab (X), F3 / letters (search, Y),
+        /// F5 (blackout, View), Page Up / Down (LB / RB), Home / End, F4 (filter). Keys with modifiers are left to the
+        /// window (e.g. Alt+F4).
         /// Returns false for keys that are typed into the search field.
         /// </summary>
         public bool HandleKey(KeyEventArgs e)
@@ -248,8 +286,10 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
             if (e.KeyboardDevice.Modifiers != ModifierKeys.None && e.KeyboardDevice.Modifiers != ModifierKeys.Shift)
                 return false;
 
-            // No focus navigation into the tabs below the mode
-            if (e.Key == Key.Tab)
+            SetInputDevice(BigPictureInputDevice.Keyboard);
+
+            // No focus navigation into the tabs below the mode (Tab alone is X, see below)
+            if (e.Key == Key.Tab && e.KeyboardDevice.Modifiers != ModifierKeys.None)
                 return true;
 
             if (GetView().ptcIntro.IsPlaying)
@@ -261,7 +301,7 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
             // The blackout covers the mode: Esc / Backspace end it, nothing else reaches the hidden mode
             if (CFBlackout.IsFullBlackout())
             {
-                if (e.Key is Key.Escape or Key.Back)
+                if (e.Key is Key.Escape or Key.Back or Key.F5)
                     EndBlackout();
 
                 return true;
@@ -271,6 +311,14 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
 
             if (isBrowsing && IsKeyboardInput())
                 return HandleSearchKey(e.Key);
+
+            if (e.Key == Key.F5)
+            {
+                if (isBrowsing)
+                    ToggleBlackout();
+
+                return true;
+            }
 
             if (e.KeyboardDevice.Modifiers != ModifierKeys.None)
                 return false;
@@ -295,6 +343,7 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
                 Key.End => BigPictureInput.Last,
                 Key.Enter or Key.Space => BigPictureInput.Activate,
                 Key.Escape or Key.Back => BigPictureInput.Back,
+                Key.Tab => BigPictureInput.Options,
                 Key.Apps => BigPictureInput.Menu,
                 Key.F3 => BigPictureInput.Search,
                 Key.F4 => BigPictureInput.Filter,
@@ -379,6 +428,8 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
         /// </summary>
         private void HandleActiveGamepadButton(GamepadButton button)
         {
+            SetInputDevice(_gamepadDevice);
+
             if (GetView().ptcIntro.IsPlaying)
             {
                 GetView().ptcIntro.Skip();
@@ -440,7 +491,7 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
         /// doesn't always hand it over) and still react to the controller while the mode is operated; most games stop
         /// reading the controller once they are minimized. A to "Back to the game" restores it.
         /// </summary>
-        private void ReturnFromGame(Window window)
+        private async void ReturnFromGame(Window window)
         {
             // The user left the game on purpose: a launched game is not brought to the front anymore
             _launchFrontVersion++;
@@ -451,6 +502,52 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
                 FnLog.AddInfo(GetApp(), $"No window of {t1profi.GANA} found to minimize for the Big Picture mode");
 
             ReturnToFront(window);
+
+            // Minimizing isn't enough for games that read the controller in the background: they are suspended. Only
+            // once the game handled the minimizing and gave up the foreground: a suspended foreground game blocks
+            // bringing the mode to the front, and a pending minimize would follow when it is resumed
+            if (t1profi == null || !FnLauncher.IsPauseInBigPictureEnabled(t1profi))
+                return;
+
+            await Task.Delay(PauseDelay);
+
+            if (_runningPfid == t1profi.PFID && GetApp().IsOpen && (window.IsActive || FnForeground.IsVisibleOnTop(window)))
+                PauseRunningGame(window, t1profi);
+        }
+
+        private void PauseRunningGame(Window window, T1PROFI t1profi)
+        {
+            if (!_isDeactivationHooked)
+            {
+                window.Deactivated += OnWindowDeactivated;
+                _isDeactivationHooked = true;
+            }
+
+            if (FnLauncher.PauseGame(t1profi))
+                _pausedAt = DateTime.Now;
+
+            UpdateRunningState();
+        }
+
+        /// <summary>
+        /// The user went to another application (e.g. to the game through the taskbar): a paused game is resumed, it
+        /// must never look frozen outside of the mode.
+        /// </summary>
+        private void OnWindowDeactivated(object? sender, EventArgs e)
+        {
+            if (!FnLauncher.IsGamePaused || DateTime.Now - _pausedAt < PauseResumeGrace)
+                return;
+
+            // Decided once the other window has the focus (e.g. a message box of this application doesn't count)
+            View.Dispatcher.BeginInvoke(() =>
+            {
+                if (!FnLauncher.IsGamePaused || System.Windows.Application.Current.Windows.OfType<Window>().Any(w => w.IsActive))
+                    return;
+
+                FnLog.AddInfo(GetApp(), "Big Picture mode left for another application, the paused game is resumed");
+                FnLauncher.ResumePausedGame();
+                UpdateRunningState();
+            }, DispatcherPriority.ApplicationIdle);
         }
 
         /// <summary>
@@ -536,7 +633,11 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
                     break;
 
                 case BigPictureInput.Search:
-                    ShowPivot(isSearch ? _lastBrowsePivot : BigPicturePivotKind.Search);
+                    // Y on the running game starts / stops its monitoring instead of the search (F3 too)
+                    if (!isSearch && GetSelectedRunningGame() is BigPictureGameTile running)
+                        ToggleMonitoring(running.Profile);
+                    else
+                        ShowPivot(isSearch ? _lastBrowsePivot : BigPicturePivotKind.Search);
                     break;
 
                 case BigPictureInput.Filter:
@@ -591,6 +692,12 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
                 hintB = "Done";
                 hintX = "Reset";
             }
+            else if (IsKeyboardInput() && _inputDevice == BigPictureInputDevice.Keyboard)
+            {
+                // Typed on the keyboard itself: Enter goes to the results, Esc closes the search
+                hintA = _games.Count > 0 ? "Results" : string.Empty;
+                hintB = "Close";
+            }
             else if (IsKeyboardInput())
             {
                 hintA = "Type";
@@ -605,7 +712,9 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
                     : string.Empty;
                 hintB = _pivot == BigPicturePivotKind.Search ? "Keyboard" : "Menu";
                 hintX = GetSelectedGame() != null ? "Options" : string.Empty;
-                hintY = _pivot == BigPicturePivotKind.Search ? "Close" : "Search";
+                hintY = _pivot == BigPicturePivotKind.Search ? "Close"
+                    : GetSelectedRunningGame() != null ? (CFGameTimeMonitoring.IsMonitoring ? "Stop monitoring" : "Start monitoring")
+                    : "Search";
                 hintView = "Blackout";
             }
 
@@ -616,10 +725,91 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
             SetHint(GetView().pnlHintView, GetView().txHintView, hintView);
         }
 
+        /// <summary>
+        /// The selected game if it is the running one, otherwise null.
+        /// </summary>
+        private BigPictureGameTile? GetSelectedRunningGame()
+        {
+            return GetSelectedGame() is BigPictureGameTile game && _runningPfid != 0 && game.Profile.PFID == _runningPfid ? game : null;
+        }
+
         private static void SetHint(FrameworkElement panel, TextBlock text, string hint)
         {
             text.Text = hint;
             FnControls.SetVisible(panel, !FnString.IsNullEmptyOrWhitespace(hint));
+        }
+
+        /// <summary>
+        /// Keyboard / mouse, or the controller: the hints and the texts that name a button switch to its buttons.
+        /// </summary>
+        private void SetInputDevice(BigPictureInputDevice device)
+        {
+            if (device == _inputDevice)
+                return;
+
+            _inputDevice = device;
+
+            ApplyButtonLabels();
+            UpdateEmptyMessage();
+
+            if (GetSelectedGame() is BigPictureGameTile selected)
+                FillAction(selected.Profile);
+
+            UpdateHints();
+        }
+
+        private BigPictureInputDevice GetGamepadDevice()
+        {
+            try
+            {
+                return FnGamepadDevices.IsPlayStationControllerPresent() ? BigPictureInputDevice.PlayStation : BigPictureInputDevice.Xbox;
+            }
+            catch (Exception ex)
+            {
+                FnLog.AddWarning(GetApp(), "Connected game controllers could not be read, Xbox buttons are shown", ex);
+                return BigPictureInputDevice.Xbox;
+            }
+        }
+
+        private void ApplyButtonLabels()
+        {
+            SetButtonLabel(GetView().ccHintA, BigPictureButton.A);
+            SetButtonLabel(GetView().ccHintB, BigPictureButton.B);
+            SetButtonLabel(GetView().ccHintX, BigPictureButton.X);
+            SetButtonLabel(GetView().ccHintY, BigPictureButton.Y);
+            SetButtonLabel(GetView().ccHintView, BigPictureButton.View);
+            SetButtonLabel(GetView().ccPlayButton, BigPictureButton.A);
+            SetButtonLabel(GetView().ccPivotPrevious, BigPictureButton.LeftBumper);
+            SetButtonLabel(GetView().ccPivotNext, BigPictureButton.RightBumper);
+        }
+
+        /// <summary>
+        /// Face buttons of a controller are round in their color; keys of the keyboard, View and the bumpers are flat.
+        /// </summary>
+        private void SetButtonLabel(ContentControl button, BigPictureButton kind)
+        {
+            button.Content = GetButtonLabel(kind);
+
+            string? brushKey = CFBigPictureApp.GetButtonBrushKey(_inputDevice, kind);
+
+            if (brushKey == null)
+            {
+                button.Style = (Style)View.FindResource("BigPicture.ControllerBumper");
+                button.ClearValue(Control.BackgroundProperty);
+            }
+            else
+            {
+                button.Style = (Style)View.FindResource("BigPicture.ControllerButton");
+                button.SetResourceReference(Control.BackgroundProperty, brushKey);
+            }
+        }
+
+        /// <summary>
+        /// Name of the button on the input device last used, for texts (e.g. "Press X to change the filter").
+        /// </summary>
+        private string GetButtonLabel(BigPictureButton button)
+        {
+            return CFBigPictureApp.GetButtonLabel(_inputDevice, button);
         }
 
         private static bool IsTypingKey(Key key)
@@ -672,6 +862,8 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
         protected async Task EXEV_BigPictureGameClosed(long pfid)
         {
             _launchFrontVersion++;
+            LiftLaunchCover();
+            FnLauncher.ResumePausedGame();
             _runningPfid = 0;
             _launchingProfile = null;
             _isQuitting = false;

@@ -1,4 +1,5 @@
-﻿using GameTimeNext.Core.Application.DataManagers;
+﻿using GameTimeNext.Core.Application.BigPicture;
+using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.General;
 using GameTimeNext.Core.Application.Playthroughs;
 using GameTimeNext.Core.Application.Profiles.BackgroundProcesses;
@@ -358,6 +359,10 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 await AdjustFiltersToStartedGameProfile(AppEnvironment.CurrentPfid);
 
             _profilesSubGridViewModel.SelectedT1Profi = _profilesSubGridViewModel.T1Profis.Where(p => (p.ItemObject as T1PROFI)?.PFID == AppEnvironment.CurrentPfid).ToList()[0];
+
+            // The Big Picture mode shows the game itself; a toast would pop up in front of the game started from it
+            if (CFBigPictureApp.IsOpen)
+                return;
 
             ToastMessage tm = new ToastMessage("Switched profile...", (_profilesSubGridViewModel!.SelectedT1Profi.ItemObject as T1PROFI)?.GANA ?? string.Empty);
             tm.Show();

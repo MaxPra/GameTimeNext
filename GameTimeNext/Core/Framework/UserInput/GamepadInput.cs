@@ -29,8 +29,10 @@ namespace GameTimeNext.Core.Framework.UserInput
     }
 
     /// <summary>
-    /// Reads XInput controllers (Xbox and compatible) on the UI thread and reports button presses.
-    /// Held directions repeat like a held arrow key. Only polls between Start and Stop.
+    /// Reads XInput controllers (Xbox and compatible) and PlayStation controllers (PlayStationControllers, over HID)
+    /// and reports button presses on the dispatcher of the creating (UI) thread. A button reported by both (e.g. a
+    /// PlayStation controller that Steam Input also emulates as an Xbox controller) counts once. Polls on its own thread: XInputGetState can block for a while (above all for empty slots), which
+    /// made animations of the UI stutter. Held directions repeat like a held arrow key. Only polls between Start and Stop.
     /// </summary>
     public sealed class GamepadInput
     {
@@ -50,15 +52,27 @@ namespace GameTimeNext.Core.Framework.UserInput
         // XInputGetState is slow for empty slots, so they are only checked from time to time
         private static readonly TimeSpan EmptySlotRetryInterval = TimeSpan.FromSeconds(2);
 
-        private readonly DispatcherTimer _timer;
+        private readonly Dispatcher _dispatcher;
         private readonly bool[] _connected = new bool[MaxControllers];
         private readonly DateTime[] _nextSlotCheck = new DateTime[MaxControllers];
 
-        private HashSet<GamepadButton> _previous = new HashSet<GamepadButton>();
+        // Only used by the poll thread; opened while polling, closed when it ends
+        private readonly PlayStationControllers _playStationControllers = new PlayStationControllers();
+        private bool _playStationAvailable = true;
+
+        // Replaced (never changed) on every poll, so IsHeld can read it from the UI thread
+        private volatile HashSet<GamepadButton> _previous = new HashSet<GamepadButton>();
+
+        // Fields below are only used by the poll thread
         private GamepadButton? _heldDirection;
         private DateTime _nextRepeat;
         private bool _ignoreHeldButtons;
-        private bool _xinputAvailable = true;
+
+        private volatile bool _xinputAvailable = true;
+        private volatile bool _isConnected;
+
+        // Stops the running poll thread (Stop); a new one is started with a new source
+        private CancellationTokenSource? _pollCancellation;
 
         // XInputGetStateEx (ordinal 100) also reports the Guide button; it isn't exported on every system
         private bool _stateExAvailable = true;
@@ -69,7 +83,7 @@ namespace GameTimeNext.Core.Framework.UserInput
         /// <summary>The first controller was connected or the last one disconnected.</summary>
         public event Action<bool>? ConnectionChanged;
 
-        public bool IsConnected => _connected.Any(c => c);
+        public bool IsConnected => _isConnected;
 
         /// <summary>
         /// True while the button is held, e.g. to recognize a combination in ButtonPressed.
@@ -81,44 +95,71 @@ namespace GameTimeNext.Core.Framework.UserInput
 
         public GamepadInput()
         {
-            _timer = new DispatcherTimer(DispatcherPriority.Input)
-            {
-                Interval = PollInterval
-            };
-
-            _timer.Tick += (_, _) => Poll();
+            _dispatcher = Dispatcher.CurrentDispatcher;
         }
 
         public void Start()
         {
-            if (_timer.IsEnabled || !_xinputAvailable)
+            if (_pollCancellation != null)
                 return;
 
+            CancellationTokenSource cancellation = new CancellationTokenSource();
+            _pollCancellation = cancellation;
+
+            Thread thread = new Thread(() => PollLoop(cancellation.Token))
+            {
+                IsBackground = true,
+                Name = nameof(GamepadInput)
+            };
+
+            thread.Start();
+        }
+
+        public void Stop()
+        {
+            _pollCancellation?.Cancel();
+            _pollCancellation = null;
+        }
+
+        private void PollLoop(CancellationToken token)
+        {
             Array.Clear(_nextSlotCheck);
 
             // Buttons that are already held (e.g. the one that opened the caller) don't count as a press
             _ignoreHeldButtons = true;
             _heldDirection = null;
 
-            _timer.Start();
+            try
+            {
+                while (!token.IsCancellationRequested)
+                {
+                    Poll(token);
+
+                    if (token.WaitHandle.WaitOne(PollInterval))
+                        break;
+                }
+            }
+            finally
+            {
+                _playStationControllers.Dispose();
+            }
         }
 
-        public void Stop()
+        private void Poll(CancellationToken token)
         {
-            _timer.Stop();
-            _heldDirection = null;
-        }
-
-        private void Poll()
-        {
-            bool wasConnected = IsConnected;
+            bool wasConnected = _isConnected;
             HashSet<GamepadButton> current = ReadButtons();
 
-            if (!_xinputAvailable)
+            if (token.IsCancellationRequested)
                 return;
 
-            if (wasConnected != IsConnected)
-                ConnectionChanged?.Invoke(IsConnected);
+            _isConnected = _connected.Any(c => c) || (_playStationAvailable && _playStationControllers.IsConnected);
+
+            if (wasConnected != _isConnected)
+            {
+                bool connected = _isConnected;
+                _dispatcher.BeginInvoke(() => ConnectionChanged?.Invoke(connected), DispatcherPriority.Input);
+            }
 
             if (_ignoreHeldButtons)
             {
@@ -162,12 +203,11 @@ namespace GameTimeNext.Core.Framework.UserInput
         }
 
         /// <summary>
-        /// Raised after the poll, not inside it: a handler may show something modal (nested dispatcher frame), and the
-        /// timer only ticks again once its tick has returned.
+        /// Raised on the UI thread without waiting for it: a handler may show something modal (nested dispatcher frame).
         /// </summary>
         private void RaiseButtonPressed(GamepadButton button)
         {
-            _timer.Dispatcher.BeginInvoke(() => ButtonPressed?.Invoke(button), DispatcherPriority.Input);
+            _dispatcher.BeginInvoke(() => ButtonPressed?.Invoke(button), DispatcherPriority.Input);
         }
 
         /// <summary>
@@ -176,6 +216,28 @@ namespace GameTimeNext.Core.Framework.UserInput
         private HashSet<GamepadButton> ReadButtons()
         {
             HashSet<GamepadButton> buttons = new HashSet<GamepadButton>();
+
+            if (_xinputAvailable)
+                AddXInputButtons(buttons);
+
+            if (_playStationAvailable)
+            {
+                try
+                {
+                    _playStationControllers.AddPressedButtons(buttons);
+                }
+                catch (Exception ex) when (ex is DllNotFoundException or EntryPointNotFoundException)
+                {
+                    FnLog.AddWarning(nameof(GamepadInput), "HID is not available, PlayStation controllers are only read through XInput", ex);
+                    _playStationAvailable = false;
+                }
+            }
+
+            return buttons;
+        }
+
+        private void AddXInputButtons(HashSet<GamepadButton> buttons)
+        {
             DateTime now = DateTime.UtcNow;
 
             for (int slot = 0; slot < MaxControllers; slot++)
@@ -196,17 +258,14 @@ namespace GameTimeNext.Core.Framework.UserInput
                 }
                 catch (Exception ex) when (ex is DllNotFoundException or EntryPointNotFoundException)
                 {
-                    FnLog.AddWarning(nameof(GamepadInput), "XInput is not available, game controllers can't be used", ex);
+                    FnLog.AddWarning(nameof(GamepadInput), "XInput is not available, only PlayStation controllers can be used", ex);
                     _xinputAvailable = false;
-                    Stop();
-                    return buttons;
+                    return;
                 }
 
                 _connected[slot] = true;
                 AddPressedButtons(state.Gamepad, buttons);
             }
-
-            return buttons;
         }
 
         private static void AddPressedButtons(XINPUT_GAMEPAD gamepad, HashSet<GamepadButton> buttons)
