@@ -70,6 +70,13 @@
     <SolidColorBrush x:Key="Brush.Window.TitleBarTranslucent" Color="#33000000" />
 
     <!--
+        Setting "Dark tinted glass": black layer over the window background (gradient, acrylic, wallpaper, accent glow),
+        below title bar and content. The glass surfaces are translucent, so they turn darker with it.
+        Set at runtime by FnTheme.ApplyGlassTint (application resource, referenced with DynamicResource).
+    -->
+    <sys:Double x:Key="Window.GlassTintOpacity">0</sys:Double>
+
+    <!--
         Root grid of a view: outer margin when shown in its own window, none inside a main window tab
         (the tab content area already insets it, see ModernTabControlStyle).
     -->
@@ -163,6 +170,14 @@
                                         Background="{DynamicResource GradientBrush.ProfileDetailView.Vignette}"
                                         IsHitTestVisible="False"
                                         Visibility="Collapsed" />
+
+                                    <!--  Dark tinted glass (setting): darkens everything above the window background  -->
+                                    <Border
+                                        x:Name="GlassTintLayer"
+                                        Grid.RowSpan="2"
+                                        Background="#FF000000"
+                                        IsHitTestVisible="False"
+                                        Opacity="{DynamicResource Window.GlassTintOpacity}" />
 
                                     <!--  Title bar with a thin accent line below  -->
                                     <Border

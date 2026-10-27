@@ -73,6 +73,7 @@ namespace GameTimeNext
 
             // Blurred background image (desktop wallpaper or profile cover) as base of the window background (setting)
             FnTheme.ApplyWallpaperBackground(AppEnvironment.GetAppConfig().AppSettings.BackgroundSource);
+            FnTheme.ApplyGlassTint(AppEnvironment.GetAppConfig().AppSettings.DarkTintedGlass);
 
             FnLog.AddInfo("MainApp", "*** Initializing Application... ***");
 

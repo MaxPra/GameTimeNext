@@ -88,6 +88,10 @@ namespace GameTimeNext.Core.Application.TableObjects
         [UIXSignatureField(24)]
         public string BackgroundSource { get; set; }
 
+        /// <summary>Darker tint over the window background and the glass surfaces, closer to a classic dark mode.</summary>
+        [UIXSignatureField(25)]
+        public bool DarkTintedGlass { get; set; }
+
 
 
         public AppSettings()
@@ -97,6 +101,7 @@ namespace GameTimeNext.Core.Application.TableObjects
             EnableFullBlackoutText = true;
             AllowProfileSpecificStyleChanges = false;
             BackgroundSource = string.Empty;
+            DarkTintedGlass = false;
 
             MonitoringKeyActive = false;
             ShowToastNotification = false;

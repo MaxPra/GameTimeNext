@@ -332,6 +332,8 @@
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="12" />
                                     <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="12" />
+                                    <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
                                 <Grid Grid.Row="0" HorizontalAlignment="Left">
@@ -375,6 +377,28 @@
                                         VerticalAlignment="Center"
                                         SelectedValuePath="Tag"
                                         ToolTip="Image used as blurred main window background: the desktop wallpaper or the cover of the selected profile. (None) disables it." />
+                                </Grid>
+
+                                <Grid Grid.Row="4" HorizontalAlignment="Left">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="220" />
+                                        <ColumnDefinition Width="16" />
+                                        <ColumnDefinition Width="54" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        VerticalAlignment="Center"
+                                        Foreground="{DynamicResource Brush.TextSecondary}"
+                                        Text="Dark tinted glass" />
+
+                                    <CheckBox
+                                        x:Name="cbDarkTintedGlass"
+                                        Grid.Column="2"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center"
+                                        ToolTip="Tints the window background and the glass surfaces darker, closer to a classic dark mode." />
                                 </Grid>
                             </Grid>
                         </GroupBox>

@@ -186,6 +186,18 @@ namespace GameTimeNext.Core.Application.General
             }
         }
 
+        // Opacity of the black tint layer of the windows with the setting "Dark tinted glass"
+        private const double DarkGlassTintOpacity = 0.45;
+
+        /// <summary>
+        /// Setting "Dark tinted glass": darkens the window background and with it the translucent glass surfaces
+        /// in all GTN windows (GlassTintLayer in GTNWindowStyle). Works at startup and at runtime.
+        /// </summary>
+        public static void ApplyGlassTint(bool darkTintedGlass)
+        {
+            System.Windows.Application.Current.Resources["Window.GlassTintOpacity"] = darkTintedGlass ? DarkGlassTintOpacity : 0d;
+        }
+
         /// <summary>True if a background source is set (an empty source disables the dynamic background).</summary>
         public static bool IsDynamicBackgroundEnabled(string backgroundSource)
         {
