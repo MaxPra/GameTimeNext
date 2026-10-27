@@ -72,7 +72,7 @@
             <TextBlock
                 Grid.Row="1"
                 Margin="0,0,0,16"
-                Foreground="{DynamicResource Brush.TextSecondary}"
+                Style="{StaticResource Text.Hint}"
                 Text="Checked entries are shown. Uncheck what you want to hide."
                 TextWrapping="Wrap" />
 
@@ -87,14 +87,14 @@
                 <DockPanel
                     Grid.Column="0"
                     Height="{Binding ActualHeight, ElementName=SpOptions}"
-                    Margin="0,0,18,0"
+                    Margin="0,0,16,0"
                     VerticalAlignment="Top">
                     <TextBlock
                         DockPanel.Dock="Top"
                         Style="{StaticResource FilterGroupHeader}"
                         Text="Tags" />
 
-                    <Grid Margin="0,0,0,10" DockPanel.Dock="Top">
+                    <Grid Margin="0,0,0,12" DockPanel.Dock="Top">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
@@ -206,7 +206,7 @@
                     <Button
                         x:Name="BtnCancel"
                         Width="90"
-                        Margin="0,0,10,0"
+                        Margin="0,0,8,0"
                         Content="Cancel" />
 
                     <Button

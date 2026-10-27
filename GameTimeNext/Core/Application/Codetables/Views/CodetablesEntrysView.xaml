@@ -33,11 +33,11 @@
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="130" />
-                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="12" />
                     <ColumnDefinition Width="240" />
                     <ColumnDefinition Width="24" />
                     <ColumnDefinition Width="130" />
-                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="12" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
@@ -100,7 +100,7 @@
                         <TextBlock
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
-                            FontFamily="Segoe MDL2 Assets"
+                            FontFamily="{StaticResource Font.Icons}"
                             FontSize="14"
                             Text="&#xE710;" />
                     </Button>
@@ -114,7 +114,7 @@
                         <TextBlock
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
-                            FontFamily="Segoe MDL2 Assets"
+                            FontFamily="{StaticResource Font.Icons}"
                             FontSize="14"
                             Text="&#xE72C;" />
                     </Button>

@@ -121,14 +121,14 @@
         <Setter Property="LineStackingStrategy" Value="BlockLineHeight" />
         <Setter Property="LineHeight" Value="25" />
         <Setter Property="MaxHeight" Value="75" />
-        <Setter Property="Margin" Value="0,0,0,14" />
+        <Setter Property="Margin" Value="0,0,0,12" />
         <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=Text}" />
     </Style>
 
     <Style x:Key="ProfileDetail.HeroValue" TargetType="TextBlock">
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
-        <Setter Property="FontSize" Value="30" />
-        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="FontSize" Value="28" />
+        <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Margin" Value="0,2,0,0" />
     </Style>
 
@@ -171,7 +171,7 @@
 
     <!--  Pinned at the bottom; the separator shows that the content above can scroll underneath. Transparent: the glass panel shows through  -->
     <Style x:Key="ProfileDetail.ActionBar" TargetType="Border">
-        <Setter Property="Padding" Value="0,14,0,16" />
+        <Setter Property="Padding" Value="0,16" />
         <Setter Property="BorderBrush" Value="{StaticResource Brush.Card.Divider}" />
         <Setter Property="BorderThickness" Value="0,1,0,0" />
         <Setter Property="Background" Value="Transparent" />

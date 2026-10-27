@@ -26,7 +26,7 @@
         </Grid.RowDefinitions>
 
         <!--  Body  -->
-        <Grid Grid.Row="0" Margin="24,22,28,24">
+        <Grid Grid.Row="0" Margin="24">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
@@ -42,7 +42,7 @@
 
                 <TextBlock
                     x:Name="TbIconGlyph"
-                    FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                    FontFamily="{StaticResource Font.Icons}"
                     FontSize="22"
                     Foreground="{DynamicResource Brush.Warning}"
                     Text="&#xE9CE;" />
@@ -55,10 +55,8 @@
 
                 <TextBlock
                     x:Name="TbHeadline"
-                    Margin="0,0,0,6"
-                    FontSize="15"
-                    FontWeight="SemiBold"
-                    Foreground="{DynamicResource Brush.TextPrimary}"
+                    Margin="0,0,0,8"
+                    Style="{StaticResource Text.Subtitle}"
                     Text="Headline"
                     TextWrapping="Wrap"
                     Visibility="Collapsed" />
@@ -75,9 +73,8 @@
 
                     <TextBlock
                         x:Name="TbMessage"
-                        FontSize="13.5"
-                        Foreground="{DynamicResource Brush.TextSecondary}"
                         LineHeight="20"
+                        Style="{StaticResource Text.Label}"
                         Text="Message"
                         TextWrapping="Wrap" />
                 </ScrollViewer>
@@ -122,7 +119,7 @@
         <!--  Footer: translucent inset band so the window glass shows through (rounded like the window corners)  -->
         <Border
             Grid.Row="1"
-            Padding="20,12"
+            Padding="24,12"
             Background="{StaticResource Brush.Card.Inset}"
             BorderBrush="{StaticResource Brush.Card.Divider}"
             BorderThickness="0,1,0,0"

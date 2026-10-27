@@ -60,7 +60,7 @@
                                             <TextBlock
                                                 HorizontalAlignment="Center"
                                                 VerticalAlignment="Center"
-                                                FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                                FontFamily="{StaticResource Font.Icons}"
                                                 FontSize="30"
                                                 Foreground="{DynamicResource Brush.TextPrimary}"
                                                 Text="&#xE7FC;" />
@@ -80,6 +80,7 @@
                                         Margin="0,10,0,0"
                                         HorizontalAlignment="Center"
                                         FontSize="13"
+                                        FontWeight="SemiBold"
                                         Foreground="{DynamicResource Brush.TextSecondary}"
                                         Opacity="0.9"
                                         Text="Tracking active session"

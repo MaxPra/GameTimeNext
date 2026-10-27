@@ -31,9 +31,9 @@
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="10" />
+                    <RowDefinition Height="12" />
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="10" />
+                    <RowDefinition Height="12" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
@@ -46,7 +46,7 @@
                     Grid.Row="0"
                     Grid.Column="0"
                     VerticalAlignment="Center"
-                    Opacity="0.8"
+                    Style="{StaticResource Text.Label}"
                     Text="App name" />
 
                 <TextBox
@@ -61,7 +61,7 @@
                     Grid.Row="2"
                     Grid.Column="0"
                     VerticalAlignment="Center"
-                    Opacity="0.8"
+                    Style="{StaticResource Text.Label}"
                     Text="Description" />
 
                 <TextBox
@@ -74,7 +74,7 @@
                     Grid.Row="4"
                     Grid.Column="0"
                     VerticalAlignment="Center"
-                    Opacity="0.8"
+                    Style="{StaticResource Text.Label}"
                     Text="Menu call possible" />
 
                 <CheckBox
@@ -107,7 +107,8 @@
                 Width="140"
                 Height="36"
                 Content="Save"
-                IsDefault="True" />
+                IsDefault="True"
+                Style="{StaticResource Button.Primary}" />
         </Grid>
     </Grid>
 </ui:GTNWindowView>

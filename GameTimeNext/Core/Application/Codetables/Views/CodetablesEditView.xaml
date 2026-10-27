@@ -27,11 +27,11 @@
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
-                        <RowDefinition Height="10" />
+                        <RowDefinition Height="12" />
                         <RowDefinition Height="Auto" />
-                        <RowDefinition Height="10" />
+                        <RowDefinition Height="12" />
                         <RowDefinition Height="Auto" />
-                        <RowDefinition Height="10" />
+                        <RowDefinition Height="12" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
@@ -45,7 +45,7 @@
                         Grid.Row="0"
                         Grid.Column="0"
                         VerticalAlignment="Center"
-                        Opacity="0.8"
+                        Style="{StaticResource Text.Label}"
                         Text="Text type" />
 
                     <TextBox
@@ -62,7 +62,7 @@
                         Grid.Row="2"
                         Grid.Column="0"
                         VerticalAlignment="Center"
-                        Opacity="0.8"
+                        Style="{StaticResource Text.Label}"
                         Text="Description" />
 
                     <TextBox
@@ -90,14 +90,14 @@
                         Grid.Row="4"
                         Grid.Column="0"
                         VerticalAlignment="Center"
-                        Opacity="0.8"
+                        Style="{StaticResource Text.Label}"
                         Text="Permission" />
 
                     <TextBlock
                         Grid.Row="6"
                         Grid.Column="0"
                         VerticalAlignment="Center"
-                        Opacity="0.8"
+                        Style="{StaticResource Text.Label}"
                         Text="Number Range active" />
 
                     <StackPanel
@@ -126,7 +126,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="12" />
                         <RowDefinition Height="Auto" />
-                        <RowDefinition Height="10" />
+                        <RowDefinition Height="12" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
@@ -148,38 +148,38 @@
                         Grid.Row="0"
                         Grid.Column="0"
                         VerticalAlignment="Center"
-                        Opacity="0.8"
+                        Style="{StaticResource Text.Label}"
                         Text="Active" />
                     <TextBlock
                         Grid.Row="0"
                         Grid.Column="2"
                         VerticalAlignment="Center"
-                        Opacity="0.8"
+                        Style="{StaticResource Text.Label}"
                         Text="Description" />
                     <TextBlock
                         Grid.Row="0"
                         Grid.Column="4"
                         VerticalAlignment="Center"
-                        Opacity="0.8"
+                        Style="{StaticResource Text.Label}"
                         Text="Tooltip" />
                     <TextBlock
                         Grid.Row="0"
                         Grid.Column="6"
                         VerticalAlignment="Center"
-                        Opacity="0.8"
+                        Style="{StaticResource Text.Label}"
                         Text="Required Field" />
                     <TextBlock
                         Grid.Row="0"
                         Grid.Column="8"
                         VerticalAlignment="Center"
-                        Opacity="0.8"
+                        Style="{StaticResource Text.Label}"
                         Text="Control-Type" />
                     <TextBlock
                         x:Name="LblParamCodetable"
                         Grid.Row="0"
                         Grid.Column="10"
                         VerticalAlignment="Center"
-                        Opacity="0.8"
+                        Style="{StaticResource Text.Label}"
                         Text="Codetable" />
 
                     <CheckBox
@@ -298,7 +298,8 @@
                 Width="140"
                 Height="36"
                 Content="Save"
-                IsDefault="True" />
+                IsDefault="True"
+                Style="{StaticResource Button.Primary}" />
         </Grid>
     </Grid>
 </ui:GTNWindowView>

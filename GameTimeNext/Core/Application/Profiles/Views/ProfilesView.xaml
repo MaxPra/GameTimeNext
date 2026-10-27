@@ -95,11 +95,12 @@
                             <Button
                                 x:Name="BtnFilter"
                                 VerticalAlignment="Center"
-                                Style="{StaticResource Button.Icon}">
+                                Style="{StaticResource Button.Icon}"
+                                ToolTip="Filter library">
                                 <TextBlock
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    FontFamily="Segoe MDL2 Assets"
+                                    FontFamily="{StaticResource Font.Icons}"
                                     FontSize="14"
                                     Text="" />
                             </Button>
@@ -139,7 +140,7 @@
                             <TextBlock
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
-                                FontFamily="Segoe MDL2 Assets"
+                                FontFamily="{StaticResource Font.Icons}"
                                 FontSize="14"
                                 Text="&#xE72C;" />
                         </Button>
@@ -194,7 +195,7 @@
                                             Style="{StaticResource ModernContextMenuItemStyle}">
                                             <MenuItem.Icon>
                                                 <TextBlock
-                                                    FontFamily="Segoe MDL2 Assets"
+                                                    FontFamily="{StaticResource Font.Icons}"
                                                     FontSize="14"
                                                     Text="" />
                                             </MenuItem.Icon>
@@ -208,7 +209,7 @@
                                             Style="{StaticResource ModernContextMenuItemStyle}">
                                             <MenuItem.Icon>
                                                 <TextBlock
-                                                    FontFamily="Segoe MDL2 Assets"
+                                                    FontFamily="{StaticResource Font.Icons}"
                                                     FontSize="14"
                                                     Text="" />
                                             </MenuItem.Icon>

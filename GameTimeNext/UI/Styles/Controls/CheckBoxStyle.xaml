@@ -141,6 +141,7 @@
                         </Grid.ColumnDefinitions>
 
                         <ContentPresenter
+                            x:Name="ContentHost"
                             Grid.Column="0"
                             Margin="{TemplateBinding Padding}"
                             HorizontalAlignment="Left"
@@ -177,6 +178,11 @@
                     </Grid>
 
                     <ControlTemplate.Triggers>
+                        <!--  Without a label (label in a separate TextBlock): no gap, the box lines up with the inputs  -->
+                        <Trigger Property="HasContent" Value="False">
+                            <Setter TargetName="ContentHost" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="Box" Property="BorderBrush" Value="{DynamicResource Brush.Accent.Outline}" />
                         </Trigger>
@@ -239,6 +245,7 @@
                         </Border>
 
                         <ContentPresenter
+                            x:Name="ContentHost"
                             Grid.Column="1"
                             Margin="{TemplateBinding Padding}"
                             HorizontalAlignment="Left"
@@ -248,6 +255,11 @@
                     </Grid>
 
                     <ControlTemplate.Triggers>
+                        <!--  Without a label (label in a separate TextBlock): no gap, the box lines up with the inputs  -->
+                        <Trigger Property="HasContent" Value="False">
+                            <Setter TargetName="ContentHost" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="Box" Property="BorderBrush" Value="{DynamicResource Brush.Accent.Outline}" />
                         </Trigger>

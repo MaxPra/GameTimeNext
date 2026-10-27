@@ -263,7 +263,7 @@
                                                     ToolTip="Big Picture mode (for TV and controller)"
                                                     Visibility="Collapsed">
                                                     <TextBlock
-                                                        FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                                        FontFamily="{StaticResource Font.Icons}"
                                                         FontSize="14"
                                                         Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
                                                         Text="&#xE7FC;" />
@@ -277,7 +277,7 @@
                                                     ToolTip="Help for GameTimeNext"
                                                     Visibility="Collapsed">
                                                     <TextBlock
-                                                        FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                                        FontFamily="{StaticResource Font.Icons}"
                                                         FontSize="13"
                                                         Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
                                                         Text="&#xE897;" />
@@ -288,7 +288,7 @@
                                                     Margin="0,0,2,0"
                                                     Style="{StaticResource TitleBarMinButtonStyle}">
                                                     <TextBlock
-                                                        FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                                        FontFamily="{StaticResource Font.Icons}"
                                                         FontSize="12"
                                                         Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
                                                         Text="&#xE921;" />
@@ -301,14 +301,14 @@
                                                     <Grid>
                                                         <TextBlock
                                                             x:Name="MaxIcon"
-                                                            FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                                            FontFamily="{StaticResource Font.Icons}"
                                                             FontSize="12"
                                                             Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
                                                             Text="&#xE922;" />
                                                         <!--  Restore (maximized)  -->
                                                         <TextBlock
                                                             x:Name="RestoreIcon"
-                                                            FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                                            FontFamily="{StaticResource Font.Icons}"
                                                             FontSize="12"
                                                             Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
                                                             Text="&#xE923;"
@@ -318,7 +318,7 @@
 
                                                 <Button x:Name="PART_CloseButton" Style="{StaticResource TitleBarCloseButtonStyle}">
                                                     <TextBlock
-                                                        FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                                        FontFamily="{StaticResource Font.Icons}"
                                                         FontSize="12"
                                                         Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
                                                         Text="&#xE8BB;" />

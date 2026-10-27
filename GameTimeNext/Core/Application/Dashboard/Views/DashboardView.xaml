@@ -17,9 +17,9 @@
     <Grid Style="{StaticResource View.Root}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="18" />
+            <RowDefinition Height="16" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="18" />
+            <RowDefinition Height="16" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
@@ -56,8 +56,8 @@
                         ToolTip="Decrease Time Span"
                         Style="{StaticResource Button.Icon}">
                         <TextBlock
-                            FontFamily="Segoe MDL2 Assets"
-                            FontSize="9"
+                            FontFamily="{StaticResource Font.Icons}"
+                            FontSize="14"
                             Text="&#xE738;" />
                     </Button>
 
@@ -68,7 +68,7 @@
                         TextAlignment="Center"
                         Text="0"
                         FontSize="14"
-                        FontWeight="Bold"
+                        FontWeight="SemiBold"
                         Foreground="{DynamicResource Brush.TextPrimary}" />
 
                     <Button
@@ -78,8 +78,8 @@
                         ToolTip="Increase Time Span"
                         Style="{StaticResource Button.Icon}">
                         <TextBlock
-                            FontFamily="Segoe MDL2 Assets"
-                            FontSize="9"
+                            FontFamily="{StaticResource Font.Icons}"
+                            FontSize="14"
                             Text="&#xE710;" />
                     </Button>
                 </Grid>
@@ -107,8 +107,8 @@
                     ToolTip="Refresh"
                     Style="{StaticResource Button.Icon}">
                     <TextBlock
-                        FontFamily="Segoe MDL2 Assets"
-                        FontSize="9"
+                        FontFamily="{StaticResource Font.Icons}"
+                        FontSize="14"
                         Text="&#xE72C;" />
                 </Button>
             </Grid>
@@ -118,7 +118,7 @@
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1.2*" MinWidth="380" />
-                <ColumnDefinition Width="20" />
+                <ColumnDefinition Width="16" />
                 <ColumnDefinition Width="1*" MinWidth="320" />
             </Grid.ColumnDefinitions>
 
@@ -137,12 +137,12 @@
                     <!--  Card header  -->
                     <StackPanel
                         Grid.Row="0"
-                        Margin="16,14,16,0"
+                        Margin="16,16,16,0"
                         Orientation="Horizontal">
                         <TextBlock
                             Margin="0,0,8,0"
                             VerticalAlignment="Center"
-                            FontFamily="Segoe MDL2 Assets"
+                            FontFamily="{StaticResource Font.Icons}"
                             FontSize="16"
                             FontWeight="Normal"
                             Foreground="{DynamicResource Brush.Accent}"
@@ -219,7 +219,7 @@
                                 Grid.Row="0"
                                 Margin="0,0,0,8"
                                 FontSize="28"
-                                FontWeight="Bold"
+                                FontWeight="SemiBold"
                                 Foreground="{DynamicResource Brush.TextPrimary}"
                                 Text="n.A."
                                 TextTrimming="CharacterEllipsis"
@@ -244,7 +244,7 @@
                                             <TextBlock
                                                 Margin="0,0,6,0"
                                                 VerticalAlignment="Center"
-                                                FontFamily="Segoe MDL2 Assets"
+                                                FontFamily="{StaticResource Font.Icons}"
                                                 FontSize="14"
                                                 FontWeight="Normal"
                                                 Foreground="{DynamicResource Brush.Accent}"
@@ -252,13 +252,13 @@
                                             <TextBlock
                                                 x:Name="txtMostPlayedPlaytime"
                                                 VerticalAlignment="Center"
-                                                FontSize="15"
-                                                FontWeight="Bold"
+                                                FontSize="16"
+                                                FontWeight="SemiBold"
                                                 Foreground="{DynamicResource Brush.TextPrimary}"
                                                 Text="n.A." />
                                         </StackPanel>
                                         <TextBlock
-                                            FontSize="11"
+                                            FontSize="12"
                                             FontWeight="Normal"
                                             Foreground="{DynamicResource Brush.TextSecondary}"
                                             Text="Playtime" />
@@ -270,7 +270,7 @@
                                             <TextBlock
                                                 Margin="0,0,6,0"
                                                 VerticalAlignment="Center"
-                                                FontFamily="Segoe MDL2 Assets"
+                                                FontFamily="{StaticResource Font.Icons}"
                                                 FontSize="14"
                                                 FontWeight="Normal"
                                                 Foreground="{DynamicResource Brush.Accent}"
@@ -278,13 +278,13 @@
                                             <TextBlock
                                                 x:Name="txtMostPlayedDays"
                                                 VerticalAlignment="Center"
-                                                FontSize="15"
-                                                FontWeight="Bold"
+                                                FontSize="16"
+                                                FontWeight="SemiBold"
                                                 Foreground="{DynamicResource Brush.TextPrimary}"
                                                 Text="n.A." />
                                         </StackPanel>
                                         <TextBlock
-                                            FontSize="11"
+                                            FontSize="12"
                                             FontWeight="Normal"
                                             Foreground="{DynamicResource Brush.TextSecondary}"
                                             Text="Days Played" />
@@ -312,16 +312,16 @@
                     <!--  Card header  -->
                     <StackPanel
                         Grid.Row="0"
-                        Margin="16,14,16,0"
+                        Margin="16,16,16,0"
                         Orientation="Horizontal">
                         <TextBlock
                             Margin="0,0,8,0"
                             VerticalAlignment="Center"
-                            FontFamily="Segoe MDL2 Assets"
+                            FontFamily="{StaticResource Font.Icons}"
                             FontSize="16"
                             FontWeight="Normal"
                             Foreground="{DynamicResource Brush.Accent}"
-                            Text="&#xE7FC;" />
+                            Text="&#xE81C;" />
                         <TextBlock
                             VerticalAlignment="Center"
                             FontSize="14"
@@ -371,7 +371,7 @@
                         <Grid Grid.Column="2" VerticalAlignment="Stretch">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
-                                <RowDefinition Height="10" />
+                                <RowDefinition Height="8" />
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="8" />
                                 <RowDefinition Height="Auto" />
@@ -381,8 +381,8 @@
                             <TextBlock
                                 x:Name="txtLastPlayedTitle"
                                 Grid.Row="0"
-                                FontSize="18"
-                                FontWeight="Bold"
+                                FontSize="20"
+                                FontWeight="SemiBold"
                                 Foreground="{DynamicResource Brush.TextPrimary}"
                                 Text="n.A."
                                 TextTrimming="CharacterEllipsis"
@@ -395,7 +395,7 @@
                                 Style="{StaticResource Card.Inset}">
                                 <TextBlock
                                     x:Name="txtLastPlayedDate"
-                                    FontSize="11"
+                                    FontSize="12"
                                     FontWeight="Normal"
                                     Foreground="{DynamicResource Brush.TextSecondary}"
                                     Text="n.A." />
@@ -410,7 +410,7 @@
                                     <TextBlock
                                         Margin="0,0,6,0"
                                         VerticalAlignment="Center"
-                                        FontFamily="Segoe MDL2 Assets"
+                                        FontFamily="{StaticResource Font.Icons}"
                                         FontSize="14"
                                         FontWeight="Normal"
                                         Foreground="{DynamicResource Brush.Accent}"
@@ -436,13 +436,13 @@
         <Grid Grid.Row="4" MinHeight="220">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1.2*" />
-                <ColumnDefinition Width="20" />
+                <ColumnDefinition Width="16" />
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="20" />
+                <ColumnDefinition Width="16" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <!--  Last played  -->
+            <!--  Games played  -->
             <Border
                 Grid.Column="0"
                 Padding="0"
@@ -455,16 +455,16 @@
 
                     <StackPanel
                         Grid.Row="0"
-                        Margin="16,14,16,0"
+                        Margin="16,16,16,0"
                         Orientation="Horizontal">
                         <TextBlock
                             Margin="0,0,8,0"
                             VerticalAlignment="Center"
-                            FontFamily="Segoe MDL2 Assets"
+                            FontFamily="{StaticResource Font.Icons}"
                             FontSize="16"
                             FontWeight="Normal"
                             Foreground="{DynamicResource Brush.Accent}"
-                            Text="&#xE823;" />
+                            Text="&#xE8FD;" />
                         <TextBlock
                             VerticalAlignment="Center"
                             FontSize="14"
@@ -490,14 +490,14 @@
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <Border
-                                    Padding="10,8"
+                                    Padding="12,8"
                                     Style="{StaticResource Card.Inset}">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="72" />
-                                            <ColumnDefinition Width="10" />
+                                            <ColumnDefinition Width="12" />
                                             <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="10" />
+                                            <ColumnDefinition Width="12" />
                                             <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
 
@@ -525,7 +525,7 @@
                                                 TextTrimming="CharacterEllipsis" />
                                             <TextBlock
                                                 Margin="0,2,0,0"
-                                                FontSize="11"
+                                                FontSize="12"
                                                 FontWeight="Normal"
                                                 Foreground="{DynamicResource Brush.TextSecondary}"
                                                 Text="{Binding ItemObject.LAPL, StringFormat={}{0:dd.MM.yyyy HH:mm}}" />
@@ -533,8 +533,8 @@
 
                                         <TextBlock
                                             Grid.Column="4"
-                                            FontSize="18"
-                                            FontWeight="Bold"
+                                            FontSize="16"
+                                            FontWeight="SemiBold"
                                             Foreground="{DynamicResource Brush.TextPrimary}"
                                             Text="{Binding COCPLTI}" />
                                     </Grid>
@@ -559,12 +559,12 @@
 
                     <StackPanel
                         Grid.Row="0"
-                        Margin="16,14,16,0"
+                        Margin="16,16,16,0"
                         Orientation="Horizontal">
                         <TextBlock
                             Margin="0,0,8,0"
                             VerticalAlignment="Center"
-                            FontFamily="Segoe MDL2 Assets"
+                            FontFamily="{StaticResource Font.Icons}"
                             FontSize="16"
                             FontWeight="Normal"
                             Foreground="{DynamicResource Brush.Accent}"
@@ -594,14 +594,14 @@
                         <Border
                             Grid.Row="0"
                             Grid.Column="0"
-                            Padding="14,12"
+                            Padding="16,12"
                             Style="{StaticResource Card.Inset}">
                             <StackPanel Orientation="Vertical">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock
                                         Margin="0,0,8,0"
                                         VerticalAlignment="Center"
-                                        FontFamily="Segoe MDL2 Assets"
+                                        FontFamily="{StaticResource Font.Icons}"
                                         FontSize="18"
                                         FontWeight="Normal"
                                         Foreground="{DynamicResource Brush.Accent}"
@@ -610,13 +610,13 @@
                                         x:Name="txtTotalPlaytime"
                                         VerticalAlignment="Center"
                                         FontSize="20"
-                                        FontWeight="Bold"
+                                        FontWeight="SemiBold"
                                         Foreground="{DynamicResource Brush.TextPrimary}"
                                         Text="n.A." />
                                 </StackPanel>
                                 <TextBlock
                                     Margin="0,4,0,0"
-                                    FontSize="11"
+                                    FontSize="12"
                                     FontWeight="Normal"
                                     Foreground="{DynamicResource Brush.TextSecondary}"
                                     Text="Total Playtime" />
@@ -627,14 +627,14 @@
                         <Border
                             Grid.Row="0"
                             Grid.Column="2"
-                            Padding="14,12"
+                            Padding="16,12"
                             Style="{StaticResource Card.Inset}">
                             <StackPanel Orientation="Vertical">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock
                                         Margin="0,0,8,0"
                                         VerticalAlignment="Center"
-                                        FontFamily="Segoe MDL2 Assets"
+                                        FontFamily="{StaticResource Font.Icons}"
                                         FontSize="18"
                                         FontWeight="Normal"
                                         Foreground="{DynamicResource Brush.Accent}"
@@ -643,13 +643,13 @@
                                         x:Name="txtDaysPlayed"
                                         VerticalAlignment="Center"
                                         FontSize="20"
-                                        FontWeight="Bold"
+                                        FontWeight="SemiBold"
                                         Foreground="{DynamicResource Brush.TextPrimary}"
                                         Text="n.A." />
                                 </StackPanel>
                                 <TextBlock
                                     Margin="0,4,0,0"
-                                    FontSize="11"
+                                    FontSize="12"
                                     FontWeight="Normal"
                                     Foreground="{DynamicResource Brush.TextSecondary}"
                                     Text="Days Played" />
@@ -661,14 +661,14 @@
                             Grid.Row="2"
                             Grid.Column="0"
                             Grid.ColumnSpan="3"
-                            Padding="14,12"
+                            Padding="16,12"
                             Style="{StaticResource Card.Inset}">
                             <StackPanel Orientation="Vertical">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock
                                         Margin="0,0,8,0"
                                         VerticalAlignment="Center"
-                                        FontFamily="Segoe MDL2 Assets"
+                                        FontFamily="{StaticResource Font.Icons}"
                                         FontSize="18"
                                         FontWeight="Normal"
                                         Foreground="{DynamicResource Brush.Accent}"
@@ -677,13 +677,13 @@
                                         x:Name="txtGamesPlayed"
                                         VerticalAlignment="Center"
                                         FontSize="20"
-                                        FontWeight="Bold"
+                                        FontWeight="SemiBold"
                                         Foreground="{DynamicResource Brush.TextPrimary}"
                                         Text="n.A." />
                                 </StackPanel>
                                 <TextBlock
                                     Margin="0,4,0,0"
-                                    FontSize="11"
+                                    FontSize="12"
                                     FontWeight="Normal"
                                     Foreground="{DynamicResource Brush.TextSecondary}"
                                     Text="Games Played" />
@@ -709,12 +709,12 @@
 
                     <StackPanel
                         Grid.Row="0"
-                        Margin="16,14,16,0"
+                        Margin="16,16,16,0"
                         Orientation="Horizontal">
                         <TextBlock
                             Margin="0,0,8,0"
                             VerticalAlignment="Center"
-                            FontFamily="Segoe MDL2 Assets"
+                            FontFamily="{StaticResource Font.Icons}"
                             FontSize="16"
                             FontWeight="Normal"
                             Foreground="{DynamicResource Brush.Accent}"
@@ -730,7 +730,7 @@
                     <Grid Grid.Row="1" Margin="16,12,16,16">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*" />
-                            <RowDefinition Height="10" />
+                            <RowDefinition Height="12" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
@@ -739,19 +739,19 @@
 
                         <Border
                             Grid.Row="0"
-                            Padding="12,10"
+                            Padding="16,12"
                             Style="{StaticResource Card.Inset}">
                             <StackPanel Orientation="Vertical">
                                 <TextBlock
-                                    FontSize="11"
+                                    FontSize="12"
                                     FontWeight="Normal"
                                     Foreground="{DynamicResource Brush.TextSecondary}"
                                     Text="Played today" />
                                 <TextBlock
                                     x:Name="txtStatPlayedToday"
                                     Margin="0,4,0,0"
-                                    FontSize="19"
-                                    FontWeight="Bold"
+                                    FontSize="20"
+                                    FontWeight="SemiBold"
                                     Foreground="{DynamicResource Brush.TextPrimary}"
                                     Text="n.A." />
                             </StackPanel>
@@ -759,32 +759,32 @@
 
                         <Border
                             Grid.Row="2"
-                            Padding="12,10"
+                            Padding="16,12"
                             Style="{StaticResource Card.Inset}">
                             <StackPanel Orientation="Vertical">
                                 <TextBlock
-                                    FontSize="11"
+                                    FontSize="12"
                                     FontWeight="Normal"
                                     Foreground="{DynamicResource Brush.TextSecondary}"
                                     Text="Longest session" />
                                 <TextBlock
                                     x:Name="txtStatLongestSession"
                                     Margin="0,4,0,0"
-                                    FontSize="19"
-                                    FontWeight="Bold"
+                                    FontSize="20"
+                                    FontWeight="SemiBold"
                                     Foreground="{DynamicResource Brush.TextPrimary}"
                                     Text="n.A." />
                                 <TextBlock
                                     x:Name="txtStatLongestSessionGame"
                                     Margin="0,2,0,0"
-                                    FontSize="11"
+                                    FontSize="12"
                                     FontWeight="Normal"
                                     Foreground="{DynamicResource Brush.TextSecondary}"
                                     Text="(n.A.)" />
                                 <TextBlock
                                     x:Name="txtStatLongestSessionDate"
                                     Margin="0,2,0,0"
-                                    FontSize="11"
+                                    FontSize="12"
                                     FontWeight="Normal"
                                     Foreground="{DynamicResource Brush.TextSecondary}"
                                     Text="(n.A.)" />

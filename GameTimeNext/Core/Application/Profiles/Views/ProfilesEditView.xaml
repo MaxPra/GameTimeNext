@@ -70,8 +70,7 @@
 
                                     <TextBlock
                                         Grid.Row="0"
-                                        FontSize="14"
-                                        FontWeight="SemiBold"
+                                        Style="{StaticResource Text.BodyStrong}"
                                         Text="Profile" />
 
                                     <TextBox
@@ -83,13 +82,13 @@
 
                                     <TextBlock
                                         Grid.Row="4"
-                                        Opacity="0.8"
+                                        Style="{StaticResource Text.Label}"
                                         Text="Target play style" />
 
                                     <Grid Grid.Row="6">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="10" />
+                                            <ColumnDefinition Width="8" />
                                             <ColumnDefinition Width="120" />
                                         </Grid.ColumnDefinitions>
 
@@ -110,13 +109,13 @@
 
                                     <TextBlock
                                         Grid.Row="8"
-                                        Opacity="0.8"
+                                        Style="{StaticResource Text.Label}"
                                         Text="Game folder (where the .exe is)" />
 
                                     <Grid Grid.Row="10">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="10" />
+                                            <ColumnDefinition Width="8" />
                                             <ColumnDefinition Width="120" />
                                         </Grid.ColumnDefinitions>
 
@@ -138,7 +137,7 @@
 
                                     <TextBlock
                                         Grid.Row="12"
-                                        Opacity="0.8"
+                                        Style="{StaticResource Text.Label}"
                                         Text="Platform" />
 
                                     <Grid Grid.Row="14">
@@ -164,16 +163,10 @@
                                             Grid.Column="2"
                                             ToolTip="Add Platform through wizard"
                                             Style="{StaticResource Button.Icon}">
-                                            <Viewbox
-                                                Width="18"
-                                                Height="18"
-                                                Stretch="Uniform">
-                                                <TextBlock
-                                                    VerticalAlignment="Center"
-                                                    FontFamily="Segoe UI Emoji"
-                                                    FontSize="16"
-                                                    Text="🧙" />
-                                            </Viewbox>
+                                            <TextBlock
+                                                FontSize="14"
+                                                Style="{StaticResource Text.Icon}"
+                                                Text="&#xE710;" />
                                         </Button>
                                     </Grid>
 
@@ -218,15 +211,15 @@
                         <Button
                             x:Name="btnLinkFile"
                             Width="140"
-                            Height="34"
+                            Height="36"
                             Content="Link file…"
                             ToolTip="Start the game with an executable, a shortcut or a URI" />
 
                         <Button
                             x:Name="btnLauncherImport"
                             Width="140"
-                            Height="34"
-                            Margin="10,0,0,0"
+                            Height="36"
+                            Margin="8,0,0,0"
                             Content="Launcher import"
                             ToolTip="Import an installed game from a launcher" />
                     </StackPanel>
@@ -235,14 +228,14 @@
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
-                                <RowDefinition Height="14" />
+                                <RowDefinition Height="16" />
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
                             <Border
                                 x:Name="pnlLauncherLinkState"
                                 Grid.Row="0"
-                                Padding="12,10"
+                                Padding="16,12"
                                 Visibility="Visible"
                                 Style="{StaticResource Card}">
                                 <Grid>
@@ -257,8 +250,10 @@
                                     <TextBlock
                                         Grid.Column="0"
                                         VerticalAlignment="Center"
-                                        FontSize="16"
-                                        Text="🔗" />
+                                        FontSize="18"
+                                        Foreground="{DynamicResource Brush.Accent}"
+                                        Style="{StaticResource Text.Icon}"
+                                        Text="&#xE71B;" />
 
                                     <StackPanel
                                         Grid.Column="2"
@@ -272,7 +267,7 @@
                                         <TextBlock
                                             x:Name="txtLauncherGameId"
                                             Margin="0,2,0,0"
-                                            Opacity="0.8"
+                                            Style="{StaticResource Text.Hint}"
                                             TextTrimming="CharacterEllipsis" />
                                     </StackPanel>
 
@@ -280,7 +275,7 @@
                                         x:Name="btnUnlinkLauncher"
                                         Grid.Column="4"
                                         Width="110"
-                                        Height="30"
+                                        Height="36"
                                         VerticalAlignment="Center"
                                         Content="Remove link"
                                         ToolTip="Remove the launcher link from this profile" />
@@ -303,8 +298,7 @@
 
                                     <TextBlock
                                         Grid.Row="0"
-                                        FontSize="14"
-                                        FontWeight="SemiBold"
+                                        Style="{StaticResource Text.BodyStrong}"
                                         Text="Launch settings" />
 
                                     <CheckBox
@@ -321,7 +315,7 @@
 
                                         <TextBlock
                                             Grid.Row="0"
-                                            Opacity="0.8"
+                                            Style="{StaticResource Text.Label}"
                                             Text="Launch arguments" />
 
                                         <TextBox
@@ -353,8 +347,7 @@
 
                                 <TextBlock
                                     Grid.Row="0"
-                                    FontSize="14"
-                                    FontWeight="SemiBold"
+                                    Style="{StaticResource Text.BodyStrong}"
                                     Text="Tags" />
 
                                 <ItemsControl Grid.Row="2" ItemsSource="{Binding T1GROUPs}">
@@ -386,7 +379,7 @@
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
-                                <RowDefinition Height="14" />
+                                <RowDefinition Height="16" />
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
@@ -399,7 +392,7 @@
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="12" />
                                         <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="10" />
+                                        <RowDefinition Height="12" />
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="12" />
                                         <RowDefinition Height="Auto" />
@@ -407,8 +400,7 @@
 
                                     <TextBlock
                                         Grid.Row="0"
-                                        FontSize="14"
-                                        FontWeight="SemiBold"
+                                        Style="{StaticResource Text.BodyStrong}"
                                         Text="Cover" />
 
                                     <TextBox
@@ -422,7 +414,7 @@
                                     <Grid Grid.Row="4">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="10" />
+                                            <ColumnDefinition Width="8" />
                                             <ColumnDefinition Width="150" />
                                         </Grid.ColumnDefinitions>
 
@@ -443,7 +435,7 @@
 
                                     <TextBlock
                                         Grid.Row="6"
-                                        Opacity="0.65"
+                                        Style="{StaticResource Text.Hint}"
                                         Text="Use either “Browse local…” or “SteamGridDB…” to set the image path." />
                                 </Grid>
                             </Border>
@@ -463,8 +455,7 @@
 
                                     <TextBlock
                                         Grid.Row="0"
-                                        FontSize="14"
-                                        FontWeight="SemiBold"
+                                        Style="{StaticResource Text.BodyStrong}"
                                         Text="Appearance" />
 
                                     <CheckBox
@@ -483,7 +474,7 @@
 
                                         <TextBlock
                                             Grid.Row="0"
-                                            Opacity="0.8"
+                                            Style="{StaticResource Text.Label}"
                                             Text="Accent colors" />
 
                                         <StackPanel Grid.Row="2" Orientation="Horizontal">
@@ -509,7 +500,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="10" />
+                <ColumnDefinition Width="8" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
@@ -525,7 +516,8 @@
                 Grid.Column="3"
                 Width="140"
                 Height="36"
-                Content="Save" />
+                Content="Save"
+                Style="{StaticResource Button.Primary}" />
         </Grid>
     </Grid>
 </ui:GTNWindowView>

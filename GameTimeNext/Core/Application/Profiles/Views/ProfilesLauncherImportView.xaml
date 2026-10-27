@@ -21,7 +21,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="8" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="14" />
+            <RowDefinition Height="16" />
             <RowDefinition Height="*" />
             <RowDefinition Height="16" />
             <RowDefinition Height="Auto" />
@@ -29,7 +29,7 @@
 
         <TextBlock
             Grid.Row="0"
-            Opacity="0.8"
+            Style="{StaticResource Text.Label}"
             Text="Search" />
 
         <TextBox
@@ -68,7 +68,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="10" />
+                <ColumnDefinition Width="8" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
@@ -85,7 +85,8 @@
                 Grid.Column="3"
                 Width="140"
                 Height="36"
-                Content="Import" />
+                Content="Import"
+                Style="{StaticResource Button.Primary}" />
         </Grid>
     </Grid>
 </ui:GTNWindowView>

@@ -34,9 +34,7 @@
                 <TextBlock
                     x:Name="txGameName"
                     HorizontalAlignment="Center"
-                    FontSize="18"
-                    FontWeight="SemiBold"
-                    Foreground="{DynamicResource Brush.TextPrimary}"
+                    Style="{StaticResource Text.Title}"
                     TextTrimming="CharacterEllipsis" />
 
                 <TextBlock

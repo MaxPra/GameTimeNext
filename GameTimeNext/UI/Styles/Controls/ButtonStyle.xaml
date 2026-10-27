@@ -300,7 +300,7 @@
                                 x:Name="CheckMark"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
-                                FontFamily="Segoe MDL2 Assets"
+                                FontFamily="{StaticResource Font.Icons}"
                                 FontSize="15"
                                 FontWeight="Bold"
                                 Foreground="White"

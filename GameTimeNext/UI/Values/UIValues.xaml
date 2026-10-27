@@ -4,4 +4,15 @@
 
     <CubicEase x:Key="Ease.Out" EasingMode="EaseOut" />
 
+    <!--
+        Icon font for all glyphs: the Windows 11 icons, Segoe MDL2 Assets as fallback on Windows 10 (same code points).
+        Used with StaticResource everywhere, so the whole app shows one icon style.
+    -->
+    <FontFamily x:Key="Font.Icons">Segoe Fluent Icons, Segoe MDL2 Assets</FontFamily>
+
+    <!--
+        ===== Spacing =====
+        4 px grid: 4 / 8 / 12 / 16 / 24 / 32. Gaps between label and input are 12, between cards and sections 16.
+    -->
+
 </ResourceDictionary>
