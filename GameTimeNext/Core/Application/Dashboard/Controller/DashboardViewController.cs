@@ -27,6 +27,8 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
         DateTime? timeSpanStart = null;
         DateTime timeSpanEnd = DateTime.Today.AddDays(1).AddTicks(-1);
         bool showOffsetSelection = false;
+        // Playtime of the whole period in minutes (playtime overview), the base of the most played share
+        double totalPlaytime = 0;
 
         public DashboardViewController(UIXApplication app) : base(app)
         {
@@ -79,7 +81,7 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
 
         protected override void BuildImpl()
         {
-            FnControls.SetVisible(GetView().grdTimeSpanOffset, showOffsetSelection);
+            FnControls.SetVisible(GetView().pnlTimeSpanOffset, showOffsetSelection);
             FnControls.SetEnabled(GetView().BtnIncreaseTimeSpan, timeSpanOffset < 0);
         }
 
@@ -97,9 +99,10 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
 
         protected override void FillViewImpl()
         {
-            GetView().txtTimeSpanOffset.Text = timeSpanOffset.ToString(CultureInfo.CurrentCulture);
+            GetView().txtTimeSpanRange.Text = FormatTimeSpan();
 
             FillSectionPlaytimeOverview();
+            FillSectionDayBars();
             FillSectionOverallStatistics();
             FillSectionLastPlayed();
             FillSectionMostPlayed();
@@ -187,6 +190,32 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
             }
         }
 
+        /// <summary>
+        /// The shown period in words: the day, the month, a date range or "All time".
+        /// </summary>
+        private string FormatTimeSpan()
+        {
+            if (timeSpanStart is not DateTime start)
+                return "All time";
+
+            DateTime end = timeSpanEnd.Date;
+
+            switch (GetView().CmbTimeRange.SelectedIndex)
+            {
+                case 3:
+                    // Day
+                    return start.ToString("D", CultureInfo.CurrentCulture);
+                case 5:
+                    // Month
+                    return start.ToString("Y", CultureInfo.CurrentCulture);
+            }
+
+            if (start.Date == end)
+                return start.ToString("d", CultureInfo.CurrentCulture);
+
+            return $"{start.ToString("d", CultureInfo.CurrentCulture)} – {end.ToString("d", CultureInfo.CurrentCulture)}";
+        }
+
         private async Task BuildPlayedProfilesListBoxAsync()
         {
             GetApp().Loader.Begin();
@@ -220,14 +249,71 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
 
         private void FillSectionPlaytimeOverview()
         {
-            GetView().txtTotalPlaytime.Text = FnTime.FormatMinutesAsHoursAndMinutes(TFPROFI.GetPlaytime(timeSpanStart, timeSpanEnd));
-            GetView().txtGamesPlayed.Text = TFPROFI.GetPlayedProfilesCount(timeSpanStart, timeSpanEnd).ToString(CultureInfo.CurrentCulture);
-            GetView().txtDaysPlayed.Text = TFPROFI.GetDaysPlayed(timeSpanStart, timeSpanEnd).ToString(CultureInfo.CurrentCulture);
+            totalPlaytime = TFPROFI.GetPlaytime(timeSpanStart, timeSpanEnd);
+            int games = TFPROFI.GetPlayedProfilesCount(timeSpanStart, timeSpanEnd);
+            int days = TFPROFI.GetDaysPlayed(timeSpanStart, timeSpanEnd);
+
+            GetView().txtTotalPlaytime.Text = FnTime.FormatMinutesAsHoursAndMinutes(totalPlaytime);
+            GetView().txtDaysPlayed.Text = FormatCount(days, "day played", "days played");
+            GetView().txtGamesPlayed.Text = FormatCount(games, "game", "games");
+            GetView().txtAveragePerDay.Text = $"Ø {FnTime.FormatMinutesAsHoursAndMinutes(days > 0 ? totalPlaytime / days : 0, FnTime.NoValue)} per day";
+        }
+
+        /// <summary>
+        /// Playtime of the last 7 days up to the end of the period, as bars relative to the peak day.
+        /// </summary>
+        private void FillSectionDayBars()
+        {
+            DateTime lastDay = timeSpanEnd.Date;
+            List<DashboardDayBar> bars = new List<DashboardDayBar>(7);
+
+            double[] minutes = new double[7];
+            for (int i = 0; i < 7; i++)
+            {
+                DateTime day = lastDay.AddDays(i - 6);
+                minutes[i] = TFPROFI.GetPlaytime(day, day.AddDays(1).AddTicks(-1));
+            }
+
+            double peak = minutes.Max();
+            int peakIndex = peak > 0 ? Array.IndexOf(minutes, peak) : -1;
+
+            for (int i = 0; i < 7; i++)
+            {
+                DateTime day = lastDay.AddDays(i - 6);
+                double ratio = peak > 0 ? minutes[i] / peak : 0;
+                string time = FnTime.FormatMinutesAsHoursAndMinutes(minutes[i]);
+
+                bars.Add(new DashboardDayBar
+                {
+                    Label = day.ToString("ddd", CultureInfo.CurrentCulture),
+                    ValueText = time,
+                    ToolTipText = $"{day.ToString("ddd", CultureInfo.CurrentCulture)}, {day.ToString("d", CultureInfo.CurrentCulture)}: {time}",
+                    BarHeight = new GridLength(ratio, GridUnitType.Star),
+                    RestHeight = new GridLength(1 - ratio, GridUnitType.Star),
+                    IsPeak = i == peakIndex,
+                    IsToday = day == DateTime.Today
+                });
+            }
+
+            GetView().icDayBars.ItemsSource = bars;
+            GetView().txtDayBarsCaption.Text = lastDay == DateTime.Today
+                ? "Last 7 days"
+                : $"7 days up to {lastDay.ToString("d", CultureInfo.CurrentCulture)}";
+        }
+
+        private static string FormatCount(int count, string singular, string plural)
+        {
+            return $"{count.ToString(CultureInfo.CurrentCulture)} {(count == 1 ? singular : plural)}";
         }
 
         private void FillSectionOverallStatistics()
         {
             GetView().txtStatPlayedToday.Text = FnTime.FormatMinutesAsHoursAndMinutes(TFPROFI.GetPlaytimeToday(timeSpanStart, timeSpanEnd));
+
+            // Fixed periods, independent of the selected time span
+            FillPeriodTile(FnTimeSpan.TimeSpanType.Week, GetView().txtStatThisWeek, GetView().txtStatThisWeekDays);
+            FillPeriodTile(FnTimeSpan.TimeSpanType.Month, GetView().txtStatThisMonth, GetView().txtStatThisMonthDays);
+            FillPeriodTile(FnTimeSpan.TimeSpanType.Year, GetView().txtStatThisYear, GetView().txtStatThisYearDays);
 
             {
                 // Longest Session
@@ -236,6 +322,13 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
                 GetView().txtStatLongestSessionGame.Text = gana;
                 GetView().txtStatLongestSessionDate.Text = $"({CFProfilesApp.FormatFirstLastDate(plto)})";
             }
+        }
+
+        private static void FillPeriodTile(FnTimeSpan.TimeSpanType type, TextBlock txtPlaytime, TextBlock txtDays)
+        {
+            (DateTime start, DateTime end) = FnTimeSpan.GetBeginningAndEnd(type);
+            txtPlaytime.Text = FnTime.FormatMinutesAsHoursAndMinutes(TFPROFI.GetPlaytime(start, end));
+            txtDays.Text = FormatCount(TFPROFI.GetDaysPlayed(start, end), "day played", "days played");
         }
 
         private void FillSectionLastPlayed()
@@ -255,6 +348,12 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
             GetView().txtMostPlayedTitle.Text = gana;
             GetView().txtMostPlayedPlaytime.Text = FnTime.FormatMinutesAsHoursAndMinutes(plti, FnTime.NoValue);
             GetView().txtMostPlayedDays.Text = days.ToString(CultureInfo.CurrentCulture);
+            GetView().txtMostPlayedAverage.Text = FnTime.FormatMinutesAsHoursAndMinutes(days > 0 ? plti / days : 0, FnTime.NoValue);
+
+            // Share of the period's playtime (FillSectionPlaytimeOverview runs before and sets totalPlaytime)
+            double share = totalPlaytime > 0 ? Math.Clamp(plti / totalPlaytime, 0, 1) : 0;
+            GetView().txtMostPlayedShare.Text = totalPlaytime > 0 ? share.ToString("P0", CultureInfo.CurrentCulture) : FnTime.NoValue;
+            GetView().scMostPlayedShare.ScaleX = share;
 
             BitmapImage? coverImage = FnImage.LoadImageWithoutLock(ppfn, 300, 450);
             GetView().ccMostPlayedCase.Content = coverImage;
