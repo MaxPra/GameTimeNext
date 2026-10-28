@@ -80,7 +80,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         /// </summary>
         private void UpdateUIIdle()
         {
-            T1PROFI t1profi = _dataWrapper!.GetTypedTableObject();
+            T1PROFI t1profi = _dataWrapper!.Get();
             bool isSealed = TFPROFI.IsSealed(t1profi);
 
             GetView().btnLaunchGame.Content = isSealed ? "Unwrap game" : "Launch game";
@@ -124,7 +124,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             if (_dataWrapper == null)
                 return;
 
-            AddIdentifier("T1PROFI", _dataWrapper.GetTypedTableObject());
+            AddIdentifier("T1PROFI", _dataWrapper.Get());
         }
 
         protected override void BuildImpl()
@@ -136,7 +136,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
             ResetView();
 
-            GetView().imgProfileCover.Source = CFProfilesApp.LoadProfileCover(_dataWrapper!.GetTypedTableObject().PPFN);
+            GetView().imgProfileCover.Source = CFProfilesApp.LoadProfileCover(_dataWrapper!.Get().PPFN);
 
             if (_gameRunning || _gameLaunching)
                 GetView().btnLaunchGame.IsEnabled = true;
@@ -147,7 +147,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             //bool isIGDBLinkedCorrectly = !FnString.IsNullEmptyOrWhitespace(AppEnvironment.GetAppConfig().AppSettings.TwitchIGDBClientID) &&
             //    !FnString.IsNullEmptyOrWhitespace(AppEnvironment.GetAppConfig().AppSettings.TwitchIGDBClientSecret);
 
-            FnControls.SetVisible(GetView().pnlProgressSection, _dataWrapper!.GetTypedTableObject().ETTY != EstimatedTimeTypes.EST_TIME_NONE && TFPLTHR.HasCurrentPlaythrough(_dataWrapper!.GetTypedTableObject().PFID));
+            FnControls.SetVisible(GetView().pnlProgressSection, _dataWrapper!.Get().ETTY != EstimatedTimeTypes.EST_TIME_NONE && TFPLTHR.HasCurrentPlaythrough(_dataWrapper!.Get().PFID));
 
             BuildProgressBarPanel();
 
@@ -210,7 +210,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         private void FillTodaysGameTime()
         {
 
-            double todaysGameTimeMinutes = TFPROFI.GetTodaysGameTimeInMinutes(_dataWrapper!.GetTypedTableObject().PFID);
+            double todaysGameTimeMinutes = TFPROFI.GetTodaysGameTimeInMinutes(_dataWrapper!.Get().PFID);
 
             GetView().txPlayedToday.Text = FnTime.FormatMinutesAsHoursAndMinutes(todaysGameTimeMinutes);
         }
@@ -244,7 +244,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         private void FillCurrentPlaythroughName()
         {
-            T1PLTHR t1plthr = TFPLTHR.GetCurrentPlaythrough(_dataWrapper!.GetTypedTableObject().PFID);
+            T1PLTHR t1plthr = TFPLTHR.GetCurrentPlaythrough(_dataWrapper!.Get().PFID);
 
             if (t1plthr == null)
                 return;
@@ -254,7 +254,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         private void FillProfileRating()
         {
-            double rating = TFPLTHR.GetProfileRating(_dataWrapper!.GetTypedTableObject().PFID);
+            double rating = TFPLTHR.GetProfileRating(_dataWrapper!.Get().PFID);
 
             FnControls.SetVisible(GetView().pnlRating, rating > 0);
 
@@ -265,7 +265,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         private void FillLastSessionGameTime()
         {
 
-            double lastSessionTime = TFSESSI.GetLastSessionGameTime(_dataWrapper!.GetTypedTableObject().PFID);
+            double lastSessionTime = TFSESSI.GetLastSessionGameTime(_dataWrapper!.Get().PFID);
 
             string text = FnTime.FormatMinutesAsHoursAndMinutes(lastSessionTime, FnTime.NoValue);
 
@@ -274,7 +274,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         private void FillProgressbarAndTimes()
         {
-            T1PROFI t1profi = _dataWrapper!.GetTypedTableObject();
+            T1PROFI t1profi = _dataWrapper!.Get();
 
             switch (t1profi.ETTY)
             {
@@ -371,7 +371,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             query.AddField(K1PROFI.Name, K1PROFI.Fields.LAPL);
 
             // Where restrictions
-            query.AddWhere(K1PROFI.Name, K1PROFI.Fields.PFID, QueryCompareType.EQUALS, _dataWrapper!.GetTypedTableObject().PFID);
+            query.AddWhere(K1PROFI.Name, K1PROFI.Fields.PFID, QueryCompareType.EQUALS, _dataWrapper!.Get().PFID);
 
             return query;
         }
@@ -379,7 +379,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         public UIXQuery BuildCurrentPlaythroughTimeQuery()
         {
 
-            long pfid = _dataWrapper!.GetTypedTableObject()!.PFID;
+            long pfid = _dataWrapper!.Get().PFID;
 
             UIXQuery query = new UIXQuery(K1PLTHR.Name, AppEnvironment.GetDataBaseManager().GetConnection());
 
@@ -405,7 +405,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             query.AddSum(K1SESSI.Name, K1SESSI.Fields.PLTI, "TotalPlaytime");
 
             // Where restrictions
-            query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PFID, QueryCompareType.EQUALS, _dataWrapper!.GetTypedTableObject().PFID);
+            query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PFID, QueryCompareType.EQUALS, _dataWrapper!.Get().PFID);
 
             return query;
         }
@@ -413,9 +413,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         private void BuildCurrentPlaythroughPanel()
         {
             // Visibility of the playthrough box
-            T1PLTHR t1plthr = TFPLTHR.GetCurrentPlaythrough(_dataWrapper!.GetTypedTableObject().PFID);
+            T1PLTHR t1plthr = TFPLTHR.GetCurrentPlaythrough(_dataWrapper!.Get().PFID);
 
-            if (t1plthr != null && TFPLTHR.HasCurrentPlaythrough(_dataWrapper!.GetTypedTableObject().PFID) && t1plthr.PTTY != PlaythroughType.INITIAL_PLAYTHROUGH)
+            if (t1plthr != null && TFPLTHR.HasCurrentPlaythrough(_dataWrapper!.Get().PFID) && t1plthr.PTTY != PlaythroughType.INITIAL_PLAYTHROUGH)
             {
                 FnControls.SetVisible(GetView().pnlPlaythrough, true);
             }
@@ -427,7 +427,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         private void BuildProgressBarPanel()
         {
-            T1PROFI t1profi = _dataWrapper!.GetTypedTableObject();
+            T1PROFI t1profi = _dataWrapper!.Get();
 
             switch (t1profi.ETTY)
             {
@@ -497,7 +497,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         /// </summary>
         public async void EV_btnLaunchGame()
         {
-            T1PROFI t1profi = _dataWrapper!.GetTypedTableObject();
+            T1PROFI t1profi = _dataWrapper!.Get();
 
             if (!_gameRunning && !_gameLaunching && TFPROFI.IsSealed(t1profi))
             {
@@ -543,7 +543,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         protected void EV_btnStartMonitoring()
         {
 
-            if (!CFProfilesApp.AskForNewPlaythroughCreationIfNotActive(_dataWrapper!.GetTypedTableObject().PFID, GetApp()))
+            if (!CFProfilesApp.AskForNewPlaythroughCreationIfNotActive(_dataWrapper!.Get().PFID, GetApp()))
                 return;
 
             if (CFGameTimeMonitoring.IsMonitoring)
