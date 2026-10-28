@@ -24,6 +24,12 @@
     <SolidColorBrush x:Key="Brush.BigPicture.ButtonY" Color="#FFD49A16" />
     <SolidColorBrush x:Key="Brush.BigPicture.ButtonBumper" Color="#33FFFFFF" />
 
+    <!--  PlayStation symbol colors, used when a PlayStation controller is connected  -->
+    <SolidColorBrush x:Key="Brush.BigPicture.ButtonCross" Color="#FF4F86D9" />
+    <SolidColorBrush x:Key="Brush.BigPicture.ButtonCircle" Color="#FFD2453F" />
+    <SolidColorBrush x:Key="Brush.BigPicture.ButtonSquare" Color="#FFC2669F" />
+    <SolidColorBrush x:Key="Brush.BigPicture.ButtonTriangle" Color="#FF2FA88A" />
+
     <!--  Darkens the background towards the bottom (hints) and the top (row of covers)  -->
     <LinearGradientBrush x:Key="GradientBrush.BigPicture.ShadeVertical" StartPoint="0,0" EndPoint="0,1">
         <GradientStop Offset="0" Color="#99000000" />
@@ -172,7 +178,10 @@
         x:Key="BigPicture.ControllerBumper"
         BasedOn="{StaticResource BigPicture.ControllerButton}"
         TargetType="ContentControl">
-        <Setter Property="Width" Value="48" />
+        <!--  Grows for longer labels (CREATE, keys of the keyboard)  -->
+        <Setter Property="Width" Value="Auto" />
+        <Setter Property="MinWidth" Value="48" />
+        <Setter Property="Padding" Value="9,0" />
         <Setter Property="Height" Value="28" />
         <Setter Property="FontSize" Value="13" />
         <Setter Property="Background" Value="{StaticResource Brush.BigPicture.ButtonBumper}" />
@@ -185,7 +194,10 @@
                             BorderBrush="#2EFFFFFF"
                             BorderThickness="1"
                             CornerRadius="8" />
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <ContentPresenter
+                            Margin="{TemplateBinding Padding}"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center" />
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
@@ -318,11 +330,12 @@
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
                     <Grid>
+                        <!--  Collapsed unless selected: every visible shadow is rendered again while the row scrolls  -->
                         <Border
                             x:Name="Glow"
                             Background="{DynamicResource Brush.Accent}"
                             CornerRadius="{StaticResource BigPicture.CornerRadius}"
-                            Opacity="0">
+                            Visibility="Collapsed">
                             <Border.Effect>
                                 <DropShadowEffect
                                     BlurRadius="28"
@@ -358,7 +371,7 @@
                             <Setter TargetName="Dim" Property="Opacity" Value="0.1" />
                         </Trigger>
                         <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                            <Setter TargetName="Glow" Property="Opacity" Value="1" />
+                            <Setter TargetName="Glow" Property="Visibility" Value="Visible" />
                             <Setter TargetName="Dim" Property="Opacity" Value="0" />
                             <Setter TargetName="Edge" Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
                             <Setter TargetName="Edge" Property="BorderThickness" Value="3" />

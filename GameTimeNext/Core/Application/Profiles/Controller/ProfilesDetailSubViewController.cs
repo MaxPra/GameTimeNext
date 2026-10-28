@@ -119,7 +119,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
             ResetView();
 
-            GetView().imgProfileCover.Source = FnImage.LoadImageWithoutLock(Path.Combine(AppConfig.Storage.ProfileCoversDirectoryPath, _dataWrapper!.GetTypedTableObject().PPFN), 300, 450);
+            GetView().imgProfileCover.Source = CFProfilesApp.LoadProfileCover(_dataWrapper!.GetTypedTableObject().PPFN);
 
             GetView().btnLaunchGame.IsEnabled = _gameRunning || _gameLaunching || FnLauncher.CanLaunch(_dataWrapper!.GetTypedTableObject());
 

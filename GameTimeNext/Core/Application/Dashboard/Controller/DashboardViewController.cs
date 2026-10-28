@@ -241,7 +241,7 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
             return t1profiles.Select(prof => new ProfilesListBoxItem
             {
                 ItemObject = prof,
-                COCOVIM = FnImage.LoadImageWithoutLock(Path.Combine(AppConfig.Storage.ProfileCoversDirectoryPath ?? string.Empty, prof.PPFN), 300, 450),
+                COCOVIM = CFProfilesApp.LoadProfileCover(prof.PPFN),
                 COISPLA = FnSystem.IsExeFoundInPath(prof.EXGF),
                 COCPLTI = FnTime.FormatMinutesAsHoursAndMinutes(TFPROFI.GetGameTimeInMinutes(prof.PFID, timeSpanStart, timeSpanEnd))
             }).ToList();
@@ -338,8 +338,8 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
             GetView().txtLastPlayedDate.Text = CFProfilesApp.FormatFirstLastDate(lapl);
             GetView().txtLastPlayedTime.Text = FnTime.FormatMinutesAsHoursAndMinutes(plti, FnTime.NoValue);
 
-            BitmapImage? coverImage = FnImage.LoadImageWithoutLock(ppfn, 300, 450);
-            GetView().ccLastPlayedCase.Content = coverImage;
+            // No cover without a played game in the time span
+            GetView().ccLastPlayedCase.Content = FnString.IsNullEmptyOrWhitespace(ppfn) ? null : CFProfilesApp.LoadProfileCover(ppfn);
         }
 
         private void FillSectionMostPlayed()
@@ -355,8 +355,8 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
             GetView().txtMostPlayedShare.Text = totalPlaytime > 0 ? share.ToString("P0", CultureInfo.CurrentCulture) : FnTime.NoValue;
             GetView().scMostPlayedShare.ScaleX = share;
 
-            BitmapImage? coverImage = FnImage.LoadImageWithoutLock(ppfn, 300, 450);
-            GetView().ccMostPlayedCase.Content = coverImage;
+            // No cover without a played game in the time span
+            GetView().ccMostPlayedCase.Content = FnString.IsNullEmptyOrWhitespace(ppfn) ? null : CFProfilesApp.LoadProfileCover(ppfn);
         }
 
         protected void EV_BtnRefresh()

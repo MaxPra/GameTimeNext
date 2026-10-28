@@ -1,4 +1,4 @@
-using GameTimeNext.Core.Application.DataManagers;
+﻿using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Profiles.Components;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework.UI;
@@ -18,6 +18,10 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
     {
         // Set while the launch waits for the profile settings (e.g. HDR) before the launcher is started
         private static CancellationTokenSource? _launchCancellation;
+
+        // Processes suspended by PauseGame; resumed by ResumePausedGame (also when the application exits)
+        private static readonly HashSet<int> _pausedProcessIds = new HashSet<int>();
+        private static readonly object _pausedProcessIdsLock = new object();
 
         /// <summary>
         /// Returns the integration of the profile's launcher, null if the profile has none.
@@ -184,6 +188,9 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
             if (FnString.IsNullEmptyOrWhitespace(t1profi.EXGF))
                 return true;
 
+            // A suspended game may not end cleanly (e.g. its other processes wait for it)
+            ResumePausedGame();
+
             bool allEnded = true;
 
             foreach (Process process in FnSystem.GetProcessesWithPathPart(FnExecutables.GetAllActiveExecutablesFromDBObj(t1profi), t1profi.EXGF))
@@ -229,6 +236,9 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
         /// </summary>
         public static bool SwitchToGame(T1PROFI t1profi)
         {
+            // A paused game can't restore its window
+            ResumePausedGame();
+
             IntPtr gameWindow = FindGameWindow(t1profi);
 
             if (gameWindow == IntPtr.Zero)
@@ -254,6 +264,108 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
 
             FnForeground.Minimize(gameWindow);
             return true;
+        }
+
+        /// <summary>
+        /// True if pausing is switched on for the profile (CProfileSettings.PauseInBigPicture, on by default).
+        /// </summary>
+        public static bool IsPauseInBigPictureEnabled(T1PROFI t1profi)
+        {
+            return new CProfileSettings(t1profi.PRSE).Dezerialize().PauseInBigPicture;
+        }
+
+        /// <summary>
+        /// Switches pausing in the Big Picture mode on or off for the profile and saves it. The current row is read again,
+        /// so other fields that changed meanwhile (e.g. by the monitoring) aren't overwritten; the given object gets the
+        /// new settings too.
+        /// </summary>
+        public static void SetPauseInBigPicture(T1PROFI t1profi, bool enabled)
+        {
+            TXPROFI txprofi = new TXPROFI();
+            T1PROFI? current = txprofi.Read(t1profi.PFID);
+
+            if (current == null)
+                return;
+
+            CProfileSettings cProfileSettings = new CProfileSettings(current.PRSE).Dezerialize();
+            cProfileSettings.PauseInBigPicture = enabled;
+
+            current.PRSE = cProfileSettings.Serialize();
+            txprofi.Save(current);
+
+            t1profi.PRSE = current.PRSE;
+        }
+
+        /// <summary>
+        /// Suspends all running processes of the game (its active executables in the game folder): XInput is global, so
+        /// a game in the background keeps reading the controller, even minimized, while the Big Picture mode is operated.
+        /// A suspended game reads nothing. Returns false if no process could be suspended (e.g. elevated or protected
+        /// by an anti-cheat); the game keeps running then.
+        /// </summary>
+        public static bool PauseGame(T1PROFI t1profi)
+        {
+            if (FnString.IsNullEmptyOrWhitespace(t1profi.EXGF))
+                return false;
+
+            bool anyPaused = false;
+
+            foreach (Process process in FnSystem.GetProcessesWithPathPart(FnExecutables.GetAllActiveExecutablesFromDBObj(t1profi), t1profi.EXGF))
+            {
+                using (process)
+                {
+                    lock (_pausedProcessIdsLock)
+                    {
+                        if (_pausedProcessIds.Contains(process.Id))
+                        {
+                            anyPaused = true;
+                            continue;
+                        }
+
+                        if (FnProcessSuspension.Suspend(process.Id))
+                        {
+                            _pausedProcessIds.Add(process.Id);
+                            anyPaused = true;
+                            FnLog.AddInfo(nameof(FnLauncher), $"Paused {t1profi.GANA}: process {process.ProcessName} suspended");
+                        }
+                        else
+                        {
+                            FnLog.AddWarning(nameof(FnLauncher), $"Could not pause {t1profi.GANA}: process {process.ProcessName} can't be suspended");
+                        }
+                    }
+                }
+            }
+
+            return anyPaused;
+        }
+
+        /// <summary>
+        /// Resumes all processes suspended by PauseGame (of whichever game). Does nothing if none is paused.
+        /// </summary>
+        public static void ResumePausedGame()
+        {
+            lock (_pausedProcessIdsLock)
+            {
+                foreach (int processId in _pausedProcessIds)
+                {
+                    // Already ended (e.g. quit while paused): nothing to resume
+                    if (!FnProcessSuspension.Resume(processId))
+                        FnLog.AddInfo(nameof(FnLauncher), $"Paused process {processId} could not be resumed (ended meanwhile?)");
+                }
+
+                if (_pausedProcessIds.Count > 0)
+                    FnLog.AddInfo(nameof(FnLauncher), "Paused game resumed");
+
+                _pausedProcessIds.Clear();
+            }
+        }
+
+        public static bool IsGamePaused
+        {
+            get
+            {
+                lock (_pausedProcessIdsLock)
+                    return _pausedProcessIds.Count > 0;
+            }
         }
 
         /// <summary>

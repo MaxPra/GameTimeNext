@@ -36,6 +36,7 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
         private const string OptionGameQuit = "game.quit";
         private const string OptionGameMonitoring = "game.monitoring";
         private const string OptionGameLauncher = "game.launcher";
+        private const string OptionGamePause = "game.pause";
 
         // Message box option keys: "mbox." + CFMBOXResult
         private const string MessageBoxOptionPrefix = "mbox.";
@@ -89,7 +90,7 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
         /// <summary>
         /// X on a game: what can be done with it right now (play or back to it, monitoring, quit, launcher).
         /// </summary>
-        private void OpenGameMenu(T1PROFI t1profi)
+        private void OpenGameMenu(T1PROFI t1profi, string? selectedKey = null)
         {
             List<BigPictureMenuOption> options = new List<BigPictureMenuOption>();
 
@@ -110,13 +111,42 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
             if (FnLauncher.GetLauncher(t1profi) is { SupportsOpenInLauncher: true } && FnLauncher.IsLinked(t1profi))
                 options.Add(new BigPictureMenuOption(OptionGameLauncher, "Show in " + FnLauncher.GetLauncherName(t1profi.LNTY), "\uE8A7"));
 
+            // Setting of the profile (also in its launch settings)
+            options.Add(FnLauncher.IsPauseInBigPictureEnabled(t1profi)
+                ? new BigPictureMenuOption(OptionGamePause, "Pause in Big Picture: On", "\uE769")
+                : new BigPictureMenuOption(OptionGamePause, "Pause in Big Picture: Off", "\uE768"));
+
             _menuGame = t1profi;
 
             string message = CFGameTimeMonitoring.IsMonitoring
                 ? "Monitoring: " + TFPROFI.GetProfileName(AppEnvironment.CurrentPfid)
                 : string.Empty;
 
-            OpenMenu(MenuKind.Game, "\uE7FC", t1profi.GANA, message, options);
+            OpenMenu(MenuKind.Game, "\uE7FC", t1profi.GANA, message, options, Math.Max(0, options.FindIndex(o => o.Key == selectedKey)));
+        }
+
+        /// <summary>
+        /// Switches pausing in the mode for the game. The running game follows right away: paused while the mode is in
+        /// front, resumed when switched off. The menu stays open on the option.
+        /// </summary>
+        private void TogglePauseInBigPicture(T1PROFI t1profi)
+        {
+            bool enabled = !FnLauncher.IsPauseInBigPictureEnabled(t1profi);
+
+            FnLauncher.SetPauseInBigPicture(t1profi, enabled);
+            FnLog.AddInfo(GetApp(), $"Pause in Big Picture {(enabled ? "switched on" : "switched off")} for {t1profi.GANA}");
+
+            if (t1profi.PFID == _runningPfid && Window.GetWindow(View) is Window window)
+            {
+                if (enabled)
+                    PauseRunningGame(window, t1profi);
+                else
+                    FnLauncher.ResumePausedGame();
+
+                UpdateRunningState();
+            }
+
+            OpenGameMenu(t1profi, OptionGamePause);
         }
 
         private void OpenQuitGameQuestion(T1PROFI t1profi)
@@ -247,6 +277,11 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
                 case OptionGameLauncher:
                     if (menuGame != null)
                         FnLauncher.OpenInLauncher(menuGame);
+                    break;
+
+                case OptionGamePause:
+                    if (menuGame != null)
+                        TogglePauseInBigPicture(menuGame);
                     break;
 
                 case OptionRefresh:
