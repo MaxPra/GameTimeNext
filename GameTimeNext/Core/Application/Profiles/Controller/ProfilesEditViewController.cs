@@ -416,6 +416,10 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         private async Task<bool> FillDBOEstimatedTimesIGDBAsync()
         {
+            // The loader belongs to the profile library (host application): stopped in finally on every way out,
+            // otherwise an IGDB error would leave the library loader visible for good
+            bool loaderStarted = false;
+
             try
             {
                 if (!_cmbTargetPlayTypeFilledCompletely || _isEstTimeFilledManual)
@@ -437,6 +441,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 }
 
                 GetApp().Loader.Begin();
+                loaderStarted = true;
 
                 string clientId = AppEnvironment.GetAppConfig().AppSettings.TwitchIGDBClientID;
 
@@ -466,8 +471,6 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
                     ResetPlaytypes();
 
-                    GetApp().Loader.Stop();
-
                     return false;
                 }
 
@@ -482,7 +485,6 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
                     ResetPlaytypes();
 
-                    GetApp().Loader.Stop();
                     return false;
                 }
 
@@ -495,7 +497,6 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
                     ResetPlaytypes();
 
-                    GetApp().Loader.Stop();
                     return false;
                 }
 
@@ -506,14 +507,17 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
                 GetApp().T1Profi.ETTY = combItem.Tag.ToString();
 
-                GetApp().Loader.Stop();
-
                 return true;
             }
             catch (Exception ex)
             {
                 // ignored
                 return false;
+            }
+            finally
+            {
+                if (loaderStarted)
+                    GetApp().Loader.Stop();
             }
         }
 

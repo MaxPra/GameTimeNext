@@ -14,6 +14,7 @@ using GameTimeNext.Core.Framework.LauncherIntegration;
 using GameTimeNext.Core.Framework.UI;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.Utils;
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -133,53 +134,96 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
             GetApp().Loader.Begin();
 
-            await Task.Run(() =>
+            // Stop in finally: an error while building the list must not leave the loader visible
+            try
             {
-                (List<T1PROFI> T1PROFIs, bool filterActive) = GetAllFilteredProfis();
-                List<ProfilesListBoxItem> profileItems = BuildProfileListBoxItems(T1PROFIs);
-
-                //Thread.Sleep(3000);
-
-                View.Dispatcher.Invoke(() =>
+                (List<ProfilesListBoxItem> profileItems, bool filterActive) = await Task.Run(() =>
                 {
-                    // Indicator on the filter button if the list is filtered
-                    GetView().ElFilterActive.Visibility = filterActive ? Visibility.Visible : Visibility.Collapsed;
+                    (List<T1PROFI> t1profis, bool isFiltered) = GetAllFilteredProfis();
 
-                    _profilesSubGridViewModel = new ProfilesSubGridViewModel();
-                    _profilesSubGridViewModel.T1Profis = new System.Collections.ObjectModel.ObservableCollection<ProfilesListBoxItem>(profileItems);
+                    return (BuildProfileListBoxItems(t1profis), isFiltered);
+                });
 
-                    if (profileItems.Count > 0)
-                    {
-                        _profilesSubGridViewModel.SelectedT1Profi =
-                            profileItems.FirstOrDefault(p => (p.ItemObject as T1PROFI)?.PFID == pfid)
-                            ?? profileItems.FirstOrDefault()!;
-                    }
+                // On the UI thread, also when called from a background thread
+                await View.Dispatcher.InvokeAsync(() => FillProfilesListBoxAsync(profileItems, filterActive, pfid)).Task.Unwrap();
+            }
+            finally
+            {
+                GetApp().Loader.Stop();
+            }
+        }
 
+        // Increased by every fill of the list: an older fill still adding tiles stops when a newer one has started
+        private int _listFillVersion;
 
-                    _dataWrapper!.TableObject = _profilesSubGridViewModel.SelectedT1Profi?.ItemObject as T1PROFI;
+        // UI thread time per portion of tiles; the rest of a frame stays free for rendering and the loader animation
+        private const double TilePortionBudgetMs = 8;
 
-                    View.DataContext = _profilesSubGridViewModel;
+        /// <summary>
+        /// Shows the profiles in the list. The tiles are added in portions, each followed by layout and a rendered frame:
+        /// a game case (3D template) is expensive to create, and creating all of them in one layout pass blocked the UI
+        /// thread, so the loader animation (driven by the UI thread) stood still while the library was loading.
+        /// The portion size adapts to the measured time per tile. The profile is selected once all tiles exist.
+        /// </summary>
+        private async Task FillProfilesListBoxAsync(List<ProfilesListBoxItem> profileItems, bool filterActive, long pfid)
+        {
+            int version = ++_listFillVersion;
 
-                    if (_dataWrapper!.TableObject == null)
-                    {
-                        _dataWrapper!.TableObject = new TXPROFI().CreateNew();
-                        GetApp().ProfilesDetailView.Visibility = Visibility.Hidden;
-                        AppEnvironment.CurrentPfid = 0;
-                        FnTheme.ApplyProfileBackground(null);
-                        FnTheme.ApplyProfileAccentColors(null);
-                    }
-                    else
-                    {
-                        GetApp().ProfilesDetailView.Visibility = Visibility.Visible;
-                        AppEnvironment.CurrentPfid = (_profilesSubGridViewModel.SelectedT1Profi?.ItemObject as T1PROFI)?.PFID ?? 0;
-                        FnTheme.ApplyProfileBackground(_dataWrapper!.TableObject);
-                        FnTheme.ApplyProfileAccentColors(_dataWrapper!.TableObject);
-                    }
+            // Indicator on the filter button if the list is filtered
+            GetView().ElFilterActive.Visibility = filterActive ? Visibility.Visible : Visibility.Collapsed;
 
-                    GetApp().Loader.Stop();
+            ProfilesListBoxItem? selectedItem = profileItems.FirstOrDefault(p => (p.ItemObject as T1PROFI)?.PFID == pfid)
+                                                ?? profileItems.FirstOrDefault();
 
-                }, DispatcherPriority.Normal);
-            });
+            _profilesSubGridViewModel = new ProfilesSubGridViewModel();
+
+            _dataWrapper!.TableObject = selectedItem?.ItemObject as T1PROFI;
+
+            View.DataContext = _profilesSubGridViewModel;
+
+            if (_dataWrapper!.TableObject == null)
+            {
+                _dataWrapper!.TableObject = new TXPROFI().CreateNew();
+                GetApp().ProfilesDetailView.Visibility = Visibility.Hidden;
+                AppEnvironment.CurrentPfid = 0;
+                FnTheme.ApplyProfileBackground(null);
+                FnTheme.ApplyProfileAccentColors(null);
+            }
+            else
+            {
+                GetApp().ProfilesDetailView.Visibility = Visibility.Visible;
+                AppEnvironment.CurrentPfid = (selectedItem?.ItemObject as T1PROFI)?.PFID ?? 0;
+                FnTheme.ApplyProfileBackground(_dataWrapper!.TableObject);
+                FnTheme.ApplyProfileAccentColors(_dataWrapper!.TableObject);
+            }
+
+            ProfilesSubGridViewModel viewModel = _profilesSubGridViewModel;
+            Stopwatch watch = new Stopwatch();
+            int portionSize = 1;
+            int index = 0;
+
+            while (index < profileItems.Count)
+            {
+                int portionEnd = Math.Min(profileItems.Count, index + portionSize);
+                int added = portionEnd - index;
+
+                watch.Restart();
+
+                for (; index < portionEnd; index++)
+                    viewModel.T1Profis.Add(profileItems[index]);
+
+                // Layout (creates the new cases) and rendering have a higher priority: they run before this continues
+                await Dispatcher.Yield(DispatcherPriority.Background);
+
+                if (version != _listFillVersion)
+                    return;
+
+                double msPerTile = Math.Max(0.25, watch.Elapsed.TotalMilliseconds / added);
+                portionSize = Math.Clamp((int)(TilePortionBudgetMs / msPerTile), 1, 24);
+            }
+
+            if (selectedItem != null)
+                viewModel.SelectedT1Profi = selectedItem;
         }
 
         /// <summary>

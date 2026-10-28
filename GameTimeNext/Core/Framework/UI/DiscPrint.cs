@@ -21,7 +21,7 @@ using WinPixelFormat = Windows.Graphics.Imaging.BitmapPixelFormat;
 namespace GameTimeNext.Core.Framework.UI
 {
     /// <summary>
-    /// Prints a cover on a disc (styles GameCase and GameCase.Showcase in TileViewStyle.xaml): set Cover on the disc's
+    /// Prints a cover on a disc (styles GameCase, GameCase.Showcase and GameCase.Preview in TileViewStyle.xaml): set Cover on the disc's
     /// Ellipse and it gets the cover as fill, with a section that shows the game title completely.
     ///
     /// The title is found with the Windows OCR (largest text line plus the lines right next to it, padded). The section
@@ -137,12 +137,50 @@ namespace GameTimeNext.Core.Framework.UI
 
         private static Task<DiscSection> GetSectionAsync(BitmapSource cover)
         {
-            string key = AnalysisVersion + "_" + Convert.ToHexString(SHA256.HashData(ReadPixels(cover, 1).Data));
+            string key = GetKey(cover);
 
             if (Cache.Value.TryGetValue(key, out DiscSection? cached))
                 return Task.FromResult(cached);
 
             return Analyses.GetOrAdd(key, _ => AnalyzeAsync(key, cover));
+        }
+
+        private static string GetKey(BitmapSource cover)
+        {
+            return AnalysisVersion + "_" + Convert.ToHexString(SHA256.HashData(ReadPixels(cover, 1).Data));
+        }
+
+        /// <summary>
+        /// Gives a cover file the section of its preview (e.g. the SteamGridDB thumbnail shown before applying it), so its
+        /// disc looks exactly like the preview wherever the file is shown, instead of being analyzed again on its own pixels
+        /// (the OCR can find a different title box there). The file is read like the profile covers are loaded everywhere
+        /// (FnImage.LoadImageWithoutLock with 300 x 450): the same pixels give the same cache key. Waits for the analysis
+        /// of the preview if it is still running. Errors are logged; the cover is then analyzed on its own as before.
+        /// </summary>
+        public static async Task AdoptSectionAsync(BitmapSource preview, string coverFilePath)
+        {
+            try
+            {
+                if (!preview.IsFrozen || !File.Exists(coverFilePath))
+                    return;
+
+                DiscSection section = await Task.Run(() => GetSectionAsync(preview));
+
+                await Task.Run(() =>
+                {
+                    BitmapImage? cover = FnImage.LoadImageWithoutLock(coverFilePath, 300, 450);
+
+                    if (cover == null)
+                        return;
+
+                    Cache.Value[GetKey(cover)] = section;
+                    SaveCache();
+                });
+            }
+            catch (Exception ex)
+            {
+                FnLog.AddError("MainApp", "Disc print section could not be taken over from the cover preview", ex);
+            }
         }
 
         private static Brush CreateBrush(BitmapSource cover, DiscSection section, double angle)

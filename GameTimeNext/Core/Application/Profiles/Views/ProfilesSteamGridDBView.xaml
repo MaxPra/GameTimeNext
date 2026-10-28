@@ -7,9 +7,9 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI.Base"
     Title="Select SteamGridDB cover"
-    Width="1100"
+    Width="1500"
     Height="760"
-    MinWidth="980"
+    MinWidth="1380"
     MinHeight="620"
     ShowMaximizeButton="False"
     ShowMinimizeButton="False"
@@ -23,40 +23,81 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Border
-            Grid.Row="0"
-            Padding="12,8"
-            Style="{StaticResource Card}">
-            <ListBox
-                x:Name="lbSteamGridCovers"
-                ItemsSource="{Binding Images}"
-                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                ScrollViewer.VerticalScrollBarVisibility="Auto"
-                SelectedItem="{Binding SelectedImage, Mode=TwoWay}"
-                SelectionMode="Single"
-                Style="{StaticResource SteamGridDBCoverListBoxStyle}">
-                <ListBox.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <!--
-                            Spacing on the panel, not as ListBox padding: room for lift and glow that scrolls with the covers.
-                            Vertical only: TileLayout.AutoSize does not know a horizontal panel margin, the last column would wrap.
-                        -->
-                        <WrapPanel Margin="0,4" />
-                    </ItemsPanelTemplate>
-                </ListBox.ItemsPanel>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="16" />
+                <ColumnDefinition Width="400" />
+            </Grid.ColumnDefinitions>
 
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <!--  ImageBrush instead of Image + clip: the corner radius follows any cover size  -->
-                        <Border CornerRadius="{StaticResource SteamGridDB.CoverCornerRadius}" RenderOptions.BitmapScalingMode="HighQuality">
-                            <Border.Background>
-                                <ImageBrush ImageSource="{Binding BitmapImage}" Stretch="UniformToFill" />
-                            </Border.Background>
-                        </Border>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-        </Border>
+            <Border
+                Grid.Column="0"
+                Padding="12,8"
+                Style="{StaticResource Card}">
+                <ListBox
+                    x:Name="lbSteamGridCovers"
+                    ItemsSource="{Binding Images}"
+                    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                    ScrollViewer.VerticalScrollBarVisibility="Auto"
+                    SelectedItem="{Binding SelectedImage, Mode=TwoWay}"
+                    SelectionMode="Single"
+                    Style="{StaticResource SteamGridDBCoverListBoxStyle}">
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <!--
+                                Spacing on the panel, not as ListBox padding: room for lift and glow that scrolls with the covers.
+                                Vertical only: TileLayout.AutoSize does not know a horizontal panel margin, the last column would wrap.
+                            -->
+                            <WrapPanel Margin="0,4" />
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+    
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <!--  ImageBrush instead of Image + clip: the corner radius follows any cover size  -->
+                            <Border CornerRadius="{StaticResource SteamGridDB.CoverCornerRadius}" RenderOptions.BitmapScalingMode="HighQuality">
+                                <Border.Background>
+                                    <ImageBrush ImageSource="{Binding BitmapImage}" Stretch="UniformToFill" />
+                                </Border.Background>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Border>
+
+            <!--  Preview of the selected cover: case and disc as in the library (style GameCase.Preview, base 450 x 400)  -->
+            <Border
+                Grid.Column="2"
+                Padding="24"
+                Style="{StaticResource Card}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="4" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock
+                        Grid.Row="0"
+                        Style="{StaticResource Text.Subtitle}"
+                        Text="Preview" />
+                    <TextBlock
+                        Grid.Row="2"
+                        Style="{StaticResource Text.Hint}"
+                        Text="Cover and disc as they appear in your library."
+                        TextWrapping="Wrap" />
+
+                    <Viewbox
+                        Grid.Row="3"
+                        Margin="0,24,0,0"
+                        VerticalAlignment="Center"
+                        Stretch="Uniform">
+                        <ContentControl x:Name="ccCoverPreview" Style="{StaticResource GameCase.Preview}" />
+                    </Viewbox>
+                </Grid>
+            </Border>
+        </Grid>
 
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>

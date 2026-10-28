@@ -802,7 +802,8 @@
                                     Width="224"
                                     Height="224"
                                     OpacityMask="{StaticResource Brush.Case.DiscHoleMask}">
-                                    <Ellipse ui:DiscPrint.Cover="{Binding Tag, ElementName=Stage}" />
+                                    <!--  Print like the selected disc in the library and the cover preview: turned so the title runs down the right side (102 - 12 of DiscTurn = 90)  -->
+                                    <Ellipse ui:DiscPrint.Cover="{Binding Tag, ElementName=Stage}" ui:DiscPrint.PrintAngle="102" />
                                     <Ellipse Fill="{StaticResource Brush.Case.Disc}" />
                                     <Ellipse Stroke="{DynamicResource Brush.Card.Border}" StrokeThickness="3" />
                                     <Ellipse
@@ -839,6 +840,185 @@
                                 <BeginStoryboard HandoffBehavior="SnapshotAndReplace" Storyboard="{StaticResource SbRest}" />
                             </Trigger.ExitActions>
                         </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--
+        Preview of a cover (SteamGridDB cover selection): the closed case from the front with exactly the cover section of
+        the library, its disc completely visible in front of the case's right edge, turned like the disc of a selected
+        case (print turned -30, disc 120 clockwise), so its print reads like in the library. No plinth and no opened
+        cover: that stays the showcase of the most played game. ContentControl with the cover image as content, base
+        units 450 x 400 (scale it with a Viewbox). A new cover rolls the disc out again.
+
+        Stage (base units): case 246 x 366 at 0,17; disc 240 at 206,80 (overlaps the case by 40, centered on its middle).
+    -->
+    <Style x:Key="GameCase.Preview" TargetType="{x:Type ContentControl}">
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="IsHitTestVisible" Value="False" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ContentControl}">
+
+                    <ControlTemplate.Resources>
+                        <CubicEase x:Key="EaseOut" EasingMode="EaseOut" />
+
+                        <Storyboard x:Key="SbDiscOut">
+                            <DoubleAnimation
+                                EasingFunction="{StaticResource EaseOut}"
+                                Storyboard.TargetName="DiscSlide"
+                                Storyboard.TargetProperty="X"
+                                From="-60"
+                                To="0"
+                                Duration="0:0:0.38" />
+                            <DoubleAnimation
+                                EasingFunction="{StaticResource EaseOut}"
+                                Storyboard.TargetName="DiscTurn"
+                                Storyboard.TargetProperty="Angle"
+                                From="0"
+                                To="120"
+                                Duration="0:0:0.44" />
+                        </Storyboard>
+                    </ControlTemplate.Resources>
+
+                    <!--  Tag: the cover (content), so the parts can bind to it by name  -->
+                    <Grid
+                        x:Name="Stage"
+                        Width="450"
+                        Height="400"
+                        Tag="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}">
+
+                        <!--  Contact shadow of the case on the floor  -->
+                        <Ellipse
+                            Width="236"
+                            Height="12"
+                            Margin="5,377,0,0"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top">
+                            <Ellipse.Fill>
+                                <RadialGradientBrush>
+                                    <GradientStop Offset="0" Color="#59000000" />
+                                    <GradientStop Offset="1" Color="#00000000" />
+                                </RadialGradientBrush>
+                            </Ellipse.Fill>
+                        </Ellipse>
+
+                        <!--  ===== Disc in front of the case's right edge, completely visible (ZIndex: above the case) =====  -->
+                        <Grid
+                            Width="240"
+                            Height="240"
+                            Margin="206,80,0,0"
+                            Panel.ZIndex="1"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            RenderTransformOrigin="0.5,0.5">
+                            <Grid.RenderTransform>
+                                <TransformGroup>
+                                    <RotateTransform x:Name="DiscTurn" Angle="120" />
+                                    <TranslateTransform x:Name="DiscSlide" X="0" />
+                                </TransformGroup>
+                            </Grid.RenderTransform>
+
+                            <!--  Shadow shape behind the disc (an effect on the disc itself would blur the print)  -->
+                            <Ellipse Fill="{DynamicResource Brush.Background}" Opacity="0.6">
+                                <Ellipse.Effect>
+                                    <DropShadowEffect
+                                        BlurRadius="20"
+                                        Direction="270"
+                                        Opacity="0.9"
+                                        RenderingBias="Quality"
+                                        ShadowDepth="6"
+                                        Color="#FF000000" />
+                                </Ellipse.Effect>
+                            </Ellipse>
+
+                            <!--  Same disc as in GameCase (drawn at 224, scaled to 240)  -->
+                            <Viewbox Stretch="Fill">
+                                <Grid
+                                    Width="224"
+                                    Height="224"
+                                    OpacityMask="{StaticResource Brush.Case.DiscHoleMask}">
+                                    <Ellipse ui:DiscPrint.Cover="{Binding Tag, ElementName=Stage}" ui:DiscPrint.PrintAngle="-30" />
+                                    <Ellipse Fill="{StaticResource Brush.Case.Disc}" />
+                                    <Ellipse Stroke="{DynamicResource Brush.Card.Border}" StrokeThickness="3" />
+                                    <Ellipse
+                                        Opacity="0.6"
+                                        Stroke="{DynamicResource Brush.Accent}"
+                                        StrokeThickness="1" />
+                                    <Ellipse
+                                        Width="88"
+                                        Height="88"
+                                        Fill="{StaticResource Brush.Case.Hub}"
+                                        Stroke="{DynamicResource Brush.Card.Border}"
+                                        StrokeThickness="1" />
+                                    <Ellipse
+                                        Width="62"
+                                        Height="62"
+                                        Stroke="#14FFFFFF"
+                                        StrokeThickness="1" />
+                                    <Ellipse
+                                        Width="34"
+                                        Height="34"
+                                        Stroke="#33FFFFFF"
+                                        StrokeThickness="2" />
+                                </Grid>
+                            </Viewbox>
+                        </Grid>
+
+                        <!--  ===== Closed case from the front: the same layers as the front cover of GameCase =====  -->
+                        <Grid
+                            Width="246"
+                            Height="366"
+                            Margin="0,17,0,0"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top">
+                            <Border Background="{DynamicResource Brush.Background}" CornerRadius="6">
+                                <Border.Effect>
+                                    <DropShadowEffect
+                                        BlurRadius="22"
+                                        Direction="270"
+                                        Opacity="0.8"
+                                        RenderingBias="Quality"
+                                        ShadowDepth="8"
+                                        Color="#FF000000" />
+                                </Border.Effect>
+                            </Border>
+                            <Border Background="{DynamicResource Brush.Card.Background}" CornerRadius="6" />
+                            <Border
+                                Margin="3"
+                                CornerRadius="4"
+                                RenderOptions.BitmapScalingMode="HighQuality">
+                                <Border.Background>
+                                    <ImageBrush
+                                        AlignmentX="Left"
+                                        AlignmentY="Top"
+                                        ImageSource="{Binding Tag, ElementName=Stage}"
+                                        Stretch="UniformToFill" />
+                                </Border.Background>
+                            </Border>
+                            <Border
+                                Margin="3"
+                                Background="{StaticResource Brush.Case.Gloss}"
+                                CornerRadius="4" />
+                            <Border
+                                BorderBrush="{DynamicResource Brush.Card.Border}"
+                                BorderThickness="1"
+                                CornerRadius="6" />
+                        </Grid>
+
+                        <!--
+                            A new cover raises TargetUpdated here, which starts SbDiscOut. Last element of the template: the
+                            binding also updates while the template is loaded, the animated parts must have their names by then.
+                        -->
+                        <FrameworkElement x:Name="CoverWatch" Tag="{Binding Content, RelativeSource={RelativeSource TemplatedParent}, NotifyOnTargetUpdated=True}" />
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+                        <EventTrigger RoutedEvent="Binding.TargetUpdated" SourceName="CoverWatch">
+                            <BeginStoryboard HandoffBehavior="SnapshotAndReplace" Storyboard="{StaticResource SbDiscOut}" />
+                        </EventTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
