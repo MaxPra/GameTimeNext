@@ -180,5 +180,29 @@ namespace GameTimeNext.Core.Framework
                 tabItem.ContextMenu = null;
             }
         }
+
+        public static class Dev
+        {
+            /// <summary>
+            /// Dev-Applications not allowed for the user
+            /// </summary>
+            private static readonly List<string> DevApplications = new List<string>()
+            {
+                "CIP", // Create Import Package
+                "MET", // Metadata
+                "APD", // Application Properties Definitions
+                "ERM"  // Errormessages
+            };
+
+            /// <summary>
+            /// Determines whether the specified application is a dev app.
+            /// </summary>
+            /// <param name="appKey"></param>
+            /// <returns>true / false</returns>
+            public static bool IsDevApplication(string appKey)
+            {
+                return DevApplications.Contains(appKey);
+            }
+        }
     }
 }

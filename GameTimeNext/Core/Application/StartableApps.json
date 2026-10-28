@@ -41,7 +41,7 @@
   },
   {
     "Code": "APD",
-    "Name": "Application Properties Definition",
+    "Name": "Application Properties Definitions",
     "ClassName": "GameTimeNext.Core.Application.ApplicationProperties.ApplicationPropertiesApp"
   },
   {
