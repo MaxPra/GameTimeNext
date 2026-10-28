@@ -97,6 +97,32 @@ namespace GameTimeNext.Core.Application.DataManagers
             return cProfileSettings.OverrideGlobalBlackout && !cProfileSettings.BlackoutSideMonitors;
         }
 
+        /// <summary>
+        /// True if the game is still shrink-wrapped: it has to be unwrapped before it can be launched.
+        /// Only while the setting SealNewGames is on; turning it off shows all games unwrapped.
+        /// </summary>
+        public static bool IsSealed(T1PROFI t1profi)
+        {
+            return AppEnvironment.GetAppConfig().AppSettings.SealNewGames
+                && new CProfileSettings(t1profi.PRSE).Dezerialize().Sealed;
+        }
+
+        /// <summary>
+        /// Unwraps the game and saves the profile
+        /// </summary>
+        public static void Unseal(T1PROFI t1profi)
+        {
+            CProfileSettings cProfileSettings = new CProfileSettings(t1profi.PRSE).Dezerialize();
+
+            if (!cProfileSettings.Sealed)
+                return;
+
+            cProfileSettings.Sealed = false;
+            t1profi.PRSE = cProfileSettings.Serialize();
+
+            new TXPROFI().Save(t1profi);
+        }
+
         public static List<T1PLTHR> GetAllPlaythroughs(T1PROFI t1profi)
         {
             List<T1PLTHR> t1plthrs = new List<T1PLTHR>();

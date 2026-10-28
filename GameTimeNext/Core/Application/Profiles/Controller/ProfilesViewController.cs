@@ -241,6 +241,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             ContextMenuBuilder contextBuilder = UIXContextMenuFactory.Create("ProfilesListBoxContextMenu");
             contextBuilder.SetStyle(ProfilesContextMenuBuilder.contextMenuStyle);
 
+            // Unwrap (sealed game)
+            ProfilesContextMenuBuilder.BuildContextUnwrap(contextBuilder, t1profi);
+
             // Always Edit and Delete in principle
             contextBuilder.AddItem("ctxtEdit", "Edit", icon: UIXContextMenuFactory.CreateMdlIcon("\uE70F"), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
             contextBuilder.AddItem("ctxtDelete", "Delete", icon: UIXContextMenuFactory.CreateMdlIcon("\uE74D"), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
@@ -294,7 +297,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                             300,
                             450),
                         COISPLA = FnSystem.IsExeFoundInPath(prof.EXGF),
-                        COPLFPA = File.Exists(platformSymbolFullPath) ? FnImage.LoadImageWithoutLock(platformSymbolFullPath, 50, 50) : null
+                        COPLFPA = File.Exists(platformSymbolFullPath) ? FnImage.LoadImageWithoutLock(platformSymbolFullPath, 50, 50) : null,
+                        COISSEA = TFPROFI.IsSealed(prof)
                     };
 
                     result.Add(item);
@@ -306,6 +310,25 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Unwraps the selected (sealed) game: saves it and plays the unwrap animation on its tile. The list is not
+        /// rebuilt, that would end the animation.
+        /// </summary>
+        public void UnwrapSelectedProfile()
+        {
+            ProfilesListBoxItem? item = _profilesSubGridViewModel?.SelectedT1Profi;
+
+            if (item?.ItemObject is not T1PROFI t1profi)
+                return;
+
+            TFPROFI.Unseal(t1profi);
+
+            item.COISSEA = false;
+
+            ProfilesDetailSubViewController profileDetailViewController = (ProfilesDetailSubViewController)GetApp().ProfilesDetailView.ViewController;
+            profileDetailViewController.UpdateUIUnwrapped();
         }
 
         private async Task AdjustFiltersToStartedGameProfile(long pfid)
@@ -508,6 +531,11 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             T1PROFI t1profi = GetSelectedProfile();
 
             FnLauncher.OpenInLauncher(t1profi);
+        }
+
+        protected void EV_ctxtUnwrapGame()
+        {
+            UnwrapSelectedProfile();
         }
 
         protected void EV_ctxtEdit()

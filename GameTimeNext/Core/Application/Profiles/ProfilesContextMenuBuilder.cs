@@ -42,6 +42,16 @@ namespace GameTimeNext.Core.Application.Profiles
             contextBuilder.AddSubMenu(playthroughSubMenu);
         }
 
+        public static void BuildContextUnwrap(ContextMenuBuilder contextBuilder, T1PROFI t1profi)
+        {
+            if (!TFPROFI.IsSealed(t1profi))
+                return;
+
+            contextBuilder.AddItem("ctxtUnwrapGame", "Unwrap game", icon: UIXContextMenuFactory.CreateMdlIcon(""), itemStyle: contextMenuItemStyle);
+
+            contextBuilder.AddSeparator(contextMenuSeparatorStyle);
+        }
+
         public static void BuildContextArchive(ContextMenuBuilder contextBuilder, T1PROFI t1profi)
         {
             // Add archive

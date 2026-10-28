@@ -391,6 +391,11 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
             CProfileSettings cProfileSettings = new CProfileSettings();
 
+            // Not edited here: a new game is added shrink-wrapped if set, an existing one keeps its state
+            cProfileSettings.Sealed = GetWnd().ViewIndicator.Contains("CN")
+                ? AppEnvironment.GetAppConfig().AppSettings.SealNewGames
+                : new CProfileSettings(GetApp().T1Profi.PRSE).Dezerialize().Sealed;
+
             cProfileSettings.HDREnabled = GetWnd().cbEnableHdrOnStart.IsChecked == true;
             cProfileSettings.LaunchArgs = GetWnd().txbLaunchArgs.Text.Trim();
 

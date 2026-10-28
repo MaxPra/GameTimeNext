@@ -11,6 +11,9 @@ namespace GameTimeNext.Core.Application.Profiles.Components
         public bool OverrideGlobalBlackout { get; set; } = false;
         public bool BlackoutSideMonitors { get; set; } = false;
 
+        // Still shrink-wrapped (setting SealNewGames); only effective while that setting is on
+        public bool Sealed { get; set; } = false;
+
         public CProfileSettings() { }
 
         public CProfileSettings(string rawValue) : base(rawValue) { }

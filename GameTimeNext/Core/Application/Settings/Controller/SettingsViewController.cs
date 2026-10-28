@@ -136,6 +136,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             GetView().cbActivateBlackoutKeyCombination.IsChecked = _appSettings!.ActivateBlackoutKeyCombination;
             GetView().cbShowTextOnBlackout.IsChecked = _appSettings.EnableFullBlackoutText;
             GetView().cbAutoStartMinimized.IsChecked = _appSettings.AutoStartMinimized;
+            GetView().cbSealNewGames.IsChecked = _appSettings.SealNewGames;
             GetView().cbAllowProfileSpecificStyleChanges.IsChecked = _appSettings!.AllowProfileSpecificStyleChanges;
             GetView().cbDarkTintedGlass.IsChecked = _appSettings.DarkTintedGlass;
             GetView().cmbBackgroundSource.SelectedValue = _appSettings.BackgroundSource;
@@ -196,6 +197,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             _appSettings!.ActivateBlackoutKeyCombination = GetView().cbActivateBlackoutKeyCombination.IsChecked == true;
             _appSettings!.EnableFullBlackoutText = GetView().cbShowTextOnBlackout.IsChecked == true;
             _appSettings!.AutoStartMinimized = GetView().cbAutoStartMinimized.IsChecked == true;
+            _appSettings!.SealNewGames = GetView().cbSealNewGames.IsChecked == true;
             _appSettings!.AllowProfileSpecificStyleChanges = GetView().cbAllowProfileSpecificStyleChanges.IsChecked == true;
             _appSettings!.BackgroundSource = GetSelectedBackgroundSource();
             _appSettings!.DarkTintedGlass = GetView().cbDarkTintedGlass.IsChecked == true;

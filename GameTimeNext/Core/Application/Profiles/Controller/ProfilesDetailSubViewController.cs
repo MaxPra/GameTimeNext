@@ -61,13 +61,30 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         public void UpdateUIGameClosed()
         {
-            GetView().btnLaunchGame.Content = "Launch game";
-            GetView().btnLaunchGame.IsEnabled = FnLauncher.CanLaunch(_dataWrapper!.GetTypedTableObject());
+            UpdateUIIdle();
             GetLaunchingOverlay().Content = null;
             GetLaunchingOverlay().Tag = null;
             GetLaunchingOverlay().Visibility = Visibility.Collapsed;
             _gameRunning = false;
             _gameLaunching = false;
+        }
+
+        public void UpdateUIUnwrapped()
+        {
+            if (!_gameRunning && !_gameLaunching)
+                UpdateUIIdle();
+        }
+
+        /// <summary>
+        /// Neither launching nor running: a sealed game has to be unwrapped first (always possible), otherwise it can be launched
+        /// </summary>
+        private void UpdateUIIdle()
+        {
+            T1PROFI t1profi = _dataWrapper!.GetTypedTableObject();
+            bool isSealed = TFPROFI.IsSealed(t1profi);
+
+            GetView().btnLaunchGame.Content = isSealed ? "Unwrap game" : "Launch game";
+            GetView().btnLaunchGame.IsEnabled = isSealed || FnLauncher.CanLaunch(t1profi);
         }
 
         private void UpdateUIGameLaunching(T1PROFI t1profi)
@@ -121,7 +138,10 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             GetView().imgProfileCover.Source = FnImage.LoadImageWithoutLock(Path.Combine(AppConfig.Storage.ProfileCoversDirectoryPath, _dataWrapper!.GetTypedTableObject().PPFN), 300, 450);
 
-            GetView().btnLaunchGame.IsEnabled = _gameRunning || _gameLaunching || FnLauncher.CanLaunch(_dataWrapper!.GetTypedTableObject());
+            if (_gameRunning || _gameLaunching)
+                GetView().btnLaunchGame.IsEnabled = true;
+            else
+                UpdateUIIdle();
 
             // -- Progress bar section
             //bool isIGDBLinkedCorrectly = !FnString.IsNullEmptyOrWhitespace(AppEnvironment.GetAppConfig().AppSettings.TwitchIGDBClientID) &&
@@ -473,11 +493,17 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         }
 
         /// <summary>
-        /// Launch game / Cancel launch / Quit game
+        /// Unwrap game / Launch game / Cancel launch / Quit game
         /// </summary>
         public async void EV_btnLaunchGame()
         {
             T1PROFI t1profi = _dataWrapper!.GetTypedTableObject();
+
+            if (!_gameRunning && !_gameLaunching && TFPROFI.IsSealed(t1profi))
+            {
+                _profilesViewController!.UnwrapSelectedProfile();
+                return;
+            }
 
             if (_gameRunning)
             {

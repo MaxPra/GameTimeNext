@@ -55,6 +55,8 @@
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="12" />
                                     <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="12" />
+                                    <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
                                 <Grid Grid.Row="0" HorizontalAlignment="Left">
@@ -156,6 +158,28 @@
                                         VerticalAlignment="Center"
                                         Foreground="{DynamicResource Brush.TextSecondary}"
                                         Text="hrs" />
+                                </Grid>
+
+                                <Grid Grid.Row="6" HorizontalAlignment="Left">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="220" />
+                                        <ColumnDefinition Width="16" />
+                                        <ColumnDefinition Width="54" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        VerticalAlignment="Center"
+                                        Foreground="{DynamicResource Brush.TextSecondary}"
+                                        Text="Add new games shrink-wrapped" />
+
+                                    <CheckBox
+                                        x:Name="cbSealNewGames"
+                                        Grid.Column="2"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center"
+                                        ToolTip="New games are added still shrink-wrapped. Unwrap them (context menu or Unwrap game) before the first launch." />
                                 </Grid>
                             </Grid>
                         </GroupBox>

@@ -14,6 +14,7 @@
         Game cases (style GameCase, also on the dashboard) and the profile library: every game is a case standing
         on the shelf, the title below it. Hover opens the front cover a little on its hinge (real 3D) and reveals the
         printed disc inside; the selected case stays open, its disc slides out, and an accent outline marks it.
+        A sealed game (setting "Add new games shrink-wrapped") stays closed in its shrink wrap until it is unwrapped.
         
         Base size; with TileLayout.AutoSize on the list the actual size is derived from it to fill each row.
         Case 246 x 366 (cover 240 x 360 = 2:3 in a glass lip of 3), title area 41 below it (rows 366*:41*).
@@ -64,6 +65,29 @@
         <GradientStop Offset="0.1518" Color="#FF000000" />
         <GradientStop Offset="1" Color="#FF000000" />
     </RadialGradientBrush>
+
+    <!--  Shrink wrap of a sealed game: clear film, glossier than the case, with two light streaks  -->
+    <LinearGradientBrush x:Key="Brush.Case.Wrap" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0" Color="#30FFFFFF" />
+        <GradientStop Offset="0.14" Color="#0EFFFFFF" />
+        <GradientStop Offset="0.3" Color="#04FFFFFF" />
+        <GradientStop Offset="0.5" Color="#16FFFFFF" />
+        <GradientStop Offset="0.55" Color="#05FFFFFF" />
+        <GradientStop Offset="0.8" Color="#02FFFFFF" />
+        <GradientStop Offset="1" Color="#0EFFFFFF" />
+    </LinearGradientBrush>
+    <!--  Tear strip in the film: silver tape with a light top edge  -->
+    <LinearGradientBrush x:Key="Brush.Case.TearStrip" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="#F2FFFFFF" />
+        <GradientStop Offset="0.45" Color="#D9D4D6DC" />
+        <GradientStop Offset="1" Color="#CC9A9CA4" />
+    </LinearGradientBrush>
+    <!--  Light band running over the film while a sealed case is hovered  -->
+    <LinearGradientBrush x:Key="Brush.Case.WrapGlint" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Offset="0" Color="#00FFFFFF" />
+        <GradientStop Offset="0.5" Color="#38FFFFFF" />
+        <GradientStop Offset="1" Color="#00FFFFFF" />
+    </LinearGradientBrush>
 
     <sys:Double x:Key="Case.ShadowOpacityNormal">0.5</sys:Double>
     <sys:Double x:Key="Case.ShadowOpacityOpen">0.8</sys:Double>
@@ -149,12 +173,6 @@
                                 From="0"
                                 To="-120"
                                 Duration="0:0:0.38" />
-                            <DoubleAnimation
-                                EasingFunction="{StaticResource EaseOut}"
-                                Storyboard.TargetName="SelectionRing"
-                                Storyboard.TargetProperty="Opacity"
-                                To="1"
-                                Duration="0:0:0.18" />
                         </Storyboard>
 
                         <Storyboard x:Key="SbDeselect" FillBehavior="HoldEnd">
@@ -171,12 +189,177 @@
                                 Storyboard.TargetProperty="OffsetX"
                                 To="0"
                                 Duration="0:0:0.22" />
+                        </Storyboard>
+
+                        <!--  Accent outline: also on a selected sealed case, which doesn't open  -->
+                        <Storyboard x:Key="SbRingShow" FillBehavior="HoldEnd">
+                            <DoubleAnimation
+                                EasingFunction="{StaticResource EaseOut}"
+                                Storyboard.TargetName="SelectionRing"
+                                Storyboard.TargetProperty="Opacity"
+                                To="1"
+                                Duration="0:0:0.18" />
+                        </Storyboard>
+
+                        <Storyboard x:Key="SbRingHide" FillBehavior="HoldEnd">
                             <DoubleAnimation
                                 EasingFunction="{StaticResource EaseInOut}"
                                 Storyboard.TargetName="SelectionRing"
                                 Storyboard.TargetProperty="Opacity"
                                 To="0"
                                 Duration="0:0:0.18" />
+                        </Storyboard>
+
+                        <!--  Sealed: shows the shrink wrap  -->
+                        <Storyboard x:Key="SbSeal" FillBehavior="HoldEnd">
+                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="WrapLayer" Storyboard.TargetProperty="Visibility">
+                                <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}" />
+                            </ObjectAnimationUsingKeyFrames>
+                        </Storyboard>
+
+                        <!--
+                            Unwrap: the tab is pulled along the top and tears the strip out (0 - 0.5), the film comes off in
+                            two parts, the top flies up, the body slides down (0.45 - 1.0), a short light passes over the
+                            cover, then the case pops once. Film is off at 1.0 = GameCase.UnwrapDuration: then the case opens.
+                        -->
+                        <Storyboard x:Key="SbUnwrap" FillBehavior="HoldEnd">
+                            <DoubleAnimation
+                                Storyboard.TargetName="TearStripScale"
+                                Storyboard.TargetProperty="ScaleX"
+                                From="1"
+                                To="0"
+                                Duration="0:0:0.5">
+                                <DoubleAnimation.EasingFunction>
+                                    <CubicEase EasingMode="EaseIn" />
+                                </DoubleAnimation.EasingFunction>
+                            </DoubleAnimation>
+                            <DoubleAnimation
+                                Storyboard.TargetName="TearTabMove"
+                                Storyboard.TargetProperty="X"
+                                From="0"
+                                To="-262"
+                                Duration="0:0:0.5">
+                                <DoubleAnimation.EasingFunction>
+                                    <CubicEase EasingMode="EaseIn" />
+                                </DoubleAnimation.EasingFunction>
+                            </DoubleAnimation>
+                            <DoubleAnimation
+                                EasingFunction="{StaticResource EaseOut}"
+                                Storyboard.TargetName="TearTabMove"
+                                Storyboard.TargetProperty="Y"
+                                From="0"
+                                To="-10"
+                                Duration="0:0:0.5" />
+                            <DoubleAnimation
+                                EasingFunction="{StaticResource EaseOut}"
+                                Storyboard.TargetName="TearTabTurn"
+                                Storyboard.TargetProperty="Angle"
+                                From="0"
+                                To="-25"
+                                Duration="0:0:0.2" />
+                            <DoubleAnimation
+                                BeginTime="0:0:0.4"
+                                Storyboard.TargetName="TearTab"
+                                Storyboard.TargetProperty="Opacity"
+                                From="1"
+                                To="0"
+                                Duration="0:0:0.12" />
+
+                            <!--  Top part of the film, above the tear line: flies up and away to the left  -->
+                            <DoubleAnimation
+                                BeginTime="0:0:0.45"
+                                EasingFunction="{StaticResource EaseOut}"
+                                Storyboard.TargetName="FilmTopMove"
+                                Storyboard.TargetProperty="Y"
+                                From="0"
+                                To="-34"
+                                Duration="0:0:0.4" />
+                            <DoubleAnimation
+                                BeginTime="0:0:0.45"
+                                EasingFunction="{StaticResource EaseOut}"
+                                Storyboard.TargetName="FilmTopTurn"
+                                Storyboard.TargetProperty="Angle"
+                                From="0"
+                                To="-9"
+                                Duration="0:0:0.4" />
+                            <DoubleAnimation
+                                BeginTime="0:0:0.5"
+                                Storyboard.TargetName="FilmTop"
+                                Storyboard.TargetProperty="Opacity"
+                                From="1"
+                                To="0"
+                                Duration="0:0:0.3" />
+
+                            <!--  Body of the film: loosens and slides down off the case  -->
+                            <DoubleAnimation
+                                BeginTime="0:0:0.45"
+                                EasingFunction="{StaticResource EaseOut}"
+                                Storyboard.TargetName="FilmBodyScale"
+                                Storyboard.TargetProperty="ScaleX"
+                                From="1"
+                                To="1.06"
+                                Duration="0:0:0.3" />
+                            <DoubleAnimation
+                                BeginTime="0:0:0.5"
+                                Storyboard.TargetName="FilmBodyMove"
+                                Storyboard.TargetProperty="Y"
+                                From="0"
+                                To="80"
+                                Duration="0:0:0.5">
+                                <DoubleAnimation.EasingFunction>
+                                    <CubicEase EasingMode="EaseIn" />
+                                </DoubleAnimation.EasingFunction>
+                            </DoubleAnimation>
+                            <DoubleAnimation
+                                BeginTime="0:0:0.5"
+                                EasingFunction="{StaticResource EaseInOut}"
+                                Storyboard.TargetName="FilmBodyTurn"
+                                Storyboard.TargetProperty="Angle"
+                                From="0"
+                                To="3"
+                                Duration="0:0:0.5" />
+                            <DoubleAnimation
+                                BeginTime="0:0:0.62"
+                                Storyboard.TargetName="FilmBody"
+                                Storyboard.TargetProperty="Opacity"
+                                From="1"
+                                To="0"
+                                Duration="0:0:0.38" />
+
+                            <!--  Light over the freed cover  -->
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="UnwrapFlash" Storyboard.TargetProperty="Opacity">
+                                <LinearDoubleKeyFrame KeyTime="0:0:0.5" Value="0" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.66" Value="1" EasingFunction="{StaticResource EaseOut}" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:1.0" Value="0" EasingFunction="{StaticResource EaseInOut}" />
+                            </DoubleAnimationUsingKeyFrames>
+
+                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="WrapLayer" Storyboard.TargetProperty="Visibility">
+                                <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}" />
+                                <DiscreteObjectKeyFrame KeyTime="0:0:1.0" Value="{x:Static Visibility.Collapsed}" />
+                            </ObjectAnimationUsingKeyFrames>
+
+                            <!--  The case pops once (from the shelf) as the film is off  -->
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CasePop" Storyboard.TargetProperty="ScaleX">
+                                <LinearDoubleKeyFrame KeyTime="0:0:0.9" Value="1" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:1.04" Value="1.03" EasingFunction="{StaticResource EaseOut}" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:1.3" Value="1" EasingFunction="{StaticResource EaseInOut}" />
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CasePop" Storyboard.TargetProperty="ScaleY">
+                                <LinearDoubleKeyFrame KeyTime="0:0:0.9" Value="1" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:1.04" Value="1.03" EasingFunction="{StaticResource EaseOut}" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:1.3" Value="1" EasingFunction="{StaticResource EaseInOut}" />
+                            </DoubleAnimationUsingKeyFrames>
+                        </Storyboard>
+
+                        <!--  Hovered sealed case: a light band runs over the film instead of opening it  -->
+                        <Storyboard x:Key="SbGlint" FillBehavior="Stop">
+                            <DoubleAnimation
+                                EasingFunction="{StaticResource EaseInOut}"
+                                Storyboard.TargetName="GlintMove"
+                                Storyboard.TargetProperty="X"
+                                From="-300"
+                                To="300"
+                                Duration="0:0:0.7" />
                         </Storyboard>
                     </ControlTemplate.Resources>
 
@@ -189,7 +372,13 @@
                         is closed (all caches at once froze the app for seconds on a profile change): the selection ring sits
                         between the caches, the accent rim of the disc is only set while open (trigger).
                     -->
-                    <Grid x:Name="CaseHost" Tag="{Binding Content, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource ImageSourceOnlyConverter}}">
+                    <Grid
+                        x:Name="CaseHost"
+                        RenderTransformOrigin="0.5,1"
+                        Tag="{Binding Content, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource ImageSourceOnlyConverter}}">
+                        <Grid.RenderTransform>
+                            <ScaleTransform x:Name="CasePop" />
+                        </Grid.RenderTransform>
 
                         <!--  Shadow on the shelf (the layer needs a fill, otherwise the DropShadowEffect has nothing to cast)  -->
                         <Border IsHitTestVisible="False">
@@ -450,39 +639,211 @@
                             </Viewport2DVisual3D>
                         </Viewport3D>
                         </Border>
+
+                        <!--
+                            Shrink wrap of a sealed game (ui:GameCase.IsSealed), drawn in base units over the closed case: clear
+                            film, split by a tear strip near the top with a pull tab at its right end. Shown by SbSeal, taken off by
+                            SbUnwrap. The film parts are cached (only their transforms are animated); no accent inside, see above.
+                        -->
+                        <Viewbox
+                            x:Name="WrapLayer"
+                            IsHitTestVisible="False"
+                            Stretch="Fill"
+                            Visibility="Collapsed">
+                            <Grid Width="246" Height="366">
+
+                                <!--  Light over the cover while the film comes off  -->
+                                <Border
+                                    x:Name="UnwrapFlash"
+                                    Margin="3"
+                                    CornerRadius="4"
+                                    Opacity="0">
+                                    <Border.Background>
+                                        <RadialGradientBrush Center="0.5,0.35" GradientOrigin="0.5,0.35" RadiusX="0.8" RadiusY="0.6">
+                                            <GradientStop Offset="0" Color="#33FFFFFF" />
+                                            <GradientStop Offset="1" Color="#00FFFFFF" />
+                                        </RadialGradientBrush>
+                                    </Border.Background>
+                                </Border>
+
+                                <!--  Body of the film below the tear strip, with the welded seam at the bottom and creases at the corners  -->
+                                <Grid
+                                    x:Name="FilmBody"
+                                    Margin="-1,21,-1,-1"
+                                    RenderTransformOrigin="0.5,0">
+                                    <Grid.CacheMode>
+                                        <BitmapCache SnapsToDevicePixels="True" />
+                                    </Grid.CacheMode>
+                                    <Grid.RenderTransform>
+                                        <TransformGroup>
+                                            <ScaleTransform x:Name="FilmBodyScale" />
+                                            <RotateTransform x:Name="FilmBodyTurn" />
+                                            <TranslateTransform x:Name="FilmBodyMove" />
+                                        </TransformGroup>
+                                    </Grid.RenderTransform>
+
+                                    <Border
+                                        Background="{StaticResource Brush.Case.Wrap}"
+                                        BorderBrush="#38FFFFFF"
+                                        BorderThickness="1,0,1,1"
+                                        CornerRadius="0,0,7,7" />
+                                    <Border
+                                        Height="1"
+                                        Margin="8,0,8,6"
+                                        VerticalAlignment="Bottom"
+                                        Background="#26FFFFFF" />
+                                    <Path
+                                        Data="M 2,330 L 16,343 M 2,312 L 10,320 M 246,336 L 234,344"
+                                        Stroke="#1FFFFFFF"
+                                        StrokeThickness="1" />
+                                </Grid>
+
+                                <!--  Top of the film above the tear strip  -->
+                                <Border
+                                    x:Name="FilmTop"
+                                    Height="17"
+                                    Margin="-1,-1,-1,0"
+                                    VerticalAlignment="Top"
+                                    Background="{StaticResource Brush.Case.Wrap}"
+                                    BorderBrush="#38FFFFFF"
+                                    BorderThickness="1,1,1,0"
+                                    CornerRadius="7,7,0,0"
+                                    RenderTransformOrigin="0,1">
+                                    <Border.RenderTransform>
+                                        <TransformGroup>
+                                            <RotateTransform x:Name="FilmTopTurn" />
+                                            <TranslateTransform x:Name="FilmTopMove" />
+                                        </TransformGroup>
+                                    </Border.RenderTransform>
+                                </Border>
+
+                                <!--  Tear strip; pulled out from the right, so it shrinks towards its left end  -->
+                                <Border
+                                    Height="5"
+                                    Margin="-1,16,-1,0"
+                                    VerticalAlignment="Top"
+                                    Background="{StaticResource Brush.Case.TearStrip}"
+                                    CornerRadius="1"
+                                    RenderTransformOrigin="0,0.5">
+                                    <Border.RenderTransform>
+                                        <ScaleTransform x:Name="TearStripScale" />
+                                    </Border.RenderTransform>
+                                </Border>
+
+                                <!--  Pull tab at the right end of the strip, a little beyond the case edge  -->
+                                <Border
+                                    x:Name="TearTab"
+                                    Width="14"
+                                    Height="11"
+                                    Margin="0,13,-8,0"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Top"
+                                    Background="{StaticResource Brush.Case.TearStrip}"
+                                    CornerRadius="2,5,5,2"
+                                    RenderTransformOrigin="0,0.5">
+                                    <Border.RenderTransform>
+                                        <TransformGroup>
+                                            <RotateTransform x:Name="TearTabTurn" />
+                                            <TranslateTransform x:Name="TearTabMove" />
+                                        </TransformGroup>
+                                    </Border.RenderTransform>
+                                </Border>
+
+                                <!--  Light band of SbGlint, waiting outside the clip  -->
+                                <Grid ui:ClipBehaviors.CornerRadius="6">
+                                    <Border
+                                        Width="80"
+                                        Height="520"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Background="{StaticResource Brush.Case.WrapGlint}">
+                                        <Border.RenderTransform>
+                                            <TransformGroup>
+                                                <RotateTransform Angle="20" CenterX="40" CenterY="260" />
+                                                <TranslateTransform x:Name="GlintMove" X="-300" />
+                                            </TransformGroup>
+                                        </Border.RenderTransform>
+                                    </Border>
+                                </Grid>
+                            </Grid>
+                        </Viewbox>
                     </Grid>
 
                     <!--
-                        Open while hovered or IsOpen, closed otherwise: one trigger (OR) owns the opening angle. Animations of
-                        triggers declared later win over earlier ones, so separate open / close triggers on the same property
-                        would block each other.
+                        Open while hovered or IsOpen and not wrapped, closed otherwise: one trigger owns the opening angle.
+                        Animations of triggers declared later win over earlier ones, so separate open / close triggers on the
+                        same property would block each other.
                     -->
                     <ControlTemplate.Triggers>
-                        <DataTrigger Value="True">
-                            <DataTrigger.Binding>
-                                <MultiBinding Converter="{StaticResource AnyTrueConverter}">
-                                    <Binding Path="IsMouseOver" RelativeSource="{RelativeSource Self}" />
-                                    <Binding Path="(ui:GameCase.IsOpen)" RelativeSource="{RelativeSource Self}" />
-                                </MultiBinding>
-                            </DataTrigger.Binding>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Value="True">
+                                    <Condition.Binding>
+                                        <MultiBinding Converter="{StaticResource AnyTrueConverter}">
+                                            <Binding Path="IsMouseOver" RelativeSource="{RelativeSource Self}" />
+                                            <Binding Path="(ui:GameCase.IsOpen)" RelativeSource="{RelativeSource Self}" />
+                                        </MultiBinding>
+                                    </Condition.Binding>
+                                </Condition>
+                                <Condition Binding="{Binding Path=(ui:GameCase.IsWrapped), RelativeSource={RelativeSource Self}}" Value="False" />
+                            </MultiDataTrigger.Conditions>
                             <Setter TargetName="DiscAccentRim" Property="Stroke" Value="{DynamicResource Brush.Accent}" />
-                            <DataTrigger.EnterActions>
+                            <MultiDataTrigger.EnterActions>
                                 <BeginStoryboard HandoffBehavior="SnapshotAndReplace" Storyboard="{StaticResource SbOpen}" />
-                            </DataTrigger.EnterActions>
-                            <DataTrigger.ExitActions>
+                            </MultiDataTrigger.EnterActions>
+                            <MultiDataTrigger.ExitActions>
                                 <BeginStoryboard HandoffBehavior="SnapshotAndReplace" Storyboard="{StaticResource SbClose}" />
-                            </DataTrigger.ExitActions>
-                        </DataTrigger>
+                            </MultiDataTrigger.ExitActions>
+                        </MultiDataTrigger>
 
-                        <!--  Only properties the open trigger doesn't animate: extra angle, disc, outline  -->
                         <Trigger Property="ui:GameCase.IsSelected" Value="True">
                             <Trigger.EnterActions>
-                                <BeginStoryboard HandoffBehavior="SnapshotAndReplace" Storyboard="{StaticResource SbSelect}" />
+                                <BeginStoryboard HandoffBehavior="SnapshotAndReplace" Storyboard="{StaticResource SbRingShow}" />
                             </Trigger.EnterActions>
                             <Trigger.ExitActions>
-                                <BeginStoryboard HandoffBehavior="SnapshotAndReplace" Storyboard="{StaticResource SbDeselect}" />
+                                <BeginStoryboard HandoffBehavior="SnapshotAndReplace" Storyboard="{StaticResource SbRingHide}" />
                             </Trigger.ExitActions>
                         </Trigger>
+
+                        <!--  Only properties the open trigger doesn't animate: extra angle, disc. Not while wrapped  -->
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="ui:GameCase.IsSelected" Value="True" />
+                                <Condition Property="ui:GameCase.IsWrapped" Value="False" />
+                            </MultiTrigger.Conditions>
+                            <MultiTrigger.EnterActions>
+                                <BeginStoryboard HandoffBehavior="SnapshotAndReplace" Storyboard="{StaticResource SbSelect}" />
+                            </MultiTrigger.EnterActions>
+                            <MultiTrigger.ExitActions>
+                                <BeginStoryboard HandoffBehavior="SnapshotAndReplace" Storyboard="{StaticResource SbDeselect}" />
+                            </MultiTrigger.ExitActions>
+                        </MultiTrigger>
+
+                        <Trigger Property="ui:GameCase.IsSealed" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard HandoffBehavior="SnapshotAndReplace" Storyboard="{StaticResource SbSeal}" />
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard HandoffBehavior="SnapshotAndReplace" Storyboard="{StaticResource SbUnwrap}" />
+                            </Trigger.ExitActions>
+                        </Trigger>
+
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Value="True">
+                                    <Condition.Binding>
+                                        <MultiBinding Converter="{StaticResource AnyTrueConverter}">
+                                            <Binding Path="IsMouseOver" RelativeSource="{RelativeSource Self}" />
+                                            <Binding Path="(ui:GameCase.IsOpen)" RelativeSource="{RelativeSource Self}" />
+                                        </MultiBinding>
+                                    </Condition.Binding>
+                                </Condition>
+                                <Condition Binding="{Binding Path=(ui:GameCase.IsSealed), RelativeSource={RelativeSource Self}}" Value="True" />
+                            </MultiDataTrigger.Conditions>
+                            <MultiDataTrigger.EnterActions>
+                                <BeginStoryboard HandoffBehavior="SnapshotAndReplace" Storyboard="{StaticResource SbGlint}" />
+                            </MultiDataTrigger.EnterActions>
+                        </MultiDataTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
@@ -1061,9 +1422,10 @@
                                 <RowDefinition Height="41*" />
                             </Grid.RowDefinitions>
 
-                            <!--  ===== Case (style GameCase), opened while the tile is hovered or selected =====  -->
+                            <!--  ===== Case (style GameCase), opened while the tile is hovered or selected, unless still sealed =====  -->
                             <ContentControl
                                 Grid.Row="0"
+                                ui:GameCase.IsSealed="{Binding COISSEA}"
                                 ui:GameCase.IsSelected="{Binding IsSelected, RelativeSource={RelativeSource TemplatedParent}}"
                                 Content="{Binding COCOVIM}"
                                 IsHitTestVisible="False"
