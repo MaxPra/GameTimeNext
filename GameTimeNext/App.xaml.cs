@@ -5,6 +5,7 @@ using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.Files;
 using GameTimeNext.Core.Framework.GitHub;
+using GameTimeNext.Core.Framework.LauncherIntegration;
 using GameTimeNext.Core.Framework.Utils;
 using System.Diagnostics;
 using System.Windows;
@@ -29,6 +30,9 @@ namespace GameTimeNext
                 Shutdown();
                 return;
             }
+
+            // A crash must not leave a game suspended by the Big Picture mode (OnExit doesn't run then)
+            AppDomain.CurrentDomain.UnhandledException += (_, _) => FnLauncher.ResumePausedGame();
 
             FnSystem.ParseStartArguments(e.Args);
             bool startMinimized = AppEnvironment.StartArguments.ContainsKey("minimized");
@@ -122,6 +126,9 @@ namespace GameTimeNext
         protected override void OnExit(ExitEventArgs e)
         {
             FnLog.AddInfo(null, "*** Shutdown initiated ***");
+
+            // A game paused by the Big Picture mode must never stay suspended
+            FnLauncher.ResumePausedGame();
 
             FnLog.AddInfo(null, "Stopping background processes...");
             AppEnvironment.StopBackgroundProcesses();

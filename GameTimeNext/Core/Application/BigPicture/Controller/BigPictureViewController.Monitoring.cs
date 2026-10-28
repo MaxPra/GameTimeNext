@@ -48,6 +48,7 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
                 FnLog.AddInfo(GetApp(), "Monitoring stopped from the Big Picture mode");
 
                 UpdateMonitoringChip();
+                UpdateHints();
                 EnsureFocus();
                 _ = LoadLibraryAsync();
                 return;
@@ -69,6 +70,7 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
             FnLog.AddInfo(GetApp(), $"Monitoring of {t1profi.GANA} started from the Big Picture mode");
 
             UpdateMonitoringChip();
+            UpdateHints();
             EnsureFocus();
         }
 
@@ -148,6 +150,14 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
             if (_isGameCombinationUsed || _gamepad.IsHeld(GamepadButton.Start))
                 return;
 
+            ToggleBlackout();
+        }
+
+        /// <summary>
+        /// View (after its delay) or F5: blackout of all monitors, or its end.
+        /// </summary>
+        private void ToggleBlackout()
+        {
             if (CFBlackout.IsActive())
             {
                 EndBlackout();
@@ -174,6 +184,7 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
             if (t1profi == null)
                 return;
 
+            // Resumes a paused game too
             if (!FnLauncher.SwitchToGame(t1profi))
                 new ToastMessage("Game not found", $"The window of {t1profi.GANA} could not be found.\nMinimize the Big Picture mode in its menu to reach it.").Show();
         }
@@ -190,6 +201,11 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
                 return;
 
             FnLog.AddInfo(GetApp(), "Big Picture mode minimized");
+
+            // What is behind the mode is meant to be used, a paused game too
+            FnLauncher.ResumePausedGame();
+            UpdateRunningState();
+
             window.WindowState = WindowState.Minimized;
         }
         #endregion

@@ -102,6 +102,20 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         }
 
+        protected override async Task BuildFirstImplAsync()
+        {
+            // New profiles start with the placeholder cover, replaced by choosing another one
+            if (GetWnd().ViewIndicator.Contains("CN") && FnString.IsNullEmptyOrWhitespace(GetApp().T1Profi.PPFN))
+            {
+                (string path, string fileName) tempCover = await FnSystem.SaveCroppedImageTempPath(CFProfilesApp.LoadPlaceholderCover(), GetApp().Loader);
+
+                await FillViewCoverChanged(tempCover.path);
+
+                // Set on the object as well, so the following FillView keeps it
+                GetApp().T1Profi.PPFN = _coverAppFolderFileName;
+            }
+        }
+
         protected override void BuildImpl()
         {
             ControlBlackoutCheckboxProtection();
@@ -175,8 +189,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             // Profile settings
             FillDBOProfileSettings();
 
-            // Copy image
-            if (GetApp().T1Profi.HasFieldDataChanged(K1PROFI.Fields.PPFN))
+            // Copy image. Compared with the cover the profile was opened with, not with the change tracking:
+            // its baseline is taken after BuildFirst, so the preset placeholder cover would count as unchanged
+            if (GetApp().T1Profi.PPFN != _oldProfileCoverFileName)
                 _hasProfileCoverChanged = true;
         }
 
@@ -259,6 +274,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             CProfileSettings cProfileSettings = new CProfileSettings(GetApp().T1Profi.PRSE).Dezerialize();
 
             GetWnd().cbEnableHdrOnStart.IsChecked = cProfileSettings.HDREnabled == true;
+            GetWnd().cbPauseInBigPicture.IsChecked = cProfileSettings.PauseInBigPicture;
 
             using (SuppressRunEventPipeline())
             {
@@ -398,6 +414,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             cProfileSettings.HDREnabled = GetWnd().cbEnableHdrOnStart.IsChecked == true;
             cProfileSettings.LaunchArgs = GetWnd().txbLaunchArgs.Text.Trim();
+            cProfileSettings.PauseInBigPicture = GetWnd().cbPauseInBigPicture.IsChecked == true;
 
             cProfileSettings.OverrideGlobalBlackout = GetWnd().cbOverrideGlobalBlackout.IsChecked == true;
             cProfileSettings.BlackoutSideMonitors =
@@ -824,17 +841,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             app.Search(GetApp(), steamAppId, GetWnd().txbProfileName.Text, r =>
             {
                 if (!r.Canceled)
-                {
-                    Task.Run(async () =>
-                    {
-                        using (SuppressRunEventPipeline())
-                            await FillViewCoverChanged(r.SelectedImagePath);
-
-                        GetWnd().Dispatcher.Invoke(() =>
-                        { RunEventPipelineSync(View, string.Empty); });
-
-                    });
-                }
+                    Task.Run(() => ApplyCoverAsync(r.SelectedImagePath));
             });
         }
         protected void EV_btnUnlinkLauncher()
@@ -854,24 +861,38 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 app.Crop(chosenImage, r =>
                 {
                     if (!r.Canceled)
-                    {
-                        (string path, string fileName) tuple = (string.Empty, string.Empty);
-
-                        Task.Run(async () =>
-                        {
-                            tuple = await FnSystem.SaveCroppedImageTempPath(r.CroppedImage!, GetApp().Loader);
-
-                            using (SuppressRunEventPipeline())
-                                await FillViewCoverChanged(tuple.path);
-
-                            GetWnd().Dispatcher.Invoke(() =>
-                            { RunEventPipelineSync(View, string.Empty); });
-                        });
-
-
-                    }
+                        Task.Run(() => ApplyCoverImageAsync(r.CroppedImage!));
                 });
             }
+        }
+
+        protected async Task EV_btnUsePlaceholderCover()
+        {
+            BitmapImage placeholderCover = CFProfilesApp.LoadPlaceholderCover();
+
+            await Task.Run(() => ApplyCoverImageAsync(placeholderCover));
+        }
+
+        /// <summary>
+        /// Saves the image as cover to the temp cover folder and applies it (see ApplyCoverAsync).
+        /// </summary>
+        private async Task ApplyCoverImageAsync(BitmapImage image)
+        {
+            (string path, string fileName) tempCover = await FnSystem.SaveCroppedImageTempPath(image, GetApp().Loader);
+
+            await ApplyCoverAsync(tempCover.path);
+        }
+
+        /// <summary>
+        /// Sets the cover file as new profile cover (file name, accent colors; copied on save) and refreshes the view.
+        /// </summary>
+        private async Task ApplyCoverAsync(string path)
+        {
+            using (SuppressRunEventPipeline())
+                await FillViewCoverChanged(path);
+
+            GetWnd().Dispatcher.Invoke(() =>
+            { RunEventPipelineSync(View, string.Empty); });
         }
 
         protected void EV_btnManualEstTimes()

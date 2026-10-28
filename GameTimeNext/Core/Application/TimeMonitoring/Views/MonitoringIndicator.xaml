@@ -11,6 +11,7 @@
     Background="Transparent"
     Focusable="False"
     ResizeMode="NoResize"
+    ShowActivated="False"
     ShowInTaskbar="False"
     Topmost="True"
     WindowStyle="None"

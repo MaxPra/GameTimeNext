@@ -14,6 +14,12 @@ namespace GameTimeNext.Core.Application.Profiles.Components
         // Still shrink-wrapped (setting SealNewGames); only effective while that setting is on
         public bool Sealed { get; set; } = false;
 
+        /// <summary>
+        /// Suspends the game while the Big Picture mode is brought in front of it, so it doesn't react to the
+        /// controller there (FnLauncher.PauseGame). On by default, also for profiles saved before the setting existed.
+        /// </summary>
+        public bool PauseInBigPicture { get; set; } = true;
+
         public CProfileSettings() { }
 
         public CProfileSettings(string rawValue) : base(rawValue) { }

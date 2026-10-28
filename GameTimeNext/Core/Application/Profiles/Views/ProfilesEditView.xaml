@@ -294,6 +294,8 @@
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="12" />
                                         <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="12" />
+                                        <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
 
                                     <TextBlock
@@ -306,7 +308,13 @@
                                         Grid.Row="2"
                                         Content="Enable HDR on game start" />
 
-                                    <Grid x:Name="grdLaunchArgs" Grid.Row="4">
+                                    <CheckBox
+                                        x:Name="cbPauseInBigPicture"
+                                        Grid.Row="4"
+                                        Content="Pause the game while the Big Picture mode is in front"
+                                        ToolTip="The game doesn't react to the controller while you use the Big Picture mode. Switch it off for online games or games with anti-cheat." />
+
+                                    <Grid x:Name="grdLaunchArgs" Grid.Row="6">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="8" />
@@ -416,6 +424,8 @@
                                             <ColumnDefinition Width="*" />
                                             <ColumnDefinition Width="8" />
                                             <ColumnDefinition Width="150" />
+                                            <ColumnDefinition Width="10" />
+                                            <ColumnDefinition Width="150" />
                                         </Grid.ColumnDefinitions>
 
                                         <Button
@@ -431,12 +441,19 @@
                                             Height="36"
                                             Content="SteamGridDB…"
                                             ToolTip="Open SteamGridDB picker window" />
+
+                                        <Button
+                                            x:Name="btnUsePlaceholderCover"
+                                            Grid.Column="4"
+                                            Height="36"
+                                            Content="Placeholder"
+                                            ToolTip="Use the GameTimeNext placeholder cover" />
                                     </Grid>
 
                                     <TextBlock
                                         Grid.Row="6"
                                         Style="{StaticResource Text.Hint}"
-                                        Text="Use either “Browse local…” or “SteamGridDB…” to set the image path." />
+                                        Text="Use “Browse local…”, “SteamGridDB…” or “Placeholder” to set the image path." />
                                 </Grid>
                             </Border>
 

@@ -1,4 +1,7 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Diagnostics;
+using System.Globalization;
+using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows;
 using System.Windows.Interop;
 
@@ -36,10 +39,13 @@ namespace GameTimeNext.Core.Framework.Utils
                 return true;
 
             IntPtr foregroundWindow = GetForegroundWindow();
-            uint foregroundThread = GetWindowThreadProcessId(foregroundWindow, out _);
+            uint foregroundThread = GetWindowThreadProcessId(foregroundWindow, out uint foregroundProcessId);
             uint ownThread = GetCurrentThreadId();
 
-            bool attached = foregroundThread != 0 && foregroundThread != ownThread && AttachThreadInput(foregroundThread, ownThread, true);
+            // Sharing the input of a suspended process (game paused by the Big Picture mode) blocks this thread for good
+            bool attached = foregroundThread != 0 && foregroundThread != ownThread &&
+                !FnProcessSuspension.IsSuspended((int)foregroundProcessId) &&
+                AttachThreadInput(foregroundThread, ownThread, true);
 
             try
             {
@@ -91,6 +97,80 @@ namespace GameTimeNext.Core.Framework.Utils
         public static bool IsForeground(IntPtr hwnd)
         {
             return hwnd != IntPtr.Zero && GetForegroundWindow() == hwnd;
+        }
+
+        /// <summary>
+        /// Process and window class of the foreground window, for the log (e.g. why a window couldn't be brought to the front).
+        /// </summary>
+        public static string DescribeForegroundWindow()
+        {
+            IntPtr hwnd = GetForegroundWindow();
+
+            if (hwnd == IntPtr.Zero)
+                return "none";
+
+            GetWindowThreadProcessId(hwnd, out uint processId);
+
+            StringBuilder className = new StringBuilder(256);
+            GetClassName(hwnd, className, className.Capacity);
+
+            string processName;
+
+            try
+            {
+                using Process process = Process.GetProcessById((int)processId);
+                processName = process.ProcessName;
+            }
+            catch (Exception)
+            {
+                processName = processId.ToString(CultureInfo.InvariantCulture);
+            }
+
+            return $"{processName} ({className})";
+        }
+
+        /// <summary>
+        /// The window of another application that has the foreground right now, IntPtr.Zero if the foreground belongs
+        /// to this application or to the Windows shell (taskbar, desktop) or there is none.
+        /// </summary>
+        public static IntPtr GetForeignForegroundWindow()
+        {
+            IntPtr hwnd = GetForegroundWindow();
+
+            if (hwnd == IntPtr.Zero)
+                return IntPtr.Zero;
+
+            GetWindowThreadProcessId(hwnd, out uint processId);
+
+            if (processId == (uint)Environment.ProcessId)
+                return IntPtr.Zero;
+
+            StringBuilder className = new StringBuilder(64);
+            GetClassName(hwnd, className, className.Capacity);
+
+            return ShellWindowClasses.Contains(className.ToString()) ? IntPtr.Zero : hwnd;
+        }
+
+        /// <summary>
+        /// Puts a window of another application on top of the normal (not topmost) windows without activating it,
+        /// e.g. the dialog that had the foreground behind a window that was topmost until now.
+        /// </summary>
+        public static void Raise(IntPtr hwnd)
+        {
+            if (hwnd != IntPtr.Zero)
+                SetWindowPos(hwnd, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+        }
+
+        /// <summary>
+        /// Puts the window behind all other windows without activating anything, e.g. the mode that covers a game
+        /// which already has the focus.
+        /// </summary>
+        public static void Lower(Window window)
+        {
+            IntPtr hwnd = new WindowInteropHelper(window).Handle;
+
+            if (hwnd != IntPtr.Zero)
+                SetWindowPos(hwnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
         }
 
         /// <summary>
@@ -166,6 +246,17 @@ namespace GameTimeNext.Core.Framework.Utils
             return (long)Math.Max(0, rect.Right - rect.Left) * Math.Max(0, rect.Bottom - rect.Top);
         }
 
+        // Taskbars and desktop: they get the foreground when no window has it, which is no dialog of a launcher
+        private static readonly HashSet<string> ShellWindowClasses = new HashSet<string>(StringComparer.Ordinal)
+        {
+            "Shell_TrayWnd", "Shell_SecondaryTrayWnd", "Progman", "WorkerW"
+        };
+
+        private static readonly IntPtr HWND_TOP = IntPtr.Zero;
+        private static readonly IntPtr HWND_BOTTOM = new IntPtr(1);
+        private const uint SWP_NOSIZE = 0x0001;
+        private const uint SWP_NOMOVE = 0x0002;
+        private const uint SWP_NOACTIVATE = 0x0010;
         private const int SW_MINIMIZE = 6;
         private const int SW_RESTORE = 9;
         private const uint GW_OWNER = 4;
@@ -258,5 +349,11 @@ namespace GameTimeNext.Core.Framework.Utils
 
         [DllImport("user32.dll")]
         private static extern IntPtr GetAncestor(IntPtr hwnd, uint gaFlags);
+
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        private static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
+
+        [DllImport("user32.dll")]
+        private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, uint uFlags);
     }
 }

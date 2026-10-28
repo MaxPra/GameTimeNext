@@ -164,6 +164,11 @@ namespace GameTimeNext.Core.Application.General.Controller
             GetWindow().IsFullScreen = true;
             _bigPictureApp.Start(GetApp(), GetWindow().cpBigPicture);
 
+            // WPF renders covered elements too: the tabs below (e.g. animations of the profiles view) would keep costing
+            // frames of the mode. Hidden keeps their layout and state.
+            GetWindow().MainTabControl.Visibility = Visibility.Hidden;
+            FnControls.SetVisible(GetWindow().pnlEmptyTabMessage, false);
+
             FnLog.AddInfo("MainApp", "Big Picture mode opened");
         }
 
@@ -177,6 +182,9 @@ namespace GameTimeNext.Core.Application.General.Controller
 
             _bigPictureApp.Close();
             GetWindow().IsFullScreen = false;
+
+            GetWindow().MainTabControl.Visibility = Visibility.Visible;
+            FnControls.SetVisible(GetWindow().pnlEmptyTabMessage, GetWindow().MainTabControl.Items.Count == 0);
 
             // The mode colored the window with the selected game: back to the profile selected in the profiles view
             FnTheme.ApplyProfileAccentColors(AppEnvironment.CurrentPfid == 0 ? null : new TXPROFI().Read(AppEnvironment.CurrentPfid));
