@@ -92,6 +92,10 @@ namespace GameTimeNext.Core.Application.TableObjects
         [UIXSignatureField(25)]
         public bool DarkTintedGlass { get; set; }
 
+        /// <summary>New profiles are added shrink-wrapped and have to be unwrapped before they can be launched.</summary>
+        [UIXSignatureField(26)]
+        public bool SealNewGames { get; set; }
+
 
 
         public AppSettings()
@@ -102,6 +106,7 @@ namespace GameTimeNext.Core.Application.TableObjects
             AllowProfileSpecificStyleChanges = false;
             BackgroundSource = string.Empty;
             DarkTintedGlass = false;
+            SealNewGames = false;
 
             MonitoringKeyActive = false;
             ShowToastNotification = false;
