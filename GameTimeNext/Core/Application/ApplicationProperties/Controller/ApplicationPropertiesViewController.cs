@@ -1,10 +1,11 @@
-using GameTimeNext.Core.Application.ApplicationProperties.Viewmodels;
+using GameTimeNext.Core.Application.ApplicationProperties.DataWrapper;
 using GameTimeNext.Core.Application.ApplicationProperties.Views;
 using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Profiles;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.UI.Dialogs;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -19,17 +20,16 @@ namespace GameTimeNext.Core.Application.ApplicationProperties.Controller
 {
     public class ApplicationPropertiesViewController : UIXViewControllerBase
     {
-
-        private ApplicationPropertiesViewModel? _viewModel;
+        private ApplicationPropertiesDataWrapper? _dataWrapper;
 
         public ApplicationPropertiesViewController(UIXApplication app) : base(app)
         {
-            _viewModel = new ApplicationPropertiesViewModel();
         }
 
         #region Event-Pipeline-Methods
         protected override void Init()
         {
+            _dataWrapper = GetDataWrapper<ApplicationPropertiesDataWrapper>();
         }
 
         protected override void TriggeredEvent(FrameworkElement source, string eventName)
@@ -38,20 +38,17 @@ namespace GameTimeNext.Core.Application.ApplicationProperties.Controller
 
         protected override void BuildFirstImpl()
         {
+            // Nothing is selected yet: no edit area
+            FnControls.SetVisible(GetView().cpApplicationPropertiesDetail, false);
         }
 
         protected override async Task BuildFirstImplAsync()
         {
-            await BuildApplicationPropertiesViewModel();
+            await BuildListAsync(string.Empty);
         }
 
         protected override void BuildImpl()
         {
-        }
-
-        protected override async Task BuildImplAsync()
-        {
-
         }
 
         protected override void CheckImpl()
@@ -60,7 +57,6 @@ namespace GameTimeNext.Core.Application.ApplicationProperties.Controller
 
         protected override void FillViewImpl()
         {
-
         }
 
         protected override void FillDBOImpl()
@@ -73,6 +69,7 @@ namespace GameTimeNext.Core.Application.ApplicationProperties.Controller
 
         protected override void DataWrapperSelectionChangedImpl(Selector source)
         {
+            FnControls.SetVisible(GetView().cpApplicationPropertiesDetail, true);
         }
         #endregion
 
@@ -86,29 +83,70 @@ namespace GameTimeNext.Core.Application.ApplicationProperties.Controller
             return (ApplicationPropertiesView)View;
         }
 
-        private async Task BuildApplicationPropertiesViewModel()
+        /// <summary>
+        /// Rebuilds the list and selects the definition with the given ID, which opens it in the edit area.
+        /// Empty = no selection, the edit area is closed.
+        /// </summary>
+        public async Task BuildListAsync(string selectApdid)
         {
             GetApp().Loader.Begin();
 
             try
             {
-                await Task.Run(() =>
+                List<ApplicationPropertiesDataGridRow> rows = await Task.Run(BuildRowsApplicationProperties);
+
+                View.Dispatcher.Invoke(() =>
                 {
-                    List<ApplicationPropertiesDataGridRow> rows = BuildRowsApplicationProperties();
+                    GetView().dgApplicationProperties.ItemsSource = new ObservableCollection<ApplicationPropertiesDataGridRow>(rows);
 
-                    View.Dispatcher.Invoke(() =>
+                    ApplicationPropertiesDataGridRow? selectedRow = FnString.IsNullEmptyOrWhitespace(selectApdid)
+                        ? null
+                        : rows.FirstOrDefault(r => r.APAPDID == selectApdid);
+
+                    if (selectedRow != null)
                     {
-                        _viewModel = new ApplicationPropertiesViewModel();
-                        _viewModel!.ApplicationPropertiesDataGridRows = new System.Collections.ObjectModel.ObservableCollection<ApplicationPropertiesDataGridRow>(rows);
-
-                        GetView().DataContext = _viewModel;
-                    });
+                        GetView().dgApplicationProperties.SelectedItem = selectedRow;
+                        GetView().dgApplicationProperties.ScrollIntoView(selectedRow);
+                    }
+                    else
+                    {
+                        CloseDetail();
+                    }
                 });
             }
             finally
             {
                 GetApp().Loader.Stop();
             }
+        }
+
+        /// <summary>
+        /// Closes the edit area without saving and clears the selection.
+        /// </summary>
+        public void CloseDetail()
+        {
+            GetView().dgApplicationProperties.SelectedItem = null;
+
+            _dataWrapper!.Set(null);
+            FnControls.SetVisible(GetView().cpApplicationPropertiesDetail, false);
+        }
+
+        /// <summary>
+        /// Opens the definition, a new and unsaved one or a saved one, in the edit area.
+        /// </summary>
+        private void OpenInDetail(T1APRDH t1aprdh)
+        {
+            GetView().dgApplicationProperties.SelectedItem = null;
+
+            _dataWrapper!.Set(t1aprdh);
+            FnControls.SetVisible(GetView().cpApplicationPropertiesDetail, true);
+
+            _dataWrapper.TargetController.Open(true);
+        }
+
+        private T1APRDH? GetSelectedDefinition()
+        {
+            return (GetView().dgApplicationProperties.SelectedItem as ApplicationPropertiesDataGridRow)?.RowObject as T1APRDH;
         }
 
         private List<ApplicationPropertiesDataGridRow> BuildRowsApplicationProperties()
@@ -128,7 +166,7 @@ namespace GameTimeNext.Core.Application.ApplicationProperties.Controller
                     if (t1aprdh == null)
                         continue;
 
-                    ApplicationPropertiesDataGridRow row = GetView().DgApplicationProperties.CreateNewRow<ApplicationPropertiesDataGridRow>();
+                    ApplicationPropertiesDataGridRow row = GetView().dgApplicationProperties.CreateNewRow<ApplicationPropertiesDataGridRow>();
                     row.APAPDID = t1aprdh.APDID;
                     row.APAPDES = t1aprdh.APDES;
                     row.APAPMCP = t1aprdh.APMCP;
@@ -149,14 +187,14 @@ namespace GameTimeNext.Core.Application.ApplicationProperties.Controller
 
             View.Dispatcher.Invoke(() =>
             {
-                if (!FnString.IsNullEmptyOrWhitespace(GetView().TxbId.Text))
+                if (!FnString.IsNullEmptyOrWhitespace(GetView().txbId.Text))
                 {
-                    query.AddWhere(K1APRDH.Name, K1APRDH.Fields.APDID, QueryCompareType.LIKE, GetView().TxbId.Text);
+                    query.AddWhere(K1APRDH.Name, K1APRDH.Fields.APDID, QueryCompareType.LIKE, GetView().txbId.Text);
                 }
 
-                if (!FnString.IsNullEmptyOrWhitespace(GetView().TxbDescription.Text))
+                if (!FnString.IsNullEmptyOrWhitespace(GetView().txbDescription.Text))
                 {
-                    query.AddWhere(K1APRDH.Name, K1APRDH.Fields.APDES, QueryCompareType.LIKE, GetView().TxbDescription.Text);
+                    query.AddWhere(K1APRDH.Name, K1APRDH.Fields.APDES, QueryCompareType.LIKE, GetView().txbDescription.Text);
                 }
             });
 
@@ -171,15 +209,15 @@ namespace GameTimeNext.Core.Application.ApplicationProperties.Controller
             ContextMenuBuilder contextBuilder = UIXContextMenuFactory.Create("ApplicationPropertiesContextMenu");
             contextBuilder.SetStyle(ProfilesContextMenuBuilder.contextMenuStyle);
 
+            // First entry = double click
             contextBuilder.AddItem("ctxtEdit", "Edit", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Edit), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
-            contextBuilder.AddItem("ctxtView", "View", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.View), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
             contextBuilder.AddItem("ctxtCopy", "Copy", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Copy), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
             contextBuilder.AddItem("ctxtDelete", "Delete", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Delete), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
 
             dgRow.ContextMenu = contextBuilder.Build();
         }
 
-        protected void EV_DgApplicationProperties_CtxtOpening(FrameworkElement target)
+        protected void EV_dgApplicationProperties_CtxtOpening(FrameworkElement target)
         {
             if (target is not DataGridRow row)
                 return;
@@ -187,93 +225,59 @@ namespace GameTimeNext.Core.Application.ApplicationProperties.Controller
             if (row.DataContext is not ApplicationPropertiesDataGridRow applicationPropertiesRow)
                 return;
 
-            if (_viewModel != null)
-                _viewModel.SelectedRow = applicationPropertiesRow;
-
-            GetView().DgApplicationProperties.SelectedItem = applicationPropertiesRow;
+            GetView().dgApplicationProperties.SelectedItem = applicationPropertiesRow;
 
             BuildContextMenu(row);
 
-            row.ContextMenu.PlacementTarget = row;
+            row.ContextMenu!.PlacementTarget = row;
             row.ContextMenu.Placement = PlacementMode.MousePoint;
             row.ContextMenu.IsOpen = true;
         }
 
-        private void OpenEditApp(T1APRDH t1aprdh, bool edit)
-        {
-            ApplicationPropertiesEditApp editApp = GetApp().GetApplication<ApplicationPropertiesEditApp>(UIXApplicationStartTarget.Window);
-            editApp.Properties(async (result) =>
-            {
-                if (!result.HasChanged)
-                    return;
-
-                await EV_BtnRefresh();
-            }, t1aprdh, edit);
-        }
-
         protected void EV_ctxtEdit()
         {
-            if (_viewModel?.SelectedRow?.RowObject is not T1APRDH selectedT1aprdh)
-                return;
-
-            OpenEditApp(selectedT1aprdh, true);
-        }
-
-        protected void EV_ctxtView()
-        {
-            if (_viewModel?.SelectedRow?.RowObject is not T1APRDH selectedT1aprdh)
-                return;
-
-            OpenEditApp(selectedT1aprdh, false);
+            GetApp().ApplicationPropertiesDetailView!.txbDescription.Focus();
         }
 
         protected void EV_ctxtCopy()
         {
-            if (_viewModel?.SelectedRow?.RowObject is not T1APRDH selectedT1aprdh)
+            if (GetSelectedDefinition() is not T1APRDH t1aprdhSource)
                 return;
 
-            ApplicationPropertiesEditApp editApp = GetApp().GetApplication<ApplicationPropertiesEditApp>(UIXApplicationStartTarget.Window);
-            editApp.Copy(async (result) =>
-            {
-                if (!result.HasChanged)
-                    return;
+            // The ID is the primary key, so the copy starts without one and the user has to enter a new ID
+            T1APRDH t1aprdh = new TXAPRDH().CreateNew();
+            t1aprdh.APDES = t1aprdhSource.APDES;
+            t1aprdh.APHPT = t1aprdhSource.APHPT;
+            t1aprdh.APMCP = t1aprdhSource.APMCP;
 
-                await EV_BtnRefresh();
-            }, selectedT1aprdh);
+            OpenInDetail(t1aprdh);
         }
 
         protected async Task EV_ctxtDelete()
         {
-            if (_viewModel?.SelectedRow?.RowObject is not T1APRDH selectedT1aprdh)
+            if (GetSelectedDefinition() is not T1APRDH t1aprdh)
                 return;
 
             CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window);
 
-            CFMBOXResult result = cfmbox.Show(GetErrorMessage("GLO0001", $"the application properties definition {selectedT1aprdh.APDID}"), CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
+            CFMBOXResult result = cfmbox.Show(GetErrorMessage("GLO0001", $"the application properties definition {t1aprdh.APDID}"), CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
 
             if (result == CFMBOXResult.Yes)
             {
-                new TXAPRDH().Delete(selectedT1aprdh.APDID);
+                new TXAPRDH().Delete(t1aprdh.APDID);
 
-                await EV_BtnRefresh();
+                await BuildListAsync(string.Empty);
             }
         }
 
-        protected void EV_BtnAddApplicationProperties()
+        protected void EV_btnAddApplicationProperties()
         {
-            ApplicationPropertiesEditApp editApp = GetApp().GetApplication<ApplicationPropertiesEditApp>(UIXApplicationStartTarget.Window);
-            editApp.CreateNew(async (result) =>
-            {
-                if (!result.HasChanged)
-                    return;
-
-                await EV_BtnRefresh();
-            });
+            OpenInDetail(new TXAPRDH().CreateNew());
         }
 
-        protected async Task EV_BtnRefresh()
+        protected async Task EV_btnRefresh()
         {
-            await BuildApplicationPropertiesViewModel();
+            await BuildListAsync(GetSelectedDefinition()?.APDID ?? string.Empty);
         }
     }
 }

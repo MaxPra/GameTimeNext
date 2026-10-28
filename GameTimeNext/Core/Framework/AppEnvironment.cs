@@ -35,7 +35,6 @@ namespace GameTimeNext.Core.Framework
 
         public static Dictionary<string, string?> StartArguments { get; set; } = new Dictionary<string, string?>();
         public static Dictionary<string, UIXApplication> StartedApplications { get => _startedApplications; set => _startedApplications = value; }
-        public static List<SearchableApplication> AvailableApplications { get; set; } = new List<SearchableApplication>();
         public static Dictionary<string, UIXBackgroundProcess> StartedBackgroundProcesses { get => _startedBackgroundProcesses; set => _startedBackgroundProcesses = value; }
         public static List<InformationListItem> InformationList { get; set; } = new List<InformationListItem>();
 
@@ -100,8 +99,6 @@ namespace GameTimeNext.Core.Framework
             HandleBackup();
 
             MigrationFactory.Metadata.MigrateTables();
-
-            InitializeStartableApps();
 
             CheckShowChangeLog();
 
@@ -301,36 +298,6 @@ namespace GameTimeNext.Core.Framework
             }
 
             _appConfig = JsonSerializer.Deserialize<AppConfig>(appConfigText);
-        }
-
-        private static void InitializeStartableApps()
-        {
-            string jsonFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Core", "Application", "StartableApps.json");
-
-            if (!File.Exists(jsonFilePath))
-            {
-                InformationList.Add(InformationListItem.FromErrorMessage(CFMBOXIcon.Error, "GLO0014", "file StartableApps.json", jsonFilePath));
-                return;
-            }
-
-            try
-            {
-                string jsonContent = File.ReadAllText(jsonFilePath);
-                var apps = JsonSerializer.Deserialize<List<SearchableApplication>>(jsonContent);
-
-                if (apps != null && apps.Count > 0)
-                {
-                    AvailableApplications.AddRange(apps);
-                }
-                else
-                {
-                    InformationList.Add(InformationListItem.FromErrorMessage(CFMBOXIcon.Warning, "GLO0019"));
-                }
-            }
-            catch (Exception ex)
-            {
-                InformationList.Add(InformationListItem.FromErrorMessage(CFMBOXIcon.Error, "GLO0013", "loading StartableApps.json", ex.Message));
-            }
         }
 
         private static void InitializeCleanup()

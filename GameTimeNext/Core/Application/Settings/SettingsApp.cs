@@ -6,6 +6,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Settings
 {
+    [UIXAppIcon(UIXMdlIcons.Settings)]
     public class SettingsApp : UIXApplication, IUIXApplicationStarter
     {
 
@@ -25,8 +26,6 @@ namespace GameTimeNext.Core.Application.Settings
 
             _settingsViewController = new SettingsViewController(this);
             _settingsView.ViewController = _settingsViewController;
-
-            Icon = UIXMdlIcons.Settings;
         }
 
         public void Start(UIXApplication hostApplication, ContentPresenter presenter)

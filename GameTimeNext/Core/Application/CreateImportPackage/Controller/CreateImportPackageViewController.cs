@@ -55,6 +55,23 @@ namespace GameTimeNext.Core.Application.CreateImportPackage.Controller
         {
         }
 
+        /// <summary>
+        /// Removes the previous packages and leftover temp folders, but keeps the folder itself: a deleted folder
+        /// that is still watched (e.g. by Visual Studio) stays "delete pending", and creating it again fails with
+        /// access denied until the last handle is closed.
+        /// </summary>
+        private static void ClearOutputDirectory(string outputDirPath)
+        {
+            if (!Directory.Exists(outputDirPath))
+                return;
+
+            foreach (string filePath in Directory.GetFiles(outputDirPath))
+                File.Delete(filePath);
+
+            foreach (string directoryPath in Directory.GetDirectories(outputDirPath))
+                Directory.Delete(directoryPath, true);
+        }
+
         private CreateImportPackageApp GetApp()
         {
             return (CreateImportPackageApp)App;
@@ -82,16 +99,13 @@ namespace GameTimeNext.Core.Application.CreateImportPackage.Controller
                 {
                     string outputDirPath = AppConfig.Dev.ImportPackagesDirectoryPath;
 
-                    if (Directory.Exists(outputDirPath))
-                    {
-                        Directory.Delete(outputDirPath, true);
-                        FnDirectory.EnsureDirectoryExists(outputDirPath);
-                    }
+                    ClearOutputDirectory(outputDirPath);
 
                     MigrationFactory.ImportPackage.ExportPackage(outputDirPath);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    FnLog.AddError(this, "Creating the import package failed.", ex);
                     error = true;
                 }
 

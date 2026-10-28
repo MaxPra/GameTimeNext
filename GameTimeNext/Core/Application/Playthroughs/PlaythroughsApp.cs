@@ -6,6 +6,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Playthroughs
 {
+    [UIXAppIcon(UIXMdlIcons.Play)]
     public class PlaythroughsApp : UIXApplication, IUIXApplicationStarter
     {
         public PlaythroughsView? PlaythroughsView { get; set; }
@@ -55,8 +56,6 @@ namespace GameTimeNext.Core.Application.Playthroughs
             PlaythroughsView = new PlaythroughsView();
             MainView = PlaythroughsView;
             PlaythroughsView.ViewController = new PlaythroughsViewController(this);
-
-            Icon = UIXMdlIcons.Play;
         }
 
         public override bool CanClose()

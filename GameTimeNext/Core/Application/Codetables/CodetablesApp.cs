@@ -6,6 +6,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Codetables
 {
+    [UIXAppIcon(UIXMdlIcons.BulletList)]
     public class CodetablesApp : UIXApplication, IUIXApplicationStarter
     {
 
@@ -56,8 +57,6 @@ namespace GameTimeNext.Core.Application.Codetables
             CodetablesView = new CodetablesView();
             MainView = CodetablesView;
             CodetablesView.ViewController = new CodetablesViewController(this);
-
-            Icon = UIXMdlIcons.BulletList;
         }
 
         public override bool CanClose()

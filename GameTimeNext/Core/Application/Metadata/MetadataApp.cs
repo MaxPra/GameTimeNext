@@ -6,6 +6,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Metadata
 {
+    [UIXAppIcon(UIXMdlIcons.DataBase)]
     public class MetadataApp : UIXApplication, IUIXApplicationStarter
     {
         public MetadataView? MetadataView { get; set; }
@@ -38,8 +39,6 @@ namespace GameTimeNext.Core.Application.Metadata
             MetadataView = new MetadataView();
             MainView = MetadataView;
             MetadataView.ViewController = new MetadataViewController(this);
-
-            Icon = UIXMdlIcons.DataBase;
         }
 
         public override bool CanClose()

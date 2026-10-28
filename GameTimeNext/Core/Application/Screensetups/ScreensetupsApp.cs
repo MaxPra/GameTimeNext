@@ -6,6 +6,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Screensetups
 {
+    [UIXAppIcon(UIXMdlIcons.Monitor)]
     public class ScreensetupsApp : UIXApplication, IUIXApplicationStarter
     {
 
@@ -56,8 +57,6 @@ namespace GameTimeNext.Core.Application.Screensetups
             ScreensetupsView = new ScreensetupsView();
             MainView = ScreensetupsView;
             ScreensetupsView!.ViewController = new ScreensetupsViewController(this);
-
-            Icon = UIXMdlIcons.Monitor;
         }
 
         public override bool CanClose()

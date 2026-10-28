@@ -68,11 +68,13 @@
                                             <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
 
+                                        <!--  Follows HeadersVisibility of the grid, like the WPF default template  -->
                                         <DataGridColumnHeadersPresenter
                                             Grid.Row="0"
                                             Grid.Column="0"
                                             Margin="0,0,0,4"
-                                            Background="Transparent" />
+                                            Background="Transparent"
+                                            Visibility="{Binding HeadersVisibility, ConverterParameter={x:Static DataGridHeadersVisibility.Column}, Converter={x:Static DataGrid.HeadersVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" />
 
                                         <ScrollContentPresenter
                                             Grid.Row="1"
@@ -175,6 +177,7 @@
         BasedOn="{StaticResource {x:Type uixsel:UIXDataGrid}}"
         TargetType="{x:Type uixsel:UIXTreeGrid}">
         <Setter Property="IndentSize" Value="18" />
+        <Setter Property="IconFontFamily" Value="{StaticResource Font.Icons}" />
         <Setter Property="RowStyle" Value="{DynamicResource TreeGrid.Row}" />
     </Style>
 
