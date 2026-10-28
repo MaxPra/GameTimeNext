@@ -1,4 +1,5 @@
 using GameTimeNext.Core.Framework.Config;
+using System.Buffers;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Security.Cryptography;
@@ -111,43 +112,109 @@ namespace GameTimeNext.Core.Framework.UI
         private static readonly Lazy<ConcurrentDictionary<string, DiscSection>> Cache = new(LoadCache);
         private static readonly object CacheFileLock = new();
 
+        /// <summary>
+        /// Sets the print once its section is known. A library sets all covers at once, and every change of the fill
+        /// renders the whole cached game case again: covers already analyzed (cache) get their final print directly,
+        /// only a new cover shows the plain print until its analysis is done. Without a fill until then the disc is
+        /// empty for a moment, which is not visible: it lies under the closed front cover.
+        /// </summary>
         private static async void OnCoverChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is not Shape shape)
                 return;
 
-            shape.Fill = e.NewValue is ImageSource image ? new ImageBrush(image) { Stretch = Stretch.UniformToFill } : null;
-
             // Pixels are read on a background thread
             if (e.NewValue is not BitmapSource cover || !cover.IsFrozen || cover.PixelWidth <= 0 || cover.PixelHeight <= 0)
+            {
+                shape.Fill = e.NewValue is ImageSource image ? CreatePlainBrush(image) : null;
                 return;
+            }
+
+            shape.Fill = null;
 
             try
             {
-                DiscSection section = await Task.Run(() => GetSectionAsync(cover));
+                string key = await Task.Run(() => GetKeyAsync(cover));
 
-                if (section.Size > 0 && ReferenceEquals(GetCover(shape), cover))
-                    shape.Fill = CreateBrush(cover, section, GetPrintAngle(shape));
+                if (!ReferenceEquals(GetCover(shape), cover))
+                    return;
+
+                if (!Cache.Value.TryGetValue(key, out DiscSection? section))
+                {
+                    shape.Fill = CreatePlainBrush(cover);
+
+                    section = await Task.Run(() => Analyses.GetOrAdd(key, _ => AnalyzeAsync(key, cover)));
+
+                    if (!ReferenceEquals(GetCover(shape), cover))
+                        return;
+                }
+
+                shape.Fill = section.Size > 0 ? CreateBrush(cover, section, GetPrintAngle(shape)) : CreatePlainBrush(cover);
             }
             catch (Exception ex)
             {
                 FnLog.AddError("MainApp", "Disc print section of a cover could not be determined", ex);
+
+                if (ReferenceEquals(GetCover(shape), cover))
+                    shape.Fill = CreatePlainBrush(cover);
             }
         }
 
-        private static Task<DiscSection> GetSectionAsync(BitmapSource cover)
+        /// <summary>The cover centered, like Stretch UniformToFill (no title section or not analyzed yet).</summary>
+        private static Brush CreatePlainBrush(ImageSource image)
         {
-            string key = GetKey(cover);
+            var brush = new ImageBrush(image) { Stretch = Stretch.UniformToFill };
+            brush.Freeze();
 
-            if (Cache.Value.TryGetValue(key, out DiscSection? cached))
-                return Task.FromResult(cached);
-
-            return Analyses.GetOrAdd(key, _ => AnalyzeAsync(key, cover));
+            return brush;
         }
 
+        private static async Task<DiscSection> GetSectionAsync(BitmapSource cover)
+        {
+            string key = await GetKeyAsync(cover);
+
+            if (Cache.Value.TryGetValue(key, out DiscSection? cached))
+                return cached;
+
+            return await Analyses.GetOrAdd(key, _ => AnalyzeAsync(key, cover));
+        }
+
+        // Keys are computed one at a time with a pooled buffer: a library sets all covers at once, and parallel reads with
+        // a new 0.5 MB array each (large object heap) forced garbage collections that also stopped the UI thread
+        private static readonly SemaphoreSlim KeyGate = new(1, 1);
+
+        private static async Task<string> GetKeyAsync(BitmapSource cover)
+        {
+            await KeyGate.WaitAsync();
+
+            try
+            {
+                return GetKey(cover);
+            }
+            finally
+            {
+                KeyGate.Release();
+            }
+        }
+
+        /// <summary>Hash of the cover's pixels (Pbgra32), the cache key.</summary>
         private static string GetKey(BitmapSource cover)
         {
-            return AnalysisVersion + "_" + Convert.ToHexString(SHA256.HashData(ReadPixels(cover, 1).Data));
+            BitmapSource source = new FormatConvertedBitmap(cover, PixelFormats.Pbgra32, null, 0);
+            int stride = source.PixelWidth * 4;
+            int length = stride * source.PixelHeight;
+            byte[] buffer = ArrayPool<byte>.Shared.Rent(length);
+
+            try
+            {
+                source.CopyPixels(buffer, stride, 0);
+
+                return AnalysisVersion + "_" + Convert.ToHexString(SHA256.HashData(buffer.AsSpan(0, length)));
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(buffer);
+            }
         }
 
         /// <summary>

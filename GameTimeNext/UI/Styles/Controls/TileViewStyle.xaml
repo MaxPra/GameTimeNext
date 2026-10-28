@@ -7,6 +7,8 @@
 
     <converter:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     <converter:AnyTrueConverter x:Key="AnyTrueConverter" />
+    <!--  Tag of the case templates: only the cover image, never the placeholder {DisconnectedItem} of a removed tile  -->
+    <converter:ImageSourceOnlyConverter x:Key="ImageSourceOnlyConverter" />
 
     <!--
         Game cases (style GameCase, also on the dashboard) and the profile library: every game is a case standing
@@ -187,7 +189,7 @@
                         is closed (all caches at once froze the app for seconds on a profile change): the selection ring sits
                         between the caches, the accent rim of the disc is only set while open (trigger).
                     -->
-                    <Grid x:Name="CaseHost" Tag="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}">
+                    <Grid x:Name="CaseHost" Tag="{Binding Content, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource ImageSourceOnlyConverter}}">
 
                         <!--  Shadow on the shelf (the layer needs a fill, otherwise the DropShadowEffect has nothing to cast)  -->
                         <Border IsHitTestVisible="False">
@@ -555,7 +557,7 @@
                         Width="340"
                         Height="430"
                         Background="Transparent"
-                        Tag="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}">
+                        Tag="{Binding Content, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource ImageSourceOnlyConverter}}">
 
                         <!--  ===== Plinth: glass slab, its top face a touch lighter, soft shadow on the floor =====  -->
                         <Border
@@ -888,7 +890,7 @@
                         x:Name="Stage"
                         Width="450"
                         Height="400"
-                        Tag="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}">
+                        Tag="{Binding Content, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource ImageSourceOnlyConverter}}">
 
                         <!--  Contact shadow of the case on the floor  -->
                         <Ellipse
