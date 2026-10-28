@@ -178,13 +178,13 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             _profilesSubGridViewModel = new ProfilesSubGridViewModel();
 
-            _dataWrapper!.TableObject = selectedItem?.ItemObject as T1PROFI;
+            _dataWrapper!.Set(selectedItem?.ItemObject as T1PROFI);
 
             View.DataContext = _profilesSubGridViewModel;
 
-            if (_dataWrapper!.TableObject == null)
+            if (!_dataWrapper!.HasData)
             {
-                _dataWrapper!.TableObject = new TXPROFI().CreateNew();
+                _dataWrapper!.Set(new TXPROFI().CreateNew());
                 GetApp().ProfilesDetailView.Visibility = Visibility.Hidden;
                 AppEnvironment.CurrentPfid = 0;
                 FnTheme.ApplyProfileBackground(null);
@@ -194,8 +194,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             {
                 GetApp().ProfilesDetailView.Visibility = Visibility.Visible;
                 AppEnvironment.CurrentPfid = (selectedItem?.ItemObject as T1PROFI)?.PFID ?? 0;
-                FnTheme.ApplyProfileBackground(_dataWrapper!.TableObject);
-                FnTheme.ApplyProfileAccentColors(_dataWrapper!.TableObject);
+                FnTheme.ApplyProfileBackground(_dataWrapper!.Get());
+                FnTheme.ApplyProfileAccentColors(_dataWrapper!.Get());
             }
 
             ProfilesSubGridViewModel viewModel = _profilesSubGridViewModel;
