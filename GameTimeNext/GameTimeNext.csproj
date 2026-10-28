@@ -37,8 +37,6 @@
 		<!-- Images, embedded in the assembly and referenced as pack URIs (/UI/Ressources/...); not copied to the output -->
 		<None Remove="UI\Ressources\**" />
 		<Resource Include="UI\Ressources\**" />
-
-		<None Update="Core\Application\StartableApps.json" CopyToOutputDirectory="PreserveNewest" />
 	</ItemGroup>
 
 	<ItemGroup>

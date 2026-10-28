@@ -6,6 +6,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.ErrorMessages
 {
+    [UIXAppIcon(UIXMdlIcons.Error)]
     public class ErrorMessagesApp : UIXApplication, IUIXApplicationStarter
     {
 
@@ -55,8 +56,6 @@ namespace GameTimeNext.Core.Application.ErrorMessages
             ErrorMessagesView = new ErrorMessagesView();
             MainView = ErrorMessagesView;
             ErrorMessagesView.ViewController = new ErrorMessagesViewController(this);
-
-            Icon = UIXMdlIcons.Error;
         }
 
         public override void SetWindowProperties(UIXApplicationStartOptions options)

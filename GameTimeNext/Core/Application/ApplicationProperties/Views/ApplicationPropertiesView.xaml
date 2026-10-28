@@ -12,8 +12,8 @@
     VerticalAlignment="Stretch"
     HorizontalContentAlignment="Stretch"
     VerticalContentAlignment="Stretch"
-    d:DesignHeight="700"
-    d:DesignWidth="1100"
+    d:DesignHeight="800"
+    d:DesignWidth="1400"
     mc:Ignorable="d">
 
     <Grid Style="{StaticResource View.Root}">
@@ -53,7 +53,7 @@
                         Text="App name" />
 
                     <TextBox
-                        x:Name="TxbId"
+                        x:Name="txbId"
                         Grid.Column="2"
                         Style="{StaticResource TextBox.Default}" />
                 </Grid>
@@ -72,17 +72,17 @@
                         Text="Description" />
 
                     <TextBox
-                        x:Name="TxbDescription"
+                        x:Name="txbDescription"
                         Grid.Column="2"
                         Style="{StaticResource TextBox.Default}" />
                 </Grid>
 
                 <Button
-                    x:Name="BtnAddApplicationProperties"
+                    x:Name="btnAddApplicationProperties"
                     Grid.Column="4"
                     VerticalAlignment="Center"
-                    ToolTip="Create new application properties definition"
-                    Style="{StaticResource Button.Icon}">
+                    Style="{StaticResource Button.Icon}"
+                    ToolTip="Create new application properties definition">
                     <TextBlock
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
@@ -92,12 +92,12 @@
                 </Button>
 
                 <Button
-                    x:Name="BtnRefresh"
+                    x:Name="btnRefresh"
                     Grid.Column="6"
                     VerticalAlignment="Center"
                     IsDefault="True"
-                    ToolTip="Refresh application properties definitions"
-                    Style="{StaticResource Button.Icon}">
+                    Style="{StaticResource Button.Icon}"
+                    ToolTip="Refresh application properties definitions">
                     <TextBlock
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
@@ -108,33 +108,46 @@
             </Grid>
         </Border>
 
-        <uixsel:UIXDataGrid
-            x:Name="DgApplicationProperties"
-            Grid.Row="2"
-            AutoGenerateColumns="False"
-            CanUserAddRows="False"
-            CanUserDeleteRows="False"
-            CanUserResizeRows="False"
-            HeadersVisibility="Column"
-            IsReadOnly="True"
-            ItemsSource="{Binding ApplicationPropertiesDataGridRows}"
-            SelectedItem="{Binding SelectedRow, Mode=TwoWay}"
-            SelectionMode="Single"
-            SelectionUnit="FullRow">
-            <uixsel:UIXDataGrid.Columns>
-                <DataGridTextColumn
-                    Width="260"
-                    Binding="{Binding APAPDID}"
-                    Header="App name" />
-                <DataGridTextColumn
-                    Width="300"
-                    Binding="{Binding APAPDES}"
-                    Header="Description" />
-                <DataGridCheckBoxColumn
-                    Width="160"
-                    Binding="{Binding APAPMCP}"
-                    Header="Menu call possible" />
-            </uixsel:UIXDataGrid.Columns>
-        </uixsel:UIXDataGrid>
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <uixsel:UIXDataGrid
+                x:Name="dgApplicationProperties"
+                Grid.Column="0"
+                AutoGenerateColumns="False"
+                CanUserAddRows="False"
+                CanUserDeleteRows="False"
+                CanUserResizeRows="False"
+                HeadersVisibility="Column"
+                IsReadOnly="True"
+                SelectionMode="Single"
+                SelectionUnit="FullRow">
+                <uixsel:UIXDataGrid.Columns>
+                    <DataGridTextColumn
+                        Width="260"
+                        Binding="{Binding APAPDID}"
+                        Header="App name" />
+                    <DataGridTextColumn
+                        Width="*"
+                        MinWidth="200"
+                        Binding="{Binding APAPDES}"
+                        Header="Description" />
+                    <DataGridCheckBoxColumn
+                        Width="160"
+                        Binding="{Binding APAPMCP}"
+                        Header="Menu call possible" />
+                </uixsel:UIXDataGrid.Columns>
+            </uixsel:UIXDataGrid>
+
+            <!--  Combined edit area of the selected definition  -->
+            <ContentPresenter
+                x:Name="cpApplicationPropertiesDetail"
+                Grid.Column="1"
+                Width="560"
+                Margin="16,0,0,0" />
+        </Grid>
     </Grid>
 </ui:GTNWindowView>

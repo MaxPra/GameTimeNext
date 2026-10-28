@@ -10,6 +10,7 @@ using static GameTimeNext.Core.Application.Profiles.Controller.ProfilesViewContr
 
 namespace GameTimeNext.Core.Application.Profiles
 {
+    [UIXAppIcon(UIXMdlIcons.GameProfile)]
     public class ProfilesApp : UIXApplication, IUIXApplicationStarter
     {
 
@@ -73,8 +74,6 @@ namespace GameTimeNext.Core.Application.Profiles
             this.ProfilesFilterView.ViewController = new ProfilesFilterViewController(this);
             this.ProfilesFilterView.ContentPresenter = ProfilesView.CPFilter;
             this.ProfilesFilterView.Popup = ProfilesView.PopFilter;
-
-            Icon = UIXMdlIcons.GameProfile;
 
         }
 

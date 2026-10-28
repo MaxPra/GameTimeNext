@@ -3,7 +3,6 @@ using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.General.AppSearch;
 using GameTimeNext.Core.Application.General.FavAppsReorder;
 using GameTimeNext.Core.Application.General.UserSettings;
-using GameTimeNext.Core.Application.General.ViewModels;
 using GameTimeNext.Core.Application.GTXMigration;
 using GameTimeNext.Core.Application.Profiles;
 using GameTimeNext.Core.Framework;
@@ -27,7 +26,6 @@ namespace GameTimeNext.Core.Application.General.Controller
     {
         private string _gtxPath = "C:\\GameTimeX";
 
-        private MainWindowViewModel? _mainWindowViewModel = null;
 
         // Created when the Big Picture mode is opened the first time, then reused
         private BigPictureApp? _bigPictureApp = null;
@@ -199,7 +197,7 @@ namespace GameTimeNext.Core.Application.General.Controller
             if (AppEnvironment.IsApplicationRunning(className))
                 return;
 
-            string tabName = AppEnvironment.AvailableApplications.FirstOrDefault(a => a.ClassName == className)?.Name ?? "Profiles";
+            string tabName = "Profiles";
 
             AppEnvironment.AppLauncher.LaunchApplication(className, GetApp(), tabName);
         }
