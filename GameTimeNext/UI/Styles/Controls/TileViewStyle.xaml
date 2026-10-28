@@ -130,22 +130,23 @@
                                 Storyboard.TargetProperty="Angle"
                                 To="{StaticResource Case.SelectedExtraAngle}"
                                 Duration="0:0:0.32" />
+                            <!--  Starts right after the cover begins to move: no noticeable pause after the click  -->
                             <DoubleAnimation
-                                BeginTime="0:0:0.16"
+                                BeginTime="0:0:0.04"
                                 EasingFunction="{StaticResource EaseOut}"
                                 Storyboard.TargetName="DiscSlide"
                                 Storyboard.TargetProperty="OffsetX"
                                 To="{StaticResource Case.DiscOutOffset}"
-                                Duration="0:0:0.42" />
+                                Duration="0:0:0.32" />
                             <!--  Short clockwise spin while it slides out (ends with the slide), fast at first and settling softly  -->
                             <DoubleAnimation
-                                BeginTime="0:0:0.16"
+                                BeginTime="0:0:0.04"
                                 EasingFunction="{StaticResource EaseOut}"
                                 Storyboard.TargetName="DiscSpin"
                                 Storyboard.TargetProperty="Angle"
                                 From="0"
                                 To="-120"
-                                Duration="0:0:0.5" />
+                                Duration="0:0:0.38" />
                             <DoubleAnimation
                                 EasingFunction="{StaticResource EaseOut}"
                                 Storyboard.TargetName="SelectionRing"
@@ -177,10 +178,22 @@
                         </Storyboard>
                     </ControlTemplate.Resources>
 
-                    <!--  Tag: the cover (content), so the visuals of the 3D surfaces can bind to it by name  -->
+                    <!--
+                        Tag: the cover (content), so the visuals of the 3D surfaces can bind to it by name.
+                        Performance: shadow and 3D case are each cached as a bitmap (BitmapCache on a wrapping Border; an
+                        Effect is applied after the cache of its own element, so the cache must sit on a parent), so
+                        scrolling a library only moves finished images (140 instead of 22 fps with 80 profiles). A cache is
+                        rendered again when its content changes, so nothing inside may follow the accent color while the case
+                        is closed (all caches at once froze the app for seconds on a profile change): the selection ring sits
+                        between the caches, the accent rim of the disc is only set while open (trigger).
+                    -->
                     <Grid x:Name="CaseHost" Tag="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}">
 
                         <!--  Shadow on the shelf (the layer needs a fill, otherwise the DropShadowEffect has nothing to cast)  -->
+                        <Border IsHitTestVisible="False">
+                            <Border.CacheMode>
+                                <BitmapCache SnapsToDevicePixels="True" />
+                            </Border.CacheMode>
                         <Border
                             x:Name="ShadowLayer"
                             Background="{DynamicResource Brush.Background}"
@@ -197,6 +210,7 @@
                                     Color="#FF000000" />
                             </Border.Effect>
                         </Border>
+                        </Border>
 
                         <!--  Selection: accent outline around the case, behind it (cover and disc pass in front of it)  -->
                         <Border
@@ -208,6 +222,10 @@
                             IsHitTestVisible="False"
                             Opacity="0" />
 
+                        <Border IsHitTestVisible="False">
+                            <Border.CacheMode>
+                                <BitmapCache SnapsToDevicePixels="True" />
+                            </Border.CacheMode>
                         <Viewport3D ClipToBounds="False" IsHitTestVisible="False">
                             <Viewport3D.Camera>
                                 <!--
@@ -310,18 +328,18 @@
                                                 Width="224"
                                                 Height="224"
                                                 OpacityMask="{StaticResource Brush.Case.DiscHoleMask}">
-                                                <Ellipse>
-                                                    <Ellipse.Fill>
-                                                        <ImageBrush ImageSource="{Binding Tag, ElementName=CaseHost}" Stretch="UniformToFill" />
-                                                    </Ellipse.Fill>
-                                                </Ellipse>
+                                                <!--
+                                                    Cover print; shows the game title readable when that fits (DiscPrint), turned so it ends
+                                                    on the visible right side after the spin of SbSelect (-120: PrintAngle -30)
+                                                -->
+                                                <Ellipse ui:DiscPrint.Cover="{Binding Tag, ElementName=CaseHost}" ui:DiscPrint.PrintAngle="-30" />
                                                 <!--  Gloss of the disc surface  -->
                                                 <Ellipse Fill="{StaticResource Brush.Case.Disc}" />
-                                                <!--  Rim: clear edge, catches the light in the accent color  -->
+                                                <!--  Rim: clear edge, catches the light in the accent color (stroke set while open, see the cache note above)  -->
                                                 <Ellipse Stroke="{DynamicResource Brush.Card.Border}" StrokeThickness="3" />
                                                 <Ellipse
+                                                    x:Name="DiscAccentRim"
                                                     Opacity="0.6"
-                                                    Stroke="{DynamicResource Brush.Accent}"
                                                     StrokeThickness="1" />
                                                 <!--  Black plastic hub with a fine stacking ring; the hole itself is cut out by the opacity mask  -->
                                                 <Ellipse
@@ -429,6 +447,7 @@
                                 </Viewport2DVisual3D.Visual>
                             </Viewport2DVisual3D>
                         </Viewport3D>
+                        </Border>
                     </Grid>
 
                     <!--
@@ -444,6 +463,7 @@
                                     <Binding Path="(ui:GameCase.IsOpen)" RelativeSource="{RelativeSource Self}" />
                                 </MultiBinding>
                             </DataTrigger.Binding>
+                            <Setter TargetName="DiscAccentRim" Property="Stroke" Value="{DynamicResource Brush.Accent}" />
                             <DataTrigger.EnterActions>
                                 <BeginStoryboard HandoffBehavior="SnapshotAndReplace" Storyboard="{StaticResource SbOpen}" />
                             </DataTrigger.EnterActions>
@@ -782,11 +802,7 @@
                                     Width="224"
                                     Height="224"
                                     OpacityMask="{StaticResource Brush.Case.DiscHoleMask}">
-                                    <Ellipse>
-                                        <Ellipse.Fill>
-                                            <ImageBrush ImageSource="{Binding Tag, ElementName=Stage}" Stretch="UniformToFill" />
-                                        </Ellipse.Fill>
-                                    </Ellipse>
+                                    <Ellipse ui:DiscPrint.Cover="{Binding Tag, ElementName=Stage}" />
                                     <Ellipse Fill="{StaticResource Brush.Case.Disc}" />
                                     <Ellipse Stroke="{DynamicResource Brush.Card.Border}" StrokeThickness="3" />
                                     <Ellipse

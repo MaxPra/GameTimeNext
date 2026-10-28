@@ -241,6 +241,13 @@ namespace GameTimeNext.Core.Framework.Config
             {
                 get => ReturnEnsureDirectoryExists(Path.Combine(_tempDirectoryPath, "backup"));
             }
+
+            /// <summary>Sections of the covers printed on the discs (DiscPrint), so each cover is analyzed only once.</summary>
+            [JsonIgnore]
+            public static string DiscPrintCacheFilePath
+            {
+                get => Path.Combine(_tempDirectoryPath, "discPrintCache.json");
+            }
         }
 
         /// <summary>
