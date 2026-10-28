@@ -4,6 +4,7 @@ using GameTimeNext.Core.Application.Profiles.Views;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.SteamGridDB;
+using GameTimeNext.Core.Framework.UI;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.Utils;
 using System.IO;
@@ -157,6 +158,13 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
             FnControls.SetEnabled(GetWnd().btnPreviousPage, _currentPage > 0);
             FnControls.SetEnabled(GetWnd().btnNextPage, _currentPage < _sgdbPages.Count - 1);
+
+            // Preview of the selected cover as case and disc (only set on a change: a new cover rolls the disc out again).
+            // Its disc section is taken over by the profile cover on Apply (DiscPrint.AdoptSectionAsync).
+            BitmapImage? previewCover = (GetWnd().lbSteamGridCovers.SelectedItem as SteamGridDBImage)?.BitmapImage;
+
+            if (!ReferenceEquals(GetWnd().ccCoverPreview.Content, previewCover))
+                GetWnd().ccCoverPreview.Content = previewCover;
         }
 
         protected override void CheckImpl()
@@ -207,9 +215,10 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             try
             {
-                // Only now download the full resolution image of the chosen cover
+                // Only now download the full resolution image of the chosen cover (in the background: it is decoded and
+                // saved as JPEG after the download, which would block the window on the UI thread)
                 if (!File.Exists(selected.FullImagePath))
-                    await _client.DownloadCoverAsync(selected.FullImageUrl, selected.FullImagePath);
+                    await Task.Run(() => _client.DownloadCoverAsync(selected.FullImageUrl, selected.FullImagePath));
             }
             catch (Exception)
             {
@@ -219,6 +228,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
                 return;
             }
+
+            // The profile cover (a copy of this file) shows the disc exactly like the preview, everywhere
+            await DiscPrint.AdoptSectionAsync(selected.BitmapImage, selected.FullImagePath);
 
             GetApp().Loader.Stop();
 

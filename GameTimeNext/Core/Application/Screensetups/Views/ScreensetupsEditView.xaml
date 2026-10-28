@@ -28,9 +28,9 @@
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
-                        <RowDefinition Height="10" />
+                        <RowDefinition Height="12" />
                         <RowDefinition Height="Auto" />
-                        <RowDefinition Height="10" />
+                        <RowDefinition Height="12" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="6" />
                         <RowDefinition Height="Auto" />
@@ -46,7 +46,7 @@
                         Grid.Row="0"
                         Grid.Column="0"
                         VerticalAlignment="Center"
-                        Opacity="0.8"
+                        Style="{StaticResource Text.Label}"
                         Text="Name" />
 
                     <TextBox
@@ -61,7 +61,7 @@
                         Grid.Row="2"
                         Grid.Column="0"
                         VerticalAlignment="Center"
-                        Opacity="0.8"
+                        Style="{StaticResource Text.Label}"
                         Text="Description" />
 
                     <TextBox
@@ -76,7 +76,7 @@
                         Grid.Row="4"
                         Grid.Column="0"
                         VerticalAlignment="Center"
-                        Opacity="0.8"
+                        Style="{StaticResource Text.Label}"
                         Text="Audio device" />
 
                     <ComboBox
@@ -89,7 +89,7 @@
                     <TextBlock
                         Grid.Row="6"
                         Grid.Column="2"
-                        Opacity="0.6"
+                        Style="{StaticResource Text.Hint}"
                         Text="The audio device is switched after the monitors. Devices of monitors that are switched off are marked as not available."
                         TextWrapping="Wrap" />
                 </Grid>
@@ -99,7 +99,7 @@
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
-                        <RowDefinition Height="10" />
+                        <RowDefinition Height="12" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
@@ -115,7 +115,7 @@
                         <TextBlock
                             Grid.Column="0"
                             VerticalAlignment="Center"
-                            Opacity="0.6"
+                            Style="{StaticResource Text.Hint}"
                             Text="Identical monitors can only be told apart with &quot;Identify&quot; while they are switched on."
                             TextWrapping="Wrap" />
 
@@ -136,7 +136,7 @@
                             <TextBlock
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
-                                FontFamily="Segoe MDL2 Assets"
+                                FontFamily="{StaticResource Font.Icons}"
                                 FontSize="14"
                                 Text="&#xE7F4;" />
                         </Button>
@@ -206,7 +206,8 @@
                 Width="140"
                 Height="36"
                 Content="Save"
-                IsDefault="True" />
+                IsDefault="True"
+                Style="{StaticResource Button.Primary}" />
         </Grid>
     </Grid>
 </ui:GTNWindowView>

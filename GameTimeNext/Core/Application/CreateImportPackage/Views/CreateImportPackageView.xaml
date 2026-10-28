@@ -45,12 +45,13 @@
                     Grid.Column="0"
                     Width="148"
                     Height="38"
-                    HorizontalAlignment="Left">
+                    HorizontalAlignment="Left"
+                    Style="{StaticResource Button.Primary}">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock
                             Margin="0,0,6,0"
                             VerticalAlignment="Center"
-                            FontFamily="Segoe MDL2 Assets"
+                            FontFamily="{StaticResource Font.Icons}"
                             Text="&#xE768;" />
                         <TextBlock VerticalAlignment="Center" Text="Execute" />
                     </StackPanel>
@@ -93,7 +94,7 @@
                         <TextBlock
                             Margin="0,0,6,0"
                             VerticalAlignment="Center"
-                            FontFamily="Segoe MDL2 Assets"
+                            FontFamily="{StaticResource Font.Icons}"
                             Text="&#xE9D9;" />
                         <TextBlock VerticalAlignment="Center" Text="Test Import" />
                     </StackPanel>

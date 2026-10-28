@@ -109,7 +109,7 @@
                                     <MenuItem.Icon>
                                         <TextBlock
                                             VerticalAlignment="Center"
-                                            FontFamily="Segoe MDL2 Assets"
+                                            FontFamily="{StaticResource Font.Icons}"
                                             FontSize="14"
                                             Text="&#xE8BB;" />
                                     </MenuItem.Icon>
@@ -123,7 +123,7 @@
                                     <MenuItem.Icon>
                                         <TextBlock
                                             VerticalAlignment="Center"
-                                            FontFamily="Segoe MDL2 Assets"
+                                            FontFamily="{StaticResource Font.Icons}"
                                             FontSize="14"
                                             Text="&#xE734;" />
                                     </MenuItem.Icon>
@@ -194,7 +194,7 @@
                     <TextBlock
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
-                        FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                        FontFamily="{StaticResource Font.Icons}"
                         FontSize="30"
                         Foreground="{DynamicResource Brush.Accent}"
                         Text="&#xE7FC;" />
@@ -229,9 +229,9 @@
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
-                        <RowDefinition Height="22" />
+                        <RowDefinition Height="24" />
                         <RowDefinition Height="Auto" />
-                        <RowDefinition Height="22" />
+                        <RowDefinition Height="24" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
@@ -263,7 +263,7 @@
                         VerticalAlignment="Center"
                         Style="{StaticResource EmptyState.Key}">
                         <TextBlock
-                            FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                            FontFamily="{StaticResource Font.Icons}"
                             Style="{StaticResource EmptyState.KeyText}"
                             Text="&#xE897;" />
                     </Border>
@@ -280,7 +280,7 @@
                         VerticalAlignment="Center"
                         Style="{StaticResource EmptyState.Key}">
                         <TextBlock
-                            FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                            FontFamily="{StaticResource Font.Icons}"
                             Style="{StaticResource EmptyState.KeyText}"
                             Text="&#xE962;" />
                     </Border>

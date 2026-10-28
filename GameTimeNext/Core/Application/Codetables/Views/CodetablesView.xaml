@@ -53,7 +53,7 @@
                     HorizontalAlignment="Left">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="130" />
-                        <ColumnDefinition Width="14" />
+                        <ColumnDefinition Width="12" />
                         <ColumnDefinition Width="110" />
                     </Grid.ColumnDefinitions>
 
@@ -74,7 +74,7 @@
                     HorizontalAlignment="Left">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="130" />
-                        <ColumnDefinition Width="14" />
+                        <ColumnDefinition Width="12" />
                         <ColumnDefinition Width="240" />
                     </Grid.ColumnDefinitions>
 
@@ -105,7 +105,7 @@
                     <TextBlock
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
-                        FontFamily="Segoe MDL2 Assets"
+                        FontFamily="{StaticResource Font.Icons}"
                         FontSize="14"
                         Text="&#xE710;" />
                 </Button>
@@ -121,7 +121,7 @@
                     <TextBlock
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
-                        FontFamily="Segoe MDL2 Assets"
+                        FontFamily="{StaticResource Font.Icons}"
                         FontSize="14"
                         Text="&#xE72C;" />
                 </Button>
@@ -132,7 +132,7 @@
                     HorizontalAlignment="Left">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="130" />
-                        <ColumnDefinition Width="14" />
+                        <ColumnDefinition Width="12" />
                         <ColumnDefinition Width="340" />
                     </Grid.ColumnDefinitions>
 

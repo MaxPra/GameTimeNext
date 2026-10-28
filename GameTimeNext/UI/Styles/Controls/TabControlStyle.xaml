@@ -4,14 +4,14 @@
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Padding" Value="18,9" />
+        <Setter Property="Padding" Value="16,8" />
         <!--  Gap to the next tab (and to the "+" button), same as the add button's own margin  -->
         <Setter Property="Margin" Value="0,0,6,0" />
         <Setter Property="FontSize" Value="13" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual.Control}" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="VerticalContentAlignment" Value="Stretch" />
@@ -60,8 +60,8 @@
                                     <TextBlock
                                         x:Name="IconText"
                                         VerticalAlignment="Center"
-                                        FontFamily="Segoe MDL2 Assets"
-                                        FontSize="20"
+                                        FontFamily="{StaticResource Font.Icons}"
+                                        FontSize="16"
                                         Foreground="{DynamicResource Brush.TextSecondary}"
                                         Text="{TemplateBinding Uid}" />
                                 </Border>
@@ -258,13 +258,13 @@
                                         -->
                                         <Grid
                                             Width="0"
-                                            Margin="0,9"
+                                            Margin="0,8"
                                             IsHitTestVisible="False"
                                             Visibility="Hidden">
                                             <!--  NoWrap: the implicit TextBlock style wraps, which would break the text into one line per letter at zero width  -->
                                             <TextBlock
-                                                FontFamily="Segoe MDL2 Assets"
-                                                FontSize="20"
+                                                FontFamily="{StaticResource Font.Icons}"
+                                                FontSize="16"
                                                 Text="&#xE710;"
                                                 TextWrapping="NoWrap" />
                                             <TextBlock
@@ -335,10 +335,20 @@
         <Setter Property="FontSize" Value="13" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual.Control}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type TabItem}">
+                    <!--
+                        Text headers inherit color, size and weight from the presenter below (muted / selected);
+                        the implicit TextBlock style would otherwise pin them to white.
+                    -->
+                    <ControlTemplate.Resources>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="VerticalAlignment" Value="Center" />
+                        </Style>
+                    </ControlTemplate.Resources>
+
                     <Grid>
                     <Border
                         x:Name="RootBorder"
@@ -357,7 +367,7 @@
                                 <TextBlock
                                     x:Name="DefaultIconText"
                                     VerticalAlignment="Center"
-                                    FontFamily="Segoe MDL2 Assets"
+                                    FontFamily="{StaticResource Font.Icons}"
                                     FontSize="14"
                                     Foreground="{DynamicResource Brush.TextSecondary}"
                                     Text="{TemplateBinding Uid}" />

@@ -21,10 +21,10 @@
     <!--  ===== Values =====  -->
 
     <CornerRadius x:Key="Card.CornerRadius">6</CornerRadius>
-    <Thickness x:Key="Card.Padding">14,12</Thickness>
+    <Thickness x:Key="Card.Padding">16,12</Thickness>
     <!--  Cards that only contain rows: the rows bring their own vertical spacing  -->
-    <Thickness x:Key="Card.RowsPadding">14,2</Thickness>
-    <Thickness x:Key="Card.SectionMargin">0,0,0,18</Thickness>
+    <Thickness x:Key="Card.RowsPadding">16,4</Thickness>
+    <Thickness x:Key="Card.SectionMargin">0,0,0,16</Thickness>
     <Thickness x:Key="Card.HeaderMargin">0,0,0,8</Thickness>
 
     <!--
@@ -85,7 +85,7 @@
     <!--  ===== Rows =====  -->
 
     <Style x:Key="Card.Row" TargetType="Border">
-        <Setter Property="Padding" Value="0,9" />
+        <Setter Property="Padding" Value="0,8" />
         <Setter Property="BorderBrush" Value="{StaticResource Brush.Card.Divider}" />
         <Setter Property="BorderThickness" Value="0,1,0,0" />
         <Setter Property="SnapsToDevicePixels" Value="True" />

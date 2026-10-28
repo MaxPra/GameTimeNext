@@ -130,13 +130,40 @@ namespace GameTimeNext.Core.Application.General
                 [ColorAccentPressed] = pressed,
             };
 
+            // Every change of the application resources updates every element of every window (setting the resources
+            // one by one took 50-90 ms per profile click in a large library), so unchanged colors are not set again
+            // and all accent resources are swapped at once as one merged dictionary
+            var resources = System.Windows.Application.Current.Resources;
+
+            if (colors.All(c => resources[c.Key] is Color current && current == c.Value))
+                return;
+
+            var accentDictionary = new System.Windows.ResourceDictionary();
+
             // Color resources: for DynamicResource references in elements and templates
             foreach (var (key, color) in colors)
-                System.Windows.Application.Current.Resources[key] = color;
+                accentDictionary[key] = color;
 
             foreach (var (resourceKey, colorKey) in AccentResources)
-                SetAccentResourceColor(resourceKey, colors[colorKey]);
+            {
+                Brush? brush = CreateAccentResourceCopy(resourceKey, colors[colorKey]);
+
+                if (brush != null)
+                    accentDictionary[resourceKey] = brush;
+            }
+
+            int index = _accentDictionary == null ? -1 : resources.MergedDictionaries.IndexOf(_accentDictionary);
+
+            if (index >= 0)
+                resources.MergedDictionaries[index] = accentDictionary;
+            else
+                resources.MergedDictionaries.Add(accentDictionary);
+
+            _accentDictionary = accentDictionary;
         }
+
+        // Accent resources of the current colors, last merged dictionary of the application (overrides Colors.xaml)
+        private static System.Windows.ResourceDictionary? _accentDictionary;
 
         private static Dictionary<string, Color> GetDefaultAccentColors()
         {
@@ -186,6 +213,18 @@ namespace GameTimeNext.Core.Application.General
             }
         }
 
+        // Opacity of the black tint layer of the windows with the setting "Dark tinted glass"
+        private const double DarkGlassTintOpacity = 0.45;
+
+        /// <summary>
+        /// Setting "Dark tinted glass": darkens the window background and with it the translucent glass surfaces
+        /// in all GTN windows (GlassTintLayer in GTNWindowStyle). Works at startup and at runtime.
+        /// </summary>
+        public static void ApplyGlassTint(bool darkTintedGlass)
+        {
+            System.Windows.Application.Current.Resources["Window.GlassTintOpacity"] = darkTintedGlass ? DarkGlassTintOpacity : 0d;
+        }
+
         /// <summary>True if a background source is set (an empty source disables the dynamic background).</summary>
         public static bool IsDynamicBackgroundEnabled(string backgroundSource)
         {
@@ -202,15 +241,14 @@ namespace GameTimeNext.Core.Application.General
         }
 
         /// <summary>
-        /// Replaces the brush with a copy in the new color (application resources, so DynamicResource references
-        /// update). Opacity and the other gradient stops are kept.
+        /// Copy of the accent brush in the new color (null if the resource is no brush); opacity and the other gradient
+        /// stops are kept. Frozen: styles reference it with DynamicResource.
         /// </summary>
-        private static void SetAccentResourceColor(string key, Color color)
+        private static Brush? CreateAccentResourceCopy(string key, Color color)
         {
-            var resources = System.Windows.Application.Current.Resources;
             Brush? copy = null;
 
-            switch (resources[key])
+            switch (System.Windows.Application.Current.Resources[key])
             {
                 case SolidColorBrush solidBrush:
                     SolidColorBrush solidCopy = solidBrush.CloneCurrentValue();
@@ -225,11 +263,9 @@ namespace GameTimeNext.Core.Application.General
                     break;
             }
 
-            if (copy == null)
-                return;
+            copy?.Freeze();
 
-            copy.Freeze();
-            resources[key] = copy;
+            return copy;
         }
 
         private static Color ToColor(string colorHex)

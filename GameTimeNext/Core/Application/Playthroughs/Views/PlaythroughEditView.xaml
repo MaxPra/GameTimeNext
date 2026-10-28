@@ -39,7 +39,7 @@
 
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="130" />
-                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="12" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
@@ -117,6 +117,7 @@
             Width="140"
             Height="36"
             HorizontalAlignment="Right"
-            Content="Save" />
+            Content="Save"
+            Style="{StaticResource Button.Primary}" />
     </Grid>
 </ui:GTNWindowView>

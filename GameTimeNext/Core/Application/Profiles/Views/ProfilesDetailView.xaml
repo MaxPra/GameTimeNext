@@ -31,7 +31,7 @@
                         x:Name="btnLaunchGame"
                         Grid.Column="0"
                         Content="Launch game"
-                        Style="{StaticResource Button.Secondary}" />
+                        Style="{StaticResource Button.Primary}" />
 
                     <Button
                         x:Name="btnStartMonitoring"

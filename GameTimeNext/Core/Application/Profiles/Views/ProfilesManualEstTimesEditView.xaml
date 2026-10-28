@@ -57,7 +57,7 @@
                         Grid.Row="2"
                         Grid.Column="0"
                         VerticalAlignment="Center"
-                        Opacity="0.8"
+                        Style="{StaticResource Text.Label}"
                         Text="Main Story (h)" />
 
                     <TextBox
@@ -71,7 +71,7 @@
                         Grid.Row="4"
                         Grid.Column="0"
                         VerticalAlignment="Center"
-                        Opacity="0.8"
+                        Style="{StaticResource Text.Label}"
                         Text="Main Story + Extras (h)" />
 
                     <TextBox
@@ -85,7 +85,7 @@
                         Grid.Row="6"
                         Grid.Column="0"
                         VerticalAlignment="Center"
-                        Opacity="0.8"
+                        Style="{StaticResource Text.Label}"
                         Text="Completionist (h)" />
 
                     <TextBox
@@ -102,9 +102,9 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="10" />
+                <ColumnDefinition Width="8" />
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="10" />
+                <ColumnDefinition Width="8" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
@@ -127,7 +127,8 @@
                 Grid.Column="5"
                 Width="140"
                 Height="36"
-                Content="Apply" />
+                Content="Apply"
+                Style="{StaticResource Button.Primary}" />
         </Grid>
     </Grid>
 </ui:GTNWindowView>

@@ -53,7 +53,7 @@
                 <Grid Grid.Column="0" HorizontalAlignment="Left">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="80" />
-                        <ColumnDefinition Width="14" />
+                        <ColumnDefinition Width="12" />
                         <ColumnDefinition Width="180" />
                     </Grid.ColumnDefinitions>
 
@@ -75,7 +75,7 @@
                 <Grid Grid.Column="2" HorizontalAlignment="Left">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="130" />
-                        <ColumnDefinition Width="14" />
+                        <ColumnDefinition Width="12" />
                         <ColumnDefinition Width="220" />
                     </Grid.ColumnDefinitions>
 
@@ -93,7 +93,7 @@
                 <Grid Grid.Column="4" HorizontalAlignment="Left">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="130" />
-                        <ColumnDefinition Width="14" />
+                        <ColumnDefinition Width="12" />
                         <ColumnDefinition Width="300" />
                     </Grid.ColumnDefinitions>
 
@@ -117,7 +117,7 @@
                     <TextBlock
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
-                        FontFamily="Segoe MDL2 Assets"
+                        FontFamily="{StaticResource Font.Icons}"
                         FontSize="14"
                         Text="&#xE710;" />
                 </Button>
@@ -132,7 +132,7 @@
                     <TextBlock
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
-                        FontFamily="Segoe MDL2 Assets"
+                        FontFamily="{StaticResource Font.Icons}"
                         FontSize="14"
                         Text="&#xE72C;" />
                 </Button>
@@ -146,7 +146,7 @@
                     <TextBlock
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
-                        FontFamily="Segoe MDL2 Assets"
+                        FontFamily="{StaticResource Font.Icons}"
                         FontSize="14"
                         Text="&#xE8B8;" />
                 </Button>
@@ -160,7 +160,7 @@
                     <TextBlock
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
-                        FontFamily="Segoe MDL2 Assets"
+                        FontFamily="{StaticResource Font.Icons}"
                         FontSize="14"
                         Text="&#xE8B8;" />
                 </Button>
@@ -174,7 +174,7 @@
                     <TextBlock
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
-                        FontFamily="Segoe MDL2 Assets"
+                        FontFamily="{StaticResource Font.Icons}"
                         FontSize="14"
                         Text="&#xE8B7;" />
                 </Button>
@@ -188,7 +188,7 @@
                     <TextBlock
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
-                        FontFamily="Segoe MDL2 Assets"
+                        FontFamily="{StaticResource Font.Icons}"
                         FontSize="14"
                         Text="&#xE8B7;" />
                 </Button>

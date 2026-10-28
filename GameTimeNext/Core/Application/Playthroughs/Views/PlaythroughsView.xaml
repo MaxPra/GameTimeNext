@@ -55,7 +55,7 @@
                     HorizontalAlignment="Left">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="130" />
-                        <ColumnDefinition Width="14" />
+                        <ColumnDefinition Width="12" />
                         <ColumnDefinition Width="280" />
                     </Grid.ColumnDefinitions>
 
@@ -76,7 +76,7 @@
                     HorizontalAlignment="Left">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="130" />
-                        <ColumnDefinition Width="14" />
+                        <ColumnDefinition Width="12" />
                         <ColumnDefinition Width="280" />
                     </Grid.ColumnDefinitions>
 
@@ -97,7 +97,7 @@
                     HorizontalAlignment="Left">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="130" />
-                        <ColumnDefinition Width="14" />
+                        <ColumnDefinition Width="12" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
@@ -118,7 +118,7 @@
                     HorizontalAlignment="Left">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="130" />
-                        <ColumnDefinition Width="14" />
+                        <ColumnDefinition Width="12" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
@@ -139,7 +139,7 @@
                     HorizontalAlignment="Left">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="130" />
-                        <ColumnDefinition Width="14" />
+                        <ColumnDefinition Width="12" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
@@ -160,7 +160,7 @@
                     HorizontalAlignment="Left">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="130" />
-                        <ColumnDefinition Width="14" />
+                        <ColumnDefinition Width="12" />
                         <ColumnDefinition Width="280" />
                     </Grid.ColumnDefinitions>
 
@@ -193,7 +193,7 @@
                     <TextBlock
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
-                        FontFamily="Segoe MDL2 Assets"
+                        FontFamily="{StaticResource Font.Icons}"
                         FontSize="14"
                         Text="&#xE72C;" />
                 </Button>

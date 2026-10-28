@@ -19,14 +19,13 @@
 
     <Style x:Key="SettingsPageSubtitleStyle" TargetType="{x:Type TextBlock}">
         <Setter Property="Margin" Value="0,4,0,0" />
-        <Setter Property="Opacity" Value="0.75" />
-        <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}" />
     </Style>
 
+    <!--  Same as Text.Subtitle (TextBlockStyle.xaml is merged later, so not based on it)  -->
     <Style x:Key="SettingsGroupTitleStyle" TargetType="{x:Type TextBlock}">
-        <Setter Property="FontSize" Value="15" />
-        <Setter Property="FontWeight" Value="Bold" />
-        <Setter Property="FontFamily" Value="Segoe UI" />
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
     </Style>
 
@@ -115,7 +114,7 @@
                             Grid.Column="1"
                             Width="1"
                             HorizontalAlignment="Center"
-                            Background="{StaticResource Brush.SettingsTab.Separator}" />
+                            Background="{StaticResource Brush.Card.Divider}" />
 
                         <!--  Right content  -->
                         <Border
@@ -159,6 +158,13 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type TabItem}">
+                    <!--  Text headers inherit color and weight from the tab item (muted / hovered / selected), not the white default  -->
+                    <ControlTemplate.Resources>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="VerticalAlignment" Value="Center" />
+                        </Style>
+                    </ControlTemplate.Resources>
+
                     <!--
                         Hover: neutral glass highlight over the whole entry, like list / menu entries and the main tabs.
                         The selection (glass + accent bar) is the SelectionRunner of the tab control, which slides between the entries.

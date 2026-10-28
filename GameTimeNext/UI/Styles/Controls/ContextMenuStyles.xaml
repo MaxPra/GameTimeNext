@@ -46,7 +46,7 @@
                                     Grid.Column="2"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    FontFamily="Segoe MDL2 Assets"
+                                    FontFamily="{StaticResource Font.Icons}"
                                     FontSize="10"
                                     Foreground="{DynamicResource Brush.TextSecondary}"
                                     Text="&#xE76C;"

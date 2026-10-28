@@ -20,7 +20,7 @@
     <Grid Style="{StaticResource View.Root}">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
-            <RowDefinition Height="18" />
+            <RowDefinition Height="16" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
@@ -31,7 +31,7 @@
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="14" />
+                    <RowDefinition Height="16" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
@@ -82,7 +82,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="10" />
+                <ColumnDefinition Width="8" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
@@ -98,7 +98,8 @@
                 Grid.Column="3"
                 Width="140"
                 Height="36"
-                Content="Select" />
+                Content="Select"
+                Style="{StaticResource Button.Primary}" />
         </Grid>
     </Grid>
 </ui:GTNWindowView>

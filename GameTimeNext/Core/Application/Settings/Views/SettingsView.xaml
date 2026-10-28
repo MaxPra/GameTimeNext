@@ -41,7 +41,7 @@
                         <TextBlock Style="{StaticResource SettingsPageTitleStyle}" Text="General" />
 
                         <TextBlock
-                            Margin="0,4,0,18"
+                            Margin="0,4,0,16"
                             Style="{StaticResource SettingsPageSubtitleStyle}"
                             Text="General application settings and appearance behavior." />
 
@@ -50,6 +50,8 @@
                             Style="{StaticResource GroupBox.Card}">
                             <Grid>
                                 <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="12" />
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="12" />
                                     <RowDefinition Height="Auto" />
@@ -157,6 +159,28 @@
                                         Foreground="{DynamicResource Brush.TextSecondary}"
                                         Text="hrs" />
                                 </Grid>
+
+                                <Grid Grid.Row="6" HorizontalAlignment="Left">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="220" />
+                                        <ColumnDefinition Width="16" />
+                                        <ColumnDefinition Width="54" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        VerticalAlignment="Center"
+                                        Foreground="{DynamicResource Brush.TextSecondary}"
+                                        Text="Add new games shrink-wrapped" />
+
+                                    <CheckBox
+                                        x:Name="cbSealNewGames"
+                                        Grid.Column="2"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center"
+                                        ToolTip="New games are added still shrink-wrapped. Unwrap them (context menu or Unwrap game) before the first launch." />
+                                </Grid>
                             </Grid>
                         </GroupBox>
 
@@ -199,15 +223,15 @@
                                         <TextBlock
                                             HorizontalAlignment="Center"
                                             VerticalAlignment="Center"
-                                            FontFamily="Segoe MDL2 Assets"
-                                            FontSize="16"
+                                            FontFamily="{StaticResource Font.Icons}"
+                                            FontSize="14"
                                             Text="&#xE128;" />
                                     </Button>
                                 </Grid>
 
                                 <TextBlock
                                     Grid.Row="2"
-                                    Foreground="{DynamicResource Brush.TextSecondary}"
+                                    Style="{StaticResource Text.Hint}"
                                     Text="Used to retrieve game artwork and grid images." />
                             </Grid>
                         </GroupBox>
@@ -218,9 +242,9 @@
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="14" />
+                                    <RowDefinition Height="16" />
                                     <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="14" />
+                                    <RowDefinition Height="16" />
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="12" />
                                     <RowDefinition Height="Auto" />
@@ -228,8 +252,7 @@
 
                                 <Grid Grid.Row="0" HorizontalAlignment="Left">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="200" />
-                                        <ColumnDefinition Width="10" />
+                                        <ColumnDefinition Width="220" />
                                         <ColumnDefinition Width="16" />
                                         <ColumnDefinition Width="54" />
                                         <ColumnDefinition Width="*" />
@@ -237,14 +260,15 @@
 
                                     <TextBlock
                                         Grid.Column="0"
-                                        Grid.ColumnSpan="2"
+                                        VerticalAlignment="Center"
                                         Foreground="{DynamicResource Brush.TextSecondary}"
                                         Text="Enable Integration" />
 
                                     <CheckBox
                                         x:Name="cbEnableIGDBIntegration"
-                                        Grid.Column="3"
-                                        Grid.ColumnSpan="2" />
+                                        Grid.Column="2"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center" />
                                 </Grid>
 
                                 <Grid Grid.Row="2" HorizontalAlignment="Left">
@@ -276,8 +300,8 @@
                                         <TextBlock
                                             HorizontalAlignment="Center"
                                             VerticalAlignment="Center"
-                                            FontFamily="Segoe MDL2 Assets"
-                                            FontSize="16"
+                                            FontFamily="{StaticResource Font.Icons}"
+                                            FontSize="14"
                                             Text="&#xE128;" />
                                     </Button>
                                 </Grid>
@@ -311,15 +335,15 @@
                                         <TextBlock
                                             HorizontalAlignment="Center"
                                             VerticalAlignment="Center"
-                                            FontFamily="Segoe MDL2 Assets"
-                                            FontSize="16"
+                                            FontFamily="{StaticResource Font.Icons}"
+                                            FontSize="14"
                                             Text="&#xE128;" />
                                     </Button>
                                 </Grid>
 
                                 <TextBlock
                                     Grid.Row="6"
-                                    Foreground="{DynamicResource Brush.TextSecondary}"
+                                    Style="{StaticResource Text.Hint}"
                                     Text="Required for IGDB access via Twitch developer credentials." />
                             </Grid>
                         </GroupBox>
@@ -329,6 +353,8 @@
                             Style="{StaticResource GroupBox.Card}">
                             <Grid>
                                 <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="12" />
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="12" />
                                     <RowDefinition Height="Auto" />
@@ -376,6 +402,28 @@
                                         SelectedValuePath="Tag"
                                         ToolTip="Image used as blurred main window background: the desktop wallpaper or the cover of the selected profile. (None) disables it." />
                                 </Grid>
+
+                                <Grid Grid.Row="4" HorizontalAlignment="Left">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="220" />
+                                        <ColumnDefinition Width="16" />
+                                        <ColumnDefinition Width="54" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        VerticalAlignment="Center"
+                                        Foreground="{DynamicResource Brush.TextSecondary}"
+                                        Text="Dark tinted glass" />
+
+                                    <CheckBox
+                                        x:Name="cbDarkTintedGlass"
+                                        Grid.Column="2"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center"
+                                        ToolTip="Tints the window background and the glass surfaces darker, closer to a classic dark mode." />
+                                </Grid>
                             </Grid>
                         </GroupBox>
 
@@ -387,7 +435,7 @@
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="12" />
                                     <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="14" />
+                                    <RowDefinition Height="16" />
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
@@ -424,8 +472,8 @@
                                         <TextBlock
                                             HorizontalAlignment="Center"
                                             VerticalAlignment="Center"
-                                            FontFamily="Segoe MDL2 Assets"
-                                            FontSize="16"
+                                            FontFamily="{StaticResource Font.Icons}"
+                                            FontSize="14"
                                             Text="&#xE188;" />
                                     </Button>
 
@@ -443,7 +491,7 @@
                                         <ColumnDefinition Width="220" />
                                         <ColumnDefinition Width="16" />
                                         <ColumnDefinition Width="54" />
-                                        <ColumnDefinition Width="18" />
+                                        <ColumnDefinition Width="16" />
                                         <ColumnDefinition Width="100" />
                                         <ColumnDefinition Width="20" />
                                         <ColumnDefinition Width="54" />
@@ -510,8 +558,8 @@
                                         <TextBlock
                                             HorizontalAlignment="Center"
                                             VerticalAlignment="Center"
-                                            FontFamily="Segoe MDL2 Assets"
-                                            FontSize="16"
+                                            FontFamily="{StaticResource Font.Icons}"
+                                            FontSize="14"
                                             Text="&#xE8B7;" />
                                     </Button>
 
@@ -537,7 +585,7 @@
                         <TextBlock Style="{StaticResource SettingsPageTitleStyle}" Text="Monitoring" />
 
                         <TextBlock
-                            Margin="0,4,0,18"
+                            Margin="0,4,0,16"
                             Style="{StaticResource SettingsPageSubtitleStyle}"
                             Text="Configure game monitoring behavior and blackout handling." />
 
@@ -684,7 +732,7 @@
 
                                 <TextBlock
                                     Grid.Row="2"
-                                    Foreground="{DynamicResource Brush.TextSecondary}"
+                                    Style="{StaticResource Text.Hint}"
                                     Text="Press the button to listen for a new hotkey." />
                             </Grid>
                         </GroupBox>
@@ -762,7 +810,7 @@
                         <TextBlock Style="{StaticResource SettingsPageTitleStyle}" Text="About" />
 
                         <TextBlock
-                            Margin="0,4,0,18"
+                            Margin="0,4,0,16"
                             Style="{StaticResource SettingsPageSubtitleStyle}"
                             Text="Application information, version details and credits." />
 
@@ -772,14 +820,14 @@
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="10" />
+                                    <RowDefinition Height="12" />
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
                                 <TextBlock
                                     x:Name="txVersion"
                                     Grid.Row="0"
-                                    Foreground="{DynamicResource Brush.TextSecondary}"
+                                    Style="{StaticResource Text.BodyStrong}"
                                     Text="Beta 0.1.0" />
 
                                 <TextBlock
@@ -795,7 +843,7 @@
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="10" />
+                                    <RowDefinition Height="12" />
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="8" />
                                     <RowDefinition Height="Auto" />
@@ -803,7 +851,7 @@
 
                                 <TextBlock
                                     Grid.Row="0"
-                                    Foreground="{DynamicResource Brush.TextSecondary}"
+                                    Style="{StaticResource Text.Hint}"
                                     Text="Some icons used in this application are provided by Icons8." />
 
                                 <TextBlock Grid.Row="2" Foreground="{DynamicResource Brush.TextSecondary}">
@@ -811,7 +859,7 @@
                                 </TextBlock>
                                 <Border
                                     Grid.Row="4"
-                                    Padding="14"
+                                    Padding="16"
                                     HorizontalAlignment="Left"
                                     Style="{StaticResource Card.Inset}">
                                     <StackPanel>
@@ -822,7 +870,7 @@
                                             Source="/UI/Ressources/GTN_CLS_ICON.png" />
 
                                         <StackPanel
-                                            Margin="0,14,0,0"
+                                            Margin="0,16,0,0"
                                             HorizontalAlignment="Center"
                                             Orientation="Horizontal">
                                             <Border
@@ -860,13 +908,14 @@
 
         </TabControl>
 
-        <Grid Grid.Row="1" Margin="0,28,0,8">
+        <Grid Grid.Row="1" Margin="0,24,0,8">
             <Button
                 x:Name="btnSave"
                 Width="140"
                 Height="36"
                 HorizontalAlignment="Right"
-                Content="Save settings" />
+                Content="Save settings"
+                Style="{StaticResource Button.Primary}" />
         </Grid>
     </Grid>
 </uix:UIXUserControlBase>

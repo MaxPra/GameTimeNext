@@ -136,7 +136,9 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             GetView().cbActivateBlackoutKeyCombination.IsChecked = _appSettings!.ActivateBlackoutKeyCombination;
             GetView().cbShowTextOnBlackout.IsChecked = _appSettings.EnableFullBlackoutText;
             GetView().cbAutoStartMinimized.IsChecked = _appSettings.AutoStartMinimized;
+            GetView().cbSealNewGames.IsChecked = _appSettings.SealNewGames;
             GetView().cbAllowProfileSpecificStyleChanges.IsChecked = _appSettings!.AllowProfileSpecificStyleChanges;
+            GetView().cbDarkTintedGlass.IsChecked = _appSettings.DarkTintedGlass;
             GetView().cmbBackgroundSource.SelectedValue = _appSettings.BackgroundSource;
             if (GetView().cmbBackgroundSource.SelectedItem == null)
                 GetView().cmbBackgroundSource.SelectedValue = string.Empty;
@@ -195,8 +197,10 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             _appSettings!.ActivateBlackoutKeyCombination = GetView().cbActivateBlackoutKeyCombination.IsChecked == true;
             _appSettings!.EnableFullBlackoutText = GetView().cbShowTextOnBlackout.IsChecked == true;
             _appSettings!.AutoStartMinimized = GetView().cbAutoStartMinimized.IsChecked == true;
+            _appSettings!.SealNewGames = GetView().cbSealNewGames.IsChecked == true;
             _appSettings!.AllowProfileSpecificStyleChanges = GetView().cbAllowProfileSpecificStyleChanges.IsChecked == true;
             _appSettings!.BackgroundSource = GetSelectedBackgroundSource();
+            _appSettings!.DarkTintedGlass = GetView().cbDarkTintedGlass.IsChecked == true;
             _appSettings!.SteamGridDbKey = GetView().txbSteamGridDbApiKey.Text;
             _appSettings!.BackupExportPath = GetView().txbBackupExportPath.Text;
             _appSettings!.AutoBackup = GetView().cbAutoBackup.IsChecked == true;
@@ -407,6 +411,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             FnTheme.ApplyProfileAccentColors(AppEnvironment.GetCurrentProfile());
 
             FnTheme.ApplyWallpaperBackground(GetSelectedBackgroundSource());
+            FnTheme.ApplyGlassTint(GetView().cbDarkTintedGlass.IsChecked == true);
         }
     }
 }

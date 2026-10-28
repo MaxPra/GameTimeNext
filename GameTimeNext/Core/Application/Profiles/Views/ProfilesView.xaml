@@ -95,11 +95,12 @@
                             <Button
                                 x:Name="BtnFilter"
                                 VerticalAlignment="Center"
-                                Style="{StaticResource Button.Icon}">
+                                Style="{StaticResource Button.Icon}"
+                                ToolTip="Filter library">
                                 <TextBlock
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    FontFamily="Segoe MDL2 Assets"
+                                    FontFamily="{StaticResource Font.Icons}"
                                     FontSize="14"
                                     Text="" />
                             </Button>
@@ -139,7 +140,7 @@
                             <TextBlock
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
-                                FontFamily="Segoe MDL2 Assets"
+                                FontFamily="{StaticResource Font.Icons}"
                                 FontSize="14"
                                 Text="&#xE72C;" />
                         </Button>
@@ -164,7 +165,7 @@
                     ui:ScrollFade.Length="80"
                     ui:TileLayout.AutoSize="True"
                     Grid.Row="1"
-                    Margin="-12,12,0,0"
+                    Margin="-12,-8,0,0"
                     Padding="0"
                     ClipToBounds="True"
                     Background="Transparent"
@@ -177,8 +178,11 @@
 
                     <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <!--  Spacing on the panel, not as ListBox padding: it has to scroll with the tiles instead of shrinking the viewport  -->
-                            <WrapPanel Margin="0,-18,0,26" />
+                            <!--
+                                Spacing on the panel, not as ListBox padding: it has to scroll with the tiles instead of shrinking the viewport.
+                                20 px room above the first row: an opened case cover grows a little beyond the case (TileViewStyle).
+                            -->
+                            <WrapPanel Margin="0,2,0,26" />
                         </ItemsPanelTemplate>
                     </ListBox.ItemsPanel>
 
@@ -194,7 +198,7 @@
                                             Style="{StaticResource ModernContextMenuItemStyle}">
                                             <MenuItem.Icon>
                                                 <TextBlock
-                                                    FontFamily="Segoe MDL2 Assets"
+                                                    FontFamily="{StaticResource Font.Icons}"
                                                     FontSize="14"
                                                     Text="" />
                                             </MenuItem.Icon>
@@ -208,7 +212,7 @@
                                             Style="{StaticResource ModernContextMenuItemStyle}">
                                             <MenuItem.Icon>
                                                 <TextBlock
-                                                    FontFamily="Segoe MDL2 Assets"
+                                                    FontFamily="{StaticResource Font.Icons}"
                                                     FontSize="14"
                                                     Text="" />
                                             </MenuItem.Icon>

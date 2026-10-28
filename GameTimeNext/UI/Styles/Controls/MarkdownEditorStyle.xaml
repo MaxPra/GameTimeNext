@@ -107,7 +107,7 @@
                                 <TextBlock
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    FontFamily="Segoe MDL2 Assets"
+                                    FontFamily="{StaticResource Font.Icons}"
                                     FontSize="14"
                                     Text="&#xEB9F;" />
                             </Button>

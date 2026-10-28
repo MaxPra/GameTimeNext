@@ -70,6 +70,13 @@
     <SolidColorBrush x:Key="Brush.Window.TitleBarTranslucent" Color="#33000000" />
 
     <!--
+        Setting "Dark tinted glass": black layer over the window background (gradient, acrylic, wallpaper, accent glow),
+        below title bar and content. The glass surfaces are translucent, so they turn darker with it.
+        Set at runtime by FnTheme.ApplyGlassTint (application resource, referenced with DynamicResource).
+    -->
+    <sys:Double x:Key="Window.GlassTintOpacity">0</sys:Double>
+
+    <!--
         Root grid of a view: outer margin when shown in its own window, none inside a main window tab
         (the tab content area already insets it, see ModernTabControlStyle).
     -->
@@ -163,6 +170,14 @@
                                         Background="{DynamicResource GradientBrush.ProfileDetailView.Vignette}"
                                         IsHitTestVisible="False"
                                         Visibility="Collapsed" />
+
+                                    <!--  Dark tinted glass (setting): darkens everything above the window background  -->
+                                    <Border
+                                        x:Name="GlassTintLayer"
+                                        Grid.RowSpan="2"
+                                        Background="#FF000000"
+                                        IsHitTestVisible="False"
+                                        Opacity="{DynamicResource Window.GlassTintOpacity}" />
 
                                     <!--  Title bar with a thin accent line below  -->
                                     <Border
@@ -263,7 +278,7 @@
                                                     ToolTip="Big Picture mode (for TV and controller)"
                                                     Visibility="Collapsed">
                                                     <TextBlock
-                                                        FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                                        FontFamily="{StaticResource Font.Icons}"
                                                         FontSize="14"
                                                         Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
                                                         Text="&#xE7FC;" />
@@ -277,7 +292,7 @@
                                                     ToolTip="Help for GameTimeNext"
                                                     Visibility="Collapsed">
                                                     <TextBlock
-                                                        FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                                        FontFamily="{StaticResource Font.Icons}"
                                                         FontSize="13"
                                                         Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
                                                         Text="&#xE897;" />
@@ -288,7 +303,7 @@
                                                     Margin="0,0,2,0"
                                                     Style="{StaticResource TitleBarMinButtonStyle}">
                                                     <TextBlock
-                                                        FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                                        FontFamily="{StaticResource Font.Icons}"
                                                         FontSize="12"
                                                         Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
                                                         Text="&#xE921;" />
@@ -301,14 +316,14 @@
                                                     <Grid>
                                                         <TextBlock
                                                             x:Name="MaxIcon"
-                                                            FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                                            FontFamily="{StaticResource Font.Icons}"
                                                             FontSize="12"
                                                             Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
                                                             Text="&#xE922;" />
                                                         <!--  Restore (maximized)  -->
                                                         <TextBlock
                                                             x:Name="RestoreIcon"
-                                                            FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                                            FontFamily="{StaticResource Font.Icons}"
                                                             FontSize="12"
                                                             Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
                                                             Text="&#xE923;"
@@ -318,7 +333,7 @@
 
                                                 <Button x:Name="PART_CloseButton" Style="{StaticResource TitleBarCloseButtonStyle}">
                                                     <TextBlock
-                                                        FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                                        FontFamily="{StaticResource Font.Icons}"
                                                         FontSize="12"
                                                         Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
                                                         Text="&#xE8BB;" />

@@ -30,7 +30,7 @@
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="10" />
+                    <RowDefinition Height="12" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
@@ -43,7 +43,7 @@
                     Grid.Row="0"
                     Grid.Column="0"
                     VerticalAlignment="Center"
-                    Opacity="0.8"
+                    Style="{StaticResource Text.Label}"
                     Text="Number" />
 
                 <TextBox
@@ -59,7 +59,7 @@
                     Grid.Column="0"
                     Margin="0,8,0,0"
                     VerticalAlignment="Top"
-                    Opacity="0.8"
+                    Style="{StaticResource Text.Label}"
                     Text="Message" />
 
                 <!--  Up to 250 characters: multi-line so the whole message stays readable  -->
@@ -104,7 +104,8 @@
                 Width="140"
                 Height="36"
                 Content="Save"
-                IsDefault="True" />
+                IsDefault="True"
+                Style="{StaticResource Button.Primary}" />
         </Grid>
     </Grid>
 </ui:GTNWindowView>
