@@ -66,28 +66,45 @@
         <GradientStop Offset="1" Color="#FF000000" />
     </RadialGradientBrush>
 
-    <!--  Shrink wrap of a sealed game: clear film, glossier than the case, with two light streaks  -->
-    <LinearGradientBrush x:Key="Brush.Case.Wrap" StartPoint="0,0" EndPoint="1,1">
-        <GradientStop Offset="0" Color="#30FFFFFF" />
-        <GradientStop Offset="0.14" Color="#0EFFFFFF" />
-        <GradientStop Offset="0.3" Color="#04FFFFFF" />
-        <GradientStop Offset="0.5" Color="#16FFFFFF" />
-        <GradientStop Offset="0.55" Color="#05FFFFFF" />
-        <GradientStop Offset="0.8" Color="#02FFFFFF" />
-        <GradientStop Offset="1" Color="#0EFFFFFF" />
+    <!--
+        Shrink wrap of a sealed game: milky clear film, glossier than the case, with light streaks. Absolute mapping in
+        the base units of the film body (248 x 346), so its two halves continue each other (WrapRight starts at the middle).
+    -->
+    <LinearGradientBrush x:Key="Brush.Case.Wrap" MappingMode="Absolute" StartPoint="0,0" EndPoint="248,346">
+        <GradientStop Offset="0" Color="#46FFFFFF" />
+        <GradientStop Offset="0.12" Color="#1CFFFFFF" />
+        <GradientStop Offset="0.3" Color="#0EFFFFFF" />
+        <GradientStop Offset="0.47" Color="#26FFFFFF" />
+        <GradientStop Offset="0.52" Color="#10FFFFFF" />
+        <GradientStop Offset="0.8" Color="#0AFFFFFF" />
+        <GradientStop Offset="1" Color="#1CFFFFFF" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="Brush.Case.WrapRight" MappingMode="Absolute" StartPoint="0,0" EndPoint="248,346">
+        <LinearGradientBrush.Transform>
+            <TranslateTransform X="-124" />
+        </LinearGradientBrush.Transform>
+        <GradientStop Offset="0" Color="#46FFFFFF" />
+        <GradientStop Offset="0.12" Color="#1CFFFFFF" />
+        <GradientStop Offset="0.3" Color="#0EFFFFFF" />
+        <GradientStop Offset="0.47" Color="#26FFFFFF" />
+        <GradientStop Offset="0.52" Color="#10FFFFFF" />
+        <GradientStop Offset="0.8" Color="#0AFFFFFF" />
+        <GradientStop Offset="1" Color="#1CFFFFFF" />
     </LinearGradientBrush>
     <!--  Tear strip in the film: silver tape with a light top edge  -->
     <LinearGradientBrush x:Key="Brush.Case.TearStrip" StartPoint="0,0" EndPoint="0,1">
-        <GradientStop Offset="0" Color="#F2FFFFFF" />
-        <GradientStop Offset="0.45" Color="#D9D4D6DC" />
-        <GradientStop Offset="1" Color="#CC9A9CA4" />
+        <GradientStop Offset="0" Color="#FFFFFFFF" />
+        <GradientStop Offset="0.45" Color="#F0D4D6DC" />
+        <GradientStop Offset="1" Color="#E69A9CA4" />
     </LinearGradientBrush>
-    <!--  Light band running over the film while a sealed case is hovered  -->
+    <!--  Light band running over the film while a sealed case is hovered, and over the cover once unwrapped  -->
     <LinearGradientBrush x:Key="Brush.Case.WrapGlint" StartPoint="0,0" EndPoint="1,0">
         <GradientStop Offset="0" Color="#00FFFFFF" />
-        <GradientStop Offset="0.5" Color="#38FFFFFF" />
+        <GradientStop Offset="0.5" Color="#5CFFFFFF" />
         <GradientStop Offset="1" Color="#00FFFFFF" />
     </LinearGradientBrush>
+    <!--  Sparkles around the freed case  -->
+    <StreamGeometry x:Key="Geo.Case.Sparkle">M 8,0 L 9.4,6.6 16,8 9.4,9.4 8,16 6.6,9.4 0,8 6.6,6.6 Z</StreamGeometry>
 
     <sys:Double x:Key="Case.ShadowOpacityNormal">0.5</sys:Double>
     <sys:Double x:Key="Case.ShadowOpacityOpen">0.8</sys:Double>
@@ -218,140 +235,238 @@
                         </Storyboard>
 
                         <!--
-                            Unwrap: the tab is pulled along the top and tears the strip out (0 - 0.5), the film comes off in
-                            two parts, the top flies up, the body slides down (0.45 - 1.0), a short light passes over the
-                            cover, then the case pops once. Film is off at 1.0 = GameCase.UnwrapDuration: then the case opens.
+                            Unwrap: the tab is lifted (0 - 0.16), then pulled along the top, tearing the strip out with a spark
+                            at the tear (- 0.62). The film bursts open: the top flies up, the two halves of the body fall away to
+                            the sides (0.6 - 1.2). Light and a sweep pass over the freed cover, sparkles around the case, the
+                            case pops. Film is off at 1.1 = GameCase.UnwrapDuration: then the case opens.
                         -->
                         <Storyboard x:Key="SbUnwrap" FillBehavior="HoldEnd">
+                            <!--  Tab and strip  -->
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="TearTabTurn" Storyboard.TargetProperty="Angle">
+                                <LinearDoubleKeyFrame KeyTime="0" Value="0" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.16" Value="-28" EasingFunction="{StaticResource EaseOut}" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.62" Value="-40" EasingFunction="{StaticResource EaseInOut}" />
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="TearTabMove" Storyboard.TargetProperty="X">
+                                <LinearDoubleKeyFrame KeyTime="0" Value="0" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.16" Value="5" EasingFunction="{StaticResource EaseOut}" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.62" Value="-264">
+                                    <EasingDoubleKeyFrame.EasingFunction>
+                                        <CubicEase EasingMode="EaseIn" />
+                                    </EasingDoubleKeyFrame.EasingFunction>
+                                </EasingDoubleKeyFrame>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="TearTabMove" Storyboard.TargetProperty="Y">
+                                <LinearDoubleKeyFrame KeyTime="0" Value="0" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.16" Value="-4" EasingFunction="{StaticResource EaseOut}" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.62" Value="-14" EasingFunction="{StaticResource EaseInOut}" />
+                            </DoubleAnimationUsingKeyFrames>
                             <DoubleAnimation
-                                Storyboard.TargetName="TearStripScale"
-                                Storyboard.TargetProperty="ScaleX"
-                                From="1"
-                                To="0"
-                                Duration="0:0:0.5">
-                                <DoubleAnimation.EasingFunction>
-                                    <CubicEase EasingMode="EaseIn" />
-                                </DoubleAnimation.EasingFunction>
-                            </DoubleAnimation>
-                            <DoubleAnimation
-                                Storyboard.TargetName="TearTabMove"
-                                Storyboard.TargetProperty="X"
-                                From="0"
-                                To="-262"
-                                Duration="0:0:0.5">
-                                <DoubleAnimation.EasingFunction>
-                                    <CubicEase EasingMode="EaseIn" />
-                                </DoubleAnimation.EasingFunction>
-                            </DoubleAnimation>
-                            <DoubleAnimation
-                                EasingFunction="{StaticResource EaseOut}"
-                                Storyboard.TargetName="TearTabMove"
-                                Storyboard.TargetProperty="Y"
-                                From="0"
-                                To="-10"
-                                Duration="0:0:0.5" />
-                            <DoubleAnimation
-                                EasingFunction="{StaticResource EaseOut}"
-                                Storyboard.TargetName="TearTabTurn"
-                                Storyboard.TargetProperty="Angle"
-                                From="0"
-                                To="-25"
-                                Duration="0:0:0.2" />
-                            <DoubleAnimation
-                                BeginTime="0:0:0.4"
+                                BeginTime="0:0:0.52"
                                 Storyboard.TargetName="TearTab"
                                 Storyboard.TargetProperty="Opacity"
                                 From="1"
                                 To="0"
                                 Duration="0:0:0.12" />
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="TearStripScale" Storyboard.TargetProperty="ScaleX">
+                                <LinearDoubleKeyFrame KeyTime="0" Value="1" />
+                                <LinearDoubleKeyFrame KeyTime="0:0:0.16" Value="1" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.62" Value="0">
+                                    <EasingDoubleKeyFrame.EasingFunction>
+                                        <CubicEase EasingMode="EaseIn" />
+                                    </EasingDoubleKeyFrame.EasingFunction>
+                                </EasingDoubleKeyFrame>
+                            </DoubleAnimationUsingKeyFrames>
+
+                            <!--  Spark running with the tear  -->
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="TearSparkMove" Storyboard.TargetProperty="X">
+                                <LinearDoubleKeyFrame KeyTime="0" Value="0" />
+                                <LinearDoubleKeyFrame KeyTime="0:0:0.16" Value="0" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.62" Value="-252">
+                                    <EasingDoubleKeyFrame.EasingFunction>
+                                        <CubicEase EasingMode="EaseIn" />
+                                    </EasingDoubleKeyFrame.EasingFunction>
+                                </EasingDoubleKeyFrame>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="TearSpark" Storyboard.TargetProperty="Opacity">
+                                <LinearDoubleKeyFrame KeyTime="0:0:0.16" Value="0" />
+                                <LinearDoubleKeyFrame KeyTime="0:0:0.22" Value="1" />
+                                <LinearDoubleKeyFrame KeyTime="0:0:0.56" Value="1" />
+                                <LinearDoubleKeyFrame KeyTime="0:0:0.66" Value="0" />
+                            </DoubleAnimationUsingKeyFrames>
 
                             <!--  Top part of the film, above the tear line: flies up and away to the left  -->
                             <DoubleAnimation
-                                BeginTime="0:0:0.45"
+                                BeginTime="0:0:0.58"
                                 EasingFunction="{StaticResource EaseOut}"
                                 Storyboard.TargetName="FilmTopMove"
                                 Storyboard.TargetProperty="Y"
                                 From="0"
-                                To="-34"
+                                To="-44"
                                 Duration="0:0:0.4" />
                             <DoubleAnimation
-                                BeginTime="0:0:0.45"
+                                BeginTime="0:0:0.58"
                                 EasingFunction="{StaticResource EaseOut}"
                                 Storyboard.TargetName="FilmTopTurn"
                                 Storyboard.TargetProperty="Angle"
                                 From="0"
-                                To="-9"
+                                To="-14"
                                 Duration="0:0:0.4" />
                             <DoubleAnimation
-                                BeginTime="0:0:0.5"
+                                BeginTime="0:0:0.62"
                                 Storyboard.TargetName="FilmTop"
                                 Storyboard.TargetProperty="Opacity"
                                 From="1"
                                 To="0"
-                                Duration="0:0:0.3" />
+                                Duration="0:0:0.33" />
 
-                            <!--  Body of the film: loosens and slides down off the case  -->
+                            <!--  The body bursts open: both halves fall away to their side  -->
                             <DoubleAnimation
-                                BeginTime="0:0:0.45"
+                                BeginTime="0:0:0.6"
                                 EasingFunction="{StaticResource EaseOut}"
-                                Storyboard.TargetName="FilmBodyScale"
-                                Storyboard.TargetProperty="ScaleX"
-                                From="1"
-                                To="1.06"
-                                Duration="0:0:0.3" />
+                                Storyboard.TargetName="FilmLeftMove"
+                                Storyboard.TargetProperty="X"
+                                From="0"
+                                To="-34"
+                                Duration="0:0:0.55" />
                             <DoubleAnimation
-                                BeginTime="0:0:0.5"
-                                Storyboard.TargetName="FilmBodyMove"
+                                BeginTime="0:0:0.6"
+                                Storyboard.TargetName="FilmLeftMove"
                                 Storyboard.TargetProperty="Y"
                                 From="0"
-                                To="80"
-                                Duration="0:0:0.5">
+                                To="110"
+                                Duration="0:0:0.55">
                                 <DoubleAnimation.EasingFunction>
                                     <CubicEase EasingMode="EaseIn" />
                                 </DoubleAnimation.EasingFunction>
                             </DoubleAnimation>
                             <DoubleAnimation
-                                BeginTime="0:0:0.5"
-                                EasingFunction="{StaticResource EaseInOut}"
-                                Storyboard.TargetName="FilmBodyTurn"
+                                BeginTime="0:0:0.6"
+                                EasingFunction="{StaticResource EaseOut}"
+                                Storyboard.TargetName="FilmLeftTurn"
                                 Storyboard.TargetProperty="Angle"
                                 From="0"
-                                To="3"
-                                Duration="0:0:0.5" />
+                                To="-16"
+                                Duration="0:0:0.55" />
                             <DoubleAnimation
-                                BeginTime="0:0:0.62"
-                                Storyboard.TargetName="FilmBody"
+                                BeginTime="0:0:0.8"
+                                Storyboard.TargetName="FilmLeft"
                                 Storyboard.TargetProperty="Opacity"
                                 From="1"
                                 To="0"
-                                Duration="0:0:0.38" />
+                                Duration="0:0:0.35" />
 
-                            <!--  Light over the freed cover  -->
+                            <DoubleAnimation
+                                BeginTime="0:0:0.64"
+                                EasingFunction="{StaticResource EaseOut}"
+                                Storyboard.TargetName="FilmRightMove"
+                                Storyboard.TargetProperty="X"
+                                From="0"
+                                To="34"
+                                Duration="0:0:0.55" />
+                            <DoubleAnimation
+                                BeginTime="0:0:0.64"
+                                Storyboard.TargetName="FilmRightMove"
+                                Storyboard.TargetProperty="Y"
+                                From="0"
+                                To="110"
+                                Duration="0:0:0.55">
+                                <DoubleAnimation.EasingFunction>
+                                    <CubicEase EasingMode="EaseIn" />
+                                </DoubleAnimation.EasingFunction>
+                            </DoubleAnimation>
+                            <DoubleAnimation
+                                BeginTime="0:0:0.64"
+                                EasingFunction="{StaticResource EaseOut}"
+                                Storyboard.TargetName="FilmRightTurn"
+                                Storyboard.TargetProperty="Angle"
+                                From="0"
+                                To="16"
+                                Duration="0:0:0.55" />
+                            <DoubleAnimation
+                                BeginTime="0:0:0.84"
+                                Storyboard.TargetName="FilmRight"
+                                Storyboard.TargetProperty="Opacity"
+                                From="1"
+                                To="0"
+                                Duration="0:0:0.35" />
+
+                            <!--  Light over the freed cover, then a sweep across it  -->
                             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="UnwrapFlash" Storyboard.TargetProperty="Opacity">
-                                <LinearDoubleKeyFrame KeyTime="0:0:0.5" Value="0" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:0.66" Value="1" EasingFunction="{StaticResource EaseOut}" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:1.0" Value="0" EasingFunction="{StaticResource EaseInOut}" />
+                                <LinearDoubleKeyFrame KeyTime="0:0:0.6" Value="0" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.74" Value="1" EasingFunction="{StaticResource EaseOut}" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:1.15" Value="0" EasingFunction="{StaticResource EaseInOut}" />
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimation
+                                BeginTime="0:0:0.72"
+                                EasingFunction="{StaticResource EaseInOut}"
+                                Storyboard.TargetName="CoverSweepMove"
+                                Storyboard.TargetProperty="X"
+                                From="-300"
+                                To="300"
+                                Duration="0:0:0.55" />
+
+                            <!--  Sparkles around the case, one after the other  -->
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Sparkle1Scale" Storyboard.TargetProperty="ScaleX">
+                                <LinearDoubleKeyFrame KeyTime="0:0:0.8" Value="0" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.95" Value="1" EasingFunction="{StaticResource EaseOut}" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:1.2" Value="0" EasingFunction="{StaticResource EaseInOut}" />
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Sparkle1Scale" Storyboard.TargetProperty="ScaleY">
+                                <LinearDoubleKeyFrame KeyTime="0:0:0.8" Value="0" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.95" Value="1" EasingFunction="{StaticResource EaseOut}" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:1.2" Value="0" EasingFunction="{StaticResource EaseInOut}" />
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Sparkle2Scale" Storyboard.TargetProperty="ScaleX">
+                                <LinearDoubleKeyFrame KeyTime="0:0:0.88" Value="0" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:1.03" Value="1" EasingFunction="{StaticResource EaseOut}" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:1.28" Value="0" EasingFunction="{StaticResource EaseInOut}" />
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Sparkle2Scale" Storyboard.TargetProperty="ScaleY">
+                                <LinearDoubleKeyFrame KeyTime="0:0:0.88" Value="0" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:1.03" Value="1" EasingFunction="{StaticResource EaseOut}" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:1.28" Value="0" EasingFunction="{StaticResource EaseInOut}" />
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Sparkle3Scale" Storyboard.TargetProperty="ScaleX">
+                                <LinearDoubleKeyFrame KeyTime="0:0:0.96" Value="0" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:1.11" Value="1" EasingFunction="{StaticResource EaseOut}" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:1.36" Value="0" EasingFunction="{StaticResource EaseInOut}" />
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Sparkle3Scale" Storyboard.TargetProperty="ScaleY">
+                                <LinearDoubleKeyFrame KeyTime="0:0:0.96" Value="0" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:1.11" Value="1" EasingFunction="{StaticResource EaseOut}" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:1.36" Value="0" EasingFunction="{StaticResource EaseInOut}" />
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Sparkle4Scale" Storyboard.TargetProperty="ScaleX">
+                                <LinearDoubleKeyFrame KeyTime="0:0:1.02" Value="0" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:1.17" Value="1" EasingFunction="{StaticResource EaseOut}" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:1.42" Value="0" EasingFunction="{StaticResource EaseInOut}" />
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Sparkle4Scale" Storyboard.TargetProperty="ScaleY">
+                                <LinearDoubleKeyFrame KeyTime="0:0:1.02" Value="0" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:1.17" Value="1" EasingFunction="{StaticResource EaseOut}" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:1.42" Value="0" EasingFunction="{StaticResource EaseInOut}" />
                             </DoubleAnimationUsingKeyFrames>
 
                             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="WrapLayer" Storyboard.TargetProperty="Visibility">
                                 <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}" />
-                                <DiscreteObjectKeyFrame KeyTime="0:0:1.0" Value="{x:Static Visibility.Collapsed}" />
+                                <DiscreteObjectKeyFrame KeyTime="0:0:1.45" Value="{x:Static Visibility.Collapsed}" />
                             </ObjectAnimationUsingKeyFrames>
 
-                            <!--  The case pops once (from the shelf) as the film is off  -->
+                            <!--  The case pops (from the shelf) as the film is off  -->
                             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CasePop" Storyboard.TargetProperty="ScaleX">
-                                <LinearDoubleKeyFrame KeyTime="0:0:0.9" Value="1" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:1.04" Value="1.03" EasingFunction="{StaticResource EaseOut}" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:1.3" Value="1" EasingFunction="{StaticResource EaseInOut}" />
+                                <LinearDoubleKeyFrame KeyTime="0:0:1.02" Value="1" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:1.16" Value="1.05" EasingFunction="{StaticResource EaseOut}" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:1.45" Value="1" EasingFunction="{StaticResource EaseInOut}" />
                             </DoubleAnimationUsingKeyFrames>
                             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CasePop" Storyboard.TargetProperty="ScaleY">
-                                <LinearDoubleKeyFrame KeyTime="0:0:0.9" Value="1" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:1.04" Value="1.03" EasingFunction="{StaticResource EaseOut}" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:1.3" Value="1" EasingFunction="{StaticResource EaseInOut}" />
+                                <LinearDoubleKeyFrame KeyTime="0:0:1.02" Value="1" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:1.16" Value="1.05" EasingFunction="{StaticResource EaseOut}" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:1.45" Value="1" EasingFunction="{StaticResource EaseInOut}" />
                             </DoubleAnimationUsingKeyFrames>
                         </Storyboard>
 
-                        <!--  Hovered sealed case: a light band runs over the film instead of opening it  -->
+                        <!--  Hovered sealed case: a light band runs over the film and the tab wiggles, instead of opening  -->
                         <Storyboard x:Key="SbGlint" FillBehavior="Stop">
                             <DoubleAnimation
                                 EasingFunction="{StaticResource EaseInOut}"
@@ -360,6 +475,12 @@
                                 From="-300"
                                 To="300"
                                 Duration="0:0:0.7" />
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="TearTabTurn" Storyboard.TargetProperty="Angle">
+                                <LinearDoubleKeyFrame KeyTime="0" Value="0" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.12" Value="-18" EasingFunction="{StaticResource EaseOut}" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="6" EasingFunction="{StaticResource EaseInOut}" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.45" Value="0" EasingFunction="{StaticResource EaseInOut}" />
+                            </DoubleAnimationUsingKeyFrames>
                         </Storyboard>
                     </ControlTemplate.Resources>
 
@@ -641,9 +762,11 @@
                         </Border>
 
                         <!--
-                            Shrink wrap of a sealed game (ui:GameCase.IsSealed), drawn in base units over the closed case: clear
-                            film, split by a tear strip near the top with a pull tab at its right end. Shown by SbSeal, taken off by
-                            SbUnwrap. The film parts are cached (only their transforms are animated); no accent inside, see above.
+                            Shrink wrap of a sealed game (ui:GameCase.IsSealed), drawn in base units over the closed case: milky
+                            film with a sharp reflection, creases and sealed corner flaps, a NEW sticker, and a tear strip near the
+                            top with a pull tab at its right end. Shown by SbSeal, taken off by SbUnwrap. The film halves are cached
+                            (only their transforms are animated); sticker, spark and sparkles follow the accent, so they sit outside
+                            those caches.
                         -->
                         <Viewbox
                             x:Name="WrapLayer"
@@ -652,7 +775,7 @@
                             Visibility="Collapsed">
                             <Grid Width="246" Height="366">
 
-                                <!--  Light over the cover while the film comes off  -->
+                                <!--  Light over the cover while the film comes off, and the sweep across it  -->
                                 <Border
                                     x:Name="UnwrapFlash"
                                     Margin="3"
@@ -660,52 +783,163 @@
                                     Opacity="0">
                                     <Border.Background>
                                         <RadialGradientBrush Center="0.5,0.35" GradientOrigin="0.5,0.35" RadiusX="0.8" RadiusY="0.6">
-                                            <GradientStop Offset="0" Color="#33FFFFFF" />
+                                            <GradientStop Offset="0" Color="#40FFFFFF" />
                                             <GradientStop Offset="1" Color="#00FFFFFF" />
                                         </RadialGradientBrush>
                                     </Border.Background>
                                 </Border>
+                                <Grid ui:ClipBehaviors.CornerRadius="6">
+                                    <Border
+                                        Width="90"
+                                        Height="520"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Background="{StaticResource Brush.Case.WrapGlint}">
+                                        <Border.RenderTransform>
+                                            <TransformGroup>
+                                                <RotateTransform Angle="20" CenterX="45" CenterY="260" />
+                                                <TranslateTransform x:Name="CoverSweepMove" X="-300" />
+                                            </TransformGroup>
+                                        </Border.RenderTransform>
+                                    </Border>
+                                </Grid>
 
-                                <!--  Body of the film below the tear strip, with the welded seam at the bottom and creases at the corners  -->
+                                <!--  Left half of the film body (below the strip): reflection, creases, seam, corner flap  -->
                                 <Grid
-                                    x:Name="FilmBody"
-                                    Margin="-1,21,-1,-1"
-                                    RenderTransformOrigin="0.5,0">
-                                    <Grid.CacheMode>
-                                        <BitmapCache SnapsToDevicePixels="True" />
-                                    </Grid.CacheMode>
+                                    x:Name="FilmLeft"
+                                    Width="124"
+                                    Margin="-1,21,0,-1"
+                                    HorizontalAlignment="Left"
+                                    RenderTransformOrigin="0.5,0.3">
                                     <Grid.RenderTransform>
                                         <TransformGroup>
-                                            <ScaleTransform x:Name="FilmBodyScale" />
-                                            <RotateTransform x:Name="FilmBodyTurn" />
-                                            <TranslateTransform x:Name="FilmBodyMove" />
+                                            <RotateTransform x:Name="FilmLeftTurn" />
+                                            <TranslateTransform x:Name="FilmLeftMove" />
                                         </TransformGroup>
                                     </Grid.RenderTransform>
+                                    <Grid>
+                                        <Grid.CacheMode>
+                                            <BitmapCache SnapsToDevicePixels="True" />
+                                        </Grid.CacheMode>
+                                        <Border
+                                            Background="{StaticResource Brush.Case.Wrap}"
+                                            BorderBrush="#4DFFFFFF"
+                                            BorderThickness="1,0,0,1"
+                                            CornerRadius="0,0,0,7" />
+                                        <Path
+                                            Data="M 4,150 L 124,22"
+                                            Stroke="#14FFFFFF"
+                                            StrokeThickness="12" />
+                                        <Path
+                                            Data="M 10,148 L 124,26"
+                                            Stroke="#4DFFFFFF"
+                                            StrokeThickness="1.5" />
+                                        <Border
+                                            Height="1"
+                                            Margin="9,0,0,6"
+                                            VerticalAlignment="Bottom"
+                                            Background="#38FFFFFF" />
+                                        <Path
+                                            Data="M 1,296 Q 8,310 20,320 M 1,272 L 10,284 M 32,345 Q 38,336 50,334 M 1,40 Q 7,48 9,60"
+                                            Stroke="#30FFFFFF"
+                                            StrokeThickness="1" />
+                                        <Path
+                                            Data="M -4,334 L 12,346 L -4,351 Z"
+                                            Fill="#24FFFFFF"
+                                            Stroke="#55FFFFFF"
+                                            StrokeThickness="0.8" />
+                                    </Grid>
+                                </Grid>
 
-                                    <Border
-                                        Background="{StaticResource Brush.Case.Wrap}"
-                                        BorderBrush="#38FFFFFF"
-                                        BorderThickness="1,0,1,1"
-                                        CornerRadius="0,0,7,7" />
-                                    <Border
-                                        Height="1"
-                                        Margin="8,0,8,6"
-                                        VerticalAlignment="Bottom"
-                                        Background="#26FFFFFF" />
-                                    <Path
-                                        Data="M 2,330 L 16,343 M 2,312 L 10,320 M 246,336 L 234,344"
-                                        Stroke="#1FFFFFFF"
-                                        StrokeThickness="1" />
+                                <!--  Right half of the film body, with the NEW sticker  -->
+                                <Grid
+                                    x:Name="FilmRight"
+                                    Width="124"
+                                    Margin="0,21,-1,-1"
+                                    HorizontalAlignment="Right"
+                                    RenderTransformOrigin="0.5,0.3">
+                                    <Grid.RenderTransform>
+                                        <TransformGroup>
+                                            <RotateTransform x:Name="FilmRightTurn" />
+                                            <TranslateTransform x:Name="FilmRightMove" />
+                                        </TransformGroup>
+                                    </Grid.RenderTransform>
+                                    <Grid>
+                                        <Grid.CacheMode>
+                                            <BitmapCache SnapsToDevicePixels="True" />
+                                        </Grid.CacheMode>
+                                        <Border
+                                            Background="{StaticResource Brush.Case.WrapRight}"
+                                            BorderBrush="#4DFFFFFF"
+                                            BorderThickness="0,0,1,1"
+                                            CornerRadius="0,0,7,0" />
+                                        <Path
+                                            Data="M 0,22 L 20,0"
+                                            Stroke="#14FFFFFF"
+                                            StrokeThickness="12" />
+                                        <Path
+                                            Data="M 0,26 L 24,0"
+                                            Stroke="#4DFFFFFF"
+                                            StrokeThickness="1.5" />
+                                        <Border
+                                            Height="1"
+                                            Margin="0,0,9,6"
+                                            VerticalAlignment="Bottom"
+                                            Background="#38FFFFFF" />
+                                        <Path
+                                            Data="M 123,292 Q 116,306 104,316 M 123,268 L 114,280 M 92,345 Q 86,336 74,334 M 123,150 Q 118,160 117,172"
+                                            Stroke="#30FFFFFF"
+                                            StrokeThickness="1" />
+                                        <Path
+                                            Data="M 128,334 L 112,346 L 128,351 Z"
+                                            Fill="#24FFFFFF"
+                                            Stroke="#55FFFFFF"
+                                            StrokeThickness="0.8" />
+                                    </Grid>
+
+                                    <!--  Small glass sticker on the film: dark glass, accent edge and text, slightly turned  -->
+                                    <Grid
+                                        Width="34"
+                                        Height="34"
+                                        Margin="0,12,12,0"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Top"
+                                        Opacity="0.9"
+                                        RenderTransformOrigin="0.5,0.5">
+                                        <Grid.RenderTransform>
+                                            <RotateTransform Angle="8" />
+                                        </Grid.RenderTransform>
+                                        <Ellipse
+                                            Fill="#8C101014"
+                                            Stroke="{DynamicResource Brush.Accent}"
+                                            StrokeThickness="1" />
+                                        <TextBlock
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            FontSize="9"
+                                            FontWeight="SemiBold"
+                                            Foreground="{DynamicResource Brush.Accent}"
+                                            Text="NEW" />
+                                        <Ellipse>
+                                            <Ellipse.Fill>
+                                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                                    <GradientStop Offset="0" Color="#26FFFFFF" />
+                                                    <GradientStop Offset="0.5" Color="#05FFFFFF" />
+                                                    <GradientStop Offset="1" Color="#00FFFFFF" />
+                                                </LinearGradientBrush>
+                                            </Ellipse.Fill>
+                                        </Ellipse>
+                                    </Grid>
                                 </Grid>
 
                                 <!--  Top of the film above the tear strip  -->
                                 <Border
                                     x:Name="FilmTop"
-                                    Height="17"
+                                    Height="16"
                                     Margin="-1,-1,-1,0"
                                     VerticalAlignment="Top"
                                     Background="{StaticResource Brush.Case.Wrap}"
-                                    BorderBrush="#38FFFFFF"
+                                    BorderBrush="#4DFFFFFF"
                                     BorderThickness="1,1,1,0"
                                     CornerRadius="7,7,0,0"
                                     RenderTransformOrigin="0,1">
@@ -717,37 +951,73 @@
                                     </Border.RenderTransform>
                                 </Border>
 
-                                <!--  Tear strip; pulled out from the right, so it shrinks towards its left end  -->
-                                <Border
-                                    Height="5"
-                                    Margin="-1,16,-1,0"
+                                <!--  Tear strip with its shadow line; pulled out from the right, so it shrinks towards its left end  -->
+                                <Grid
+                                    Height="7"
+                                    Margin="-1,15,-1,0"
                                     VerticalAlignment="Top"
-                                    Background="{StaticResource Brush.Case.TearStrip}"
-                                    CornerRadius="1"
                                     RenderTransformOrigin="0,0.5">
-                                    <Border.RenderTransform>
+                                    <Grid.RenderTransform>
                                         <ScaleTransform x:Name="TearStripScale" />
-                                    </Border.RenderTransform>
-                                </Border>
+                                    </Grid.RenderTransform>
+                                    <Border
+                                        Height="6"
+                                        VerticalAlignment="Top"
+                                        Background="{StaticResource Brush.Case.TearStrip}"
+                                        CornerRadius="1" />
+                                    <Border
+                                        Height="1"
+                                        VerticalAlignment="Bottom"
+                                        Background="#59000000" />
+                                </Grid>
 
-                                <!--  Pull tab at the right end of the strip, a little beyond the case edge  -->
-                                <Border
+                                <!--  Pull tab at the right end of the strip, beyond the case edge, with grip lines  -->
+                                <Grid
                                     x:Name="TearTab"
-                                    Width="14"
-                                    Height="11"
-                                    Margin="0,13,-8,0"
+                                    Width="20"
+                                    Height="15"
+                                    Margin="0,10.5,-12,0"
                                     HorizontalAlignment="Right"
                                     VerticalAlignment="Top"
-                                    Background="{StaticResource Brush.Case.TearStrip}"
-                                    CornerRadius="2,5,5,2"
                                     RenderTransformOrigin="0,0.5">
-                                    <Border.RenderTransform>
+                                    <Grid.RenderTransform>
                                         <TransformGroup>
                                             <RotateTransform x:Name="TearTabTurn" />
                                             <TranslateTransform x:Name="TearTabMove" />
                                         </TransformGroup>
-                                    </Border.RenderTransform>
-                                </Border>
+                                    </Grid.RenderTransform>
+                                    <Border
+                                        Background="{StaticResource Brush.Case.TearStrip}"
+                                        BorderBrush="#40000000"
+                                        BorderThickness="0.6"
+                                        CornerRadius="2,6,6,2" />
+                                    <Path
+                                        Data="M 11,4 L 11,11 M 14,4 L 14,11"
+                                        Stroke="#66000000"
+                                        StrokeThickness="0.8" />
+                                </Grid>
+
+                                <!--  Spark at the tear, runs with the tab  -->
+                                <Ellipse
+                                    x:Name="TearSpark"
+                                    Width="20"
+                                    Height="20"
+                                    Margin="0,8,-10,0"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Top"
+                                    Opacity="0">
+                                    <!--  White core with an accent glow (Color.Accent directly: follows the profile accent)  -->
+                                    <Ellipse.Fill>
+                                        <RadialGradientBrush>
+                                            <GradientStop Offset="0" Color="#FFFFFFFF" />
+                                            <GradientStop Offset="0.3" Color="{DynamicResource Color.Accent}" />
+                                            <GradientStop Offset="1" Color="Transparent" />
+                                        </RadialGradientBrush>
+                                    </Ellipse.Fill>
+                                    <Ellipse.RenderTransform>
+                                        <TranslateTransform x:Name="TearSparkMove" />
+                                    </Ellipse.RenderTransform>
+                                </Ellipse>
 
                                 <!--  Light band of SbGlint, waiting outside the clip  -->
                                 <Grid ui:ClipBehaviors.CornerRadius="6">
@@ -765,6 +1035,64 @@
                                         </Border.RenderTransform>
                                     </Border>
                                 </Grid>
+
+                                <!--  Sparkles around the freed case  -->
+                                <Path
+                                    Width="18"
+                                    Height="18"
+                                    Margin="-12,48,0,0"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Top"
+                                    Data="{StaticResource Geo.Case.Sparkle}"
+                                    Fill="{DynamicResource Brush.Accent}"
+                                    RenderTransformOrigin="0.5,0.5"
+                                    Stretch="Fill">
+                                    <Path.RenderTransform>
+                                        <ScaleTransform x:Name="Sparkle1Scale" ScaleX="0" ScaleY="0" />
+                                    </Path.RenderTransform>
+                                </Path>
+                                <Path
+                                    Width="14"
+                                    Height="14"
+                                    Margin="0,118,-10,0"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Top"
+                                    Data="{StaticResource Geo.Case.Sparkle}"
+                                    Fill="{DynamicResource Brush.Accent}"
+                                    RenderTransformOrigin="0.5,0.5"
+                                    Stretch="Fill">
+                                    <Path.RenderTransform>
+                                        <ScaleTransform x:Name="Sparkle2Scale" ScaleX="0" ScaleY="0" />
+                                    </Path.RenderTransform>
+                                </Path>
+                                <Path
+                                    Width="12"
+                                    Height="12"
+                                    Margin="22,0,0,52"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Bottom"
+                                    Data="{StaticResource Geo.Case.Sparkle}"
+                                    Fill="{DynamicResource Brush.Accent}"
+                                    RenderTransformOrigin="0.5,0.5"
+                                    Stretch="Fill">
+                                    <Path.RenderTransform>
+                                        <ScaleTransform x:Name="Sparkle3Scale" ScaleX="0" ScaleY="0" />
+                                    </Path.RenderTransform>
+                                </Path>
+                                <Path
+                                    Width="20"
+                                    Height="20"
+                                    Margin="0,0,-12,28"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Bottom"
+                                    Data="{StaticResource Geo.Case.Sparkle}"
+                                    Fill="{DynamicResource Brush.Accent}"
+                                    RenderTransformOrigin="0.5,0.5"
+                                    Stretch="Fill">
+                                    <Path.RenderTransform>
+                                        <ScaleTransform x:Name="Sparkle4Scale" ScaleX="0" ScaleY="0" />
+                                    </Path.RenderTransform>
+                                </Path>
                             </Grid>
                         </Viewbox>
                     </Grid>

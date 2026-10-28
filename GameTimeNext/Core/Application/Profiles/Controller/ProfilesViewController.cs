@@ -241,12 +241,22 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             ContextMenuBuilder contextBuilder = UIXContextMenuFactory.Create("ProfilesListBoxContextMenu");
             contextBuilder.SetStyle(ProfilesContextMenuBuilder.contextMenuStyle);
 
+            bool isSealed = TFPROFI.IsSealed(t1profi);
+
             // Unwrap (sealed game)
-            ProfilesContextMenuBuilder.BuildContextUnwrap(contextBuilder, t1profi);
+            if (isSealed)
+                ProfilesContextMenuBuilder.BuildContextUnwrap(contextBuilder);
 
             // Always Edit and Delete in principle
             contextBuilder.AddItem("ctxtEdit", "Edit", icon: UIXContextMenuFactory.CreateMdlIcon("\uE70F"), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
             contextBuilder.AddItem("ctxtDelete", "Delete", icon: UIXContextMenuFactory.CreateMdlIcon("\uE74D"), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
+
+            // A sealed game offers nothing else until it is unwrapped
+            if (isSealed)
+            {
+                lbi.ContextMenu = contextBuilder.Build();
+                return;
+            }
 
             // Game Folder
             ProfilesContextMenuBuilder.BuildContextShowGameFolder(contextBuilder, t1profi);

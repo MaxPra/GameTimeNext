@@ -14,7 +14,7 @@ namespace GameTimeNext.Core.Framework.UI
     public static class GameCase
     {
         // Until the film is off in SbUnwrap (TileViewStyle.xaml); keep both in sync
-        private static readonly TimeSpan UnwrapDuration = TimeSpan.FromSeconds(1.0);
+        private static readonly TimeSpan UnwrapDuration = TimeSpan.FromSeconds(1.1);
 
         public static readonly DependencyProperty IsOpenProperty =
             DependencyProperty.RegisterAttached(
