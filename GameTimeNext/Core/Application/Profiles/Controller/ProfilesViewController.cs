@@ -30,7 +30,7 @@ using static UIX.ViewController.Engine.FrameworkElements.UIXContextMenuFactory;
 
 namespace GameTimeNext.Core.Application.Profiles.Controller
 {
-    public class ProfilesViewController : UIXViewControllerBase
+    public class ProfilesViewController : UIXViewControllerBase<ProfilesApp, ProfilesView>
     {
         private ProfilesSubViewDataWrapper? _dataWrapper;
         private ProfilesSubGridViewModel? _profilesSubGridViewModel;
@@ -100,6 +100,10 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         }
 
         protected override void FillViewImpl()
+        {
+        }
+
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
         {
         }
 
@@ -377,15 +381,6 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         }
 
         #region Getter App & View
-        private ProfilesApp GetApp()
-        {
-            return (ProfilesApp)App;
-        }
-
-        private ProfilesView GetView()
-        {
-            return (ProfilesView)View;
-        }
         #endregion
 
         #region External Events

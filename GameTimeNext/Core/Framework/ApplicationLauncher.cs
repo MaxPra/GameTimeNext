@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
 using UIX.ViewController.Engine.FrameworkElements;
+using UIX.ViewController.Engine.FrameworkElements.Windows;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 using static UIX.ViewController.Engine.FrameworkElements.UIXContextMenuFactory;
@@ -17,6 +18,17 @@ namespace GameTimeNext.Core.Framework
         public ApplicationLauncher(TabControl tabControl)
         {
             TabControl = tabControl;
+
+            // Unsaved changes in a tab that isn't selected are asked in that tab
+            UIXWindowHost.BringIntoViewHandler = SelectTabOfHost;
+        }
+
+        private void SelectTabOfHost(UIXWindowHost host)
+        {
+            TabItem? tab = TabControl.Items.OfType<TabItem>().FirstOrDefault(t => t.Content is ContentPresenter presenter && ReferenceEquals(presenter.Content, host.Element));
+
+            if (tab != null)
+                TabControl.SelectedItem = tab;
         }
 
         public TabItem LaunchApplication(string className, UIXApplication host, string header)
@@ -123,6 +135,11 @@ namespace GameTimeNext.Core.Framework
             UIXApplication app = AppEnvironment.StartedApplications[typeName];
 
             if (!app.CanClose())
+                return;
+
+            // Windows opened from the tab belong to its view and are closed with it; unsaved changes in them or in
+            // the view are asked first, and the tab stays open if the user keeps something open
+            if (!app.TryCloseViews())
                 return;
 
             AppEnvironment.StartedApplications.Remove(type!.FullName!);

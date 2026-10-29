@@ -21,7 +21,7 @@ using static UIX.ViewController.Engine.FrameworkElements.UIXContextMenuFactory;
 
 namespace GameTimeNext.Core.Application.Playthroughs.Controller
 {
-    public class PlaythroughsViewController : UIXViewControllerBase
+    public class PlaythroughsViewController : UIXViewControllerBase<PlaythroughsApp, PlaythroughsView>
     {
         private PlaythroughsViewModel? _viewModel;
 
@@ -76,6 +76,10 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
         {
         }
 
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
+        {
+        }
+
         protected override void FillDBOImpl()
         {
         }
@@ -91,16 +95,6 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
         protected override void Event_Closing()
         {
             Exit(true);
-        }
-
-        private PlaythroughsApp GetApp()
-        {
-            return (PlaythroughsApp)App;
-        }
-
-        private PlaythroughsView GetView()
-        {
-            return (PlaythroughsView)View;
         }
 
         protected void EV_DgPlaythroughs_CtxtOpening(FrameworkElement target)

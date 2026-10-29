@@ -14,7 +14,7 @@ using static GameTimeNext.Core.Application.Profiles.Controller.ProfilesViewContr
 
 namespace GameTimeNext.Core.Application.Profiles.Controller
 {
-    public class ProfilesFilterViewController : UIXViewControllerBase
+    public class ProfilesFilterViewController : UIXViewControllerBase<ProfilesApp, ProfilesFilterView>
     {
         private ProfilesFilterViewModel _profilesFilterViewModel = new ProfilesFilterViewModel();
 
@@ -47,6 +47,10 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         }
 
         protected override void CheckImpl()
+        {
+        }
+
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
         {
         }
 
@@ -218,14 +222,5 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             return filter;
         }
 
-        private ProfilesApp GetApp()
-        {
-            return (ProfilesApp)App;
-        }
-
-        private ProfilesFilterView GetView()
-        {
-            return (ProfilesFilterView)this.View;
-        }
     }
 }

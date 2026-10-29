@@ -19,7 +19,7 @@ using static UIX.ViewController.Engine.FrameworkElements.UIXContextMenuFactory;
 
 namespace GameTimeNext.Core.Application.Menus.Controller
 {
-    public class MenusViewController : UIXViewControllerBase
+    public class MenusViewController : UIXViewControllerBase<MenusApp, MenusView>
     {
         private MenusDataWrapper? _dataWrapper;
 
@@ -60,6 +60,10 @@ namespace GameTimeNext.Core.Application.Menus.Controller
         {
         }
 
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
+        {
+        }
+
         protected override void FillDBOImpl()
         {
         }
@@ -78,16 +82,6 @@ namespace GameTimeNext.Core.Application.Menus.Controller
             Exit(true);
         }
         #endregion
-
-        private MenusApp GetApp()
-        {
-            return (MenusApp)App;
-        }
-
-        private MenusView GetView()
-        {
-            return (MenusView)View;
-        }
 
         /// <summary>
         /// Rebuilds the tree and selects the entry with the given ID, which opens it in the edit area.

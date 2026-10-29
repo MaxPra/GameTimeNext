@@ -11,7 +11,7 @@ using UIX.ViewController.Engine.Runnables;
 
 namespace GameTimeNext.Core.Application.Profiles.Controller
 {
-    public class ProfilesExecutablesEditViewController : UIXViewControllerBase
+    internal class ProfilesExecutablesEditViewController : UIXViewControllerBase<ProfilesExecutablesEditApp, ProfilesExecutablesEditView>
     {
 
         ProfilesExecutablesEditViewModel? _profilesExecutablesEditViewModel = null;
@@ -58,6 +58,10 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
         }
 
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
+        {
+        }
+
         protected override void FillDBOImpl()
         {
         }
@@ -75,16 +79,6 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
         }
 
-        private ProfilesExecutablesEditApp GetApp()
-        {
-            return (ProfilesExecutablesEditApp)App;
-        }
-
-        private ProfilesExecutablesEditView GetWnd()
-        {
-            return (ProfilesExecutablesEditView)View!;
-        }
-
         private void BuildExecutablesList()
         {
             List<Executable> executables = FnSystem.FindExecutables(GetApp().GameFolder);
@@ -95,7 +89,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             _profilesExecutablesEditViewModel = new ProfilesExecutablesEditViewModel();
             _profilesExecutablesEditViewModel.Executables = new System.Collections.ObjectModel.ObservableCollection<Executable>(executables);
 
-            GetWnd().DataContext = _profilesExecutablesEditViewModel;
+            GetView().DataContext = _profilesExecutablesEditViewModel;
         }
 
         private void ShowExitWarning()

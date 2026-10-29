@@ -8,10 +8,11 @@ using UIX.ViewController.Engine.DataBaseObjects;
 using UIX.ViewController.Engine.FrameworkElements.UserControls;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
+using GameTimeNext.Core.Framework.UI.Dialogs;
 
 namespace GameTimeNext.Core.Application.ErrorMessages.Controller
 {
-    public class ErrorMessagesEditViewController : UIXViewControllerBase
+    public class ErrorMessagesEditViewController : UIXViewControllerBase<ErrorMessagesEditApp, ErrorMessagesEditView>
     {
         public ErrorMessagesEditViewController(UIXApplication app) : base(app)
         {
@@ -31,47 +32,52 @@ namespace GameTimeNext.Core.Application.ErrorMessages.Controller
 
         protected override void BuildFirstImpl()
         {
-            bool isNew = GetWnd().ViewIndicator.Contains("CN") || GetWnd().ViewIndicator.Contains("CO");
+            bool isNew = GetView().ViewIndicator.Contains("CN") || GetView().ViewIndicator.Contains("CO");
 
             if (isNew)
-                GetWnd().txbNumber.Focus();
-            else if (GetWnd().ViewIndicator.Contains("ED"))
-                GetWnd().txbMessage.Focus();
+                GetView().txbNumber.Focus();
+            else if (GetView().ViewIndicator.Contains("ED"))
+                GetView().txbMessage.Focus();
 
-            FnControls.SetEnabled(GetWnd().txbNumber, isNew);
+            FnControls.SetEnabled(GetView().txbNumber, isNew);
 
-            FnControls.SetVisible(GetWnd().btnSave, GetWnd().ViewIndicator.Count != 0);
+            FnControls.SetVisible(GetView().btnSave, GetView().ViewIndicator.Count != 0);
         }
 
         protected override void BuildImpl()
         {
             // The number is the primary key: once the error message is saved it can no longer be changed
             if (GetApp().T1ERMSG!.State == UIXTableObjectState.Available)
-                FnControls.SetEnabled(GetWnd().txbNumber, false);
+                FnControls.SetEnabled(GetView().txbNumber, false);
         }
 
         protected override void CheckImpl()
         {
-            string number = GetWnd().txbNumber.Text;
+            string number = GetView().txbNumber.Text;
 
             if (FnString.IsNullEmptyOrWhitespace(number))
-                AddViewError(GetWnd().txbNumber, GetErrorMessage("GLO0003", "Number"));
+                AddViewError(GetView().txbNumber, GetErrorMessage("GLO0003", "Number"));
             else if (number.Length > 7)
-                AddViewError(GetWnd().txbNumber, GetErrorMessage("GLO0004", "Number", "7"));
+                AddViewError(GetView().txbNumber, GetErrorMessage("GLO0004", "Number", "7"));
             else if (GetApp().T1ERMSG!.State == UIXTableObjectState.New && new TXERMSG().Read(number) != null)
-                AddViewError(GetWnd().txbNumber, GetErrorMessage("GLO0008", "Error message", number));
+                AddViewError(GetView().txbNumber, GetErrorMessage("GLO0008", "Error message", number));
 
-            if (FnString.IsNullEmptyOrWhitespace(GetWnd().txbMessage.Text))
-                AddViewError(GetWnd().txbMessage, GetErrorMessage("GLO0003", "Message"));
-            else if (GetWnd().txbMessage.Text.Length > 250)
-                AddViewError(GetWnd().txbMessage, GetErrorMessage("GLO0004", "Message", "250"));
+            if (FnString.IsNullEmptyOrWhitespace(GetView().txbMessage.Text))
+                AddViewError(GetView().txbMessage, GetErrorMessage("GLO0003", "Message"));
+            else if (GetView().txbMessage.Text.Length > 250)
+                AddViewError(GetView().txbMessage, GetErrorMessage("GLO0004", "Message", "250"));
 
-            if (GetWnd().txbHint.Text.Length > 500)
-                AddViewError(GetWnd().txbHint, GetErrorMessage("GLO0004", "Hint", "500"));
+            if (GetView().txbHint.Text.Length > 500)
+                AddViewError(GetView().txbHint, GetErrorMessage("GLO0004", "Hint", "500"));
         }
 
         protected override void FillViewImpl()
         {
+        }
+
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
+        {
+            CFMBOX.AskUnsavedChanges(GetApp(), args);
         }
 
         protected override void FillDBOImpl()
@@ -95,7 +101,7 @@ namespace GameTimeNext.Core.Application.ErrorMessages.Controller
             GetViewReturn<ErrorMessagesEditViewReturn>().Canceled = true;
 
             // The event pipeline saves valid changes immediately, so the overview has to refresh even when the window is closed
-            GetViewReturn<ErrorMessagesEditViewReturn>().HasChanged = GetWnd().ViewIndicator.Count != 0;
+            GetViewReturn<ErrorMessagesEditViewReturn>().HasChanged = GetView().ViewIndicator.Count != 0;
         }
 
         protected override void Event_Minimize()
@@ -104,16 +110,6 @@ namespace GameTimeNext.Core.Application.ErrorMessages.Controller
 
         protected override void Event_Maximize()
         {
-        }
-
-        private ErrorMessagesEditApp GetApp()
-        {
-            return (ErrorMessagesEditApp)App;
-        }
-
-        private ErrorMessagesEditView GetWnd()
-        {
-            return (ErrorMessagesEditView)View;
         }
 
         protected void EV_btnSave()

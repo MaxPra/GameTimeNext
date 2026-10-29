@@ -10,7 +10,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Profiles.Controller
 {
-    public class ProfilesManualEstTimesEditViewController : UIXViewControllerBase
+    public class ProfilesManualEstTimesEditViewController : UIXViewControllerBase<ProfilesEditApp, ProfilesManualEstTimesEditView>
     {
         public ProfilesManualEstTimesEditViewController(UIXApplication app) : base(app)
         {
@@ -47,26 +47,30 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected override void CheckImpl()
         {
-            if (!FnControls.ContainsOnlyNumericValue(GetWnd().txbEstTimeMain))
-                AddViewError(GetWnd().txbEstTimeMain, GetErrorMessage("GLO0009"));
+            if (!FnControls.ContainsOnlyNumericValue(GetView().txbEstTimeMain))
+                AddViewError(GetView().txbEstTimeMain, GetErrorMessage("GLO0009"));
 
-            if (!FnControls.ContainsOnlyNumericValue(GetWnd().txbEstTimeMainExtra))
-                AddViewError(GetWnd().txbEstTimeMainExtra, GetErrorMessage("GLO0009"));
+            if (!FnControls.ContainsOnlyNumericValue(GetView().txbEstTimeMainExtra))
+                AddViewError(GetView().txbEstTimeMainExtra, GetErrorMessage("GLO0009"));
 
-            if (!FnControls.ContainsOnlyNumericValue(GetWnd().txbEstTimeCompletionist))
-                AddViewError(GetWnd().txbEstTimeCompletionist, GetErrorMessage("GLO0009"));
+            if (!FnControls.ContainsOnlyNumericValue(GetView().txbEstTimeCompletionist))
+                AddViewError(GetView().txbEstTimeCompletionist, GetErrorMessage("GLO0009"));
 
-            if (FnString.IsNullEmptyOrWhitespace(GetWnd().txbEstTimeMain.Text))
-                AddViewError(GetWnd().txbEstTimeMain, GetErrorMessage("GLO0003", "Est. time main"));
+            if (FnString.IsNullEmptyOrWhitespace(GetView().txbEstTimeMain.Text))
+                AddViewError(GetView().txbEstTimeMain, GetErrorMessage("GLO0003", "Est. time main"));
 
-            if (FnString.IsNullEmptyOrWhitespace(GetWnd().txbEstTimeMainExtra.Text))
-                AddViewError(GetWnd().txbEstTimeMainExtra, GetErrorMessage("GLO0003", "Est. time extra"));
+            if (FnString.IsNullEmptyOrWhitespace(GetView().txbEstTimeMainExtra.Text))
+                AddViewError(GetView().txbEstTimeMainExtra, GetErrorMessage("GLO0003", "Est. time extra"));
 
-            if (FnString.IsNullEmptyOrWhitespace(GetWnd().txbEstTimeCompletionist.Text))
-                AddViewError(GetWnd().txbEstTimeCompletionist, GetErrorMessage("GLO0003", "Est. time completionist"));
+            if (FnString.IsNullEmptyOrWhitespace(GetView().txbEstTimeCompletionist.Text))
+                AddViewError(GetView().txbEstTimeCompletionist, GetErrorMessage("GLO0003", "Est. time completionist"));
         }
 
         protected override void DataWrapperSelectionChangedImpl(Selector source)
+        {
+        }
+
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
         {
         }
 
@@ -76,9 +80,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected override void FillViewImpl()
         {
-            GetWnd().txbEstTimeMain.Text = GetApp().ManualEstTimesCache.estTimeMain.ToString(CultureInfo.CurrentCulture);
-            GetWnd().txbEstTimeMainExtra.Text = GetApp().ManualEstTimesCache.estTimeMainExtra.ToString(CultureInfo.CurrentCulture);
-            GetWnd().txbEstTimeCompletionist.Text = GetApp().ManualEstTimesCache.estTimeCompletionist.ToString(CultureInfo.CurrentCulture);
+            GetView().txbEstTimeMain.Text = GetApp().ManualEstTimesCache.estTimeMain.ToString(CultureInfo.CurrentCulture);
+            GetView().txbEstTimeMainExtra.Text = GetApp().ManualEstTimesCache.estTimeMainExtra.ToString(CultureInfo.CurrentCulture);
+            GetView().txbEstTimeCompletionist.Text = GetApp().ManualEstTimesCache.estTimeCompletionist.ToString(CultureInfo.CurrentCulture);
         }
 
         protected override void SaveDBOImpl()
@@ -101,16 +105,6 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
         }
 
-        private ProfilesManualEstTimesEditView GetWnd()
-        {
-            return (ProfilesManualEstTimesEditView)View;
-        }
-
-        private ProfilesEditApp GetApp()
-        {
-            return (ProfilesEditApp)App;
-        }
-
         protected void EV_btnOpenHowLongToBeat()
         {
             CFProfilesEditApp.OpenHowLongToBeatForGame(GetApp().ManualEstTimesCache.ProfileName);
@@ -123,9 +117,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             if (ViewErrors.Count > 0)
                 return;
 
-            GetViewReturn<ProfilesManualEstTimesEditViewReturn>().estTimeMain = FnConvert.ToDouble(GetWnd().txbEstTimeMain.Text);
-            GetViewReturn<ProfilesManualEstTimesEditViewReturn>().estTimeMainExtra = FnConvert.ToDouble(GetWnd().txbEstTimeMainExtra.Text);
-            GetViewReturn<ProfilesManualEstTimesEditViewReturn>().estTimeCompletionist = FnConvert.ToDouble(GetWnd().txbEstTimeCompletionist.Text);
+            GetViewReturn<ProfilesManualEstTimesEditViewReturn>().estTimeMain = FnConvert.ToDouble(GetView().txbEstTimeMain.Text);
+            GetViewReturn<ProfilesManualEstTimesEditViewReturn>().estTimeMainExtra = FnConvert.ToDouble(GetView().txbEstTimeMainExtra.Text);
+            GetViewReturn<ProfilesManualEstTimesEditViewReturn>().estTimeCompletionist = FnConvert.ToDouble(GetView().txbEstTimeCompletionist.Text);
             GetViewReturn<ProfilesManualEstTimesEditViewReturn>().Canceled = false;
 
             Exit(true);

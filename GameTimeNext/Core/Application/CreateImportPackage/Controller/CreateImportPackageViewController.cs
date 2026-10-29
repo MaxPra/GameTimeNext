@@ -12,7 +12,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.CreateImportPackage.Controller
 {
-    public class CreateImportPackageViewController : UIXViewControllerBase
+    public class CreateImportPackageViewController : UIXViewControllerBase<CreateImportPackageApp, CreateImportPackageView>
     {
         public CreateImportPackageViewController(UIXApplication app) : base(app)
         {
@@ -43,6 +43,10 @@ namespace GameTimeNext.Core.Application.CreateImportPackage.Controller
         {
         }
 
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
+        {
+        }
+
         protected override void FillDBOImpl()
         {
         }
@@ -70,16 +74,6 @@ namespace GameTimeNext.Core.Application.CreateImportPackage.Controller
 
             foreach (string directoryPath in Directory.GetDirectories(outputDirPath))
                 Directory.Delete(directoryPath, true);
-        }
-
-        private CreateImportPackageApp GetApp()
-        {
-            return (CreateImportPackageApp)App;
-        }
-
-        private CreateImportPackageView GetView()
-        {
-            return (CreateImportPackageView)View;
         }
 
         protected async Task EV_btnExecute()

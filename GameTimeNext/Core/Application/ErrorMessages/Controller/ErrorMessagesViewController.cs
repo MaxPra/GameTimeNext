@@ -18,7 +18,7 @@ using static UIX.ViewController.Engine.FrameworkElements.UIXContextMenuFactory;
 
 namespace GameTimeNext.Core.Application.ErrorMessages.Controller
 {
-    public class ErrorMessagesViewController : UIXViewControllerBase
+    public class ErrorMessagesViewController : UIXViewControllerBase<ErrorMessagesApp, ErrorMessagesView>
     {
 
         private ErrorMessagesViewModel? _viewModel;
@@ -64,6 +64,10 @@ namespace GameTimeNext.Core.Application.ErrorMessages.Controller
 
         }
 
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
+        {
+        }
+
         protected override void FillDBOImpl()
         {
         }
@@ -76,16 +80,6 @@ namespace GameTimeNext.Core.Application.ErrorMessages.Controller
         {
         }
         #endregion
-
-        private ErrorMessagesApp GetApp()
-        {
-            return (ErrorMessagesApp)App;
-        }
-
-        private ErrorMessagesView GetView()
-        {
-            return (ErrorMessagesView)View;
-        }
 
         private async Task BuildErrorMessagesViewModel()
         {

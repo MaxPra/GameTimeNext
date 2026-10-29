@@ -30,7 +30,7 @@ using static GameTimeNext.Core.Application.Profiles.Controller.ProfilesManualEst
 
 namespace GameTimeNext.Core.Application.Profiles.Controller
 {
-    public class ProfilesEditViewController : UIXViewControllerBase
+    public class ProfilesEditViewController : UIXViewControllerBase<ProfilesEditApp, ProfilesEditView>
     {
 
         private ProfilesEditViewModel? _profilesEditViewModel;
@@ -97,7 +97,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 //bool isIGDBLinkedCorrectly = !FnString.IsNullEmptyOrWhitespace(AppEnvironment.GetAppConfig().AppSettings.TwitchIGDBClientID) &&
                 //    !FnString.IsNullEmptyOrWhitespace(AppEnvironment.GetAppConfig().AppSettings.TwitchIGDBClientSecret);
 
-                //FnControls.SetEnabled(GetWnd().cmbEstimatedTimeType, isIGDBLinkedCorrectly);
+                //FnControls.SetEnabled(GetView().cmbEstimatedTimeType, isIGDBLinkedCorrectly);
             }
 
         }
@@ -105,7 +105,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         protected override async Task BuildFirstImplAsync()
         {
             // New profiles start with the placeholder cover, replaced by choosing another one
-            if (GetWnd().ViewIndicator.Contains("CN") && FnString.IsNullEmptyOrWhitespace(GetApp().T1Profi.PPFN))
+            if (GetView().ViewIndicator.Contains("CN") && FnString.IsNullEmptyOrWhitespace(GetApp().T1Profi.PPFN))
             {
                 (string path, string fileName) tempCover = await FnSystem.SaveCroppedImageTempPath(CFProfilesApp.LoadPlaceholderCover(), GetApp().Loader);
 
@@ -127,24 +127,24 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         protected override void CheckImpl()
         {
             // Profile Name
-            if (FnString.IsNullEmptyOrWhitespace(GetWnd().txbProfileName.Text))
-                AddViewError(GetWnd().txbProfileName, GetErrorMessage("GLO0003", "Profile name"));
+            if (FnString.IsNullEmptyOrWhitespace(GetView().txbProfileName.Text))
+                AddViewError(GetView().txbProfileName, GetErrorMessage("GLO0003", "Profile name"));
 
             // Cover
-            if (FnString.IsNullEmptyOrWhitespace(GetWnd().txbImagePath.Text))
-                AddViewError(GetWnd().txbImagePath, GetErrorMessage("GLO0003", "Profile cover"));
+            if (FnString.IsNullEmptyOrWhitespace(GetView().txbImagePath.Text))
+                AddViewError(GetView().txbImagePath, GetErrorMessage("GLO0003", "Profile cover"));
 
             // Accent Colors
-            if (GetWnd().cbUseProfileAccentColors.IsChecked == true
-                && (GetWnd().tglAccent1.IsChecked == false && GetWnd().tglAccent2.IsChecked == false && GetWnd().tglAccent3.IsChecked == false))
-                AddViewError(GetWnd().cbUseProfileAccentColors, GetErrorMessage("GLO0003", "An accent color"));
+            if (GetView().cbUseProfileAccentColors.IsChecked == true
+                && (GetView().tglAccent1.IsChecked == false && GetView().tglAccent2.IsChecked == false && GetView().tglAccent3.IsChecked == false))
+                AddViewError(GetView().cbUseProfileAccentColors, GetErrorMessage("GLO0003", "An accent color"));
 
-            if (GetWnd().cbUseProfileAccentColors.IsChecked == false
-                && (GetWnd().tglAccent1.IsChecked == true || GetWnd().tglAccent2.IsChecked == true || GetWnd().tglAccent3.IsChecked == true))
-                AddViewError(GetWnd().cbUseProfileAccentColors, GetErrorMessage("PRO0001"));
+            if (GetView().cbUseProfileAccentColors.IsChecked == false
+                && (GetView().tglAccent1.IsChecked == true || GetView().tglAccent2.IsChecked == true || GetView().tglAccent3.IsChecked == true))
+                AddViewError(GetView().cbUseProfileAccentColors, GetErrorMessage("PRO0001"));
 
-            if (FnString.IsNullEmptyOrWhitespace(GetWnd().cmbPlatform.SelectedValue.ToString()!))
-                AddViewError(GetWnd().cmbPlatform, GetErrorMessage("GLO0003", "Platform"));
+            if (FnString.IsNullEmptyOrWhitespace(GetView().cmbPlatform.SelectedValue.ToString()!))
+                AddViewError(GetView().cmbPlatform, GetErrorMessage("GLO0003", "Platform"));
         }
 
         protected override void DataWrapperSelectionChangedImpl(Selector source)
@@ -166,6 +166,11 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected override void Event_Minimize()
         {
+        }
+
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
+        {
+            CFMBOX.AskUnsavedChanges(GetApp(), args);
         }
 
         protected override void FillDBOImpl()
@@ -212,22 +217,22 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
             _cmbTargetPlayTypeFilledCompletely = false;
 
-            GetWnd().cmbEstimatedTimeType.Items.Clear();
+            GetView().cmbEstimatedTimeType.Items.Clear();
 
-            GetWnd().cmbEstimatedTimeType.Items.Add(new ComboBoxItem { Content = "(None)", Tag = EstimatedTimeTypes.EST_TIME_NONE });
-            GetWnd().cmbEstimatedTimeType.Items.Add(new ComboBoxItem { Content = "Main Story", Tag = EstimatedTimeTypes.EST_TIME_MAIN });
-            GetWnd().cmbEstimatedTimeType.Items.Add(new ComboBoxItem { Content = "Main Story + Extra", Tag = EstimatedTimeTypes.EST_TIME_MAIN_EXTRA });
-            GetWnd().cmbEstimatedTimeType.Items.Add(new ComboBoxItem { Content = "Completionist", Tag = EstimatedTimeTypes.EST_TIME_COMPLETIONIST });
+            GetView().cmbEstimatedTimeType.Items.Add(new ComboBoxItem { Content = "(None)", Tag = EstimatedTimeTypes.EST_TIME_NONE });
+            GetView().cmbEstimatedTimeType.Items.Add(new ComboBoxItem { Content = "Main Story", Tag = EstimatedTimeTypes.EST_TIME_MAIN });
+            GetView().cmbEstimatedTimeType.Items.Add(new ComboBoxItem { Content = "Main Story + Extra", Tag = EstimatedTimeTypes.EST_TIME_MAIN_EXTRA });
+            GetView().cmbEstimatedTimeType.Items.Add(new ComboBoxItem { Content = "Completionist", Tag = EstimatedTimeTypes.EST_TIME_COMPLETIONIST });
 
             _cmbTargetPlayTypeFilledCompletely = true;
 
             if (!FnString.IsNullEmptyOrWhitespace(GetApp().T1Profi.ETTY))
             {
-                foreach (ComboBoxItem item in GetWnd().cmbEstimatedTimeType.Items)
+                foreach (ComboBoxItem item in GetView().cmbEstimatedTimeType.Items)
                 {
                     if (item.Tag?.ToString() == GetApp().T1Profi.ETTY)
                     {
-                        GetWnd().cmbEstimatedTimeType.SelectedItem = item;
+                        GetView().cmbEstimatedTimeType.SelectedItem = item;
                         break;
                     }
                 }
@@ -239,7 +244,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             // Tags
             FillDBOTags();
 
-            if (GetWnd().ViewIndicator.Contains("CN"))
+            if (GetView().ViewIndicator.Contains("CN"))
             {
                 TFPLTHR.CreateNewPlaythrough(GetApp().T1Profi.PFID);
             }
@@ -260,12 +265,12 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         private void FillViewLinkedGame(LauncherGame game)
         {
             // Profile name
-            if (GetWnd().ViewIndicator.Contains("CN"))
-                GetWnd().txbProfileName.Text = game.Name;
+            if (GetView().ViewIndicator.Contains("CN"))
+                GetView().txbProfileName.Text = game.Name;
 
             // Game folder (the executables were reset for it)
             if (!FnString.IsNullEmptyOrWhitespace(game.InstallPath))
-                GetWnd().txbGameFolder.Text = game.InstallPath;
+                GetView().txbGameFolder.Text = game.InstallPath;
         }
 
         private void FillViewProfileSettings()
@@ -273,23 +278,23 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             // Load profile settings
             CProfileSettings cProfileSettings = new CProfileSettings(GetApp().T1Profi.PRSE).Dezerialize();
 
-            GetWnd().cbEnableHdrOnStart.IsChecked = cProfileSettings.HDREnabled == true;
-            GetWnd().cbPauseInBigPicture.IsChecked = cProfileSettings.PauseInBigPicture;
+            GetView().cbEnableHdrOnStart.IsChecked = cProfileSettings.HDREnabled == true;
+            GetView().cbPauseInBigPicture.IsChecked = cProfileSettings.PauseInBigPicture;
 
             using (SuppressRunEventPipeline())
             {
-                GetWnd().cbOverrideGlobalBlackout.IsChecked = cProfileSettings.OverrideGlobalBlackout == true;
-                GetWnd().cbBlackoutSideMonitors.IsChecked = cProfileSettings.BlackoutSideMonitors == true;
+                GetView().cbOverrideGlobalBlackout.IsChecked = cProfileSettings.OverrideGlobalBlackout == true;
+                GetView().cbBlackoutSideMonitors.IsChecked = cProfileSettings.BlackoutSideMonitors == true;
             }
 
             ControlBlackoutCheckboxProtection();
 
-            GetWnd().txbLaunchArgs.Text = cProfileSettings.LaunchArgs;
+            GetView().txbLaunchArgs.Text = cProfileSettings.LaunchArgs;
         }
 
         private void FillViewAccentColors()
         {
-            if (FnString.IsNullEmptyOrWhitespace(_selectedSteamGridDBImagePath) && GetWnd().ViewIndicator.Contains("ED"))
+            if (FnString.IsNullEmptyOrWhitespace(_selectedSteamGridDBImagePath) && GetView().ViewIndicator.Contains("ED"))
             {
                 // Read from T1PROFI
                 CAccentColorsInit cAccentColorsInit = new CAccentColorsInit(GetApp().T1Profi.ACIN);
@@ -302,17 +307,17 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 Color color2 = (Color)ColorConverter.ConvertFromString(cAccentColorsInit.AccentColors.ElementAt(1).Key);
                 Color color3 = (Color)ColorConverter.ConvertFromString(cAccentColorsInit.AccentColors.ElementAt(2).Key);
 
-                GetWnd().tglAccent1.Background = new SolidColorBrush(color1);
-                GetWnd().tglAccent1.Tag = color1;
-                GetWnd().tglAccent1.IsChecked = cAccentColorsInit.AccentColors.ElementAt(0).Value;
+                GetView().tglAccent1.Background = new SolidColorBrush(color1);
+                GetView().tglAccent1.Tag = color1;
+                GetView().tglAccent1.IsChecked = cAccentColorsInit.AccentColors.ElementAt(0).Value;
 
-                GetWnd().tglAccent2.Background = new SolidColorBrush(color2);
-                GetWnd().tglAccent2.Tag = color2;
-                GetWnd().tglAccent2.IsChecked = cAccentColorsInit.AccentColors.ElementAt(1).Value;
+                GetView().tglAccent2.Background = new SolidColorBrush(color2);
+                GetView().tglAccent2.Tag = color2;
+                GetView().tglAccent2.IsChecked = cAccentColorsInit.AccentColors.ElementAt(1).Value;
 
-                GetWnd().tglAccent3.Background = new SolidColorBrush(color3);
-                GetWnd().tglAccent3.Tag = color3;
-                GetWnd().tglAccent3.IsChecked = cAccentColorsInit.AccentColors.ElementAt(2).Value;
+                GetView().tglAccent3.Background = new SolidColorBrush(color3);
+                GetView().tglAccent3.Tag = color3;
+                GetView().tglAccent3.IsChecked = cAccentColorsInit.AccentColors.ElementAt(2).Value;
             }
         }
 
@@ -321,9 +326,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             _coverAppFolderFileName = CFProfilesEditApp.GetGUIDCoverName("jpg");
 
-            GetWnd().Dispatcher.Invoke(() =>
+            GetView().Dispatcher.Invoke(() =>
             {
-                GetWnd().txbImagePath.Text = _coverAppFolderFileName;
+                GetView().txbImagePath.Text = _coverAppFolderFileName;
             });
 
             GetApp().Loader.Begin();
@@ -349,21 +354,21 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             if (accentColors.Count == 3)
             {
 
-                GetWnd().Dispatcher.Invoke(() =>
+                GetView().Dispatcher.Invoke(() =>
                 {
                     // Fill accent colors
                     Color color1 = Color.FromArgb(255, accentColors[0].R, accentColors[0].G, accentColors[0].B);
                     Color color2 = Color.FromArgb(255, accentColors[1].R, accentColors[1].G, accentColors[1].B);
                     Color color3 = Color.FromArgb(255, accentColors[2].R, accentColors[2].G, accentColors[2].B);
 
-                    GetWnd().tglAccent1.Background = new SolidColorBrush(color1);
-                    GetWnd().tglAccent1.Tag = color1;
+                    GetView().tglAccent1.Background = new SolidColorBrush(color1);
+                    GetView().tglAccent1.Tag = color1;
 
-                    GetWnd().tglAccent2.Background = new SolidColorBrush(color2);
-                    GetWnd().tglAccent2.Tag = color2;
+                    GetView().tglAccent2.Background = new SolidColorBrush(color2);
+                    GetView().tglAccent2.Tag = color2;
 
-                    GetWnd().tglAccent3.Background = new SolidColorBrush(color3);
-                    GetWnd().tglAccent3.Tag = color3;
+                    GetView().tglAccent3.Background = new SolidColorBrush(color3);
+                    GetView().tglAccent3.Tag = color3;
                 });
             }
 
@@ -373,7 +378,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         private void FillDBOManualEstTimes()
         {
-            ComboBoxItem combItem = GetWnd().cmbEstimatedTimeType.SelectedItem as ComboBoxItem;
+            ComboBoxItem combItem = GetView().cmbEstimatedTimeType.SelectedItem as ComboBoxItem;
 
             GetApp().T1Profi.ETML = _isEstTimeFilledManual;
             GetApp().T1Profi.ETMA = GetApp().ManualEstTimesCache.estTimeMain * 60;
@@ -408,18 +413,18 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             CProfileSettings cProfileSettings = new CProfileSettings();
 
             // Not edited here: a new game is added shrink-wrapped if set, an existing one keeps its state
-            cProfileSettings.Sealed = GetWnd().ViewIndicator.Contains("CN")
+            cProfileSettings.Sealed = GetView().ViewIndicator.Contains("CN")
                 ? AppEnvironment.GetAppConfig().AppSettings.SealNewGames
                 : new CProfileSettings(GetApp().T1Profi.PRSE).Dezerialize().Sealed;
 
-            cProfileSettings.HDREnabled = GetWnd().cbEnableHdrOnStart.IsChecked == true;
-            cProfileSettings.LaunchArgs = GetWnd().txbLaunchArgs.Text.Trim();
-            cProfileSettings.PauseInBigPicture = GetWnd().cbPauseInBigPicture.IsChecked == true;
+            cProfileSettings.HDREnabled = GetView().cbEnableHdrOnStart.IsChecked == true;
+            cProfileSettings.LaunchArgs = GetView().txbLaunchArgs.Text.Trim();
+            cProfileSettings.PauseInBigPicture = GetView().cbPauseInBigPicture.IsChecked == true;
 
-            cProfileSettings.OverrideGlobalBlackout = GetWnd().cbOverrideGlobalBlackout.IsChecked == true;
+            cProfileSettings.OverrideGlobalBlackout = GetView().cbOverrideGlobalBlackout.IsChecked == true;
             cProfileSettings.BlackoutSideMonitors =
                 cProfileSettings.OverrideGlobalBlackout &&
-                GetWnd().cbBlackoutSideMonitors.IsChecked == true;
+                GetView().cbBlackoutSideMonitors.IsChecked == true;
 
             GetApp().T1Profi.PRSE = cProfileSettings.Serialize();
         }
@@ -447,11 +452,11 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 if (!_cmbTargetPlayTypeFilledCompletely || _isEstTimeFilledManual)
                     return false;
 
-                ComboBoxItem combItem = GetWnd().cmbEstimatedTimeType.SelectedItem as ComboBoxItem;
+                ComboBoxItem combItem = GetView().cmbEstimatedTimeType.SelectedItem as ComboBoxItem;
 
                 long steamAppId = FnLauncher.GetSteamAppId(GetApp().T1Profi);
 
-                if (steamAppId == 0 && FnString.IsNullEmptyOrWhitespace(GetWnd().txbProfileName.Text) || combItem.Tag.ToString() == EstimatedTimeTypes.EST_TIME_NONE)
+                if (steamAppId == 0 && FnString.IsNullEmptyOrWhitespace(GetView().txbProfileName.Text) || combItem.Tag.ToString() == EstimatedTimeTypes.EST_TIME_NONE)
                 {
                     // -- Filling
                     GetApp().T1Profi.ETMA = 0;
@@ -486,7 +491,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
                 if (gameId == null)
                 {
-                    GetWnd().Dispatcher.Invoke(() =>
+                    GetView().Dispatcher.Invoke(() =>
                     {
                         GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("PRO0002"), CFMBOXResult.Ok, CFMBOXIcon.Warning);
                     });
@@ -500,7 +505,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
                 if (timeToBeat == null)
                 {
-                    GetWnd().Dispatcher.Invoke(() =>
+                    GetView().Dispatcher.Invoke(() =>
                     {
                         GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("GLO0016", "the time to beat"), CFMBOXResult.Ok, CFMBOXIcon.Warning);
                     });
@@ -512,7 +517,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
                 if (timeToBeat.Hastily == null || timeToBeat.Normally == null || timeToBeat.Completely == null)
                 {
-                    GetWnd().Dispatcher.Invoke(() =>
+                    GetView().Dispatcher.Invoke(() =>
                     {
                         GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("GLO0016", "the time to beat"), CFMBOXResult.Ok, CFMBOXIcon.Warning);
                     });
@@ -555,7 +560,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 uIXManualCodetable.AddEntry(entry.TXNUM, entry.DESCR);
             }
 
-            uIXManualCodetable.ApplyTo(GetWnd().cmbPlatform);
+            uIXManualCodetable.ApplyTo(GetView().cmbPlatform);
         }
 
         private void BuildLauncherSection()
@@ -563,27 +568,27 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             T1PROFI t1profi = GetApp().T1Profi;
             bool isLinked = FnLauncher.IsLinked(t1profi);
 
-            FnControls.SetVisible(GetWnd().pnlLauncherLinkState, isLinked);
-            FnControls.SetVisible(GetWnd().pnlLauncherSettings, isLinked);
-            FnControls.SetVisible(GetWnd().grdLaunchArgs, FnLauncher.GetLauncher(t1profi)?.SupportsLaunchArguments == true);
+            FnControls.SetVisible(GetView().pnlLauncherLinkState, isLinked);
+            FnControls.SetVisible(GetView().pnlLauncherSettings, isLinked);
+            FnControls.SetVisible(GetView().grdLaunchArgs, FnLauncher.GetLauncher(t1profi)?.SupportsLaunchArguments == true);
 
             if (isLinked)
             {
-                GetWnd().txtLauncherLinkStatus.Text = $"Linked with {FnLauncher.GetLauncherName(t1profi.LNTY)}";
-                GetWnd().txtLauncherGameId.Text = t1profi.LNID;
+                GetView().txtLauncherLinkStatus.Text = $"Linked with {FnLauncher.GetLauncherName(t1profi.LNTY)}";
+                GetView().txtLauncherGameId.Text = t1profi.LNID;
             }
         }
 
         private void BuildAccentColorSection()
         {
             // Visibility of the accent colors
-            if (!FnString.IsNullEmptyOrWhitespace(GetWnd().txbImagePath.Text))
+            if (!FnString.IsNullEmptyOrWhitespace(GetView().txbImagePath.Text))
             {
-                GetWnd().grdAccentColorSettings.Visibility = Visibility.Visible;
+                GetView().grdAccentColorSettings.Visibility = Visibility.Visible;
             }
             else
             {
-                GetWnd().grdAccentColorSettings.Visibility = Visibility.Collapsed;
+                GetView().grdAccentColorSettings.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -652,11 +657,11 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         private void SaveAccentColors()
         {
-            if (GetWnd().cbUseProfileAccentColors.IsChecked == false)
+            if (GetView().cbUseProfileAccentColors.IsChecked == false)
                 return;
 
             // -- Accent colors (corresponding to the selected one)
-            string[] accentColorsCalculated = FnTheme.CalculateAccentStateColors(CFProfilesEditApp.GetSelectedToggleButton(GetWnd()).Tag.ToString());
+            string[] accentColorsCalculated = FnTheme.CalculateAccentStateColors(CFProfilesEditApp.GetSelectedToggleButton(GetView()).Tag.ToString());
 
             Dictionary<string, string> accentColorsDic = new Dictionary<string, string>();
 
@@ -672,14 +677,14 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             // -- Save automatically determined accent colors
             string[] accentColorsInit = new string[3];
 
-            accentColorsInit[0] = GetWnd().tglAccent1.Tag.ToString()!;
-            accentColorsInit[1] = GetWnd().tglAccent2.Tag.ToString()!;
-            accentColorsInit[2] = GetWnd().tglAccent3.Tag.ToString()!;
+            accentColorsInit[0] = GetView().tglAccent1.Tag.ToString()!;
+            accentColorsInit[1] = GetView().tglAccent2.Tag.ToString()!;
+            accentColorsInit[2] = GetView().tglAccent3.Tag.ToString()!;
 
             Dictionary<string, bool> dicAccentColorsInit = new Dictionary<string, bool>();
-            dicAccentColorsInit.Add(accentColorsInit[0], GetWnd().tglAccent1.IsChecked == true);
-            dicAccentColorsInit.Add(accentColorsInit[1], GetWnd().tglAccent2.IsChecked == true);
-            dicAccentColorsInit.Add(accentColorsInit[2], GetWnd().tglAccent3.IsChecked == true);
+            dicAccentColorsInit.Add(accentColorsInit[0], GetView().tglAccent1.IsChecked == true);
+            dicAccentColorsInit.Add(accentColorsInit[1], GetView().tglAccent2.IsChecked == true);
+            dicAccentColorsInit.Add(accentColorsInit[2], GetView().tglAccent3.IsChecked == true);
 
             CAccentColorsInit cAccentColorsInit = new CAccentColorsInit();
             cAccentColorsInit.AccentColors = dicAccentColorsInit;
@@ -689,20 +694,20 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         private void ToggleAccentChanged(FrameworkElement toggleChecked)
         {
-            if (toggleChecked == GetWnd().tglAccent1)
+            if (toggleChecked == GetView().tglAccent1)
             {
-                GetWnd().tglAccent2.IsChecked = false;
-                GetWnd().tglAccent3.IsChecked = false;
+                GetView().tglAccent2.IsChecked = false;
+                GetView().tglAccent3.IsChecked = false;
             }
-            else if (toggleChecked == GetWnd().tglAccent2)
+            else if (toggleChecked == GetView().tglAccent2)
             {
-                GetWnd().tglAccent1.IsChecked = false;
-                GetWnd().tglAccent3.IsChecked = false;
+                GetView().tglAccent1.IsChecked = false;
+                GetView().tglAccent3.IsChecked = false;
             }
-            else if (toggleChecked == GetWnd().tglAccent3)
+            else if (toggleChecked == GetView().tglAccent3)
             {
-                GetWnd().tglAccent1.IsChecked = false;
-                GetWnd().tglAccent2.IsChecked = false;
+                GetView().tglAccent1.IsChecked = false;
+                GetView().tglAccent2.IsChecked = false;
             }
         }
 
@@ -710,24 +715,24 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
             using (SuppressRunEventPipeline())
             {
-                bool isOverrideEnabled = GetWnd().cbOverrideGlobalBlackout.IsChecked == true;
+                bool isOverrideEnabled = GetView().cbOverrideGlobalBlackout.IsChecked == true;
 
-                FnControls.SetEnabled(GetWnd().cbBlackoutSideMonitors, isOverrideEnabled);
+                FnControls.SetEnabled(GetView().cbBlackoutSideMonitors, isOverrideEnabled);
                 if (!isOverrideEnabled)
-                    GetWnd().cbBlackoutSideMonitors.IsChecked = false;
+                    GetView().cbBlackoutSideMonitors.IsChecked = false;
             }
         }
 
         private void ResetPlaytypes()
         {
-            GetWnd().cmbEstimatedTimeType.SelectedIndex = 0;
+            GetView().cmbEstimatedTimeType.SelectedIndex = 0;
 
             FillDBO();
         }
 
         private void ShowManualEstTimesEditView()
         {
-            GetApp().ManualEstTimesCache.ProfileName = GetWnd().txbProfileName.Text;
+            GetApp().ManualEstTimesCache.ProfileName = GetView().txbProfileName.Text;
 
             GetApp().ProfilesManualEstTimesEditView = new ProfilesManualEstTimesEditView();
             GetApp().ProfilesManualEstTimesEditView.ViewController = new ProfilesManualEstTimesEditViewController(GetApp());
@@ -745,16 +750,6 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             });
 
             GetApp().ProfilesManualEstTimesEditView.ViewController.Show();
-        }
-
-        public ProfilesEditApp GetApp()
-        {
-            return (ProfilesEditApp)App;
-        }
-
-        public ProfilesEditView GetWnd()
-        {
-            return (ProfilesEditView)View;
         }
 
         private void LinkGame(LauncherGame game)
@@ -813,7 +808,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 // Select executable
                 SearchExecutables(gameFolderPath);
 
-                GetWnd().txbGameFolder.Text = gameFolderPath;
+                GetView().txbGameFolder.Text = gameFolderPath;
             }
         }
 
@@ -830,7 +825,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             // Check Steam profile link or game name
             long steamAppId = FnLauncher.GetSteamAppId(GetApp().T1Profi);
 
-            if (steamAppId == 0 && FnString.IsNullEmptyOrWhitespace(GetWnd().txbProfileName.Text))
+            if (steamAppId == 0 && FnString.IsNullEmptyOrWhitespace(GetView().txbProfileName.Text))
             {
                 CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
                 cfmbox.Show(GetErrorMessage("PRO0003"), CFMBOXResult.Ok, CFMBOXIcon.Info);
@@ -838,7 +833,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             }
 
             ProfilesSteamGridDBApp app = GetApp().GetApplication<ProfilesSteamGridDBApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
-            app.Search(GetApp(), steamAppId, GetWnd().txbProfileName.Text, r =>
+            app.Search(GetApp(), steamAppId, GetView().txbProfileName.Text, r =>
             {
                 if (!r.Canceled)
                     Task.Run(() => ApplyCoverAsync(r.SelectedImagePath));
@@ -891,7 +886,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             using (SuppressRunEventPipeline())
                 await FillViewCoverChanged(path);
 
-            GetWnd().Dispatcher.Invoke(() =>
+            GetView().Dispatcher.Invoke(() =>
             { RunEventPipelineSync(View, string.Empty); });
         }
 
@@ -899,7 +894,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
 
             if (GetApp().ManualEstTimesCache.estTimeMain == 0 && GetApp().ManualEstTimesCache.estTimeMainExtra == 0 && GetApp().ManualEstTimesCache.estTimeCompletionist == 0)
-                CFProfilesEditApp.OpenHowLongToBeatForGame(GetWnd().txbProfileName.Text);
+                CFProfilesEditApp.OpenHowLongToBeatForGame(GetView().txbProfileName.Text);
 
             ShowManualEstTimesEditView();
         }
@@ -926,8 +921,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                     {
                         FillComboboxPlatformsManual();
 
-                        if (GetWnd().cmbPlatform.Items.Count > 0)
-                            GetWnd().cmbPlatform.SelectedValue = r.Platform;
+                        if (GetView().cmbPlatform.Items.Count > 0)
+                            GetView().cmbPlatform.SelectedValue = r.Platform;
                     }
                 }, "pF");
 

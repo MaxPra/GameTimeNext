@@ -20,7 +20,7 @@ using static UIX.ViewController.Engine.FrameworkElements.UIXContextMenuFactory;
 
 namespace GameTimeNext.Core.Application.Metadata.Controller
 {
-    public class MetadataEditViewController : UIXViewControllerBase
+    public class MetadataEditViewController : UIXViewControllerBase<MetadataEditApp, MetadataEditView>
     {
 
         MetadataEditViewModel? _viewModel;
@@ -50,48 +50,53 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
         protected override void BuildImpl()
         {
-            FnControls.SetEnabled(GetWnd().TxbTableObject, GetWnd().ViewIndicator.Contains("CN"));
-            FnControls.SetEnabled(GetWnd().TxbDescription, GetWnd().ViewIndicator.Count > 0);
+            FnControls.SetEnabled(GetView().TxbTableObject, GetView().ViewIndicator.Contains("CN"));
+            FnControls.SetEnabled(GetView().TxbDescription, GetView().ViewIndicator.Count > 0);
 
 
-            FnControls.SetVisible(GetWnd().tabControl, GetWnd().ViewIndicator.Contains("ED"));
+            FnControls.SetVisible(GetView().tabControl, GetView().ViewIndicator.Contains("ED"));
 
-            FnControls.SetVisible(GetWnd().lblGenerationRequired, !GetApp().T1METAH!.GENER);
+            FnControls.SetVisible(GetView().lblGenerationRequired, !GetApp().T1METAH!.GENER);
         }
 
 
         protected override void CheckImpl()
         {
-            string selectedType = GetWnd().CmbType.SelectedValue?.ToString() ?? string.Empty;
+            string selectedType = GetView().CmbType.SelectedValue?.ToString() ?? string.Empty;
             string controlNameTableObj = "Table object";
 
             // Table object
-            if (FnString.IsNullEmptyOrWhitespace(GetWnd().TxbTableObject.Text))
-                AddViewError(GetWnd().TxbTableObject, GetErrorMessage("GLO0003", controlNameTableObj));
-            else if (!Regex.IsMatch(GetWnd().TxbTableObject.Text, @"^T1[A-Z0-9]*$"))
-                AddViewError(GetWnd().TxbTableObject, GetErrorMessage("GLO0007", controlNameTableObj));
-            else if (GetWnd().TxbTableObject.Text.Length != 7)
-                AddViewError(GetWnd().TxbTableObject, GetErrorMessage("GLO0005", controlNameTableObj, 7));
+            if (FnString.IsNullEmptyOrWhitespace(GetView().TxbTableObject.Text))
+                AddViewError(GetView().TxbTableObject, GetErrorMessage("GLO0003", controlNameTableObj));
+            else if (!Regex.IsMatch(GetView().TxbTableObject.Text, @"^T1[A-Z0-9]*$"))
+                AddViewError(GetView().TxbTableObject, GetErrorMessage("GLO0007", controlNameTableObj));
+            else if (GetView().TxbTableObject.Text.Length != 7)
+                AddViewError(GetView().TxbTableObject, GetErrorMessage("GLO0005", controlNameTableObj, 7));
 
             TXMETAH txmetah = new TXMETAH();
-            if (GetWnd().ViewIndicator.Contains("CN") && txmetah.Exists(GetWnd().TxbTableObject.Text))
+            if (GetView().ViewIndicator.Contains("CN") && txmetah.Exists(GetView().TxbTableObject.Text))
             {
-                AddViewError(GetWnd().TxbTableObject, GetErrorMessage("GLO0008", controlNameTableObj, GetWnd().TxbTableObject.Text));
+                AddViewError(GetView().TxbTableObject, GetErrorMessage("GLO0008", controlNameTableObj, GetView().TxbTableObject.Text));
             }
 
             // Description
-            if (FnString.IsNullEmptyOrWhitespace(GetWnd().TxbDescription.Text))
-                AddViewError(GetWnd().TxbDescription, GetErrorMessage("GLO0003", "Description"));
-            else if (GetWnd().TxbDescription.Text.Length > 200)
-                AddViewError(GetWnd().TxbDescription, GetErrorMessage("GLO0004", "Description", "200"));
+            if (FnString.IsNullEmptyOrWhitespace(GetView().TxbDescription.Text))
+                AddViewError(GetView().TxbDescription, GetErrorMessage("GLO0003", "Description"));
+            else if (GetView().TxbDescription.Text.Length > 200)
+                AddViewError(GetView().TxbDescription, GetErrorMessage("GLO0004", "Description", "200"));
 
             // Type
             if (FnString.IsNullEmptyOrWhitespace(selectedType))
-                AddViewError(GetWnd().CmbType, GetErrorMessage("GLO0003", "Type"));
+                AddViewError(GetView().CmbType, GetErrorMessage("GLO0003", "Type"));
         }
 
         protected override void FillViewImpl()
         {
+        }
+
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
+        {
+            CFMBOX.AskUnsavedChanges(GetApp(), args);
         }
 
         protected override void FillDBOImpl()
@@ -135,7 +140,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
                     _viewModel = new MetadataEditViewModel();
                     _viewModel.MetadataPositionDataGridRows = new System.Collections.ObjectModel.ObservableCollection<MetadataPosDataGridRow>(metadataRows);
 
-                    GetWnd().DataContext = _viewModel;
+                    GetView().DataContext = _viewModel;
                     GetApp().Loader.Stop();
                 });
             });
@@ -160,7 +165,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
                     if (t1metap is null)
                         continue;
 
-                    MetadataPosDataGridRow row = GetWnd().DgFields.CreateNewRow<MetadataPosDataGridRow>();
+                    MetadataPosDataGridRow row = GetView().DgFields.CreateNewRow<MetadataPosDataGridRow>();
                     row.COPONAM = t1metap.PONAM;
                     row.COPORDE = t1metap.PORDE;
                     row.COMENAM = t1metap.MENAM;
@@ -186,11 +191,11 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
             View.Dispatcher.Invoke(() =>
             {
-                if (!FnString.IsNullEmptyOrWhitespace(GetWnd().TxbFieldSearch.Text))
+                if (!FnString.IsNullEmptyOrWhitespace(GetView().TxbFieldSearch.Text))
                 {
-                    if (!FnString.IsNullEmptyOrWhitespace(GetWnd().TxbFieldSearch.Text))
+                    if (!FnString.IsNullEmptyOrWhitespace(GetView().TxbFieldSearch.Text))
                     {
-                        string search = GetWnd().TxbFieldSearch.Text.Trim();
+                        string search = GetView().TxbFieldSearch.Text.Trim();
                         string like = $"%{search}%";
 
                         query.AddWhereRaw(
@@ -209,19 +214,19 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
         private void InitializeMetadataTypeCombo()
         {
-            GetWnd().CmbType.Items.Clear();
+            GetView().CmbType.Items.Clear();
 
             foreach (MetadataObjectTypes.Entry entry in MetadataObjectTypes.GetEntries())
             {
-                GetWnd().CmbType.Items.Add(new ComboBoxItem
+                GetView().CmbType.Items.Add(new ComboBoxItem
                 {
                     Content = entry.Text,
                     Tag = entry.Key
                 });
             }
 
-            if (GetWnd().CmbType.Items.Count > 0)
-                GetWnd().CmbType.SelectedIndex = 0;
+            if (GetView().CmbType.Items.Count > 0)
+                GetView().CmbType.SelectedIndex = 0;
         }
 
         protected void EV_DgFields_CtxtOpening(FrameworkElement target)
@@ -237,7 +242,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
             if (_viewModel != null)
                 _viewModel.SelectedRow = metadataRow;
 
-            GetWnd().DgFields.SelectedItem = metadataRow;
+            GetView().DgFields.SelectedItem = metadataRow;
 
             BuildContextMenu(row, metadataRow);
 
@@ -311,11 +316,11 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
             if (HasViewErrors())
                 return;
 
-            if (GetWnd().ViewIndicator.Contains("ED"))
+            if (GetView().ViewIndicator.Contains("ED"))
                 Exit(true);
 
-            GetWnd().ViewIndicator.Clear();
-            GetWnd().ViewIndicator.Add("ED");
+            GetView().ViewIndicator.Clear();
+            GetView().ViewIndicator.Add("ED");
 
             Open(false);
         }
@@ -392,14 +397,5 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
             Build();
         }
 
-        private MetadataEditApp GetApp()
-        {
-            return (MetadataEditApp)App;
-        }
-
-        private MetadataEditView GetWnd()
-        {
-            return (MetadataEditView)View;
-        }
     }
 }

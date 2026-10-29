@@ -41,6 +41,7 @@ SET0001;&1 will now restart and import the backup.\nYour current settings will b
 GLO0019;No applications were found in StartableApps.json.;;2026-10-26 19:00:00;prage;2026-10-26 19:00:00;prage
 GLO0020;The dev folder was created from the production app folder.;;2026-10-26 19:00:00;prage;2026-10-26 19:00:00;prage
 GLO0021;Version &1 is available.\n\nDo you want to open GitHub to download it now?;;2026-10-26 19:00:00;prage;2026-10-26 19:00:00;prage
+GLO0022;Do you want to save your changes?\nOtherwise they will be lost.;Asked when a view with unsaved changes is closed (Yes = save, No = discard, Cancel = stay open).;2026-10-29 20:00:00;prage;2026-10-29 20:00:00;prage
 SET0002;The automatic backup could not be created, because the backup path does not exist:\n&1;;2026-10-26 19:00:00;prage;2026-10-26 19:00:00;prage
 PRO0007;&1 profile cover(s) optimized, &2 MB saved.;;2026-10-26 19:00:00;prage;2026-10-26 19:00:00;prage
 PRO0008;"Quit &1?

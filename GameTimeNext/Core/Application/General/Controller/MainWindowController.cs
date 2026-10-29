@@ -22,7 +22,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.General.Controller
 {
-    internal class MainWindowController : UIXWindowControllerBase
+    internal class MainWindowController : UIXWindowControllerBase<MainApp, MainWindow>
     {
         private string _gtxPath = "C:\\GameTimeX";
 
@@ -47,17 +47,17 @@ namespace GameTimeNext.Core.Application.General.Controller
             // Setting "Dynamic Background" (at runtime via FnTheme.ApplyWallpaperBackground)
             // Without dynamic background the main window is translucent (acrylic)
             bool isDynamicBackground = FnTheme.IsDynamicBackgroundEnabled(AppEnvironment.GetAppConfig().AppSettings.BackgroundSource);
-            GetWindow().UseWallpaperBackground = isDynamicBackground;
-            GetWindow().UseBackdropBlur = !isDynamicBackground;
+            GetView().UseWallpaperBackground = isDynamicBackground;
+            GetView().UseBackdropBlur = !isDynamicBackground;
         }
 
         protected override async Task BuildFirstImplAsync()
         {
             // Set tab control for the app launcher
-            AppEnvironment.AppLauncher.TabControl = GetWindow().MainTabControl;
+            AppEnvironment.AppLauncher.TabControl = GetView().MainTabControl;
 
-            FnControls.SetVisible(GetWindow().pnlDevPathsHeader, FnSystem.IsDebug());
-            FnControls.SetVisible(GetWindow().pnlUserModeHeader, FnSystem.IsDebug() && FnSystem.RunWithUserPermissions());
+            FnControls.SetVisible(GetView().pnlDevPathsHeader, FnSystem.IsDebug());
+            FnControls.SetVisible(GetView().pnlUserModeHeader, FnSystem.IsDebug() && FnSystem.RunWithUserPermissions());
 
             BuildBetaTag();
 
@@ -82,12 +82,12 @@ namespace GameTimeNext.Core.Application.General.Controller
                     System.Windows.Application.Current.MainWindow = null;
             }
 
-            FnControls.SetVisible(GetWindow(), true);
+            FnControls.SetVisible(GetView(), true);
 
             // Set WindowState
-            _ = GetWindow().Dispatcher.BeginInvoke(() =>
+            _ = GetView().Dispatcher.BeginInvoke(() =>
             {
-                GetWindow().WindowState = GetApp().StartMinimized
+                GetView().WindowState = GetApp().StartMinimized
                     ? WindowState.Minimized
                     : WindowState.Maximized;
 
@@ -112,7 +112,7 @@ namespace GameTimeNext.Core.Application.General.Controller
 
         protected override void BuildImpl()
         {
-            FnControls.SetVisible(GetWindow().pnlEmptyTabMessage, GetWindow().MainTabControl.Items.Count == 0);
+            FnControls.SetVisible(GetView().pnlEmptyTabMessage, GetView().MainTabControl.Items.Count == 0);
         }
 
         public override bool HandleGlobalShortcut(KeyEventArgs e)
@@ -159,13 +159,13 @@ namespace GameTimeNext.Core.Application.General.Controller
 
             _bigPictureApp ??= GetApp().GetApplication<BigPictureApp>();
 
-            GetWindow().IsFullScreen = true;
-            _bigPictureApp.Start(GetApp(), GetWindow().cpBigPicture);
+            GetView().IsFullScreen = true;
+            _bigPictureApp.Start(GetApp(), GetView().cpBigPicture);
 
             // WPF renders covered elements too: the tabs below (e.g. animations of the profiles view) would keep costing
             // frames of the mode. Hidden keeps their layout and state.
-            GetWindow().MainTabControl.Visibility = Visibility.Hidden;
-            FnControls.SetVisible(GetWindow().pnlEmptyTabMessage, false);
+            GetView().MainTabControl.Visibility = Visibility.Hidden;
+            FnControls.SetVisible(GetView().pnlEmptyTabMessage, false);
 
             FnLog.AddInfo("MainApp", "Big Picture mode opened");
         }
@@ -179,10 +179,10 @@ namespace GameTimeNext.Core.Application.General.Controller
                 return;
 
             _bigPictureApp.Close();
-            GetWindow().IsFullScreen = false;
+            GetView().IsFullScreen = false;
 
-            GetWindow().MainTabControl.Visibility = Visibility.Visible;
-            FnControls.SetVisible(GetWindow().pnlEmptyTabMessage, GetWindow().MainTabControl.Items.Count == 0);
+            GetView().MainTabControl.Visibility = Visibility.Visible;
+            FnControls.SetVisible(GetView().pnlEmptyTabMessage, GetView().MainTabControl.Items.Count == 0);
 
             // The mode colored the window with the selected game: back to the profile selected in the profiles view
             FnTheme.ApplyProfileAccentColors(AppEnvironment.CurrentPfid == 0 ? null : new TXPROFI().Read(AppEnvironment.CurrentPfid));
@@ -216,7 +216,7 @@ namespace GameTimeNext.Core.Application.General.Controller
 
                     if (source is TabControl)
                     {
-                        FnControls.SetVisible(GetWindow().pnlEmptyTabMessage, GetWindow().MainTabControl.Items.Count == 0);
+                        FnControls.SetVisible(GetView().pnlEmptyTabMessage, GetView().MainTabControl.Items.Count == 0);
                         Event_TabChanged((TabControl)source);
                     }
                     break;
@@ -228,6 +228,10 @@ namespace GameTimeNext.Core.Application.General.Controller
         }
 
         protected override void FillViewImpl()
+        {
+        }
+
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
         {
         }
 
@@ -313,9 +317,9 @@ namespace GameTimeNext.Core.Application.General.Controller
         private void BuildBetaTag()
         {
             if (AppEnvironment.AppVersion.IsBeta)
-                GetWindow().Subtitle = "BETA";
+                GetView().Subtitle = "BETA";
             else
-                GetWindow().Subtitle = string.Empty;
+                GetView().Subtitle = string.Empty;
         }
 
         private void ShowErrorsFromErrorList()
@@ -349,7 +353,7 @@ namespace GameTimeNext.Core.Application.General.Controller
 
         protected void EV_BtnHelp()
         {
-            ShowHelp(GetApp(), GetWindow().Title);
+            ShowHelp(GetApp(), GetView().Title);
         }
 
         private void ShowTabHelp(TabItem tab)
@@ -455,13 +459,13 @@ namespace GameTimeNext.Core.Application.General.Controller
             if (!AppEnvironment.IsApplicationRunning(applicationFullName))
                 return;
 
-            GetWindow().MainTabControl.SelectedItem = GetWindow().MainTabControl.Items.Cast<TabItem>().FirstOrDefault(t => t.Tag?.ToString() == applicationFullName);
+            GetView().MainTabControl.SelectedItem = GetView().MainTabControl.Items.Cast<TabItem>().FirstOrDefault(t => t.Tag?.ToString() == applicationFullName);
         }
 
         private void ReorderTabsByFavApps()
         {
             var favApps = AppEnvironment.GetAppConfig().UserSettings.FavApps;
-            var tabControl = GetWindow().MainTabControl;
+            var tabControl = GetView().MainTabControl;
 
             if (favApps == null || favApps.Count == 0 || tabControl.Items.Count == 0)
                 return;
@@ -501,14 +505,5 @@ namespace GameTimeNext.Core.Application.General.Controller
             AppEnvironment.AppLauncher.BuildContextMenu(tab, favApp);
         }
 
-        private MainWindow GetWindow()
-        {
-            return (MainWindow)View;
-        }
-
-        private MainApp GetApp()
-        {
-            return (MainApp)App;
-        }
     }
 }

@@ -46,7 +46,7 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
         MarkdownLarge = 3
     }
 
-    internal class CFMBOXController : UIXWindowControllerBase
+    internal class CFMBOXController : UIXWindowControllerBase<CFMBOX, CFMBOXView>
     {
         public class WindowReturn : UIXWindowReturn
         {
@@ -100,10 +100,10 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
 
         protected override void Init()
         {
-            GetWnd().Loaded += Wnd_Loaded;
-            GetWnd().LocationChanged += Wnd_LocationChanged;
-            GetWnd().PreviewKeyDown += Wnd_PreviewKeyDown;
-            //GetWnd().HeaderRoot.MouseLeftButtonDown += HeaderRoot_MouseLeftButtonDown;
+            GetView().Loaded += Wnd_Loaded;
+            GetView().LocationChanged += Wnd_LocationChanged;
+            GetView().PreviewKeyDown += Wnd_PreviewKeyDown;
+            //GetView().HeaderRoot.MouseLeftButtonDown += HeaderRoot_MouseLeftButtonDown;
         }
 
         protected override void BuildFirstImpl()
@@ -119,19 +119,19 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
             if (eventName != UIXEventNames.Button.Click)
                 return;
 
-            if (source == GetWnd().BtnButton1)
+            if (source == GetView().BtnButton1)
             {
                 EV_Button1();
                 return;
             }
 
-            if (source == GetWnd().BtnButton2)
+            if (source == GetView().BtnButton2)
             {
                 EV_Button2();
                 return;
             }
 
-            if (source == GetWnd().BtnButton3)
+            if (source == GetView().BtnButton3)
             {
                 EV_Button3();
             }
@@ -142,6 +142,10 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
         }
 
         protected override void FillViewImpl()
+        {
+        }
+
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
         {
         }
 
@@ -159,10 +163,10 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
 
         protected override void Event_Closing()
         {
-            GetWnd().Loaded -= Wnd_Loaded;
-            GetWnd().LocationChanged -= Wnd_LocationChanged;
-            GetWnd().PreviewKeyDown -= Wnd_PreviewKeyDown;
-            //GetWnd().HeaderRoot.MouseLeftButtonDown -= HeaderRoot_MouseLeftButtonDown;
+            GetView().Loaded -= Wnd_Loaded;
+            GetView().LocationChanged -= Wnd_LocationChanged;
+            GetView().PreviewKeyDown -= Wnd_PreviewKeyDown;
+            //GetView().HeaderRoot.MouseLeftButtonDown -= HeaderRoot_MouseLeftButtonDown;
         }
 
         protected override void Event_Minimize()
@@ -176,16 +180,16 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
         private void ApplyContent(string title, string message, CFMBOXResult buttons, CFMBOXIcon icon, Window? owner, CFMBOXType type = CFMBOXType.Default)
         {
             // Ensure dialog has correct owner so it stays on top of the main window
-            GetWnd().Owner = owner;
+            GetView().Owner = owner;
             // Do not show dialog as separate taskbar window
-            GetWnd().ShowInTaskbar = false;
+            GetView().ShowInTaskbar = false;
 
             if (FnString.IsNullEmptyOrWhitespace(title))
                 title = DeriveTitleFromIcon(icon);
 
-            GetWnd().Title = title;
+            GetView().Title = title;
 
-            GetWnd().BdMarkdown.Visibility = Visibility.Collapsed;
+            GetView().BdMarkdown.Visibility = Visibility.Collapsed;
 
             if (type == CFMBOXType.Markdown || type == CFMBOXType.MarkdownLarge)
             {
@@ -194,55 +198,55 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
                 double maxWidth = isLarge ? MarkdownLargeMaxWidth : MemotextMaxWidth;
                 double maxHeight = isLarge ? MarkdownLargeMaxHeight : MemotextMaxHeight;
 
-                GetWnd().SpText.Visibility = Visibility.Collapsed;
-                GetWnd().TxbMemotext.Visibility = Visibility.Collapsed;
-                GetWnd().FdsvMarkdown.Document = UIXMarkdownRenderer.ToFlowDocument(message);
-                GetWnd().BdMarkdown.Visibility = Visibility.Visible;
+                GetView().SpText.Visibility = Visibility.Collapsed;
+                GetView().TxbMemotext.Visibility = Visibility.Collapsed;
+                GetView().FdsvMarkdown.Document = UIXMarkdownRenderer.ToFlowDocument(message);
+                GetView().BdMarkdown.Visibility = Visibility.Visible;
 
                 // Wrapped text has no natural width: fixed reading width, the height follows the content up to a maximum
                 Rect workArea = (_owner != null ? FnDisplay.GetWorkArea(_owner) : null) ?? SystemParameters.WorkArea;
 
-                GetWnd().SizeToContent = SizeToContent.Height;
-                GetWnd().ResizeMode = ResizeMode.CanResize;
-                GetWnd().Width = Math.Max(MemotextMinWidth, Math.Min(width, workArea.Width * MemotextMaxScreenShare));
-                GetWnd().Height = double.NaN;
-                GetWnd().MinWidth = MemotextMinWidth;
-                GetWnd().MinHeight = MemotextMinHeight;
-                GetWnd().MaxWidth = Math.Max(MemotextMinWidth, Math.Min(maxWidth, workArea.Width * MemotextMaxScreenShare));
-                GetWnd().MaxHeight = Math.Max(MemotextMinHeight, Math.Min(maxHeight, workArea.Height * MemotextMaxScreenShare));
+                GetView().SizeToContent = SizeToContent.Height;
+                GetView().ResizeMode = ResizeMode.CanResize;
+                GetView().Width = Math.Max(MemotextMinWidth, Math.Min(width, workArea.Width * MemotextMaxScreenShare));
+                GetView().Height = double.NaN;
+                GetView().MinWidth = MemotextMinWidth;
+                GetView().MinHeight = MemotextMinHeight;
+                GetView().MaxWidth = Math.Max(MemotextMinWidth, Math.Min(maxWidth, workArea.Width * MemotextMaxScreenShare));
+                GetView().MaxHeight = Math.Max(MemotextMinHeight, Math.Min(maxHeight, workArea.Height * MemotextMaxScreenShare));
             }
             else if (type == CFMBOXType.Memotext)
             {
-                GetWnd().SpText.Visibility = Visibility.Collapsed;
-                GetWnd().TxbMemotext.Text = message;
-                GetWnd().TxbMemotext.Visibility = Visibility.Visible;
+                GetView().SpText.Visibility = Visibility.Collapsed;
+                GetView().TxbMemotext.Text = message;
+                GetView().TxbMemotext.Visibility = Visibility.Visible;
 
                 // Size follows the text (longest line / number of lines), limited to a sensible maximum;
                 // beyond that the text scrolls inside the window
                 Rect workArea = (_owner != null ? FnDisplay.GetWorkArea(_owner) : null) ?? SystemParameters.WorkArea;
 
-                GetWnd().SizeToContent = SizeToContent.WidthAndHeight;
-                GetWnd().ResizeMode = ResizeMode.CanResize;
-                GetWnd().Width = double.NaN;
-                GetWnd().Height = double.NaN;
-                GetWnd().MinWidth = MemotextMinWidth;
-                GetWnd().MinHeight = MemotextMinHeight;
-                GetWnd().MaxWidth = Math.Max(MemotextMinWidth, Math.Min(MemotextMaxWidth, workArea.Width * MemotextMaxScreenShare));
-                GetWnd().MaxHeight = Math.Max(MemotextMinHeight, Math.Min(MemotextMaxHeight, workArea.Height * MemotextMaxScreenShare));
+                GetView().SizeToContent = SizeToContent.WidthAndHeight;
+                GetView().ResizeMode = ResizeMode.CanResize;
+                GetView().Width = double.NaN;
+                GetView().Height = double.NaN;
+                GetView().MinWidth = MemotextMinWidth;
+                GetView().MinHeight = MemotextMinHeight;
+                GetView().MaxWidth = Math.Max(MemotextMinWidth, Math.Min(MemotextMaxWidth, workArea.Width * MemotextMaxScreenShare));
+                GetView().MaxHeight = Math.Max(MemotextMinHeight, Math.Min(MemotextMaxHeight, workArea.Height * MemotextMaxScreenShare));
             }
             else
             {
-                GetWnd().TxbMemotext.Visibility = Visibility.Collapsed;
+                GetView().TxbMemotext.Visibility = Visibility.Collapsed;
                 ApplyMessage(message);
-                GetWnd().SpText.Visibility = Visibility.Visible;
+                GetView().SpText.Visibility = Visibility.Visible;
 
-                GetWnd().SizeToContent = SizeToContent.Height;
-                GetWnd().ResizeMode = ResizeMode.NoResize;
-                GetWnd().Width = 460;
-                GetWnd().MinWidth = 460;
-                GetWnd().MinHeight = 0;
-                GetWnd().MaxWidth = 820;
-                GetWnd().MaxHeight = 700;
+                GetView().SizeToContent = SizeToContent.Height;
+                GetView().ResizeMode = ResizeMode.NoResize;
+                GetView().Width = 460;
+                GetView().MinWidth = 460;
+                GetView().MinHeight = 0;
+                GetView().MaxWidth = 820;
+                GetView().MaxHeight = 700;
             }
 
             ConfigureButtons(buttons);
@@ -251,7 +255,7 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
 
             // Markdown brings its own headings, the icon column would only take away width
             if (type == CFMBOXType.Markdown || type == CFMBOXType.MarkdownLarge)
-                GetWnd().BdIconHost.Visibility = Visibility.Collapsed;
+                GetView().BdIconHost.Visibility = Visibility.Collapsed;
 
             PrepareStartupPosition();
         }
@@ -266,16 +270,16 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
             int lineBreak = message.IndexOf('\n');
             if (lineBreak > 0 && lineBreak <= 120)
             {
-                GetWnd().TbHeadline.Text = message.Substring(0, lineBreak).Trim();
-                GetWnd().TbHeadline.Visibility = Visibility.Visible;
-                GetWnd().TbMessage.Text = message.Substring(lineBreak + 1).Trim();
-                GetWnd().TbMessage.SetResourceReference(System.Windows.Controls.TextBlock.ForegroundProperty, "Brush.TextSecondary");
+                GetView().TbHeadline.Text = message.Substring(0, lineBreak).Trim();
+                GetView().TbHeadline.Visibility = Visibility.Visible;
+                GetView().TbMessage.Text = message.Substring(lineBreak + 1).Trim();
+                GetView().TbMessage.SetResourceReference(System.Windows.Controls.TextBlock.ForegroundProperty, "Brush.TextSecondary");
                 return;
             }
 
-            GetWnd().TbHeadline.Visibility = Visibility.Collapsed;
-            GetWnd().TbMessage.Text = message;
-            GetWnd().TbMessage.SetResourceReference(System.Windows.Controls.TextBlock.ForegroundProperty, "Brush.TextPrimary");
+            GetView().TbHeadline.Visibility = Visibility.Collapsed;
+            GetView().TbMessage.Text = message;
+            GetView().TbMessage.SetResourceReference(System.Windows.Controls.TextBlock.ForegroundProperty, "Brush.TextPrimary");
         }
 
         private static string DeriveTitleFromIcon(CFMBOXIcon icon)
@@ -336,7 +340,7 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
             if (e.ChangedButton != MouseButton.Left)
                 return;
 
-            GetWnd().DragMove();
+            GetView().DragMove();
             ClampToOwner();
         }
 
@@ -358,7 +362,7 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
         private void CloseWithResult(CFMBOXResult result)
         {
             _windowReturn.Result = result;
-            GetWnd().Close();
+            GetView().Close();
         }
 
         private void ConfigureButtons(CFMBOXResult buttons)
@@ -383,27 +387,27 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
             if (HasFlag(buttons, CFMBOXResult.Cancel))
                 SetNextButton(CFMBOXResult.Cancel);
 
-            if (GetWnd().BtnButton1.Visibility != Visibility.Visible)
+            if (GetView().BtnButton1.Visibility != Visibility.Visible)
                 SetButton1(CFMBOXResult.Ok);
         }
 
         private void ResetButtons()
         {
-            GetWnd().BtnButton1.Visibility = Visibility.Collapsed;
-            GetWnd().BtnButton2.Visibility = Visibility.Collapsed;
-            GetWnd().BtnButton3.Visibility = Visibility.Collapsed;
+            GetView().BtnButton1.Visibility = Visibility.Collapsed;
+            GetView().BtnButton2.Visibility = Visibility.Collapsed;
+            GetView().BtnButton3.Visibility = Visibility.Collapsed;
 
-            GetWnd().BtnButton1.Content = string.Empty;
-            GetWnd().BtnButton2.Content = string.Empty;
-            GetWnd().BtnButton3.Content = string.Empty;
+            GetView().BtnButton1.Content = string.Empty;
+            GetView().BtnButton2.Content = string.Empty;
+            GetView().BtnButton3.Content = string.Empty;
 
-            GetWnd().BtnButton1.IsDefault = false;
-            GetWnd().BtnButton2.IsDefault = false;
-            GetWnd().BtnButton3.IsDefault = false;
+            GetView().BtnButton1.IsDefault = false;
+            GetView().BtnButton2.IsDefault = false;
+            GetView().BtnButton3.IsDefault = false;
 
-            GetWnd().BtnButton1.IsCancel = false;
-            GetWnd().BtnButton2.IsCancel = false;
-            GetWnd().BtnButton3.IsCancel = false;
+            GetView().BtnButton1.IsCancel = false;
+            GetView().BtnButton2.IsCancel = false;
+            GetView().BtnButton3.IsCancel = false;
 
             _button1Result = CFMBOXResult.None;
             _button2Result = CFMBOXResult.None;
@@ -414,15 +418,15 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
         {
             CFMBOXResult defaultResult = GetDefaultResult();
 
-            foreach (Button button in new[] { GetWnd().BtnButton1, GetWnd().BtnButton2, GetWnd().BtnButton3 })
+            foreach (Button button in new[] { GetView().BtnButton1, GetView().BtnButton2, GetView().BtnButton3 })
             {
                 button.ClearValue(Control.BackgroundProperty);
                 button.ClearValue(Control.BorderBrushProperty);
             }
 
-            Button? defaultButton = defaultResult == _button1Result ? GetWnd().BtnButton1
-                : defaultResult == _button2Result ? GetWnd().BtnButton2
-                : defaultResult == _button3Result ? GetWnd().BtnButton3
+            Button? defaultButton = defaultResult == _button1Result ? GetView().BtnButton1
+                : defaultResult == _button2Result ? GetView().BtnButton2
+                : defaultResult == _button3Result ? GetView().BtnButton3
                 : null;
 
             if (defaultButton == null)
@@ -434,19 +438,19 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
 
         private void SetNextButton(CFMBOXResult result)
         {
-            if (GetWnd().BtnButton1.Visibility != Visibility.Visible)
+            if (GetView().BtnButton1.Visibility != Visibility.Visible)
             {
                 SetButton1(result);
                 return;
             }
 
-            if (GetWnd().BtnButton2.Visibility != Visibility.Visible)
+            if (GetView().BtnButton2.Visibility != Visibility.Visible)
             {
                 SetButton2(result);
                 return;
             }
 
-            if (GetWnd().BtnButton3.Visibility != Visibility.Visible)
+            if (GetView().BtnButton3.Visibility != Visibility.Visible)
             {
                 SetButton3(result);
             }
@@ -455,22 +459,22 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
         private void SetButton1(CFMBOXResult result)
         {
             _button1Result = result;
-            GetWnd().BtnButton1.Content = GetButtonText(result);
-            GetWnd().BtnButton1.Visibility = Visibility.Visible;
+            GetView().BtnButton1.Content = GetButtonText(result);
+            GetView().BtnButton1.Visibility = Visibility.Visible;
         }
 
         private void SetButton2(CFMBOXResult result)
         {
             _button2Result = result;
-            GetWnd().BtnButton2.Content = GetButtonText(result);
-            GetWnd().BtnButton2.Visibility = Visibility.Visible;
+            GetView().BtnButton2.Content = GetButtonText(result);
+            GetView().BtnButton2.Visibility = Visibility.Visible;
         }
 
         private void SetButton3(CFMBOXResult result)
         {
             _button3Result = result;
-            GetWnd().BtnButton3.Content = GetButtonText(result);
-            GetWnd().BtnButton3.Visibility = Visibility.Visible;
+            GetView().BtnButton3.Content = GetButtonText(result);
+            GetView().BtnButton3.Visibility = Visibility.Visible;
         }
 
         private void ApplyIcon(CFMBOXIcon icon)
@@ -479,36 +483,36 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
             switch (icon)
             {
                 case CFMBOXIcon.Info:
-                    GetWnd().TbIconGlyph.Text = "";
-                    GetWnd().TbIconGlyph.Foreground = TryFindBrush("Brush.TextSecondary", Color.FromRgb(148, 148, 155));
+                    GetView().TbIconGlyph.Text = "";
+                    GetView().TbIconGlyph.Foreground = TryFindBrush("Brush.TextSecondary", Color.FromRgb(148, 148, 155));
                     break;
 
                 case CFMBOXIcon.Question:
-                    GetWnd().TbIconGlyph.Text = "";
-                    GetWnd().TbIconGlyph.Foreground = TryFindBrush("Brush.TextSecondary", Color.FromRgb(148, 148, 155));
+                    GetView().TbIconGlyph.Text = "";
+                    GetView().TbIconGlyph.Foreground = TryFindBrush("Brush.TextSecondary", Color.FromRgb(148, 148, 155));
                     break;
 
                 case CFMBOXIcon.Warning:
-                    GetWnd().TbIconGlyph.Text = "";
-                    GetWnd().TbIconGlyph.Foreground = TryFindBrush("Brush.Warning", Color.FromRgb(255, 167, 38));
+                    GetView().TbIconGlyph.Text = "";
+                    GetView().TbIconGlyph.Foreground = TryFindBrush("Brush.Warning", Color.FromRgb(255, 167, 38));
                     break;
 
                 case CFMBOXIcon.Error:
-                    GetWnd().TbIconGlyph.Text = "";
-                    GetWnd().TbIconGlyph.Foreground = TryFindBrush("Brush.Danger", Color.FromRgb(255, 76, 102));
+                    GetView().TbIconGlyph.Text = "";
+                    GetView().TbIconGlyph.Foreground = TryFindBrush("Brush.Danger", Color.FromRgb(255, 76, 102));
                     break;
 
                 case CFMBOXIcon.Success:
-                    GetWnd().TbIconGlyph.Text = "";
-                    GetWnd().TbIconGlyph.Foreground = TryFindBrush("Brush.Success", Color.FromRgb(46, 224, 137));
+                    GetView().TbIconGlyph.Text = "";
+                    GetView().TbIconGlyph.Foreground = TryFindBrush("Brush.Success", Color.FromRgb(46, 224, 137));
                     break;
 
                 default:
-                    GetWnd().TbIconGlyph.Text = string.Empty;
+                    GetView().TbIconGlyph.Text = string.Empty;
                     break;
             }
 
-            GetWnd().BdIconHost.Visibility = icon == CFMBOXIcon.None ? Visibility.Collapsed : Visibility.Visible;
+            GetView().BdIconHost.Visibility = icon == CFMBOXIcon.None ? Visibility.Collapsed : Visibility.Visible;
         }
 
         private void FocusDefaultButton()
@@ -517,22 +521,22 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
 
             if (_button1Result == defaultResult)
             {
-                GetWnd().BtnButton1.IsDefault = true;
-                GetWnd().BtnButton1.Focus();
+                GetView().BtnButton1.IsDefault = true;
+                GetView().BtnButton1.Focus();
                 return;
             }
 
             if (_button2Result == defaultResult)
             {
-                GetWnd().BtnButton2.IsDefault = true;
-                GetWnd().BtnButton2.Focus();
+                GetView().BtnButton2.IsDefault = true;
+                GetView().BtnButton2.Focus();
                 return;
             }
 
             if (_button3Result == defaultResult)
             {
-                GetWnd().BtnButton3.IsDefault = true;
-                GetWnd().BtnButton3.Focus();
+                GetView().BtnButton3.IsDefault = true;
+                GetView().BtnButton3.Focus();
             }
         }
 
@@ -590,11 +594,11 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
         {
             if (GetOwnerArea() == null)
             {
-                GetWnd().WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                GetView().WindowStartupLocation = WindowStartupLocation.CenterScreen;
                 return;
             }
 
-            GetWnd().WindowStartupLocation = WindowStartupLocation.Manual;
+            GetView().WindowStartupLocation = WindowStartupLocation.Manual;
             CenterInOwnerArea();
         }
 
@@ -632,8 +636,8 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
             double wndHeight = GetDialogHeight();
 
             _isInternalMove = true;
-            GetWnd().Left = area.Left + ((area.Width - wndWidth) / 2d);
-            GetWnd().Top = area.Top + ((area.Height - wndHeight) / 2d);
+            GetView().Left = area.Left + ((area.Width - wndWidth) / 2d);
+            GetView().Top = area.Top + ((area.Height - wndHeight) / 2d);
             _isInternalMove = false;
 
             ClampToOwner();
@@ -642,18 +646,18 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
         // Before the first layout the size may be NaN (SizeToContent): fall back to the minimum size
         private double GetDialogWidth()
         {
-            if (GetWnd().ActualWidth > 0)
-                return GetWnd().ActualWidth;
+            if (GetView().ActualWidth > 0)
+                return GetView().ActualWidth;
 
-            return double.IsNaN(GetWnd().Width) ? GetWnd().MinWidth : GetWnd().Width;
+            return double.IsNaN(GetView().Width) ? GetView().MinWidth : GetView().Width;
         }
 
         private double GetDialogHeight()
         {
-            if (GetWnd().ActualHeight > 0)
-                return GetWnd().ActualHeight;
+            if (GetView().ActualHeight > 0)
+                return GetView().ActualHeight;
 
-            return double.IsNaN(GetWnd().Height) ? Math.Max(GetWnd().MinHeight, 200) : GetWnd().Height;
+            return double.IsNaN(GetView().Height) ? Math.Max(GetView().MinHeight, 200) : GetView().Height;
         }
 
         private void ClampToOwner()
@@ -675,8 +679,8 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
             if (maxTop < minTop)
                 maxTop = minTop;
 
-            double newLeft = double.IsNaN(GetWnd().Left) ? minLeft : GetWnd().Left;
-            double newTop = double.IsNaN(GetWnd().Top) ? minTop : GetWnd().Top;
+            double newLeft = double.IsNaN(GetView().Left) ? minLeft : GetView().Left;
+            double newTop = double.IsNaN(GetView().Top) ? minTop : GetView().Top;
 
             if (newLeft < minLeft)
                 newLeft = minLeft;
@@ -690,27 +694,23 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
             if (newTop > maxTop)
                 newTop = maxTop;
 
-            if (Math.Abs(newLeft - GetWnd().Left) < 0.1 && Math.Abs(newTop - GetWnd().Top) < 0.1)
+            if (Math.Abs(newLeft - GetView().Left) < 0.1 && Math.Abs(newTop - GetView().Top) < 0.1)
                 return;
 
             _isInternalMove = true;
-            GetWnd().Left = newLeft;
-            GetWnd().Top = newTop;
+            GetView().Left = newLeft;
+            GetView().Top = newTop;
             _isInternalMove = false;
         }
 
         private SolidColorBrush TryFindBrush(string resourceKey, Color fallbackColor)
         {
-            object resource = GetWnd().TryFindResource(resourceKey);
+            object resource = GetView().TryFindResource(resourceKey);
             if (resource is SolidColorBrush brush)
                 return brush;
 
             return new SolidColorBrush(fallbackColor);
         }
 
-        private CFMBOXView GetWnd()
-        {
-            return (CFMBOXView)View;
-        }
     }
 }

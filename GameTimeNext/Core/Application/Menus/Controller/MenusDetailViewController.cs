@@ -10,13 +10,14 @@ using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.DataBaseObjects;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
+using GameTimeNext.Core.Framework.UI.Dialogs;
 
 namespace GameTimeNext.Core.Application.Menus.Controller
 {
     /// <summary>
     /// Combined edit area of the menu tree: edits the entry held by the data wrapper and saves it directly.
     /// </summary>
-    public class MenusDetailViewController : UIXViewControllerBase
+    public class MenusDetailViewController : UIXViewControllerBase<MenusApp, MenusDetailView>
     {
         private MenusDataWrapper? _dataWrapper;
         private List<T1APRDH> _applications = new List<T1APRDH>();
@@ -92,6 +93,11 @@ namespace GameTimeNext.Core.Application.Menus.Controller
         {
         }
 
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
+        {
+            CFMBOX.AskUnsavedChanges(GetApp(), args);
+        }
+
         protected override void FillDBOImpl()
         {
         }
@@ -104,16 +110,6 @@ namespace GameTimeNext.Core.Application.Menus.Controller
         {
         }
         #endregion
-
-        private MenusApp GetApp()
-        {
-            return (MenusApp)App;
-        }
-
-        private MenusDetailView GetView()
-        {
-            return (MenusDetailView)View;
-        }
 
         /// <summary>
         /// Applications that may be called from a menu; the first entry stands for "none".

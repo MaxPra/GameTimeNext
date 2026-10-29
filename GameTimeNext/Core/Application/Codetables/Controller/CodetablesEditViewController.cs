@@ -9,10 +9,11 @@ using UIX.ViewController.Engine.DataBaseObjects;
 using UIX.ViewController.Engine.FrameworkElements.UserControls;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
+using GameTimeNext.Core.Framework.UI.Dialogs;
 
 namespace GameTimeNext.Core.Application.Codetables.Controller
 {
-    public class CodetablesEditViewController : UIXViewControllerBase
+    public class CodetablesEditViewController : UIXViewControllerBase<CodetablesEditApp, CodetablesEditView>
     {
         public CodetablesEditViewController(UIXApplication app) : base(app)
         {
@@ -39,27 +40,27 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
         {
             using (SuppressRunEventPipeline())
             {
-                FnControls.LoadTabContent(GetWnd().tabControl);
+                FnControls.LoadTabContent(GetView().tabControl);
             }
 
 
-            if (GetWnd().ViewIndicator.Contains("CN"))
-                GetWnd().TxbTextType.Focus();
-            else if (GetWnd().ViewIndicator.Contains("ED"))
-                GetWnd().TxbDescription.Focus();
+            if (GetView().ViewIndicator.Contains("CN"))
+                GetView().TxbTextType.Focus();
+            else if (GetView().ViewIndicator.Contains("ED"))
+                GetView().TxbDescription.Focus();
 
-            FnControls.SetEnabled(GetWnd().CmbPermission, GetWnd().ViewIndicator.Contains("CN"));
-            FnControls.SetEnabled(GetWnd().TxbTextType, GetWnd().ViewIndicator.Contains("CN"));
-            FnControls.SetEnabled(GetWnd().ChbExportIntoImportPackage, GetWnd().ViewIndicator.Contains("CN"));
-            FnControls.SetEnabled(GetWnd().ChbNumberRangeActive, GetWnd().ViewIndicator.Contains("CN"));
+            FnControls.SetEnabled(GetView().CmbPermission, GetView().ViewIndicator.Contains("CN"));
+            FnControls.SetEnabled(GetView().TxbTextType, GetView().ViewIndicator.Contains("CN"));
+            FnControls.SetEnabled(GetView().ChbExportIntoImportPackage, GetView().ViewIndicator.Contains("CN"));
+            FnControls.SetEnabled(GetView().ChbNumberRangeActive, GetView().ViewIndicator.Contains("CN"));
 
-            FnControls.SetVisible(GetWnd().BtnSave, GetWnd().ViewIndicator.Count != 0);
+            FnControls.SetVisible(GetView().BtnSave, GetView().ViewIndicator.Count != 0);
         }
 
         protected override void BuildImpl()
         {
             if (GetApp().T1CTABH!.State == UIXTableObjectState.Available)
-                FnControls.SetEnabled(GetWnd().TxbTextType, false);
+                FnControls.SetEnabled(GetView().TxbTextType, false);
 
             ControlParameterProtection();
             ControlCodetableVisibility();
@@ -69,19 +70,19 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
         {
             CheckTextType();
 
-            if (FnString.IsNullEmptyOrWhitespace(GetWnd().TxbDescription.Text))
-                AddViewError(GetWnd().TxbDescription, GetErrorMessage("GLO0003", "Description"));
+            if (FnString.IsNullEmptyOrWhitespace(GetView().TxbDescription.Text))
+                AddViewError(GetView().TxbDescription, GetErrorMessage("GLO0003", "Description"));
 
-            if (FnString.IsNullEmptyOrWhitespace(GetWnd().CmbPermission.SelectedValue.ToString()!))
-                AddViewError(GetWnd().CmbPermission, GetErrorMessage("GLO0003", "Permission"));
+            if (FnString.IsNullEmptyOrWhitespace(GetView().CmbPermission.SelectedValue.ToString()!))
+                AddViewError(GetView().CmbPermission, GetErrorMessage("GLO0003", "Permission"));
 
-            if (GetWnd().TxbDescription.Text.Length > 200)
-                AddViewError(GetWnd().TxbDescription, GetErrorMessage("GLO0004", "Description", "200"));
+            if (GetView().TxbDescription.Text.Length > 200)
+                AddViewError(GetView().TxbDescription, GetErrorMessage("GLO0004", "Description", "200"));
         }
 
         private void CheckTextType()
         {
-            TextBox control = GetWnd().TxbTextType;
+            TextBox control = GetView().TxbTextType;
             string value = control.Text;
             string controlName = "Text type";
 
@@ -99,7 +100,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
             }
 
             TXCTABH txctabh = new TXCTABH();
-            if (GetWnd().ViewIndicator.Contains("CN") && txctabh.Exists(value))
+            if (GetView().ViewIndicator.Contains("CN") && txctabh.Exists(value))
             {
                 AddViewError(control, GetErrorMessage("GLO0008", controlName, value));
             }
@@ -107,6 +108,11 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
         protected override void FillViewImpl()
         {
+        }
+
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
+        {
+            CFMBOX.AskUnsavedChanges(GetApp(), args);
         }
 
         protected override void FillDBOImpl()
@@ -138,39 +144,29 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
         {
         }
 
-        private CodetablesEditApp GetApp()
-        {
-            return (CodetablesEditApp)App;
-        }
-
-        private CodetablesEditView GetWnd()
-        {
-            return (CodetablesEditView)View;
-        }
-
         private void ControlParameterProtection()
         {
             for (int i = 1; i <= 2; i++)
             {
                 // Active-Checkbox
-                CheckBox checkBox = (CheckBox)GetWnd().FindName($"ChbParam{i}Active");
+                CheckBox checkBox = (CheckBox)GetView().FindName($"ChbParam{i}Active");
 
                 bool isActive = checkBox.IsChecked == true;
 
                 // Description
-                TextBox textBoxDescription = (TextBox)GetWnd().FindName($"TxbParam{i}Description");
+                TextBox textBoxDescription = (TextBox)GetView().FindName($"TxbParam{i}Description");
                 FnControls.SetEnabled(textBoxDescription, isActive);
 
                 // Required-Checkbox
-                CheckBox checkBoxRequired = (CheckBox)GetWnd().FindName($"ChbParam{i}Required");
+                CheckBox checkBoxRequired = (CheckBox)GetView().FindName($"ChbParam{i}Required");
                 FnControls.SetEnabled(checkBoxRequired, isActive);
 
                 // Control Type
-                ComboBox comboBoxControlType = (ComboBox)GetWnd().FindName($"CmbParam{i}ControlType");
+                ComboBox comboBoxControlType = (ComboBox)GetView().FindName($"CmbParam{i}ControlType");
                 FnControls.SetEnabled(comboBoxControlType, isActive);
 
                 // Type
-                ComboBox comboBoxCodetable = (ComboBox)GetWnd().FindName($"CmbParam{i}Codetable");
+                ComboBox comboBoxCodetable = (ComboBox)GetView().FindName($"CmbParam{i}Codetable");
                 FnControls.SetEnabled(comboBoxCodetable, isActive);
             }
         }
@@ -183,7 +179,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
             for (int i = 1; i <= 2; i++)
             {
                 // Control Type
-                ComboBox comboBoxControlType = (ComboBox)GetWnd().FindName($"CmbParam{i}ControlType");
+                ComboBox comboBoxControlType = (ComboBox)GetView().FindName($"CmbParam{i}ControlType");
 
                 string selectedControlType =
                     (comboBoxControlType.SelectedItem as ComboBoxItem)?.Tag?.ToString()
@@ -194,11 +190,11 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
                 isControlTypeComboboxOnce |= isControlTypeCombobox;
 
                 // ComboBox for codetable selection
-                ComboBox comboBoxCodetable = (ComboBox)GetWnd().FindName($"CmbParam{i}Codetable");
+                ComboBox comboBoxCodetable = (ComboBox)GetView().FindName($"CmbParam{i}Codetable");
                 FnControls.SetVisible(comboBoxCodetable, isControlTypeCombobox);
 
                 // Heading label
-                TextBlock lblCodetable = (TextBlock)GetWnd().FindName($"LblParamCodetable");
+                TextBlock lblCodetable = (TextBlock)GetView().FindName($"LblParamCodetable");
                 FnControls.SetVisible(lblCodetable, isControlTypeCombobox || isControlTypeComboboxOnce);
             }
         }
