@@ -110,9 +110,6 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 (string path, string fileName) tempCover = await FnSystem.SaveCroppedImageTempPath(CFProfilesApp.LoadPlaceholderCover(), GetApp().Loader);
 
                 await FillViewCoverChanged(tempCover.path);
-
-                // Set on the object as well, so the following FillView keeps it
-                GetApp().T1Profi.PPFN = _coverAppFolderFileName;
             }
         }
 
@@ -130,9 +127,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             if (FnString.IsNullEmptyOrWhitespace(GetView().txbProfileName.Text))
                 AddViewError(GetView().txbProfileName, GetErrorMessage("GLO0003", "Profile name"));
 
-            // Cover
-            if (FnString.IsNullEmptyOrWhitespace(GetView().txbImagePath.Text))
-                AddViewError(GetView().txbImagePath, GetErrorMessage("GLO0003", "Profile cover"));
+            // Cover (set by the controller, no field: the error is shown on the button choosing one)
+            if (FnString.IsNullEmptyOrWhitespace(GetApp().T1Profi.PPFN))
+                AddViewError(GetView().btnBrowseLocalImage, GetErrorMessage("GLO0003", "Profile cover"));
 
             // Accent Colors
             if (GetView().cbUseProfileAccentColors.IsChecked == true
@@ -211,6 +208,18 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
                 FillViewAccentColors();
             }
+
+            FillViewCoverPreview();
+        }
+
+        /// <summary>
+        /// Shows the chosen cover (not saved yet) or the profile's cover.
+        /// </summary>
+        private void FillViewCoverPreview()
+        {
+            GetView().imgCover.Source = FnString.IsNullEmptyOrWhitespace(_coverAppDataPath)
+                ? CFProfilesApp.LoadProfileCover(GetApp().T1Profi.PPFN)
+                : FnImage.LoadImageWithoutLock(_coverAppDataPath, 300, 450) ?? CFProfilesApp.LoadPlaceholderCover(300, 450);
         }
 
         private void FillComboboxPlayTypes()
@@ -328,7 +337,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             GetView().Dispatcher.Invoke(() =>
             {
-                GetView().txbImagePath.Text = _coverAppFolderFileName;
+                GetApp().T1Profi.PPFN = _coverAppFolderFileName;
             });
 
             GetApp().Loader.Begin();
@@ -374,6 +383,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             // Remember path for copying later
             _coverAppDataPath = path;
+
+            GetView().Dispatcher.Invoke(FillViewCoverPreview);
         }
 
         private void FillDBOManualEstTimes()
@@ -582,7 +593,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         private void BuildAccentColorSection()
         {
             // Visibility of the accent colors
-            if (!FnString.IsNullEmptyOrWhitespace(GetView().txbImagePath.Text))
+            if (!FnString.IsNullEmptyOrWhitespace(GetApp().T1Profi.PPFN))
             {
                 GetView().grdAccentColorSettings.Visibility = Visibility.Visible;
             }

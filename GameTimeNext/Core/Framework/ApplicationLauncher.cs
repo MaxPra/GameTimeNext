@@ -1,6 +1,7 @@
 ﻿using GameTimeNext.Core.Application.General.UserSettings;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Threading;
 using UIX.ViewController.Engine.FrameworkElements;
 using UIX.ViewController.Engine.FrameworkElements.Windows;
@@ -41,6 +42,7 @@ namespace GameTimeNext.Core.Framework
             if (existingTab != null)
             {
                 this.TabControl.SelectedItem = existingTab;
+                FocusTabContent(existingTab);
                 return null!;
             }
 
@@ -80,6 +82,7 @@ namespace GameTimeNext.Core.Framework
 
             this.TabControl.Items.Add(tabItem);
             this.TabControl.SelectedItem = tabItem;
+            FocusTabContent(tabItem);
 
             host.MainView.Dispatcher.Invoke(
         DispatcherPriority.Background,
@@ -91,6 +94,22 @@ namespace GameTimeNext.Core.Framework
                 return tabItem;
             else
                 return null!;
+        }
+
+        /// <summary>
+        /// Moves the keyboard focus from the tab header into the view of the tab once it is shown. Otherwise a tab
+        /// opened by keyboard (e.g. Enter in the application search) keeps the focus with its focus ring on the header.
+        /// A view that has set its own focus keeps it.
+        /// </summary>
+        private void FocusTabContent(TabItem tab)
+        {
+            TabControl.Dispatcher.BeginInvoke(() =>
+            {
+                if (!tab.IsSelected || !tab.IsKeyboardFocused || tab.Content is not UIElement content)
+                    return;
+
+                content.MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
+            }, DispatcherPriority.ContextIdle);
         }
 
         private TabItem? FindApplicationTab(string typeFullName)
