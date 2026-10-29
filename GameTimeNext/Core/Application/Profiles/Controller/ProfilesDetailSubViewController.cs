@@ -23,7 +23,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Profiles.Controller
 {
-    internal class ProfilesDetailSubViewController : UIXViewControllerBase
+    internal class ProfilesDetailSubViewController : UIXViewControllerBase<ProfilesApp, ProfilesDetailView>
     {
 
         private ProfilesSubViewDataWrapper? _dataWrapper;
@@ -185,6 +185,10 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             // Rating
             FillProfileRating();
+        }
+
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
+        {
         }
 
         protected override void FillDBOImpl()
@@ -475,16 +479,6 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             SetEstimateHighlighted(GetView().lblEstCompletionist, GetView().txEstCompletionist, false);
 
             SetProgress(0);
-        }
-
-        private ProfilesDetailView GetView()
-        {
-            return (ProfilesDetailView)this.View;
-        }
-
-        private ProfilesApp GetApp()
-        {
-            return (ProfilesApp)this.App;
         }
 
         protected override void DataWrapperSelectionChangedImpl(Selector source)

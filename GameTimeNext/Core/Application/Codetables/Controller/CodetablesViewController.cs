@@ -18,7 +18,7 @@ using static UIX.ViewController.Engine.FrameworkElements.UIXContextMenuFactory;
 
 namespace GameTimeNext.Core.Application.Codetables.Controller
 {
-    public class CodetablesViewController : UIXViewControllerBase
+    public class CodetablesViewController : UIXViewControllerBase<CodetablesApp, CodetablesView>
     {
 
         private CodetablesViewModel? _viewModel;
@@ -66,6 +66,10 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
         }
 
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
+        {
+        }
+
         protected override void FillDBOImpl()
         {
         }
@@ -78,16 +82,6 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
         {
         }
         #endregion
-
-        private CodetablesApp GetApp()
-        {
-            return (CodetablesApp)App;
-        }
-
-        private CodetablesView GetView()
-        {
-            return (CodetablesView)View;
-        }
 
         private async Task BuildCodetableViewModel()
         {

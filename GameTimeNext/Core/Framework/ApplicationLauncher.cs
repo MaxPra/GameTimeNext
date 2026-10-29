@@ -1,8 +1,10 @@
 ﻿using GameTimeNext.Core.Application.General.UserSettings;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Threading;
 using UIX.ViewController.Engine.FrameworkElements;
+using UIX.ViewController.Engine.FrameworkElements.Windows;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 using static UIX.ViewController.Engine.FrameworkElements.UIXContextMenuFactory;
@@ -17,6 +19,17 @@ namespace GameTimeNext.Core.Framework
         public ApplicationLauncher(TabControl tabControl)
         {
             TabControl = tabControl;
+
+            // Unsaved changes in a tab that isn't selected are asked in that tab
+            UIXWindowHost.BringIntoViewHandler = SelectTabOfHost;
+        }
+
+        private void SelectTabOfHost(UIXWindowHost host)
+        {
+            TabItem? tab = TabControl.Items.OfType<TabItem>().FirstOrDefault(t => t.Content is ContentPresenter presenter && ReferenceEquals(presenter.Content, host.Element));
+
+            if (tab != null)
+                TabControl.SelectedItem = tab;
         }
 
         public TabItem LaunchApplication(string className, UIXApplication host, string header)
@@ -29,6 +42,7 @@ namespace GameTimeNext.Core.Framework
             if (existingTab != null)
             {
                 this.TabControl.SelectedItem = existingTab;
+                FocusTabContent(existingTab);
                 return null!;
             }
 
@@ -68,6 +82,7 @@ namespace GameTimeNext.Core.Framework
 
             this.TabControl.Items.Add(tabItem);
             this.TabControl.SelectedItem = tabItem;
+            FocusTabContent(tabItem);
 
             host.MainView.Dispatcher.Invoke(
         DispatcherPriority.Background,
@@ -79,6 +94,22 @@ namespace GameTimeNext.Core.Framework
                 return tabItem;
             else
                 return null!;
+        }
+
+        /// <summary>
+        /// Moves the keyboard focus from the tab header into the view of the tab once it is shown. Otherwise a tab
+        /// opened by keyboard (e.g. Enter in the application search) keeps the focus with its focus ring on the header.
+        /// A view that has set its own focus keeps it.
+        /// </summary>
+        private void FocusTabContent(TabItem tab)
+        {
+            TabControl.Dispatcher.BeginInvoke(() =>
+            {
+                if (!tab.IsSelected || !tab.IsKeyboardFocused || tab.Content is not UIElement content)
+                    return;
+
+                content.MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
+            }, DispatcherPriority.ContextIdle);
         }
 
         private TabItem? FindApplicationTab(string typeFullName)
@@ -123,6 +154,11 @@ namespace GameTimeNext.Core.Framework
             UIXApplication app = AppEnvironment.StartedApplications[typeName];
 
             if (!app.CanClose())
+                return;
+
+            // Windows opened from the tab belong to its view and are closed with it; unsaved changes in them or in
+            // the view are asked first, and the tab stays open if the user keeps something open
+            if (!app.TryCloseViews())
                 return;
 
             AppEnvironment.StartedApplications.Remove(type!.FullName!);

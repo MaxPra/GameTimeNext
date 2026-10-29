@@ -10,7 +10,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Profiles.Controller
 {
-    public class ProfilesLauncherImportViewController : UIXViewControllerBase
+    public class ProfilesLauncherImportViewController : UIXViewControllerBase<ProfilesLauncherImportApp, ProfilesLauncherImportView>
     {
 
         private ProfilesLauncherImportViewModel? _profilesLauncherImportViewModel;
@@ -63,6 +63,10 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         }
 
         protected override void Event_Minimize()
+        {
+        }
+
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
         {
         }
 
@@ -129,14 +133,5 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             return _installedGames.Where(g => g.Name.Contains(GetView().txbSearch.Text, StringComparison.OrdinalIgnoreCase)).ToList();
         }
 
-        private ProfilesLauncherImportApp GetApp()
-        {
-            return (ProfilesLauncherImportApp)App;
-        }
-
-        private ProfilesLauncherImportView GetView()
-        {
-            return (ProfilesLauncherImportView)View;
-        }
     }
 }

@@ -19,7 +19,7 @@ using static UIX.ViewController.Engine.FrameworkElements.UIXContextMenuFactory;
 
 namespace GameTimeNext.Core.Application.Screensetups.Controller
 {
-    public class ScreensetupsViewController : UIXViewControllerBase
+    public class ScreensetupsViewController : UIXViewControllerBase<ScreensetupsApp, ScreensetupsView>
     {
 
         private ScreensetupsViewModel? _viewModel;
@@ -65,6 +65,10 @@ namespace GameTimeNext.Core.Application.Screensetups.Controller
 
         }
 
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
+        {
+        }
+
         protected override void FillDBOImpl()
         {
         }
@@ -92,16 +96,6 @@ namespace GameTimeNext.Core.Application.Screensetups.Controller
             }
         }
         #endregion
-
-        private ScreensetupsApp GetApp()
-        {
-            return (ScreensetupsApp)App;
-        }
-
-        private ScreensetupsView GetView()
-        {
-            return (ScreensetupsView)View;
-        }
 
         private async Task BuildScreensetupViewModel()
         {

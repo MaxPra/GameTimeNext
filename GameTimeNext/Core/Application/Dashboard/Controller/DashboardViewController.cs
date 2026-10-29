@@ -20,7 +20,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Dashboard.Controller
 {
-    public class DashboardViewController : UIXViewControllerBase
+    public class DashboardViewController : UIXViewControllerBase<DashboardApp, DashboardView>
     {
         DashboardViewModel? viewModel = null;
         short timeSpanOffset = 0;
@@ -93,6 +93,10 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
         {
         }
 
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
+        {
+        }
+
         protected override void FillDBOImpl()
         {
         }
@@ -132,16 +136,6 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
                 }
 
             }
-        }
-
-        private DashboardApp GetApp()
-        {
-            return (DashboardApp)App;
-        }
-
-        private DashboardView GetView()
-        {
-            return (DashboardView)View;
         }
 
         private void ChangeTimeSpanDays()

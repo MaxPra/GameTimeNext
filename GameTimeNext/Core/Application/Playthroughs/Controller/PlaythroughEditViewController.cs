@@ -10,10 +10,11 @@ using UIX.ViewController.Engine.Events;
 using UIX.ViewController.Engine.FrameworkElements.UserControls;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
+using GameTimeNext.Core.Framework.UI.Dialogs;
 
 namespace GameTimeNext.Core.Application.Playthroughs.Controller
 {
-    public class PlaythroughEditViewController : UIXViewControllerBase
+    public class PlaythroughEditViewController : UIXViewControllerBase<PlaythroughEditApp, PlaythroughEditView>
     {
         public PlaythroughEditViewController(UIXApplication app) : base(app)
         {
@@ -88,6 +89,11 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
         {
         }
 
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
+        {
+            CFMBOX.AskUnsavedChanges(GetApp(), args);
+        }
+
         protected override void FillDBOImpl()
         {
             GetApp().T1plthr.PTRA = CFPlaythroughsApp.ToRatingValue(GetView().rtgRating.Value);
@@ -124,16 +130,6 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
                     }
                 }
             }
-        }
-
-        private PlaythroughEditView GetView()
-        {
-            return (PlaythroughEditView)View;
-        }
-
-        private PlaythroughEditApp GetApp()
-        {
-            return (PlaythroughEditApp)App;
         }
 
         protected void EV_btnSave()

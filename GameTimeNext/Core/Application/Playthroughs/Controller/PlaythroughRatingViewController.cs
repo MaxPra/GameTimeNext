@@ -6,10 +6,11 @@ using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements.UserControls;
 using UIX.ViewController.Engine.Runnables;
+using GameTimeNext.Core.Framework.UI.Dialogs;
 
 namespace GameTimeNext.Core.Application.Playthroughs.Controller
 {
-    public class PlaythroughRatingViewController : UIXViewControllerBase
+    public class PlaythroughRatingViewController : UIXViewControllerBase<PlaythroughRatingApp, PlaythroughRatingView>
     {
         public PlaythroughRatingViewController(UIXApplication app) : base(app)
         {
@@ -60,6 +61,11 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
         {
         }
 
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
+        {
+            CFMBOX.AskUnsavedChanges(GetApp(), args);
+        }
+
         protected override void FillDBOImpl()
         {
             GetApp().T1plthr.PTRA = CFPlaythroughsApp.ToRatingValue(GetView().rtgRating.Value);
@@ -76,16 +82,6 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
 
         protected override void TriggeredEvent(FrameworkElement source, string eventName)
         {
-        }
-
-        private PlaythroughRatingView GetView()
-        {
-            return (PlaythroughRatingView)View;
-        }
-
-        private PlaythroughRatingApp GetApp()
-        {
-            return (PlaythroughRatingApp)App;
         }
 
         protected void EV_btnSave()

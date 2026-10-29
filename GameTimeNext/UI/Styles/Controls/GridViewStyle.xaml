@@ -353,9 +353,12 @@
         </Setter>
     </Style>
 
+    <!--  Parent rows of a UIXTreeGrid: darker than Brush.Card.Inset, which is too faint on light wallpapers behind the glass  -->
+    <SolidColorBrush x:Key="Brush.TreeGrid.ParentRow" Color="#57000000" />
+
     <!--
-        Row of a UIXTreeGrid: parent rows (rows with children) get the darker inset tone of the card, so they read as
-        group headers and stay distinct from the white hover / selection tint, which still applies on top.
+        Row of a UIXTreeGrid: parent rows (rows with children) get a darker inset tone and SemiBold text, so they read
+        as group headers and stay distinct from the white hover / selection tint, which still applies on top.
     -->
     <Style
         x:Key="TreeGrid.Row"
@@ -363,7 +366,8 @@
         TargetType="{x:Type DataGridRow}">
         <Style.Triggers>
             <DataTrigger Binding="{Binding HasChildren}" Value="True">
-                <Setter Property="Background" Value="{StaticResource Brush.Card.Inset}" />
+                <Setter Property="Background" Value="{StaticResource Brush.TreeGrid.ParentRow}" />
+                <Setter Property="FontWeight" Value="SemiBold" />
             </DataTrigger>
         </Style.Triggers>
     </Style>

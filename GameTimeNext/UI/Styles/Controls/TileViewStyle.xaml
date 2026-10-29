@@ -1800,13 +1800,16 @@
                                     TextWrapping="NoWrap"
                                     ToolTip="{Binding ItemObject.GANA}" />
 
-                                <Image
+                                <!--  Playable: filled disc with the play triangle cut out (even-odd fill)  -->
+                                <Path
                                     Grid.Column="2"
                                     Width="16"
                                     Height="16"
                                     Margin="8,0,0,0"
                                     VerticalAlignment="Center"
-                                    Source="/UI/Ressources/GTN_ICON_PLAYABLE.png"
+                                    Data="F0 M 8,0 A 8,8 0 1 1 8,16 A 8,8 0 1 1 8,0 Z M 6.25,4.75 L 11.25,8 L 6.25,11.25 Z"
+                                    Fill="{DynamicResource Brush.TextPrimary}"
+                                    SnapsToDevicePixels="False"
                                     Visibility="{Binding COISPLA, Converter={StaticResource BoolToVisibilityConverter}}" />
                             </Grid>
                         </Grid>

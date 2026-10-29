@@ -19,7 +19,7 @@ using static UIX.ViewController.Engine.FrameworkElements.UIXContextMenuFactory;
 
 namespace GameTimeNext.Core.Application.Codetables.Controller
 {
-    public class CodetablesEntrysViewController : UIXViewControllerBase
+    public class CodetablesEntrysViewController : UIXViewControllerBase<CodetablesEntrysApp, CodetablesEntrysView>
     {
 
         private CodetablesEntrysViewModel? _viewModel;
@@ -46,7 +46,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
         protected override async Task BuildFirstImplAsync()
         {
-            FnControls.SetVisible(GetWnd().BtnAdd, GetWnd().ViewIndicator.Contains("ED"));
+            FnControls.SetVisible(GetView().BtnAdd, GetView().ViewIndicator.Contains("ED"));
             await BuildDG();
         }
 
@@ -59,6 +59,10 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
         }
 
         protected override void FillViewImpl()
+        {
+        }
+
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
         {
         }
 
@@ -91,10 +95,6 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
         {
         }
 
-        private CodetablesEntrysApp GetApp() => (CodetablesEntrysApp)App;
-
-        private CodetablesEntrysView GetWnd() => (CodetablesEntrysView)View;
-
         private async Task BuildDG()
         {
             GetApp().Loader.Begin();
@@ -107,7 +107,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
                 {
                     _viewModel = new CodetablesEntrysViewModel();
                     _viewModel.CodetableEntryDataGridRows = new System.Collections.ObjectModel.ObservableCollection<CodetableEntryDataGridRow>(rows);
-                    GetWnd().DataContext = _viewModel;
+                    GetView().DataContext = _viewModel;
                     GetApp().Loader.Stop();
                 });
             });
@@ -131,7 +131,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
                     T1CTABD t1ctabd = txctabd.Read(txtyp, txnum);
 
-                    CodetableEntryDataGridRow row = GetWnd().DgCodetableEntrys.CreateNewRow<CodetableEntryDataGridRow>();
+                    CodetableEntryDataGridRow row = GetView().DgCodetableEntrys.CreateNewRow<CodetableEntryDataGridRow>();
                     row.COTXTYP = txtyp;
                     row.COTXNUM = txnum;
                     row.CODESCR = t1ctabd.DESCR;
@@ -184,7 +184,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
         private bool GetUserIsAllowedToEdit(T1CTABD t1ctabd)
         {
-            if (!GetWnd().ViewIndicator.Contains("ED")) return false;
+            if (!GetView().ViewIndicator.Contains("ED")) return false;
 
             if (FnSystem.IsDebug() && !FnSystem.RunWithUserPermissions()) return true;
 

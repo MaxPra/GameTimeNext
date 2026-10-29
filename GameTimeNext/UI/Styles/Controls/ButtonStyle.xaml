@@ -1,4 +1,7 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:uixprops="clr-namespace:UIX.ViewController.Engine.AttachedProperties;assembly=UIX.ViewController.Engine">
 
     <!--  Former neutral button brushes, kept for compatibility (see ControlTokens.xaml for the current ones)  -->
     <SolidColorBrush x:Key="Brush.Button.Background" Color="#FF1E1E26" />
@@ -144,14 +147,136 @@
                 IsHitTestVisible="False" />
 
             <ContentPresenter
+                x:Name="Content"
                 Margin="{TemplateBinding Padding}"
                 HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                 VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                 RecognizesAccessKey="True"
-                TextElement.Foreground="{TemplateBinding Foreground}" />
+                TextElement.Foreground="{TemplateBinding Foreground}">
+                <ContentPresenter.RenderTransform>
+                    <TranslateTransform />
+                </ContentPresenter.RenderTransform>
+            </ContentPresenter>
+
+            <!--  Save confirmation (UIXSaveFeedback.IsSaved, set by the engine after a successful save): a filled circle with a check in place of the content  -->
+            <Grid
+                x:Name="SavedBadge"
+                Width="20"
+                Height="20"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                IsHitTestVisible="False"
+                Opacity="0"
+                RenderTransformOrigin="0.5,0.5">
+                <Grid.RenderTransform>
+                    <ScaleTransform ScaleX="0.6" ScaleY="0.6" />
+                </Grid.RenderTransform>
+
+                <Ellipse Fill="{TemplateBinding Foreground}" />
+
+                <Path
+                    x:Name="SavedCheck"
+                    Width="11"
+                    Height="9"
+                    Margin="0,1,0,0"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Data="M 1,4.5 L 4,7.5 L 10,1"
+                    Stroke="{TemplateBinding Background}"
+                    StrokeDashArray="7 20"
+                    StrokeDashOffset="7"
+                    StrokeEndLineCap="Round"
+                    StrokeLineJoin="Round"
+                    StrokeStartLineCap="Round"
+                    StrokeThickness="2" />
+            </Grid>
         </Grid>
 
         <ControlTemplate.Triggers>
+            <!--  One trigger for showing and hiding (see "Trigger animations" in CLAUDE.md)  -->
+            <Trigger Property="uixprops:UIXSaveFeedback.IsSaved" Value="True">
+                <Trigger.EnterActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation
+                                Storyboard.TargetName="Content"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0"
+                                Duration="0:0:0.12" />
+                            <DoubleAnimation
+                                Storyboard.TargetName="Content"
+                                Storyboard.TargetProperty="RenderTransform.(TranslateTransform.Y)"
+                                To="-4"
+                                Duration="0:0:0.12" />
+                            <DoubleAnimation
+                                BeginTime="0:0:0.08"
+                                Storyboard.TargetName="SavedBadge"
+                                Storyboard.TargetProperty="Opacity"
+                                From="0"
+                                To="1"
+                                Duration="0:0:0.1" />
+                            <DoubleAnimation
+                                BeginTime="0:0:0.08"
+                                Storyboard.TargetName="SavedBadge"
+                                Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)"
+                                From="0.6"
+                                To="1"
+                                Duration="0:0:0.22">
+                                <DoubleAnimation.EasingFunction>
+                                    <CubicEase EasingMode="EaseOut" />
+                                </DoubleAnimation.EasingFunction>
+                            </DoubleAnimation>
+                            <DoubleAnimation
+                                BeginTime="0:0:0.08"
+                                Storyboard.TargetName="SavedBadge"
+                                Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)"
+                                From="0.6"
+                                To="1"
+                                Duration="0:0:0.22">
+                                <DoubleAnimation.EasingFunction>
+                                    <CubicEase EasingMode="EaseOut" />
+                                </DoubleAnimation.EasingFunction>
+                            </DoubleAnimation>
+                            <DoubleAnimation
+                                BeginTime="0:0:0.16"
+                                Storyboard.TargetName="SavedCheck"
+                                Storyboard.TargetProperty="StrokeDashOffset"
+                                From="7"
+                                To="0"
+                                Duration="0:0:0.24">
+                                <DoubleAnimation.EasingFunction>
+                                    <CubicEase EasingMode="EaseOut" />
+                                </DoubleAnimation.EasingFunction>
+                            </DoubleAnimation>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.EnterActions>
+                <Trigger.ExitActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation
+                                Storyboard.TargetName="SavedBadge"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0"
+                                Duration="0:0:0.15" />
+                            <DoubleAnimation
+                                BeginTime="0:0:0.1"
+                                Storyboard.TargetName="Content"
+                                Storyboard.TargetProperty="Opacity"
+                                To="1"
+                                Duration="0:0:0.15" />
+                            <DoubleAnimation
+                                BeginTime="0:0:0.1"
+                                Storyboard.TargetName="Content"
+                                Storyboard.TargetProperty="RenderTransform.(TranslateTransform.Y)"
+                                From="4"
+                                To="0"
+                                Duration="0:0:0.15" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.ExitActions>
+            </Trigger>
+
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter TargetName="Overlay" Property="Background" Value="{StaticResource Brush.Control.HoverOverlay}" />
             </Trigger>
@@ -181,6 +306,9 @@
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual.Control}" />
         <Setter Property="Template" Value="{StaticResource Template.Button}" />
+        <!--  Save buttons (btnSave): wait for the check before the view closes, keep it while the view stays open  -->
+        <Setter Property="uixprops:UIXSaveFeedback.WaitTime" Value="0:0:0.45" />
+        <Setter Property="uixprops:UIXSaveFeedback.ShowTime" Value="0:0:1.4" />
         <Style.Triggers>
             <!--  Accent outline on hover (drawn by the background border, so the content doesn't move)  -->
             <Trigger Property="IsMouseOver" Value="True">

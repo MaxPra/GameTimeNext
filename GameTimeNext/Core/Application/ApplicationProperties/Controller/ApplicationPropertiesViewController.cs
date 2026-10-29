@@ -18,7 +18,7 @@ using static UIX.ViewController.Engine.FrameworkElements.UIXContextMenuFactory;
 
 namespace GameTimeNext.Core.Application.ApplicationProperties.Controller
 {
-    public class ApplicationPropertiesViewController : UIXViewControllerBase
+    public class ApplicationPropertiesViewController : UIXViewControllerBase<ApplicationPropertiesApp, ApplicationPropertiesView>
     {
         private ApplicationPropertiesDataWrapper? _dataWrapper;
 
@@ -59,6 +59,10 @@ namespace GameTimeNext.Core.Application.ApplicationProperties.Controller
         {
         }
 
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
+        {
+        }
+
         protected override void FillDBOImpl()
         {
         }
@@ -72,16 +76,6 @@ namespace GameTimeNext.Core.Application.ApplicationProperties.Controller
             FnControls.SetVisible(GetView().cpApplicationPropertiesDetail, true);
         }
         #endregion
-
-        private ApplicationPropertiesApp GetApp()
-        {
-            return (ApplicationPropertiesApp)App;
-        }
-
-        private ApplicationPropertiesView GetView()
-        {
-            return (ApplicationPropertiesView)View;
-        }
 
         /// <summary>
         /// Rebuilds the list and selects the definition with the given ID, which opens it in the edit area.

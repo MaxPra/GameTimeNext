@@ -18,7 +18,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Profiles.Controller
 {
-    public class ProfilesSteamGridDBViewController : UIXViewControllerBase
+    public class ProfilesSteamGridDBViewController : UIXViewControllerBase<ProfilesSteamGridDBApp, ProfilesSteamGridDBView>
     {
         private ProfilesSteamGridDBViewModel _profilesSteamGridDBViewModel;
 
@@ -156,15 +156,15 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected override void BuildImpl()
         {
-            FnControls.SetEnabled(GetWnd().btnPreviousPage, _currentPage > 0);
-            FnControls.SetEnabled(GetWnd().btnNextPage, _currentPage < _sgdbPages.Count - 1);
+            FnControls.SetEnabled(GetView().btnPreviousPage, _currentPage > 0);
+            FnControls.SetEnabled(GetView().btnNextPage, _currentPage < _sgdbPages.Count - 1);
 
             // Preview of the selected cover as case and disc (only set on a change: a new cover rolls the disc out again).
             // Its disc section is taken over by the profile cover on Apply (DiscPrint.AdoptSectionAsync).
-            BitmapImage? previewCover = (GetWnd().lbSteamGridCovers.SelectedItem as SteamGridDBImage)?.BitmapImage;
+            BitmapImage? previewCover = (GetView().lbSteamGridCovers.SelectedItem as SteamGridDBImage)?.BitmapImage;
 
-            if (!ReferenceEquals(GetWnd().ccCoverPreview.Content, previewCover))
-                GetWnd().ccCoverPreview.Content = previewCover;
+            if (!ReferenceEquals(GetView().ccCoverPreview.Content, previewCover))
+                GetView().ccCoverPreview.Content = previewCover;
         }
 
         protected override void CheckImpl()
@@ -185,6 +185,10 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         }
 
         protected override void Event_Minimize()
+        {
+        }
+
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
         {
         }
 
@@ -481,14 +485,5 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             public Task? DownloadTask { get; set; }
         }
 
-        private ProfilesSteamGridDBApp GetApp()
-        {
-            return (ProfilesSteamGridDBApp)App;
-        }
-
-        private ProfilesSteamGridDBView GetWnd()
-        {
-            return (ProfilesSteamGridDBView)View;
-        }
     }
 }

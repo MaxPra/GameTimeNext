@@ -20,7 +20,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Settings.Controller
 {
-    internal class SettingsViewController : UIXViewControllerBase
+    internal class SettingsViewController : UIXViewControllerBase<SettingsApp, SettingsView>
     {
 
         private AppSettings? _appSettings = null;
@@ -111,6 +111,11 @@ namespace GameTimeNext.Core.Application.Settings.Controller
 
         protected override void TriggeredEvent(FrameworkElement source, string eventName)
         {
+        }
+
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
+        {
+            CFMBOX.AskUnsavedChanges(GetApp(), args);
         }
 
         protected override void FillDBOImpl()
@@ -249,16 +254,6 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             _appSettings!.AcceptChanges();
 
             FnSystem.SetAutoStart(_appSettings!.AutoStartMinimized && !FnSystem.IsDebug(), true);
-        }
-
-        private SettingsView GetView()
-        {
-            return (SettingsView)View;
-        }
-
-        private SettingsApp GetApp()
-        {
-            return (SettingsApp)App;
         }
 
         protected void EV_btnCaptureMonitoringKey()

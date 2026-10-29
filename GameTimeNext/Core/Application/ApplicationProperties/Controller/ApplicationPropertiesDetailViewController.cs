@@ -9,13 +9,14 @@ using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.DataBaseObjects;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
+using GameTimeNext.Core.Framework.UI.Dialogs;
 
 namespace GameTimeNext.Core.Application.ApplicationProperties.Controller
 {
     /// <summary>
     /// Combined edit area of the definitions list: edits the definition held by the data wrapper and saves it directly.
     /// </summary>
-    public class ApplicationPropertiesDetailViewController : UIXViewControllerBase
+    public class ApplicationPropertiesDetailViewController : UIXViewControllerBase<ApplicationPropertiesApp, ApplicationPropertiesDetailView>
     {
         private ApplicationPropertiesDataWrapper? _dataWrapper;
 
@@ -85,6 +86,11 @@ namespace GameTimeNext.Core.Application.ApplicationProperties.Controller
         {
         }
 
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
+        {
+            CFMBOX.AskUnsavedChanges(GetApp(), args);
+        }
+
         protected override void FillDBOImpl()
         {
         }
@@ -97,11 +103,6 @@ namespace GameTimeNext.Core.Application.ApplicationProperties.Controller
         {
         }
         #endregion
-
-        private ApplicationPropertiesDetailView GetView()
-        {
-            return (ApplicationPropertiesDetailView)View;
-        }
 
         private void BuildHeader(T1APRDH t1aprdh)
         {

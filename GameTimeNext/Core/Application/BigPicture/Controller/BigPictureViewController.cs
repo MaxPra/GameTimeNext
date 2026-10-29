@@ -31,7 +31,7 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
     /// mouse; the selection is a controller model, not the keyboard focus.
     /// Split by concern: games (pivots, row, details), launch / quit, menu and message boxes, search, filter.
     /// </summary>
-    public partial class BigPictureViewController : UIXViewControllerBase, ICFMBOXPresenter
+    public partial class BigPictureViewController : UIXViewControllerBase<BigPictureApp, BigPictureView>, ICFMBOXPresenter
     {
         private readonly GamepadInput _gamepad = new GamepadInput();
         private readonly DispatcherTimer _clockTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(10) };
@@ -186,6 +186,10 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
         }
 
         protected override void FillViewImpl()
+        {
+        }
+
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
         {
         }
 
@@ -901,14 +905,5 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
                 : null;
         }
 
-        private BigPictureApp GetApp()
-        {
-            return (BigPictureApp)App;
-        }
-
-        private BigPictureView GetView()
-        {
-            return (BigPictureView)View;
-        }
     }
 }

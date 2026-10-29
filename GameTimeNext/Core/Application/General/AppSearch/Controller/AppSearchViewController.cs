@@ -21,7 +21,7 @@ using UIX.ViewController.Engine.Viewmodel;
 
 namespace GameTimeNext.Core.Application.General.AppSearch.Controller
 {
-    public class AppSearchViewController : UIXViewControllerBase
+    public class AppSearchViewController : UIXViewControllerBase<AppSearchApp, AppSearchView>
     {
         /// <summary>
         /// Application call of a menu that can be launched by the current user.
@@ -46,7 +46,7 @@ namespace GameTimeNext.Core.Application.General.AppSearch.Controller
 
         protected override void BuildFirstImpl()
         {
-            GetWnd().txbSearch.Focus();
+            GetView().txbSearch.Focus();
         }
 
         protected override async Task BuildFirstImplAsync()
@@ -63,6 +63,10 @@ namespace GameTimeNext.Core.Application.General.AppSearch.Controller
         }
 
         protected override void DataWrapperSelectionChangedImpl(Selector source)
+        {
+        }
+
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
         {
         }
 
@@ -135,16 +139,6 @@ namespace GameTimeNext.Core.Application.General.AppSearch.Controller
                 BuildTree();
         }
 
-        private AppSearchApp GetApp()
-        {
-            return (AppSearchApp)App;
-        }
-
-        private AppSearchView GetWnd()
-        {
-            return (AppSearchView)View;
-        }
-
         /// <summary>
         /// Loads the menus and the application calls the current user can launch, then shows the tree.
         /// </summary>
@@ -215,7 +209,7 @@ namespace GameTimeNext.Core.Application.General.AppSearch.Controller
         /// </summary>
         private void BuildTree()
         {
-            string searchText = GetWnd().txbSearch.Text.Trim();
+            string searchText = GetView().txbSearch.Text.Trim();
             bool hasSearch = !FnString.IsNullEmptyOrWhitespace(searchText);
 
             Dictionary<long, T1MENUE> entriesById = _entries.ToDictionary(e => e.MEID);
@@ -250,19 +244,19 @@ namespace GameTimeNext.Core.Application.General.AppSearch.Controller
             List<AppSearchTreeGridRow> rows = new List<AppSearchTreeGridRow>();
             AddRows(rows, childrenByParent, 0, new UIXStructureKey(), visibleIds, new HashSet<long>());
 
-            GetWnd().dgApplications.ItemsSource = new ObservableCollection<AppSearchTreeGridRow>(rows);
+            GetView().dgApplications.ItemsSource = new ObservableCollection<AppSearchTreeGridRow>(rows);
 
             int applicationCount = rows.Count(r => !r.IsFolder);
 
-            GetWnd().txResultCount.Text = applicationCount == 1 ? "1 application" : $"{applicationCount} applications";
-            GetWnd().txNoResults.Text = hasSearch ? $"No results for \"{searchText}\"" : "No menu calls yet";
-            FnControls.SetVisible(GetWnd().pnlNoResults, rows.Count == 0);
+            GetView().txResultCount.Text = applicationCount == 1 ? "1 application" : $"{applicationCount} applications";
+            GetView().txNoResults.Text = hasSearch ? $"No results for \"{searchText}\"" : "No menu calls yet";
+            FnControls.SetVisible(GetView().pnlNoResults, rows.Count == 0);
 
             // While searching, the first hit is preselected, so Enter opens it
             if (hasSearch && GetFirstApplicationRow() is AppSearchTreeGridRow firstRow)
             {
-                GetWnd().dgApplications.SelectedItem = firstRow;
-                GetWnd().dgApplications.ScrollIntoView(firstRow);
+                GetView().dgApplications.SelectedItem = firstRow;
+                GetView().dgApplications.ScrollIntoView(firstRow);
             }
         }
 
@@ -289,7 +283,7 @@ namespace GameTimeNext.Core.Application.General.AppSearch.Controller
 
                 _menuCalls.TryGetValue(t1menue.MEID, out MenuCall? menuCall);
 
-                AppSearchTreeGridRow row = GetWnd().dgApplications.CreateNewRow<AppSearchTreeGridRow>();
+                AppSearchTreeGridRow row = GetView().dgApplications.CreateNewRow<AppSearchTreeGridRow>();
                 row.StructureKey = parentKey.Add(t1menue.MEID);
                 row.IsExpanded = true;
                 row.IsFolder = menuCall == null;
@@ -307,12 +301,12 @@ namespace GameTimeNext.Core.Application.General.AppSearch.Controller
 
         private AppSearchTreeGridRow? GetSelectedRow()
         {
-            return GetWnd().dgApplications.SelectedItem as AppSearchTreeGridRow;
+            return GetView().dgApplications.SelectedItem as AppSearchTreeGridRow;
         }
 
         private AppSearchTreeGridRow? GetFirstApplicationRow()
         {
-            return GetWnd().dgApplications.TreeRows.OfType<AppSearchTreeGridRow>().FirstOrDefault(r => !r.IsFolder && r.IsVisibleInTree);
+            return GetView().dgApplications.TreeRows.OfType<AppSearchTreeGridRow>().FirstOrDefault(r => !r.IsFolder && r.IsVisibleInTree);
         }
 
         /// <summary>
@@ -320,7 +314,7 @@ namespace GameTimeNext.Core.Application.General.AppSearch.Controller
         /// </summary>
         private void FocusTree()
         {
-            UIXTreeGrid dgApplications = GetWnd().dgApplications;
+            UIXTreeGrid dgApplications = GetView().dgApplications;
             object? item = dgApplications.SelectedItem ?? dgApplications.Items.Cast<object>().FirstOrDefault();
 
             if (item == null)
@@ -341,7 +335,7 @@ namespace GameTimeNext.Core.Application.General.AppSearch.Controller
         {
             for (; element != null; element = element is Visual ? VisualTreeHelper.GetParent(element) : LogicalTreeHelper.GetParent(element))
             {
-                if (ReferenceEquals(element, GetWnd().dgApplications))
+                if (ReferenceEquals(element, GetView().dgApplications))
                     return true;
             }
 
@@ -368,7 +362,7 @@ namespace GameTimeNext.Core.Application.General.AppSearch.Controller
         private void LaunchApplication(string className, string appName)
         {
             UIXApplication hostApplication = GetApp().HostApplication;
-            Window? hostWindow = Window.GetWindow(GetWnd());
+            Window? hostWindow = Window.GetWindow(GetView());
 
             void LaunchAfterClose(object? sender, EventArgs args)
             {

@@ -19,7 +19,7 @@ using static UIX.ViewController.Engine.FrameworkElements.UIXContextMenuFactory;
 
 namespace GameTimeNext.Core.Application.Metadata.Controller
 {
-    public class MetadataViewController : UIXViewControllerBase
+    public class MetadataViewController : UIXViewControllerBase<MetadataApp, MetadataView>
     {
         private MetadataViewModel? _viewModel;
 
@@ -61,6 +61,10 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
         {
         }
 
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
+        {
+        }
+
         protected override void FillDBOImpl()
         {
         }
@@ -71,16 +75,6 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
         protected override void DataWrapperSelectionChangedImpl(Selector source)
         {
-        }
-
-        private MetadataApp GetApp()
-        {
-            return (MetadataApp)App;
-        }
-
-        private MetadataView GetView()
-        {
-            return (MetadataView)View;
         }
 
         protected void EV_DgMetadata_CtxtOpening(FrameworkElement target)

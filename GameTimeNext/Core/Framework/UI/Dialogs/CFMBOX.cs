@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.Runnables;
 
 namespace GameTimeNext.Core.Framework.UI.Dialogs
@@ -62,6 +63,19 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
 
             CreateFreshDialog();
             return _cfmboxController!.ShowDialog(title, message, buttons, icon, owner, type);
+        }
+
+        /// <summary>
+        /// Standard question for UnsavedChangesImpl of a controller: Yes saves (then closes), No discards the changes,
+        /// Cancel (or closing the message box) keeps the view open.
+        /// </summary>
+        public static void AskUnsavedChanges(UIXApplication app, UIXUnsavedChangesArgs args)
+        {
+            CFMBOXResult result = app.GetApplication<CFMBOX>(UIXApplicationStartTarget.Window)
+                .Show(app.GetErrorMessage("GLO0022"), CFMBOXResult.Yes | CFMBOXResult.No | CFMBOXResult.Cancel, CFMBOXIcon.Question);
+
+            args.Save = result == CFMBOXResult.Yes;
+            args.Cancel = result != CFMBOXResult.Yes && result != CFMBOXResult.No;
         }
 
         private void CreateFreshDialog()

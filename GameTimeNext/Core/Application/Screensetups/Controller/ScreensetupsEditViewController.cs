@@ -15,7 +15,7 @@ using UIXMonitorTweaks;
 
 namespace GameTimeNext.Core.Application.Screensetups.Controller
 {
-    public class ScreensetupsEditViewController : UIXViewControllerBase
+    public class ScreensetupsEditViewController : UIXViewControllerBase<ScreensetupsEditApp, ScreensetupsEditView>
     {
 
         private ScreensetupsEditViewModel? _viewModel;
@@ -43,13 +43,13 @@ namespace GameTimeNext.Core.Application.Screensetups.Controller
         {
             using (SuppressRunEventPipeline())
             {
-                FnControls.LoadTabContent(GetWnd().tabControl);
+                FnControls.LoadTabContent(GetView().tabControl);
 
                 BuildMonitorGrid();
                 BuildAudioDevices();
             }
 
-            GetWnd().TxbName.Focus();
+            GetView().TxbName.Focus();
         }
 
         protected override void BuildImpl()
@@ -58,32 +58,37 @@ namespace GameTimeNext.Core.Application.Screensetups.Controller
 
         protected override void CheckImpl()
         {
-            if (FnString.IsNullEmptyOrWhitespace(GetWnd().TxbName.Text))
-                AddViewError(GetWnd().TxbName, GetErrorMessage("GLO0003", "Name"));
+            if (FnString.IsNullEmptyOrWhitespace(GetView().TxbName.Text))
+                AddViewError(GetView().TxbName, GetErrorMessage("GLO0003", "Name"));
 
-            if (GetWnd().TxbName.Text.Length > 200)
-                AddViewError(GetWnd().TxbName, GetErrorMessage("GLO0004", "Name", "200"));
+            if (GetView().TxbName.Text.Length > 200)
+                AddViewError(GetView().TxbName, GetErrorMessage("GLO0004", "Name", "200"));
 
-            if (GetWnd().TxbDescription.Text.Length > 200)
-                AddViewError(GetWnd().TxbDescription, GetErrorMessage("GLO0004", "Description", "200"));
+            if (GetView().TxbDescription.Text.Length > 200)
+                AddViewError(GetView().TxbDescription, GetErrorMessage("GLO0004", "Description", "200"));
 
             List<ScreensetupMonitorDataGridRow> monitorRows = _viewModel?.MonitorDataGridRows?.ToList() ?? new List<ScreensetupMonitorDataGridRow>();
 
             if (!monitorRows.Any(r => r.COMOEN))
-                AddViewError(GetWnd().DgMonitors, GetErrorMessage("SCS0001"));
+                AddViewError(GetView().DgMonitors, GetErrorMessage("SCS0001"));
             else if (!monitorRows.Any(r => r.COMOPR))
-                AddViewError(GetWnd().DgMonitors, GetErrorMessage("GLO0003", "A primary monitor"));
+                AddViewError(GetView().DgMonitors, GetErrorMessage("GLO0003", "A primary monitor"));
             else if (monitorRows.Any(r => r.COMOPR && !r.COMOEN))
-                AddViewError(GetWnd().DgMonitors, GetErrorMessage("SCS0002"));
+                AddViewError(GetView().DgMonitors, GetErrorMessage("SCS0002"));
         }
 
         protected override void FillViewImpl()
         {
         }
 
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
+        {
+            CFMBOX.AskUnsavedChanges(GetApp(), args);
+        }
+
         protected override void FillDBOImpl()
         {
-            string adid = (GetWnd().CmbAudioDevice.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? string.Empty;
+            string adid = (GetView().CmbAudioDevice.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? string.Empty;
 
             GetApp().T1SCRSH!.ADID = adid;
             GetApp().T1SCRSH!.ADNA = _audioDeviceNames.TryGetValue(adid, out string? adna) ? adna : string.Empty;
@@ -133,26 +138,16 @@ namespace GameTimeNext.Core.Application.Screensetups.Controller
         {
         }
 
-        private ScreensetupsEditApp GetApp()
-        {
-            return (ScreensetupsEditApp)App;
-        }
-
-        private ScreensetupsEditView GetWnd()
-        {
-            return (ScreensetupsEditView)View;
-        }
-
         private void BuildMonitorGrid()
         {
             // A copy starts with the monitors of its source screensetup
-            long ssid = GetWnd().ViewIndicator.Contains("CO") ? GetApp().CopySourceSSID : GetApp().T1SCRSH!.SSID;
+            long ssid = GetView().ViewIndicator.Contains("CO") ? GetApp().CopySourceSSID : GetApp().T1SCRSH!.SSID;
 
             IReadOnlyList<UIXMonitorInfo> monitors = UIXMonitorManager.GetMonitors();
             List<T1SCRSP> t1scrsps = TFSCRSP.GetMonitorsOfScreensetup(ssid);
 
             // A new screensetup starts with the current Windows state
-            bool isCreateNew = GetWnd().ViewIndicator.Contains("CN");
+            bool isCreateNew = GetView().ViewIndicator.Contains("CN");
 
             List<ScreensetupMonitorDataGridRow> rows = new List<ScreensetupMonitorDataGridRow>();
 
@@ -162,7 +157,7 @@ namespace GameTimeNext.Core.Application.Screensetups.Controller
                 UIXMonitorInfo monitor = monitors[i];
                 T1SCRSP? t1scrsp = t1scrsps.FirstOrDefault(p => p.MOID == monitor.Id);
 
-                ScreensetupMonitorDataGridRow row = GetWnd().DgMonitors.CreateNewRow<ScreensetupMonitorDataGridRow>();
+                ScreensetupMonitorDataGridRow row = GetView().DgMonitors.CreateNewRow<ScreensetupMonitorDataGridRow>();
                 row.COMOID = monitor.Id;
                 row.COMONA = monitor.Name;
                 row.CONUMB = (i + 1).ToString(CultureInfo.CurrentCulture);
@@ -177,7 +172,7 @@ namespace GameTimeNext.Core.Application.Screensetups.Controller
             // Keep stored monitors that are not connected right now, otherwise they would be lost on save
             foreach (T1SCRSP t1scrsp in t1scrsps.Where(p => !monitors.Any(m => m.Id == p.MOID)))
             {
-                ScreensetupMonitorDataGridRow row = GetWnd().DgMonitors.CreateNewRow<ScreensetupMonitorDataGridRow>();
+                ScreensetupMonitorDataGridRow row = GetView().DgMonitors.CreateNewRow<ScreensetupMonitorDataGridRow>();
                 row.COMOID = t1scrsp.MOID;
                 row.COMONA = t1scrsp.MONA;
                 row.CONUMB = "-";
@@ -217,7 +212,7 @@ namespace GameTimeNext.Core.Application.Screensetups.Controller
 
             _audioDeviceNames = new Dictionary<string, string>();
 
-            ComboBox cmbAudioDevice = GetWnd().CmbAudioDevice;
+            ComboBox cmbAudioDevice = GetView().CmbAudioDevice;
             cmbAudioDevice.Items.Clear();
             cmbAudioDevice.Items.Add(new ComboBoxItem { Content = "(Unchanged)", Tag = string.Empty });
 
