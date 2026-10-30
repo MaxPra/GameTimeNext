@@ -131,7 +131,12 @@
         "+" after the last tab: small glass square, centered in the track with the same gap on all sides
         (width follows the remaining height). Card brushes via DynamicResource: CardStyles.xaml is merged later.
     -->
+    <Geometry x:Key="TabAddButton.Glyph">M4.5,0 L4.5,9 M0,4.5 L9,4.5</Geometry>
+    <Geometry x:Key="TabFavoritesButton.Glyph">M0.5,2.5 L4.5,6.5 L8.5,2.5</Geometry>
+
+    <!--  The glyph (9 x 9 line drawing) is the button's Tag, so the "favorites" button can share the template  -->
     <Style x:Key="TabAddButtonStyle" TargetType="{x:Type Button}">
+        <Setter Property="Tag" Value="{StaticResource TabAddButton.Glyph}" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
         <Setter Property="Background" Value="{DynamicResource Brush.Card.Background}" />
         <Setter Property="BorderBrush" Value="{DynamicResource Brush.Card.Border}" />
@@ -156,8 +161,9 @@
                             Height="9"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
-                            Data="M4.5,0 L4.5,9 M0,4.5 L9,4.5"
+                            Data="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}"
                             Stroke="{TemplateBinding Foreground}"
+                            StrokeLineJoin="Round"
                             StrokeEndLineCap="Round"
                             StrokeStartLineCap="Round"
                             StrokeThickness="1.6" />
@@ -175,6 +181,14 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+
+    <!--  Down arrow before the "+": opens the start order of the favorites (TabControlBehaviors.ShowFavoritesButton)  -->
+    <Style
+        x:Key="TabFavoritesButtonStyle"
+        BasedOn="{StaticResource TabAddButtonStyle}"
+        TargetType="{x:Type Button}">
+        <Setter Property="Tag" Value="{StaticResource TabFavoritesButton.Glyph}" />
     </Style>
 
     <Style x:Key="ModernTabControlStyle" TargetType="{x:Type TabControl}">
@@ -277,9 +291,16 @@
                                         <ItemsPresenter />
 
                                         <!--
-                                            Optional "+" after the last tab (TabControlBehaviors.ShowAddButton).
-                                            The click bubbles to the window and is dispatched to the controller as EV_BtnTabAdd.
+                                            Optional favorites button and "+" after the last tab (TabControlBehaviors.ShowFavoritesButton /
+                                            ShowAddButton). The clicks bubble to the window and are dispatched to the controller as
+                                            EV_btnTabFavorites / EV_BtnTabAdd.
                                         -->
+                                        <Button
+                                            x:Name="btnTabFavorites"
+                                            Style="{StaticResource TabFavoritesButtonStyle}"
+                                            ToolTip="{Binding Path=(uiFramework:TabControlBehaviors.FavoritesButtonToolTip), RelativeSource={RelativeSource TemplatedParent}}"
+                                            Visibility="Collapsed" />
+
                                         <Button
                                             x:Name="BtnTabAdd"
                                             Style="{StaticResource TabAddButtonStyle}"
@@ -315,10 +336,24 @@
                             <Setter TargetName="BtnTabAdd" Property="Visibility" Value="Visible" />
                         </Trigger>
 
+                        <Trigger Property="uiFramework:TabControlBehaviors.ShowFavoritesButton" Value="True">
+                            <Setter TargetName="btnTabFavorites" Property="Visibility" Value="Visible" />
+                        </Trigger>
+
                         <!--  Without tabs there is no preceding tab margin: same gap on the left as on the other sides  -->
                         <Trigger Property="HasItems" Value="False">
                             <Setter TargetName="BtnTabAdd" Property="Margin" Value="6" />
+                            <Setter TargetName="btnTabFavorites" Property="Margin" Value="6" />
                         </Trigger>
+
+                        <!--  The favorites button brings the left gap, the "+" follows it  -->
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="HasItems" Value="False" />
+                                <Condition Property="uiFramework:TabControlBehaviors.ShowFavoritesButton" Value="True" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="BtnTabAdd" Property="Margin" Value="0,6,6,6" />
+                        </MultiTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>

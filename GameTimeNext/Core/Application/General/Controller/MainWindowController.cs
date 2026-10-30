@@ -1,8 +1,8 @@
 ﻿using GameTimeNext.Core.Application.BigPicture;
 using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.General.AppSearch;
-using GameTimeNext.Core.Application.General.FavAppsReorder;
 using GameTimeNext.Core.Application.General.UserSettings;
+using GameTimeNext.Core.Application.General.Views;
 using GameTimeNext.Core.Application.GTXMigration;
 using GameTimeNext.Core.Application.Profiles;
 using GameTimeNext.Core.Framework;
@@ -136,6 +136,32 @@ namespace GameTimeNext.Core.Application.General.Controller
         protected void EV_BtnTabAdd()
         {
             OpenAppMenu();
+        }
+
+        /// <summary>
+        /// Down arrow before the "+" in the main tab control (template part of the tab control style):
+        /// opens the start order of the favorites.
+        /// </summary>
+        protected void EV_btnTabFavorites()
+        {
+            FavAppsStartOrderView view = GetApp().FavAppsStartOrderView!;
+
+            // The popup closes itself on a click outside, without CloseView
+            if (view.IsShown && view.Popup!.IsOpen)
+            {
+                view.CloseView();
+                return;
+            }
+
+            view.Popup!.PlacementTarget = GetView().MainTabControl.Template.FindName("btnTabFavorites", GetView().MainTabControl) as UIElement;
+            view.ShowView(true);
+        }
+
+        /// <summary>
+        /// An open application was dragged to another position in the tab bar. The order of the open tabs is not saved.
+        /// </summary>
+        protected void EV_MainTabControl_DragAndDrop()
+        {
         }
 
         /// <summary>
@@ -437,21 +463,6 @@ namespace GameTimeNext.Core.Application.General.Controller
             FavoriteApplication favApp = FnUserSettings.GetFavoriteApplication(AppEnvironment.GetAppConfig().UserSettings.FavApps, tab.Tag.ToString());
 
             FnUserSettings.UnsetAsPrimaryStart(favApp);
-        }
-
-        protected void EV_ctxtEditOrder()
-        {
-            FavAppsReorderApp? favAppsReorderApp = GetApp().GetApplication<FavAppsReorderApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
-
-            favAppsReorderApp.AppResult = (result =>
-            {
-                if (result.HasChanged)
-                {
-                    ReorderTabsByFavApps();
-                }
-            });
-
-            favAppsReorderApp.Reorder();
         }
 
         protected void EXEV_SwitchToApplication(string applicationFullName)

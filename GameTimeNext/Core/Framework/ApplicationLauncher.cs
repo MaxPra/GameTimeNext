@@ -197,13 +197,6 @@ namespace GameTimeNext.Core.Framework
 
             var favApps = AppEnvironment.GetAppConfig().UserSettings.FavApps.OrderBy(a => a.Order).ToList();
 
-            if (favApps != null && favApps.Count > 1)
-            {
-                contextBuilder.AddSeparator(contextMenuSeparatorStyle);
-
-                contextBuilder.AddItem("ctxtEditOrder", "Edit favorite apps order", icon: UIXContextMenuFactory.CreateMdlIcon("\uE7C2"), itemStyle: contextMenuItemStyle);
-            }
-
             // Help text of the application (T1APRDH), shown as Markdown in the CFMBOX
             contextBuilder.AddSeparator(contextMenuSeparatorStyle);
             contextBuilder.AddItem("ctxtHelp", "Help", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Help), itemStyle: contextMenuItemStyle);

@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using UIX.ViewController.Engine.AttachedProperties;
 
 namespace GameTimeNext.Core.Framework.UI
 {
@@ -51,6 +52,37 @@ namespace GameTimeNext.Core.Framework.UI
         public static void SetAddButtonToolTip(DependencyObject obj, string? value)
             => obj.SetValue(AddButtonToolTipProperty, value);
 
+        /// <summary>
+        /// Shows a button with a down arrow before the "+" button (template part btnTabFavorites). Its click is
+        /// dispatched to the window controller like any other named button (EV_btnTabFavorites).
+        /// </summary>
+        public static readonly DependencyProperty ShowFavoritesButtonProperty =
+            DependencyProperty.RegisterAttached(
+                "ShowFavoritesButton",
+                typeof(bool),
+                typeof(TabControlBehaviors),
+                new PropertyMetadata(false));
+
+        public static bool GetShowFavoritesButton(DependencyObject obj)
+            => (bool)obj.GetValue(ShowFavoritesButtonProperty);
+
+        public static void SetShowFavoritesButton(DependencyObject obj, bool value)
+            => obj.SetValue(ShowFavoritesButtonProperty, value);
+
+        /// <summary>Tooltip of the favorites button.</summary>
+        public static readonly DependencyProperty FavoritesButtonToolTipProperty =
+            DependencyProperty.RegisterAttached(
+                "FavoritesButtonToolTip",
+                typeof(string),
+                typeof(TabControlBehaviors),
+                new PropertyMetadata(null));
+
+        public static string? GetFavoritesButtonToolTip(DependencyObject obj)
+            => (string?)obj.GetValue(FavoritesButtonToolTipProperty);
+
+        public static void SetFavoritesButtonToolTip(DependencyObject obj, string? value)
+            => obj.SetValue(FavoritesButtonToolTipProperty, value);
+
         private static readonly DependencyProperty LastSelectedItemProperty =
             DependencyProperty.RegisterAttached(
                 "LastSelectedItem",
@@ -74,12 +106,14 @@ namespace GameTimeNext.Core.Framework.UI
                 tabControl.SelectionChanged += OnTabControlSelectionChanged;
                 tabControl.Loaded += OnTabControlLoaded;
                 tabControl.SizeChanged += OnTabControlSizeChanged;
+                UIXDragAndDrop.AddItemsMovedHandler(tabControl, OnTabsMoved);
             }
             else
             {
                 tabControl.SelectionChanged -= OnTabControlSelectionChanged;
                 tabControl.Loaded -= OnTabControlLoaded;
                 tabControl.SizeChanged -= OnTabControlSizeChanged;
+                UIXDragAndDrop.RemoveItemsMovedHandler(tabControl, OnTabsMoved);
             }
         }
 
@@ -98,6 +132,15 @@ namespace GameTimeNext.Core.Framework.UI
                 return;
 
             AnimateSelectionRunner(tabControl, animate: false);
+        }
+
+        /// <summary>
+        /// Tabs dragged to another position (UIXDragAndDrop): the runner follows the selected tab without animation.
+        /// </summary>
+        private static void OnTabsMoved(object sender, RoutedEventArgs e)
+        {
+            if (sender is TabControl tabControl)
+                AnimateSelectionRunner(tabControl, animate: false);
         }
 
         private static void OnTabControlSelectionChanged(object sender, SelectionChangedEventArgs e)
