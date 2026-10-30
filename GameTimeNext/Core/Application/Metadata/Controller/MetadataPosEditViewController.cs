@@ -275,7 +275,8 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
         protected void EV_btnSave()
         {
 
-            GetViewReturn<MetadataPosEditViewReturn>().HasChanged = GetApp().T1METAP!.HasChanged();
+            // A new field is always a change, it is saved now
+            GetViewReturn<MetadataPosEditViewReturn>().HasChanged = GetView().ViewIndicator.Contains("CN") || GetApp().T1METAP!.HasChanged();
 
             Exit(true);
         }
