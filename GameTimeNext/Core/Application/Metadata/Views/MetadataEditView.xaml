@@ -127,7 +127,7 @@
             </Grid>
         </Border>
 
-        <TabControl x:Name="tabControl" Grid.Row="2">
+        <uixsel:UIXTabControl x:Name="tabControl" Grid.Row="2">
             <TabItem Header="Fields">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -220,8 +220,6 @@
                         CanUserResizeRows="False"
                         HeadersVisibility="Column"
                         IsReadOnly="True"
-                        ItemsSource="{Binding MetadataPositionDataGridRows}"
-                        SelectedItem="{Binding SelectedRow, Mode=TwoWay}"
                         SelectionMode="Single"
                         SelectionUnit="FullRow">
                         <uixsel:UIXDataGrid.Columns>
@@ -253,7 +251,7 @@
                     </uixsel:UIXDataGrid>
                 </Grid>
             </TabItem>
-        </TabControl>
+        </uixsel:UIXTabControl>
 
         <Grid Grid.Row="4">
             <Grid.ColumnDefinitions>

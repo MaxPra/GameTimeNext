@@ -6,6 +6,7 @@
     xmlns:local="clr-namespace:GameTimeNext.Core.Application.Profiles.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI.Base"
+    xmlns:uixsel="clr-namespace:UIX.ViewController.Engine.FrameworkElements.Selectors;assembly=UIX.ViewController.Engine"
     Title="Launcher import"
     Width="800"
     Height="750"
@@ -39,7 +40,7 @@
             VerticalContentAlignment="Center"
             ToolTip="Type to filter the list" />
 
-        <DataGrid
+        <uixsel:UIXDataGrid
             x:Name="dgGames"
             Grid.Row="4"
             AutoGenerateColumns="False"
@@ -48,21 +49,19 @@
             CanUserResizeRows="False"
             HeadersVisibility="Column"
             IsReadOnly="True"
-            ItemsSource="{Binding Games}"
-            SelectedItem="{Binding SelectedGame}"
             SelectionMode="Single"
             SelectionUnit="FullRow">
-            <DataGrid.Columns>
+            <uixsel:UIXDataGrid.Columns>
                 <DataGridTextColumn
                     Width="*"
-                    Binding="{Binding Name}"
+                    Binding="{Binding COGANAM}"
                     Header="Name" />
                 <DataGridTextColumn
                     Width="220"
-                    Binding="{Binding LauncherName}"
+                    Binding="{Binding COLNTY}"
                     Header="Launcher" />
-            </DataGrid.Columns>
-        </DataGrid>
+            </uixsel:UIXDataGrid.Columns>
+        </uixsel:UIXDataGrid>
 
         <Grid Grid.Row="6">
             <Grid.ColumnDefinitions>

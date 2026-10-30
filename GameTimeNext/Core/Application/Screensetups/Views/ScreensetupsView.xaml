@@ -111,8 +111,6 @@
             CanUserResizeRows="False"
             HeadersVisibility="Column"
             IsReadOnly="True"
-            ItemsSource="{Binding ScreensetupDataGridRows}"
-            SelectedItem="{Binding SelectedRow, Mode=TwoWay}"
             SelectionMode="Single"
             SelectionUnit="FullRow">
             <uixsel:UIXDataGrid.Columns>

@@ -100,11 +100,11 @@
         ===== Buttons =====
         One flat template for all buttons: fill without border, hover/pressed as overlay (works on any fill),
         accent focus ring only for keyboard navigation (FocusVisualStyle).
-
-          (implicit)        neutral button
-          Button.Primary    accent fill, the main action of a view (Button.Secondary is the old name, kept for compatibility)
-          Button.Ghost      no fill until hovered, for icon buttons and secondary actions
-          Button.Icon       square neutral button for a single icon (no padding, otherwise the icon gets clipped)
+        
+        (implicit)        neutral button
+        Button.Primary    accent fill, the main action of a view (Button.Secondary is the old name, kept for compatibility)
+        Button.Ghost      no fill until hovered, for icon buttons and secondary actions
+        Button.Icon       square neutral button for a single icon (no padding, otherwise the icon gets clipped)
     -->
 
     <Style x:Key="FocusVisual.Control">

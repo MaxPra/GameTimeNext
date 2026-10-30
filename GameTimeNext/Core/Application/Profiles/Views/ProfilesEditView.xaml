@@ -3,6 +3,7 @@
     x:Class="GameTimeNext.Core.Application.Profiles.Views.ProfilesEditView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:uixsel="clr-namespace:UIX.ViewController.Engine.FrameworkElements.Selectors;assembly=UIX.ViewController.Engine"
     xmlns:uixcb="clr-namespace:UIX.ViewController.Engine.FrameworkElements.ComboBoxes;assembly=UIX.ViewController.Engine"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:gtnui="clr-namespace:GameTimeNext.Core.Framework.UI"
@@ -72,14 +73,14 @@
                     ToolTip="Use the GameTimeNext placeholder cover" />
             </StackPanel>
 
-            <TabControl x:Name="tabControl" Grid.Column="2">
-                <TabControl.Resources>
+            <uixsel:UIXTabControl x:Name="tabControl" Grid.Column="2">
+                <uixsel:UIXTabControl.Resources>
                     <!--  Sections of this view: more room inside the cards  -->
                     <Style BasedOn="{StaticResource GroupBox.Card}" TargetType="{x:Type GroupBox}">
                         <Setter Property="Padding" Value="20" />
                         <Setter Property="Margin" Value="0" />
                     </Style>
-                </TabControl.Resources>
+                </uixsel:UIXTabControl.Resources>
 
                 <TabItem Header="General">
                     <Grid>
@@ -407,7 +408,7 @@
                         </GroupBox>
                     </StackPanel>
                 </TabItem>
-            </TabControl>
+            </uixsel:UIXTabControl>
         </Grid>
 
         <Grid Grid.Row="2">

@@ -65,7 +65,10 @@
                                                 </TransformGroup>
                                             </Grid.RenderTransform>
 
-                                            <Ellipse Fill="{DynamicResource Brush.Card.Background}" Stroke="{DynamicResource Brush.Card.Border}" StrokeThickness="1" />
+                                            <Ellipse
+                                                Fill="{DynamicResource Brush.Card.Background}"
+                                                Stroke="{DynamicResource Brush.Card.Border}"
+                                                StrokeThickness="1" />
                                             <Ellipse
                                                 Margin="7"
                                                 Fill="{DynamicResource Brush.Accent}"
@@ -134,20 +137,38 @@
                                         <!--  The icon lifts off and settles again, a bit faster than the monitoring heartbeat  -->
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CenterLiftTransform" Storyboard.TargetProperty="Y">
                                             <SplineDoubleKeyFrame KeyTime="0:0:0.0" Value="0" />
-                                            <SplineDoubleKeyFrame KeySpline="0.4,0,0.6,1" KeyTime="0:0:0.9" Value="-5" />
-                                            <SplineDoubleKeyFrame KeySpline="0.4,0,0.6,1" KeyTime="0:0:1.8" Value="0" />
+                                            <SplineDoubleKeyFrame
+                                                KeySpline="0.4,0,0.6,1"
+                                                KeyTime="0:0:0.9"
+                                                Value="-5" />
+                                            <SplineDoubleKeyFrame
+                                                KeySpline="0.4,0,0.6,1"
+                                                KeyTime="0:0:1.8"
+                                                Value="0" />
                                         </DoubleAnimationUsingKeyFrames>
 
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CenterPulseTransform" Storyboard.TargetProperty="ScaleX">
                                             <SplineDoubleKeyFrame KeyTime="0:0:0.0" Value="1.0" />
-                                            <SplineDoubleKeyFrame KeySpline="0.4,0,0.6,1" KeyTime="0:0:0.9" Value="1.06" />
-                                            <SplineDoubleKeyFrame KeySpline="0.4,0,0.6,1" KeyTime="0:0:1.8" Value="1.0" />
+                                            <SplineDoubleKeyFrame
+                                                KeySpline="0.4,0,0.6,1"
+                                                KeyTime="0:0:0.9"
+                                                Value="1.06" />
+                                            <SplineDoubleKeyFrame
+                                                KeySpline="0.4,0,0.6,1"
+                                                KeyTime="0:0:1.8"
+                                                Value="1.0" />
                                         </DoubleAnimationUsingKeyFrames>
 
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CenterPulseTransform" Storyboard.TargetProperty="ScaleY">
                                             <SplineDoubleKeyFrame KeyTime="0:0:0.0" Value="1.0" />
-                                            <SplineDoubleKeyFrame KeySpline="0.4,0,0.6,1" KeyTime="0:0:0.9" Value="1.06" />
-                                            <SplineDoubleKeyFrame KeySpline="0.4,0,0.6,1" KeyTime="0:0:1.8" Value="1.0" />
+                                            <SplineDoubleKeyFrame
+                                                KeySpline="0.4,0,0.6,1"
+                                                KeyTime="0:0:0.9"
+                                                Value="1.06" />
+                                            <SplineDoubleKeyFrame
+                                                KeySpline="0.4,0,0.6,1"
+                                                KeyTime="0:0:1.8"
+                                                Value="1.0" />
                                         </DoubleAnimationUsingKeyFrames>
 
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="StatusText" Storyboard.TargetProperty="Opacity">

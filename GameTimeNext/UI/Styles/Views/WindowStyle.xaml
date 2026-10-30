@@ -6,7 +6,8 @@
     xmlns:baseViews="clr-namespace:GameTimeNext.Core.Framework.UI.Base"
     xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
-    xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI">
+    xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI"
+    xmlns:uixcb="clr-namespace:UIX.ViewController.Engine.FrameworkElements.ComboBoxes;assembly=UIX.ViewController.Engine">
 
     <!--
         Windows with backdrop blur (GTNWindow.IsBackdropActive; main window without dynamic background): "tinted glass".
@@ -248,12 +249,13 @@
                                                 Background="Transparent"
                                                 Visibility="Collapsed">
 
-                                                <ComboBox
+                                                <uixcb:UIXComboBox
                                                     x:Name="PART_ApplicationSearchBox"
                                                     IsEditable="True"
                                                     IsTextSearchEnabled="False"
                                                     ItemsSource="{TemplateBinding ApplicationSearchItemsSource}"
                                                     SelectedItem="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=ApplicationSearchSelectedItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                    ShowKeys="False"
                                                     StaysOpenOnEdit="True"
                                                     Style="{StaticResource TitleBarSearchComboBoxStyle}"
                                                     Tag="{TemplateBinding ApplicationSearchPlaceholder}" />

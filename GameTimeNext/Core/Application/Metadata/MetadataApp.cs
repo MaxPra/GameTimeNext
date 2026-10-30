@@ -1,4 +1,5 @@
 using GameTimeNext.Core.Application.Metadata.Controller;
+using GameTimeNext.Core.Application.Metadata.Selectors;
 using GameTimeNext.Core.Application.Metadata.Views;
 using System.Windows.Controls;
 using UIX.ViewController.Engine.Runnables;
@@ -39,6 +40,8 @@ namespace GameTimeNext.Core.Application.Metadata
             MetadataView = new MetadataView();
             MainView = MetadataView;
             MetadataView.ViewController = new MetadataViewController(this);
+            MetadataView.DgMetadata.SelectorAdapter = new MetadataView_MetadataSelectorAdapter(this);
+            MetadataView.DgMetadata.SelectorController = new MetadataView_MetadataSelectorController(this);
         }
 
         public override bool CanClose()

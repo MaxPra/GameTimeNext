@@ -6,34 +6,6 @@ using System.Windows.Media.Imaging;
 
 namespace GameTimeNext.Core.Application.Profiles.Viewmodel
 {
-    public class ProfilesSubGridViewModel : GTNViewModelBase
-    {
-        public ObservableCollection<ProfilesListBoxItem> T1Profis { get; set; }
-
-        private ProfilesListBoxItem _selectedProfile;
-        public ProfilesListBoxItem SelectedT1Profi
-        {
-            get => _selectedProfile;
-            set => SetProperty(ref _selectedProfile, value, OnSelectedProfileChanged);
-        }
-
-        public ProfilesSubGridViewModel()
-        {
-            T1Profis = new ObservableCollection<ProfilesListBoxItem>();
-        }
-
-
-        private void OnSelectedProfileChanged(ProfilesListBoxItem value)
-        {
-            if (value == null)
-                return;
-
-            AppEnvironment.SetCurrentProfile(value.ItemObject as T1PROFI);
-        }
-
-
-    }
-
     public class ProfileCover : GTNViewModelBase
     {
         private T1PROFI _t1Profi;

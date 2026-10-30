@@ -4,6 +4,7 @@ using GameTimeNext.Core.Application.General;
 using GameTimeNext.Core.Application.Playthroughs;
 using GameTimeNext.Core.Application.Profiles.BackgroundProcesses;
 using GameTimeNext.Core.Application.Profiles.DataWrapper;
+using GameTimeNext.Core.Application.Profiles.Selectors;
 using GameTimeNext.Core.Application.Profiles.Types;
 using GameTimeNext.Core.Application.Profiles.Viewmodel;
 using GameTimeNext.Core.Application.Profiles.Views;
@@ -23,6 +24,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Threading;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements;
+using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
@@ -33,7 +35,6 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
     public class ProfilesViewController : UIXViewControllerBase<ProfilesApp, ProfilesView>
     {
         private ProfilesSubViewDataWrapper? _dataWrapper;
-        private ProfilesSubGridViewModel? _profilesSubGridViewModel;
 
         public ProfilesViewController(UIXApplication app) : base(app)
         {
@@ -135,56 +136,28 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         #endregion
 
         #region Profiles List View
-        private async Task BuildProfilesListBoxAsync(long pfid)
-        {
-            GetApp().Loader.Begin();
-
-            // Stop in finally: an error while building the list must not leave the loader visible
-            try
-            {
-                (List<ProfilesListBoxItem> profileItems, bool filterActive) = await Task.Run(() =>
-                {
-                    (List<T1PROFI> t1profis, bool isFiltered) = GetAllFilteredProfis();
-
-                    return (BuildProfileListBoxItems(t1profis), isFiltered);
-                });
-
-                // On the UI thread, also when called from a background thread
-                await View.Dispatcher.InvokeAsync(() => FillProfilesListBoxAsync(profileItems, filterActive, pfid)).Task.Unwrap();
-            }
-            finally
-            {
-                GetApp().Loader.Stop();
-            }
-        }
-
-        // Increased by every fill of the list: an older fill still adding tiles stops when a newer one has started
-        private int _listFillVersion;
-
-        // UI thread time per portion of tiles; the rest of a frame stays free for rendering and the loader animation
-        private const double TilePortionBudgetMs = 8;
-
         /// <summary>
-        /// Shows the profiles in the list. The tiles are added in portions, each followed by layout and a rendered frame:
-        /// a game case (3D template) is expensive to create, and creating all of them in one layout pass blocked the UI
-        /// thread, so the loader animation (driven by the UI thread) stood still while the library was loading.
-        /// The portion size adapts to the measured time per tile. The profile is selected once all tiles exist.
+        /// Rebuilds the list (ProfilesView_ProfilesSelectorAdapter) and selects the profile with the given PFID, or
+        /// the first one if it is not in the list. Without profiles the detail view is hidden.
         /// </summary>
-        private async Task FillProfilesListBoxAsync(List<ProfilesListBoxItem> profileItems, bool filterActive, long pfid)
+        public async Task BuildProfilesListBoxAsync(long pfid)
         {
-            int version = ++_listFillVersion;
+            UIXListBox listBoxProfiles = GetView().ListBoxProfiles;
+
+            if (!await listBoxProfiles.LoadDataAsync())
+                return;
 
             // Indicator on the filter button if the list is filtered
-            GetView().ElFilterActive.Visibility = filterActive ? Visibility.Visible : Visibility.Collapsed;
+            GetView().ElFilterActive.Visibility = listBoxProfiles.GetSelectorAdapter<ProfilesView_ProfilesSelectorAdapter>().FilterActive
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+
+            List<ProfilesListBoxItem> profileItems = listBoxProfiles.Items.OfType<ProfilesListBoxItem>().ToList();
 
             ProfilesListBoxItem? selectedItem = profileItems.FirstOrDefault(p => (p.ItemObject as T1PROFI)?.PFID == pfid)
                                                 ?? profileItems.FirstOrDefault();
 
-            _profilesSubGridViewModel = new ProfilesSubGridViewModel();
-
             _dataWrapper!.Set(selectedItem?.ItemObject as T1PROFI);
-
-            View.DataContext = _profilesSubGridViewModel;
 
             if (!_dataWrapper!.HasData)
             {
@@ -202,127 +175,15 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 FnTheme.ApplyProfileAccentColors(_dataWrapper!.Get());
             }
 
-            ProfilesSubGridViewModel viewModel = _profilesSubGridViewModel;
-            Stopwatch watch = new Stopwatch();
-            int portionSize = 1;
-            int index = 0;
-
-            while (index < profileItems.Count)
-            {
-                int portionEnd = Math.Min(profileItems.Count, index + portionSize);
-                int added = portionEnd - index;
-
-                watch.Restart();
-
-                for (; index < portionEnd; index++)
-                    viewModel.T1Profis.Add(profileItems[index]);
-
-                // Layout (creates the new cases) and rendering have a higher priority: they run before this continues
-                await Dispatcher.Yield(DispatcherPriority.Background);
-
-                if (version != _listFillVersion)
-                    return;
-
-                double msPerTile = Math.Max(0.25, watch.Elapsed.TotalMilliseconds / added);
-                portionSize = Math.Clamp((int)(TilePortionBudgetMs / msPerTile), 1, 24);
-            }
-
             if (selectedItem != null)
-                viewModel.SelectedT1Profi = selectedItem;
+                listBoxProfiles.SelectedItem = selectedItem;
         }
 
-        /// <summary>
-        /// Reads all profiles matching the library filter and the name search (TFPROFI.GetFilteredProfiles).
-        /// </summary>
-        private (List<T1PROFI> Profiles, bool FilterActive) GetAllFilteredProfis()
+        private ProfilesListBoxItem? GetSelectedItem()
         {
-            string nameSearch = GetView().Dispatcher.Invoke(() => GetView().tbSearchProfileName.Text);
-
-            return TFPROFI.GetFilteredProfiles(GetApp().FilterCache, nameSearch);
-        }
-
-        private void BuildContextMenu(ListBoxItem lbi, T1PROFI t1profi)
-        {
-            ContextMenuBuilder contextBuilder = UIXContextMenuFactory.Create("ProfilesListBoxContextMenu");
-            contextBuilder.SetStyle(ProfilesContextMenuBuilder.contextMenuStyle);
-
-            bool isSealed = TFPROFI.IsSealed(t1profi);
-
-            // Unwrap (sealed game)
-            if (isSealed)
-                ProfilesContextMenuBuilder.BuildContextUnwrap(contextBuilder);
-
-            // Always Edit and Delete in principle
-            contextBuilder.AddItem("ctxtEdit", "Edit", icon: UIXContextMenuFactory.CreateMdlIcon("\uE70F"), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
-            contextBuilder.AddItem("ctxtDelete", "Delete", icon: UIXContextMenuFactory.CreateMdlIcon("\uE74D"), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
-
-            // A sealed game offers nothing else until it is unwrapped
-            if (isSealed)
-            {
-                lbi.ContextMenu = contextBuilder.Build();
-                return;
-            }
-
-            // Game Folder
-            ProfilesContextMenuBuilder.BuildContextShowGameFolder(contextBuilder, t1profi);
-
-            // Playthrough
-            ProfilesContextMenuBuilder.BuildContextPlayhtrougths(contextBuilder, t1profi);
-
-            // Launcher
-            ProfilesContextMenuBuilder.BuildContextLauncher(contextBuilder, t1profi);
-
-            // Archive
-            ProfilesContextMenuBuilder.BuildContextArchive(contextBuilder, t1profi);
-
-
-            if (contextBuilder.HasItems())
-                lbi.ContextMenu = contextBuilder.Build();
-            else
-                lbi.ContextMenu = null;
-
+            return GetView().ListBoxProfiles.SelectedItem as ProfilesListBoxItem;
         }
         #endregion
-
-        private List<ProfilesListBoxItem> BuildProfileListBoxItems(List<T1PROFI> t1profiles)
-        {
-            List<ProfilesListBoxItem> result = new List<ProfilesListBoxItem>(t1profiles.Count);
-            TXCTABD txctabd = new TXCTABD();
-
-            for (int i = 0; i < t1profiles.Count; i++)
-            {
-                T1PROFI prof = t1profiles[i];
-                try
-                {
-                    T1CTABD? t1ctabdPf = txctabd.Read("pF", prof.PLAFO);
-                    T1CTABD? t1ctabdIm = t1ctabdPf == null
-                        ? null
-                        : txctabd.Read("iM", t1ctabdPf.PARM2);
-
-                    string platformSymbolFile = t1ctabdIm?.PARM1 ?? string.Empty;
-                    string platformSymbolFullPath =
-                        AppConfig.Storage.ImagesSymbolsDirectoryPath +
-                        platformSymbolFile;
-
-                    ProfilesListBoxItem item = new ProfilesListBoxItem
-                    {
-                        ItemObject = prof,
-                        COCOVIM = CFProfilesApp.LoadProfileCover(prof.PPFN),
-                        COISPLA = FnSystem.IsExeFoundInPath(prof.EXGF),
-                        COPLFPA = File.Exists(platformSymbolFullPath) ? FnImage.LoadImageWithoutLock(platformSymbolFullPath, 50, 50) : null,
-                        COISSEA = TFPROFI.IsSealed(prof)
-                    };
-
-                    result.Add(item);
-                }
-                catch (Exception ex)
-                {
-                    FnLog.AddError(GetApp(), $"Error while building profile list box item {prof.GANA}. Continued with next item", ex);
-                }
-            }
-
-            return result;
-        }
 
         /// <summary>
         /// Unwraps the selected (sealed) game: saves it and plays the unwrap animation on its tile. The list is not
@@ -330,7 +191,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         /// </summary>
         public void UnwrapSelectedProfile()
         {
-            ProfilesListBoxItem? item = _profilesSubGridViewModel?.SelectedT1Profi;
+            ProfilesListBoxItem? item = GetSelectedItem();
 
             if (item?.ItemObject is not T1PROFI t1profi)
                 return;
@@ -422,21 +283,23 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected async Task EXEV_SwitchProfile(long pfid)
         {
-            if (_profilesSubGridViewModel == null)
+            UIXListBox listBoxProfiles = GetView().ListBoxProfiles;
+
+            if (listBoxProfiles.ItemsSource == null)
                 return;
 
-            List<ProfilesListBoxItem> currentProfis = _profilesSubGridViewModel.T1Profis.Where(p => (p.ItemObject as T1PROFI)?.PFID == pfid).ToList();
+            ProfilesListBoxItem? FindCurrent() => listBoxProfiles.Items.OfType<ProfilesListBoxItem>().FirstOrDefault(p => (p.ItemObject as T1PROFI)?.PFID == pfid);
 
-            if (currentProfis == null || currentProfis.Count == 0)
+            if (FindCurrent() == null)
                 await AdjustFiltersToStartedGameProfile(pfid);
 
-            _profilesSubGridViewModel.SelectedT1Profi = _profilesSubGridViewModel.T1Profis.Where(p => (p.ItemObject as T1PROFI)?.PFID == pfid).ToList()[0];
+            listBoxProfiles.SelectedItem = FindCurrent() ?? throw new InvalidOperationException("The started profile is not in the list.");
 
             // The Big Picture mode shows the game itself; a toast would pop up in front of the game started from it
             if (CFBigPictureApp.IsOpen)
                 return;
 
-            ToastMessage tm = new ToastMessage("Switched profile...", (_profilesSubGridViewModel!.SelectedT1Profi.ItemObject as T1PROFI)?.GANA ?? string.Empty);
+            ToastMessage tm = new ToastMessage("Switched profile...", (GetSelectedItem()?.ItemObject as T1PROFI)?.GANA ?? string.Empty);
             tm.Show();
         }
 
@@ -513,184 +376,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             });
         }
 
-        /// <summary>
-        /// Context menu is opening
-        /// </summary>
-        /// <param name="target"></param>
-        protected void EV_ListBoxProfiles_CtxtOpening(FrameworkElement target)
-        {
-            ListBoxItem listBoxItem = target as ListBoxItem;
-
-            if (listBoxItem == null)
-                return;
-
-            if (listBoxItem.DataContext is not ProfilesListBoxItem profi)
-                return;
-
-            BuildContextMenu(listBoxItem, profi.ItemObject as T1PROFI);
-        }
-
-        /// <summary>
-        /// Show the game in the library of its launcher
-        /// </summary>
-        protected void EV_ctxtOpenInLauncher()
-        {
-            T1PROFI t1profi = GetSelectedProfile();
-
-            FnLauncher.OpenInLauncher(t1profi);
-        }
-
-        protected void EV_ctxtUnwrapGame()
-        {
-            UnwrapSelectedProfile();
-        }
-
-        protected void EV_ctxtEdit()
-        {
-            T1PROFI t1profi = GetSelectedProfile();
-
-            ProfilesEditApp app = GetApp().GetApplication<ProfilesEditApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
-            app.Edit(t1profi, async r =>
-            {
-                if (!r.Canceled)
-                {
-                    GameRunningProcess grp = ((GameRunningProcess)AppEnvironment.StartedBackgroundProcesses[typeof(GameRunningProcess).FullName]);
-
-                    T1PROFI t1profi = new TXPROFI().Read(r.PFID);
-                    grp.AddT1profi(t1profi);
-                    grp.AddExecutables(t1profi.PFID, FnExecutables.GetAllActiveExecutablesFromDBObj(t1profi));
-
-                    await BuildProfilesListBoxAsync(r.PFID);
-                }
-            });
-        }
-
-        protected async Task EV_ctxtDelete()
-        {
-            CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
-            CFMBOXResult result = cfmbox.Show(GetErrorMessage("GLO0002", "this profile"), CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
-
-            if (result == CFMBOXResult.Yes)
-            {
-                T1PROFI selectedT1profi = GetSelectedProfile();
-
-                string coverPath = Path.Combine(AppConfig.Storage.ProfileCoversDirectoryPath ?? string.Empty, selectedT1profi.PPFN);
-                File.Delete(coverPath);
-
-                TFPROFI.DeleteT1PROFIAndLinkedData(selectedT1profi);
-
-                GameRunningProcess grp = ((GameRunningProcess)AppEnvironment.StartedBackgroundProcesses[typeof(GameRunningProcess).FullName!]);
-                grp.RemoveT1profi(selectedT1profi);
-                grp.RemoveExecutables(selectedT1profi.PFID);
-
-                await BuildProfilesListBoxAsync(0);
-            }
-        }
-
-        protected void EV_ctxtOpenGameFolder()
-        {
-            T1PROFI t1profi = GetSelectedProfile();
-
-            if (FnString.IsNullEmptyOrWhitespace(t1profi.EXGF))
-            {
-                CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
-                cfmbox.Show(GetErrorMessage("PRO0006"), CFMBOXResult.Ok, CFMBOXIcon.Info);
-                return;
-            }
-
-            if (!Directory.Exists(t1profi.EXGF))
-            {
-                CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
-                cfmbox.Show(GetErrorMessage("GLO0014", "game folder", t1profi.EXGF), CFMBOXResult.Ok, CFMBOXIcon.Info);
-                return;
-            }
-
-            FnOpSys.OpenExplorer(t1profi.EXGF);
-        }
-
-        protected async Task EV_ctxtCompleteProfile()
-        {
-            T1PROFI t1profi = GetSelectedProfile();
-            T1PLTHR t1plthr = TFPLTHR.GetCurrentPlaythrough(t1profi.PFID);
-
-            TFPLTHR.UpdatePlaythroughStatus(GetApp(), ref t1plthr, TFPLTHR.PlaythroughStatus.Completed);
-
-            await BuildProfilesListBoxAsync(t1profi.PFID);
-        }
-
-        protected async Task EV_ctxtStartNewPlaythrough()
-        {
-            T1PROFI t1profi = GetSelectedProfile();
-
-            PlaythroughEditApp app = GetApp().GetApplication<PlaythroughEditApp>();
-            app.CreateNew(async r =>
-            {
-                if (r.HasChanged)
-                {
-                    await BuildProfilesListBoxAsync(t1profi.PFID);
-                }
-            }, t1profi);
-        }
-
-        protected async Task EV_ctxtCancelPlaythrough()
-        {
-            T1PROFI t1profi = GetSelectedProfile();
-            T1PLTHR t1plthr = TFPLTHR.GetCurrentPlaythrough(t1profi.PFID);
-
-            TFPLTHR.UpdatePlaythroughStatus(GetApp(), ref t1plthr, TFPLTHR.PlaythroughStatus.Canceled);
-
-            await BuildProfilesListBoxAsync(t1profi.PFID);
-        }
-
-        protected async Task EV_ctxtArchiveProfile()
-        {
-            T1PROFI t1profi = GetSelectedProfile();
-
-            t1profi.ARCH = true;
-
-            new TXPROFI().Save(t1profi);
-
-            await BuildProfilesListBoxAsync(0);
-        }
-
-        protected async Task EV_ctxtUnarchiveProfile()
-        {
-            T1PROFI t1profi = GetSelectedProfile();
-
-            t1profi.ARCH = false;
-
-            new TXPROFI().Save(t1profi);
-
-            await BuildProfilesListBoxAsync(0);
-        }
-
-        protected void EV_ctxtShowPlaythroughs()
-        {
-            T1PROFI t1profi = GetSelectedProfile();
-            PlaythroughsApp app = GetApp().GetApplication<PlaythroughsApp>();
-            app.AppRunSelections = new PlaythroughAppRunSelections
-            {
-                Pfid = t1profi.PFID,
-                Gana = t1profi.GANA
-            };
-
-            app.ShowWindow(async r =>
-            {
-                if (r.HasChanged)
-                {
-                    await BuildProfilesListBoxAsync(t1profi.PFID);
-                }
-            });
-        }
-
-
         #endregion
-
-        private T1PROFI GetSelectedProfile()
-        {
-            return _profilesSubGridViewModel?.SelectedT1Profi?.ItemObject as T1PROFI
-                ?? throw new InvalidOperationException("No profile is currently selected.");
-        }
 
         /// <summary>
         /// Filter cache (stores the filter selections)

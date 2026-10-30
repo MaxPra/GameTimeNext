@@ -2,10 +2,10 @@
 
     <!--
         Check boxes:
-          (implicit)       label left, box right
-          CheckBox.Left    box left, label right
-          CheckBox.Switch  on/off switch (settings)
-          CheckBox.ListItem  box left, label right, as an entry of a list (whole row clickable, hover tint)
+        (implicit)       label left, box right
+        CheckBox.Left    box left, label right
+        CheckBox.Switch  on/off switch (settings)
+        CheckBox.ListItem  box left, label right, as an entry of a list (whole row clickable, hover tint)
         Box: 18px, filled with the accent color when checked. Height stays flexible so rows define the layout.
     -->
 
@@ -155,11 +155,11 @@
                             Width="18"
                             Height="18"
                             VerticalAlignment="Center"
-                            Effect="{StaticResource Effect.Control}"
                             Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="{StaticResource Item.CornerRadius}">
+                            CornerRadius="{StaticResource Item.CornerRadius}"
+                            Effect="{StaticResource Effect.Control}">
                             <Path
                                 x:Name="Tick"
                                 Width="10"
@@ -223,11 +223,11 @@
                             Width="18"
                             Height="18"
                             VerticalAlignment="Center"
-                            Effect="{StaticResource Effect.Control}"
                             Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="{StaticResource Item.CornerRadius}">
+                            CornerRadius="{StaticResource Item.CornerRadius}"
+                            Effect="{StaticResource Effect.Control}">
                             <Path
                                 x:Name="Tick"
                                 Width="10"

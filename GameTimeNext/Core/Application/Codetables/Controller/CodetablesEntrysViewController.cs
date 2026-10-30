@@ -1,28 +1,16 @@
-using GameTimeNext.Core.Application.Codetables.Viewmodels;
 using GameTimeNext.Core.Application.Codetables.Views;
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.Profiles;
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.UI.Dialogs;
-using GameTimeNext.Core.Framework.Utils;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
-using UIX.ViewController.Engine.FrameworkElements;
+using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.FrameworkElements.UserControls;
-using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
-using static UIX.ViewController.Engine.FrameworkElements.UIXContextMenuFactory;
 
 namespace GameTimeNext.Core.Application.Codetables.Controller
 {
     public class CodetablesEntrysViewController : UIXViewControllerBase<CodetablesEntrysApp, CodetablesEntrysView>
     {
-
-        private CodetablesEntrysViewModel? _viewModel;
 
         public CodetablesEntrysViewController(UIXApplication app) : base(app)
         {
@@ -35,7 +23,6 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
         protected override void Init()
         {
             ViewReturn = new CodetablesEntrysViewReturn();
-            _viewModel = new CodetablesEntrysViewModel();
 
             AddIdentifier("T1CTABH", GetApp().T1CTABH!);
         }
@@ -47,7 +34,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
         protected override async Task BuildFirstImplAsync()
         {
             FnControls.SetVisible(GetView().BtnAdd, GetView().ViewIndicator.Contains("ED"));
-            await BuildDG();
+            await GetView().DgCodetableEntrys.LoadDataAsync();
         }
 
         protected override void BuildImpl()
@@ -95,166 +82,6 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
         {
         }
 
-        private async Task BuildDG()
-        {
-            GetApp().Loader.Begin();
-
-            await Task.Run(() =>
-            {
-                List<CodetableEntryDataGridRow> rows = BuildRowsCodetableEntrys();
-
-                View.Dispatcher.Invoke(() =>
-                {
-                    _viewModel = new CodetablesEntrysViewModel();
-                    _viewModel.CodetableEntryDataGridRows = new System.Collections.ObjectModel.ObservableCollection<CodetableEntryDataGridRow>(rows);
-                    GetView().DataContext = _viewModel;
-                    GetApp().Loader.Stop();
-                });
-            });
-        }
-
-        private List<CodetableEntryDataGridRow> BuildRowsCodetableEntrys()
-        {
-            UIXQuery query = BuildQueryCodetableEntrys();
-
-            List<CodetableEntryDataGridRow> rows = new List<CodetableEntryDataGridRow>();
-
-            using (var reader = query.Execute())
-            {
-
-                while (reader.Read())
-                {
-                    TXCTABD txctabd = new TXCTABD();
-
-                    string txtyp = UIXQuery.GetString(reader, K1CTABD.Name, K1CTABD.Fields.TXTYP, string.Empty);
-                    string txnum = UIXQuery.GetString(reader, K1CTABD.Name, K1CTABD.Fields.TXNUM, string.Empty);
-
-                    T1CTABD t1ctabd = txctabd.Read(txtyp, txnum);
-
-                    CodetableEntryDataGridRow row = GetView().DgCodetableEntrys.CreateNewRow<CodetableEntryDataGridRow>();
-                    row.COTXTYP = txtyp;
-                    row.COTXNUM = txnum;
-                    row.CODESCR = t1ctabd.DESCR;
-                    row.RowObject = t1ctabd;
-
-                    rows.Add(row);
-                }
-            }
-
-            return rows;
-        }
-
-        private UIXQuery BuildQueryCodetableEntrys()
-        {
-            UIXQuery query = new UIXQuery(K1CTABD.Name, AppEnvironment.GetDataBaseManager().GetConnection());
-
-            query.AddField(K1CTABD.Name, K1CTABD.Fields.TXTYP);
-            query.AddField(K1CTABD.Name, K1CTABD.Fields.TXNUM);
-
-            query.AddWhere(K1CTABD.Name, K1CTABD.Fields.TXTYP, QueryCompareType.EQUALS, GetApp().T1CTABH!.TXTYP);
-
-            query.AddOrderBy(K1CTABD.Name, K1CTABD.Fields.TXNUM, OrderDirection.ASC);
-
-            return query;
-        }
-
-        private void BuildContextMenu(DataGridRow dgRow, CodetableEntryDataGridRow ctRow)
-        {
-            ContextMenuBuilder contextBuilder = UIXContextMenuFactory.Create("CodetablesEntrysDataGridContextMenu");
-            contextBuilder.SetStyle(ProfilesContextMenuBuilder.contextMenuStyle);
-
-            T1CTABD t1ctabd = (T1CTABD)ctRow.RowObject!;
-            bool userCanEdit = GetUserIsAllowedToEdit(t1ctabd);
-
-            // Development codetables may only be changed in debug mode
-            if (userCanEdit)
-                contextBuilder.AddItem("ctxtEdit", "Edit", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Edit), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
-
-            contextBuilder.AddItem("ctxtView", "View", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.View), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
-
-            // Development codetables may only be deleted in debug mode
-            if (userCanEdit)
-                contextBuilder.AddItem("ctxtDelete", "Delete", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Delete), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
-
-            if (contextBuilder.HasItems())
-                dgRow.ContextMenu = contextBuilder.Build();
-            else
-                dgRow.ContextMenu = null;
-        }
-
-        private bool GetUserIsAllowedToEdit(T1CTABD t1ctabd)
-        {
-            if (!GetView().ViewIndicator.Contains("ED")) return false;
-
-            if (FnSystem.IsDebug() && !FnSystem.RunWithUserPermissions()) return true;
-
-            if (GetApp().T1CTABH.PERMI.Equals("D")) return false;
-
-            if (GetApp().T1CTABH.NRANA && t1ctabd.TXNUM.StartsWith("D_")) return false;
-
-            return true;
-        }
-
-        protected void EV_DgCodetableEntrys_CtxtOpening(FrameworkElement target)
-        {
-            DataGridRow row = target as DataGridRow;
-
-            if (row == null)
-                return;
-
-            if (row.DataContext is not CodetableEntryDataGridRow)
-                return;
-
-            BuildContextMenu(row, (CodetableEntryDataGridRow)row.DataContext);
-
-            if (row.ContextMenu == null)
-                return;
-
-            row.ContextMenu.PlacementTarget = row;
-            row.ContextMenu.Placement = PlacementMode.MousePoint;
-            row.ContextMenu.IsOpen = true;
-        }
-
-        protected void EV_ctxtEdit()
-        {
-            CodetableEntryDataGridRow row = _viewModel!.SelectedRow!;
-
-            CodetablesEntryEditApp app = GetApp().GetApplication<CodetablesEntryEditApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
-            app.Edit(async (result) =>
-            {
-                if (!result.HasChanged)
-                    return;
-
-                await BuildDG();
-
-            }, (T1CTABD)(row.RowObject!));
-        }
-
-        protected void EV_ctxtView()
-        {
-            CodetableEntryDataGridRow row = _viewModel!.SelectedRow!;
-            CodetablesEntryEditApp app = GetApp().GetApplication<CodetablesEntryEditApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
-            app.View((T1CTABD)(row.RowObject!));
-        }
-
-        protected async Task EV_ctxtDelete()
-        {
-            CodetableEntryDataGridRow row = _viewModel!.SelectedRow!;
-            T1CTABD t1ctabd = (T1CTABD)(row.RowObject!);
-
-            CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
-
-            CFMBOXResult result = cfmbox.Show(GetErrorMessage("GLO0001", "this entry"), CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
-
-            if (result == CFMBOXResult.Yes)
-            {
-                new TXCTABD().Delete(t1ctabd.TXTYP, t1ctabd.TXNUM);
-
-                await BuildDG();
-            }
-
-        }
-
         protected void EV_BtnAdd()
         {
             CodetablesEntryEditApp app = GetApp().GetApplication<CodetablesEntryEditApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
@@ -263,7 +90,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
                 if (!result.HasChanged)
                     return;
 
-                await BuildDG();
+                await GetView().DgCodetableEntrys.LoadDataAsync();
             }, GetApp().T1CTABH!.TXTYP);
 
         }
@@ -271,7 +98,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
         protected async Task EV_BtnRefresh()
         {
-            await BuildDG();
+            await GetView().DgCodetableEntrys.LoadDataAsync();
         }
     }
 }

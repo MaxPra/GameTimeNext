@@ -1,4 +1,5 @@
 ﻿using GameTimeNext.Core.Application.Dashboard.Controller;
+using GameTimeNext.Core.Application.Dashboard.Selectors;
 using GameTimeNext.Core.Application.Dashboard.Views;
 using System.Windows.Controls;
 using UIX.ViewController.Engine.Runnables;
@@ -40,6 +41,8 @@ namespace GameTimeNext.Core.Application.Dashboard
             this.DashboardView = new DashboardView();
             this.MainView = DashboardView;
             this.DashboardView.ViewController = new DashboardViewController(this);
+            this.DashboardView.ListViewRecentGames.SelectorAdapter = new DashboardView_RecentGamesSelectorAdapter(this);
+            this.DashboardView.ListViewRecentGames.SelectorController = new DashboardView_RecentGamesSelectorController(this);
         }
 
         public override bool CanClose()

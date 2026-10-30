@@ -62,6 +62,10 @@ namespace GameTimeNext.Core.Application.General.Controller
             BuildBetaTag();
 
 
+            // Visible (still cloaked, see MainApp.Start) while the favorites are started: a hidden window doesn't render,
+            // so the views of the tabs would not get loaded and opened
+            FnControls.SetVisible(GetView(), true);
+
             FnLog.AddInfo("MainApp", "Starting favorites...");
             AppEnvironment.AppLauncher.StartFavorites(GetApp());
 
@@ -81,8 +85,6 @@ namespace GameTimeNext.Core.Application.General.Controller
                 if (ReferenceEquals(System.Windows.Application.Current.MainWindow, GetApp().SplashScreen))
                     System.Windows.Application.Current.MainWindow = null;
             }
-
-            FnControls.SetVisible(GetView(), true);
 
             // Set WindowState
             _ = GetView().Dispatcher.BeginInvoke(() =>

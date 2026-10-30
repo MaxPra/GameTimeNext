@@ -2,6 +2,7 @@
     x:Class="GameTimeNext.Core.Application.Dashboard.Views.DashboardView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:uixsel="clr-namespace:UIX.ViewController.Engine.FrameworkElements.Selectors;assembly=UIX.ViewController.Engine"
     xmlns:uixcb="clr-namespace:UIX.ViewController.Engine.FrameworkElements.ComboBoxes;assembly=UIX.ViewController.Engine"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -348,7 +349,7 @@
                         <TextBlock Style="{StaticResource Dashboard.CardHeaderText}" Text="Games Played" />
                     </StackPanel>
 
-                    <ListView
+                    <uixsel:UIXListView
                         x:Name="ListViewRecentGames"
                         Grid.Row="1"
                         Margin="16,4,16,8"
@@ -357,12 +358,11 @@
                         BorderThickness="0"
                         Focusable="False"
                         ItemContainerStyle="{StaticResource DashboardRecentGamesItemStyle}"
-                        ItemsSource="{Binding T1Profis}"
                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                         ScrollViewer.VerticalScrollBarVisibility="Auto"
                         SelectionMode="Single">
 
-                        <ListView.ItemTemplate>
+                        <uixsel:UIXListView.ItemTemplate>
                             <DataTemplate>
                                 <Border Style="{StaticResource Dashboard.GameRow}">
                                     <Grid>
@@ -405,8 +405,8 @@
                                     </Grid>
                                 </Border>
                             </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
+                        </uixsel:UIXListView.ItemTemplate>
+                    </uixsel:UIXListView>
                 </Grid>
             </Border>
 

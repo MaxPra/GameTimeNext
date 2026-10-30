@@ -227,9 +227,7 @@
                                 </Border.Effect>
                             </Border>
 
-                            <Border
-                                Background="{DynamicResource Brush.TileBackground}"
-                                CornerRadius="{StaticResource SteamGridDB.CoverCornerRadius}">
+                            <Border Background="{DynamicResource Brush.TileBackground}" CornerRadius="{StaticResource SteamGridDB.CoverCornerRadius}">
                                 <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
                             </Border>
 

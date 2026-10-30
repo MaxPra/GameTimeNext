@@ -259,6 +259,11 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             FnSystem.SetAutoStart(_appSettings!.AutoStartMinimized && !FnSystem.IsDebug(), true);
         }
 
+        protected void EXEV_remoteMonitoringPortChanged(int port)
+        {
+            GetView().txtRemoteMonitoringPort.Text = $"Web-App accessible via port {port}.";
+        }
+
         protected void EV_btnCaptureMonitoringKey()
         {
 

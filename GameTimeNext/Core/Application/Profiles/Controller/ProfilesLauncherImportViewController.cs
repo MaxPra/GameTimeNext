@@ -1,22 +1,17 @@
-using GameTimeNext.Core.Application.Profiles.Viewmodel;
+using GameTimeNext.Core.Application.Profiles.Selectors;
 using GameTimeNext.Core.Application.Profiles.Views;
 using GameTimeNext.Core.Framework.LauncherIntegration;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
+using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.FrameworkElements.UserControls;
 using UIX.ViewController.Engine.Runnables;
-using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Profiles.Controller
 {
     public class ProfilesLauncherImportViewController : UIXViewControllerBase<ProfilesLauncherImportApp, ProfilesLauncherImportView>
     {
-
-        private ProfilesLauncherImportViewModel? _profilesLauncherImportViewModel;
-
-        // Installed games of all launchers, read once (scanning the launchers is slow)
-        private List<LauncherGame>? _installedGames;
 
         public ProfilesLauncherImportViewController(UIXApplication app) : base(app)
         {
@@ -27,6 +22,13 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             public LauncherGame? Game { get; set; } = null;
         }
 
+        public void ImportGame()
+        {
+            GetViewReturn<ProfilesLauncherImportViewReturn>().Canceled = false;
+            GetViewReturn<ProfilesLauncherImportViewReturn>().Game = GetSelectedGame();
+            Exit(true);
+        }
+
         protected override void Init()
         {
             ViewReturn = new ProfilesLauncherImportViewReturn();
@@ -35,13 +37,16 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         protected override void BuildImpl()
         {
             // Visibility of the import button
-            GetView().btnImport.IsEnabled = _profilesLauncherImportViewModel != null && _profilesLauncherImportViewModel.Games.Count > 0
-                                                && _profilesLauncherImportViewModel.SelectedGame != null;
+            GetView().btnImport.IsEnabled = GetSelectedGame() != null;
         }
 
         protected override void BuildFirstImpl()
         {
-            BuildGameGrid();
+        }
+
+        protected override async Task BuildFirstImplAsync()
+        {
+            await BuildGameGridAsync();
         }
 
         protected override void CheckImpl()
@@ -86,9 +91,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
         }
 
-        protected void EV_txbSearch()
+        protected async Task EV_txbSearch()
         {
-            BuildGameGrid();
+            await BuildGameGridAsync();
         }
 
         /// <summary>
@@ -96,9 +101,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         /// </summary>
         protected void EV_btnImport()
         {
-            GetViewReturn<ProfilesLauncherImportViewReturn>().Canceled = false;
-            GetViewReturn<ProfilesLauncherImportViewReturn>().Game = _profilesLauncherImportViewModel!.SelectedGame;
-            Exit(true);
+            ImportGame();
         }
 
         protected void EV_btnCancel()
@@ -108,30 +111,17 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             Exit(true);
         }
 
-        private void BuildGameGrid()
+        private async Task BuildGameGridAsync()
         {
-            List<LauncherGame> games = GetGames();
+            if (!await GetView().dgGames.LoadDataAsync())
+                return;
 
-            // Fill view model
-            _profilesLauncherImportViewModel = new ProfilesLauncherImportViewModel();
-            _profilesLauncherImportViewModel.Games = new System.Collections.ObjectModel.ObservableCollection<LauncherGame>(games);
-
-            if (games.Count > 0)
-                _profilesLauncherImportViewModel.SelectedGame = games.FirstOrDefault()!;
-
-            View.DataContext = _profilesLauncherImportViewModel;
+            GetView().dgGames.SelectedItem = GetView().dgGames.Items.OfType<GameImportRow>().FirstOrDefault();
         }
 
-        private List<LauncherGame> GetGames()
+        private LauncherGame? GetSelectedGame()
         {
-            _installedGames ??= FnLauncher.GetInstalledGames();
-
-            // Search
-            if (FnString.IsNullEmptyOrWhitespace(GetView().txbSearch.Text))
-                return _installedGames;
-
-            return _installedGames.Where(g => g.Name.Contains(GetView().txbSearch.Text, StringComparison.OrdinalIgnoreCase)).ToList();
+            return (GetView().dgGames.SelectedItem as GameImportRow)?.RowObject as LauncherGame;
         }
-
     }
 }

@@ -115,8 +115,7 @@
                             Background="Transparent"
                             CornerRadius="{StaticResource DefaultCornerRadius}"
                             IsHitTestVisible="False"
-                            Opacity="0">
-                        </Border>
+                            Opacity="0" />
 
                         <Border
                             x:Name="Bd"
@@ -149,8 +148,7 @@
                                     IsHitTestVisible="False"
                                     Opacity="0"
                                     RadiusX="2"
-                                    RadiusY="2">
-                                </Rectangle>
+                                    RadiusY="2" />
 
                                 <Grid Grid.Column="1" Margin="0,0,4,0">
                                     <TextBox
