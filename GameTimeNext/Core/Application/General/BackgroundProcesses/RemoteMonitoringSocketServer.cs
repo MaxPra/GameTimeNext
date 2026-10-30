@@ -1,6 +1,5 @@
 ﻿using GameTimeNext.Core.Application.Profiles.Batch;
 using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.Logging;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -87,6 +86,11 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
                 return profilesBatchApp;
 
             return null!;
+        }
+
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(RemoteMonitoringSocketServer));
         }
     }
 }

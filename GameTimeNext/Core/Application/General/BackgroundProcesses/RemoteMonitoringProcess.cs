@@ -3,7 +3,6 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.Logging;
 using GameTimeNext.Core.Framework.Utils;
 using UIX.ViewController.Engine.Runnables;
 
@@ -134,6 +133,11 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
         protected override void InitializeInfos()
         {
             ProcessName = "RemoteMonitoringProcess";
+        }
+
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(RemoteMonitoringProcess));
         }
     }
 }
