@@ -1,4 +1,4 @@
-using GameTimeNext.Core.Application.Metadata.Controller;
+﻿using GameTimeNext.Core.Application.Metadata.Controller;
 using GameTimeNext.Core.Application.Metadata.Data;
 using GameTimeNext.Core.Application.Metadata.Views;
 using GameTimeNext.Core.Application.Profiles;
@@ -86,8 +86,7 @@ namespace GameTimeNext.Core.Application.Metadata.Selectors
             {
                 new TXMETAP().Delete(t1metap.MENAM, t1metap.PONAM);
 
-                GetApp().T1METAH!.GENER = false;
-                new TXMETAH().Save(GetApp().T1METAH!);
+                GetViewController<MetadataEditViewController>().MarkGenerationRequired();
             }
         }
     }
