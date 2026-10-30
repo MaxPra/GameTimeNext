@@ -36,6 +36,19 @@ namespace GameTimeNext.Core.Application.DataManagers
             return obj;
         }
 
+        public virtual T1GRPPO Copy(T1GRPPO objFrom)
+        {
+            T1GRPPO obj = CreateNew();
+            obj.GRID = objFrom.GRID;
+            obj.PFID = objFrom.PFID;
+            return obj;
+        }
+
+        public virtual T1GRPPO DeepCopy(T1GRPPO objFrom)
+        {
+            throw new NotImplementedException();
+        }
+
         public virtual void Save(T1GRPPO obj)
         {
             if (obj is null)

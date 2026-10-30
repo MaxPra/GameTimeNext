@@ -36,6 +36,33 @@ namespace GameTimeNext.Core.Application.DataManagers
             return obj;
         }
 
+        public virtual T1CTABH Copy(T1CTABH objFrom)
+        {
+            T1CTABH obj = CreateNew();
+            obj.DESCR = objFrom.DESCR;
+            obj.PERMI = objFrom.PERMI;
+            obj.PAAC1 = objFrom.PAAC1;
+            obj.PADE1 = objFrom.PADE1;
+            obj.PARF1 = objFrom.PARF1;
+            obj.PACO1 = objFrom.PACO1;
+            obj.PACT1 = objFrom.PACT1;
+            obj.PAAC2 = objFrom.PAAC2;
+            obj.PADE2 = objFrom.PADE2;
+            obj.PARF2 = objFrom.PARF2;
+            obj.PACO2 = objFrom.PACO2;
+            obj.PACT2 = objFrom.PACT2;
+            obj.NRANA = objFrom.NRANA;
+            obj.EXPRT = objFrom.EXPRT;
+            obj.PTOL1 = objFrom.PTOL1;
+            obj.PTOL2 = objFrom.PTOL2;
+            return obj;
+        }
+
+        public virtual T1CTABH DeepCopy(T1CTABH objFrom)
+        {
+            throw new NotImplementedException();
+        }
+
         public virtual void Save(T1CTABH obj)
         {
             if (obj is null)

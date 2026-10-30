@@ -35,6 +35,25 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             return obj;
         }
 
+        public virtual T1METAP Copy(T1METAP objFrom)
+        {
+            T1METAP obj = CreateNew();
+            obj.DESCR = objFrom.DESCR;
+            obj.DATYP = objFrom.DATYP;
+            obj.DALEN = objFrom.DALEN;
+            obj.PORDE = objFrom.PORDE;
+            obj.PRIMK = objFrom.PRIMK;
+            obj.AUTOI = objFrom.AUTOI;
+            obj.DEFAK = objFrom.DEFAK;
+            obj.DEFVL = objFrom.DEFVL;
+            return obj;
+        }
+
+        public virtual T1METAP DeepCopy(T1METAP objFrom)
+        {
+            throw new NotImplementedException();
+        }
+
         public virtual void Save(T1METAP obj)
         {
             if (obj is null)

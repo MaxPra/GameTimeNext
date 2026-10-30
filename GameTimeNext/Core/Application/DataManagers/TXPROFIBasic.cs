@@ -36,6 +36,38 @@ namespace GameTimeNext.Core.Application.DataManagers
             return obj;
         }
 
+        public virtual T1PROFI Copy(T1PROFI objFrom)
+        {
+            T1PROFI obj = CreateNew();
+            obj.GANA = objFrom.GANA;
+            obj.FIPL = objFrom.FIPL;
+            obj.LAPL = objFrom.LAPL;
+            obj.PPFN = objFrom.PPFN;
+            obj.EXGF = objFrom.EXGF;
+            obj.LNTY = objFrom.LNTY;
+            obj.LNID = objFrom.LNID;
+            obj.SAID = objFrom.SAID;
+            obj.PRSE = objFrom.PRSE;
+            obj.EXEC = objFrom.EXEC;
+            obj.ACCO = objFrom.ACCO;
+            obj.ACIN = objFrom.ACIN;
+            obj.ACAC = objFrom.ACAC;
+            obj.CUPT = objFrom.CUPT;
+            obj.ETMA = objFrom.ETMA;
+            obj.ETME = objFrom.ETME;
+            obj.ETCO = objFrom.ETCO;
+            obj.ETTY = objFrom.ETTY;
+            obj.ETML = objFrom.ETML;
+            obj.ARCH = objFrom.ARCH;
+            obj.PLAFO = objFrom.PLAFO;
+            return obj;
+        }
+
+        public virtual T1PROFI DeepCopy(T1PROFI objFrom)
+        {
+            throw new NotImplementedException();
+        }
+
         public virtual void Save(T1PROFI obj)
         {
             if (obj is null)

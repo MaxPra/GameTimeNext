@@ -36,6 +36,22 @@ namespace GameTimeNext.Core.Application.DataManagers
             return obj;
         }
 
+        public virtual T1SCRSP Copy(T1SCRSP objFrom)
+        {
+            T1SCRSP obj = CreateNew();
+            obj.SSID = objFrom.SSID;
+            obj.MOID = objFrom.MOID;
+            obj.MONA = objFrom.MONA;
+            obj.MOEN = objFrom.MOEN;
+            obj.MOPR = objFrom.MOPR;
+            return obj;
+        }
+
+        public virtual T1SCRSP DeepCopy(T1SCRSP objFrom)
+        {
+            throw new NotImplementedException();
+        }
+
         public virtual void Save(T1SCRSP obj)
         {
             if (obj is null)

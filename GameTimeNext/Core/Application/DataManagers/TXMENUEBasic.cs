@@ -36,6 +36,23 @@ namespace GameTimeNext.Core.Application.DataManagers
             return obj;
         }
 
+        public virtual T1MENUE Copy(T1MENUE objFrom)
+        {
+            T1MENUE obj = CreateNew();
+            obj.MEPA = objFrom.MEPA;
+            obj.METY = objFrom.METY;
+            obj.MEDE = objFrom.MEDE;
+            obj.MEAP = objFrom.MEAP;
+            obj.DEVT = objFrom.DEVT;
+            obj.MEOR = objFrom.MEOR;
+            return obj;
+        }
+
+        public virtual T1MENUE DeepCopy(T1MENUE objFrom)
+        {
+            throw new NotImplementedException();
+        }
+
         public virtual void Save(T1MENUE obj)
         {
             if (obj is null)

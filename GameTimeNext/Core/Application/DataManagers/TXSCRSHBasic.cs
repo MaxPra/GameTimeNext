@@ -36,6 +36,21 @@ namespace GameTimeNext.Core.Application.DataManagers
             return obj;
         }
 
+        public virtual T1SCRSH Copy(T1SCRSH objFrom)
+        {
+            T1SCRSH obj = CreateNew();
+            obj.SSNA = objFrom.SSNA;
+            obj.SSDE = objFrom.SSDE;
+            obj.ADID = objFrom.ADID;
+            obj.ADNA = objFrom.ADNA;
+            return obj;
+        }
+
+        public virtual T1SCRSH DeepCopy(T1SCRSH objFrom)
+        {
+            throw new NotImplementedException();
+        }
+
         public virtual void Save(T1SCRSH obj)
         {
             if (obj is null)

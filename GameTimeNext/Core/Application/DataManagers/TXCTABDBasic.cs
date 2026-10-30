@@ -36,6 +36,20 @@ namespace GameTimeNext.Core.Application.DataManagers
             return obj;
         }
 
+        public virtual T1CTABD Copy(T1CTABD objFrom)
+        {
+            T1CTABD obj = CreateNew();
+            obj.DESCR = objFrom.DESCR;
+            obj.PARM1 = objFrom.PARM1;
+            obj.PARM2 = objFrom.PARM2;
+            return obj;
+        }
+
+        public virtual T1CTABD DeepCopy(T1CTABD objFrom)
+        {
+            throw new NotImplementedException();
+        }
+
         public virtual void Save(T1CTABD obj)
         {
             if (obj is null)

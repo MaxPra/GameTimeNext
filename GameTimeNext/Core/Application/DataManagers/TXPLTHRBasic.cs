@@ -36,6 +36,25 @@ namespace GameTimeNext.Core.Application.DataManagers
             return obj;
         }
 
+        public virtual T1PLTHR Copy(T1PLTHR objFrom)
+        {
+            T1PLTHR obj = CreateNew();
+            obj.PFID = objFrom.PFID;
+            obj.PTTY = objFrom.PTTY;
+            obj.PTDE = objFrom.PTDE;
+            obj.PTCO = objFrom.PTCO;
+            obj.PTCA = objFrom.PTCA;
+            obj.PTPA = objFrom.PTPA;
+            obj.PTRA = objFrom.PTRA;
+            obj.PTRC = objFrom.PTRC;
+            return obj;
+        }
+
+        public virtual T1PLTHR DeepCopy(T1PLTHR objFrom)
+        {
+            throw new NotImplementedException();
+        }
+
         public virtual void Save(T1PLTHR obj)
         {
             if (obj is null)

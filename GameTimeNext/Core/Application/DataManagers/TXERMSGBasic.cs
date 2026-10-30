@@ -36,6 +36,19 @@ namespace GameTimeNext.Core.Application.DataManagers
             return obj;
         }
 
+        public virtual T1ERMSG Copy(T1ERMSG objFrom)
+        {
+            T1ERMSG obj = CreateNew();
+            obj.ERMSG = objFrom.ERMSG;
+            obj.ERHIN = objFrom.ERHIN;
+            return obj;
+        }
+
+        public virtual T1ERMSG DeepCopy(T1ERMSG objFrom)
+        {
+            throw new NotImplementedException();
+        }
+
         public virtual void Save(T1ERMSG obj)
         {
             if (obj is null)

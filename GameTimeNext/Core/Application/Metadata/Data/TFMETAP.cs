@@ -18,7 +18,7 @@ namespace GameTimeNext.Core.Application.Metadata.Data
             return 1;
         }
 
-        private static readonly string[] AuditFields = { "CRAT", "CRUS", "CHAT", "CHUS" };
+        public static readonly string[] AuditFields = { "CRAT", "CRUS", "CHAT", "CHUS" };
 
         public static bool AutoReorder(string menam)
         {

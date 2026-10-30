@@ -43,11 +43,7 @@ namespace GameTimeNext.Core.Application.Screensetups
 
         public void Copy(Action<ScreensetupsEditViewController.ScreensetupsEditViewReturn> callback, T1SCRSH t1scrshSource)
         {
-            T1SCRSH = new TXSCRSH().CreateNew();
-            T1SCRSH.SSNA = $"{t1scrshSource.SSNA} (Copy)";
-            T1SCRSH.SSDE = t1scrshSource.SSDE;
-            T1SCRSH.ADID = t1scrshSource.ADID;
-            T1SCRSH.ADNA = t1scrshSource.ADNA;
+            T1SCRSH = new TXSCRSH().Copy(t1scrshSource);
             CopySourceSSID = t1scrshSource.SSID;
 
             ScreensetupsEditView!.ViewIndicator.Clear();
