@@ -32,7 +32,7 @@ namespace GameTimeNext.Core.Application.MigrationTasks
             int migratedProfiles = command.ExecuteNonQuery();
 
             if (migratedProfiles > 0)
-                FnLog.AddInfo(nameof(MigTask_100b_010), $"Steam link of {migratedProfiles.ToString(CultureInfo.InvariantCulture)} profile(s) moved to the launcher link");
+                FnLog.AddInfo("MainApp", $"Steam link of {migratedProfiles.ToString(CultureInfo.InvariantCulture)} profile(s) moved to the launcher link");
         }
 
         private void MigrateSteamGameArgs()
@@ -64,7 +64,7 @@ namespace GameTimeNext.Core.Application.MigrationTasks
                     catch (Exception ex)
                     {
                         // Broken settings of one profile must not stop the startup; the profile keeps its old settings
-                        FnLog.AddWarning(nameof(MigTask_100b_010), $"Could not migrate the Steam launch arguments of profile {pfid.ToString(CultureInfo.InvariantCulture)}", ex);
+                        FnLog.AddWarning("MainApp", $"Could not migrate the Steam launch arguments of profile {pfid.ToString(CultureInfo.InvariantCulture)}", ex);
                     }
                 }
             }

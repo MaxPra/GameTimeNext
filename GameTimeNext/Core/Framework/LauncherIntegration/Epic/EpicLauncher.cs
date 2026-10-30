@@ -56,7 +56,7 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration.Epic
                 catch (Exception ex)
                 {
                     // A broken manifest must not hide the other games
-                    FnLog.AddWarning(nameof(EpicLauncher), $"Could not read manifest {Path.GetFileName(file)}", ex);
+                    FnLog.AddWarning(nameof(FnLauncher), $"Epic: could not read manifest {Path.GetFileName(file)}", ex);
                 }
             }
 

@@ -12,6 +12,7 @@ namespace GameTimeNext.Core.Framework.Config
             public static string PublisherName = "CryloudStudios";
             public static string ApplicationName = "GameTimeNext";
             public static string DatabaseFileName = ApplicationName + "Db.db";
+            public static string LogDatabaseFileName = "LogDb.db";
             public static string AppConfigFileName = "appConfig.gtnconf";
             public static string AppLogFileName = $"ApplicationLog_{DateTime.Now:yyyy-MM-dd}.log";
 
@@ -290,6 +291,12 @@ namespace GameTimeNext.Core.Framework.Config
         public static string LogFilePath
         {
             get => ReturnEnsureFileExists(Path.Combine(LogsDirectoryPath, Root.AppLogFileName));
+        }
+
+        [JsonIgnore]
+        public static string LogDatabaseFilePath
+        {
+            get => Path.Combine(LogsDirectoryPath, Root.LogDatabaseFileName);
         }
 
         private static void EnsurePathsExist()

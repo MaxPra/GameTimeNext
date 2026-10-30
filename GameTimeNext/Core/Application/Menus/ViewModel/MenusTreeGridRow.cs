@@ -10,12 +10,12 @@ namespace GameTimeNext.Core.Application.Menus.ViewModel
         public bool IsFolder { get; set; } = false;
 
         // Description of the entry (tree column)
-        public string COMEDE { get; set; } = string.Empty;
+        public UIXDataGridCell COMEDE { get; set; } = "";
 
         // Description of the entry type (codetable mN)
-        public string COMETY { get; set; } = string.Empty;
+        public UIXDataGridCell COMETY { get; set; } = "";
 
         // Called application (APDID), empty for folders
-        public string COMEAP { get; set; } = string.Empty;
+        public UIXDataGridCell COMEAP { get; set; } = "";
     }
 }

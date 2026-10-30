@@ -28,17 +28,17 @@ namespace GameTimeNext.Core.Application.Metadata
             MetadataEditView.DgFields.SelectorController = new MetadataEditView_FieldsSelectorController(this);
         }
 
-        public void CreateNew()
+        public void CreateNew(Action<MetadataEditViewController.MetadataEditViewReturn> callback)
         {
             T1METAH = new TXMETAH().CreateNew();
             MetadataEditView!.ViewIndicator.Clear();
             MetadataEditView!.ViewIndicator.Add("CN");
             MetadataEditView!.Title = "Create New Metadata";
 
-            MetadataEditViewController!.Show();
+            ShowAndReturn(callback);
         }
 
-        public void Edit(T1METAH t1metah)
+        public void Edit(Action<MetadataEditViewController.MetadataEditViewReturn> callback, T1METAH t1metah)
         {
             T1METAH = t1metah;
 
@@ -47,7 +47,19 @@ namespace GameTimeNext.Core.Application.Metadata
 
             MetadataEditView!.Title = "Edit Metadata";
 
+            ShowAndReturn(callback);
+        }
+
+        /// <summary>
+        /// The view stays open after saving and is mostly left with Esc / the close button, which doesn't run a result callback
+        /// (only Exit does): the dialog is modal, so Show returns once it is closed, however it was closed, and the callback
+        /// gets the result then.
+        /// </summary>
+        private void ShowAndReturn(Action<MetadataEditViewController.MetadataEditViewReturn> callback)
+        {
             MetadataEditViewController!.Show();
+
+            callback(MetadataEditViewController.GetEditReturn());
         }
 
         public override void SetWindowProperties(UIXApplicationStartOptions options)

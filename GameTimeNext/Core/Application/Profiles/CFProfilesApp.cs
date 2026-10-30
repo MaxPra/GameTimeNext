@@ -38,7 +38,7 @@ namespace GameTimeNext.Core.Application.Profiles
             }
             catch (Exception ex)
             {
-                FnLog.AddWarning("Profiles", $"Cover \"{coverFileName}\" could not be loaded, the placeholder cover is shown instead", ex);
+                FnLog.AddWarning(nameof(CFProfilesApp), $"Cover \"{coverFileName}\" could not be loaded, the placeholder cover is shown instead", ex);
                 return LoadPlaceholderCover(width, height);
             }
         }

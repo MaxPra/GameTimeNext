@@ -1,5 +1,7 @@
 ﻿using System.Data.SQLite;
+using System.Diagnostics;
 using System.IO;
+using System.Runtime.CompilerServices;
 using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Framework.DataBase.Migration
@@ -44,11 +46,16 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
             });
         }
 
-        private static void LogInfo(string message, string? subSystem = null, string? method = null)
-            => FnLog.AddInfo("MigrationFactory", BuildLogMessage(message, subSystem, method));
+        // Wrappers of FnLog: the place of the call and the call stack belong to the code that calls them
+        [StackTraceHidden]
+        private static void LogInfo(string message, string? subSystem = null, string? method = null,
+            [CallerMemberName] string callerMember = "", [CallerFilePath] string callerFile = "", [CallerLineNumber] int callerLine = 0)
+            => FnLog.AddInfo("MainApp", BuildLogMessage(message, subSystem, method), null, callerMember, callerFile, callerLine);
 
-        private static void LogError(string message, Exception? exception = null, string? subSystem = null, string? method = null)
-            => FnLog.AddError("MigrationFactory", BuildLogMessage(message, subSystem, method), exception: exception);
+        [StackTraceHidden]
+        private static void LogError(string message, Exception? exception = null, string? subSystem = null, string? method = null,
+            [CallerMemberName] string callerMember = "", [CallerFilePath] string callerFile = "", [CallerLineNumber] int callerLine = 0)
+            => FnLog.AddError("MainApp", BuildLogMessage(message, subSystem, method), exception, callerMember, callerFile, callerLine);
 
         private static string BuildLogMessage(string message, string? subSystem, string? method)
         {

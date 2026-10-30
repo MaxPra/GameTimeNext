@@ -4,10 +4,10 @@ namespace GameTimeNext.Core.Application.ErrorMessages.Controller
 {
     public class ErrorMessagesDataGridRow : UIXDataGridRow
     {
-        public string? ERERMNR { get; set; } = "";
-        public string? ERERMSG { get; set; } = "";
-        public string? ERERHIN { get; set; } = "";
-        public string? ERCHAT { get; set; } = "";
-        public string? ERCHUS { get; set; } = "";
+        public UIXDataGridCell ERERMNR { get; set; } = "";
+        public UIXDataGridCell ERERMSG { get; set; } = "";
+        public UIXDataGridCell ERERHIN { get; set; } = "";
+        public UIXDataGridCell ERCHAT { get; set; } = "";
+        public UIXDataGridCell ERCHUS { get; set; } = "";
     }
 }

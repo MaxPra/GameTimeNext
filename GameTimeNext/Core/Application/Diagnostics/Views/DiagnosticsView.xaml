@@ -1,0 +1,457 @@
+<ui:GTNWindowView
+    x:Class="GameTimeNext.Core.Application.Diagnostics.Views.DiagnosticsView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI.Base"
+    xmlns:uixcb="clr-namespace:UIX.ViewController.Engine.FrameworkElements.ComboBoxes;assembly=UIX.ViewController.Engine"
+    xmlns:uixsel="clr-namespace:UIX.ViewController.Engine.FrameworkElements.Selectors;assembly=UIX.ViewController.Engine"
+    Width="Auto"
+    Height="800"
+    HorizontalAlignment="Stretch"
+    VerticalAlignment="Stretch"
+    HorizontalContentAlignment="Stretch"
+    VerticalContentAlignment="Stretch"
+    d:DesignHeight="700"
+    d:DesignWidth="1100"
+    mc:Ignorable="d">
+
+    <Grid Style="{StaticResource View.Root}">
+        <uixsel:UIXTabControl x:Name="tbcDiagnostics">
+
+            <!--  Status: background processes and external APIs  -->
+            <TabItem Header="Status">
+                <Grid>
+                    <!--  Both lists as high as their rows, one below the other; the free space stays at the bottom  -->
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="16" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="8" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="24" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="8" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <Border
+                        Grid.Row="0"
+                        Padding="16"
+                        Style="{StaticResource Card}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="16" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock
+                                Grid.Column="0"
+                                VerticalAlignment="Center"
+                                Style="{StaticResource Text.Hint}"
+                                Text="Processes running in the background of the app and the external APIs it uses. Cycle times are measured without the wait time between two cycles. The APIs are checked with a test request on every refresh, the request values count since the app started."
+                                TextWrapping="Wrap" />
+
+                            <Button
+                                x:Name="btnRefreshProcesses"
+                                Grid.Column="2"
+                                VerticalAlignment="Center"
+                                Style="{StaticResource Button.Icon}"
+                                ToolTip="Refresh background processes and APIs">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontFamily="{StaticResource Font.Icons}"
+                                    FontSize="14"
+                                    Text="&#xE72C;" />
+                            </Button>
+                        </Grid>
+                    </Border>
+
+                    <TextBlock
+                        Grid.Row="2"
+                        Margin="0"
+                        Style="{StaticResource Text.Subtitle}"
+                        Text="Background processes" />
+
+                    <uixsel:UIXDataGrid
+                        x:Name="dgBackgroundProcesses"
+                        Grid.Row="4"
+                        AutoGenerateColumns="False"
+                        CanUserAddRows="False"
+                        CanUserDeleteRows="False"
+                        CanUserResizeRows="False"
+                        HeadersVisibility="Column"
+                        IsReadOnly="True"
+                        SelectionMode="Single"
+                        SelectionUnit="FullRow">
+                        <uixsel:UIXDataGrid.Columns>
+                            <DataGridTextColumn
+                                Width="220"
+                                MinWidth="180"
+                                Binding="{Binding COPROC}"
+                                Header="Process" />
+                            <DataGridTextColumn
+                                Width="220"
+                                MinWidth="160"
+                                Binding="{Binding CODESC}"
+                                Header="Description" />
+                            <DataGridTextColumn
+                                Width="90"
+                                Binding="{Binding COSTAT}"
+                                Header="Status" />
+                            <DataGridTextColumn
+                                Width="150"
+                                Binding="{Binding COSTRT}"
+                                Header="Started at" />
+                            <DataGridTextColumn
+                                Width="110"
+                                Binding="{Binding CORUNF}"
+                                Header="Running for" />
+                            <DataGridTextColumn
+                                Width="90"
+                                Binding="{Binding COINTV}"
+                                Header="Interval" />
+                            <DataGridTextColumn
+                                Width="70"
+                                Binding="{Binding COMODE}"
+                                Header="Mode" />
+                            <DataGridTextColumn
+                                Width="90"
+                                Binding="{Binding COCYCL}"
+                                Header="Cycles" />
+                            <DataGridTextColumn
+                                Width="150"
+                                Binding="{Binding COLAST}"
+                                Header="Last cycle" />
+                            <DataGridTextColumn
+                                Width="90"
+                                Binding="{Binding COLDUR}"
+                                Header="Last" />
+                            <DataGridTextColumn
+                                Width="90"
+                                Binding="{Binding COAVGD}"
+                                Header="Average" />
+                            <DataGridTextColumn
+                                Width="90"
+                                Binding="{Binding COMAXD}"
+                                Header="Max" />
+                            <DataGridTextColumn
+                                Width="70"
+                                Binding="{Binding COTHRD}"
+                                Header="Thread" />
+                        </uixsel:UIXDataGrid.Columns>
+                    </uixsel:UIXDataGrid>
+
+                    <!--  External APIs (FnApiStatus): configuration and the requests since the app started  -->
+                    <TextBlock
+                        Grid.Row="6"
+                        Margin="0"
+                        Style="{StaticResource Text.Subtitle}"
+                        Text="APIs" />
+
+                    <uixsel:UIXDataGrid
+                        x:Name="dgApiStatus"
+                        Grid.Row="8"
+                        AutoGenerateColumns="False"
+                        CanUserAddRows="False"
+                        CanUserDeleteRows="False"
+                        CanUserResizeRows="False"
+                        HeadersVisibility="Column"
+                        IsReadOnly="True"
+                        SelectionMode="Single"
+                        SelectionUnit="FullRow">
+                        <uixsel:UIXDataGrid.Columns>
+                            <DataGridTextColumn
+                                Width="130"
+                                Binding="{Binding COAPI}"
+                                Header="API" />
+                            <DataGridTextColumn
+                                Width="130"
+                                Binding="{Binding COSTAT}"
+                                Header="Status" />
+                            <DataGridTextColumn
+                                Width="200"
+                                Binding="{Binding COCONF}"
+                                Header="Configuration" />
+                            <DataGridTextColumn
+                                Width="190"
+                                Binding="{Binding COCHCK}"
+                                Header="Checked" />
+                            <DataGridTextColumn
+                                Width="150"
+                                Binding="{Binding COLREQ}"
+                                Header="Last request" />
+                            <DataGridTextColumn
+                                Width="150"
+                                Binding="{Binding COLSUC}"
+                                Header="Last success" />
+                            <DataGridTextColumn
+                                Width="90"
+                                Binding="{Binding COREQS}"
+                                Header="Requests" />
+                            <DataGridTextColumn
+                                Width="80"
+                                Binding="{Binding COERRS}"
+                                Header="Errors" />
+                            <DataGridTextColumn
+                                Width="100"
+                                Binding="{Binding COAVGD}"
+                                Header="Average" />
+                            <DataGridTextColumn
+                                Width="*"
+                                MinWidth="220"
+                                Binding="{Binding COLERR}"
+                                Header="Last error" />
+                        </uixsel:UIXDataGrid.Columns>
+                    </uixsel:UIXDataGrid>
+                </Grid>
+            </TabItem>
+
+            <!--  Log (T1SYLOG of the log database)  -->
+            <TabItem Header="Log">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="16" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <Border
+                        Grid.Row="0"
+                        Padding="16"
+                        Style="{StaticResource Card}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="12" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="32" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="32" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="16" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <Grid
+                                Grid.Row="0"
+                                Grid.Column="0"
+                                HorizontalAlignment="Left">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="80" />
+                                    <ColumnDefinition Width="12" />
+                                    <ColumnDefinition Width="200" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock
+                                    Grid.Column="0"
+                                    VerticalAlignment="Center"
+                                    Style="{StaticResource Text.Label}"
+                                    Text="From" />
+
+                                <DatePicker
+                                    x:Name="dtpFrom"
+                                    Grid.Column="2"
+                                    VerticalAlignment="Center" />
+                            </Grid>
+
+                            <Grid
+                                Grid.Row="0"
+                                Grid.Column="2"
+                                HorizontalAlignment="Left">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="80" />
+                                    <ColumnDefinition Width="12" />
+                                    <ColumnDefinition Width="200" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock
+                                    Grid.Column="0"
+                                    VerticalAlignment="Center"
+                                    Style="{StaticResource Text.Label}"
+                                    Text="To" />
+
+                                <DatePicker
+                                    x:Name="dtpTo"
+                                    Grid.Column="2"
+                                    VerticalAlignment="Center" />
+                            </Grid>
+
+                            <Grid
+                                Grid.Row="0"
+                                Grid.Column="4"
+                                HorizontalAlignment="Left">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="80" />
+                                    <ColumnDefinition Width="12" />
+                                    <ColumnDefinition Width="200" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock
+                                    Grid.Column="0"
+                                    VerticalAlignment="Center"
+                                    Style="{StaticResource Text.Label}"
+                                    Text="Type" />
+
+                                <uixcb:UIXComboBox
+                                    x:Name="cmbLogType"
+                                    Grid.Column="2"
+                                    Height="36"
+                                    VerticalAlignment="Center"
+                                    AdditionalEntry="(All)"
+                                    SelectedValuePath="Tag"
+                                    ShowKeys="False" />
+                            </Grid>
+
+                            <Button
+                                x:Name="btnRefreshLog"
+                                Grid.Row="0"
+                                Grid.Column="6"
+                                VerticalAlignment="Center"
+                                IsDefault="True"
+                                Style="{StaticResource Button.Icon}"
+                                ToolTip="Refresh log">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontFamily="{StaticResource Font.Icons}"
+                                    FontSize="14"
+                                    Text="&#xE72C;" />
+                            </Button>
+
+                            <!--  Clear log: on its own at the right edge, away from the filter actions  -->
+                            <Button
+                                x:Name="btnClearLog"
+                                Grid.Row="0"
+                                Grid.Column="8"
+                                VerticalAlignment="Center"
+                                Style="{StaticResource Button.Icon}"
+                                ToolTip="Clear log">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontFamily="{StaticResource Font.Icons}"
+                                    FontSize="14"
+                                    Text="&#xE74D;" />
+                            </Button>
+
+                            <Grid
+                                Grid.Row="2"
+                                Grid.Column="0"
+                                HorizontalAlignment="Left">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="80" />
+                                    <ColumnDefinition Width="12" />
+                                    <ColumnDefinition Width="200" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock
+                                    Grid.Column="0"
+                                    VerticalAlignment="Center"
+                                    Style="{StaticResource Text.Label}"
+                                    Text="Source" />
+
+                                <TextBox
+                                    x:Name="txbSource"
+                                    Grid.Column="2"
+                                    Style="{StaticResource TextBox.Default}" />
+                            </Grid>
+
+                            <Grid
+                                Grid.Row="2"
+                                Grid.Column="2"
+                                Grid.ColumnSpan="3"
+                                HorizontalAlignment="Left">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="80" />
+                                    <ColumnDefinition Width="12" />
+                                    <ColumnDefinition Width="340" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock
+                                    Grid.Column="0"
+                                    VerticalAlignment="Center"
+                                    Style="{StaticResource Text.Label}"
+                                    Text="Message" />
+
+                                <TextBox
+                                    x:Name="txbMessage"
+                                    Grid.Column="2"
+                                    Style="{StaticResource TextBox.Default}" />
+                            </Grid>
+
+                            <TextBlock
+                                x:Name="txtLogCount"
+                                Grid.Row="2"
+                                Grid.Column="6"
+                                Grid.ColumnSpan="3"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center"
+                                Style="{StaticResource Text.Caption}" />
+                        </Grid>
+                    </Border>
+
+                    <!--  List left, detail of the selected entry right; the splitter column and the detail column are 0 while nothing is selected  -->
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" MinWidth="400" />
+                            <ColumnDefinition x:Name="colLogSplitter" Width="0" />
+                            <ColumnDefinition x:Name="colLogDetail" Width="0" />
+                        </Grid.ColumnDefinitions>
+
+                        <uixsel:UIXDataGrid
+                            x:Name="dgLog"
+                            Grid.Column="0"
+                            AutoGenerateColumns="False"
+                            CanUserAddRows="False"
+                            CanUserDeleteRows="False"
+                            CanUserResizeRows="False"
+                            HeadersVisibility="Column"
+                            IsReadOnly="True"
+                            SelectionMode="Single"
+                            SelectionUnit="FullRow">
+                            <uixsel:UIXDataGrid.Columns>
+
+                                <uixsel:UIXDataGridTextColumn
+                                    Width="120"
+                                    Binding="{Binding COLGTY}"
+                                    Header="Type" />
+                                <DataGridTextColumn
+                                    Width="180"
+                                    Binding="{Binding COLGSR}"
+                                    Header="Source" />
+                                <DataGridTextColumn
+                                    Width="420"
+                                    MinWidth="220"
+                                    Binding="{Binding COLGMS}"
+                                    Header="Message" />
+                                <DataGridTextColumn
+                                    Width="150"
+                                    Binding="{Binding COLGTS}"
+                                    Header="Time" />
+                            </uixsel:UIXDataGrid.Columns>
+                        </uixsel:UIXDataGrid>
+
+                        <GridSplitter
+                            x:Name="gspLogDetail"
+                            Grid.Column="1"
+                            Visibility="Collapsed" />
+
+                        <!--  Detail area of the selected entry (DiagnosticsLogDetailView, via DiagnosticsLogDataWrapper)  -->
+                        <ContentPresenter x:Name="cpLogDetail" Grid.Column="2" />
+                    </Grid>
+                </Grid>
+            </TabItem>
+        </uixsel:UIXTabControl>
+    </Grid>
+</ui:GTNWindowView>

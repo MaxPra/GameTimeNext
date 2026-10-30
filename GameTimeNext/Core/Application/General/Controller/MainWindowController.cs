@@ -66,10 +66,10 @@ namespace GameTimeNext.Core.Application.General.Controller
             // so the views of the tabs would not get loaded and opened
             FnControls.SetVisible(GetView(), true);
 
-            FnLog.AddInfo("MainApp", "Starting favorites...");
+            FnLog.AddInfo(GetApp(), "Starting favorites...");
             AppEnvironment.AppLauncher.StartFavorites(GetApp());
 
-            FnLog.AddInfo("MainApp", "Starting background processes...");
+            FnLog.AddInfo(GetApp(), "Starting background processes...");
             // Start background processes
             AppEnvironment.StartBackgroundProcesses(GetApp());
 
@@ -109,7 +109,7 @@ namespace GameTimeNext.Core.Application.General.Controller
             await CheckGTXMigration();
 
 
-            FnLog.AddInfo("MainApp", "*** Application started ***");
+            FnLog.AddInfo(GetApp(), "*** Application started ***");
         }
 
         protected override void BuildImpl()
@@ -195,7 +195,7 @@ namespace GameTimeNext.Core.Application.General.Controller
             GetView().MainTabControl.Visibility = Visibility.Hidden;
             FnControls.SetVisible(GetView().pnlEmptyTabMessage, false);
 
-            FnLog.AddInfo("MainApp", "Big Picture mode opened");
+            FnLog.AddInfo(GetApp(), "Big Picture mode opened");
         }
 
         /// <summary>
@@ -215,7 +215,7 @@ namespace GameTimeNext.Core.Application.General.Controller
             // The mode colored the window with the selected game: back to the profile selected in the profiles view
             FnTheme.ApplyProfileAccentColors(AppEnvironment.CurrentPfid == 0 ? null : new TXPROFI().Read(AppEnvironment.CurrentPfid));
 
-            FnLog.AddInfo("MainApp", "Big Picture mode closed");
+            FnLog.AddInfo(GetApp(), "Big Picture mode closed");
         }
 
         private void EnsureProfilesAppStarted()
@@ -307,14 +307,14 @@ namespace GameTimeNext.Core.Application.General.Controller
 
             if (Directory.Exists(_gtxPath) && gtnFiles.Length == 0)
             {
-                FnLog.AddInfo("MainApp", "GameTimeX installation found. Prompting user for migration.");
+                FnLog.AddInfo(GetApp(), "GameTimeX installation found. Prompting user for migration.");
 
                 CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
                 CFMBOXResult result = cfmbox.Show(GetErrorMessage("GTX0001", AppConfig.Root.ApplicationName), CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
 
                 if (result == CFMBOXResult.Yes)
                 {
-                    FnLog.AddInfo("MainApp", "User accepted migration. Starting migration process.");
+                    FnLog.AddInfo(GetApp(), "User accepted migration. Starting migration process.");
                     GetApp().Loader.Begin(loaderTextStart);
 
                     bool hasError = false;
@@ -329,12 +329,12 @@ namespace GameTimeNext.Core.Application.General.Controller
                         catch (Exception ex)
                         {
                             hasError = true;
-                            FnLog.AddError("MainApp", "Error during GTX migration", ex);
+                            FnLog.AddError(GetApp(), "Error during GTX migration", ex);
                             GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("GLO0013", "migrating from GameTimeX", ex.Message), CFMBOXResult.Ok, CFMBOXIcon.Error);
                         }
                         finally
                         {
-                            FnLog.AddInfo("MainApp", $"GTX migration process completed {(hasError ? "with errors" : "successfully")}.");
+                            FnLog.AddInfo(GetApp(), $"GTX migration process completed {(hasError ? "with errors" : "successfully")}.");
                             GetApp().Loader.Stop();
                         }
                     });

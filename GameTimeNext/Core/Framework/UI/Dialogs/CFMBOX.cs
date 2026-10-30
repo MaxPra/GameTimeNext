@@ -66,6 +66,17 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
         }
 
         /// <summary>
+        /// Asks for a text (like answering a question): the message with an input field and OK / Cancel.
+        /// IsConfirmed of the result is true for OK, Text holds the entered text then. Always the dialog window,
+        /// also in the Big Picture mode (its presenter has no input field).
+        /// </summary>
+        public CFMBOXInputResult ShowInput(string message, string defaultText = "", CFMBOXIcon icon = CFMBOXIcon.Question, string? title = null)
+        {
+            CreateFreshDialog();
+            return _cfmboxController!.ShowInputDialog(title ?? DeriveTitleFromIcon(icon), message, defaultText, icon, this.WndParent ?? System.Windows.Application.Current?.MainWindow);
+        }
+
+        /// <summary>
         /// Standard question for UnsavedChangesImpl of a controller: Yes saves (then closes), No discards the changes,
         /// Cancel (or closing the message box) keeps the view open.
         /// </summary>

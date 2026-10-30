@@ -3,6 +3,7 @@ using GameTimeNext.Core.Framework.Config;
 using System.IO;
 using System.Text;
 using UIX.ViewController.Engine.Migration.Types;
+using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Framework.DataBase.Migration
@@ -15,7 +16,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
             {
                 // OFDO (#OF001): Make a base class for TXBasic with generic methods
 
-                public static void GenerateFor(T1METAH t1metah)
+                public static void GenerateFor(UIXApplication app, T1METAH t1metah)
                 {
                     if (t1metah is null) throw new ArgumentNullException(nameof(t1metah));
 
@@ -31,13 +32,13 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     TableSchema tSchema = SchemaGenerator.GenerateSingleFromMetadata(t1metah.MENAM);
                     string nsTableObjects = $"{AppConfig.Root.ApplicationName}.Core.Application.TableObjects";
                     string nsDataManagers = $"{AppConfig.Root.ApplicationName}.Core.Application.DataManagers";
-                    Generate(suffix, tSchema, t1metah.DSYNC, fields, nsTableObjects, nsDataManagers);
+                    Generate(app, suffix, tSchema, t1metah.DSYNC, fields, nsTableObjects, nsDataManagers);
                 }
 
                 /// <summary>
                 /// Generates the classes of the metadata tables (T1METAH, T1METAP) from the hard-coded METADATA definition.
                 /// </summary>
-                public static void GenerateForMetadata()
+                public static void GenerateForMetadata(UIXApplication app)
                 {
                     string nsMetadata = $"{AppConfig.Root.ApplicationName}.Core.Application.Metadata.Data";
 
@@ -56,16 +57,16 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                             DEFVL = c.DEFVL,
                         }).OrderBy(p => p.PORDE).ThenBy(p => p.PONAM).ToList();
 
-                        Generate(tSchema.MENAM.Substring(2), tSchema, true, GenerateFields(t1metaps), nsMetadata, nsMetadata);
+                        Generate(app, tSchema.MENAM.Substring(2), tSchema, true, GenerateFields(t1metaps), nsMetadata, nsMetadata);
                     }
                 }
 
-                private static void Generate(string suffix, TableSchema tSchema, bool devSync, Dictionary<T1METAP, UIXSqliteDataType> fields, string nsTableObjects, string nsDataManagers)
+                private static void Generate(UIXApplication app, string suffix, TableSchema tSchema, bool devSync, Dictionary<T1METAP, UIXSqliteDataType> fields, string nsTableObjects, string nsDataManagers)
                 {
-                    GenerateT1Class(suffix, tSchema, devSync, fields, nsTableObjects, nsDataManagers);
-                    GenerateK1Class(suffix, fields, nsTableObjects);
-                    GenerateTXBasicClass(suffix, tSchema, fields, nsTableObjects, nsDataManagers);
-                    GenerateTXClass(suffix, nsDataManagers);
+                    GenerateT1Class(app, suffix, tSchema, devSync, fields, nsTableObjects, nsDataManagers);
+                    GenerateK1Class(app, suffix, fields, nsTableObjects);
+                    GenerateTXBasicClass(app, suffix, tSchema, fields, nsTableObjects, nsDataManagers);
+                    GenerateTXClass(app, suffix, nsDataManagers);
                 }
 
                 private static Dictionary<T1METAP, UIXSqliteDataType> GenerateFields(List<T1METAP> t1metaps)
@@ -81,7 +82,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     return temp;
                 }
 
-                private static void GenerateT1Class(string suffix, TableSchema tSchema, bool devSync, Dictionary<T1METAP, UIXSqliteDataType> fields, string nsTableObjects, string nsDataManagers)
+                private static void GenerateT1Class(UIXApplication app, string suffix, TableSchema tSchema, bool devSync, Dictionary<T1METAP, UIXSqliteDataType> fields, string nsTableObjects, string nsDataManagers)
                 {
                     string className = $"T1{suffix}";
                     CodeBuilder code = new CodeBuilder();
@@ -119,10 +120,10 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     code.EndBlock();
 
 
-                    code.SaveToFile(AppConfig.Dev.GenClassTableObjectsDirectoryPath, $"{className}.cs");
+                    code.SaveToFile(app, AppConfig.Dev.GenClassTableObjectsDirectoryPath, $"{className}.cs");
                 }
 
-                private static void GenerateK1Class(string suffix, Dictionary<T1METAP, UIXSqliteDataType> fields, string nsTableObjects)
+                private static void GenerateK1Class(UIXApplication app, string suffix, Dictionary<T1METAP, UIXSqliteDataType> fields, string nsTableObjects)
                 {
                     string className = $"K1{suffix}";
                     string classNameT1 = $"T1{suffix}";
@@ -151,10 +152,10 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     code.EndBlock();
 
 
-                    code.SaveToFile(AppConfig.Dev.GenClassTableObjectsDirectoryPath, $"{className}.cs");
+                    code.SaveToFile(app, AppConfig.Dev.GenClassTableObjectsDirectoryPath, $"{className}.cs");
                 }
 
-                private static void GenerateTXBasicClass(string suffix, TableSchema tSchema, Dictionary<T1METAP, UIXSqliteDataType> fields, string nsTableObjects, string nsDataManagers)
+                private static void GenerateTXBasicClass(UIXApplication app, string suffix, TableSchema tSchema, Dictionary<T1METAP, UIXSqliteDataType> fields, string nsTableObjects, string nsDataManagers)
                 {
                     string className = $"TX{suffix}Basic";
                     string classNameT1 = $"T1{suffix}";
@@ -400,10 +401,10 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     code.EndBlock();
 
 
-                    code.SaveToFile(AppConfig.Dev.GenClassDataManagersDirectoryPath, $"{className}.cs");
+                    code.SaveToFile(app, AppConfig.Dev.GenClassDataManagersDirectoryPath, $"{className}.cs");
                 }
 
-                private static void GenerateTXClass(string suffix, string nsDataManagers)
+                private static void GenerateTXClass(UIXApplication app, string suffix, string nsDataManagers)
                 {
                     string className = $"TX{suffix}";
                     string classNameBasic = $"{className}Basic";
@@ -425,7 +426,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     code.EndBlock();
 
 
-                    code.SaveToFile(AppConfig.Dev.GenClassDataManagersDirectoryPath, $"{className}.cs", preventSolutionOverride: true);
+                    code.SaveToFile(app, AppConfig.Dev.GenClassDataManagersDirectoryPath, $"{className}.cs", preventSolutionOverride: true);
                 }
 
                 private static class Helpers
@@ -553,19 +554,19 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                         return this;
                     }
 
-                    public void SaveToFile(string targetDirectoryPath, string fileName, bool preventSolutionOverride = false)
+                    public void SaveToFile(UIXApplication app, string targetDirectoryPath, string fileName, bool preventSolutionOverride = false)
                     {
                         string? solutionFilePath = GetSolutionFilePath(fileName);
 
                         if (solutionFilePath is not null && !preventSolutionOverride)
                         {
                             File.WriteAllText(solutionFilePath, ToString(), Encoding.UTF8);
-                            FnLog.AddInfo(this, $"{fileName} generated to solution.");
+                            FnLog.AddInfo(app, $"{fileName} generated to solution.");
                         }
                         else
                         {
                             File.WriteAllText(Path.Combine(targetDirectoryPath, fileName), ToString(), Encoding.UTF8);
-                            FnLog.AddInfo(this, $"{fileName} generated to genClass.");
+                            FnLog.AddInfo(app, $"{fileName} generated to genClass.");
                         }
                     }
 

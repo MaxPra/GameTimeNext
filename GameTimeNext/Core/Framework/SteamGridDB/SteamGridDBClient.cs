@@ -1,4 +1,5 @@
 ﻿using GameTimeNext.Core.Framework.Config;
+using GameTimeNext.Core.Framework.Http;
 using GameTimeNext.Core.Framework.Utils;
 using GameTimeNext.Core.Application.Profiles;
 using System.IO;
@@ -21,7 +22,7 @@ namespace GameTimeNext.Core.Framework.SteamGridDB
             if (FnString.IsNullEmptyOrWhitespace(apiKey))
                 throw new ArgumentException("API-Key missing!", nameof(apiKey));
 
-            _httpClient = httpClient ?? new HttpClient();
+            _httpClient = httpClient ?? new HttpClient(FnApiStatus.CreateHandler(FnApiStatus.SteamGridDB));
             _httpClient.BaseAddress = _steamGridDBUri;
             _httpClient.Timeout = TimeSpan.FromSeconds(20);
 
@@ -112,6 +113,15 @@ namespace GameTimeNext.Core.Framework.SteamGridDB
 
 
         /// <summary>
+        /// Small authenticated request to check that the API answers and accepts the key (throws if not).
+        /// </summary>
+        public async Task CheckConnectionAsync(CancellationToken cancellationToken = default)
+        {
+            using var response = await _httpClient!.GetAsync("search/autocomplete/portal", cancellationToken);
+            response.EnsureSuccessStatusCode();
+        }
+
+        /// <summary>
         /// Downloads the file as it is (no re-encoding), e.g. thumbnails for the selection grid.
         /// </summary>
         public async Task DownloadFileAsync(string fileUrl, string targetPath, CancellationToken cancellationToken = default)
@@ -168,7 +178,8 @@ namespace GameTimeNext.Core.Framework.SteamGridDB
                 AutomaticDecompression = DecompressionMethods.All
             };
 
-            HttpClient httpClient = new HttpClient(handler);
+            // Covers come from the SteamGridDB CDN: counted as SteamGridDB
+            HttpClient httpClient = new HttpClient(FnApiStatus.CreateHandler(FnApiStatus.SteamGridDB, handler));
             httpClient.Timeout = TimeSpan.FromSeconds(20);
             httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " + AppConfig.Root.ApplicationName + " / 1.0"

@@ -33,7 +33,7 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
     /// </summary>
     public partial class BigPictureViewController : UIXViewControllerBase<BigPictureApp, BigPictureView>, ICFMBOXPresenter
     {
-        private readonly GamepadInput _gamepad = new GamepadInput();
+        private readonly GamepadInput _gamepad;
         private readonly DispatcherTimer _clockTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(10) };
 
         // Second attempt to get the focus after a return from a game
@@ -87,6 +87,8 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
 
         public BigPictureViewController(UIXApplication app) : base(app)
         {
+            _gamepad = new GamepadInput(app);
+
             _gamepad.ButtonPressed += OnGamepadButtonPressed;
             _gamepad.ConnectionChanged += connected =>
             {

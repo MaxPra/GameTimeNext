@@ -175,6 +175,7 @@
         <Setter Property="ColumnHeaderStyle" Value="{DynamicResource {x:Type DataGridColumnHeader}}" />
         <Setter Property="RowStyle" Value="{DynamicResource {x:Type DataGridRow}}" />
         <Setter Property="CellStyle" Value="{DynamicResource {x:Type DataGridCell}}" />
+        <Setter Property="IconFontFamily" Value="{StaticResource Font.Icons}" />
     </Style>
 
     <!--  Tree grid (engine UIXTreeGrid): same card look as UIXDataGrid  -->
@@ -183,7 +184,6 @@
         BasedOn="{StaticResource {x:Type uixsel:UIXDataGrid}}"
         TargetType="{x:Type uixsel:UIXTreeGrid}">
         <Setter Property="IndentSize" Value="18" />
-        <Setter Property="IconFontFamily" Value="{StaticResource Font.Icons}" />
         <Setter Property="RowStyle" Value="{DynamicResource TreeGrid.Row}" />
     </Style>
 
@@ -307,6 +307,13 @@
                             Background="{StaticResource Brush.Card.Divider}"
                             SnapsToDevicePixels="True" />
 
+                        <!--  Row color set by the row view model (UIXDataGridRow.RowBackground), below the hover / selection tint  -->
+                        <Border
+                            Margin="0,1"
+                            Background="{Binding RowBackground}"
+                            CornerRadius="{StaticResource Item.CornerRadius}"
+                            SnapsToDevicePixels="True" />
+
                         <Border
                             x:Name="RowBorder"
                             Margin="0,1"
@@ -357,6 +364,13 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+
+        <Style.Triggers>
+            <!--  Text color set by the row view model (UIXDataGridRow.RowForeground); a style trigger wins over the selected state of the template  -->
+            <DataTrigger Binding="{Binding HasRowForeground}" Value="True">
+                <Setter Property="Foreground" Value="{Binding RowForeground}" />
+            </DataTrigger>
+        </Style.Triggers>
     </Style>
 
     <!--  Parent rows of a UIXTreeGrid: darker than Brush.Card.Inset, which is too faint on light wallpapers behind the glass  -->
@@ -379,7 +393,8 @@
     </Style>
 
     <Style TargetType="{x:Type DataGridCell}">
-        <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+        <!--  Text color of the row (TextPrimary, or the row view model's RowForeground); a setter, so the theme's selected color doesn't apply  -->
+        <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type DataGridRow}}}" />
         <Setter Property="Background" Value="Transparent" />
         <!--  Vertical column divider on the left edge (see DataGridColumnHeader), same hairline as the one between the rows  -->
         <Setter Property="BorderBrush" Value="{StaticResource Brush.Card.Divider}" />
@@ -389,27 +404,36 @@
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
+        <!--  Colors of single cells (UIXDataGridCell of the bound row property), drawn by this template and the trigger below  -->
+        <Setter Property="uixsel:UIXDataGridCellColors.IsEnabled" Value="True" />
 
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type DataGridCell}">
-                    <Border
-                        x:Name="CellBorder"
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}"
-                        SnapsToDevicePixels="True">
-                        <ContentPresenter
-                            Margin="{TemplateBinding Padding}"
-                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                            VerticalAlignment="Center"
-                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
-                    </Border>
+                    <Grid>
+                        <!--  Cell color set by the row view model (UIXDataGridCell.Background, passed on by UIXDataGridCellColors)  -->
+                        <Border
+                            Margin="0,1"
+                            Background="{Binding (uixsel:UIXDataGridCellColors.Background), RelativeSource={RelativeSource TemplatedParent}}"
+                            SnapsToDevicePixels="True" />
+
+                        <Border
+                            x:Name="CellBorder"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            SnapsToDevicePixels="True">
+                            <ContentPresenter
+                                Margin="{TemplateBinding Padding}"
+                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                VerticalAlignment="Center"
+                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                        </Border>
+                    </Grid>
 
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsSelected" Value="True">
                             <Setter TargetName="CellBorder" Property="Background" Value="Transparent" />
-                            <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
                         </Trigger>
 
                         <Trigger Property="IsKeyboardFocusWithin" Value="True">
@@ -425,6 +449,11 @@
             <DataTrigger Binding="{Binding Column.DisplayIndex, RelativeSource={RelativeSource Self}}" Value="0">
                 <Setter Property="BorderThickness" Value="0" />
             </DataTrigger>
+
+            <!--  Text color of the single cell (UIXDataGridCell.Foreground), over the row's color  -->
+            <Trigger Property="uixsel:UIXDataGridCellColors.HasForeground" Value="True">
+                <Setter Property="Foreground" Value="{Binding (uixsel:UIXDataGridCellColors.Foreground), RelativeSource={RelativeSource Self}}" />
+            </Trigger>
         </Style.Triggers>
     </Style>
 

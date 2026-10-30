@@ -1,0 +1,81 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--
+        Splitter between two areas (e.g. list and detail): the grip is as wide as the gap between cards (16 px) and transparent,
+        only a fine line in its middle shows it; hover and dragging tint the line with the accent.
+        Vertical splitter (between columns) by default; for one between rows use GridSplitter.Horizontal.
+    -->
+    <Style TargetType="{x:Type GridSplitter}">
+        <Setter Property="Width" Value="16" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+        <Setter Property="ResizeDirection" Value="Columns" />
+        <Setter Property="ResizeBehavior" Value="PreviousAndNext" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{StaticResource Brush.Card.Divider}" />
+        <Setter Property="Cursor" Value="SizeWE" />
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="ShowsPreview" Value="False" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type GridSplitter}">
+                    <Border Background="{TemplateBinding Background}">
+                        <Border
+                            x:Name="Line"
+                            Width="2"
+                            Margin="0,8"
+                            HorizontalAlignment="Center"
+                            Background="{TemplateBinding Foreground}"
+                            CornerRadius="1" />
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Line" Property="Background" Value="{DynamicResource Brush.Accent.Outline}" />
+                        </Trigger>
+                        <Trigger Property="IsDragging" Value="True">
+                            <Setter TargetName="Line" Property="Background" Value="{DynamicResource Brush.Accent}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style
+        x:Key="GridSplitter.Horizontal"
+        BasedOn="{StaticResource {x:Type GridSplitter}}"
+        TargetType="{x:Type GridSplitter}">
+        <Setter Property="Width" Value="NaN" />
+        <Setter Property="Height" Value="16" />
+        <Setter Property="ResizeDirection" Value="Rows" />
+        <Setter Property="Cursor" Value="SizeNS" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type GridSplitter}">
+                    <Border Background="{TemplateBinding Background}">
+                        <Border
+                            x:Name="Line"
+                            Height="2"
+                            Margin="8,0"
+                            VerticalAlignment="Center"
+                            Background="{TemplateBinding Foreground}"
+                            CornerRadius="1" />
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Line" Property="Background" Value="{DynamicResource Brush.Accent.Outline}" />
+                        </Trigger>
+                        <Trigger Property="IsDragging" Value="True">
+                            <Setter TargetName="Line" Property="Background" Value="{DynamicResource Brush.Accent}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

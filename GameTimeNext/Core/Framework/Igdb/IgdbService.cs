@@ -1,4 +1,5 @@
-﻿using GameTimeNext.Core.Framework.UI.Dialogs;
+﻿using GameTimeNext.Core.Framework.Http;
+using GameTimeNext.Core.Framework.UI.Dialogs;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -20,7 +21,7 @@ namespace GameTimeNext.Core.Framework.Igdb
         public IgdbService(UIXApplication app, string clientId)
         {
             _application = app;
-            HttpClient = new HttpClient();
+            HttpClient = new HttpClient(FnApiStatus.CreateHandler(FnApiStatus.Igdb));
             ClientId = clientId;
         }
 
@@ -112,6 +113,24 @@ namespace GameTimeNext.Core.Framework.Igdb
             return items?.FirstOrDefault();
         }
 
+        /// <summary>
+        /// Checks the connection with the given credentials (throws if not possible): gets a Twitch token and runs a minimal
+        /// query. Independent of the token of the service (AuthToken), which stays as it is.
+        /// </summary>
+        public static async Task CheckConnectionAsync(string clientId, string clientSecret, CancellationToken cancellationToken = default)
+        {
+            string token = await FnTwitchAuthentication.GetAccessTokenAsync(clientId, clientSecret, cancellationToken);
+
+            using HttpClient httpClient = new HttpClient(FnApiStatus.CreateHandler(FnApiStatus.Igdb));
+            using var request = new HttpRequestMessage(HttpMethod.Post, "https://api.igdb.com/v4/games");
+            request.Headers.Add("Client-ID", clientId);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            request.Content = new StringContent("fields id; limit 1;", Encoding.UTF8, "text/plain");
+
+            using var response = await httpClient.SendAsync(request, cancellationToken);
+            response.EnsureSuccessStatusCode();
+        }
+
         public int GetSteamSourceId()
         {
             EnsureAuthToken();
@@ -176,7 +195,7 @@ namespace GameTimeNext.Core.Framework.Igdb
 
             try
             {
-                IgdbExtGameSources = FnTwitchAuthentication.GetExternalGameSources(new System.Net.Http.HttpClient(), clientId, AuthToken);
+                IgdbExtGameSources = FnTwitchAuthentication.GetExternalGameSources(new HttpClient(FnApiStatus.CreateHandler(FnApiStatus.Igdb)), clientId, AuthToken);
             }
             catch (Exception)
             {

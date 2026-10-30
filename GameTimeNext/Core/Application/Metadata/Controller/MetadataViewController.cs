@@ -72,7 +72,13 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
         protected void EV_BtnAdd()
         {
             MetadataEditApp metadataEditApp = GetApp().GetApplication<MetadataEditApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
-            metadataEditApp.CreateNew();
+            metadataEditApp.CreateNew(async (result) =>
+            {
+                if (!result.HasChanged)
+                    return;
+
+                await GetView().DgMetadata.LoadDataAsync();
+            });
         }
 
         protected async Task EV_BtnRefresh()
@@ -95,7 +101,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
                 {
                     await Task.Run(() =>
                     {
-                        MigrationFactory.Metadata.CodeGenerator.GenerateFor(t1metah);
+                        MigrationFactory.Metadata.CodeGenerator.GenerateFor(GetApp(), t1metah);
                         MigrationFactory.FromCsv.MigrateTables(MigrationFactory.ImportType.MetadataGenerator);
                     });
 
@@ -123,7 +129,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
             {
                 GetApp().Loader.Begin();
 
-                await Task.Run(() => MigrationFactory.Metadata.CodeGenerator.GenerateForMetadata());
+                await Task.Run(() => MigrationFactory.Metadata.CodeGenerator.GenerateForMetadata(GetApp()));
 
                 GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("MET0002"), CFMBOXResult.Ok, CFMBOXIcon.Success);
             }

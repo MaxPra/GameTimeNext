@@ -24,6 +24,7 @@ namespace GameTimeNext.Core.Framework
     {
         private static AppConfig _appConfig = new AppConfig();
         private static DataBaseManager _databaseManager = new DataBaseManager();
+        private static LogDataBaseManager _logDatabaseManager = new LogDataBaseManager();
         private static T1PROFI? _t1Profi = new T1PROFI();
         private static ContentControl _loader = new ContentControl();
         private static Dictionary<string, UIXApplication> _startedApplications = new Dictionary<string, UIXApplication>();
@@ -51,6 +52,11 @@ namespace GameTimeNext.Core.Framework
         public static DataBaseManager GetDataBaseManager()
         {
             return _databaseManager;
+        }
+
+        public static LogDataBaseManager GetLogDataBaseManager()
+        {
+            return _logDatabaseManager;
         }
 
         public static T1PROFI? GetCurrentProfile()

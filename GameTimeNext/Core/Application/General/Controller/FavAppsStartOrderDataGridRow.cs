@@ -7,8 +7,8 @@ namespace GameTimeNext.Core.Application.General.Controller
     /// </summary>
     public class FavAppsStartOrderDataGridRow : UIXDataGridRow
     {
-        public string COICON { get; set; } = "";
-        public string CONAME { get; set; } = "";
+        public UIXDataGridCell COICON { get; set; } = "";
+        public UIXDataGridCell CONAME { get; set; } = "";
         public bool COPRST { get; set; } = false;
     }
 }

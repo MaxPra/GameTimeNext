@@ -99,7 +99,7 @@ namespace GameTimeNext.Core.Application.CreateImportPackage.Controller
                 }
                 catch (Exception ex)
                 {
-                    FnLog.AddError(this, "Creating the import package failed.", ex);
+                    FnLog.AddError(GetApp(), "Creating the import package failed.", ex);
                     error = true;
                 }
 
@@ -138,7 +138,7 @@ namespace GameTimeNext.Core.Application.CreateImportPackage.Controller
             {
                 string errMsg = GetErrorMessage("GLO0012", "testing the import package");
                 cfmbox.Show(errMsg, CFMBOXResult.Ok, CFMBOXIcon.Error);
-                FnLog.AddError(this, errMsg, ex);
+                FnLog.AddError(GetApp(), errMsg, ex);
             }
             finally
             {
