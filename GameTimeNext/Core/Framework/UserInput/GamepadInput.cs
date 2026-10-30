@@ -1,5 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 using System.Windows.Threading;
+using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Framework.UserInput
@@ -57,7 +58,8 @@ namespace GameTimeNext.Core.Framework.UserInput
         private readonly DateTime[] _nextSlotCheck = new DateTime[MaxControllers];
 
         // Only used by the poll thread; opened while polling, closed when it ends
-        private readonly PlayStationControllers _playStationControllers = new PlayStationControllers();
+        private readonly UIXApplication _app;
+        private readonly PlayStationControllers _playStationControllers;
         private bool _playStationAvailable = true;
 
         // Replaced (never changed) on every poll, so IsHeld can read it from the UI thread
@@ -93,8 +95,11 @@ namespace GameTimeNext.Core.Framework.UserInput
             return _previous.Contains(button);
         }
 
-        public GamepadInput()
+        /// <param name="app">Application that reads the controller; source of the log entries.</param>
+        public GamepadInput(UIXApplication app)
         {
+            _app = app;
+            _playStationControllers = new PlayStationControllers(app);
             _dispatcher = Dispatcher.CurrentDispatcher;
         }
 
@@ -228,7 +233,7 @@ namespace GameTimeNext.Core.Framework.UserInput
                 }
                 catch (Exception ex) when (ex is DllNotFoundException or EntryPointNotFoundException)
                 {
-                    FnLog.AddWarning(nameof(GamepadInput), "HID is not available, PlayStation controllers are only read through XInput", ex);
+                    FnLog.AddWarning(_app, "HID is not available, PlayStation controllers are only read through XInput", ex);
                     _playStationAvailable = false;
                 }
             }
@@ -258,7 +263,7 @@ namespace GameTimeNext.Core.Framework.UserInput
                 }
                 catch (Exception ex) when (ex is DllNotFoundException or EntryPointNotFoundException)
                 {
-                    FnLog.AddWarning(nameof(GamepadInput), "XInput is not available, only PlayStation controllers can be used", ex);
+                    FnLog.AddWarning(_app, "XInput is not available, only PlayStation controllers can be used", ex);
                     _xinputAvailable = false;
                     return;
                 }
@@ -328,7 +333,7 @@ namespace GameTimeNext.Core.Framework.UserInput
                 }
                 catch (EntryPointNotFoundException)
                 {
-                    FnLog.AddInfo(nameof(GamepadInput), "XInputGetStateEx is not available, the Guide button can't be read");
+                    FnLog.AddInfo(_app, "XInputGetStateEx is not available, the Guide button can't be read");
                     _stateExAvailable = false;
                 }
             }

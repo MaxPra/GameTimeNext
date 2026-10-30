@@ -4,11 +4,11 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 {
     public class MetadataPosDataGridRow : UIXDataGridRow
     {
-        public string? COMENAM { get; set; } = string.Empty;
-        public string? COPONAM { get; set; } = string.Empty;
+        public UIXDataGridCell COMENAM { get; set; } = "";
+        public UIXDataGridCell COPONAM { get; set; } = "";
         public int COPORDE { get; set; } = 0;
-        public string? CODESCR { get; set; } = string.Empty;
-        public string? CODATYP { get; set; } = string.Empty;
+        public UIXDataGridCell CODESCR { get; set; } = "";
+        public UIXDataGridCell CODATYP { get; set; } = "";
         public bool COPRIMK { get; set; }
         public int CODALEN { get; set; } = 0;
     }

@@ -1,0 +1,76 @@
+<uixcontrols:UIXUserControlBase
+    x:Class="GameTimeNext.Core.Application.Diagnostics.Views.DiagnosticsLogDetailView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:uixcontrols="clr-namespace:UIX.ViewController.Engine.FrameworkElements.UserControls;assembly=UIX.ViewController.Engine"
+    d:DesignHeight="700"
+    d:DesignWidth="460"
+    mc:Ignorable="d">
+
+    <Border Padding="16" Style="{StaticResource Card}">
+        <DockPanel>
+
+            <!--  Header: type icon, type and time, source  -->
+            <Grid Margin="0,0,0,12" DockPanel.Dock="Top">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="12" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock
+                    x:Name="txIcon"
+                    Grid.Column="0"
+                    Margin="0"
+                    VerticalAlignment="Center"
+                    FontFamily="{StaticResource Font.Icons}"
+                    FontSize="20" />
+
+                <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                    <TextBlock
+                        x:Name="txTitle"
+                        Margin="0"
+                        Style="{StaticResource Text.BodyStrong}"
+                        TextTrimming="CharacterEllipsis"
+                        TextWrapping="NoWrap" />
+                    <TextBlock
+                        x:Name="txSubtitle"
+                        Margin="0"
+                        Style="{StaticResource Text.Hint}"
+                        TextTrimming="CharacterEllipsis"
+                        TextWrapping="NoWrap" />
+                </StackPanel>
+
+                <Button
+                    x:Name="btnCopy"
+                    Grid.Column="3"
+                    VerticalAlignment="Center"
+                    Style="{StaticResource Button.Icon}"
+                    ToolTip="Copy entry">
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontFamily="{StaticResource Font.Icons}"
+                        FontSize="14"
+                        Text="&#xE8C8;" />
+                </Button>
+            </Grid>
+
+            <!--  Message and exception  -->
+            <TextBox
+                x:Name="txbText"
+                Height="Auto"
+                VerticalAlignment="Stretch"
+                VerticalContentAlignment="Top"
+                AcceptsReturn="True"
+                FontFamily="Consolas"
+                HorizontalScrollBarVisibility="Disabled"
+                IsReadOnly="True"
+                TextWrapping="Wrap"
+                VerticalScrollBarVisibility="Auto" />
+        </DockPanel>
+    </Border>
+</uixcontrols:UIXUserControlBase>

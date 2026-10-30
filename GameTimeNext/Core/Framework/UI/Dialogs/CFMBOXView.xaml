@@ -78,6 +78,13 @@
                         Text="Message"
                         TextWrapping="Wrap" />
                 </ScrollViewer>
+
+                <!--  Answer of an input question (CFMBOX.ShowInput)  -->
+                <TextBox
+                    x:Name="txbInput"
+                    Margin="0,16,0,0"
+                    Style="{StaticResource TextBox.Default}"
+                    Visibility="Collapsed" />
             </StackPanel>
 
             <TextBox

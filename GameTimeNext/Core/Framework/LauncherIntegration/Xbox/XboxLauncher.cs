@@ -36,7 +36,7 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration.Xbox
                 catch (Exception ex)
                 {
                     // Packages that can't be read (e.g. being updated) must not hide the other games
-                    FnLog.AddWarning(nameof(XboxLauncher), $"Could not read package {package.Id.FullName}", ex);
+                    FnLog.AddWarning(nameof(FnLauncher), $"Xbox: could not read package {package.Id.FullName}", ex);
                 }
             }
 

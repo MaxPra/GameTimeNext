@@ -4,8 +4,8 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 {
     public class CodetableDataGridRow : UIXDataGridRow
     {
-        public string? COTXTYP { get; set; } = "";
-        public string? CODESCR { get; set; } = "";
-        public string? COPERMI { get; set; } = "";
+        public UIXDataGridCell COTXTYP { get; set; } = "";
+        public UIXDataGridCell CODESCR { get; set; } = "";
+        public UIXDataGridCell COPERMI { get; set; } = "";
     }
 }

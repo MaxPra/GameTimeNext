@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using GameTimeNext.Core.Framework.Http;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -33,7 +34,8 @@ namespace GameTimeNext.Core.Framework.Igdb
                     UseProxy = false
                 };
 
-                using var httpClient = new HttpClient(handler)
+                // The Twitch token is part of IGDB: a failing authentication shows as IGDB error
+                using var httpClient = new HttpClient(FnApiStatus.CreateHandler(FnApiStatus.Igdb, handler))
                 {
                     Timeout = TimeSpan.FromSeconds(15)
                 };

@@ -3,6 +3,7 @@ using GameTimeNext.Core.Application.Settings;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.UI;
+using GameTimeNext.Core.Framework.Utils;
 using System.Windows.Media;
 using UIX.ViewController.Engine.Utils;
 
@@ -160,6 +161,9 @@ namespace GameTimeNext.Core.Application.General
                 resources.MergedDictionaries.Add(accentDictionary);
 
             _accentDictionary = accentDictionary;
+
+            // Brushes handed out for code are snapshots of the old colors
+            FnColor.ClearCache();
         }
 
         // Accent resources of the current colors, last merged dictionary of the application (overrides Colors.xaml)

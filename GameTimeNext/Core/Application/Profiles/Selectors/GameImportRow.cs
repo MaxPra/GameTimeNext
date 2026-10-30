@@ -4,7 +4,7 @@ namespace GameTimeNext.Core.Application.Profiles.Selectors
 {
     public class GameImportRow : UIXDataGridRow
     {
-        public string COGANAM { get; set; } = "";
-        public string COLNTY { get; set; } = "";
+        public UIXDataGridCell COGANAM { get; set; } = "";
+        public UIXDataGridCell COLNTY { get; set; } = "";
     }
 }

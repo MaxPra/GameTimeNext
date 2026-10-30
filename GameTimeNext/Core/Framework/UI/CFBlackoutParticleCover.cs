@@ -305,7 +305,7 @@ namespace GameTimeNext.Core.Framework.UI
                 return cover;
             }
 
-            FnLog.AddWarning("Blackout", $"Cover \"{coverFile}\" could not be sampled, the placeholder cover is used instead");
+            FnLog.AddWarning(nameof(CFBlackoutParticleCover), $"Cover \"{coverFile}\" could not be sampled, the placeholder cover is used instead");
             return SampleCover(CFProfilesApp.OpenPlaceholderCoverStream);
         }
 

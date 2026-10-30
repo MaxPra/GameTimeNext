@@ -61,7 +61,13 @@ namespace GameTimeNext.Core.Application.Metadata.Selectors
                 return;
 
             MetadataEditApp metadataEditApp = GetApp().GetApplication<MetadataEditApp>(UIXApplicationStartTarget.Window);
-            metadataEditApp.Edit(t1metah);
+            metadataEditApp.Edit(async (result) =>
+            {
+                if (!result.HasChanged)
+                    return;
+
+                await GetSelector().LoadDataAsync();
+            }, t1metah);
         }
 
         protected async Task EV_ctxtDelete()

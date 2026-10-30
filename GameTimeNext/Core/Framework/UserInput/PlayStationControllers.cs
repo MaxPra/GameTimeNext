@@ -1,6 +1,7 @@
 using Microsoft.Win32.SafeHandles;
 using System.IO;
 using System.Runtime.InteropServices;
+using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Framework.UserInput
@@ -16,6 +17,14 @@ namespace GameTimeNext.Core.Framework.UserInput
     {
         // Plugged in / paired controllers are looked for this often
         private static readonly TimeSpan DeviceCheckInterval = TimeSpan.FromSeconds(2);
+
+        // Source of the log entries
+        private readonly UIXApplication _app;
+
+        public PlayStationControllers(UIXApplication app)
+        {
+            _app = app;
+        }
 
         private readonly Dictionary<string, Reader> _readers = new Dictionary<string, Reader>(StringComparer.OrdinalIgnoreCase);
 
@@ -80,12 +89,12 @@ namespace GameTimeNext.Core.Framework.UserInput
                 if (reader == null)
                 {
                     _failedPaths.Add(path);
-                    FnLog.AddInfo(nameof(PlayStationControllers), $"PlayStation controller can't be opened (in use exclusively by another program?), left to XInput: {path}");
+                    FnLog.AddInfo(_app, $"PlayStation controller can't be opened (in use exclusively by another program?), left to XInput: {path}");
                     continue;
                 }
 
                 _readers.Add(path, reader);
-                FnLog.AddInfo(nameof(PlayStationControllers), $"PlayStation controller opened ({(reader.IsDualSense ? "DualSense" : "DualShock 4")}, {(reader.IsBluetooth ? "Bluetooth" : "USB")})");
+                FnLog.AddInfo(_app, $"PlayStation controller opened ({(reader.IsDualSense ? "DualSense" : "DualShock 4")}, {(reader.IsBluetooth ? "Bluetooth" : "USB")})");
             }
         }
 

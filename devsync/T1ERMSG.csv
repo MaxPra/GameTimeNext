@@ -48,3 +48,5 @@ PRO0008;"Quit &1?
 Unsaved progress will be lost.";;2026-10-26 17:44:32;prage;2026-10-26 17:44:32;prage
 IMP0001;"ImportPackage imported successfully.
 Please check the temporarty database!";Used for ImportPackage testing.;2026-10-26 16:52:27;Oliver Fida;2026-10-26 16:52:27;Oliver Fida
+DGN0001;"Do you really want to delete the entire app log?
+Confirm with your favorite app (hint: it's the one asking).";;2026-10-30 22:43:26;prage;2026-10-30 22:43:26;prage
