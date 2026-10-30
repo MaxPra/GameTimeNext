@@ -21,6 +21,17 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
         protected override void Init()
         {
+            // Set loader texts
+            GetApp().Loader.SetRandomTexts(
+                                            "Loading metadata...",
+                                            "Reading the blueprints of every table...",
+                                            "Measuring tables and fields...",
+                                            "Checking which classes need generating...",
+                                            "Consulting the database architects...",
+                                            "Counting fields and keys...",
+                                            "Drawing the database map..."
+                                            );
+
             AddSource("T1CTABD", new TXCTABD());
         }
 

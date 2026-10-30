@@ -71,6 +71,17 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected override void Init()
         {
+            // Set loader texts
+            GetApp().Loader.SetRandomTexts(
+                                            "Loading the game profile...",
+                                            "Polishing the cover...",
+                                            "Looking up the game details...",
+                                            "Checking the launcher...",
+                                            "Asking IGDB about the game...",
+                                            "Calculating how long it takes to beat...",
+                                            "Gathering your playthroughs..."
+                                            );
+
 
             _profilesEditViewModel = new ProfilesEditViewModel();
             ViewReturn = new ProfilesEditViewReturn();

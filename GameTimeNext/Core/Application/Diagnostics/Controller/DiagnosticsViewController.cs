@@ -28,6 +28,27 @@ namespace GameTimeNext.Core.Application.Diagnostics.Controller
         protected override void Init()
         {
             _logDataWrapper = GetDataWrapper<DiagnosticsLogDataWrapper>();
+
+            // Set loader texts
+            GetApp().Loader.SetRandomTexts(
+                                            "Running diagnostics...",
+                                            "Checking on the background processes...",
+                                            "Counting background cycles...",
+                                            "Asking SteamGridDB if it's awake...",
+                                            "Knocking on IGDB's door...",
+                                            "Requesting a fresh Twitch token...",
+                                            "Measuring API response times...",
+                                            "Reading the log book...",
+                                            "Sorting warnings from errors...",
+                                            "Following the stack traces...",
+                                            "Looking for clues in the log...",
+                                            "Checking the pulse of the app...",
+                                            "Inspecting the engine room...",
+                                            "Tracing every little hiccup...",
+                                            "Interrogating the background workers...",
+                                            "Dusting off old log entries...",
+                                            "Making sure everything runs smoothly..."
+                                            );
         }
 
         protected override void TriggeredEvent(FrameworkElement source, string eventName)

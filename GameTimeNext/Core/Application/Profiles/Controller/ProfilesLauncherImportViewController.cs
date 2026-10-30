@@ -31,6 +31,16 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected override void Init()
         {
+            // Set loader texts
+            GetApp().Loader.SetRandomTexts(
+                                            "Searching your launchers for games...",
+                                            "Asking Steam what you own...",
+                                            "Looking through your game libraries...",
+                                            "Finding games you haven't added yet...",
+                                            "Peeking into every installed launcher...",
+                                            "Counting your installed games..."
+                                            );
+
             ViewReturn = new ProfilesLauncherImportViewReturn();
         }
 

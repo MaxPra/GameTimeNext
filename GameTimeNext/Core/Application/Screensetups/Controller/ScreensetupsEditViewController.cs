@@ -32,6 +32,15 @@ namespace GameTimeNext.Core.Application.Screensetups.Controller
 
         protected override void Init()
         {
+            // Set loader texts
+            GetApp().Loader.SetRandomTexts(
+                                            "Detecting your monitors...",
+                                            "Identifying connected displays...",
+                                            "Checking which monitors are switched on...",
+                                            "Finding your audio devices...",
+                                            "Lining up your screens..."
+                                            );
+
             ViewReturn = new ScreensetupsEditViewReturn();
 
             AddIdentifier("T1SCRSH", GetApp().T1SCRSH!);

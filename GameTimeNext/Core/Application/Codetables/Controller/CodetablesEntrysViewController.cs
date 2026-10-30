@@ -22,6 +22,15 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
         protected override void Init()
         {
+            // Set loader texts
+            GetApp().Loader.SetRandomTexts(
+                                            "Loading codetable entries...",
+                                            "Lining up the keys...",
+                                            "Reading every entry of the codetable...",
+                                            "Matching keys with their meanings...",
+                                            "Turning codes into words..."
+                                            );
+
             ViewReturn = new CodetablesEntrysViewReturn();
 
             AddIdentifier("T1CTABH", GetApp().T1CTABH!);

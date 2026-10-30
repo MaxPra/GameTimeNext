@@ -19,6 +19,16 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
         #region Event-Pipeline-Methods
         protected override void Init()
         {
+            // Set loader texts
+            GetApp().Loader.SetRandomTexts(
+                                            "Loading codetables...",
+                                            "Decoding the codes...",
+                                            "Sorting keys and values...",
+                                            "Checking every entry of the dictionary...",
+                                            "Translating codes into words...",
+                                            "Opening the big book of codes..."
+                                            );
+
             AddSource("T1CTABD", new TXCTABD());
         }
 

@@ -17,6 +17,13 @@ namespace GameTimeNext.Core.Application.General.Controller
         #region Event-Pipeline-Methods
         protected override void Init()
         {
+            // Set loader texts
+            GetApp().Loader.SetRandomTexts(
+                                            "Loading your favorites...",
+                                            "Lining up your favorite apps...",
+                                            "Deciding who starts first...",
+                                            "Sorting your favorite tabs..."
+                                            );
         }
 
         protected override void TriggeredEvent(FrameworkElement source, string eventName)

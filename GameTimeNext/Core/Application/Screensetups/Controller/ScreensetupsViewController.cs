@@ -18,6 +18,15 @@ namespace GameTimeNext.Core.Application.Screensetups.Controller
         #region Event-Pipeline-Methods
         protected override void Init()
         {
+            // Set loader texts
+            GetApp().Loader.SetRandomTexts(
+                                            "Loading screen setups...",
+                                            "Counting your monitors...",
+                                            "Checking which displays are connected...",
+                                            "Arranging your screens...",
+                                            "Looking for the primary display...",
+                                            "Tuning your audio devices..."
+                                            );
         }
 
         protected override void TriggeredEvent(FrameworkElement source, string eventName)

@@ -39,6 +39,17 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
         protected override void Init()
         {
+            // Set loader texts
+            GetApp().Loader.SetRandomTexts(
+                                            "Loading table fields...",
+                                            "Laying out the fields...",
+                                            "Checking keys and data types...",
+                                            "Generating classes...",
+                                            "Writing code that writes code...",
+                                            "Ordering the fields neatly...",
+                                            "Migrating the database..."
+                                            );
+
             // Created once: Init runs again on every Open (e.g. after saving a new table), the result must survive it
             if (ViewReturn is not MetadataEditViewReturn)
                 ViewReturn = new MetadataEditViewReturn();

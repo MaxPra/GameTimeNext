@@ -23,6 +23,16 @@ namespace GameTimeNext.Core.Application.Menus.Controller
         #region Event-Pipeline-Methods
         protected override void Init()
         {
+            // Set loader texts
+            GetApp().Loader.SetRandomTexts(
+                                            "Loading menus...",
+                                            "Building the menu tree...",
+                                            "Folding and unfolding folders...",
+                                            "Arranging every menu entry...",
+                                            "Planting the menu tree...",
+                                            "Checking which entries are developer tools..."
+                                            );
+
             _dataWrapper = GetDataWrapper<MenusDataWrapper>();
         }
 

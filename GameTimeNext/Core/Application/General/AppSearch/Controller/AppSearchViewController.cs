@@ -25,6 +25,14 @@ namespace GameTimeNext.Core.Application.General.AppSearch.Controller
 
         protected override void Init()
         {
+            // Set loader texts
+            GetApp().Loader.SetRandomTexts(
+                                            "Searching applications...",
+                                            "Browsing the menu...",
+                                            "Finding the right app for you...",
+                                            "Opening every folder of the menu...",
+                                            "Looking behind every menu entry..."
+                                            );
         }
 
         protected override void BuildFirstImpl()

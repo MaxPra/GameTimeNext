@@ -33,6 +33,16 @@ namespace GameTimeNext.Core.Application.Settings.Controller
 
         protected override void Init()
         {
+            // Set loader texts
+            GetApp().Loader.SetRandomTexts(
+                                            "Loading settings...",
+                                            "Adjusting the knobs...",
+                                            "Checking your preferences...",
+                                            "Fine-tuning everything for you...",
+                                            "Reading your personal setup...",
+                                            "Making everything just the way you like it..."
+                                            );
+
             _appSettings = AppEnvironment.GetAppConfig().AppSettings;
             _appSettings.ResetChangeTracking();
             _appSettings.AcceptChanges();
