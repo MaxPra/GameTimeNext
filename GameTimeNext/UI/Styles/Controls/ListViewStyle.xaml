@@ -1,4 +1,7 @@
-<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:uixsel="clr-namespace:UIX.ViewController.Engine.FrameworkElements.Selectors;assembly=UIX.ViewController.Engine">
 
     <!--  Default ListView Style  -->
     <Style x:Key="ListView.Default" TargetType="{x:Type ListView}">
@@ -54,21 +57,13 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ListViewItem}">
                     <Grid>
-                        <!--  Subtle hover/selection glow background  -->
+                        <!--  (former glow, kept as hook for the triggers)  -->
                         <Border
                             x:Name="GlowBorder"
                             Background="Transparent"
                             CornerRadius="{StaticResource DefaultCornerRadius}"
                             IsHitTestVisible="False"
-                            Opacity="0">
-                            <Border.Effect>
-                                <DropShadowEffect
-                                    BlurRadius="8"
-                                    Opacity="0.3"
-                                    ShadowDepth="0"
-                                    Color="{DynamicResource Color.Accent}" />
-                            </Border.Effect>
-                        </Border>
+                            Opacity="0" />
 
                         <Border
                             x:Name="Bd"
@@ -78,7 +73,7 @@
                             CornerRadius="{StaticResource DefaultCornerRadius}"
                             SnapsToDevicePixels="True">
 
-                            <!--  Subtle top sheen for depth  -->
+                            <!--  (former sheen, kept as hook for the triggers)  -->
                             <Grid>
                                 <Rectangle
                                     x:Name="Sheen"
@@ -86,14 +81,7 @@
                                     IsHitTestVisible="False"
                                     Opacity="0"
                                     RadiusX="2"
-                                    RadiusY="2">
-                                    <Rectangle.Fill>
-                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                            <GradientStop Offset="0" Color="#0AFFFFFF" />
-                                            <GradientStop Offset="1" Color="#00FFFFFF" />
-                                        </LinearGradientBrush>
-                                    </Rectangle.Fill>
-                                </Rectangle>
+                                    RadiusY="2" />
 
                                 <ContentPresenter
                                     Margin="{TemplateBinding Padding}"
@@ -113,11 +101,7 @@
 
                         <!--  Selected  -->
                         <Trigger Property="IsSelected" Value="True">
-                            <Setter TargetName="Bd" Property="Background">
-                                <Setter.Value>
-                                    <SolidColorBrush Opacity="0.15" Color="{DynamicResource Color.Accent}" />
-                                </Setter.Value>
-                            </Setter>
+                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource Brush.Item.Selected}" />
                             <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
                             <Setter TargetName="Bd" Property="BorderThickness" Value="1" />
                             <Setter TargetName="GlowBorder" Property="Opacity" Value="0.4" />
@@ -130,11 +114,7 @@
                                 <Condition Property="IsSelected" Value="True" />
                                 <Condition Property="IsMouseOver" Value="True" />
                             </MultiTrigger.Conditions>
-                            <Setter TargetName="Bd" Property="Background">
-                                <Setter.Value>
-                                    <SolidColorBrush Opacity="0.20" Color="{DynamicResource Color.Accent}" />
-                                </Setter.Value>
-                            </Setter>
+                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource Brush.Card.BackgroundHover}" />
                             <Setter TargetName="GlowBorder" Property="Opacity" Value="0.5" />
                             <Setter TargetName="Sheen" Property="Opacity" Value="0.30" />
                         </MultiTrigger>
@@ -154,5 +134,8 @@
     <Style BasedOn="{StaticResource ListView.Default}" TargetType="{x:Type ListView}">
         <Setter Property="ItemContainerStyle" Value="{StaticResource ListViewItem.Default}" />
     </Style>
+
+    <!--  Engine ListView (UIXListView): implicit styles only apply to the exact type  -->
+    <Style BasedOn="{StaticResource {x:Type ListView}}" TargetType="{x:Type uixsel:UIXListView}" />
 
 </ResourceDictionary>

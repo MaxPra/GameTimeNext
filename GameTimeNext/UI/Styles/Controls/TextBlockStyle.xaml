@@ -1,13 +1,96 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+    <!--
+        Default for all TextBlocks. The weight is not set: it is inherited (normal body text by default,
+        SemiBold where the container asks for it, e.g. buttons, group box headers, tabs), so headings stand out.
+    -->
     <Style TargetType="TextBlock">
         <Setter Property="Foreground" Value="White" />
         <Setter Property="FontSize" Value="14" />
-        <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Margin" Value="0,4,0,4" />
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="TextAlignment" Value="Left" />
         <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <!--
+        ===== Type ramp =====
+        One scale for the whole app (Segoe UI):
+        Text.Display      28  SemiBold   hero value or name (e.g. most played game)
+        Text.Title        20  SemiBold   title of a view or dialog
+        Text.Subtitle     16  SemiBold   section heading
+        Text.BodyStrong   14  SemiBold   emphasized body text, card headings, values
+        Text.Body         14  Normal     body text
+        Text.Label        14  Normal     muted label in front of an input
+        Text.Hint         13  Normal     muted explanation below / next to a setting
+        Text.Caption      12  Normal     muted small text (units, captions of values)
+        Text.Icon         icon glyph (Font.Icons) in the color of its container
+    -->
+
+    <Style
+        x:Key="Text.Body"
+        BasedOn="{StaticResource {x:Type TextBlock}}"
+        TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+        <Setter Property="FontWeight" Value="Normal" />
+    </Style>
+
+    <Style
+        x:Key="Text.BodyStrong"
+        BasedOn="{StaticResource Text.Body}"
+        TargetType="TextBlock">
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <Style
+        x:Key="Text.Subtitle"
+        BasedOn="{StaticResource Text.BodyStrong}"
+        TargetType="TextBlock">
+        <Setter Property="FontSize" Value="16" />
+    </Style>
+
+    <Style
+        x:Key="Text.Title"
+        BasedOn="{StaticResource Text.BodyStrong}"
+        TargetType="TextBlock">
+        <Setter Property="FontSize" Value="20" />
+    </Style>
+
+    <Style
+        x:Key="Text.Display"
+        BasedOn="{StaticResource Text.BodyStrong}"
+        TargetType="TextBlock">
+        <Setter Property="FontSize" Value="28" />
+    </Style>
+
+    <Style
+        x:Key="Text.Label"
+        BasedOn="{StaticResource Text.Body}"
+        TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}" />
+    </Style>
+
+    <Style
+        x:Key="Text.Hint"
+        BasedOn="{StaticResource Text.Label}"
+        TargetType="TextBlock">
+        <Setter Property="FontSize" Value="13" />
+    </Style>
+
+    <Style
+        x:Key="Text.Caption"
+        BasedOn="{StaticResource Text.Label}"
+        TargetType="TextBlock">
+        <Setter Property="FontSize" Value="12" />
+    </Style>
+
+    <!--  Not based on the default: no foreground, so the glyph takes the color of its container (button, menu entry)  -->
+    <Style x:Key="Text.Icon" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource Font.Icons}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontWeight" Value="Normal" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="TextWrapping" Value="NoWrap" />
     </Style>
 
 </ResourceDictionary>

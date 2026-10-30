@@ -9,5 +9,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
         public string? CODESCR { get; set; } = string.Empty;
 
         public string? COMTYPE { get; set; } = string.Empty;
+
+        public bool COGENER { get; set; } = false;
     }
 }

@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI"
     Title="ToastMessage"
     Width="360"
     Height="132"
@@ -17,6 +18,7 @@
     Topmost="True"
     WindowStartupLocation="Manual"
     WindowStyle="None"
+    ui:AcrylicBlur.IsEnabled="True"
     mc:Ignorable="d">
 
     <Window.Resources>
@@ -31,15 +33,10 @@
         </Storyboard>
     </Window.Resources>
 
-    <Window.Effect>
-        <DropShadowEffect
-            BlurRadius="22"
-            Direction="270"
-            Opacity="0.35"
-            ShadowDepth="0"
-            Color="#A0000000" />
-    </Window.Effect>
-
+    <!--
+        Glass like the splash screen: acrylic blur behind the window (AcrylicBlur), the root border draws the tint.
+        The blur fills the whole window with the system corner radius, so no outer margin / shadow.
+    -->
     <Grid
         SnapsToDevicePixels="True"
         TextOptions.TextFormattingMode="Display"
@@ -49,13 +46,15 @@
         <Border Style="{StaticResource ToastRootBorderStyle}">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="4" />
+                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
+                <Border Grid.ColumnSpan="2" Style="{StaticResource ToastSheenStyle}" />
+
                 <Border Grid.Column="0" Style="{StaticResource ToastAccentBarStyle}" />
 
-                <Grid Grid.Column="1" Margin="16,14,16,14">
+                <Grid Grid.Column="1" Margin="12,14,16,14">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="8" />

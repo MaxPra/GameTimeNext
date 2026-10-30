@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <!-- Pixel-aligned 16 px variant without tile -->
+  <path d="M 8 2 L 4 2 A 1 1 0 0 0 3 3 L 3 13 A 1 1 0 0 0 4 14 L 11 14 A 1 1 0 0 0 12 13 L 12 8 L 7 8" fill="none" stroke="#2F95E8" stroke-width="2" stroke-linecap="butt" stroke-linejoin="miter"/>
+  <rect x="11" y="1" width="2" height="2" rx="0.6" fill="#2F95E8"/>
+</svg>

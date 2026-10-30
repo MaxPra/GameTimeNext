@@ -2,68 +2,1809 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:converter="clr-namespace:GameTimeNext.Core.Application.Profiles.Converter"
-    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI">
 
     <converter:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+    <converter:AnyTrueConverter x:Key="AnyTrueConverter" />
+    <!--  Tag of the case templates: only the cover image, never the placeholder {DisconnectedItem} of a removed tile  -->
+    <converter:ImageSourceOnlyConverter x:Key="ImageSourceOnlyConverter" />
 
-    <sys:Double x:Key="TileWidth">210</sys:Double>
-    <sys:Double x:Key="TileHeight">300</sys:Double>
+    <!--
+        Game cases (style GameCase, also on the dashboard) and the profile library: every game is a case standing
+        on the shelf, the title below it. Hover opens the front cover a little on its hinge (real 3D) and reveals the
+        printed disc inside; the selected case stays open, its disc slides out, and an accent outline marks it.
+        A sealed game (setting "Add new games shrink-wrapped") stays closed in its shrink wrap until it is unwrapped.
+        
+        Base size; with TileLayout.AutoSize on the list the actual size is derived from it to fill each row.
+        Case 246 x 366 (cover 240 x 360 = 2:3 in a glass lip of 3), title area 41 below it (rows 366*:41*).
+        The 3D meshes use the same ratio (half width 0.7, half height 0.7 * 366 / 246 = 1.041463); update both when changing it.
+    -->
+    <sys:Double x:Key="TileWidth">246</sys:Double>
+    <sys:Double x:Key="TileHeight">407</sys:Double>
 
-    <Thickness x:Key="TileOuterPadding">30</Thickness>
+    <!--  Space around the tile; the gap between two tiles is 2 x (TileOuterPadding + TileItemMargin)  -->
+    <Thickness x:Key="TileOuterPadding">12</Thickness>
 
-    <sys:Double x:Key="TileGapValue">12</sys:Double>
-    <sys:Double x:Key="TileGapHalf">6</sys:Double>
+    <!--  Uniform, so the gap between tiles is the same horizontally and vertically  -->
+    <Thickness x:Key="TileItemMargin">6</Thickness>
 
-    <Thickness x:Key="TileItemMargin">6,6,6,20</Thickness>
+    <!--  Also used by the Big Picture mode  -->
+    <SolidColorBrush x:Key="Brush.TileTitleSurface" Color="#FF17171D" />
+    <SolidColorBrush x:Key="Brush.TileBadgeBackground" Color="#A6000000" />
 
-    <Thickness x:Key="TileListPadding">26</Thickness>
+    <!--  ===== Game case =====  -->
 
-    <Thickness x:Key="TileListPaddingTopOnly">0,26,0,26</Thickness>
-
-    <CornerRadius x:Key="TileCornerRadius">2</CornerRadius>
-    <CornerRadius x:Key="TileImageCornerRadius">2,2,0,0</CornerRadius>
-    <CornerRadius x:Key="TileTitleCornerRadius">0,0,2,2</CornerRadius>
-
-    <sys:Double x:Key="TileGlassOpacityNormal">0.18</sys:Double>
-    <sys:Double x:Key="TileGlassOpacityHover">0.36</sys:Double>
-    <sys:Double x:Key="TileSheenOpacityNormal">0.08</sys:Double>
-    <sys:Double x:Key="TileSheenOpacityHover">0.45</sys:Double>
-    <sys:Double x:Key="TileShadowOpacityNormal">0.28</sys:Double>
-    <sys:Double x:Key="TileShadowOpacityHover">0.40</sys:Double>
-
-    <sys:Double x:Key="TileTitleAccentOpacityNormal">0.00</sys:Double>
-    <sys:Double x:Key="TileTitleAccentOpacitySelected">1.00</sys:Double>
-    <sys:Double x:Key="TileAccentStrokeOpacityNormal">0.00</sys:Double>
-    <sys:Double x:Key="TileAccentStrokeOpacitySelected">1.00</sys:Double>
-
-    <sys:Double x:Key="TileTiltAngleHover">-8</sys:Double>
-    <sys:Double x:Key="TileAccentGlowOpacityHover">0.95</sys:Double>
-
-    <LinearGradientBrush x:Key="Brush.TileGlassFx" StartPoint="0,0" EndPoint="1,1">
-        <GradientStop Offset="0" Color="#66FFFFFF" />
-        <GradientStop Offset="0.20" Color="#2AFFFFFF" />
-        <GradientStop Offset="0.55" Color="#0AFFFFFF" />
+    <!--
+        The case is made of the card glass (Brush.Card.*, referenced with DynamicResource: CardStyles.xaml is merged later),
+        so it sits in the GTN look like any card: glass lip with the lit edge, the tray recessed like Card.Inset.
+    -->
+    <!--  Clear plastic over the cover: a faint light from the top left, nothing more  -->
+    <LinearGradientBrush x:Key="Brush.Case.Gloss" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0" Color="#16FFFFFF" />
+        <GradientStop Offset="0.35" Color="#05FFFFFF" />
+        <GradientStop Offset="0.6" Color="#00FFFFFF" />
+    </LinearGradientBrush>
+    <!--  Gloss over the printed disc (and the clear hub): a soft light band, the print stays visible  -->
+    <LinearGradientBrush x:Key="Brush.Case.Disc" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0" Color="#0AFFFFFF" />
+        <GradientStop Offset="0.45" Color="#26FFFFFF" />
+        <GradientStop Offset="0.55" Color="#08FFFFFF" />
         <GradientStop Offset="1" Color="#00FFFFFF" />
     </LinearGradientBrush>
 
-    <LinearGradientBrush x:Key="Brush.TileSheenFx" StartPoint="0,0" EndPoint="0,1">
-        <GradientStop Offset="0" Color="#70FFFFFF" />
-        <GradientStop Offset="0.22" Color="#22FFFFFF" />
+    <!--  Black plastic hub around the center hole, lit from the top left like the glass  -->
+    <LinearGradientBrush x:Key="Brush.Case.Hub" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0" Color="#FF1C1C22" />
+        <GradientStop Offset="1" Color="#FF09090C" />
+    </LinearGradientBrush>
+    <!--  Punches the center hole (radius 17 of 112) out of the disc, so the tray shows through  -->
+    <RadialGradientBrush x:Key="Brush.Case.DiscHoleMask">
+        <GradientStop Offset="0" Color="#00000000" />
+        <GradientStop Offset="0.1517" Color="#00000000" />
+        <GradientStop Offset="0.1518" Color="#FF000000" />
+        <GradientStop Offset="1" Color="#FF000000" />
+    </RadialGradientBrush>
+
+    <!--
+        Shrink wrap of a sealed game: milky clear film, glossier than the case, with light streaks. Absolute mapping in
+        the base units of the film body (248 x 346), so its two halves continue each other (WrapRight starts at the middle).
+    -->
+    <LinearGradientBrush x:Key="Brush.Case.Wrap" MappingMode="Absolute" StartPoint="0,0" EndPoint="248,346">
+        <GradientStop Offset="0" Color="#46FFFFFF" />
+        <GradientStop Offset="0.12" Color="#1CFFFFFF" />
+        <GradientStop Offset="0.3" Color="#0EFFFFFF" />
+        <GradientStop Offset="0.47" Color="#26FFFFFF" />
+        <GradientStop Offset="0.52" Color="#10FFFFFF" />
+        <GradientStop Offset="0.8" Color="#0AFFFFFF" />
+        <GradientStop Offset="1" Color="#1CFFFFFF" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="Brush.Case.WrapRight" MappingMode="Absolute" StartPoint="0,0" EndPoint="248,346">
+        <LinearGradientBrush.Transform>
+            <TranslateTransform X="-124" />
+        </LinearGradientBrush.Transform>
+        <GradientStop Offset="0" Color="#46FFFFFF" />
+        <GradientStop Offset="0.12" Color="#1CFFFFFF" />
+        <GradientStop Offset="0.3" Color="#0EFFFFFF" />
+        <GradientStop Offset="0.47" Color="#26FFFFFF" />
+        <GradientStop Offset="0.52" Color="#10FFFFFF" />
+        <GradientStop Offset="0.8" Color="#0AFFFFFF" />
+        <GradientStop Offset="1" Color="#1CFFFFFF" />
+    </LinearGradientBrush>
+    <!--  Tear strip in the film: silver tape with a light top edge  -->
+    <LinearGradientBrush x:Key="Brush.Case.TearStrip" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="#FFFFFFFF" />
+        <GradientStop Offset="0.45" Color="#F0D4D6DC" />
+        <GradientStop Offset="1" Color="#E69A9CA4" />
+    </LinearGradientBrush>
+    <!--  Light band running over the film while a sealed case is hovered, and over the cover once unwrapped  -->
+    <LinearGradientBrush x:Key="Brush.Case.WrapGlint" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Offset="0" Color="#00FFFFFF" />
+        <GradientStop Offset="0.5" Color="#5CFFFFFF" />
         <GradientStop Offset="1" Color="#00FFFFFF" />
     </LinearGradientBrush>
+    <!--  Sparkles around the freed case  -->
+    <StreamGeometry x:Key="Geo.Case.Sparkle">M 8,0 L 9.4,6.6 16,8 9.4,9.4 8,16 6.6,9.4 0,8 6.6,6.6 Z</StreamGeometry>
 
-    <LinearGradientBrush x:Key="Brush.TileInnerStrokeFx" StartPoint="0,0" EndPoint="0,1">
-        <GradientStop Offset="0" Color="#2EFFFFFF" />
-        <GradientStop Offset="0.35" Color="#16FFFFFF" />
-        <GradientStop Offset="1" Color="#00FFFFFF" />
-    </LinearGradientBrush>
+    <sys:Double x:Key="Case.ShadowOpacityNormal">0.5</sys:Double>
+    <sys:Double x:Key="Case.ShadowOpacityOpen">0.8</sys:Double>
+    <!--  Opening angle of the front cover (negative: towards the viewer)  -->
+    <sys:Double x:Key="Case.OpenAngle">-38</sys:Double>
+    <!--  The selected case opens a little further (added to Case.OpenAngle: -46 in total)  -->
+    <sys:Double x:Key="Case.SelectedExtraAngle">-8</sys:Double>
+    <!--
+        How far the disc of the selected case slides out (3D units, case width = 1.4): ~15 px beyond the case,
+        so it stays within the 18 px around the last tile of a row (not clipped by the list).
+    -->
+    <sys:Double x:Key="Case.DiscOutOffset">0.15</sys:Double>
 
-    <LinearGradientBrush x:Key="Brush.AccentGlowMask" StartPoint="0,0" EndPoint="0,1">
-        <GradientStop Offset="0.00" Color="#00FFFFFF" />
-        <GradientStop Offset="0.55" Color="#00FFFFFF" />
-        <GradientStop Offset="0.72" Color="#C0FFFFFF" />
-        <GradientStop Offset="1.00" Color="#FFFFFFFF" />
-    </LinearGradientBrush>
+    <!--
+        Game case: ContentControl with the cover image (ImageSource) as content. Opens while hovered or while
+        ui:GameCase.IsOpen is set; ui:GameCase.IsSelected opens it further, slides the disc out with a short spin and
+        shows the accent outline. Used by the profile tiles and the dashboard. Base size 246 x 366 (see the mesh ratio above).
+    -->
+    <Style x:Key="GameCase" TargetType="{x:Type ContentControl}">
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ContentControl}">
+
+                    <ControlTemplate.Resources>
+                        <CubicEase x:Key="EaseOut" EasingMode="EaseOut" />
+                        <CubicEase x:Key="EaseInOut" EasingMode="EaseInOut" />
+
+                        <Storyboard x:Key="SbOpen" FillBehavior="HoldEnd">
+                            <DoubleAnimation
+                                EasingFunction="{StaticResource EaseOut}"
+                                Storyboard.TargetName="CoverHinge"
+                                Storyboard.TargetProperty="Angle"
+                                To="{StaticResource Case.OpenAngle}"
+                                Duration="0:0:0.32" />
+                            <DoubleAnimation
+                                EasingFunction="{StaticResource EaseOut}"
+                                Storyboard.TargetName="ShadowLayer"
+                                Storyboard.TargetProperty="Opacity"
+                                To="{StaticResource Case.ShadowOpacityOpen}"
+                                Duration="0:0:0.32" />
+                        </Storyboard>
+
+                        <!--  Short delay: a retracting disc is back inside before the cover passes over it  -->
+                        <Storyboard x:Key="SbClose" FillBehavior="HoldEnd">
+                            <DoubleAnimation
+                                BeginTime="0:0:0.06"
+                                EasingFunction="{StaticResource EaseInOut}"
+                                Storyboard.TargetName="CoverHinge"
+                                Storyboard.TargetProperty="Angle"
+                                To="0"
+                                Duration="0:0:0.26" />
+                            <DoubleAnimation
+                                EasingFunction="{StaticResource EaseInOut}"
+                                Storyboard.TargetName="ShadowLayer"
+                                Storyboard.TargetProperty="Opacity"
+                                To="{StaticResource Case.ShadowOpacityNormal}"
+                                Duration="0:0:0.26" />
+                        </Storyboard>
+
+                        <!--  Selected: the cover opens a little further, the disc follows it and slides out  -->
+                        <Storyboard x:Key="SbSelect" FillBehavior="HoldEnd">
+                            <DoubleAnimation
+                                EasingFunction="{StaticResource EaseOut}"
+                                Storyboard.TargetName="CoverHingeSelected"
+                                Storyboard.TargetProperty="Angle"
+                                To="{StaticResource Case.SelectedExtraAngle}"
+                                Duration="0:0:0.32" />
+                            <!--  Starts right after the cover begins to move: no noticeable pause after the click  -->
+                            <DoubleAnimation
+                                BeginTime="0:0:0.04"
+                                EasingFunction="{StaticResource EaseOut}"
+                                Storyboard.TargetName="DiscSlide"
+                                Storyboard.TargetProperty="OffsetX"
+                                To="{StaticResource Case.DiscOutOffset}"
+                                Duration="0:0:0.32" />
+                            <!--  Short clockwise spin while it slides out (ends with the slide), fast at first and settling softly  -->
+                            <DoubleAnimation
+                                BeginTime="0:0:0.04"
+                                EasingFunction="{StaticResource EaseOut}"
+                                Storyboard.TargetName="DiscSpin"
+                                Storyboard.TargetProperty="Angle"
+                                From="0"
+                                To="-120"
+                                Duration="0:0:0.38" />
+                        </Storyboard>
+
+                        <Storyboard x:Key="SbDeselect" FillBehavior="HoldEnd">
+                            <DoubleAnimation
+                                BeginTime="0:0:0.06"
+                                EasingFunction="{StaticResource EaseInOut}"
+                                Storyboard.TargetName="CoverHingeSelected"
+                                Storyboard.TargetProperty="Angle"
+                                To="0"
+                                Duration="0:0:0.26" />
+                            <DoubleAnimation
+                                EasingFunction="{StaticResource EaseInOut}"
+                                Storyboard.TargetName="DiscSlide"
+                                Storyboard.TargetProperty="OffsetX"
+                                To="0"
+                                Duration="0:0:0.22" />
+                        </Storyboard>
+
+                        <!--  Accent outline: also on a selected sealed case, which doesn't open  -->
+                        <Storyboard x:Key="SbRingShow" FillBehavior="HoldEnd">
+                            <DoubleAnimation
+                                EasingFunction="{StaticResource EaseOut}"
+                                Storyboard.TargetName="SelectionRing"
+                                Storyboard.TargetProperty="Opacity"
+                                To="1"
+                                Duration="0:0:0.18" />
+                        </Storyboard>
+
+                        <Storyboard x:Key="SbRingHide" FillBehavior="HoldEnd">
+                            <DoubleAnimation
+                                EasingFunction="{StaticResource EaseInOut}"
+                                Storyboard.TargetName="SelectionRing"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0"
+                                Duration="0:0:0.18" />
+                        </Storyboard>
+
+                        <!--  Sealed: shows the shrink wrap  -->
+                        <Storyboard x:Key="SbSeal" FillBehavior="HoldEnd">
+                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="WrapLayer" Storyboard.TargetProperty="Visibility">
+                                <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}" />
+                            </ObjectAnimationUsingKeyFrames>
+                        </Storyboard>
+
+                        <!--
+                            Unwrap: the tab is lifted (0 - 0.16), then pulled along the top, tearing the strip out with a spark
+                            at the tear (- 0.62). The film bursts open: the top flies up, the two halves of the body fall away to
+                            the sides (0.6 - 1.2). Light and a sweep pass over the freed cover, sparkles around the case, the
+                            case pops. Film is off at 1.1 = GameCase.UnwrapDuration: then the case opens.
+                        -->
+                        <Storyboard x:Key="SbUnwrap" FillBehavior="HoldEnd">
+                            <!--  Tab and strip  -->
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="TearTabTurn" Storyboard.TargetProperty="Angle">
+                                <LinearDoubleKeyFrame KeyTime="0" Value="0" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseOut}"
+                                    KeyTime="0:0:0.16"
+                                    Value="-28" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseInOut}"
+                                    KeyTime="0:0:0.62"
+                                    Value="-40" />
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="TearTabMove" Storyboard.TargetProperty="X">
+                                <LinearDoubleKeyFrame KeyTime="0" Value="0" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseOut}"
+                                    KeyTime="0:0:0.16"
+                                    Value="5" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.62" Value="-264">
+                                    <EasingDoubleKeyFrame.EasingFunction>
+                                        <CubicEase EasingMode="EaseIn" />
+                                    </EasingDoubleKeyFrame.EasingFunction>
+                                </EasingDoubleKeyFrame>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="TearTabMove" Storyboard.TargetProperty="Y">
+                                <LinearDoubleKeyFrame KeyTime="0" Value="0" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseOut}"
+                                    KeyTime="0:0:0.16"
+                                    Value="-4" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseInOut}"
+                                    KeyTime="0:0:0.62"
+                                    Value="-14" />
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimation
+                                BeginTime="0:0:0.52"
+                                Storyboard.TargetName="TearTab"
+                                Storyboard.TargetProperty="Opacity"
+                                From="1"
+                                To="0"
+                                Duration="0:0:0.12" />
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="TearStripScale" Storyboard.TargetProperty="ScaleX">
+                                <LinearDoubleKeyFrame KeyTime="0" Value="1" />
+                                <LinearDoubleKeyFrame KeyTime="0:0:0.16" Value="1" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.62" Value="0">
+                                    <EasingDoubleKeyFrame.EasingFunction>
+                                        <CubicEase EasingMode="EaseIn" />
+                                    </EasingDoubleKeyFrame.EasingFunction>
+                                </EasingDoubleKeyFrame>
+                            </DoubleAnimationUsingKeyFrames>
+
+                            <!--  Spark running with the tear  -->
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="TearSparkMove" Storyboard.TargetProperty="X">
+                                <LinearDoubleKeyFrame KeyTime="0" Value="0" />
+                                <LinearDoubleKeyFrame KeyTime="0:0:0.16" Value="0" />
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.62" Value="-252">
+                                    <EasingDoubleKeyFrame.EasingFunction>
+                                        <CubicEase EasingMode="EaseIn" />
+                                    </EasingDoubleKeyFrame.EasingFunction>
+                                </EasingDoubleKeyFrame>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="TearSpark" Storyboard.TargetProperty="Opacity">
+                                <LinearDoubleKeyFrame KeyTime="0:0:0.16" Value="0" />
+                                <LinearDoubleKeyFrame KeyTime="0:0:0.22" Value="1" />
+                                <LinearDoubleKeyFrame KeyTime="0:0:0.56" Value="1" />
+                                <LinearDoubleKeyFrame KeyTime="0:0:0.66" Value="0" />
+                            </DoubleAnimationUsingKeyFrames>
+
+                            <!--  Top part of the film, above the tear line: flies up and away to the left  -->
+                            <DoubleAnimation
+                                BeginTime="0:0:0.58"
+                                EasingFunction="{StaticResource EaseOut}"
+                                Storyboard.TargetName="FilmTopMove"
+                                Storyboard.TargetProperty="Y"
+                                From="0"
+                                To="-44"
+                                Duration="0:0:0.4" />
+                            <DoubleAnimation
+                                BeginTime="0:0:0.58"
+                                EasingFunction="{StaticResource EaseOut}"
+                                Storyboard.TargetName="FilmTopTurn"
+                                Storyboard.TargetProperty="Angle"
+                                From="0"
+                                To="-14"
+                                Duration="0:0:0.4" />
+                            <DoubleAnimation
+                                BeginTime="0:0:0.62"
+                                Storyboard.TargetName="FilmTop"
+                                Storyboard.TargetProperty="Opacity"
+                                From="1"
+                                To="0"
+                                Duration="0:0:0.33" />
+
+                            <!--  The body bursts open: both halves fall away to their side  -->
+                            <DoubleAnimation
+                                BeginTime="0:0:0.6"
+                                EasingFunction="{StaticResource EaseOut}"
+                                Storyboard.TargetName="FilmLeftMove"
+                                Storyboard.TargetProperty="X"
+                                From="0"
+                                To="-34"
+                                Duration="0:0:0.55" />
+                            <DoubleAnimation
+                                BeginTime="0:0:0.6"
+                                Storyboard.TargetName="FilmLeftMove"
+                                Storyboard.TargetProperty="Y"
+                                From="0"
+                                To="110"
+                                Duration="0:0:0.55">
+                                <DoubleAnimation.EasingFunction>
+                                    <CubicEase EasingMode="EaseIn" />
+                                </DoubleAnimation.EasingFunction>
+                            </DoubleAnimation>
+                            <DoubleAnimation
+                                BeginTime="0:0:0.6"
+                                EasingFunction="{StaticResource EaseOut}"
+                                Storyboard.TargetName="FilmLeftTurn"
+                                Storyboard.TargetProperty="Angle"
+                                From="0"
+                                To="-16"
+                                Duration="0:0:0.55" />
+                            <DoubleAnimation
+                                BeginTime="0:0:0.8"
+                                Storyboard.TargetName="FilmLeft"
+                                Storyboard.TargetProperty="Opacity"
+                                From="1"
+                                To="0"
+                                Duration="0:0:0.35" />
+
+                            <DoubleAnimation
+                                BeginTime="0:0:0.64"
+                                EasingFunction="{StaticResource EaseOut}"
+                                Storyboard.TargetName="FilmRightMove"
+                                Storyboard.TargetProperty="X"
+                                From="0"
+                                To="34"
+                                Duration="0:0:0.55" />
+                            <DoubleAnimation
+                                BeginTime="0:0:0.64"
+                                Storyboard.TargetName="FilmRightMove"
+                                Storyboard.TargetProperty="Y"
+                                From="0"
+                                To="110"
+                                Duration="0:0:0.55">
+                                <DoubleAnimation.EasingFunction>
+                                    <CubicEase EasingMode="EaseIn" />
+                                </DoubleAnimation.EasingFunction>
+                            </DoubleAnimation>
+                            <DoubleAnimation
+                                BeginTime="0:0:0.64"
+                                EasingFunction="{StaticResource EaseOut}"
+                                Storyboard.TargetName="FilmRightTurn"
+                                Storyboard.TargetProperty="Angle"
+                                From="0"
+                                To="16"
+                                Duration="0:0:0.55" />
+                            <DoubleAnimation
+                                BeginTime="0:0:0.84"
+                                Storyboard.TargetName="FilmRight"
+                                Storyboard.TargetProperty="Opacity"
+                                From="1"
+                                To="0"
+                                Duration="0:0:0.35" />
+
+                            <!--  Light over the freed cover, then a sweep across it  -->
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="UnwrapFlash" Storyboard.TargetProperty="Opacity">
+                                <LinearDoubleKeyFrame KeyTime="0:0:0.6" Value="0" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseOut}"
+                                    KeyTime="0:0:0.74"
+                                    Value="1" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseInOut}"
+                                    KeyTime="0:0:1.15"
+                                    Value="0" />
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimation
+                                BeginTime="0:0:0.72"
+                                EasingFunction="{StaticResource EaseInOut}"
+                                Storyboard.TargetName="CoverSweepMove"
+                                Storyboard.TargetProperty="X"
+                                From="-300"
+                                To="300"
+                                Duration="0:0:0.55" />
+
+                            <!--  Sparkles around the case, one after the other  -->
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Sparkle1Scale" Storyboard.TargetProperty="ScaleX">
+                                <LinearDoubleKeyFrame KeyTime="0:0:0.8" Value="0" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseOut}"
+                                    KeyTime="0:0:0.95"
+                                    Value="1" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseInOut}"
+                                    KeyTime="0:0:1.2"
+                                    Value="0" />
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Sparkle1Scale" Storyboard.TargetProperty="ScaleY">
+                                <LinearDoubleKeyFrame KeyTime="0:0:0.8" Value="0" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseOut}"
+                                    KeyTime="0:0:0.95"
+                                    Value="1" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseInOut}"
+                                    KeyTime="0:0:1.2"
+                                    Value="0" />
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Sparkle2Scale" Storyboard.TargetProperty="ScaleX">
+                                <LinearDoubleKeyFrame KeyTime="0:0:0.88" Value="0" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseOut}"
+                                    KeyTime="0:0:1.03"
+                                    Value="1" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseInOut}"
+                                    KeyTime="0:0:1.28"
+                                    Value="0" />
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Sparkle2Scale" Storyboard.TargetProperty="ScaleY">
+                                <LinearDoubleKeyFrame KeyTime="0:0:0.88" Value="0" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseOut}"
+                                    KeyTime="0:0:1.03"
+                                    Value="1" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseInOut}"
+                                    KeyTime="0:0:1.28"
+                                    Value="0" />
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Sparkle3Scale" Storyboard.TargetProperty="ScaleX">
+                                <LinearDoubleKeyFrame KeyTime="0:0:0.96" Value="0" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseOut}"
+                                    KeyTime="0:0:1.11"
+                                    Value="1" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseInOut}"
+                                    KeyTime="0:0:1.36"
+                                    Value="0" />
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Sparkle3Scale" Storyboard.TargetProperty="ScaleY">
+                                <LinearDoubleKeyFrame KeyTime="0:0:0.96" Value="0" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseOut}"
+                                    KeyTime="0:0:1.11"
+                                    Value="1" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseInOut}"
+                                    KeyTime="0:0:1.36"
+                                    Value="0" />
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Sparkle4Scale" Storyboard.TargetProperty="ScaleX">
+                                <LinearDoubleKeyFrame KeyTime="0:0:1.02" Value="0" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseOut}"
+                                    KeyTime="0:0:1.17"
+                                    Value="1" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseInOut}"
+                                    KeyTime="0:0:1.42"
+                                    Value="0" />
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Sparkle4Scale" Storyboard.TargetProperty="ScaleY">
+                                <LinearDoubleKeyFrame KeyTime="0:0:1.02" Value="0" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseOut}"
+                                    KeyTime="0:0:1.17"
+                                    Value="1" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseInOut}"
+                                    KeyTime="0:0:1.42"
+                                    Value="0" />
+                            </DoubleAnimationUsingKeyFrames>
+
+                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="WrapLayer" Storyboard.TargetProperty="Visibility">
+                                <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}" />
+                                <DiscreteObjectKeyFrame KeyTime="0:0:1.45" Value="{x:Static Visibility.Collapsed}" />
+                            </ObjectAnimationUsingKeyFrames>
+
+                            <!--  The case pops (from the shelf) as the film is off  -->
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CasePop" Storyboard.TargetProperty="ScaleX">
+                                <LinearDoubleKeyFrame KeyTime="0:0:1.02" Value="1" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseOut}"
+                                    KeyTime="0:0:1.16"
+                                    Value="1.05" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseInOut}"
+                                    KeyTime="0:0:1.45"
+                                    Value="1" />
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CasePop" Storyboard.TargetProperty="ScaleY">
+                                <LinearDoubleKeyFrame KeyTime="0:0:1.02" Value="1" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseOut}"
+                                    KeyTime="0:0:1.16"
+                                    Value="1.05" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseInOut}"
+                                    KeyTime="0:0:1.45"
+                                    Value="1" />
+                            </DoubleAnimationUsingKeyFrames>
+                        </Storyboard>
+
+                        <!--  Hovered sealed case: a light band runs over the film and the tab wiggles, instead of opening  -->
+                        <Storyboard x:Key="SbGlint" FillBehavior="Stop">
+                            <DoubleAnimation
+                                EasingFunction="{StaticResource EaseInOut}"
+                                Storyboard.TargetName="GlintMove"
+                                Storyboard.TargetProperty="X"
+                                From="-300"
+                                To="300"
+                                Duration="0:0:0.7" />
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="TearTabTurn" Storyboard.TargetProperty="Angle">
+                                <LinearDoubleKeyFrame KeyTime="0" Value="0" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseOut}"
+                                    KeyTime="0:0:0.12"
+                                    Value="-18" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseInOut}"
+                                    KeyTime="0:0:0.3"
+                                    Value="6" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseInOut}"
+                                    KeyTime="0:0:0.45"
+                                    Value="0" />
+                            </DoubleAnimationUsingKeyFrames>
+                        </Storyboard>
+                    </ControlTemplate.Resources>
+
+                    <!--
+                        Tag: the cover (content), so the visuals of the 3D surfaces can bind to it by name.
+                        Performance: shadow and 3D case are each cached as a bitmap (BitmapCache on a wrapping Border; an
+                        Effect is applied after the cache of its own element, so the cache must sit on a parent), so
+                        scrolling a library only moves finished images (140 instead of 22 fps with 80 profiles). A cache is
+                        rendered again when its content changes, so nothing inside may follow the accent color while the case
+                        is closed (all caches at once froze the app for seconds on a profile change): the selection ring sits
+                        between the caches, the accent rim of the disc is only set while open (trigger).
+                    -->
+                    <Grid
+                        x:Name="CaseHost"
+                        RenderTransformOrigin="0.5,1"
+                        Tag="{Binding Content, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource ImageSourceOnlyConverter}}">
+                        <Grid.RenderTransform>
+                            <ScaleTransform x:Name="CasePop" />
+                        </Grid.RenderTransform>
+
+                        <!--  Shadow on the shelf (the layer needs a fill, otherwise the DropShadowEffect has nothing to cast)  -->
+                        <Border IsHitTestVisible="False">
+                            <Border.CacheMode>
+                                <BitmapCache SnapsToDevicePixels="True" />
+                            </Border.CacheMode>
+                            <Border
+                                x:Name="ShadowLayer"
+                                Background="{DynamicResource Brush.Background}"
+                                CornerRadius="6"
+                                IsHitTestVisible="False"
+                                Opacity="{StaticResource Case.ShadowOpacityNormal}">
+                                <Border.Effect>
+                                    <DropShadowEffect
+                                        BlurRadius="18"
+                                        Direction="270"
+                                        Opacity="1"
+                                        RenderingBias="Quality"
+                                        ShadowDepth="6"
+                                        Color="#FF000000" />
+                                </Border.Effect>
+                            </Border>
+                        </Border>
+
+                        <!--  Selection: accent outline around the case, behind it (cover and disc pass in front of it)  -->
+                        <Border
+                            x:Name="SelectionRing"
+                            Margin="-4"
+                            BorderBrush="{DynamicResource Brush.Accent}"
+                            BorderThickness="2"
+                            CornerRadius="9"
+                            IsHitTestVisible="False"
+                            Opacity="0" />
+
+                        <Border IsHitTestVisible="False">
+                            <Border.CacheMode>
+                                <BitmapCache SnapsToDevicePixels="True" />
+                            </Border.CacheMode>
+                            <Viewport3D ClipToBounds="False" IsHitTestVisible="False">
+                                <Viewport3D.Camera>
+                                    <!--
+                                        FieldOfView = 2 * atan(0.7 / 14): the visible width at z = 0 is exactly the mesh width (1.4),
+                                        so the closed case is rendered 1:1 within CaseHost. The distance keeps the perspective mild:
+                                        the opened cover grows by only ~12 px at its free edge, ~14 px when selected (room above the first profile row: ProfilesView).
+                                    -->
+                                    <PerspectiveCamera
+                                        FarPlaneDistance="20"
+                                        FieldOfView="5.72482"
+                                        LookDirection="0,0,-14"
+                                        NearPlaneDistance="1"
+                                        Position="0,0,14"
+                                        UpDirection="0,1,0" />
+                                </Viewport3D.Camera>
+
+                                <!--
+                                    Light from the front: surfaces facing the viewer (case, disc, closed cover) stay at their exact colors
+                                    (ambient + directional = white), the opened cover turns slightly darker.
+                                -->
+                                <ModelVisual3D>
+                                    <ModelVisual3D.Content>
+                                        <Model3DGroup>
+                                            <AmbientLight Color="#FF8A8A8A" />
+                                            <DirectionalLight Direction="0,0,-1" Color="#FF757575" />
+                                        </Model3DGroup>
+                                    </ModelVisual3D.Content>
+                                </ModelVisual3D>
+
+                                <!--  Back of the case: glass with the recessed tray, only visible while the cover is open  -->
+                                <Viewport2DVisual3D>
+                                    <Viewport2DVisual3D.Geometry>
+                                        <MeshGeometry3D
+                                            Positions="-0.7,-1.041463,0  0.7,-1.041463,0  0.7,1.041463,0  -0.7,1.041463,0"
+                                            TextureCoordinates="0,1 1,1 1,0 0,0"
+                                            TriangleIndices="0 1 2  0 2 3" />
+                                    </Viewport2DVisual3D.Geometry>
+
+                                    <Viewport2DVisual3D.Material>
+                                        <DiffuseMaterial Brush="#FFFFFFFF" Viewport2DVisual3D.IsVisualHostMaterial="True" />
+                                    </Viewport2DVisual3D.Material>
+
+                                    <Viewport2DVisual3D.Visual>
+                                        <!--  Drawn in base units (246 x 366) and scaled to the tile size  -->
+                                        <Border Width="{Binding ActualWidth, ElementName=CaseHost}" Height="{Binding ActualHeight, ElementName=CaseHost}">
+                                            <Viewbox Stretch="Fill">
+                                                <Grid Width="246" Height="366">
+                                                    <Border
+                                                        Background="{DynamicResource Brush.Card.Background}"
+                                                        BorderBrush="{DynamicResource Brush.Card.Border}"
+                                                        BorderThickness="1"
+                                                        CornerRadius="6" />
+                                                    <Border
+                                                        Margin="3"
+                                                        Background="{DynamicResource Brush.Card.Inset}"
+                                                        CornerRadius="4" />
+                                                </Grid>
+                                            </Viewbox>
+                                        </Border>
+                                    </Viewport2DVisual3D.Visual>
+                                </Viewport2DVisual3D>
+
+                                <!--
+                                    Disc (224 px = 1.274797 units), centered under the cover, between back and cover (z).
+                                    Printed like a game disc: the cover over the whole data side, clear hub in the middle.
+                                -->
+                                <Viewport2DVisual3D>
+                                    <Viewport2DVisual3D.Geometry>
+                                        <MeshGeometry3D
+                                            Positions="-0.637398,-0.637398,0.001  0.637398,-0.637398,0.001  0.637398,0.637398,0.001  -0.637398,0.637398,0.001"
+                                            TextureCoordinates="0,1 1,1 1,0 0,0"
+                                            TriangleIndices="0 1 2  0 2 3" />
+                                    </Viewport2DVisual3D.Geometry>
+
+                                    <Viewport2DVisual3D.Material>
+                                        <DiffuseMaterial Brush="#FFFFFFFF" Viewport2DVisual3D.IsVisualHostMaterial="True" />
+                                    </Viewport2DVisual3D.Material>
+
+                                    <Viewport2DVisual3D.Transform>
+                                        <Transform3DGroup>
+                                            <RotateTransform3D
+                                                CenterX="0"
+                                                CenterY="0"
+                                                CenterZ="0.001">
+                                                <RotateTransform3D.Rotation>
+                                                    <AxisAngleRotation3D
+                                                        x:Name="DiscSpin"
+                                                        Angle="0"
+                                                        Axis="0,0,1" />
+                                                </RotateTransform3D.Rotation>
+                                            </RotateTransform3D>
+                                            <TranslateTransform3D x:Name="DiscSlide" OffsetX="0" />
+                                        </Transform3DGroup>
+                                    </Viewport2DVisual3D.Transform>
+
+                                    <Viewport2DVisual3D.Visual>
+                                        <Border Width="{Binding ActualWidth, ElementName=CaseHost}" Height="{Binding ActualWidth, ElementName=CaseHost}">
+                                            <Viewbox Stretch="Fill">
+                                                <Grid
+                                                    Width="224"
+                                                    Height="224"
+                                                    OpacityMask="{StaticResource Brush.Case.DiscHoleMask}">
+                                                    <!--
+                                                        Cover print; shows the game title readable when that fits (DiscPrint), turned so it ends
+                                                        on the visible right side after the spin of SbSelect (-120: PrintAngle -30)
+                                                    -->
+                                                    <Ellipse ui:DiscPrint.Cover="{Binding Tag, ElementName=CaseHost}" ui:DiscPrint.PrintAngle="-30" />
+                                                    <!--  Gloss of the disc surface  -->
+                                                    <Ellipse Fill="{StaticResource Brush.Case.Disc}" />
+                                                    <!--  Rim: clear edge, catches the light in the accent color (stroke set while open, see the cache note above)  -->
+                                                    <Ellipse Stroke="{DynamicResource Brush.Card.Border}" StrokeThickness="3" />
+                                                    <Ellipse
+                                                        x:Name="DiscAccentRim"
+                                                        Opacity="0.6"
+                                                        StrokeThickness="1" />
+                                                    <!--  Black plastic hub with a fine stacking ring; the hole itself is cut out by the opacity mask  -->
+                                                    <Ellipse
+                                                        Width="88"
+                                                        Height="88"
+                                                        Fill="{StaticResource Brush.Case.Hub}"
+                                                        Stroke="{DynamicResource Brush.Card.Border}"
+                                                        StrokeThickness="1" />
+                                                    <Ellipse
+                                                        Width="62"
+                                                        Height="62"
+                                                        Stroke="#14FFFFFF"
+                                                        StrokeThickness="1" />
+                                                    <!--  Edge of the hole (half of the stroke stays outside the mask)  -->
+                                                    <Ellipse
+                                                        Width="34"
+                                                        Height="34"
+                                                        Stroke="#33FFFFFF"
+                                                        StrokeThickness="2" />
+                                                </Grid>
+                                            </Viewbox>
+                                        </Border>
+                                    </Viewport2DVisual3D.Visual>
+                                </Viewport2DVisual3D>
+
+                                <!--
+                                    Front cover over the whole case, hinged at its left edge (x = -0.7): nothing stays behind on the
+                                    left when it opens. Slightly in front of back and disc (z) to avoid z-fighting.
+                                -->
+                                <Viewport2DVisual3D>
+                                    <Viewport2DVisual3D.Geometry>
+                                        <MeshGeometry3D
+                                            Positions="-0.7,-1.041463,0.002  0.7,-1.041463,0.002  0.7,1.041463,0.002  -0.7,1.041463,0.002"
+                                            TextureCoordinates="0,1 1,1 1,0 0,0"
+                                            TriangleIndices="0 1 2  0 2 3" />
+                                    </Viewport2DVisual3D.Geometry>
+
+                                    <Viewport2DVisual3D.Material>
+                                        <DiffuseMaterial Brush="#FFFFFFFF" Viewport2DVisual3D.IsVisualHostMaterial="True" />
+                                    </Viewport2DVisual3D.Material>
+
+                                    <!--  Two rotations around the same hinge: opened (hover or selected) + the extra angle of the selected case  -->
+                                    <Viewport2DVisual3D.Transform>
+                                        <Transform3DGroup>
+                                            <RotateTransform3D
+                                                CenterX="-0.7"
+                                                CenterY="0"
+                                                CenterZ="0.002">
+                                                <RotateTransform3D.Rotation>
+                                                    <AxisAngleRotation3D
+                                                        x:Name="CoverHinge"
+                                                        Angle="0"
+                                                        Axis="0,1,0" />
+                                                </RotateTransform3D.Rotation>
+                                            </RotateTransform3D>
+                                            <RotateTransform3D
+                                                CenterX="-0.7"
+                                                CenterY="0"
+                                                CenterZ="0.002">
+                                                <RotateTransform3D.Rotation>
+                                                    <AxisAngleRotation3D
+                                                        x:Name="CoverHingeSelected"
+                                                        Angle="0"
+                                                        Axis="0,1,0" />
+                                                </RotateTransform3D.Rotation>
+                                            </RotateTransform3D>
+                                        </Transform3DGroup>
+                                    </Viewport2DVisual3D.Transform>
+
+                                    <Viewport2DVisual3D.Visual>
+                                        <Border Width="{Binding ActualWidth, ElementName=CaseHost}" Height="{Binding ActualHeight, ElementName=CaseHost}">
+                                            <Viewbox Stretch="Fill">
+                                                <Grid Width="246" Height="366">
+                                                    <!--  Glass lip around the cover; opaque base below, so the cover hides the disc completely  -->
+                                                    <Border Background="{DynamicResource Brush.Background}" CornerRadius="6" />
+                                                    <Border Background="{DynamicResource Brush.Card.Background}" CornerRadius="6" />
+
+                                                    <!--  Cover (2:3); top/left like before: overflow is cut at the bottom/right  -->
+                                                    <Border
+                                                        Margin="3"
+                                                        CornerRadius="4"
+                                                        RenderOptions.BitmapScalingMode="HighQuality">
+                                                        <Border.Background>
+                                                            <ImageBrush
+                                                                AlignmentX="Left"
+                                                                AlignmentY="Top"
+                                                                ImageSource="{Binding Tag, ElementName=CaseHost}"
+                                                                Stretch="UniformToFill" />
+                                                        </Border.Background>
+                                                    </Border>
+
+                                                    <Border
+                                                        Margin="3"
+                                                        Background="{StaticResource Brush.Case.Gloss}"
+                                                        CornerRadius="4" />
+
+                                                    <!--  Lit edge like the cards  -->
+                                                    <Border
+                                                        BorderBrush="{DynamicResource Brush.Card.Border}"
+                                                        BorderThickness="1"
+                                                        CornerRadius="6" />
+                                                </Grid>
+                                            </Viewbox>
+                                        </Border>
+                                    </Viewport2DVisual3D.Visual>
+                                </Viewport2DVisual3D>
+                            </Viewport3D>
+                        </Border>
+
+                        <!--
+                            Shrink wrap of a sealed game (ui:GameCase.IsSealed), drawn in base units over the closed case: milky
+                            film with a sharp reflection, creases and sealed corner flaps, a NEW sticker, and a tear strip near the
+                            top with a pull tab at its right end. Shown by SbSeal, taken off by SbUnwrap. The film halves are cached
+                            (only their transforms are animated); sticker, spark and sparkles follow the accent, so they sit outside
+                            those caches.
+                        -->
+                        <Viewbox
+                            x:Name="WrapLayer"
+                            IsHitTestVisible="False"
+                            Stretch="Fill"
+                            Visibility="Collapsed">
+                            <Grid Width="246" Height="366">
+
+                                <!--  Light over the cover while the film comes off, and the sweep across it  -->
+                                <Border
+                                    x:Name="UnwrapFlash"
+                                    Margin="3"
+                                    CornerRadius="4"
+                                    Opacity="0">
+                                    <Border.Background>
+                                        <RadialGradientBrush Center="0.5,0.35" GradientOrigin="0.5,0.35" RadiusX="0.8" RadiusY="0.6">
+                                            <GradientStop Offset="0" Color="#40FFFFFF" />
+                                            <GradientStop Offset="1" Color="#00FFFFFF" />
+                                        </RadialGradientBrush>
+                                    </Border.Background>
+                                </Border>
+                                <Grid ui:ClipBehaviors.CornerRadius="6">
+                                    <Border
+                                        Width="90"
+                                        Height="520"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Background="{StaticResource Brush.Case.WrapGlint}">
+                                        <Border.RenderTransform>
+                                            <TransformGroup>
+                                                <RotateTransform Angle="20" CenterX="45" CenterY="260" />
+                                                <TranslateTransform x:Name="CoverSweepMove" X="-300" />
+                                            </TransformGroup>
+                                        </Border.RenderTransform>
+                                    </Border>
+                                </Grid>
+
+                                <!--  Left half of the film body (below the strip): reflection, creases, seam, corner flap  -->
+                                <Grid
+                                    x:Name="FilmLeft"
+                                    Width="124"
+                                    Margin="-1,21,0,-1"
+                                    HorizontalAlignment="Left"
+                                    RenderTransformOrigin="0.5,0.3">
+                                    <Grid.RenderTransform>
+                                        <TransformGroup>
+                                            <RotateTransform x:Name="FilmLeftTurn" />
+                                            <TranslateTransform x:Name="FilmLeftMove" />
+                                        </TransformGroup>
+                                    </Grid.RenderTransform>
+                                    <Grid>
+                                        <Grid.CacheMode>
+                                            <BitmapCache SnapsToDevicePixels="True" />
+                                        </Grid.CacheMode>
+                                        <Border
+                                            Background="{StaticResource Brush.Case.Wrap}"
+                                            BorderBrush="#4DFFFFFF"
+                                            BorderThickness="1,0,0,1"
+                                            CornerRadius="0,0,0,7" />
+                                        <Path
+                                            Data="M 4,150 L 124,22"
+                                            Stroke="#14FFFFFF"
+                                            StrokeThickness="12" />
+                                        <Path
+                                            Data="M 10,148 L 124,26"
+                                            Stroke="#4DFFFFFF"
+                                            StrokeThickness="1.5" />
+                                        <Border
+                                            Height="1"
+                                            Margin="9,0,0,6"
+                                            VerticalAlignment="Bottom"
+                                            Background="#38FFFFFF" />
+                                        <Path
+                                            Data="M 1,296 Q 8,310 20,320 M 1,272 L 10,284 M 32,345 Q 38,336 50,334 M 1,40 Q 7,48 9,60"
+                                            Stroke="#30FFFFFF"
+                                            StrokeThickness="1" />
+                                        <Path
+                                            Data="M -4,334 L 12,346 L -4,351 Z"
+                                            Fill="#24FFFFFF"
+                                            Stroke="#55FFFFFF"
+                                            StrokeThickness="0.8" />
+                                    </Grid>
+                                </Grid>
+
+                                <!--  Right half of the film body, with the NEW sticker  -->
+                                <Grid
+                                    x:Name="FilmRight"
+                                    Width="124"
+                                    Margin="0,21,-1,-1"
+                                    HorizontalAlignment="Right"
+                                    RenderTransformOrigin="0.5,0.3">
+                                    <Grid.RenderTransform>
+                                        <TransformGroup>
+                                            <RotateTransform x:Name="FilmRightTurn" />
+                                            <TranslateTransform x:Name="FilmRightMove" />
+                                        </TransformGroup>
+                                    </Grid.RenderTransform>
+                                    <Grid>
+                                        <Grid.CacheMode>
+                                            <BitmapCache SnapsToDevicePixels="True" />
+                                        </Grid.CacheMode>
+                                        <Border
+                                            Background="{StaticResource Brush.Case.WrapRight}"
+                                            BorderBrush="#4DFFFFFF"
+                                            BorderThickness="0,0,1,1"
+                                            CornerRadius="0,0,7,0" />
+                                        <Path
+                                            Data="M 0,22 L 20,0"
+                                            Stroke="#14FFFFFF"
+                                            StrokeThickness="12" />
+                                        <Path
+                                            Data="M 0,26 L 24,0"
+                                            Stroke="#4DFFFFFF"
+                                            StrokeThickness="1.5" />
+                                        <Border
+                                            Height="1"
+                                            Margin="0,0,9,6"
+                                            VerticalAlignment="Bottom"
+                                            Background="#38FFFFFF" />
+                                        <Path
+                                            Data="M 123,292 Q 116,306 104,316 M 123,268 L 114,280 M 92,345 Q 86,336 74,334 M 123,150 Q 118,160 117,172"
+                                            Stroke="#30FFFFFF"
+                                            StrokeThickness="1" />
+                                        <Path
+                                            Data="M 128,334 L 112,346 L 128,351 Z"
+                                            Fill="#24FFFFFF"
+                                            Stroke="#55FFFFFF"
+                                            StrokeThickness="0.8" />
+                                    </Grid>
+
+                                    <!--  Small glass sticker on the film: dark glass, accent edge and text, slightly turned  -->
+                                    <Grid
+                                        Width="34"
+                                        Height="34"
+                                        Margin="0,12,12,0"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Top"
+                                        Opacity="0.9"
+                                        RenderTransformOrigin="0.5,0.5">
+                                        <Grid.RenderTransform>
+                                            <RotateTransform Angle="8" />
+                                        </Grid.RenderTransform>
+                                        <Ellipse
+                                            Fill="#8C101014"
+                                            Stroke="{DynamicResource Brush.Accent}"
+                                            StrokeThickness="1" />
+                                        <TextBlock
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            FontSize="9"
+                                            FontWeight="SemiBold"
+                                            Foreground="{DynamicResource Brush.Accent}"
+                                            Text="NEW" />
+                                        <Ellipse>
+                                            <Ellipse.Fill>
+                                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                                    <GradientStop Offset="0" Color="#26FFFFFF" />
+                                                    <GradientStop Offset="0.5" Color="#05FFFFFF" />
+                                                    <GradientStop Offset="1" Color="#00FFFFFF" />
+                                                </LinearGradientBrush>
+                                            </Ellipse.Fill>
+                                        </Ellipse>
+                                    </Grid>
+                                </Grid>
+
+                                <!--  Top of the film above the tear strip  -->
+                                <Border
+                                    x:Name="FilmTop"
+                                    Height="16"
+                                    Margin="-1,-1,-1,0"
+                                    VerticalAlignment="Top"
+                                    Background="{StaticResource Brush.Case.Wrap}"
+                                    BorderBrush="#4DFFFFFF"
+                                    BorderThickness="1,1,1,0"
+                                    CornerRadius="7,7,0,0"
+                                    RenderTransformOrigin="0,1">
+                                    <Border.RenderTransform>
+                                        <TransformGroup>
+                                            <RotateTransform x:Name="FilmTopTurn" />
+                                            <TranslateTransform x:Name="FilmTopMove" />
+                                        </TransformGroup>
+                                    </Border.RenderTransform>
+                                </Border>
+
+                                <!--  Tear strip with its shadow line; pulled out from the right, so it shrinks towards its left end  -->
+                                <Grid
+                                    Height="7"
+                                    Margin="-1,15,-1,0"
+                                    VerticalAlignment="Top"
+                                    RenderTransformOrigin="0,0.5">
+                                    <Grid.RenderTransform>
+                                        <ScaleTransform x:Name="TearStripScale" />
+                                    </Grid.RenderTransform>
+                                    <Border
+                                        Height="6"
+                                        VerticalAlignment="Top"
+                                        Background="{StaticResource Brush.Case.TearStrip}"
+                                        CornerRadius="1" />
+                                    <Border
+                                        Height="1"
+                                        VerticalAlignment="Bottom"
+                                        Background="#59000000" />
+                                </Grid>
+
+                                <!--  Pull tab at the right end of the strip, beyond the case edge, with grip lines  -->
+                                <Grid
+                                    x:Name="TearTab"
+                                    Width="20"
+                                    Height="15"
+                                    Margin="0,10.5,-12,0"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Top"
+                                    RenderTransformOrigin="0,0.5">
+                                    <Grid.RenderTransform>
+                                        <TransformGroup>
+                                            <RotateTransform x:Name="TearTabTurn" />
+                                            <TranslateTransform x:Name="TearTabMove" />
+                                        </TransformGroup>
+                                    </Grid.RenderTransform>
+                                    <Border
+                                        Background="{StaticResource Brush.Case.TearStrip}"
+                                        BorderBrush="#40000000"
+                                        BorderThickness="0.6"
+                                        CornerRadius="2,6,6,2" />
+                                    <Path
+                                        Data="M 11,4 L 11,11 M 14,4 L 14,11"
+                                        Stroke="#66000000"
+                                        StrokeThickness="0.8" />
+                                </Grid>
+
+                                <!--  Spark at the tear, runs with the tab  -->
+                                <Ellipse
+                                    x:Name="TearSpark"
+                                    Width="20"
+                                    Height="20"
+                                    Margin="0,8,-10,0"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Top"
+                                    Opacity="0">
+                                    <!--  White core with an accent glow (Color.Accent directly: follows the profile accent)  -->
+                                    <Ellipse.Fill>
+                                        <RadialGradientBrush>
+                                            <GradientStop Offset="0" Color="#FFFFFFFF" />
+                                            <GradientStop Offset="0.3" Color="{DynamicResource Color.Accent}" />
+                                            <GradientStop Offset="1" Color="Transparent" />
+                                        </RadialGradientBrush>
+                                    </Ellipse.Fill>
+                                    <Ellipse.RenderTransform>
+                                        <TranslateTransform x:Name="TearSparkMove" />
+                                    </Ellipse.RenderTransform>
+                                </Ellipse>
+
+                                <!--  Light band of SbGlint, waiting outside the clip  -->
+                                <Grid ui:ClipBehaviors.CornerRadius="6">
+                                    <Border
+                                        Width="80"
+                                        Height="520"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Background="{StaticResource Brush.Case.WrapGlint}">
+                                        <Border.RenderTransform>
+                                            <TransformGroup>
+                                                <RotateTransform Angle="20" CenterX="40" CenterY="260" />
+                                                <TranslateTransform x:Name="GlintMove" X="-300" />
+                                            </TransformGroup>
+                                        </Border.RenderTransform>
+                                    </Border>
+                                </Grid>
+
+                                <!--  Sparkles around the freed case  -->
+                                <Path
+                                    Width="18"
+                                    Height="18"
+                                    Margin="-12,48,0,0"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Top"
+                                    Data="{StaticResource Geo.Case.Sparkle}"
+                                    Fill="{DynamicResource Brush.Accent}"
+                                    RenderTransformOrigin="0.5,0.5"
+                                    Stretch="Fill">
+                                    <Path.RenderTransform>
+                                        <ScaleTransform x:Name="Sparkle1Scale" ScaleX="0" ScaleY="0" />
+                                    </Path.RenderTransform>
+                                </Path>
+                                <Path
+                                    Width="14"
+                                    Height="14"
+                                    Margin="0,118,-10,0"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Top"
+                                    Data="{StaticResource Geo.Case.Sparkle}"
+                                    Fill="{DynamicResource Brush.Accent}"
+                                    RenderTransformOrigin="0.5,0.5"
+                                    Stretch="Fill">
+                                    <Path.RenderTransform>
+                                        <ScaleTransform x:Name="Sparkle2Scale" ScaleX="0" ScaleY="0" />
+                                    </Path.RenderTransform>
+                                </Path>
+                                <Path
+                                    Width="12"
+                                    Height="12"
+                                    Margin="22,0,0,52"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Bottom"
+                                    Data="{StaticResource Geo.Case.Sparkle}"
+                                    Fill="{DynamicResource Brush.Accent}"
+                                    RenderTransformOrigin="0.5,0.5"
+                                    Stretch="Fill">
+                                    <Path.RenderTransform>
+                                        <ScaleTransform x:Name="Sparkle3Scale" ScaleX="0" ScaleY="0" />
+                                    </Path.RenderTransform>
+                                </Path>
+                                <Path
+                                    Width="20"
+                                    Height="20"
+                                    Margin="0,0,-12,28"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Bottom"
+                                    Data="{StaticResource Geo.Case.Sparkle}"
+                                    Fill="{DynamicResource Brush.Accent}"
+                                    RenderTransformOrigin="0.5,0.5"
+                                    Stretch="Fill">
+                                    <Path.RenderTransform>
+                                        <ScaleTransform x:Name="Sparkle4Scale" ScaleX="0" ScaleY="0" />
+                                    </Path.RenderTransform>
+                                </Path>
+                            </Grid>
+                        </Viewbox>
+                    </Grid>
+
+                    <!--
+                        Open while hovered or IsOpen and not wrapped, closed otherwise: one trigger owns the opening angle.
+                        Animations of triggers declared later win over earlier ones, so separate open / close triggers on the
+                        same property would block each other.
+                    -->
+                    <ControlTemplate.Triggers>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Value="True">
+                                    <Condition.Binding>
+                                        <MultiBinding Converter="{StaticResource AnyTrueConverter}">
+                                            <Binding Path="IsMouseOver" RelativeSource="{RelativeSource Self}" />
+                                            <Binding Path="(ui:GameCase.IsOpen)" RelativeSource="{RelativeSource Self}" />
+                                        </MultiBinding>
+                                    </Condition.Binding>
+                                </Condition>
+                                <Condition Binding="{Binding Path=(ui:GameCase.IsWrapped), RelativeSource={RelativeSource Self}}" Value="False" />
+                            </MultiDataTrigger.Conditions>
+                            <Setter TargetName="DiscAccentRim" Property="Stroke" Value="{DynamicResource Brush.Accent}" />
+                            <MultiDataTrigger.EnterActions>
+                                <BeginStoryboard HandoffBehavior="SnapshotAndReplace" Storyboard="{StaticResource SbOpen}" />
+                            </MultiDataTrigger.EnterActions>
+                            <MultiDataTrigger.ExitActions>
+                                <BeginStoryboard HandoffBehavior="SnapshotAndReplace" Storyboard="{StaticResource SbClose}" />
+                            </MultiDataTrigger.ExitActions>
+                        </MultiDataTrigger>
+
+                        <Trigger Property="ui:GameCase.IsSelected" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard HandoffBehavior="SnapshotAndReplace" Storyboard="{StaticResource SbRingShow}" />
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard HandoffBehavior="SnapshotAndReplace" Storyboard="{StaticResource SbRingHide}" />
+                            </Trigger.ExitActions>
+                        </Trigger>
+
+                        <!--  Only properties the open trigger doesn't animate: extra angle, disc. Not while wrapped  -->
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="ui:GameCase.IsSelected" Value="True" />
+                                <Condition Property="ui:GameCase.IsWrapped" Value="False" />
+                            </MultiTrigger.Conditions>
+                            <MultiTrigger.EnterActions>
+                                <BeginStoryboard HandoffBehavior="SnapshotAndReplace" Storyboard="{StaticResource SbSelect}" />
+                            </MultiTrigger.EnterActions>
+                            <MultiTrigger.ExitActions>
+                                <BeginStoryboard HandoffBehavior="SnapshotAndReplace" Storyboard="{StaticResource SbDeselect}" />
+                            </MultiTrigger.ExitActions>
+                        </MultiTrigger>
+
+                        <Trigger Property="ui:GameCase.IsSealed" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard HandoffBehavior="SnapshotAndReplace" Storyboard="{StaticResource SbSeal}" />
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard HandoffBehavior="SnapshotAndReplace" Storyboard="{StaticResource SbUnwrap}" />
+                            </Trigger.ExitActions>
+                        </Trigger>
+
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Value="True">
+                                    <Condition.Binding>
+                                        <MultiBinding Converter="{StaticResource AnyTrueConverter}">
+                                            <Binding Path="IsMouseOver" RelativeSource="{RelativeSource Self}" />
+                                            <Binding Path="(ui:GameCase.IsOpen)" RelativeSource="{RelativeSource Self}" />
+                                        </MultiBinding>
+                                    </Condition.Binding>
+                                </Condition>
+                                <Condition Binding="{Binding Path=(ui:GameCase.IsSealed), RelativeSource={RelativeSource Self}}" Value="True" />
+                            </MultiDataTrigger.Conditions>
+                            <MultiDataTrigger.EnterActions>
+                                <BeginStoryboard HandoffBehavior="SnapshotAndReplace" Storyboard="{StaticResource SbGlint}" />
+                            </MultiDataTrigger.EnterActions>
+                        </MultiDataTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--
+        Game case in a showcase (dashboard, most played): the case stands at the back of a glass plinth, slightly open,
+        its disc stands in front of the cover, shifted to the right so most of the cover art stays visible, slightly turned.
+        ContentControl with the cover image as content, drawn in base units 340 x 430 (scale it with a Viewbox).
+        Hover opens the cover a little further, turns the disc a little and lifts it.
+        
+        Stage (base units): case 246 x 366 at 16,26 (bottom 392 on the plinth top), plinth 0 - 340 at 386 - 416,
+        disc 196 at 134,202 (center 232,300, bottom on the plinth). The open cover grows ~7 (hover ~10) beyond the case.
+    -->
+    <Style x:Key="GameCase.Showcase" TargetType="{x:Type ContentControl}">
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ContentControl}">
+
+                    <ControlTemplate.Resources>
+                        <CubicEase x:Key="EaseOut" EasingMode="EaseOut" />
+                        <CubicEase x:Key="EaseInOut" EasingMode="EaseInOut" />
+
+                        <Storyboard x:Key="SbPresent" FillBehavior="HoldEnd">
+                            <DoubleAnimation
+                                EasingFunction="{StaticResource EaseOut}"
+                                Storyboard.TargetName="ShowcaseHinge"
+                                Storyboard.TargetProperty="Angle"
+                                To="-30"
+                                Duration="0:0:0.4" />
+                            <DoubleAnimation
+                                EasingFunction="{StaticResource EaseOut}"
+                                Storyboard.TargetName="DiscTurn"
+                                Storyboard.TargetProperty="Angle"
+                                To="-20"
+                                Duration="0:0:0.4" />
+                            <DoubleAnimation
+                                EasingFunction="{StaticResource EaseOut}"
+                                Storyboard.TargetName="DiscLift"
+                                Storyboard.TargetProperty="Y"
+                                To="-4"
+                                Duration="0:0:0.4" />
+                        </Storyboard>
+
+                        <Storyboard x:Key="SbRest" FillBehavior="HoldEnd">
+                            <DoubleAnimation
+                                EasingFunction="{StaticResource EaseInOut}"
+                                Storyboard.TargetName="ShowcaseHinge"
+                                Storyboard.TargetProperty="Angle"
+                                To="-22"
+                                Duration="0:0:0.3" />
+                            <DoubleAnimation
+                                EasingFunction="{StaticResource EaseInOut}"
+                                Storyboard.TargetName="DiscTurn"
+                                Storyboard.TargetProperty="Angle"
+                                To="-12"
+                                Duration="0:0:0.3" />
+                            <DoubleAnimation
+                                EasingFunction="{StaticResource EaseInOut}"
+                                Storyboard.TargetName="DiscLift"
+                                Storyboard.TargetProperty="Y"
+                                To="0"
+                                Duration="0:0:0.3" />
+                        </Storyboard>
+                    </ControlTemplate.Resources>
+
+                    <!--  Tag: the cover (content), so the visuals of the 3D surfaces can bind to it by name  -->
+                    <Grid
+                        x:Name="Stage"
+                        Width="340"
+                        Height="430"
+                        Background="Transparent"
+                        Tag="{Binding Content, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource ImageSourceOnlyConverter}}">
+
+                        <!--  ===== Plinth: glass slab, its top face a touch lighter, soft shadow on the floor =====  -->
+                        <Border
+                            Height="30"
+                            Margin="0,386,0,0"
+                            VerticalAlignment="Top"
+                            Background="{DynamicResource Brush.Background}"
+                            CornerRadius="6"
+                            IsHitTestVisible="False"
+                            Opacity="0.7">
+                            <Border.Effect>
+                                <DropShadowEffect
+                                    BlurRadius="22"
+                                    Direction="270"
+                                    Opacity="1"
+                                    RenderingBias="Quality"
+                                    ShadowDepth="8"
+                                    Color="#FF000000" />
+                            </Border.Effect>
+                        </Border>
+                        <Border
+                            Height="30"
+                            Margin="0,386,0,0"
+                            VerticalAlignment="Top"
+                            Background="{DynamicResource Brush.Card.Background}"
+                            BorderBrush="{DynamicResource Brush.Card.Border}"
+                            BorderThickness="1"
+                            CornerRadius="6"
+                            IsHitTestVisible="False" />
+                        <!--  Top face  -->
+                        <Border
+                            Height="12"
+                            Margin="1,387,1,0"
+                            VerticalAlignment="Top"
+                            CornerRadius="5,5,0,0"
+                            IsHitTestVisible="False">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                    <GradientStop Offset="0" Color="#1CFFFFFF" />
+                                    <GradientStop Offset="1" Color="#0AFFFFFF" />
+                                </LinearGradientBrush>
+                            </Border.Background>
+                        </Border>
+                        <!--  Front edge of the top face  -->
+                        <Border
+                            Height="1"
+                            Margin="1,399,1,0"
+                            VerticalAlignment="Top"
+                            Background="#26FFFFFF"
+                            IsHitTestVisible="False" />
+
+                        <!--  Contact shadows of case and disc on the top face  -->
+                        <Ellipse
+                            Width="236"
+                            Height="12"
+                            Margin="21,386,0,0"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            IsHitTestVisible="False">
+                            <Ellipse.Fill>
+                                <RadialGradientBrush>
+                                    <GradientStop Offset="0" Color="#66000000" />
+                                    <GradientStop Offset="1" Color="#00000000" />
+                                </RadialGradientBrush>
+                            </Ellipse.Fill>
+                        </Ellipse>
+
+                        <!--  ===== Case at the back, slightly open =====  -->
+                        <Grid
+                            x:Name="CaseHost"
+                            Width="246"
+                            Height="366"
+                            Margin="16,26,0,0"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top">
+
+                            <Viewport3D ClipToBounds="False" IsHitTestVisible="False">
+                                <Viewport3D.Camera>
+                                    <!--  Same camera as GameCase: the closed case is rendered 1:1 within CaseHost  -->
+                                    <PerspectiveCamera
+                                        FarPlaneDistance="20"
+                                        FieldOfView="5.72482"
+                                        LookDirection="0,0,-14"
+                                        NearPlaneDistance="1"
+                                        Position="0,0,14"
+                                        UpDirection="0,1,0" />
+                                </Viewport3D.Camera>
+
+                                <!--  More ambient light than GameCase: the opened cover stays bright, it is the main picture here  -->
+                                <ModelVisual3D>
+                                    <ModelVisual3D.Content>
+                                        <Model3DGroup>
+                                            <AmbientLight Color="#FFB0B0B0" />
+                                            <DirectionalLight Direction="0,0,-1" Color="#FF4F4F4F" />
+                                        </Model3DGroup>
+                                    </ModelVisual3D.Content>
+                                </ModelVisual3D>
+
+                                <!--  Back of the case: glass, recessed tray with the empty disc holder  -->
+                                <Viewport2DVisual3D>
+                                    <Viewport2DVisual3D.Geometry>
+                                        <MeshGeometry3D
+                                            Positions="-0.7,-1.041463,0  0.7,-1.041463,0  0.7,1.041463,0  -0.7,1.041463,0"
+                                            TextureCoordinates="0,1 1,1 1,0 0,0"
+                                            TriangleIndices="0 1 2  0 2 3" />
+                                    </Viewport2DVisual3D.Geometry>
+
+                                    <Viewport2DVisual3D.Material>
+                                        <DiffuseMaterial Brush="#FFFFFFFF" Viewport2DVisual3D.IsVisualHostMaterial="True" />
+                                    </Viewport2DVisual3D.Material>
+
+                                    <Viewport2DVisual3D.Visual>
+                                        <Grid Width="246" Height="366">
+                                            <Border Background="{DynamicResource Brush.Background}" CornerRadius="6" />
+                                            <Border
+                                                Background="{DynamicResource Brush.Card.Background}"
+                                                BorderBrush="{DynamicResource Brush.Card.Border}"
+                                                BorderThickness="1"
+                                                CornerRadius="6" />
+                                            <Border
+                                                Margin="3"
+                                                Background="{DynamicResource Brush.Card.Inset}"
+                                                CornerRadius="4" />
+                                            <!--  Disc holder in the middle of the tray  -->
+                                            <Ellipse
+                                                Width="66"
+                                                Height="66"
+                                                Stroke="{DynamicResource Brush.Card.Border}"
+                                                StrokeThickness="1" />
+                                            <Ellipse
+                                                Width="32"
+                                                Height="32"
+                                                Fill="{StaticResource Brush.Case.Hub}"
+                                                Stroke="{DynamicResource Brush.Card.Border}"
+                                                StrokeThickness="1" />
+                                        </Grid>
+                                    </Viewport2DVisual3D.Visual>
+                                </Viewport2DVisual3D>
+
+                                <!--  Front cover, hinged at the left edge, slightly open  -->
+                                <Viewport2DVisual3D>
+                                    <Viewport2DVisual3D.Geometry>
+                                        <MeshGeometry3D
+                                            Positions="-0.7,-1.041463,0.002  0.7,-1.041463,0.002  0.7,1.041463,0.002  -0.7,1.041463,0.002"
+                                            TextureCoordinates="0,1 1,1 1,0 0,0"
+                                            TriangleIndices="0 1 2  0 2 3" />
+                                    </Viewport2DVisual3D.Geometry>
+
+                                    <Viewport2DVisual3D.Material>
+                                        <DiffuseMaterial Brush="#FFFFFFFF" Viewport2DVisual3D.IsVisualHostMaterial="True" />
+                                    </Viewport2DVisual3D.Material>
+
+                                    <Viewport2DVisual3D.Transform>
+                                        <RotateTransform3D
+                                            CenterX="-0.7"
+                                            CenterY="0"
+                                            CenterZ="0.002">
+                                            <RotateTransform3D.Rotation>
+                                                <AxisAngleRotation3D
+                                                    x:Name="ShowcaseHinge"
+                                                    Angle="-22"
+                                                    Axis="0,1,0" />
+                                            </RotateTransform3D.Rotation>
+                                        </RotateTransform3D>
+                                    </Viewport2DVisual3D.Transform>
+
+                                    <Viewport2DVisual3D.Visual>
+                                        <Grid Width="246" Height="366">
+                                            <Border Background="{DynamicResource Brush.Background}" CornerRadius="6" />
+                                            <Border Background="{DynamicResource Brush.Card.Background}" CornerRadius="6" />
+                                            <Border
+                                                Margin="3"
+                                                CornerRadius="4"
+                                                RenderOptions.BitmapScalingMode="HighQuality">
+                                                <Border.Background>
+                                                    <ImageBrush
+                                                        AlignmentX="Left"
+                                                        AlignmentY="Top"
+                                                        ImageSource="{Binding Tag, ElementName=Stage}"
+                                                        Stretch="UniformToFill" />
+                                                </Border.Background>
+                                            </Border>
+                                            <Border
+                                                Margin="3"
+                                                Background="{StaticResource Brush.Case.Gloss}"
+                                                CornerRadius="4" />
+                                            <Border
+                                                BorderBrush="{DynamicResource Brush.Card.Border}"
+                                                BorderThickness="1"
+                                                CornerRadius="6" />
+                                        </Grid>
+                                    </Viewport2DVisual3D.Visual>
+                                </Viewport2DVisual3D>
+                            </Viewport3D>
+                        </Grid>
+
+                        <!--  ===== Disc in front of the cover (right part), standing on the plinth, slightly turned =====  -->
+                        <Ellipse
+                            Width="150"
+                            Height="10"
+                            Margin="157,392,0,0"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            IsHitTestVisible="False">
+                            <Ellipse.Fill>
+                                <RadialGradientBrush>
+                                    <GradientStop Offset="0" Color="#73000000" />
+                                    <GradientStop Offset="1" Color="#00000000" />
+                                </RadialGradientBrush>
+                            </Ellipse.Fill>
+                        </Ellipse>
+
+                        <Grid
+                            Width="196"
+                            Height="196"
+                            Margin="134,202,0,0"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            IsHitTestVisible="False"
+                            RenderTransformOrigin="0.5,0.5">
+                            <Grid.RenderTransform>
+                                <TransformGroup>
+                                    <RotateTransform x:Name="DiscTurn" Angle="-12" />
+                                    <TranslateTransform x:Name="DiscLift" Y="0" />
+                                </TransformGroup>
+                            </Grid.RenderTransform>
+
+                            <!--  Shadow shape behind the disc (an effect on the disc itself would blur the print)  -->
+                            <Ellipse Fill="{DynamicResource Brush.Background}" Opacity="0.6">
+                                <Ellipse.Effect>
+                                    <DropShadowEffect
+                                        BlurRadius="20"
+                                        Direction="270"
+                                        Opacity="0.9"
+                                        RenderingBias="Quality"
+                                        ShadowDepth="6"
+                                        Color="#FF000000" />
+                                </Ellipse.Effect>
+                            </Ellipse>
+
+                            <!--  Same disc as in GameCase (drawn at 224, scaled to 196)  -->
+                            <Viewbox Stretch="Fill">
+                                <Grid
+                                    Width="224"
+                                    Height="224"
+                                    OpacityMask="{StaticResource Brush.Case.DiscHoleMask}">
+                                    <!--  Print like the selected disc in the library and the cover preview: turned so the title runs down the right side (102 - 12 of DiscTurn = 90)  -->
+                                    <Ellipse ui:DiscPrint.Cover="{Binding Tag, ElementName=Stage}" ui:DiscPrint.PrintAngle="102" />
+                                    <Ellipse Fill="{StaticResource Brush.Case.Disc}" />
+                                    <Ellipse Stroke="{DynamicResource Brush.Card.Border}" StrokeThickness="3" />
+                                    <Ellipse
+                                        Opacity="0.6"
+                                        Stroke="{DynamicResource Brush.Accent}"
+                                        StrokeThickness="1" />
+                                    <Ellipse
+                                        Width="88"
+                                        Height="88"
+                                        Fill="{StaticResource Brush.Case.Hub}"
+                                        Stroke="{DynamicResource Brush.Card.Border}"
+                                        StrokeThickness="1" />
+                                    <Ellipse
+                                        Width="62"
+                                        Height="62"
+                                        Stroke="#14FFFFFF"
+                                        StrokeThickness="1" />
+                                    <Ellipse
+                                        Width="34"
+                                        Height="34"
+                                        Stroke="#33FFFFFF"
+                                        StrokeThickness="2" />
+                                </Grid>
+                            </Viewbox>
+                        </Grid>
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard HandoffBehavior="SnapshotAndReplace" Storyboard="{StaticResource SbPresent}" />
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard HandoffBehavior="SnapshotAndReplace" Storyboard="{StaticResource SbRest}" />
+                            </Trigger.ExitActions>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--
+        Preview of a cover (SteamGridDB cover selection): the closed case from the front with exactly the cover section of
+        the library, its disc completely visible in front of the case's right edge, turned like the disc of a selected
+        case (print turned -30, disc 120 clockwise), so its print reads like in the library. No plinth and no opened
+        cover: that stays the showcase of the most played game. ContentControl with the cover image as content, base
+        units 450 x 400 (scale it with a Viewbox). A new cover rolls the disc out again.
+        
+        Stage (base units): case 246 x 366 at 0,17; disc 240 at 206,80 (overlaps the case by 40, centered on its middle).
+    -->
+    <Style x:Key="GameCase.Preview" TargetType="{x:Type ContentControl}">
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="IsHitTestVisible" Value="False" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ContentControl}">
+
+                    <ControlTemplate.Resources>
+                        <CubicEase x:Key="EaseOut" EasingMode="EaseOut" />
+
+                        <Storyboard x:Key="SbDiscOut">
+                            <DoubleAnimation
+                                EasingFunction="{StaticResource EaseOut}"
+                                Storyboard.TargetName="DiscSlide"
+                                Storyboard.TargetProperty="X"
+                                From="-60"
+                                To="0"
+                                Duration="0:0:0.38" />
+                            <DoubleAnimation
+                                EasingFunction="{StaticResource EaseOut}"
+                                Storyboard.TargetName="DiscTurn"
+                                Storyboard.TargetProperty="Angle"
+                                From="0"
+                                To="120"
+                                Duration="0:0:0.44" />
+                        </Storyboard>
+                    </ControlTemplate.Resources>
+
+                    <!--  Tag: the cover (content), so the parts can bind to it by name  -->
+                    <Grid
+                        x:Name="Stage"
+                        Width="450"
+                        Height="400"
+                        Tag="{Binding Content, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource ImageSourceOnlyConverter}}">
+
+                        <!--  Contact shadow of the case on the floor  -->
+                        <Ellipse
+                            Width="236"
+                            Height="12"
+                            Margin="5,377,0,0"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top">
+                            <Ellipse.Fill>
+                                <RadialGradientBrush>
+                                    <GradientStop Offset="0" Color="#59000000" />
+                                    <GradientStop Offset="1" Color="#00000000" />
+                                </RadialGradientBrush>
+                            </Ellipse.Fill>
+                        </Ellipse>
+
+                        <!--  ===== Disc in front of the case's right edge, completely visible (ZIndex: above the case) =====  -->
+                        <Grid
+                            Width="240"
+                            Height="240"
+                            Margin="206,80,0,0"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Panel.ZIndex="1"
+                            RenderTransformOrigin="0.5,0.5">
+                            <Grid.RenderTransform>
+                                <TransformGroup>
+                                    <RotateTransform x:Name="DiscTurn" Angle="120" />
+                                    <TranslateTransform x:Name="DiscSlide" X="0" />
+                                </TransformGroup>
+                            </Grid.RenderTransform>
+
+                            <!--  Shadow shape behind the disc (an effect on the disc itself would blur the print)  -->
+                            <Ellipse Fill="{DynamicResource Brush.Background}" Opacity="0.6">
+                                <Ellipse.Effect>
+                                    <DropShadowEffect
+                                        BlurRadius="20"
+                                        Direction="270"
+                                        Opacity="0.9"
+                                        RenderingBias="Quality"
+                                        ShadowDepth="6"
+                                        Color="#FF000000" />
+                                </Ellipse.Effect>
+                            </Ellipse>
+
+                            <!--  Same disc as in GameCase (drawn at 224, scaled to 240)  -->
+                            <Viewbox Stretch="Fill">
+                                <Grid
+                                    Width="224"
+                                    Height="224"
+                                    OpacityMask="{StaticResource Brush.Case.DiscHoleMask}">
+                                    <Ellipse ui:DiscPrint.Cover="{Binding Tag, ElementName=Stage}" ui:DiscPrint.PrintAngle="-30" />
+                                    <Ellipse Fill="{StaticResource Brush.Case.Disc}" />
+                                    <Ellipse Stroke="{DynamicResource Brush.Card.Border}" StrokeThickness="3" />
+                                    <Ellipse
+                                        Opacity="0.6"
+                                        Stroke="{DynamicResource Brush.Accent}"
+                                        StrokeThickness="1" />
+                                    <Ellipse
+                                        Width="88"
+                                        Height="88"
+                                        Fill="{StaticResource Brush.Case.Hub}"
+                                        Stroke="{DynamicResource Brush.Card.Border}"
+                                        StrokeThickness="1" />
+                                    <Ellipse
+                                        Width="62"
+                                        Height="62"
+                                        Stroke="#14FFFFFF"
+                                        StrokeThickness="1" />
+                                    <Ellipse
+                                        Width="34"
+                                        Height="34"
+                                        Stroke="#33FFFFFF"
+                                        StrokeThickness="2" />
+                                </Grid>
+                            </Viewbox>
+                        </Grid>
+
+                        <!--  ===== Closed case from the front: the same layers as the front cover of GameCase =====  -->
+                        <Grid
+                            Width="246"
+                            Height="366"
+                            Margin="0,17,0,0"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top">
+                            <Border Background="{DynamicResource Brush.Background}" CornerRadius="6">
+                                <Border.Effect>
+                                    <DropShadowEffect
+                                        BlurRadius="22"
+                                        Direction="270"
+                                        Opacity="0.8"
+                                        RenderingBias="Quality"
+                                        ShadowDepth="8"
+                                        Color="#FF000000" />
+                                </Border.Effect>
+                            </Border>
+                            <Border Background="{DynamicResource Brush.Card.Background}" CornerRadius="6" />
+                            <Border
+                                Margin="3"
+                                CornerRadius="4"
+                                RenderOptions.BitmapScalingMode="HighQuality">
+                                <Border.Background>
+                                    <ImageBrush
+                                        AlignmentX="Left"
+                                        AlignmentY="Top"
+                                        ImageSource="{Binding Tag, ElementName=Stage}"
+                                        Stretch="UniformToFill" />
+                                </Border.Background>
+                            </Border>
+                            <Border
+                                Margin="3"
+                                Background="{StaticResource Brush.Case.Gloss}"
+                                CornerRadius="4" />
+                            <Border
+                                BorderBrush="{DynamicResource Brush.Card.Border}"
+                                BorderThickness="1"
+                                CornerRadius="6" />
+                        </Grid>
+
+                        <!--
+                            A new cover raises TargetUpdated here, which starts SbDiscOut. Last element of the template: the
+                            binding also updates while the template is loaded, the animated parts must have their names by then.
+                        -->
+                        <FrameworkElement x:Name="CoverWatch" Tag="{Binding Content, RelativeSource={RelativeSource TemplatedParent}, NotifyOnTargetUpdated=True}" />
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+                        <EventTrigger RoutedEvent="Binding.TargetUpdated" SourceName="CoverWatch">
+                            <BeginStoryboard HandoffBehavior="SnapshotAndReplace" Storyboard="{StaticResource SbDiscOut}" />
+                        </EventTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 
     <Style x:Key="TileListBoxItemStyle" TargetType="{x:Type ListBoxItem}">
         <Setter Property="Padding" Value="0" />
@@ -81,122 +1822,6 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ListBoxItem}">
 
-                    <ControlTemplate.Resources>
-                        <CubicEase x:Key="EaseOut" EasingMode="EaseOut" />
-                        <CubicEase x:Key="EaseIn" EasingMode="EaseIn" />
-
-                        <Storyboard x:Key="SbHoverIn" FillBehavior="HoldEnd">
-                            <DoubleAnimation
-                                EasingFunction="{StaticResource EaseOut}"
-                                Storyboard.TargetName="Glass"
-                                Storyboard.TargetProperty="Opacity"
-                                To="{StaticResource TileGlassOpacityHover}"
-                                Duration="0:0:0.18" />
-                            <DoubleAnimation
-                                EasingFunction="{StaticResource EaseOut}"
-                                Storyboard.TargetName="Sheen"
-                                Storyboard.TargetProperty="Opacity"
-                                To="{StaticResource TileSheenOpacityHover}"
-                                Duration="0:0:0.18" />
-                            <DoubleAnimation
-                                EasingFunction="{StaticResource EaseOut}"
-                                Storyboard.TargetName="ShadowLayer"
-                                Storyboard.TargetProperty="Opacity"
-                                To="{StaticResource TileShadowOpacityHover}"
-                                Duration="0:0:0.18" />
-
-                            <DoubleAnimation
-                                EasingFunction="{StaticResource EaseOut}"
-                                Storyboard.TargetName="AccentGlowSoft"
-                                Storyboard.TargetProperty="Opacity"
-                                To="{StaticResource TileAccentGlowOpacityHover}"
-                                Duration="0:0:0.18" />
-                            <DoubleAnimation
-                                EasingFunction="{StaticResource EaseOut}"
-                                Storyboard.TargetName="AccentGlowTight"
-                                Storyboard.TargetProperty="Opacity"
-                                To="{StaticResource TileAccentGlowOpacityHover}"
-                                Duration="0:0:0.18" />
-
-                            <DoubleAnimation
-                                EasingFunction="{StaticResource EaseOut}"
-                                Storyboard.TargetName="TiltRotation"
-                                Storyboard.TargetProperty="Angle"
-                                To="{StaticResource TileTiltAngleHover}"
-                                Duration="0:0:0.18" />
-                        </Storyboard>
-
-                        <Storyboard x:Key="SbHoverOut" FillBehavior="HoldEnd">
-                            <DoubleAnimation
-                                EasingFunction="{StaticResource EaseIn}"
-                                Storyboard.TargetName="Glass"
-                                Storyboard.TargetProperty="Opacity"
-                                To="{StaticResource TileGlassOpacityNormal}"
-                                Duration="0:0:0.18" />
-                            <DoubleAnimation
-                                EasingFunction="{StaticResource EaseIn}"
-                                Storyboard.TargetName="Sheen"
-                                Storyboard.TargetProperty="Opacity"
-                                To="{StaticResource TileSheenOpacityNormal}"
-                                Duration="0:0:0.18" />
-                            <DoubleAnimation
-                                EasingFunction="{StaticResource EaseIn}"
-                                Storyboard.TargetName="ShadowLayer"
-                                Storyboard.TargetProperty="Opacity"
-                                To="{StaticResource TileShadowOpacityNormal}"
-                                Duration="0:0:0.18" />
-
-                            <DoubleAnimation
-                                EasingFunction="{StaticResource EaseIn}"
-                                Storyboard.TargetName="AccentGlowSoft"
-                                Storyboard.TargetProperty="Opacity"
-                                To="0"
-                                Duration="0:0:0.18" />
-                            <DoubleAnimation
-                                EasingFunction="{StaticResource EaseIn}"
-                                Storyboard.TargetName="AccentGlowTight"
-                                Storyboard.TargetProperty="Opacity"
-                                To="0"
-                                Duration="0:0:0.18" />
-
-                            <DoubleAnimation
-                                EasingFunction="{StaticResource EaseIn}"
-                                Storyboard.TargetName="TiltRotation"
-                                Storyboard.TargetProperty="Angle"
-                                To="0"
-                                Duration="0:0:0.18" />
-                        </Storyboard>
-
-                        <Storyboard x:Key="SbSelectIn" FillBehavior="HoldEnd">
-                            <DoubleAnimation
-                                EasingFunction="{StaticResource EaseOut}"
-                                Storyboard.TargetName="TitleAccent"
-                                Storyboard.TargetProperty="Opacity"
-                                To="{StaticResource TileTitleAccentOpacitySelected}"
-                                Duration="0:0:0.18" />
-                            <DoubleAnimation
-                                EasingFunction="{StaticResource EaseOut}"
-                                Storyboard.TargetName="AccentStroke"
-                                Storyboard.TargetProperty="Opacity"
-                                To="{StaticResource TileAccentStrokeOpacitySelected}"
-                                Duration="0:0:0.18" />
-                        </Storyboard>
-
-                        <Storyboard x:Key="SbSelectOut" FillBehavior="HoldEnd">
-                            <DoubleAnimation
-                                EasingFunction="{StaticResource EaseIn}"
-                                Storyboard.TargetName="TitleAccent"
-                                Storyboard.TargetProperty="Opacity"
-                                To="{StaticResource TileTitleAccentOpacityNormal}"
-                                Duration="0:0:0.18" />
-                            <DoubleAnimation
-                                EasingFunction="{StaticResource EaseIn}"
-                                Storyboard.TargetName="AccentStroke"
-                                Storyboard.TargetProperty="Opacity"
-                                To="{StaticResource TileAccentStrokeOpacityNormal}"
-                                Duration="0:0:0.18" />
-                        </Storyboard>
-                    </ControlTemplate.Resources>
 
                     <Border
                         x:Name="HitSurface"
@@ -206,310 +1831,93 @@
 
                         <Grid
                             x:Name="Root"
-                            Width="{StaticResource TileWidth}"
-                            Height="{StaticResource TileHeight}"
+                            Width="{Binding Path=(ui:TileLayout.TileWidth), RelativeSource={RelativeSource TemplatedParent}}"
+                            Height="{Binding Path=(ui:TileLayout.TileHeight), RelativeSource={RelativeSource TemplatedParent}}"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="366*" />
+                                <RowDefinition Height="41*" />
+                            </Grid.RowDefinitions>
 
-                            <Border
-                                x:Name="ShadowLayer"
-                                CornerRadius="{StaticResource TileCornerRadius}"
+                            <!--  ===== Case (style GameCase), opened while the tile is hovered or selected, unless still sealed =====  -->
+                            <ContentControl
+                                Grid.Row="0"
+                                ui:GameCase.IsSealed="{Binding COISSEA}"
+                                ui:GameCase.IsSelected="{Binding IsSelected, RelativeSource={RelativeSource TemplatedParent}}"
+                                Content="{Binding COCOVIM}"
                                 IsHitTestVisible="False"
-                                Opacity="{StaticResource TileShadowOpacityNormal}">
-                                <Border.Effect>
-                                    <DropShadowEffect
-                                        BlurRadius="24"
-                                        Direction="270"
-                                        Opacity="1"
-                                        RenderingBias="Quality"
-                                        ShadowDepth="10"
-                                        Color="#FF000000" />
-                                </Border.Effect>
-                            </Border>
+                                Style="{StaticResource GameCase}">
+                                <ui:GameCase.IsOpen>
+                                    <MultiBinding Converter="{StaticResource AnyTrueConverter}">
+                                        <Binding Path="IsMouseOver" RelativeSource="{RelativeSource TemplatedParent}" />
+                                        <Binding Path="IsSelected" RelativeSource="{RelativeSource TemplatedParent}" />
+                                    </MultiBinding>
+                                </ui:GameCase.IsOpen>
+                            </ContentControl>
 
-                            <Border
-                                x:Name="AccentGlowSoft"
-                                Height="26"
-                                Margin="10,0,10,12"
-                                VerticalAlignment="Bottom"
-                                Background="{DynamicResource Brush.Accent}"
-                                CornerRadius="0"
-                                IsHitTestVisible="False"
-                                Opacity="0"
-                                OpacityMask="{StaticResource Brush.AccentGlowMask}">
-                                <Border.Effect>
-                                    <DropShadowEffect
-                                        BlurRadius="90"
-                                        Direction="270"
-                                        Opacity="1"
-                                        RenderingBias="Quality"
-                                        ShadowDepth="30"
-                                        Color="{DynamicResource Color.Accent}" />
-                                </Border.Effect>
-                            </Border>
+                            <!--  ===== Title below the case: platform | name | playable =====  -->
+                            <Grid
+                                Grid.Row="1"
+                                Margin="2,16,2,0"
+                                VerticalAlignment="Top">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
 
-                            <Border
-                                x:Name="AccentGlowTight"
-                                Height="18"
-                                Margin="22,0,22,14"
-                                VerticalAlignment="Bottom"
-                                Background="{DynamicResource Brush.Accent}"
-                                CornerRadius="0"
-                                IsHitTestVisible="False"
-                                Opacity="0"
-                                OpacityMask="{StaticResource Brush.AccentGlowMask}">
-                                <Border.Effect>
-                                    <DropShadowEffect
-                                        BlurRadius="44"
-                                        Direction="270"
-                                        Opacity="1"
-                                        RenderingBias="Quality"
-                                        ShadowDepth="22"
-                                        Color="{DynamicResource Color.Accent}" />
-                                </Border.Effect>
-                            </Border>
+                                <Image
+                                    x:Name="PlatformIcon"
+                                    Grid.Column="0"
+                                    Width="16"
+                                    Height="16"
+                                    Margin="0,0,8,0"
+                                    VerticalAlignment="Center"
+                                    RenderOptions.BitmapScalingMode="HighQuality"
+                                    Source="{Binding COPLFPA}" />
 
-                            <Viewport3D ClipToBounds="False" IsHitTestVisible="False">
-                                <Viewport3D.Camera>
-                                    <PerspectiveCamera
-                                        FieldOfView="16"
-                                        LookDirection="0,0,-4.2"
-                                        Position="0,0,4.2"
-                                        UpDirection="0,1,0" />
-                                </Viewport3D.Camera>
+                                <TextBlock
+                                    x:Name="TitleText"
+                                    Grid.Column="1"
+                                    Margin="0"
+                                    VerticalAlignment="Center"
+                                    FontSize="14"
+                                    FontWeight="SemiBold"
+                                    Foreground="{DynamicResource Brush.TextPrimary}"
+                                    Text="{Binding ItemObject.GANA}"
+                                    TextTrimming="CharacterEllipsis"
+                                    TextWrapping="NoWrap"
+                                    ToolTip="{Binding ItemObject.GANA}" />
 
-                                <ModelVisual3D>
-                                    <ModelVisual3D.Content>
-                                        <Model3DGroup>
-                                            <AmbientLight Color="#FFFFFF" />
-                                            <DirectionalLight Direction="-0.2,-0.5,-1" Color="#FFFFFF" />
-                                        </Model3DGroup>
-                                    </ModelVisual3D.Content>
-                                </ModelVisual3D>
-
-                                <Viewport2DVisual3D>
-                                    <Viewport2DVisual3D.Geometry>
-                                        <MeshGeometry3D
-                                            Positions="-0.7,-1,0  0.7,-1,0  0.7,1,0  -0.7,1,0"
-                                            TextureCoordinates="0,1 1,1 1,0 0,0"
-                                            TriangleIndices="0 1 2  0 2 3" />
-                                    </Viewport2DVisual3D.Geometry>
-
-                                    <Viewport2DVisual3D.Material>
-                                        <DiffuseMaterial Brush="#FFFFFFFF" Viewport2DVisual3D.IsVisualHostMaterial="True" />
-                                    </Viewport2DVisual3D.Material>
-
-                                    <Viewport2DVisual3D.Transform>
-                                        <Transform3DGroup>
-                                            <RotateTransform3D
-                                                CenterX="0"
-                                                CenterY="1"
-                                                CenterZ="0">
-                                                <RotateTransform3D.Rotation>
-                                                    <AxisAngleRotation3D
-                                                        x:Name="TiltRotation"
-                                                        Angle="0"
-                                                        Axis="1,0,0" />
-                                                </RotateTransform3D.Rotation>
-                                            </RotateTransform3D>
-                                        </Transform3DGroup>
-                                    </Viewport2DVisual3D.Transform>
-
-                                    <Viewport2DVisual3D.Visual>
-                                        <Border
-                                            x:Name="Card"
-                                            Width="{StaticResource TileWidth}"
-                                            Height="{StaticResource TileHeight}"
-                                            Background="{DynamicResource Brush.TileBackground}"
-                                            BorderThickness="0"
-                                            ClipToBounds="True"
-                                            CornerRadius="{StaticResource TileCornerRadius}"
-                                            SnapsToDevicePixels="True">
-                                            <Grid ClipToBounds="True">
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition Height="*" />
-                                                    <RowDefinition Height="52" />
-                                                </Grid.RowDefinitions>
-
-                                                <Border
-                                                    Grid.Row="0"
-                                                    ClipToBounds="True"
-                                                    CornerRadius="{StaticResource TileImageCornerRadius}">
-                                                    <Image
-                                                        RenderOptions.BitmapScalingMode="HighQuality"
-                                                        Source="{Binding COCOVIM}"
-                                                        Stretch="UniformToFill">
-                                                        <Image.Clip>
-                                                            <RectangleGeometry
-                                                                RadiusX="2"
-                                                                RadiusY="2"
-                                                                Rect="0,0,210,248" />
-                                                        </Image.Clip>
-                                                    </Image>
-                                                </Border>
-
-                                                <Border
-                                                    Grid.Row="0"
-                                                    CornerRadius="{StaticResource TileImageCornerRadius}"
-                                                    IsHitTestVisible="False"
-                                                    Opacity="0.82">
-                                                    <Border.Background>
-                                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                                            <GradientStop Offset="0" Color="#2C000000" />
-                                                            <GradientStop Offset="0.28" Color="#00000000" />
-                                                        </LinearGradientBrush>
-                                                    </Border.Background>
-                                                </Border>
-
-                                                <Border
-                                                    Grid.Row="0"
-                                                    Margin="0,8,8,0"
-                                                    Padding="10,6"
-                                                    HorizontalAlignment="Right"
-                                                    VerticalAlignment="Top"
-                                                    Panel.ZIndex="4"
-                                                    CornerRadius="3"
-                                                    IsHitTestVisible="False">
-                                                    <Border.Background>
-                                                        <SolidColorBrush Opacity="0.78" Color="{DynamicResource Color.Accent}" />
-                                                    </Border.Background>
-                                                    <Border.Style>
-                                                        <Style TargetType="Border">
-                                                            <Setter Property="Visibility" Value="Visible" />
-                                                            <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding COPLFPA}" Value="{x:Null}">
-                                                                    <Setter Property="Visibility" Value="Collapsed" />
-                                                                </DataTrigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </Border.Style>
-                                                    <Image
-                                                        Width="26"
-                                                        Height="26"
-                                                        Source="{Binding COPLFPA}" />
-                                                </Border>
-
-                                                <Border
-                                                    x:Name="TitleHost"
-                                                    Grid.Row="1"
-                                                    Background="{DynamicResource Brush.TileTitleBackground}"
-                                                    CornerRadius="{StaticResource TileTitleCornerRadius}"
-                                                    SnapsToDevicePixels="True">
-                                                    <Grid>
-                                                        <Border
-                                                            x:Name="TitleAccent"
-                                                            Background="{DynamicResource Brush.Accent}"
-                                                            CornerRadius="{StaticResource TileTitleCornerRadius}"
-                                                            Opacity="{StaticResource TileTitleAccentOpacityNormal}" />
-
-                                                        <Border
-                                                            Height="1"
-                                                            VerticalAlignment="Top"
-                                                            Background="#30FFFFFF" />
-
-                                                        <Grid Margin="12,10">
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="*" />
-                                                                <ColumnDefinition Width="8" />
-                                                                <ColumnDefinition Width="Auto" />
-                                                            </Grid.ColumnDefinitions>
-
-                                                            <TextBlock
-                                                                x:Name="TitleText"
-                                                                Grid.Column="0"
-                                                                VerticalAlignment="Center"
-                                                                FontSize="14"
-                                                                FontWeight="SemiBold"
-                                                                Foreground="{DynamicResource Brush.TileForeground}"
-                                                                Text="{Binding ItemObject.GANA}"
-                                                                TextTrimming="CharacterEllipsis" />
-
-                                                            <Image
-                                                                Grid.Column="2"
-                                                                Width="16"
-                                                                Height="16"
-                                                                Margin="0"
-                                                                VerticalAlignment="Center"
-                                                                Source="/UI/Ressources/GTN_ICON_PLAYABLE.png"
-                                                                Visibility="{Binding COISPLA, Converter={StaticResource BoolToVisibilityConverter}}" />
-                                                        </Grid>
-                                                    </Grid>
-                                                </Border>
-
-                                                <Border
-                                                    x:Name="Glass"
-                                                    Grid.RowSpan="2"
-                                                    Background="{StaticResource Brush.TileGlassFx}"
-                                                    CornerRadius="{StaticResource TileCornerRadius}"
-                                                    IsHitTestVisible="False"
-                                                    Opacity="{StaticResource TileGlassOpacityNormal}" />
-
-                                                <Border
-                                                    x:Name="Sheen"
-                                                    Grid.Row="0"
-                                                    Background="{StaticResource Brush.TileSheenFx}"
-                                                    CornerRadius="{StaticResource TileImageCornerRadius}"
-                                                    IsHitTestVisible="False"
-                                                    Opacity="{StaticResource TileSheenOpacityNormal}" />
-
-                                                <Border
-                                                    x:Name="InnerStroke"
-                                                    Grid.RowSpan="2"
-                                                    Background="Transparent"
-                                                    BorderBrush="{StaticResource Brush.TileInnerStrokeFx}"
-                                                    BorderThickness="1"
-                                                    CornerRadius="{StaticResource TileCornerRadius}"
-                                                    IsHitTestVisible="False"
-                                                    Opacity="0.85" />
-
-                                                <Border
-                                                    x:Name="AccentStroke"
-                                                    Grid.RowSpan="2"
-                                                    Background="Transparent"
-                                                    BorderBrush="{DynamicResource Brush.AccentHover}"
-                                                    BorderThickness="1"
-                                                    CornerRadius="{StaticResource TileCornerRadius}"
-                                                    IsHitTestVisible="False"
-                                                    Opacity="{StaticResource TileAccentStrokeOpacityNormal}" />
-                                            </Grid>
-                                        </Border>
-                                    </Viewport2DVisual3D.Visual>
-                                </Viewport2DVisual3D>
-                            </Viewport3D>
+                                <!--  Playable: filled disc with the play triangle cut out (even-odd fill)  -->
+                                <Path
+                                    Grid.Column="2"
+                                    Width="16"
+                                    Height="16"
+                                    Margin="8,0,0,0"
+                                    VerticalAlignment="Center"
+                                    Data="F0 M 8,0 A 8,8 0 1 1 8,16 A 8,8 0 1 1 8,0 Z M 6.25,4.75 L 11.25,8 L 6.25,11.25 Z"
+                                    Fill="{DynamicResource Brush.TextPrimary}"
+                                    SnapsToDevicePixels="False"
+                                    Visibility="{Binding COISPLA, Converter={StaticResource BoolToVisibilityConverter}}" />
+                            </Grid>
                         </Grid>
                     </Border>
 
+                    <!--  The selected tile is drawn above its neighbors (its disc reaches into the gap), the hovered one above all  -->
                     <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Panel.ZIndex" Value="10" />
-                            <Trigger.EnterActions>
-                                <BeginStoryboard
-                                    x:Name="BsHoverIn"
-                                    HandoffBehavior="SnapshotAndReplace"
-                                    Storyboard="{StaticResource SbHoverIn}" />
-                            </Trigger.EnterActions>
-                            <Trigger.ExitActions>
-                                <BeginStoryboard
-                                    x:Name="BsHoverOut"
-                                    HandoffBehavior="SnapshotAndReplace"
-                                    Storyboard="{StaticResource SbHoverOut}" />
-                            </Trigger.ExitActions>
-                        </Trigger>
+                        <!--  No platform icon: the title starts at the case edge  -->
+                        <DataTrigger Binding="{Binding COPLFPA}" Value="{x:Null}">
+                            <Setter TargetName="PlatformIcon" Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
 
                         <Trigger Property="IsSelected" Value="True">
                             <Setter Property="Panel.ZIndex" Value="5" />
-                            <Trigger.EnterActions>
-                                <BeginStoryboard
-                                    x:Name="BsSelectIn"
-                                    HandoffBehavior="SnapshotAndReplace"
-                                    Storyboard="{StaticResource SbSelectIn}" />
-                            </Trigger.EnterActions>
-                            <Trigger.ExitActions>
-                                <BeginStoryboard
-                                    x:Name="BsSelectOut"
-                                    HandoffBehavior="SnapshotAndReplace"
-                                    Storyboard="{StaticResource SbSelectOut}" />
-                            </Trigger.ExitActions>
+                        </Trigger>
+
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Panel.ZIndex" Value="10" />
                         </Trigger>
 
                         <Trigger Property="IsEnabled" Value="False">

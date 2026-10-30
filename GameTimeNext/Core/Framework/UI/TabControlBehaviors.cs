@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using UIX.ViewController.Engine.AttachedProperties;
 
 namespace GameTimeNext.Core.Framework.UI
 {
@@ -20,6 +21,81 @@ namespace GameTimeNext.Core.Framework.UI
         public static void SetEnableSelectionSwoosh(DependencyObject obj, bool value)
             => obj.SetValue(EnableSelectionSwooshProperty, value);
 
+        /// <summary>
+        /// Shows a "+" button after the last tab (template part BtnTabAdd). Its click is dispatched to the
+        /// window controller like any other named button (EV_BtnTabAdd).
+        /// </summary>
+        public static readonly DependencyProperty ShowAddButtonProperty =
+            DependencyProperty.RegisterAttached(
+                "ShowAddButton",
+                typeof(bool),
+                typeof(TabControlBehaviors),
+                new PropertyMetadata(false));
+
+        public static bool GetShowAddButton(DependencyObject obj)
+            => (bool)obj.GetValue(ShowAddButtonProperty);
+
+        public static void SetShowAddButton(DependencyObject obj, bool value)
+            => obj.SetValue(ShowAddButtonProperty, value);
+
+        /// <summary>Tooltip of the "+" button.</summary>
+        public static readonly DependencyProperty AddButtonToolTipProperty =
+            DependencyProperty.RegisterAttached(
+                "AddButtonToolTip",
+                typeof(string),
+                typeof(TabControlBehaviors),
+                new PropertyMetadata(null));
+
+        public static string? GetAddButtonToolTip(DependencyObject obj)
+            => (string?)obj.GetValue(AddButtonToolTipProperty);
+
+        public static void SetAddButtonToolTip(DependencyObject obj, string? value)
+            => obj.SetValue(AddButtonToolTipProperty, value);
+
+        /// <summary>
+        /// Shows a button with a down arrow before the "+" button (template part btnTabFavorites). Its click is
+        /// dispatched to the window controller like any other named button (EV_btnTabFavorites).
+        /// </summary>
+        public static readonly DependencyProperty ShowFavoritesButtonProperty =
+            DependencyProperty.RegisterAttached(
+                "ShowFavoritesButton",
+                typeof(bool),
+                typeof(TabControlBehaviors),
+                new PropertyMetadata(false));
+
+        public static bool GetShowFavoritesButton(DependencyObject obj)
+            => (bool)obj.GetValue(ShowFavoritesButtonProperty);
+
+        public static void SetShowFavoritesButton(DependencyObject obj, bool value)
+            => obj.SetValue(ShowFavoritesButtonProperty, value);
+
+        /// <summary>Tooltip of the favorites button.</summary>
+        public static readonly DependencyProperty FavoritesButtonToolTipProperty =
+            DependencyProperty.RegisterAttached(
+                "FavoritesButtonToolTip",
+                typeof(string),
+                typeof(TabControlBehaviors),
+                new PropertyMetadata(null));
+
+        public static string? GetFavoritesButtonToolTip(DependencyObject obj)
+            => (string?)obj.GetValue(FavoritesButtonToolTipProperty);
+
+        public static void SetFavoritesButtonToolTip(DependencyObject obj, string? value)
+            => obj.SetValue(FavoritesButtonToolTipProperty, value);
+
+        private static readonly DependencyProperty LastSelectedItemProperty =
+            DependencyProperty.RegisterAttached(
+                "LastSelectedItem",
+                typeof(object),
+                typeof(TabControlBehaviors),
+                new PropertyMetadata(null));
+
+        private static object? GetLastSelectedItem(DependencyObject obj)
+            => obj.GetValue(LastSelectedItemProperty);
+
+        private static void SetLastSelectedItem(DependencyObject obj, object? value)
+            => obj.SetValue(LastSelectedItemProperty, value);
+
         private static void OnEnableSelectionSwooshChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is not TabControl tabControl)
@@ -30,12 +106,14 @@ namespace GameTimeNext.Core.Framework.UI
                 tabControl.SelectionChanged += OnTabControlSelectionChanged;
                 tabControl.Loaded += OnTabControlLoaded;
                 tabControl.SizeChanged += OnTabControlSizeChanged;
+                UIXDragAndDrop.AddItemsMovedHandler(tabControl, OnTabsMoved);
             }
             else
             {
                 tabControl.SelectionChanged -= OnTabControlSelectionChanged;
                 tabControl.Loaded -= OnTabControlLoaded;
                 tabControl.SizeChanged -= OnTabControlSizeChanged;
+                UIXDragAndDrop.RemoveItemsMovedHandler(tabControl, OnTabsMoved);
             }
         }
 
@@ -44,6 +122,7 @@ namespace GameTimeNext.Core.Framework.UI
             if (sender is not TabControl tabControl)
                 return;
 
+            SetLastSelectedItem(tabControl, tabControl.SelectedItem);
             AnimateSelectionRunner(tabControl, animate: false);
         }
 
@@ -55,12 +134,44 @@ namespace GameTimeNext.Core.Framework.UI
             AnimateSelectionRunner(tabControl, animate: false);
         }
 
+        /// <summary>
+        /// Tabs dragged to another position (UIXDragAndDrop): the runner follows the selected tab without animation.
+        /// </summary>
+        private static void OnTabsMoved(object sender, RoutedEventArgs e)
+        {
+            if (sender is TabControl tabControl)
+                AnimateSelectionRunner(tabControl, animate: false);
+        }
+
         private static void OnTabControlSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (sender is not TabControl tabControl)
                 return;
 
-            if (e.OriginalSource is not TabControl && e.OriginalSource is not TabItem)
+            // SelectionChanged bubbles: ignore events from nested selectors (inner TabControls, ComboBoxes, ...).
+            if (!ReferenceEquals(e.OriginalSource, tabControl))
+                return;
+
+            // Decide after the current synchronous work: FnControls.LoadTabContent (engine, e.g. during validation on save)
+            // selects every tab once and then restores the original one, which must not count as a tab change.
+            tabControl.Dispatcher.BeginInvoke(new Action(() => OnSelectionSettled(tabControl)), System.Windows.Threading.DispatcherPriority.DataBind);
+        }
+
+        private static void OnSelectionSettled(TabControl tabControl)
+        {
+            // Only animate when a different tab actually became selected (not on item reorder/re-add of the same tab).
+            var selectedItem = tabControl.SelectedItem;
+            var lastSelectedItem = GetLastSelectedItem(tabControl);
+            SetLastSelectedItem(tabControl, selectedItem);
+
+            if (selectedItem is null)
+            {
+                // Last tab closed: hide the runner instead of leaving it at the old position
+                AnimateSelectionRunner(tabControl, animate: false);
+                return;
+            }
+
+            if (ReferenceEquals(selectedItem, lastSelectedItem))
                 return;
 
             tabControl.Dispatcher.BeginInvoke(new Action(() => AnimateSelectionRunner(tabControl, animate: true)), System.Windows.Threading.DispatcherPriority.Render);
@@ -68,8 +179,10 @@ namespace GameTimeNext.Core.Framework.UI
             if (tabControl.Template.FindName("SelectedContentHost", tabControl) is not FrameworkElement contentHost)
                 return;
 
-            if (contentHost.RenderTransform is not TranslateTransform contentTransform)
+            if (contentHost.RenderTransform is not TranslateTransform)
                 return;
+
+            TranslateTransform contentTransform = GetAnimatableTranslateTransform(contentHost);
 
             contentHost.BeginAnimation(UIElement.OpacityProperty, null);
             contentTransform.BeginAnimation(TranslateTransform.XProperty, null);
@@ -97,6 +210,27 @@ namespace GameTimeNext.Core.Framework.UI
             contentTransform.BeginAnimation(TranslateTransform.XProperty, slideAnimation);
         }
 
+        /// <summary>
+        /// Returns the element's TranslateTransform in an animatable state: unnamed freezables in templates are frozen,
+        /// so a frozen (or missing) transform is replaced by a modifiable one.
+        /// </summary>
+        private static TranslateTransform GetAnimatableTranslateTransform(UIElement element)
+        {
+            if (element.RenderTransform is TranslateTransform { IsFrozen: false } transform)
+                return transform;
+
+            var modifiable = element.RenderTransform is TranslateTransform frozen
+                ? frozen.Clone()
+                : new TranslateTransform();
+
+            element.RenderTransform = modifiable;
+            return modifiable;
+        }
+
+        /// <summary>
+        /// Moves the template part SelectionRunner to the selected tab (inside TabTrackContentHost).
+        /// Horizontal tab strips animate its width and X, vertical ones (TabStripPlacement Left / Right) its height and Y.
+        /// </summary>
         private static void AnimateSelectionRunner(TabControl tabControl, bool animate)
         {
             if (tabControl.Template.FindName("SelectionRunner", tabControl) is not FrameworkElement runner)
@@ -105,66 +239,75 @@ namespace GameTimeNext.Core.Framework.UI
             if (tabControl.Template.FindName("TabTrackContentHost", tabControl) is not FrameworkElement trackHost)
                 return;
 
+            TranslateTransform runnerTransform = GetAnimatableTranslateTransform(runner);
+
+            bool vertical = tabControl.TabStripPlacement is Dock.Left or Dock.Right;
+            DependencyProperty sizeProperty = vertical ? FrameworkElement.HeightProperty : FrameworkElement.WidthProperty;
+            DependencyProperty offsetProperty = vertical ? TranslateTransform.YProperty : TranslateTransform.XProperty;
+
             if (tabControl.SelectedItem is null)
+            {
+                runner.BeginAnimation(sizeProperty, null);
+                runnerTransform.BeginAnimation(offsetProperty, null);
+                runner.SetValue(sizeProperty, 0d);
+                runnerTransform.SetValue(offsetProperty, 0d);
                 return;
+            }
 
             if (tabControl.ItemContainerGenerator.ContainerFromItem(tabControl.SelectedItem) is not FrameworkElement selectedTab)
                 return;
 
-            if (selectedTab.ActualWidth <= 0 || trackHost.ActualWidth <= 0)
+            double selectedSize = vertical ? selectedTab.ActualHeight : selectedTab.ActualWidth;
+            double trackSize = vertical ? trackHost.ActualHeight : trackHost.ActualWidth;
+
+            if (selectedSize <= 0 || trackSize <= 0)
                 return;
 
             var selectedOrigin = selectedTab.TransformToVisual(trackHost).Transform(new Point(0, 0));
-            var targetX = selectedOrigin.X;
-            var targetWidth = selectedTab.ActualWidth;
+            var targetOffset = vertical ? selectedOrigin.Y : selectedOrigin.X;
+            var targetSize = selectedSize;
 
-            if (runner.RenderTransform is not TranslateTransform runnerTransform)
+            var currentRunnerSize = (double)runner.GetValue(sizeProperty);
+            var currentRunnerOffset = (double)runnerTransform.GetValue(offsetProperty);
+
+            if (double.IsNaN(currentRunnerSize) || currentRunnerSize < 0)
+                currentRunnerSize = 0;
+
+            if (double.IsNaN(currentRunnerOffset))
+                currentRunnerOffset = 0;
+
+            runner.BeginAnimation(sizeProperty, null);
+            runnerTransform.BeginAnimation(offsetProperty, null);
+
+            runner.SetValue(sizeProperty, currentRunnerSize);
+            runnerTransform.SetValue(offsetProperty, currentRunnerOffset);
+
+            if (!animate || currentRunnerSize <= 0)
             {
-                runnerTransform = new TranslateTransform();
-                runner.RenderTransform = runnerTransform;
-            }
-
-            var currentRunnerWidth = (double)runner.GetValue(FrameworkElement.WidthProperty);
-            var currentRunnerX = (double)runnerTransform.GetValue(TranslateTransform.XProperty);
-
-            if (double.IsNaN(currentRunnerWidth) || currentRunnerWidth < 0)
-                currentRunnerWidth = 0;
-
-            if (double.IsNaN(currentRunnerX))
-                currentRunnerX = 0;
-
-            runner.BeginAnimation(FrameworkElement.WidthProperty, null);
-            runnerTransform.BeginAnimation(TranslateTransform.XProperty, null);
-
-            runner.Width = currentRunnerWidth;
-            runnerTransform.X = currentRunnerX;
-
-            if (!animate || runner.Width <= 0)
-            {
-                runner.Width = targetWidth;
-                runnerTransform.X = targetX;
+                runner.SetValue(sizeProperty, targetSize);
+                runnerTransform.SetValue(offsetProperty, targetOffset);
                 return;
             }
 
             var duration = TimeSpan.FromMilliseconds(260);
             var easing = new CubicEase { EasingMode = EasingMode.EaseInOut };
 
-            var widthAnimation = new DoubleAnimation
+            var sizeAnimation = new DoubleAnimation
             {
-                To = targetWidth,
+                To = targetSize,
                 Duration = duration,
                 EasingFunction = easing
             };
 
             var moveAnimation = new DoubleAnimation
             {
-                To = targetX,
+                To = targetOffset,
                 Duration = duration,
                 EasingFunction = easing
             };
 
-            runner.BeginAnimation(FrameworkElement.WidthProperty, widthAnimation);
-            runnerTransform.BeginAnimation(TranslateTransform.XProperty, moveAnimation);
+            runner.BeginAnimation(sizeProperty, sizeAnimation);
+            runnerTransform.BeginAnimation(offsetProperty, moveAnimation);
         }
     }
 }

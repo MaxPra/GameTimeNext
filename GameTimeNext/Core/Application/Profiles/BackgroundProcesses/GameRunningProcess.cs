@@ -19,6 +19,11 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
 
         private int _lastBreakReminderBlock = -1;
 
+        /// <summary>
+        /// PFID of the game that is running right now, 0 if none.
+        /// </summary>
+        public long RunningPfid => _currentProfileRunning?.pfid ?? 0;
+
         public GameRunningProcess() : base()
         {
         }
@@ -31,7 +36,7 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
             {
                 Dictionary<string, List<string>> runningProcesses = FnSystem.GetRunningProcessesSnapshot(ExecutablesToSearch);
 
-                // Alle Profile durchloopen
+                // Loop through all profiles
                 List<T1PROFI> t1profis = T1profis.Values.ToList();
 
                 foreach (T1PROFI t1profi in t1profis)
@@ -51,16 +56,19 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
                         {
                             if (_currentProfileRunning!.pfid == 0 && !t1profi.ARCH)
                             {
-                                // Zu Profil-Anwendung wechseln
+                                // Switch to the profile application
                                 // MainWindowController
                                 CallDispatcher!.Trigger("EXEV_SwitchToApplication", typeof(ProfilesApp).FullName!);
 
-                                // Hier Profil wechseln
+                                // Switch profile here
                                 AppEnvironment.CurrentPfid = t1profi.PFID;
 
                                 // ProfilesViewController
                                 CallDispatcher!.Trigger("EXEV_SwitchProfile", t1profi.PFID);
                                 CallDispatcher.Trigger("EXEV_GameLaunched");
+
+                                // BigPictureViewController, only registered while the Big Picture mode is open
+                                TriggerIfRegistered("EXEV_BigPictureGameLaunched", t1profi.PFID);
 
                             }
 
@@ -80,7 +88,7 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
                             {
                                 if (CFGameTimeMonitoring.IsMonitoring)
                                 {
-                                    // Nebenmonitore ausschwärzen beenden, wenn in Settings aktiviert und Profil dieses erlaubt
+                                    // Stop blacking out secondary monitors if enabled in settings and allowed by the profile
                                     if (CFBlackout.AllowedToToggleBlackout(t1profi))
                                     {
                                         System.Windows.Application.Current.Dispatcher.Invoke(() =>
@@ -97,6 +105,9 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
 
                                 CallDispatcher!.Trigger("EXEV_GameClosed");
 
+                                // BigPictureViewController, only registered while the Big Picture mode is open
+                                TriggerIfRegistered("EXEV_BigPictureGameClosed", _currentProfileRunning.pfid);
+
                                 _currentProfileRunning = new CurrentProfileRunning();
                             }
 
@@ -110,9 +121,15 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
         {
         }
 
+        private void TriggerIfRegistered(string methodName, long pfid)
+        {
+            if (CallDispatcher!.IsRegistered(methodName))
+                CallDispatcher.Trigger(methodName, pfid);
+        }
+
         public void Initialize(List<T1PROFI> profiles)
         {
-            // Neuinitialisierung
+            // Reinitialization
             ExecutablesToSearch = new Dictionary<long, List<string>>();
 
             foreach (T1PROFI profile in profiles)
@@ -120,11 +137,11 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
                 if (FnString.IsNullEmptyOrWhitespace(profile.EXGF))
                     continue;
 
-                // Für dieses Profil alle Exes holen
+                // Get all executables for this profile
                 List<string> exes = FnExecutables.GetAllActiveExecutablesFromDBObj(profile);
 
                 AddT1profi(profile);
-                // Hinzufügen
+                // Add
                 AddExecutables(profile.PFID, exes);
             }
         }
@@ -233,6 +250,11 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
             }
 
             return !(currentProfileRunning.countNotRunning == currentProfileRunning.executables.Count);
+        }
+
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(GameRunningProcess));
         }
 
         public override void InitializeApplicationOutput()

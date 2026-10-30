@@ -11,7 +11,7 @@ namespace GameTimeNext.Core.Application.DataManagers
     public partial class TFPROFI
     {
         /// <summary>
-        /// Löscht das übergebene Profil inkl. der zugehörigen Daten
+        /// Deletes the given profile including its linked data
         /// </summary>
         public static void DeleteT1PROFIAndLinkedData(T1PROFI t1profi)
         {
@@ -23,7 +23,7 @@ namespace GameTimeNext.Core.Application.DataManagers
 
             DeleteCoverImage(t1profi);
 
-            // Profil löschen
+            // Delete profile
             txprofi.Delete(t1profi.PFID);
         }
 
@@ -97,6 +97,32 @@ namespace GameTimeNext.Core.Application.DataManagers
             return cProfileSettings.OverrideGlobalBlackout && !cProfileSettings.BlackoutSideMonitors;
         }
 
+        /// <summary>
+        /// True if the game is still shrink-wrapped: it has to be unwrapped before it can be launched.
+        /// Only while the setting SealNewGames is on; turning it off shows all games unwrapped.
+        /// </summary>
+        public static bool IsSealed(T1PROFI t1profi)
+        {
+            return AppEnvironment.GetAppConfig().AppSettings.SealNewGames
+                && new CProfileSettings(t1profi.PRSE).Dezerialize().Sealed;
+        }
+
+        /// <summary>
+        /// Unwraps the game and saves the profile
+        /// </summary>
+        public static void Unseal(T1PROFI t1profi)
+        {
+            CProfileSettings cProfileSettings = new CProfileSettings(t1profi.PRSE).Dezerialize();
+
+            if (!cProfileSettings.Sealed)
+                return;
+
+            cProfileSettings.Sealed = false;
+            t1profi.PRSE = cProfileSettings.Serialize();
+
+            new TXPROFI().Save(t1profi);
+        }
+
         public static List<T1PLTHR> GetAllPlaythroughs(T1PROFI t1profi)
         {
             List<T1PLTHR> t1plthrs = new List<T1PLTHR>();
@@ -162,7 +188,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         }
 
         /// <summary>
-        /// Gibt zurück, ob es sich bei dem Profil um ein externes Spiel handelt (Konsolen, Mobile, etc.)
+        /// Returns whether the profile is an external game (consoles, mobile, etc.)
         /// </summary>
         /// <param name="pfid"></param>
         /// <returns></returns>
@@ -171,6 +197,14 @@ namespace GameTimeNext.Core.Application.DataManagers
             TXPROFI txprofi = new TXPROFI();
             T1PROFI t1profi = txprofi.Read(pfid);
 
+            return IsExternalGame(t1profi);
+        }
+
+        /// <summary>
+        /// Same as IsExternalGame(long), for an already loaded profile
+        /// </summary>
+        public static bool IsExternalGame(T1PROFI t1profi)
+        {
             if (t1profi is null)
                 return false;
 
@@ -182,13 +216,16 @@ namespace GameTimeNext.Core.Application.DataManagers
 
             t1ctabd = new TXCTABD().Read("pT", t1ctabd.PARM1);
 
+            if (t1ctabd is null)
+                return false;
+
             // 02 => External (Console, Mobile, etc.)
             return t1ctabd.TXNUM == "02";
         }
 
         private static void DeleteAllLinkedT1GRPPOs(T1PROFI t1profi)
         {
-            // Zugehörige Daten löschen
+            // Delete linked data
             TXGRPPO txgrppo = new TXGRPPO();
             List<T1GRPPO> t1grppos = txgrppo.ReadAll();
 
@@ -202,7 +239,7 @@ namespace GameTimeNext.Core.Application.DataManagers
 
         private static void DeleteAllLinkedT1SESSIs(T1PROFI t1profi)
         {
-            // Zugehörige Daten löschen
+            // Delete linked data
             List<T1SESSI> t1sessis = GetAllSessions(t1profi);
 
             foreach (T1SESSI t1sessi in t1sessis)
@@ -240,10 +277,10 @@ namespace GameTimeNext.Core.Application.DataManagers
         {
             UIXQuery query = new UIXQuery(K1GRPPO.Name, AppEnvironment.GetDataBaseManager().GetConnection());
 
-            // Felder hinzufügen
+            // Add fields
             query.AddField(K1GRPPO.Name, K1GRPPO.Fields.GRID);
 
-            // Where Restriktionen
+            // Where restrictions
             query.AddWhere(K1GRPPO.Name, K1GRPPO.Fields.PFID, QueryCompareType.EQUALS, pfid);
 
             return query;

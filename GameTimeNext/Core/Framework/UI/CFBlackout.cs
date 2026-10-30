@@ -15,6 +15,9 @@ namespace GameTimeNext.Core.Framework.UI
         private static readonly List<Window> closingWindows = new();
         private static bool isActive = false;
 
+        // All monitors are blacked out (not only the secondary ones)
+        private static bool isFullBlackout = false;
+
         // Animation shown on the full blackout (will become a user setting later)
         private static readonly BlackoutAnimationType blackoutAnimation = BlackoutAnimationType.ParticleProfileCover;
 
@@ -49,6 +52,7 @@ namespace GameTimeNext.Core.Framework.UI
             FnDisplay.ClipMouseToVirtualBottomRightPixel();
 
             isActive = true;
+            isFullBlackout = true;
         }
 
         public static void EnableOnSecondaryMonitors(Window owner, bool manageCursor = false)
@@ -69,6 +73,7 @@ namespace GameTimeNext.Core.Framework.UI
             }
 
             isActive = true;
+            isFullBlackout = false;
         }
 
         public static void Disable(Dispatcher dispatcher)
@@ -115,7 +120,7 @@ namespace GameTimeNext.Core.Framework.UI
             }
             else
             {
-                // In console mode, black out all monitors
+                // Black out all screens in console mode
                 if (consoleMode)
                     Enable(owner, true);
                 else
@@ -126,6 +131,14 @@ namespace GameTimeNext.Core.Framework.UI
         public static bool IsActive()
         {
             return isActive;
+        }
+
+        /// <summary>
+        /// True while all monitors are blacked out (not only the secondary ones while monitoring).
+        /// </summary>
+        public static bool IsFullBlackout()
+        {
+            return isActive && isFullBlackout;
         }
 
         private static void CreateWindowsForMonitors(Window owner, Func<FnDisplay.MonitorInfoData, bool> predicate, bool showMovingLabel)
@@ -325,6 +338,9 @@ namespace GameTimeNext.Core.Framework.UI
                 ResizeMode = ResizeMode.NoResize,
                 ShowInTaskbar = false,
                 Topmost = true,
+
+                // Covering the screens must not take the focus from the window in front (a game, the Big Picture mode)
+                ShowActivated = false,
                 AllowsTransparency = false,
                 Background = Brushes.Black,
                 Left = leftDip,

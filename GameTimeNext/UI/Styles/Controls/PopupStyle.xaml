@@ -1,34 +1,67 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI">
 
-    <Duration x:Key="PopupOpenDuration">0:0:0.22</Duration>
+    <Duration x:Key="PopupOpenDuration">0:0:0.16</Duration>
     <CubicEase x:Key="EaseOut" EasingMode="EaseOut" />
 
-    <Style x:Key="ModernPopupCardStyle" TargetType="{x:Type Border}">
-        <Setter Property="Background" Value="#FF101419" />
-        <Setter Property="CornerRadius" Value="16" />
-        <Setter Property="Padding" Value="14" />
+    <!--  Outer margin of opaque popups: room for the shadow, otherwise the popup window cuts it off  -->
+    <Thickness x:Key="Popup.ShadowMargin">6,2,6,10</Thickness>
+
+    <!--
+        Surface of a popup (context menu, filter popup, ...). Glass where supported (see PopupGlass):
+        translucent tint over the blurred background, no margin / shadow because the blur fills the popup window.
+        Otherwise opaque with shadow.
+    -->
+    <Style x:Key="Popup.Surface" TargetType="{x:Type Border}">
+        <Setter Property="ui:PopupGlass.IsEnabled" Value="True" />
+        <Setter Property="Background" Value="{StaticResource Brush.Popup.Background}" />
+        <Setter Property="BorderBrush" Value="{StaticResource Brush.Popup.Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{StaticResource Popup.CornerRadius}" />
+        <Setter Property="Margin" Value="{StaticResource Popup.ShadowMargin}" />
+        <Setter Property="Effect" Value="{StaticResource Effect.Popup}" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Style.Triggers>
+            <Trigger Property="ui:PopupGlass.IsActive" Value="True">
+                <Setter Property="Background" Value="{StaticResource Brush.Popup.Glass}" />
+                <Setter Property="BorderBrush" Value="{StaticResource Brush.Popup.GlassBorder}" />
+                <Setter Property="Margin" Value="0" />
+                <Setter Property="Effect" Value="{x:Null}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style
+        x:Key="ModernPopupCardStyle"
+        BasedOn="{StaticResource Popup.Surface}"
+        TargetType="{x:Type Border}">
+        <Setter Property="Padding" Value="14" />
         <Setter Property="Opacity" Value="0" />
         <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
         <Setter Property="RenderTransform">
             <Setter.Value>
                 <TransformGroup>
-                    <ScaleTransform ScaleX="0.96" ScaleY="0.96" />
-                    <TranslateTransform X="0" Y="-10" />
+                    <ScaleTransform ScaleX="0.98" ScaleY="0.98" />
+                    <TranslateTransform X="0" Y="-4" />
                 </TransformGroup>
             </Setter.Value>
         </Setter>
 
-        <Setter Property="Effect">
-            <Setter.Value>
-                <DropShadowEffect
-                    BlurRadius="24"
-                    Opacity="0.35"
-                    ShadowDepth="0" />
-            </Setter.Value>
-        </Setter>
-
         <Style.Triggers>
+            <!--  Glass: the blur doesn't move with the content, so open without scale / shift (only fade in)  -->
+            <Trigger Property="ui:PopupGlass.IsActive" Value="True">
+                <Setter Property="RenderTransform">
+                    <Setter.Value>
+                        <TransformGroup>
+                            <ScaleTransform ScaleX="1" ScaleY="1" />
+                            <TranslateTransform X="0" Y="0" />
+                        </TransformGroup>
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+
             <EventTrigger RoutedEvent="FrameworkElement.Loaded">
                 <BeginStoryboard>
                     <Storyboard>

@@ -1,0 +1,165 @@
+<ui:GTNWindowView
+    x:Class="GameTimeNext.Core.Application.Screensetups.Views.ScreensetupsView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI.Base"
+    xmlns:uixsel="clr-namespace:UIX.ViewController.Engine.FrameworkElements.Selectors;assembly=UIX.ViewController.Engine"
+    Width="Auto"
+    Height="800"
+    HorizontalAlignment="Stretch"
+    VerticalAlignment="Stretch"
+    HorizontalContentAlignment="Stretch"
+    VerticalContentAlignment="Stretch"
+    d:DesignHeight="700"
+    d:DesignWidth="1100"
+    mc:Ignorable="d">
+
+    <Grid Style="{StaticResource View.Root}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="16" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Border
+            Grid.Row="0"
+            Padding="16"
+            Style="{StaticResource Card}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="16" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Grid Grid.Column="0" HorizontalAlignment="Left">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="130" />
+                        <ColumnDefinition Width="12" />
+                        <ColumnDefinition Width="340" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock
+                        Grid.Column="0"
+                        Foreground="{DynamicResource Brush.TextSecondary}"
+                        Text="Name" />
+
+                    <TextBox
+                        x:Name="TxbName"
+                        Grid.Column="2"
+                        Style="{StaticResource TextBox.Default}" />
+                </Grid>
+
+                <Button
+                    x:Name="BtnAddScreensetup"
+                    Grid.Column="2"
+                    VerticalAlignment="Center"
+                    ToolTip="Create new screensetup"
+                    Style="{StaticResource Button.Icon}">
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontFamily="{StaticResource Font.Icons}"
+                        FontSize="14"
+                        Text="&#xE710;" />
+                </Button>
+
+                <Button
+                    x:Name="BtnIdentify"
+                    Grid.Column="4"
+                    VerticalAlignment="Center"
+                    ToolTip="Identify monitors"
+                    Style="{StaticResource Button.Icon}">
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontFamily="{StaticResource Font.Icons}"
+                        FontSize="14"
+                        Text="&#xE7F4;" />
+                </Button>
+
+                <Button
+                    x:Name="BtnRefresh"
+                    Grid.Column="6"
+                    VerticalAlignment="Center"
+                    IsDefault="True"
+                    ToolTip="Refresh screensetups"
+                    Style="{StaticResource Button.Icon}">
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontFamily="{StaticResource Font.Icons}"
+                        FontSize="14"
+                        Text="&#xE72C;" />
+                </Button>
+            </Grid>
+        </Border>
+
+        <uixsel:UIXDataGrid
+            x:Name="DgScreensetups"
+            Grid.Row="2"
+            AutoGenerateColumns="False"
+            CanUserAddRows="False"
+            CanUserDeleteRows="False"
+            CanUserResizeRows="False"
+            HeadersVisibility="Column"
+            IsReadOnly="True"
+            SelectionMode="Single"
+            SelectionUnit="FullRow">
+            <uixsel:UIXDataGrid.Columns>
+                <DataGridTextColumn
+                    Width="*"
+                    MinWidth="160"
+                    Binding="{Binding COSSNA}"
+                    Header="Name" />
+                <DataGridTextColumn
+                    Width="1.5*"
+                    MinWidth="160"
+                    Binding="{Binding COSSDE}"
+                    Header="Description" />
+                <DataGridTemplateColumn Width="70" CellStyle="{StaticResource DataGridCell.Center}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button
+                                x:Name="BtnApplyScreensetup"
+                                Width="28"
+                                Height="28"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                ToolTip="Switch to this screensetup"
+                                Style="{StaticResource Button.Icon}">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontFamily="{StaticResource Font.Icons}"
+                                    FontSize="12"
+                                    Text="&#xE768;" />
+                            </Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn
+                    Width="2*"
+                    MinWidth="200"
+                    Binding="{Binding COMONI}"
+                    Header="Monitors" />
+                <DataGridTextColumn
+                    Width="2*"
+                    MinWidth="200"
+                    Binding="{Binding COAUDI}"
+                    Header="Audio device" />
+                <DataGridCheckBoxColumn
+                    Width="120"
+                    Binding="{Binding COISACT}"
+                    Header="Active" />
+            </uixsel:UIXDataGrid.Columns>
+        </uixsel:UIXDataGrid>
+    </Grid>
+</ui:GTNWindowView>

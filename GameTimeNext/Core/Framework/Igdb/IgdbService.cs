@@ -170,7 +170,7 @@ namespace GameTimeNext.Core.Framework.Igdb
 
             if (FnString.IsNullEmptyOrWhitespace(AuthToken))
             {
-                cfmbox.Show("Couldn't get auth-token for IGDB!", CFMBOXResult.Ok, CFMBOXIcon.Error);
+                cfmbox.Show(cfmbox.GetErrorMessage("GLO0016", "the authentication token"), CFMBOXResult.Ok, CFMBOXIcon.Error);
                 return;
             }
 
@@ -185,7 +185,7 @@ namespace GameTimeNext.Core.Framework.Igdb
 
 
             if (FnString.IsNullEmptyOrWhitespace(IgdbExtGameSources))
-                cfmbox.Show("Couldn't get external game sources from IGDB!", CFMBOXResult.Ok, CFMBOXIcon.Error);
+                cfmbox.Show(cfmbox.GetErrorMessage("GLO0016", "the external game sources"), CFMBOXResult.Ok, CFMBOXIcon.Error);
         }
     }
 }

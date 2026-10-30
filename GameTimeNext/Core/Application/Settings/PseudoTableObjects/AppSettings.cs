@@ -84,7 +84,19 @@ namespace GameTimeNext.Core.Application.TableObjects
         [UIXSignatureField(23)]
         public bool EnableTwitchIGDB { get; set; }
 
+        /// <summary>Entry of codetable bG for the blurred main window background; empty disables it.</summary>
         [UIXSignatureField(24)]
+        public string BackgroundSource { get; set; }
+
+        /// <summary>Darker tint over the window background and the glass surfaces, closer to a classic dark mode.</summary>
+        [UIXSignatureField(25)]
+        public bool DarkTintedGlass { get; set; }
+
+        /// <summary>New profiles are added shrink-wrapped and have to be unwrapped before they can be launched.</summary>
+        [UIXSignatureField(26)]
+        public bool SealNewGames { get; set; }
+
+        [UIXSignatureField(27)]
         public bool RemoteMonitoring { get; set; }
 
 
@@ -95,6 +107,9 @@ namespace GameTimeNext.Core.Application.TableObjects
             ActivateBlackoutKeyCombination = false;
             EnableFullBlackoutText = true;
             AllowProfileSpecificStyleChanges = false;
+            BackgroundSource = string.Empty;
+            DarkTintedGlass = false;
+            SealNewGames = false;
 
             MonitoringKeyActive = false;
             ShowToastNotification = false;

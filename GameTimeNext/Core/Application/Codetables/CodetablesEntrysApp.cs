@@ -1,4 +1,5 @@
 using GameTimeNext.Core.Application.Codetables.Controller;
+using GameTimeNext.Core.Application.Codetables.Selectors;
 using GameTimeNext.Core.Application.Codetables.Views;
 using GameTimeNext.Core.Application.TableObjects;
 using UIX.ViewController.Engine.Runnables;
@@ -11,12 +12,19 @@ namespace GameTimeNext.Core.Application.Codetables
         public CodetablesEntrysViewController? CodetablesEntrysEditViewController { get; set; }
         public T1CTABH? T1CTABH { get; set; }
 
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(CodetablesEntrysApp));
+        }
+
         public override void InitializeApplicationOutput()
         {
             CodetablesEntrysView = new CodetablesEntrysView();
             MainView = CodetablesEntrysView;
             CodetablesEntrysEditViewController = new CodetablesEntrysViewController(this);
             CodetablesEntrysView.ViewController = CodetablesEntrysEditViewController;
+            CodetablesEntrysView.DgCodetableEntrys.SelectorAdapter = new CodetablesEntrysView_CodetableEntrysSelectorAdapter(this);
+            CodetablesEntrysView.DgCodetableEntrys.SelectorController = new CodetablesEntrysView_CodetableEntrysSelectorController(this);
         }
 
         public void Edit(T1CTABH t1ctabh)

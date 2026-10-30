@@ -1,6 +1,10 @@
 ﻿using GameTimeNext.Core.Framework.Config;
+using GameTimeNext.Core.Framework.DataBase;
+using GameTimeNext.Core.Framework.DataBase.Migration;
 using GameTimeNext.Core.Framework.Utils;
+using System.Data.SQLite;
 using System.IO;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.MigrationTasks
 {
@@ -20,7 +24,7 @@ namespace GameTimeNext.Core.Application.MigrationTasks
                 return false;
 
             // Move DB
-            MFS_MoveFile(oldConfig.DataBaseFilePath, AppConfig.Storage.DatabaseFilePath);
+            MFS_MigrateDatabase(oldConfig);
 
             // Move config file
             MFS_MoveFile(oldConfig.AppConfigPath, AppConfig.Storage.AppConfigFilePath);
@@ -42,13 +46,41 @@ namespace GameTimeNext.Core.Application.MigrationTasks
             return true;
         }
 
+        private static void MFS_MigrateDatabase(AppConfigOld oldConfig)
+        {
+            DataBaseManager oldDbManager = new DataBaseManager();
+            oldDbManager.Initialize(oldConfig.DataBaseFilePath);
+            using SQLiteConnection oldDb = oldDbManager.GetConnection();
+            DataBaseManager newDbManager = new DataBaseManager();
+            FnDirectory.EnsureDirectoryExists(AppConfig.Storage.StorageDirectoryPath);
+            newDbManager.Initialize(AppConfig.Storage.DatabaseFilePath);
+            using SQLiteConnection newDb = newDbManager.GetConnection();
+
+            MigrationFactory.ImportType importType;
+            if (FnSystem.IsDebug()) importType = MigrationFactory.ImportType.DevSync;
+            else importType = MigrationFactory.ImportType.ImportPackages;
+
+            MigrationFactory.Metadata.MigrateTables(newDb);
+            MigrationFactory.FromCsv.CopyDataToTargetDb(oldDb, newDb, metadata: true);
+            MigrationFactory.FromCsv.CreateTables(importType, newDb);
+            MigrationFactory.FromCsv.CopyDataToTargetDb(oldDb, newDb);
+
+            oldDb.Close();
+            oldDb.Dispose();
+            newDb.Close();
+            newDb.Dispose();
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            Thread.Sleep(50);
+        }
+
         private static void MFS_MoveFile(string oldPath, string newPath)
         {
             if (!File.Exists(oldPath)) return;
 
             FileInfo newFileInfo = new FileInfo(newPath);
-            if (!newFileInfo.Directory!.Exists)
-                Directory.CreateDirectory(newFileInfo.DirectoryName!);
+            FnDirectory.EnsureDirectoryExists(newFileInfo.DirectoryName!);
 
             File.Copy(oldPath, newPath, true);
         }

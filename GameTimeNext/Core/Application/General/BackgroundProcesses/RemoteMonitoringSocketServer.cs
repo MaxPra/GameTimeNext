@@ -1,6 +1,5 @@
 ﻿using GameTimeNext.Core.Application.Profiles.Batch;
 using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.Logging;
 using GameTimeNext.Shared.SocketCom;
 using GameTimeNext.Shared.SocketCom.ProfilesCom;
 using System.Diagnostics;
@@ -10,6 +9,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 using UIX.ViewController.Engine.Runnables;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.General.BackgroundProcesses
 {
@@ -185,6 +185,11 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
                 return profilesBatchApp;
 
             return null!;
+        }
+
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(RemoteMonitoringSocketServer));
         }
     }
 }

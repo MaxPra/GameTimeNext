@@ -11,52 +11,27 @@
     Height="620"
     MinWidth="820"
     MinHeight="620"
-    ResizeMode="CanResize"
     ShowCloseButton="False"
     ShowMaximizeButton="False"
     ShowMinimizeButton="False"
     WindowStartupLocation="CenterOwner"
     mc:Ignorable="d">
 
-    <Grid Margin="22">
+    <Grid Style="{StaticResource View.Root}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="20" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="18" />
+            <RowDefinition Height="16" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="6" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-
-            <TextBlock
-                Grid.Row="0"
-                FontSize="22"
-                FontWeight="SemiBold"
-                Text="Select executable" />
-
-            <TextBlock
-                Grid.Row="2"
-                Opacity="0.72"
-                Text="Choose the main .exe file from the selected game folder."
-                TextWrapping="Wrap" />
-        </Grid>
-
         <Border
-            Grid.Row="2"
+            Grid.Row="0"
             Padding="16"
-            BorderBrush="{DynamicResource Brush.Border}"
-            BorderThickness="1"
-            CornerRadius="{StaticResource DefaultCornerRadius}">
+            Style="{StaticResource Card}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="14" />
+                    <RowDefinition Height="16" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
@@ -78,9 +53,7 @@
                 <Border
                     Grid.Row="2"
                     Padding="10"
-                    BorderBrush="{DynamicResource Brush.Border}"
-                    BorderThickness="1"
-                    CornerRadius="{StaticResource DefaultCornerRadius}">
+                    Style="{StaticResource Card.Inset}">
 
                     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
 
@@ -94,9 +67,9 @@
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <CheckBox
-                                        Margin="0,0,0,6"
                                         Content="{Binding Name}"
-                                        IsChecked="{Binding IsSelected, Mode=TwoWay}" />
+                                        IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                        Style="{StaticResource CheckBox.ListItem}" />
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
@@ -105,11 +78,11 @@
             </Grid>
         </Border>
 
-        <Grid Grid.Row="4">
+        <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="10" />
+                <ColumnDefinition Width="8" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
@@ -125,7 +98,8 @@
                 Grid.Column="3"
                 Width="140"
                 Height="36"
-                Content="Select" />
+                Content="Select"
+                Style="{StaticResource Button.Primary}" />
         </Grid>
     </Grid>
 </ui:GTNWindowView>

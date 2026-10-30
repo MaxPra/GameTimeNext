@@ -6,6 +6,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
     {
         public string? COMENAM { get; set; } = string.Empty;
         public string? COPONAM { get; set; } = string.Empty;
+        public int COPORDE { get; set; } = 0;
         public string? CODESCR { get; set; } = string.Empty;
         public string? CODATYP { get; set; } = string.Empty;
         public bool COPRIMK { get; set; }

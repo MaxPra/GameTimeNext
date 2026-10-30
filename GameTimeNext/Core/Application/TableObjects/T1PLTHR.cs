@@ -14,25 +14,37 @@ namespace GameTimeNext.Core.Application.TableObjects
         public long PFID { get; set; } = 0;
 
         [UIXSignatureField(2)]
-        public string PTTY { get; set; } = string.Empty;
+        public string PTTY { get; set; } = "";
 
         [UIXSignatureField(3)]
-        public string PTDE { get; set; } = string.Empty;
+        public string PTDE { get; set; } = "";
 
         [UIXSignatureField(4)]
         public bool PTCO { get; set; } = false;
 
         [UIXSignatureField(5)]
-        public DateTime CRAT { get; set; } = DateTime.MinValue;
-
-        [UIXSignatureField(6)]
-        public DateTime CHAT { get; set; } = DateTime.MinValue;
-
-        [UIXSignatureField(7)]
         public bool PTCA { get; set; } = false;
 
-        [UIXSignatureField(8)]
+        [UIXSignatureField(6)]
         public bool PTPA { get; set; } = false;
+
+        [UIXSignatureField(7)]
+        public int PTRA { get; set; } = 0;
+
+        [UIXSignatureField(8)]
+        public string PTRC { get; set; } = "";
+
+        [UIXSignatureField(9)]
+        public DateTime CRAT { get; set; } = DateTime.MinValue;
+
+        [UIXSignatureField(10)]
+        public string CRUS { get; set; } = "";
+
+        [UIXSignatureField(11)]
+        public DateTime CHAT { get; set; } = DateTime.MinValue;
+
+        [UIXSignatureField(12)]
+        public string CHUS { get; set; } = "";
 
         public override void Save()
         {

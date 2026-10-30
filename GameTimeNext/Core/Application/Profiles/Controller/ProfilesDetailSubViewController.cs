@@ -1,5 +1,6 @@
-﻿
+
 using GameTimeNext.Core.Application.DataManagers;
+using GameTimeNext.Core.Application.Playthroughs;
 using GameTimeNext.Core.Application.Profiles.DataWrapper;
 using GameTimeNext.Core.Application.Profiles.Types;
 using GameTimeNext.Core.Application.Profiles.Views;
@@ -8,9 +9,12 @@ using GameTimeNext.Core.Application.TimeMonitoring;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.LauncherIntegration;
+using GameTimeNext.Core.Framework.UI.Dialogs;
+using GameTimeNext.Core.Framework.Utils;
+using System.Globalization;
 using System.IO;
-using System.Text;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.Querying;
@@ -19,13 +23,14 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Profiles.Controller
 {
-    internal class ProfilesDetailSubViewController : UIXViewControllerBase
+    internal class ProfilesDetailSubViewController : UIXViewControllerBase<ProfilesApp, ProfilesDetailView>
     {
 
         private ProfilesSubViewDataWrapper? _dataWrapper;
         private ProfilesViewController? _profilesViewController;
 
         private bool _gameRunning = false;
+        private bool _gameLaunching = false;
 
         public ProfilesDetailSubViewController(UIXApplication app) : base(app)
         {
@@ -43,17 +48,72 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         public void UpdateUIGameRunning()
         {
-            GetView().btnLaunchGame.Content = "Running...";
-            GetView().btnLaunchGame.IsEnabled = false;
+            GetView().btnLaunchGame.Content = "Quit game";
+            GetView().btnLaunchGame.IsEnabled = true;
+
+            // Overlay stays visible (set by ProfilesViewController), but without the launch card
+            GetLaunchingOverlay().Content = null;
+            GetLaunchingOverlay().Tag = null;
+
             _gameRunning = true;
+            _gameLaunching = false;
         }
 
         public void UpdateUIGameClosed()
         {
-            GetView().btnLaunchGame.Content = "Launch game";
-            GetView().btnLaunchGame.IsEnabled = true;
-            ((ProfilesView)_profilesViewController!.View).LaunchingOverlay.Visibility = Visibility.Collapsed;
+            UpdateUIIdle();
+            GetLaunchingOverlay().Content = null;
+            GetLaunchingOverlay().Tag = null;
+            GetLaunchingOverlay().Visibility = Visibility.Collapsed;
             _gameRunning = false;
+            _gameLaunching = false;
+        }
+
+        public void UpdateUIUnwrapped()
+        {
+            if (!_gameRunning && !_gameLaunching)
+                UpdateUIIdle();
+        }
+
+        /// <summary>
+        /// Neither launching nor running: a sealed game has to be unwrapped first (always possible), otherwise it can be launched
+        /// </summary>
+        private void UpdateUIIdle()
+        {
+            T1PROFI t1profi = _dataWrapper!.Get();
+            bool isSealed = TFPROFI.IsSealed(t1profi);
+
+            GetView().btnLaunchGame.Content = isSealed ? "Unwrap game" : "Launch game";
+            GetView().btnLaunchGame.IsEnabled = isSealed || FnLauncher.CanLaunch(t1profi);
+        }
+
+        private void UpdateUIGameLaunching(T1PROFI t1profi)
+        {
+            GetView().btnLaunchGame.Content = "Cancel launch";
+            GetView().btnLaunchGame.IsEnabled = true;
+
+            // The game name shows the launch card with its animation
+            GetLaunchingOverlay().Content = t1profi.GANA;
+            GetLaunchingOverlay().Tag = null;
+            GetLaunchingOverlay().Visibility = Visibility.Visible;
+
+            _gameLaunching = true;
+        }
+
+        private void UpdateUIGameQuitting(T1PROFI t1profi)
+        {
+            GetView().btnLaunchGame.Content = "Quitting...";
+            GetView().btnLaunchGame.IsEnabled = false;
+
+            // Same card as for launching, in its quitting variant; the running game detection closes it (UpdateUIGameClosed)
+            GetLaunchingOverlay().Content = t1profi.GANA;
+            GetLaunchingOverlay().Tag = "Quitting";
+            GetLaunchingOverlay().Visibility = Visibility.Visible;
+        }
+
+        private ContentControl GetLaunchingOverlay()
+        {
+            return ((ProfilesView)_profilesViewController!.View).LaunchingOverlay;
         }
 
         protected override void Init()
@@ -64,7 +124,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             if (_dataWrapper == null)
                 return;
 
-            AddIdentifier("T1PROFI", _dataWrapper.GetTypedTableObject());
+            AddIdentifier("T1PROFI", _dataWrapper.Get());
         }
 
         protected override void BuildImpl()
@@ -76,15 +136,18 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
             ResetView();
 
-            GetView().imgProfileCover.Source = FnImage.LoadImageWithoutLock(Path.Combine(AppConfig.Storage.ProfileCoversDirectoryPath, _dataWrapper!.GetTypedTableObject().PPFN), 300, 450);
+            GetView().imgProfileCover.Source = CFProfilesApp.LoadProfileCover(_dataWrapper!.Get().PPFN);
 
-            GetView().btnLaunchGame.IsEnabled = _dataWrapper!.GetTypedTableObject().SAID != 0 && GetView().btnLaunchGame.Content != "Running..." && TFPROFI.HasExecutables(_dataWrapper.GetTypedTableObject());
+            if (_gameRunning || _gameLaunching)
+                GetView().btnLaunchGame.IsEnabled = true;
+            else
+                UpdateUIIdle();
 
-            // -- Progressbar Sektion
-            bool isIGDBLinkedCorrectly = !FnString.IsNullEmptyOrWhitespace(AppEnvironment.GetAppConfig().AppSettings.TwitchIGDBClientID) &&
-                !FnString.IsNullEmptyOrWhitespace(AppEnvironment.GetAppConfig().AppSettings.TwitchIGDBClientSecret);
+            // -- Progress bar section
+            //bool isIGDBLinkedCorrectly = !FnString.IsNullEmptyOrWhitespace(AppEnvironment.GetAppConfig().AppSettings.TwitchIGDBClientID) &&
+            //    !FnString.IsNullEmptyOrWhitespace(AppEnvironment.GetAppConfig().AppSettings.TwitchIGDBClientSecret);
 
-            FnControls.SetVisible(GetView().pnlProgressSection, _dataWrapper!.GetTypedTableObject().ETTY != EstimatedTimeTypes.EST_TIME_NONE && TFPLTHR.HasCurrentPlaythrough(_dataWrapper!.GetTypedTableObject().PFID) && isIGDBLinkedCorrectly);
+            FnControls.SetVisible(GetView().pnlProgressSection, _dataWrapper!.Get().ETTY != EstimatedTimeTypes.EST_TIME_NONE && TFPLTHR.HasCurrentPlaythrough(_dataWrapper!.Get().PFID));
 
             BuildProgressBarPanel();
 
@@ -95,7 +158,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
         }
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
         }
 
@@ -104,13 +167,13 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             // Total game time
             FillTotalGameTime();
 
-            // Heutige Spielzeit
+            // Today's playtime
             FillTodaysGameTime();
 
-            // Letzte Session
+            // Last session
             FillLastSessionGameTime();
 
-            // First und Lastplayed
+            // First and last played
             FillFirstLastDatePlayed();
 
             // Playthrough
@@ -119,6 +182,13 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             // Progressbar
             FillProgressbarAndTimes();
+
+            // Rating
+            FillProfileRating();
+        }
+
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
+        {
         }
 
         protected override void FillDBOImpl()
@@ -136,7 +206,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             {
                 if (reader.Read())
                 {
-                    GetView().txTotalGameTime.Text = CFProfilesApp.FormatGameTimeHours(UIXQuery.GetDouble(reader, "TotalPlaytime"));
+                    GetView().txTotalGameTime.Text = FnTime.FormatMinutesAsHoursAndMinutes(UIXQuery.GetDouble(reader, "TotalPlaytime"), FnTime.NoValue);
                 }
             }
         }
@@ -144,16 +214,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         private void FillTodaysGameTime()
         {
 
-            double todaysGameTimeMinutes = TFPROFI.GetTodaysGameTimeInMinutes(_dataWrapper!.GetTypedTableObject().PFID);
+            double todaysGameTimeMinutes = TFPROFI.GetTodaysGameTimeInMinutes(_dataWrapper!.Get().PFID);
 
-            StringBuilder sb = new StringBuilder();
-
-            sb.Append(CFProfilesApp.FormatGameTimeHours(todaysGameTimeMinutes));
-            sb.Append(" ");
-            sb.Append("(").Append(CFProfilesApp.FormatGameTimeMinutes(todaysGameTimeMinutes)).Append(")");
-
-
-            GetView().txPlayedToday.Text = sb.ToString();
+            GetView().txPlayedToday.Text = FnTime.FormatMinutesAsHoursAndMinutes(todaysGameTimeMinutes);
         }
 
         private void FillFirstLastDatePlayed()
@@ -178,34 +241,44 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             {
                 if (reader.Read())
                 {
-                    GetView().txPlaythroughTime.Text = CFProfilesApp.FormatGameTimeHours(UIXQuery.GetDouble(reader, "TotalPlaytimePlaythrough"));
+                    GetView().txPlaythroughTime.Text = FnTime.FormatMinutesAsHoursAndMinutes(UIXQuery.GetDouble(reader, "TotalPlaytimePlaythrough"), FnTime.NoValue);
                 }
             }
         }
 
         private void FillCurrentPlaythroughName()
         {
-            T1PLTHR t1plthr = TFPLTHR.GetCurrentPlaythrough(_dataWrapper!.GetTypedTableObject().PFID);
+            T1PLTHR t1plthr = TFPLTHR.GetCurrentPlaythrough(_dataWrapper!.Get().PFID);
 
             if (t1plthr == null)
                 return;
 
-            GetView().txPlaythrough.Text = t1plthr.PTDE + ":";
+            GetView().txPlaythrough.Text = t1plthr.PTDE;
+        }
+
+        private void FillProfileRating()
+        {
+            double rating = TFPLTHR.GetProfileRating(_dataWrapper!.Get().PFID);
+
+            FnControls.SetVisible(GetView().pnlRating, rating > 0);
+
+            GetView().rtgProfileRating.Value = rating;
+            GetView().txProfileRating.Text = CFPlaythroughsApp.FormatRatingAsStars(rating);
         }
 
         private void FillLastSessionGameTime()
         {
 
-            double lastSessionTime = TFSESSI.GetLastSessionGameTime(_dataWrapper!.GetTypedTableObject().PFID);
+            double lastSessionTime = TFSESSI.GetLastSessionGameTime(_dataWrapper!.Get().PFID);
 
-            string text = CFProfilesApp.FormatGameTimeHours(lastSessionTime) + " (" + CFProfilesApp.FormatGameTimeMinutes(lastSessionTime) + ")";
+            string text = FnTime.FormatMinutesAsHoursAndMinutes(lastSessionTime, FnTime.NoValue);
 
             GetView().txLastSession.Text = text;
         }
 
         private void FillProgressbarAndTimes()
         {
-            T1PROFI t1profi = _dataWrapper!.GetTypedTableObject();
+            T1PROFI t1profi = _dataWrapper!.Get();
 
             switch (t1profi.ETTY)
             {
@@ -222,9 +295,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                     break;
             }
 
-            GetView().txEstMain.Text = CFProfilesApp.FormatGameTimeHours(t1profi.ETMA);
-            GetView().txEstExtra.Text = CFProfilesApp.FormatGameTimeHours(t1profi.ETME);
-            GetView().txEstCompletionist.Text = CFProfilesApp.FormatGameTimeHours(t1profi.ETCO);
+            GetView().txEstMain.Text = FnTime.FormatMinutesAsHoursAndMinutes(t1profi.ETMA, FnTime.NoValue);
+            GetView().txEstExtra.Text = FnTime.FormatMinutesAsHoursAndMinutes(t1profi.ETME, FnTime.NoValue);
+            GetView().txEstCompletionist.Text = FnTime.FormatMinutesAsHoursAndMinutes(t1profi.ETCO, FnTime.NoValue);
         }
 
         private void FillProgressbarAndTimesCompletionist(T1PROFI t1profi)
@@ -297,12 +370,12 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
             UIXQuery query = new UIXQuery(K1PROFI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
 
-            // Felder
+            // Fields
             query.AddField(K1PROFI.Name, K1PROFI.Fields.FIPL);
             query.AddField(K1PROFI.Name, K1PROFI.Fields.LAPL);
 
-            // Where Restriktionen
-            query.AddWhere(K1PROFI.Name, K1PROFI.Fields.PFID, QueryCompareType.EQUALS, _dataWrapper!.GetTypedTableObject().PFID);
+            // Where restrictions
+            query.AddWhere(K1PROFI.Name, K1PROFI.Fields.PFID, QueryCompareType.EQUALS, _dataWrapper!.Get().PFID);
 
             return query;
         }
@@ -310,11 +383,11 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         public UIXQuery BuildCurrentPlaythroughTimeQuery()
         {
 
-            long pfid = _dataWrapper!.GetTypedTableObject()!.PFID;
+            long pfid = _dataWrapper!.Get().PFID;
 
             UIXQuery query = new UIXQuery(K1PLTHR.Name, AppEnvironment.GetDataBaseManager().GetConnection());
 
-            // Felder
+            // Fields
             query.AddSum(K1SESSI.Name, K1SESSI.Fields.PLTI, "TotalPlaytimePlaythrough");
 
             // Join
@@ -332,21 +405,21 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
             UIXQuery query = new UIXQuery(K1SESSI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
 
-            // Felder hinzufügen
+            // Add fields
             query.AddSum(K1SESSI.Name, K1SESSI.Fields.PLTI, "TotalPlaytime");
 
-            // Where Restriktionen
-            query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PFID, QueryCompareType.EQUALS, _dataWrapper!.GetTypedTableObject().PFID);
+            // Where restrictions
+            query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PFID, QueryCompareType.EQUALS, _dataWrapper!.Get().PFID);
 
             return query;
         }
 
         private void BuildCurrentPlaythroughPanel()
         {
-            // Sichtbarkeitssteuerung Playthrough-Box
-            T1PLTHR t1plthr = TFPLTHR.GetCurrentPlaythrough(_dataWrapper!.GetTypedTableObject().PFID);
+            // Visibility of the playthrough box
+            T1PLTHR t1plthr = TFPLTHR.GetCurrentPlaythrough(_dataWrapper!.Get().PFID);
 
-            if (t1plthr != null && TFPLTHR.HasCurrentPlaythrough(_dataWrapper!.GetTypedTableObject().PFID) && t1plthr.PTTY != PlaythroughType.INITIAL_PLAYTHROUGH)
+            if (t1plthr != null && TFPLTHR.HasCurrentPlaythrough(_dataWrapper!.Get().PFID) && t1plthr.PTTY != PlaythroughType.INITIAL_PLAYTHROUGH)
             {
                 FnControls.SetVisible(GetView().pnlPlaythrough, true);
             }
@@ -358,25 +431,34 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         private void BuildProgressBarPanel()
         {
-            T1PROFI t1profi = _dataWrapper!.GetTypedTableObject();
+            T1PROFI t1profi = _dataWrapper!.Get();
 
             switch (t1profi.ETTY)
             {
                 case EstimatedTimeTypes.EST_TIME_MAIN:
-                    GetView().txEstMain.FontWeight = FontWeights.Bold;
-                    GetView().lblEstMain.FontWeight = FontWeights.Bold;
+                    SetEstimateHighlighted(GetView().lblEstMain, GetView().txEstMain, true);
                     break;
 
                 case EstimatedTimeTypes.EST_TIME_MAIN_EXTRA:
-                    GetView().lblEstExtra.FontWeight = FontWeights.Bold;
-                    GetView().txEstExtra.FontWeight = FontWeights.Bold;
+                    SetEstimateHighlighted(GetView().lblEstExtra, GetView().txEstExtra, true);
                     break;
 
                 case EstimatedTimeTypes.EST_TIME_COMPLETIONIST:
-                    GetView().lblEstCompletionist.FontWeight = FontWeights.Bold;
-                    GetView().txEstCompletionist.FontWeight = FontWeights.Bold;
+                    SetEstimateHighlighted(GetView().lblEstCompletionist, GetView().txEstCompletionist, true);
                     break;
             }
+        }
+
+        /// <summary>
+        /// Marks the estimate the progress is based on (labels are muted by default).
+        /// </summary>
+        private static void SetEstimateHighlighted(System.Windows.Controls.TextBlock label, System.Windows.Controls.TextBlock value, bool isHighlighted)
+        {
+            FontWeight fontWeight = isHighlighted ? FontWeights.Bold : FontWeights.Normal;
+
+            label.FontWeight = fontWeight;
+            value.FontWeight = fontWeight;
+            label.SetResourceReference(System.Windows.Controls.TextBlock.ForegroundProperty, isHighlighted ? "Brush.TextPrimary" : "Brush.TextSecondary");
         }
 
         public void SetProgress(double percent)
@@ -385,33 +467,18 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             GetView().txtProgress.Text = $"~ {percent:0}%";
 
-            double maxWidth = GetView().pnlProgressContainer.ActualWidth;
-            GetView().pnlProgress.Width = maxWidth * (percent / 100.0);
+            // Relative scale instead of a fixed width, so the fill follows the card when the detail view resizes
+            GetView().pnlProgress.RenderTransform = new System.Windows.Media.ScaleTransform(percent / 100.0, 1);
         }
 
         private void ResetView()
         {
-            // Styles vorher zurücksetzen
-            GetView().txEstMain.FontWeight = FontWeights.Normal;
-            GetView().lblEstMain.FontWeight = FontWeights.Normal;
-
-            GetView().lblEstExtra.FontWeight = FontWeights.Normal;
-            GetView().txEstExtra.FontWeight = FontWeights.Normal;
-
-            GetView().lblEstCompletionist.FontWeight = FontWeights.Normal;
-            GetView().txEstCompletionist.FontWeight = FontWeights.Normal;
+            // Reset styles first
+            SetEstimateHighlighted(GetView().lblEstMain, GetView().txEstMain, false);
+            SetEstimateHighlighted(GetView().lblEstExtra, GetView().txEstExtra, false);
+            SetEstimateHighlighted(GetView().lblEstCompletionist, GetView().txEstCompletionist, false);
 
             SetProgress(0);
-        }
-
-        private ProfilesDetailView GetView()
-        {
-            return (ProfilesDetailView)this.View;
-        }
-
-        private ProfilesApp GetApp()
-        {
-            return (ProfilesApp)this.App;
         }
 
         protected override void DataWrapperSelectionChangedImpl(Selector source)
@@ -419,35 +486,58 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         }
 
+        /// <summary>
+        /// Unwrap game / Launch game / Cancel launch / Quit game
+        /// </summary>
         public async void EV_btnLaunchGame()
         {
-            FnSteam.StartSteamGame(_dataWrapper!.GetTypedTableObject().SAID.ToString(), _dataWrapper!.GetTypedTableObject().PFID, GetApp());
-            GetView().btnLaunchGame.Content = "Launching...";
-            GetView().btnLaunchGame.IsEnabled = false;
+            T1PROFI t1profi = _dataWrapper!.Get();
 
-            ProfilesViewController? profilesViewController = _dataWrapper.SourceController as ProfilesViewController;
-            ((ProfilesView)profilesViewController!.View).LaunchingOverlay.Visibility = Visibility.Visible;
-
-            await Task.Run(() =>
+            if (!_gameRunning && !_gameLaunching && TFPROFI.IsSealed(t1profi))
             {
-                // 30 Sekunden warten
-                Thread.Sleep(30000);
+                _profilesViewController!.UnwrapSelectedProfile();
+                return;
+            }
 
-                // Sollte das Spiel in diesen 30 Sekunden nicht gestartet worden sein --> zurücksetzen des Buttons
-                System.Windows.Application.Current.Dispatcher.Invoke(() =>
-                {
-                    if (!_gameRunning)
-                    {
-                        UpdateUIGameClosed();
-                    }
-                });
-            });
+            if (_gameRunning)
+            {
+                QuitGame(t1profi);
+                return;
+            }
+
+            if (_gameLaunching)
+            {
+                FnLauncher.CancelLaunch(t1profi);
+                UpdateUIGameClosed();
+                return;
+            }
+
+            UpdateUIGameLaunching(t1profi);
+
+            // Not installed or cancelled meanwhile; otherwise the running game detection switches to "Quit game"
+            if (!await FnLauncher.StartGameAsync(t1profi, GetApp()) && _gameLaunching)
+                UpdateUIGameClosed();
+        }
+
+        private void QuitGame(T1PROFI t1profi)
+        {
+            CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window);
+            CFMBOXResult result = cfmbox.Show(GetErrorMessage("PRO0008", t1profi.GANA), CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
+
+            if (result != CFMBOXResult.Yes)
+                return;
+
+            UpdateUIGameQuitting(t1profi);
+
+            // The game keeps running (e.g. elevated): back to "Quit game"
+            if (!FnLauncher.QuitGame(t1profi))
+                UpdateUIGameRunning();
         }
 
         protected void EV_btnStartMonitoring()
         {
 
-            if (!CFProfilesApp.AskForNewPlaythroughCreationIfNotActive(_dataWrapper!.GetTypedTableObject().PFID, GetApp()))
+            if (!CFProfilesApp.AskForNewPlaythroughCreationIfNotActive(_dataWrapper!.Get().PFID, GetApp()))
                 return;
 
             if (CFGameTimeMonitoring.IsMonitoring)

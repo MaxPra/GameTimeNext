@@ -3,22 +3,24 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:fui="clr-namespace:GameTimeNext.Core.Framework.UI"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI.Base"
+    xmlns:uixcb="clr-namespace:UIX.ViewController.Engine.FrameworkElements.ComboBoxes;assembly=UIX.ViewController.Engine"
+    xmlns:uixmd="clr-namespace:UIX.ViewController.Engine.FrameworkElements.Markdown;assembly=UIX.ViewController.Engine"
     xmlns:uixprops="clr-namespace:UIX.ViewController.Engine.AttachedProperties;assembly=UIX.ViewController.Engine"
     Title="Playthrough"
     Width="760"
-    Height="250"
     MinWidth="760"
-    MinHeight="250"
-    ResizeMode="CanResize"
     ShowMaximizeButton="False"
     ShowMinimizeButton="False"
+    SizeToContent="Height"
     WindowStartupLocation="CenterOwner"
     mc:Ignorable="d">
 
-    <Grid Margin="20,16,20,20">
+    <Grid Style="{StaticResource View.Root}">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="16" />
             <RowDefinition Height="Auto" />
@@ -27,20 +29,18 @@
         <Border
             Grid.Row="0"
             Padding="16"
-            Background="{DynamicResource Brush.Surface}"
-            BorderBrush="{DynamicResource Brush.Border}"
-            BorderThickness="1"
-            CornerRadius="{StaticResource DefaultCornerRadius}">
+            Style="{StaticResource Card}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="12" />
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="130" />
-                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="12" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
@@ -68,25 +68,58 @@
                     Foreground="{DynamicResource Brush.TextSecondary}"
                     Text="Type" />
 
-                <ComboBox
+                <uixcb:UIXComboBox
                     x:Name="cmbType"
                     Grid.Row="2"
                     Grid.Column="2"
                     Height="36"
                     VerticalAlignment="Center"
                     uixprops:UIXAttachedProperty.Path="T1PLTHR.PTTY"
+                    AdditionalEntry="(None)"
                     SelectedIndex="0"
                     SelectedValue=""
                     SelectedValuePath="Tag" />
+
+                <!--  Rating: hidden in create-new mode (the spacing is a margin, so nothing remains)  -->
+                <TextBlock
+                    x:Name="lblRating"
+                    Grid.Row="3"
+                    Grid.Column="0"
+                    Margin="0,12,0,0"
+                    VerticalAlignment="Center"
+                    Foreground="{DynamicResource Brush.TextSecondary}"
+                    Text="Rating" />
+
+                <fui:StarRating
+                    x:Name="rtgRating"
+                    Grid.Row="3"
+                    Grid.Column="2"
+                    Margin="0,12,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center" />
             </Grid>
         </Border>
 
+        <!--  Spacing above as margin, so nothing remains when it is hidden (create-new mode)  -->
+        <GroupBox
+            x:Name="grpRatingComment"
+            Grid.Row="1"
+            Margin="0,16,0,0"
+            Header="Rating comment"
+            Style="{StaticResource GroupBox.Card}">
+            <uixmd:UIXMarkdownEditor
+                x:Name="txbRatingComment"
+                Height="300"
+                uixprops:UIXAttachedProperty.Path="T1PLTHR.PTRC" />
+        </GroupBox>
+
         <Button
             x:Name="btnSave"
-            Grid.Row="2"
+            Grid.Row="3"
             Width="140"
             Height="36"
             HorizontalAlignment="Right"
-            Content="Save" />
+            Content="Save"
+            Style="{StaticResource Button.Primary}" />
     </Grid>
 </ui:GTNWindowView>

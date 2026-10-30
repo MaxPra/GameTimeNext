@@ -10,9 +10,15 @@
     <Color x:Key="Color.TextDisabled">#FF6F6F7F</Color>
 
     <!--  ===== Accent Colors =====  -->
-    <Color x:Key="Color.Accent">#7B6E73</Color>
-    <Color x:Key="Color.AccentHover">#8C7F84</Color>
-    <Color x:Key="Color.AccentPressed">#675C60</Color>
+    <!--
+        Default accent (FnTheme.ApplyDefaultTheme reads it from here). Profiles can override it at runtime.
+        Brushes in ResourceDictionaries derived from these colors must be registered in FnTheme.AccentResources
+        and referenced with DynamicResource: a DynamicResource inside a shared brush resource does not follow
+        runtime changes, FnTheme replaces these brushes instead.
+    -->
+    <Color x:Key="Color.Accent">#3498E5</Color>
+    <Color x:Key="Color.AccentHover">#1A7FCB</Color>
+    <Color x:Key="Color.AccentPressed">#15629E</Color>
 
     <!--<Color x:Key="Color.Accent">#7BFF00</Color>
     <Color x:Key="Color.AccentHover">#66D900</Color>
@@ -48,7 +54,7 @@
     <Color x:Key="Color.Warning">#FFFFA726</Color>
     <Color x:Key="Color.Danger">#FFFF4C66</Color>
 
-    <!--  ===== Brushes (für DynamicResource) =====  -->
+    <!--  ===== Brushes (for DynamicResource) =====  -->
     <SolidColorBrush x:Key="Brush.Background" Color="{DynamicResource Color.Background}" />
     <SolidColorBrush x:Key="Brush.Surface" Color="{DynamicResource Color.Surface}" />
     <SolidColorBrush x:Key="Brush.Border" Color="{DynamicResource Color.Border}" />
@@ -72,10 +78,10 @@
     <SolidColorBrush x:Key="Brush.TileBorder" Color="{DynamicResource Color.Border}" />
     <SolidColorBrush x:Key="Brush.TileForeground" Color="{DynamicResource Color.TextPrimary}" />
 
-    <!--  untere Titel-Leiste  -->
+    <!--  lower title bar  -->
     <SolidColorBrush x:Key="Brush.TileTitleBackground" Color="{DynamicResource Color.Background}" />
 
-    <!--  Hover-Glanz (ohne neue Color.* Keys)  -->
+    <!--  Hover gloss (without new Color.* keys)  -->
     <SolidColorBrush x:Key="Brush.TileSheenTop" Color="#00FFFFFF" />
     <SolidColorBrush x:Key="Brush.TileSheenBottom" Color="#00FFFFFF" />
 
@@ -97,7 +103,7 @@
         <GradientStop Color="#121A24" Offset="1" />
     </LinearGradientBrush>-->
 
-    <!--  Basis  -->
+    <!--  Base  -->
     <LinearGradientBrush x:Key="GradientBrush.ProfileDetailView.Background" Opacity="1" StartPoint="0,0" EndPoint="1,1">
         <GradientStop Offset="0" Color="{DynamicResource Color.Background}" />
         <GradientStop Offset="0.30" Color="#0C0C12" />
@@ -105,25 +111,25 @@
         <GradientStop Offset="1" Color="{DynamicResource Color.Background}" />
     </LinearGradientBrush>
 
-    <!--  Accent Hauptglow  -->
+    <!--  Accent main glow  -->
     <RadialGradientBrush x:Key="GradientBrush.ProfileDetailView.AccentGlowPrimary" Center="0.28,0.22" GradientOrigin="0.28,0.22" Opacity="0.06" RadiusX="1.1" RadiusY="1.1">
         <GradientStop Offset="0" Color="{DynamicResource Color.Accent}" />
         <GradientStop Offset="1" Color="Transparent" />
     </RadialGradientBrush>
 
-    <!--  Accent Sekundär  -->
+    <!--  Accent secondary  -->
     <RadialGradientBrush x:Key="GradientBrush.ProfileDetailView.AccentGlowSecondary" Center="0.85,0.75" GradientOrigin="0.85,0.75" Opacity="0.03" RadiusX="1.2" RadiusY="1.2">
         <GradientStop Offset="0" Color="{DynamicResource Color.AccentHover}" />
         <GradientStop Offset="1" Color="Transparent" />
     </RadialGradientBrush>
 
-    <!--  Randabdunklung  -->
+    <!--  Edge darkening  -->
     <RadialGradientBrush x:Key="GradientBrush.ProfileDetailView.Vignette" Center="0.5,0.5" Opacity="0.45" RadiusX="0.9" RadiusY="0.9">
         <GradientStop Offset="0.55" Color="Transparent" />
         <GradientStop Offset="1" Color="#CC000000" />
     </RadialGradientBrush>
 
-    <!--  Kombination  -->
+    <!--  Combination  -->
     <DrawingBrush x:Key="Brush.ProfileDetailView.Background" Stretch="Fill">
         <DrawingBrush.Drawing>
             <DrawingGroup>

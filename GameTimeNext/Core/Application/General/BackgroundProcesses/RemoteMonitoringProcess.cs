@@ -1,11 +1,12 @@
 ﻿using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.Logging;
+using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.Utils;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using UIX.ViewController.Engine.Runnables;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.General.BackgroundProcesses
 {
@@ -77,11 +78,12 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
                 return;
             }
 
-            string baseDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "RemoteMonitoring");
+            string baseDir = Path.Combine(AppConfig.Root.ApplicationDirectoryPath, "RemoteMonitoring");
+            FnDirectory.EnsureDirectoryExists(baseDir);
             string? exePath = Directory.GetFiles(baseDir, "*RemoteMonitoring*.exe", SearchOption.AllDirectories).FirstOrDefault();
             if (exePath is null && FnSystem.IsDebug())
             {
-                baseDir = Path.Combine(baseDir, @"..\..\..\..\RemoteMonitoring\bin\Release\net10.0\publish");
+                baseDir = Path.Combine(baseDir, AppConfig.Dev.RemoteMonitoringBinDirectoryPath);
                 exePath = Directory.GetFiles(baseDir, "*RemoteMonitoring*.exe", SearchOption.AllDirectories).FirstOrDefault();
             }
 
@@ -185,6 +187,11 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
         protected override void InitializeInfos()
         {
             ProcessName = "RemoteMonitoringProcess";
+        }
+
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(RemoteMonitoringProcess));
         }
     }
 }

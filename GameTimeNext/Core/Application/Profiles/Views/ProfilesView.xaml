@@ -2,9 +2,11 @@
     x:Class="GameTimeNext.Core.Application.Profiles.Views.ProfilesView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:uixsel="clr-namespace:UIX.ViewController.Engine.FrameworkElements.Selectors;assembly=UIX.ViewController.Engine"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:GameTimeNext.Core.Application.Profiles.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI"
     xmlns:uix="clr-namespace:UIX.ViewController.Engine.FrameworkElements.UserControls;assembly=UIX.ViewController.Engine"
     HorizontalAlignment="Stretch"
     VerticalAlignment="Stretch"
@@ -20,12 +22,13 @@
         Background="Transparent">
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="73*" />
             <ColumnDefinition Width="2" />
+            <!--  Grows with the window (bigger cover on large screens), the detail view adapts its header to the height  -->
             <ColumnDefinition
-                Width="420"
-                MinWidth="420"
-                MaxWidth="1000" />
+                Width="27*"
+                MinWidth="300"
+                MaxWidth="460" />
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
@@ -36,101 +39,153 @@
             Grid.Column="0"
             Padding="0"
             Background="Transparent">
+            <!--  Frosted glass behind the monitoring overlay and behind the launch card (launching overlay with the game name)  -->
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Visibility, ElementName=MonitoringOverlay}" Value="Visible">
+                            <Setter Property="Effect">
+                                <Setter.Value>
+                                    <BlurEffect KernelType="Gaussian" Radius="12" RenderingBias="Performance" />
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding HasContent, ElementName=LaunchingOverlay}" Value="True">
+                            <Setter Property="Effect">
+                                <Setter.Value>
+                                    <BlurEffect KernelType="Gaussian" Radius="12" RenderingBias="Performance" />
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <Grid Grid.Row="0" Margin="0,0,0,12">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
+                <!--  Toolbar: narrowing the list (search, filter) on the left, actions (refresh, add) on the right  -->
+                <Border
+                    Grid.Row="0"
+                    Margin="0,0,16,12"
+                    Padding="16"
+                    Style="{StaticResource Card}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
 
-                    <TextBox
-                        x:Name="tbSearchProfileName"
-                        Grid.Column="0"
-                        Width="320"
-                        Height="38"
-                        Margin="10,0,0,0"
-                        VerticalAlignment="Center"
-                        Style="{StaticResource TextBox.Default}"
-                        Tag="Search for name"
-                        ToolTip="Search for name" />
+                        <TextBox
+                            x:Name="tbSearchProfileName"
+                            Grid.Column="0"
+                            Width="320"
+                            VerticalAlignment="Center"
+                            Style="{StaticResource TextBox.Default}"
+                            Tag="Search for name"
+                            ToolTip="Search for name" />
 
-                    <Grid
-                        Grid.Column="1"
-                        Margin="10,0,0,0"
-                        VerticalAlignment="Center">
+                        <Grid Grid.Column="2" VerticalAlignment="Center">
+                            <Button
+                                x:Name="BtnFilter"
+                                VerticalAlignment="Center"
+                                Style="{StaticResource Button.Icon}"
+                                ToolTip="Filter library">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontFamily="{StaticResource Font.Icons}"
+                                    FontSize="14"
+                                    Text="" />
+                            </Button>
+
+                            <!--  Shown when the library is filtered  -->
+                            <Ellipse
+                                x:Name="ElFilterActive"
+                                Width="9"
+                                Height="9"
+                                Margin="0,4,4,0"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Top"
+                                Fill="{DynamicResource Brush.Accent}"
+                                IsHitTestVisible="False"
+                                Visibility="Collapsed" />
+
+                            <Popup
+                                x:Name="PopFilter"
+                                AllowsTransparency="True"
+                                Placement="Right"
+                                PlacementTarget="{Binding ElementName=BtnFilter}"
+                                StaysOpen="True">
+                                <Border
+                                    Padding="12"
+                                    Style="{StaticResource ModernPopupCardStyle}">
+                                    <ContentPresenter x:Name="CPFilter" />
+                                </Border>
+                            </Popup>
+                        </Grid>
+
                         <Button
-                            x:Name="BtnFilter"
-                            Width="38"
-                            Height="38"
-                            VerticalAlignment="Center">
+                            x:Name="BtnRefresh"
+                            Grid.Column="4"
+                            VerticalAlignment="Center"
+                            ToolTip="Refresh profiles"
+                            Style="{StaticResource Button.Icon}">
                             <TextBlock
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
-                                FontFamily="Segoe MDL2 Assets"
+                                FontFamily="{StaticResource Font.Icons}"
                                 FontSize="14"
-                                Text="" />
+                                Text="&#xE72C;" />
                         </Button>
 
-                        <Popup
-                            x:Name="PopFilter"
-                            AllowsTransparency="True"
-                            Placement="Right"
-                            PlacementTarget="{Binding ElementName=BtnFilter}"
-                            StaysOpen="True">
-                            <Border
-                                Padding="12"
-                                Background="{DynamicResource Brush.Surface}"
-                                BorderBrush="{DynamicResource Brush.Border}"
-                                BorderThickness="1"
-                                CornerRadius="{StaticResource DefaultCornerRadius}"
-                                Style="{StaticResource ModernPopupCardStyle}">
-                                <ContentPresenter x:Name="CPFilter" />
-                            </Border>
-                        </Popup>
+                        <Button
+                            x:Name="BtnAddProfile"
+                            Grid.Column="6"
+                            VerticalAlignment="Center"
+                            ToolTip="Add profile"
+                            Style="{StaticResource Button.Icon}">
+                            <Image
+                                Width="16"
+                                Height="16"
+                                Source="/UI/Ressources/GTN_ICON_ADD_PROFILE.png"
+                                Stretch="Uniform" />
+                        </Button>
                     </Grid>
+                </Border>
 
-                    <Button
-                        x:Name="BtnAddProfile"
-                        Grid.Column="3"
-                        Width="38"
-                        Height="38"
-                        Margin="0,0,16,0"
-                        VerticalAlignment="Center"
-                        ToolTip="Add profile">
-                        <Image
-                            Width="16"
-                            Height="16"
-                            Source="/UI/Ressources/GTN_ICON_ADD_PROFILE.png"
-                            Stretch="Uniform" />
-                    </Button>
-                </Grid>
-
-                <ListBox
+                <uixsel:UIXListBox
                     x:Name="ListBoxProfiles"
+                    ui:ScrollFade.Length="80"
+                    ui:TileLayout.AutoSize="True"
                     Grid.Row="1"
-                    Padding="{StaticResource TileListPaddingTopOnly}"
+                    Margin="-12,-8,0,0"
+                    Padding="0"
+                    ClipToBounds="True"
                     Background="Transparent"
                     BorderThickness="0"
-                    ItemsSource="{Binding T1Profis}"
                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                     ScrollViewer.VerticalScrollBarVisibility="Auto"
-                    SelectedItem="{Binding SelectedT1Profi, Mode=TwoWay}"
                     SelectionMode="Single">
 
-                    <ListBox.ItemsPanel>
+                    <uixsel:UIXListBox.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <WrapPanel />
+                            <!--
+                                Spacing on the panel, not as ListBox padding: it has to scroll with the tiles instead of shrinking the viewport.
+                                20 px room above the first row: an opened case cover grows a little beyond the case (TileViewStyle).
+                            -->
+                            <WrapPanel Margin="0,2,0,26" />
                         </ItemsPanelTemplate>
-                    </ListBox.ItemsPanel>
+                    </uixsel:UIXListBox.ItemsPanel>
 
-                    <ListBox.ItemContainerStyle>
+                    <uixsel:UIXListBox.ItemContainerStyle>
                         <Style BasedOn="{StaticResource TileListBoxItemStyle}" TargetType="{x:Type ListBoxItem}">
                             <Setter Property="Margin" Value="{StaticResource TileItemMargin}" />
                             <Setter Property="ContextMenu">
@@ -142,9 +197,8 @@
                                             Style="{StaticResource ModernContextMenuItemStyle}">
                                             <MenuItem.Icon>
                                                 <TextBlock
-                                                    FontFamily="Segoe MDL2 Assets"
+                                                    FontFamily="{StaticResource Font.Icons}"
                                                     FontSize="14"
-                                                    Foreground="{DynamicResource Brush.TextSecondary}"
                                                     Text="" />
                                             </MenuItem.Icon>
                                         </MenuItem>
@@ -157,9 +211,8 @@
                                             Style="{StaticResource ModernContextMenuItemStyle}">
                                             <MenuItem.Icon>
                                                 <TextBlock
-                                                    FontFamily="Segoe MDL2 Assets"
+                                                    FontFamily="{StaticResource Font.Icons}"
                                                     FontSize="14"
-                                                    Foreground="{DynamicResource Brush.TextSecondary}"
                                                     Text="" />
                                             </MenuItem.Icon>
                                         </MenuItem>
@@ -167,8 +220,8 @@
                                 </Setter.Value>
                             </Setter>
                         </Style>
-                    </ListBox.ItemContainerStyle>
-                </ListBox>
+                    </uixsel:UIXListBox.ItemContainerStyle>
+                </uixsel:UIXListBox>
             </Grid>
         </Border>
 
@@ -183,16 +236,6 @@
             Grid.Column="0"
             Style="{StaticResource GameStartOverlayHostStyle}"
             Visibility="Collapsed" />
-
-        <GridSplitter
-            Grid.Column="1"
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch"
-            Background="{DynamicResource Brush.Border}"
-            Cursor="SizeWE"
-            ResizeBehavior="PreviousAndNext"
-            ResizeDirection="Columns"
-            ShowsPreview="False" />
 
         <Border
             Grid.Column="2"

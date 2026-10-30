@@ -65,5 +65,10 @@ namespace GameTimeNext.Core.Application.Profiles.Batch
         {
 
         }
+
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(ProfilesBatchApp));
+        }
     }
 }

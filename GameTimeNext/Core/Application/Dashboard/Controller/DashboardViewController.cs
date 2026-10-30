@@ -1,8 +1,8 @@
-﻿using GameTimeNext.Core.Application.Dashboard.ViewModels;
+﻿using System.Globalization;
+using GameTimeNext.Core.Application.Dashboard.ViewModels;
 using GameTimeNext.Core.Application.Dashboard.Views;
 using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Profiles;
-using GameTimeNext.Core.Application.Profiles.Viewmodel;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Config;
@@ -14,18 +14,20 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Media.Imaging;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.Events;
+using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Dashboard.Controller
 {
-    public class DashboardViewController : UIXViewControllerBase
+    public class DashboardViewController : UIXViewControllerBase<DashboardApp, DashboardView>
     {
-        DashboardViewModel? viewModel = null;
         short timeSpanOffset = 0;
         DateTime? timeSpanStart = null;
         DateTime timeSpanEnd = DateTime.Today.AddDays(1).AddTicks(-1);
         bool showOffsetSelection = false;
+        // Playtime of the whole period in minutes (playtime overview), the base of the most played share
+        double totalPlaytime = 0;
 
         public DashboardViewController(UIXApplication app) : base(app)
         {
@@ -33,8 +35,6 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
 
         protected override void Init()
         {
-            viewModel = new DashboardViewModel();
-
             GetApp().Loader.SetRandomTexts(
                     "Preparing your dashboard...",
                     "Collecting your latest gaming stats...",
@@ -54,10 +54,12 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
                     "Compiling your playtime universe..."
                     );
 
-            // Pipeline unterdrücken
+            // Suppress pipeline
             using (SuppressRunEventPipeline())
             {
-                GetView().CmbTimeRange.SelectedIndex = AppEnvironment.GetAppConfig().UserSettings.SelectedDashboardMode;
+                FillComboboxTimeRange();
+
+                GetView().CmbTimeRange.SelectedIndex =AppEnvironment.GetAppConfig().UserSettings.SelectedDashboardMode;
                 timeSpanOffset = AppEnvironment.GetAppConfig().UserSettings.SelectedDashboardOffset;
                 ChangeTimeSpanDays();
             }
@@ -65,7 +67,7 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
 
         protected override async Task BuildFirstImplAsync()
         {
-            await BuildPlayedProfilesListBoxAsync();
+            await GetView().ListViewRecentGames.LoadDataAsync();
         }
 
         protected override void BuildFirstImpl()
@@ -78,15 +80,19 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
 
         protected override void BuildImpl()
         {
-            FnControls.SetVisible(GetView().grdTimeSpanOffset, showOffsetSelection);
+            FnControls.SetVisible(GetView().pnlTimeSpanOffset, showOffsetSelection);
             FnControls.SetEnabled(GetView().BtnIncreaseTimeSpan, timeSpanOffset < 0);
         }
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
         }
 
         protected override void DataWrapperSelectionChangedImpl(Selector source)
+        {
+        }
+
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
         {
         }
 
@@ -96,9 +102,10 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
 
         protected override void FillViewImpl()
         {
-            GetView().txtTimeSpanOffset.Text = timeSpanOffset.ToString();
+            GetView().txtTimeSpanRange.Text = FormatTimeSpan();
 
             FillSectionPlaytimeOverview();
+            FillSectionDayBars();
             FillSectionOverallStatistics();
             FillSectionLastPlayed();
             FillSectionMostPlayed();
@@ -123,21 +130,27 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
                     AppEnvironment.GetAppConfig().UserSettings.SelectedDashboardMode = (short)GetView().CmbTimeRange.SelectedIndex;
                     AppEnvironment.SaveAppConfig();
 
-                    await BuildPlayedProfilesListBoxAsync();
+                    await GetView().ListViewRecentGames.LoadDataAsync();
                     Open(true);
                 }
 
             }
         }
 
-        private DashboardApp GetApp()
+        /// <summary>
+        /// Periods of the dashboard; the selection is evaluated and stored by index, so the order must not change.
+        /// </summary>
+        private void FillComboboxTimeRange()
         {
-            return (DashboardApp)App;
-        }
-
-        private DashboardView GetView()
-        {
-            return (DashboardView)View;
+            UIXManualCodetable codetable = new UIXManualCodetable();
+            codetable.AddEntry("LAST7", "Last 7 Days");
+            codetable.AddEntry("LAST30", "Last 30 Days");
+            codetable.AddEntry("LAST365", "Last 365 Days");
+            codetable.AddEntry("DAY", "Day");
+            codetable.AddEntry("WEEK", "Week");
+            codetable.AddEntry("MONTH", "Month");
+            codetable.AddEntry("ALL", "All Time");
+            codetable.ApplyTo(GetView().CmbTimeRange);
         }
 
         private void ChangeTimeSpanDays()
@@ -186,55 +199,122 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
             }
         }
 
-        private async Task BuildPlayedProfilesListBoxAsync()
+        /// <summary>
+        /// The shown period in words: the day, the month, a date range or "All time".
+        /// </summary>
+        private string FormatTimeSpan()
         {
-            GetApp().Loader.Begin();
+            if (timeSpanStart is not DateTime start)
+                return "All time";
 
-            await Task.Run(() =>
+            DateTime end = timeSpanEnd.Date;
+
+            switch (GetView().CmbTimeRange.SelectedIndex)
             {
-                List<T1PROFI> t1profis = TFPROFI.GetPlayedProfiles(timeSpanStart, timeSpanEnd);
-                List<ProfilesListBoxItem> profiles = BuildProfileListBoxItems(t1profis);
+                case 3:
+                    // Day
+                    return start.ToString("D", CultureInfo.CurrentCulture);
+                case 5:
+                    // Month
+                    return start.ToString("Y", CultureInfo.CurrentCulture);
+            }
 
-                View.Dispatcher.Invoke(() =>
-                {
-                    viewModel = new DashboardViewModel();
-                    viewModel!.T1Profis = new System.Collections.ObjectModel.ObservableCollection<ProfilesListBoxItem>(profiles);
-                    GetView().DataContext = viewModel;
+            if (start.Date == end)
+                return start.ToString("d", CultureInfo.CurrentCulture);
 
-                    GetApp().Loader.Stop();
-                });
-            });
+            return $"{start.ToString("d", CultureInfo.CurrentCulture)} – {end.ToString("d", CultureInfo.CurrentCulture)}";
         }
 
-        private List<ProfilesListBoxItem> BuildProfileListBoxItems(List<T1PROFI> t1profiles)
+        /// <summary>
+        /// The selected period: start (null = all time) and end.
+        /// </summary>
+        public (DateTime? Start, DateTime End) GetTimeSpan()
         {
-            return t1profiles.Select(prof => new ProfilesListBoxItem
-            {
-                ItemObject = prof,
-                COCOVIM = FnImage.LoadImageWithoutLock(Path.Combine(AppConfig.Storage.ProfileCoversDirectoryPath ?? string.Empty, prof.PPFN), 300, 450),
-                COISPLA = FnSystem.IsExeFoundInPath(prof.EXGF),
-                COCPLTI = CFDashboardApp.FormatTime(TFPROFI.GetGameTimeInMinutes(prof.PFID, timeSpanStart, timeSpanEnd))
-            }).ToList();
+            return (timeSpanStart, timeSpanEnd);
         }
 
         private void FillSectionPlaytimeOverview()
         {
-            GetView().txtTotalPlaytime.Text = CFDashboardApp.FormatTime(TFPROFI.GetPlaytime(timeSpanStart, timeSpanEnd));
-            GetView().txtGamesPlayed.Text = TFPROFI.GetPlayedProfilesCount(timeSpanStart, timeSpanEnd).ToString();
-            GetView().txtDaysPlayed.Text = TFPROFI.GetDaysPlayed(timeSpanStart, timeSpanEnd).ToString();
+            totalPlaytime = TFPROFI.GetPlaytime(timeSpanStart, timeSpanEnd);
+            int games = TFPROFI.GetPlayedProfilesCount(timeSpanStart, timeSpanEnd);
+            int days = TFPROFI.GetDaysPlayed(timeSpanStart, timeSpanEnd);
+
+            GetView().txtTotalPlaytime.Text = FnTime.FormatMinutesAsHoursAndMinutes(totalPlaytime);
+            GetView().txtDaysPlayed.Text = FormatCount(days, "day played", "days played");
+            GetView().txtGamesPlayed.Text = FormatCount(games, "game", "games");
+            GetView().txtAveragePerDay.Text = $"Ø {FnTime.FormatMinutesAsHoursAndMinutes(days > 0 ? totalPlaytime / days : 0, FnTime.NoValue)} per day";
+        }
+
+        /// <summary>
+        /// Playtime of the last 7 days up to the end of the period, as bars relative to the peak day.
+        /// </summary>
+        private void FillSectionDayBars()
+        {
+            DateTime lastDay = timeSpanEnd.Date;
+            List<DashboardDayBar> bars = new List<DashboardDayBar>(7);
+
+            double[] minutes = new double[7];
+            for (int i = 0; i < 7; i++)
+            {
+                DateTime day = lastDay.AddDays(i - 6);
+                minutes[i] = TFPROFI.GetPlaytime(day, day.AddDays(1).AddTicks(-1));
+            }
+
+            double peak = minutes.Max();
+            int peakIndex = peak > 0 ? Array.IndexOf(minutes, peak) : -1;
+
+            for (int i = 0; i < 7; i++)
+            {
+                DateTime day = lastDay.AddDays(i - 6);
+                double ratio = peak > 0 ? minutes[i] / peak : 0;
+                string time = FnTime.FormatMinutesAsHoursAndMinutes(minutes[i]);
+
+                bars.Add(new DashboardDayBar
+                {
+                    Label = day.ToString("ddd", CultureInfo.CurrentCulture),
+                    ValueText = time,
+                    ToolTipText = $"{day.ToString("ddd", CultureInfo.CurrentCulture)}, {day.ToString("d", CultureInfo.CurrentCulture)}: {time}",
+                    BarHeight = new GridLength(ratio, GridUnitType.Star),
+                    RestHeight = new GridLength(1 - ratio, GridUnitType.Star),
+                    IsPeak = i == peakIndex,
+                    IsToday = day == DateTime.Today
+                });
+            }
+
+            GetView().icDayBars.ItemsSource = bars;
+            GetView().txtDayBarsCaption.Text = lastDay == DateTime.Today
+                ? "Last 7 days"
+                : $"7 days up to {lastDay.ToString("d", CultureInfo.CurrentCulture)}";
+        }
+
+        private static string FormatCount(int count, string singular, string plural)
+        {
+            return $"{count.ToString(CultureInfo.CurrentCulture)} {(count == 1 ? singular : plural)}";
         }
 
         private void FillSectionOverallStatistics()
         {
-            GetView().txtStatPlayedToday.Text = CFDashboardApp.FormatTime(TFPROFI.GetPlaytimeToday(timeSpanStart, timeSpanEnd));
+            GetView().txtStatPlayedToday.Text = FnTime.FormatMinutesAsHoursAndMinutes(TFPROFI.GetPlaytimeToday(timeSpanStart, timeSpanEnd));
+
+            // Fixed periods, independent of the selected time span
+            FillPeriodTile(FnTimeSpan.TimeSpanType.Week, GetView().txtStatThisWeek, GetView().txtStatThisWeekDays);
+            FillPeriodTile(FnTimeSpan.TimeSpanType.Month, GetView().txtStatThisMonth, GetView().txtStatThisMonthDays);
+            FillPeriodTile(FnTimeSpan.TimeSpanType.Year, GetView().txtStatThisYear, GetView().txtStatThisYearDays);
 
             {
                 // Longest Session
                 (string gana, double plti, DateTime plto) = TFPROFI.GetLongestSession(timeSpanStart, timeSpanEnd);
-                GetView().txtStatLongestSession.Text = CFDashboardApp.FormatTime(plti);
+                GetView().txtStatLongestSession.Text = FnTime.FormatMinutesAsHoursAndMinutes(plti, FnTime.NoValue);
                 GetView().txtStatLongestSessionGame.Text = gana;
                 GetView().txtStatLongestSessionDate.Text = $"({CFProfilesApp.FormatFirstLastDate(plto)})";
             }
+        }
+
+        private static void FillPeriodTile(FnTimeSpan.TimeSpanType type, TextBlock txtPlaytime, TextBlock txtDays)
+        {
+            (DateTime start, DateTime end) = FnTimeSpan.GetBeginningAndEnd(type);
+            txtPlaytime.Text = FnTime.FormatMinutesAsHoursAndMinutes(TFPROFI.GetPlaytime(start, end));
+            txtDays.Text = FormatCount(TFPROFI.GetDaysPlayed(start, end), "day played", "days played");
         }
 
         private void FillSectionLastPlayed()
@@ -242,21 +322,27 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
             (string gana, DateTime lapl, double plti, string ppfn) = TFPROFI.GetLastPlayed(timeSpanStart, timeSpanEnd);
             GetView().txtLastPlayedTitle.Text = gana;
             GetView().txtLastPlayedDate.Text = CFProfilesApp.FormatFirstLastDate(lapl);
-            GetView().txtLastPlayedTime.Text = CFDashboardApp.FormatTime(plti);
+            GetView().txtLastPlayedTime.Text = FnTime.FormatMinutesAsHoursAndMinutes(plti, FnTime.NoValue);
 
-            BitmapImage? coverImage = FnImage.LoadImageWithoutLock(ppfn, 300, 450);
-            GetView().imgLastPlayedCover.Source = coverImage;
+            // No cover without a played game in the time span
+            GetView().ccLastPlayedCase.Content = FnString.IsNullEmptyOrWhitespace(ppfn) ? null : CFProfilesApp.LoadProfileCover(ppfn);
         }
 
         private void FillSectionMostPlayed()
         {
             (string gana, double plti, int days, string ppfn) = TFPROFI.GetMostPlayed(timeSpanStart, timeSpanEnd);
             GetView().txtMostPlayedTitle.Text = gana;
-            GetView().txtMostPlayedPlaytime.Text = CFDashboardApp.FormatTime(plti);
-            GetView().txtMostPlayedDays.Text = days.ToString();
+            GetView().txtMostPlayedPlaytime.Text = FnTime.FormatMinutesAsHoursAndMinutes(plti, FnTime.NoValue);
+            GetView().txtMostPlayedDays.Text = days.ToString(CultureInfo.CurrentCulture);
+            GetView().txtMostPlayedAverage.Text = FnTime.FormatMinutesAsHoursAndMinutes(days > 0 ? plti / days : 0, FnTime.NoValue);
 
-            BitmapImage? coverImage = FnImage.LoadImageWithoutLock(ppfn, 300, 450);
-            GetView().imgMostPlayedCover.Source = coverImage;
+            // Share of the period's playtime (FillSectionPlaytimeOverview runs before and sets totalPlaytime)
+            double share = totalPlaytime > 0 ? Math.Clamp(plti / totalPlaytime, 0, 1) : 0;
+            GetView().txtMostPlayedShare.Text = totalPlaytime > 0 ? share.ToString("P0", CultureInfo.CurrentCulture) : FnTime.NoValue;
+            GetView().scMostPlayedShare.ScaleX = share;
+
+            // No cover without a played game in the time span
+            GetView().ccMostPlayedCase.Content = FnString.IsNullEmptyOrWhitespace(ppfn) ? null : CFProfilesApp.LoadProfileCover(ppfn);
         }
 
         protected void EV_BtnRefresh()

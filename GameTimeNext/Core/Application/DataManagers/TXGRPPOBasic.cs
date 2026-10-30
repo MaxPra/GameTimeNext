@@ -1,15 +1,34 @@
 ﻿using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.DataBase.DevSync;
+using GameTimeNext.Core.Framework.DataBase.Migration;
 using System.Data.SQLite;
 using System.Globalization;
 using UIX.ViewController.Engine.DataBaseObjects;
+using UIX.ViewController.Engine.Migration.Types;
 using UIX.ViewController.Engine.Querying;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.DataManagers
 {
     public class TXGRPPOBasic
     {
+        private readonly SQLiteConnection? _connectionOverride;
+
+        protected SQLiteConnection _connection
+        {
+            get => _connectionOverride ?? AppEnvironment.GetDataBaseManager().GetConnection();
+        }
+
+        public TXGRPPOBasic()
+        {
+        }
+
+        public TXGRPPOBasic(SQLiteConnection connection)
+        {
+            _connectionOverride = connection;
+        }
+
+        #region Methods PUBLIC
         public virtual T1GRPPO CreateNew()
         {
             T1GRPPO obj = new T1GRPPO();
@@ -17,49 +36,78 @@ namespace GameTimeNext.Core.Application.DataManagers
             return obj;
         }
 
+        public virtual T1GRPPO Copy(T1GRPPO objFrom)
+        {
+            T1GRPPO obj = CreateNew();
+            obj.GRID = objFrom.GRID;
+            obj.PFID = objFrom.PFID;
+            return obj;
+        }
+
+        public virtual T1GRPPO DeepCopy(T1GRPPO objFrom)
+        {
+            throw new NotImplementedException();
+        }
+
         public virtual void Save(T1GRPPO obj)
         {
-            if (obj == null)
+            if (obj is null)
+            {
                 throw new ArgumentNullException(nameof(obj));
+            }
 
-            SQLiteConnection connection = AppEnvironment.GetDataBaseManager().GetConnection();
-            EnsureOpen(connection);
-
-            if (Exists(connection, obj))
-                Update(connection, obj);
+            if (Exists(obj))
+            {
+                Update(obj);
+            }
             else
-                Insert(connection, obj);
-
+            {
+                Insert(obj);
+            }
             obj.State = UIXTableObjectState.Available;
             obj.AcceptChanges();
-            DevSyncCsvSyncService.ExportTableFor(obj);
+            MigrationFactory.ToCsv.ExportCsvFileFor(_connection, obj, MigrationFactory.ImportType.DevSync);
         }
 
-        public virtual void Delete(long gPID)
+        public virtual void Delete(long gpid)
         {
-            SQLiteConnection connection = AppEnvironment.GetDataBaseManager().GetConnection();
-            EnsureOpen(connection);
-
-            using SQLiteCommand cmd = connection.CreateCommand();
-            cmd.CommandText = "DELETE FROM T1GRPPO WHERE GPID = @GPID";
-            cmd.Parameters.AddWithValue("@GPID", gPID);
+            using SQLiteCommand cmd = _connection.CreateCommand();
+            cmd.CommandText = "DELETE FROM T1GRPPO WHERE GPID = @GPID;";
+            cmd.Parameters.AddWithValue("@GPID", ToDbValue(gpid));
             cmd.ExecuteNonQuery();
-            DevSyncCsvSyncService.ExportTable("T1GRPPO");
+            MigrationFactory.ToCsv.ExportCsvFileFor(_connection, "T1GRPPO", MigrationFactory.ImportType.DevSync);
         }
 
-        public virtual T1GRPPO? Read(long gPID)
+        public bool Exists(T1GRPPO obj)
         {
-            UIXQuery query = new UIXQuery(K1GRPPO.Name, AppEnvironment.GetDataBaseManager().GetConnection());
+            return Exists(obj.GPID);
+        }
+
+        public bool Exists(long gpid)
+        {
+            using SQLiteCommand cmd = _connection.CreateCommand();
+            cmd.CommandText = "SELECT COUNT(*) FROM T1GRPPO WHERE GPID = @GPID;";
+            cmd.Parameters.AddWithValue("@GPID", ToDbValue(gpid));
+            return Convert.ToInt64(cmd.ExecuteScalar(), CultureInfo.InvariantCulture) > 0;
+        }
+
+        public virtual T1GRPPO? Read(long gpid)
+        {
+            UIXQuery query = new UIXQuery(K1GRPPO.Name, _connection);
             query.AddField(K1GRPPO.Name, K1GRPPO.Fields.GPID);
             query.AddField(K1GRPPO.Name, K1GRPPO.Fields.GRID);
             query.AddField(K1GRPPO.Name, K1GRPPO.Fields.PFID);
             query.AddField(K1GRPPO.Name, K1GRPPO.Fields.CRAT);
+            query.AddField(K1GRPPO.Name, K1GRPPO.Fields.CRUS);
             query.AddField(K1GRPPO.Name, K1GRPPO.Fields.CHAT);
-            query.AddWhere(K1GRPPO.Name, K1GRPPO.Fields.GPID, QueryCompareType.EQUALS, gPID);
+            query.AddField(K1GRPPO.Name, K1GRPPO.Fields.CHUS);
+            query.AddWhere(K1GRPPO.Name, K1GRPPO.Fields.GPID, QueryCompareType.EQUALS, gpid);
 
             using var reader = query.Execute();
             if (!reader.Read())
+            {
                 return null;
+            }
 
             T1GRPPO obj = Map(reader);
             obj.AcceptChanges();
@@ -68,18 +116,19 @@ namespace GameTimeNext.Core.Application.DataManagers
 
         public virtual List<T1GRPPO> ReadAll()
         {
-            UIXQuery query = new UIXQuery(K1GRPPO.Name, AppEnvironment.GetDataBaseManager().GetConnection());
+            UIXQuery query = new UIXQuery(K1GRPPO.Name, _connection);
             query.AddField(K1GRPPO.Name, K1GRPPO.Fields.GPID);
             query.AddField(K1GRPPO.Name, K1GRPPO.Fields.GRID);
             query.AddField(K1GRPPO.Name, K1GRPPO.Fields.PFID);
             query.AddField(K1GRPPO.Name, K1GRPPO.Fields.CRAT);
+            query.AddField(K1GRPPO.Name, K1GRPPO.Fields.CRUS);
             query.AddField(K1GRPPO.Name, K1GRPPO.Fields.CHAT);
+            query.AddField(K1GRPPO.Name, K1GRPPO.Fields.CHUS);
             query.AddOrderBy(K1GRPPO.Name, K1GRPPO.Fields.GPID, OrderDirection.ASC);
 
             List<T1GRPPO> list = new List<T1GRPPO>();
             using var reader = query.Execute();
             while (reader.Read())
-
             {
                 T1GRPPO obj = Map(reader);
                 obj.AcceptChanges();
@@ -87,91 +136,67 @@ namespace GameTimeNext.Core.Application.DataManagers
             }
             return list;
         }
+        #endregion
 
-        private void Insert(SQLiteConnection connection, T1GRPPO obj)
-        {
-            using SQLiteCommand cmd = connection.CreateCommand();
-            DateTime now = DateTime.Now;
-            obj.CRAT = now;
-            obj.CHAT = now;
-            cmd.CommandText = "INSERT INTO T1GRPPO (GRID, PFID, CRAT, CHAT) VALUES (@GRID, @PFID, @CRAT, @CHAT)";
-            cmd.Parameters.AddWithValue("@GRID", ToDbValue(obj.GRID));
-            cmd.Parameters.AddWithValue("@PFID", ToDbValue(obj.PFID));
-            cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
-            cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
-            cmd.ExecuteNonQuery();
-            using SQLiteCommand idCmd = connection.CreateCommand();
-            idCmd.CommandText = "SELECT last_insert_rowid();";
-            obj.GPID = Convert.ToInt64(idCmd.ExecuteScalar());
-        }
-
-        private void Update(SQLiteConnection connection, T1GRPPO obj)
-        {
-            using SQLiteCommand cmd = connection.CreateCommand();
-            obj.CHAT = DateTime.Now;
-            cmd.CommandText = "UPDATE T1GRPPO SET GRID = @GRID, PFID = @PFID, CRAT = @CRAT, CHAT = @CHAT WHERE GPID = @GPID";
-            cmd.Parameters.AddWithValue("@GPID", ToDbValue(obj.GPID));
-            cmd.Parameters.AddWithValue("@GRID", ToDbValue(obj.GRID));
-            cmd.Parameters.AddWithValue("@PFID", ToDbValue(obj.PFID));
-            cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
-            cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
-            cmd.ExecuteNonQuery();
-        }
-
-        private bool Exists(SQLiteConnection connection, T1GRPPO obj)
-        {
-            using SQLiteCommand cmd = connection.CreateCommand();
-            cmd.CommandText = "SELECT COUNT(*) FROM T1GRPPO WHERE GPID = @GPID";
-            cmd.Parameters.AddWithValue("@GPID", ToDbValue(obj.GPID));
-            return Convert.ToInt64(cmd.ExecuteScalar()) > 0;
-        }
+        #region Methods PROTECTED
 
         protected static T1GRPPO Map(SQLiteDataReader reader)
         {
             T1GRPPO obj = new T1GRPPO();
-            obj.GPID = reader.IsDBNull(0) ? 0 : Convert.ToInt64(reader.GetValue(0));
-            obj.GRID = reader.IsDBNull(1) ? 0 : Convert.ToInt64(reader.GetValue(1));
-            obj.PFID = reader.IsDBNull(2) ? 0 : Convert.ToInt64(reader.GetValue(2));
-            obj.CRAT = ParseDbDateTime(reader.GetValue(3));
-            obj.CHAT = ParseDbDateTime(reader.GetValue(4));
+            obj.GPID = UIXQuery.GetInt64(reader, K1GRPPO.Name, K1GRPPO.Fields.GPID);
+            obj.GRID = UIXQuery.GetInt64(reader, K1GRPPO.Name, K1GRPPO.Fields.GRID);
+            obj.PFID = UIXQuery.GetInt64(reader, K1GRPPO.Name, K1GRPPO.Fields.PFID);
+            obj.CRAT = UIXQuery.GetDateTime(reader, K1GRPPO.Name, K1GRPPO.Fields.CRAT);
+            obj.CRUS = UIXQuery.GetString(reader, K1GRPPO.Name, K1GRPPO.Fields.CRUS, def: "");
+            obj.CHAT = UIXQuery.GetDateTime(reader, K1GRPPO.Name, K1GRPPO.Fields.CHAT);
+            obj.CHUS = UIXQuery.GetString(reader, K1GRPPO.Name, K1GRPPO.Fields.CHUS, def: "");
             obj.State = UIXTableObjectState.Available;
             return obj;
         }
+        #endregion
 
-        private static object ToDbValue(object? value)
+        #region Methods PRIVATE
+        private void Insert(T1GRPPO obj)
         {
-            if (value is bool boolValue)
-                return boolValue ? 1 : 0;
-            if (value is DateTime dt)
-                return dt.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
-            return value ?? DBNull.Value;
+            obj.CRAT = DateTime.Now;
+            obj.CHAT = DateTime.Now;
+            obj.CRUS = FnOpSys.GetCurrentUserName();
+            obj.CHUS = FnOpSys.GetCurrentUserName();
+            using SQLiteCommand cmd = _connection.CreateCommand();
+            cmd.CommandText = "INSERT INTO T1GRPPO (GRID, PFID, CRAT, CRUS, CHAT, CHUS) VALUES (@GRID, @PFID, @CRAT, @CRUS, @CHAT, @CHUS);";
+            cmd.Parameters.AddWithValue("@GRID", ToDbValue(obj.GRID));
+            cmd.Parameters.AddWithValue("@PFID", ToDbValue(obj.PFID));
+            cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
+            cmd.Parameters.AddWithValue("@CRUS", ToDbValue(obj.CRUS));
+            cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
+            cmd.Parameters.AddWithValue("@CHUS", ToDbValue(obj.CHUS));
+            cmd.ExecuteNonQuery();
+
+            using SQLiteCommand idCmd = _connection.CreateCommand();
+            idCmd.CommandText = "SELECT last_insert_rowid();";
+            obj.GPID = Convert.ToInt64(idCmd.ExecuteScalar(), CultureInfo.InvariantCulture);
         }
 
-        private static DateTime ParseDbDateTime(object? value)
+        private void Update(T1GRPPO obj)
         {
-            if (value == null || value == DBNull.Value)
-                return DateTime.MinValue;
-
-            string raw = value.ToString() ?? string.Empty;
-            if (string.IsNullOrWhiteSpace(raw))
-                return DateTime.MinValue;
-
-            if (DateTime.TryParseExact(raw, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsed))
-                return parsed;
-            if (DateTime.TryParseExact(raw, "dd.MM.yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsed))
-                return parsed;
-            if (DateTime.TryParse(raw, CultureInfo.CurrentCulture, DateTimeStyles.None, out parsed))
-                return parsed;
-            if (DateTime.TryParse(raw, CultureInfo.InvariantCulture, DateTimeStyles.None, out parsed))
-                return parsed;
-
-            return DateTime.MinValue;
+            obj.CHAT = DateTime.Now;
+            obj.CHUS = FnOpSys.GetCurrentUserName();
+            using SQLiteCommand cmd = _connection.CreateCommand();
+            cmd.CommandText = "UPDATE T1GRPPO SET GRID = @GRID, PFID = @PFID, CRAT = @CRAT, CRUS = @CRUS, CHAT = @CHAT, CHUS = @CHUS WHERE GPID = @GPID;";
+            cmd.Parameters.AddWithValue("@GPID", ToDbValue(obj.GPID));
+            cmd.Parameters.AddWithValue("@GRID", ToDbValue(obj.GRID));
+            cmd.Parameters.AddWithValue("@PFID", ToDbValue(obj.PFID));
+            cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
+            cmd.Parameters.AddWithValue("@CRUS", ToDbValue(obj.CRUS));
+            cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
+            cmd.Parameters.AddWithValue("@CHUS", ToDbValue(obj.CHUS));
+            cmd.ExecuteNonQuery();
         }
 
-        protected static void EnsureOpen(SQLiteConnection connection)
+        private static object? ToDbValue(object? valFrom)
         {
-            if (connection.State != System.Data.ConnectionState.Open)
-                connection.Open();
+            return UIXSqliteDataType.Convert(UIXSqliteDataType.ConversionType.CSharp, UIXSqliteDataType.ConversionType.Sqlite, valFrom);
         }
+        #endregion
     }
 }

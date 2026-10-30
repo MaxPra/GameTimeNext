@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="tile" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1D1D27"/>
+      <stop offset="1" stop-color="#0A0A0E"/>
+    </linearGradient>
+    <linearGradient id="tileEdge" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0.04"/>
+    </linearGradient>
+    <radialGradient id="ambient" cx="512" cy="540" r="400" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#3498E5" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#3498E5" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="glass" x1="343" y1="292" x2="673" y2="732" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.10"/>
+      <stop offset="0.55" stop-color="#FFFFFF" stop-opacity="0.03"/>
+      <stop offset="1" stop-color="#15629E" stop-opacity="0.28"/>
+    </linearGradient>
+    <linearGradient id="glassEdge" x1="343" y1="292" x2="673" y2="732" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.45"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0.08"/>
+    </linearGradient>
+    <linearGradient id="line" x1="343" y1="292" x2="673" y2="732" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7CC8F7"/>
+      <stop offset="0.5" stop-color="#3498E5"/>
+      <stop offset="1" stop-color="#2289DA"/>
+    </linearGradient>
+    <radialGradient id="tip" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#BFE4FF" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#3498E5" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="blur" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="18"/>
+    </filter>
+    <clipPath id="tileClip">
+      <rect x="64" y="64" width="896" height="896" rx="200"/>
+    </clipPath>
+  </defs>
+
+  <!-- Tile -->
+  <rect x="64" y="64" width="896" height="896" rx="200" fill="url(#tile)"/>
+  <g clip-path="url(#tileClip)">
+    <rect x="64" y="64" width="896" height="896" fill="url(#ambient)"/>
+  </g>
+  <rect x="65.5" y="65.5" width="893" height="893" rx="198.5" fill="none" stroke="url(#tileEdge)" stroke-width="3"/>
+
+  <g transform="translate(512 512) scale(1.14) translate(-498 -492)">
+    <!-- Library cards behind -->
+    <g id="back">
+      <rect x="263" y="204" width="278" height="370" rx="46" fill="#FFFFFF" fill-opacity="0.025" stroke="#FFFFFF" stroke-opacity="0.07" stroke-width="3"/>
+      <rect x="303" y="248" width="304" height="405" rx="50" fill="#FFFFFF" fill-opacity="0.035" stroke="#FFFFFF" stroke-opacity="0.11" stroke-width="3"/>
+    </g>
+
+    <!-- Front cover (glass) -->
+    <rect x="343" y="292" width="330" height="440" rx="56" fill="#0E0E14"/>
+    <rect x="343" y="292" width="330" height="440" rx="56" fill="url(#glass)" stroke="url(#glassEdge)" stroke-width="3"/>
+
+    <!-- G progress line: glow, then line -->
+    <g id="glow" filter="url(#blur)" opacity="0.65">
+      <path d="M 595 292 L 399 292 A 56 56 0 0 0 343 348 L 343 676 A 56 56 0 0 0 399 732 L 617 732 A 56 56 0 0 0 673 676 L 673 551 A 30 30 0 0 0 643 521 L 423 521 M 548 521 L 548 732 M 548 521 L 657 716"
+            fill="none" stroke="#3498E5" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="673" cy="292" r="25" fill="#3498E5"/>
+    </g>
+    <path d="M 595 292 L 399 292 A 56 56 0 0 0 343 348 L 343 676 A 56 56 0 0 0 399 732 L 617 732 A 56 56 0 0 0 673 676 L 673 551 A 30 30 0 0 0 643 521 L 423 521 M 548 521 L 548 732 M 548 521 L 657 716"
+          fill="none" stroke="url(#line)" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="673" cy="292" r="25" fill="#8ED1FA"/>
+    <!-- Leading tip of the progress line -->
+    <circle id="tipGlow" cx="423" cy="521" r="32" fill="url(#tip)" opacity="0.6"/>
+  </g>
+</svg>

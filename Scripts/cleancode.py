@@ -35,6 +35,11 @@ ALLOWED_SOURCES = {
         "GameTimeNext/Core/Framework/Config/AppConfig.Paths.cs": 1,
         "GameTimeNext/App.xaml.cs": 1,
     },
+
+    "CryloudStudios": {
+        "GameTimeNext/Core/Framework/Config/AppConfig.Paths.cs": 1,
+        "GameTimeNext/App.xaml.cs": 1,
+    },
 }
 
 
@@ -70,16 +75,41 @@ ALLOWED_CODE_SEARCHES = {
     # },
     "DirectorySeparatorChar": {
         "GameTimeNext/Core/Framework/Config/AppConfigOld.cs": 1000,
-        "GameTimeNext/Core/Framework/LauncherIntegration/SteamImportHelper.cs": 1,
-        "GameTimeNext/Core/Framework/LauncherIntegration/SteamLocatorService.cs": 1,
+        "GameTimeNext/Core/Framework/LauncherIntegration/Steam/SteamLocator.cs": 1,
         "GameTimeNext/Core/Framework/Utils/FnSystem.cs": 1,
     },
+}
+
+
+# --------------------------------------------------------------
+# XAML ELEMENT searches
+#
+# Finds elements (tags) in XAML files, outside of comments.
+# Property elements (e.g. <ListBox.ItemsPanel>) don't count.
+# Same semantics as ALLOWED_SOURCES:
+#
+#   "file": count
+#
+# A file not listed here may not contain the element at all.
+#
+# Selector controls are always the engine's UIX classes
+# (UIXDataGrid, UIXListBox, UIXListView, UIXTabControl,
+# UIXComboBox), so selector adapters / controllers work with
+# every list (IUIXSelector).
+# --------------------------------------------------------------
+ALLOWED_XAML_ELEMENTS = {
+    "DataGrid": {},
+    "ListBox": {},
+    "ListView": {},
+    "TabControl": {},
+    "ComboBox": {},
 }
 
 
 # File types to scan
 EXTENSIONS = {
     ".cs",
+    ".xaml",
 }
 
 
@@ -545,6 +575,9 @@ def scan_file(path: Path):
         .as_posix()
     )
 
+    if path.suffix.lower() == ".xaml":
+        return scan_xaml_file(path, relative_path, source)
+
     tokens = tokenize_source(source)
     literals = extract_string_literals(source, tokens)
     code_text = build_code_text(source, tokens)
@@ -592,6 +625,45 @@ def scan_file(path: Path):
             _find_occurrences(
                 search, allowed_map, relative_path,
                 source, lines, path, "code", positions,
+            )
+        )
+
+    return results
+
+
+def scan_xaml_file(path: Path, relative_path: str, source: str):
+    """
+    Checks the XAML elements of ALLOWED_XAML_ELEMENTS. Comments
+    are blanked out first (same length, newlines kept), so line
+    numbers stay correct.
+    """
+
+    results = []
+
+    code_text = re.sub(
+        r"<!--.*?-->",
+        lambda m: re.sub(r"[^\n]", " ", m.group(0)),
+        source,
+        flags=re.DOTALL,
+    )
+
+    lines = source.splitlines()
+
+    for element, allowed_map in ALLOWED_XAML_ELEMENTS.items():
+
+        pattern = re.compile(
+            "<" + re.escape(element) + r"(?=[\s/>])"
+        )
+
+        positions = [
+            match.start()
+            for match in pattern.finditer(code_text)
+        ]
+
+        results.extend(
+            _find_occurrences(
+                element, allowed_map, relative_path,
+                source, lines, path, "xaml", positions,
             )
         )
 
@@ -683,11 +755,11 @@ def main():
 
     for result in grouped.values():
 
-        kind_label = (
-            "STRING"
-            if result["kind"] == "string"
-            else "CODE"
-        )
+        kind_label = {
+            "string": "STRING",
+            "code": "CODE",
+            "xaml": "XAML",
+        }[result["kind"]]
 
         print(
             f'[{kind_label:<6}] '

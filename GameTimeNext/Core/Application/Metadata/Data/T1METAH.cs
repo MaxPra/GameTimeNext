@@ -1,5 +1,4 @@
-using UIX.ViewController.Engine.DataBaseObjects;
-using UIX.ViewController.Engine.Utils;
+﻿using UIX.ViewController.Engine.DataBaseObjects;
 
 namespace GameTimeNext.Core.Application.Metadata.Data
 {
@@ -7,77 +6,36 @@ namespace GameTimeNext.Core.Application.Metadata.Data
     {
         public override bool IsDevSynced => true;
 
-        private DateTime _crat;
-        private DateTime _chat;
-
         [UIXSignatureField(0)]
-        public string MENAM { get; set; }
+        public string MENAM { get; set; } = "";
 
         [UIXSignatureField(1)]
-        public string DESCR { get; set; }
+        public string DESCR { get; set; } = "";
 
         [UIXSignatureField(2)]
-        public string MTYPE { get; set; }
+        public string MTYPE { get; set; } = "";
 
         [UIXSignatureField(3)]
-        public bool DSYNC { get; set; }
+        public bool DSYNC { get; set; } = false;
 
         [UIXSignatureField(4)]
-        public bool GENER { get; set; }
+        public bool GENER { get; set; } = false;
 
         [UIXSignatureField(5)]
-        public DateTime CRAT
-        {
-            get => _crat;
-            set
-            {
-                if (_crat == value)
-                    return;
-
-                _crat = value;
-                CRUS = FnOpSys.GetCurrentUserName();
-            }
-        }
+        public DateTime CRAT { get; set; } = DateTime.MinValue;
 
         [UIXSignatureField(6)]
-        public string CRUS { get; set; }
+        public string CRUS { get; set; } = "";
 
         [UIXSignatureField(7)]
-        public DateTime CHAT
-        {
-            get => _chat;
-            set
-            {
-                if (_chat == value)
-                    return;
-
-                _chat = value;
-                CHUS = FnOpSys.GetCurrentUserName();
-            }
-        }
+        public DateTime CHAT { get; set; } = DateTime.MinValue;
 
         [UIXSignatureField(8)]
-        public string CHUS { get; set; }
-
-        public T1METAH()
-        {
-            MENAM = string.Empty;
-            DESCR = string.Empty;
-            MTYPE = string.Empty;
-            DSYNC = false;
-            GENER = false;
-            CRAT = DateTime.MinValue;
-            CRUS = string.Empty;
-            CHAT = DateTime.MinValue;
-            CHUS = string.Empty;
-
-            AcceptChanges();
-        }
+        public string CHUS { get; set; } = "";
 
         public override void Save()
         {
-            TXMETAH txmetah = new TXMETAH();
-            txmetah.Save(this);
+            new TXMETAH().Save(this);
         }
     }
 }

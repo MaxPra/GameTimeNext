@@ -1,4 +1,5 @@
 ﻿using GameTimeNext.Core.Application.Profiles.Controller;
+using GameTimeNext.Core.Application.Profiles.Selectors;
 using GameTimeNext.Core.Application.Profiles.Views;
 using UIX.ViewController.Engine.Runnables;
 
@@ -13,6 +14,11 @@ namespace GameTimeNext.Core.Application.Profiles
         public long SteamAppId { get; set; }
         public string GameName { get; set; }
 
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(ProfilesSteamGridDBApp));
+        }
+
         public override void InitializeApplicationOutput()
         {
             // View
@@ -22,6 +28,10 @@ namespace GameTimeNext.Core.Application.Profiles
             // Controller
             _profilesSteamGridDBViewController = new ProfilesSteamGridDBViewController(this);
             _profilesSteamGridDBView.ViewController = _profilesSteamGridDBViewController;
+
+            // Selectors
+            _profilesSteamGridDBView.lbSteamGridCovers.SelectorAdapter = new ProfilesSteamGridDBView_CoversSelectorAdapter(this);
+            _profilesSteamGridDBView.lbSteamGridCovers.SelectorController = new ProfilesSteamGridDBView_CoversSelectorController(this);
         }
 
         public void Search(UIXApplication hostApplication, long steamAppId, string gameName, Action<ProfilesSteamGridDBViewController.ProfilesSteamGridDBViewReturn> callback)

@@ -1,0 +1,16 @@
+﻿MEID;MEPA;METY;MEDE;MEAP;DEVT;MEOR;CRAT;CRUS;CHAT;CHUS
+1;0;01;Library;;0;10;2026-10-28 19:07:27;prage;2026-10-28 19:07:27;prage
+2;1;02;Profiles;ProfilesApp;0;10;2026-10-28 19:09:03;prage;2026-10-28 19:09:03;prage
+3;1;02;Playthroughs;PlaythroughsApp;0;20;2026-10-28 19:09:28;prage;2026-10-28 19:09:28;prage
+4;1;02;Dashboard;DashboardApp;0;30;2026-10-28 19:09:41;prage;2026-10-28 19:09:41;prage
+5;0;01;Setup;;0;20;2026-10-28 19:09:58;prage;2026-10-28 19:09:58;prage
+6;5;02;Screensetups;ScreensetupsApp;0;10;2026-10-28 19:20:43;prage;2026-10-28 19:20:43;prage
+7;5;02;Settings;SettingsApp;0;20;2026-10-28 19:20:56;prage;2026-10-28 19:58:54;prage
+8;0;01;Administration;;0;30;2026-10-28 19:21:17;prage;2026-10-28 19:21:17;prage
+9;8;02;Codetables;CodetablesApp;0;10;2026-10-28 19:21:28;prage;2026-10-28 19:59:54;prage
+11;0;01;Development;;1;40;2026-10-28 19:21:49;prage;2026-10-28 20:09:14;prage
+12;11;02;Metadata;MetadataApp;0;10;2026-10-28 19:22:00;prage;2026-10-28 19:22:00;prage
+13;11;02;Application Properties Definitions;ApplicationPropertiesApp;0;20;2026-10-28 19:22:13;prage;2026-10-28 19:22:13;prage
+14;11;02;Errormessages;ErrorMessagesApp;0;30;2026-10-28 19:22:27;prage;2026-10-28 19:22:27;prage
+15;11;02;Menus;MenusApp;0;40;2026-10-28 19:22:34;prage;2026-10-28 19:22:34;prage
+16;11;02;Create Import Package;CreateImportPackageApp;0;50;2026-10-28 20:00:13;prage;2026-10-28 20:00:13;prage

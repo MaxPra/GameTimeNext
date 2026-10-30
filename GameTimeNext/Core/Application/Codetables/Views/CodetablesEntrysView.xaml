@@ -14,13 +14,12 @@
     MinHeight="600"
     d:DesignHeight="700"
     d:DesignWidth="1100"
-    ResizeMode="CanResize"
     ShowMaximizeButton="False"
     ShowMinimizeButton="False"
     WindowStartupLocation="CenterOwner"
     mc:Ignorable="d">
 
-    <Grid Margin="20,16,20,20">
+    <Grid Style="{StaticResource View.Root}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="16" />
@@ -30,18 +29,15 @@
         <Border
             Grid.Row="0"
             Padding="16"
-            Background="{DynamicResource Brush.Surface}"
-            BorderBrush="{DynamicResource Brush.Border}"
-            BorderThickness="1"
-            CornerRadius="{StaticResource DefaultCornerRadius}">
+            Style="{StaticResource Card}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="130" />
-                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="12" />
                     <ColumnDefinition Width="240" />
                     <ColumnDefinition Width="24" />
                     <ColumnDefinition Width="130" />
-                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="12" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
@@ -80,10 +76,7 @@
         <Border
             Grid.Row="2"
             Padding="16"
-            Background="{DynamicResource Brush.Surface}"
-            BorderBrush="{DynamicResource Brush.Border}"
-            BorderThickness="1"
-            CornerRadius="{StaticResource DefaultCornerRadius}">
+            Style="{StaticResource Card}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -102,13 +95,12 @@
                     <Button
                         x:Name="BtnAdd"
                         Grid.Column="1"
-                        Width="38"
-                        Height="36"
-                        ToolTip="Add entry">
+                        ToolTip="Add entry"
+                        Style="{StaticResource Button.Icon}">
                         <TextBlock
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
-                            FontFamily="Segoe MDL2 Assets"
+                            FontFamily="{StaticResource Font.Icons}"
                             FontSize="14"
                             Text="&#xE710;" />
                     </Button>
@@ -116,14 +108,13 @@
                     <Button
                         x:Name="BtnRefresh"
                         Grid.Column="3"
-                        Width="38"
-                        Height="36"
                         IsDefault="True"
-                        ToolTip="Refresh entries">
+                        ToolTip="Refresh entries"
+                        Style="{StaticResource Button.Icon}">
                         <TextBlock
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
-                            FontFamily="Segoe MDL2 Assets"
+                            FontFamily="{StaticResource Font.Icons}"
                             FontSize="14"
                             Text="&#xE72C;" />
                     </Button>
@@ -138,8 +129,6 @@
                     CanUserResizeRows="False"
                     HeadersVisibility="Column"
                     IsReadOnly="True"
-                    ItemsSource="{Binding CodetableEntryDataGridRows}"
-                    SelectedItem="{Binding SelectedRow, Mode=TwoWay}"
                     SelectionMode="Single"
                     SelectionUnit="FullRow">
                     <uixsel:UIXDataGrid.Columns>

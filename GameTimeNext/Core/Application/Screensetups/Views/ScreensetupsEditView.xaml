@@ -1,0 +1,215 @@
+<ui:GTNWindowView
+    x:Class="GameTimeNext.Core.Application.Screensetups.Views.ScreensetupsEditView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:uixcb="clr-namespace:UIX.ViewController.Engine.FrameworkElements.ComboBoxes;assembly=UIX.ViewController.Engine"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI.Base"
+    xmlns:uixprops="clr-namespace:UIX.ViewController.Engine.AttachedProperties;assembly=UIX.ViewController.Engine"
+    xmlns:uixsel="clr-namespace:UIX.ViewController.Engine.FrameworkElements.Selectors;assembly=UIX.ViewController.Engine"
+    Title="Screensetup"
+    Width="900"
+    Height="560"
+    ResizeMode="NoResize"
+    ShowMaximizeButton="False"
+    ShowMinimizeButton="False"
+    WindowStartupLocation="CenterOwner"
+    mc:Ignorable="d">
+
+    <Grid Style="{StaticResource View.Root}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="16" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <uixsel:UIXTabControl x:Name="tabControl" Grid.Row="0">
+            <TabItem Header="General">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="12" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="12" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="6" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="130" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        VerticalAlignment="Center"
+                        Style="{StaticResource Text.Label}"
+                        Text="Name" />
+
+                    <TextBox
+                        x:Name="TxbName"
+                        Grid.Row="0"
+                        Grid.Column="2"
+                        Height="36"
+                        VerticalContentAlignment="Center"
+                        uixprops:UIXAttachedProperty.Path="T1SCRSH.SSNA" />
+
+                    <TextBlock
+                        Grid.Row="2"
+                        Grid.Column="0"
+                        VerticalAlignment="Center"
+                        Style="{StaticResource Text.Label}"
+                        Text="Description" />
+
+                    <TextBox
+                        x:Name="TxbDescription"
+                        Grid.Row="2"
+                        Grid.Column="2"
+                        Height="36"
+                        VerticalContentAlignment="Center"
+                        uixprops:UIXAttachedProperty.Path="T1SCRSH.SSDE" />
+
+                    <TextBlock
+                        Grid.Row="4"
+                        Grid.Column="0"
+                        VerticalAlignment="Center"
+                        Style="{StaticResource Text.Label}"
+                        Text="Audio device" />
+
+                    <uixcb:UIXComboBox
+                        x:Name="CmbAudioDevice"
+                        ShowKeys="False"
+                        AdditionalEntry="(Unchanged)"
+                        Grid.Row="4"
+                        Grid.Column="2"
+                        Height="36"
+                        VerticalAlignment="Center" />
+
+                    <TextBlock
+                        Grid.Row="6"
+                        Grid.Column="2"
+                        Style="{StaticResource Text.Hint}"
+                        Text="The audio device is switched after the monitors. Devices of monitors that are switched off are marked as not available."
+                        TextWrapping="Wrap" />
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Monitors">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="12" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="12" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock
+                            Grid.Column="0"
+                            VerticalAlignment="Center"
+                            Style="{StaticResource Text.Hint}"
+                            Text="Identical monitors can only be told apart with &quot;Identify&quot; while they are switched on."
+                            TextWrapping="Wrap" />
+
+                        <Button
+                            x:Name="BtnUseCurrentState"
+                            Grid.Column="2"
+                            Height="36"
+                            Padding="12,0"
+                            Content="Use current state"
+                            ToolTip="Take over the monitors that are switched on right now" />
+
+                        <Button
+                            x:Name="BtnIdentify"
+                            Grid.Column="4"
+                            VerticalAlignment="Center"
+                            ToolTip="Identify monitors"
+                            Style="{StaticResource Button.Icon}">
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                FontFamily="{StaticResource Font.Icons}"
+                                FontSize="14"
+                                Text="&#xE7F4;" />
+                        </Button>
+                    </Grid>
+
+                    <uixsel:UIXDataGrid
+                        x:Name="DgMonitors"
+                        Grid.Row="2"
+                        AutoGenerateColumns="False"
+                        CanUserAddRows="False"
+                        CanUserDeleteRows="False"
+                        CanUserResizeRows="False"
+                        HeadersVisibility="Column"
+                        IsReadOnly="True"
+                        SelectionMode="Single"
+                        SelectionUnit="FullRow">
+                        <uixsel:UIXDataGrid.Columns>
+                            <DataGridTextColumn
+                                Width="70"
+                                Binding="{Binding CONUMB}"
+                                Header="No." />
+                            <DataGridTextColumn
+                                Width="*"
+                                Binding="{Binding COMONA}"
+                                Header="Monitor" />
+                            <DataGridTextColumn
+                                Width="250"
+                                Binding="{Binding COSTAT}"
+                                Header="Current state" />
+                            <DataGridTemplateColumn Width="90" Header="Enabled">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            IsChecked="{Binding COMOEN, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Width="90" Header="Primary">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            IsChecked="{Binding COMOPR, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            Style="{StaticResource CheckBox.Switch}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </uixsel:UIXDataGrid.Columns>
+                    </uixsel:UIXDataGrid>
+                </Grid>
+            </TabItem>
+        </uixsel:UIXTabControl>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Button
+                x:Name="BtnSave"
+                Grid.Column="1"
+                Width="140"
+                Height="36"
+                Content="Save"
+                IsDefault="True"
+                Style="{StaticResource Button.Primary}" />
+        </Grid>
+    </Grid>
+</ui:GTNWindowView>

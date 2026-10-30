@@ -8,6 +8,9 @@ namespace GameTimeNext.Core.Framework.Config
     {
         #region External
         public FilterCache FilterCache { get; set; } = new FilterCache();
+
+        /// <summary>Library filter of the Big Picture mode, separate from the one of the profiles view.</summary>
+        public FilterCache BigPictureFilterCache { get; set; } = new FilterCache();
         public AppSettings AppSettings { get; set; } = new AppSettings();
         public UserSettings UserSettings { get; set; } = new UserSettings();
 

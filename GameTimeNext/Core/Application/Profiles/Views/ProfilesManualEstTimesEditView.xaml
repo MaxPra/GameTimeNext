@@ -11,37 +11,23 @@
     Height="500"
     MinWidth="760"
     MinHeight="500"
-    ResizeMode="CanResize"
     ShowMaximizeButton="False"
     ShowMinimizeButton="False"
     WindowStartupLocation="CenterOwner"
     mc:Ignorable="d">
 
-    <Grid Margin="18">
+    <Grid Style="{StaticResource View.Root}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="16" />
             <RowDefinition Height="*" />
             <RowDefinition Height="16" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Margin="16,0,16,0">
-            <StackPanel Orientation="Vertical">
-                <TextBlock
-                    FontSize="20"
-                    FontWeight="SemiBold"
-                    Text="Set Manual Estimated Times" />
-
-                <TextBlock
-                    Margin="0,4,0,0"
-                    Opacity="0.75"
-                    Text="Enter the estimated completion times for the selected profile." />
-            </StackPanel>
-        </Grid>
-
-        <Grid Grid.Row="2" Margin="16,0,16,0">
-            <Border Padding="16" CornerRadius="10">
+        <Grid Grid.Row="0">
+            <Border
+                VerticalAlignment="Top"
+                Padding="16"
+                Style="{StaticResource Card}">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -71,7 +57,7 @@
                         Grid.Row="2"
                         Grid.Column="0"
                         VerticalAlignment="Center"
-                        Opacity="0.8"
+                        Style="{StaticResource Text.Label}"
                         Text="Main Story (h)" />
 
                     <TextBox
@@ -85,7 +71,7 @@
                         Grid.Row="4"
                         Grid.Column="0"
                         VerticalAlignment="Center"
-                        Opacity="0.8"
+                        Style="{StaticResource Text.Label}"
                         Text="Main Story + Extras (h)" />
 
                     <TextBox
@@ -99,7 +85,7 @@
                         Grid.Row="6"
                         Grid.Column="0"
                         VerticalAlignment="Center"
-                        Opacity="0.8"
+                        Style="{StaticResource Text.Label}"
                         Text="Completionist (h)" />
 
                     <TextBox
@@ -112,13 +98,13 @@
             </Border>
         </Grid>
 
-        <Grid Grid.Row="4" Margin="16,0,16,0">
+        <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="10" />
+                <ColumnDefinition Width="8" />
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="10" />
+                <ColumnDefinition Width="8" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
@@ -141,7 +127,8 @@
                 Grid.Column="5"
                 Width="140"
                 Height="36"
-                Content="Apply" />
+                Content="Apply"
+                Style="{StaticResource Button.Primary}" />
         </Grid>
     </Grid>
 </ui:GTNWindowView>

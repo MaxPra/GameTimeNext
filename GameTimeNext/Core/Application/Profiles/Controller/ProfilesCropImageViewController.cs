@@ -13,7 +13,7 @@ using UIX.ViewController.Engine.Runnables;
 
 namespace GameTimeNext.Core.Application.Profiles.Controller
 {
-    public class ProfilesCropImageViewController : UIXViewControllerBase
+    public class ProfilesCropImageViewController : UIXViewControllerBase<ProfilesCropImageApp, ProfilesCropImageView>
     {
         private const double CROP_RATIO = 600.0 / 900.0;
         private const double MIN_CROP_WIDTH = 90.0;
@@ -53,13 +53,13 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected override void BuildFirstImpl()
         {
-            GetWnd().thbMove.DragDelta += ThbMove_DragDelta;
-            GetWnd().thbTopLeft.DragDelta += ThbTopLeft_DragDelta;
-            GetWnd().thbTopRight.DragDelta += ThbTopRight_DragDelta;
-            GetWnd().thbBottomLeft.DragDelta += ThbBottomLeft_DragDelta;
-            GetWnd().thbBottomRight.DragDelta += ThbBottomRight_DragDelta;
-            GetWnd().grdImageHost.SizeChanged += GrdImageHost_SizeChanged;
-            GetWnd().brdCropArea.SizeChanged += BrdCropArea_SizeChanged;
+            GetView().thbMove.DragDelta += ThbMove_DragDelta;
+            GetView().thbTopLeft.DragDelta += ThbTopLeft_DragDelta;
+            GetView().thbTopRight.DragDelta += ThbTopRight_DragDelta;
+            GetView().thbBottomLeft.DragDelta += ThbBottomLeft_DragDelta;
+            GetView().thbBottomRight.DragDelta += ThbBottomRight_DragDelta;
+            GetView().grdImageHost.SizeChanged += GrdImageHost_SizeChanged;
+            GetView().brdCropArea.SizeChanged += BrdCropArea_SizeChanged;
 
             LoadSourceImage();
             UpdateLayoutMetrics();
@@ -73,7 +73,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
         }
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
         }
 
@@ -93,6 +93,10 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
         }
 
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
+        {
+        }
+
         protected override void FillDBOImpl()
         {
         }
@@ -107,31 +111,31 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected override void TriggeredEvent(FrameworkElement source, string eventName)
         {
-            if (source == GetWnd().thbMove && eventName == UIXEventNames.Thumb.DragDelta)
+            if (source == GetView().thbMove && eventName == UIXEventNames.Thumb.DragDelta)
             {
                 HandleMoveDrag();
                 return;
             }
 
-            if (source == GetWnd().thbTopLeft && eventName == UIXEventNames.Thumb.DragDelta)
+            if (source == GetView().thbTopLeft && eventName == UIXEventNames.Thumb.DragDelta)
             {
                 HandleResizeTopLeft();
                 return;
             }
 
-            if (source == GetWnd().thbTopRight && eventName == UIXEventNames.Thumb.DragDelta)
+            if (source == GetView().thbTopRight && eventName == UIXEventNames.Thumb.DragDelta)
             {
                 HandleResizeTopRight();
                 return;
             }
 
-            if (source == GetWnd().thbBottomLeft && eventName == UIXEventNames.Thumb.DragDelta)
+            if (source == GetView().thbBottomLeft && eventName == UIXEventNames.Thumb.DragDelta)
             {
                 HandleResizeBottomLeft();
                 return;
             }
 
-            if (source == GetWnd().thbBottomRight && eventName == UIXEventNames.Thumb.DragDelta)
+            if (source == GetView().thbBottomRight && eventName == UIXEventNames.Thumb.DragDelta)
             {
                 HandleResizeBottomRight();
                 return;
@@ -181,7 +185,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             _lastHorizontalChange = e.HorizontalChange;
             _lastVerticalChange = e.VerticalChange;
 
-            TriggeredEvent(GetWnd().thbMove, UIXEventNames.Thumb.DragDelta);
+            TriggeredEvent(GetView().thbMove, UIXEventNames.Thumb.DragDelta);
         }
 
         private void ThbTopLeft_DragDelta(object sender, DragDeltaEventArgs e)
@@ -189,7 +193,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             _lastHorizontalChange = e.HorizontalChange;
             _lastVerticalChange = e.VerticalChange;
 
-            TriggeredEvent(GetWnd().thbTopLeft, UIXEventNames.Thumb.DragDelta);
+            TriggeredEvent(GetView().thbTopLeft, UIXEventNames.Thumb.DragDelta);
         }
 
         private void ThbTopRight_DragDelta(object sender, DragDeltaEventArgs e)
@@ -197,7 +201,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             _lastHorizontalChange = e.HorizontalChange;
             _lastVerticalChange = e.VerticalChange;
 
-            TriggeredEvent(GetWnd().thbTopRight, UIXEventNames.Thumb.DragDelta);
+            TriggeredEvent(GetView().thbTopRight, UIXEventNames.Thumb.DragDelta);
         }
 
         private void ThbBottomLeft_DragDelta(object sender, DragDeltaEventArgs e)
@@ -205,7 +209,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             _lastHorizontalChange = e.HorizontalChange;
             _lastVerticalChange = e.VerticalChange;
 
-            TriggeredEvent(GetWnd().thbBottomLeft, UIXEventNames.Thumb.DragDelta);
+            TriggeredEvent(GetView().thbBottomLeft, UIXEventNames.Thumb.DragDelta);
         }
 
         private void ThbBottomRight_DragDelta(object sender, DragDeltaEventArgs e)
@@ -213,27 +217,27 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             _lastHorizontalChange = e.HorizontalChange;
             _lastVerticalChange = e.VerticalChange;
 
-            TriggeredEvent(GetWnd().thbBottomRight, UIXEventNames.Thumb.DragDelta);
+            TriggeredEvent(GetView().thbBottomRight, UIXEventNames.Thumb.DragDelta);
         }
 
         private void LoadSourceImage()
         {
-            GetWnd().imgSource.Source = GetApp().SourceImage;
+            GetView().imgSource.Source = GetApp().SourceImage;
         }
 
         private void UpdateLayoutMetrics()
         {
-            _hostWidth = GetWnd().grdImageHost.ActualWidth;
-            _hostHeight = GetWnd().grdImageHost.ActualHeight;
+            _hostWidth = GetView().grdImageHost.ActualWidth;
+            _hostHeight = GetView().grdImageHost.ActualHeight;
 
             if (_hostWidth <= 0)
-                _hostWidth = GetWnd().grdImageHost.Width;
+                _hostWidth = GetView().grdImageHost.Width;
 
             if (_hostHeight <= 0)
-                _hostHeight = GetWnd().grdImageHost.Height;
+                _hostHeight = GetView().grdImageHost.Height;
 
-            GetWnd().cnvOverlay.Width = _hostWidth;
-            GetWnd().cnvOverlay.Height = _hostHeight;
+            GetView().cnvOverlay.Width = _hostWidth;
+            GetView().cnvOverlay.Height = _hostHeight;
 
             if (GetApp().SourceImage == null || GetApp().SourceImage.PixelWidth <= 0 || GetApp().SourceImage.PixelHeight <= 0)
             {
@@ -262,8 +266,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 _displayImageY = 0;
             }
 
-            GetWnd().imgSource.Width = _displayImageWidth;
-            GetWnd().imgSource.Height = _displayImageHeight;
+            GetView().imgSource.Width = _displayImageWidth;
+            GetView().imgSource.Height = _displayImageHeight;
         }
 
         private void InitializeCropArea()
@@ -433,11 +437,11 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         private void RefreshCropArea()
         {
-            Canvas.SetLeft(GetWnd().brdCropArea, _cropX);
-            Canvas.SetTop(GetWnd().brdCropArea, _cropY);
+            Canvas.SetLeft(GetView().brdCropArea, _cropX);
+            Canvas.SetTop(GetView().brdCropArea, _cropY);
 
-            GetWnd().brdCropArea.Width = _cropWidth;
-            GetWnd().brdCropArea.Height = _cropHeight;
+            GetView().brdCropArea.Width = _cropWidth;
+            GetView().brdCropArea.Height = _cropHeight;
 
             UpdateOverlay();
             UpdateGuideLines();
@@ -449,38 +453,38 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             RectangleGeometry innerGeometry = new RectangleGeometry(new Rect(_cropX, _cropY, _cropWidth, _cropHeight));
 
             CombinedGeometry combinedGeometry = new CombinedGeometry(GeometryCombineMode.Exclude, outerGeometry, innerGeometry);
-            GetWnd().pthOverlay.Data = combinedGeometry;
+            GetView().pthOverlay.Data = combinedGeometry;
         }
 
         private void UpdateGuideLines()
         {
-            double width = GetWnd().brdCropArea.Width;
-            double height = GetWnd().brdCropArea.Height;
+            double width = GetView().brdCropArea.Width;
+            double height = GetView().brdCropArea.Height;
 
             double v1 = width / 3.0;
             double v2 = (width / 3.0) * 2.0;
             double h1 = height / 3.0;
             double h2 = (height / 3.0) * 2.0;
 
-            GetWnd().lnV1.X1 = v1;
-            GetWnd().lnV1.X2 = v1;
-            GetWnd().lnV1.Y1 = 0;
-            GetWnd().lnV1.Y2 = height;
+            GetView().lnV1.X1 = v1;
+            GetView().lnV1.X2 = v1;
+            GetView().lnV1.Y1 = 0;
+            GetView().lnV1.Y2 = height;
 
-            GetWnd().lnV2.X1 = v2;
-            GetWnd().lnV2.X2 = v2;
-            GetWnd().lnV2.Y1 = 0;
-            GetWnd().lnV2.Y2 = height;
+            GetView().lnV2.X1 = v2;
+            GetView().lnV2.X2 = v2;
+            GetView().lnV2.Y1 = 0;
+            GetView().lnV2.Y2 = height;
 
-            GetWnd().lnH1.X1 = 0;
-            GetWnd().lnH1.X2 = width;
-            GetWnd().lnH1.Y1 = h1;
-            GetWnd().lnH1.Y2 = h1;
+            GetView().lnH1.X1 = 0;
+            GetView().lnH1.X2 = width;
+            GetView().lnH1.Y1 = h1;
+            GetView().lnH1.Y2 = h1;
 
-            GetWnd().lnH2.X1 = 0;
-            GetWnd().lnH2.X2 = width;
-            GetWnd().lnH2.Y1 = h2;
-            GetWnd().lnH2.Y2 = h2;
+            GetView().lnH2.X1 = 0;
+            GetView().lnH2.X2 = width;
+            GetView().lnH2.Y1 = h2;
+            GetView().lnH2.Y2 = h2;
         }
 
         private BitmapImage? BuildCroppedBitmapImage()
@@ -531,16 +535,6 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             bitmapImage.Freeze();
 
             return bitmapImage;
-        }
-
-        private ProfilesCropImageApp GetApp()
-        {
-            return (ProfilesCropImageApp)App;
-        }
-
-        private ProfilesCropImageView GetWnd()
-        {
-            return (ProfilesCropImageView)View;
         }
 
         protected void EV_btnApply()

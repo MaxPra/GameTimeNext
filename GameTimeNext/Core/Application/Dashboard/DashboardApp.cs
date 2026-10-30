@@ -1,4 +1,5 @@
 ﻿using GameTimeNext.Core.Application.Dashboard.Controller;
+using GameTimeNext.Core.Application.Dashboard.Selectors;
 using GameTimeNext.Core.Application.Dashboard.Views;
 using System.Windows.Controls;
 using UIX.ViewController.Engine.Runnables;
@@ -6,6 +7,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Dashboard
 {
+    [UIXAppIcon(UIXMdlIcons.Dashboard)]
     public class DashboardApp : UIXApplication, IUIXApplicationStarter
     {
 
@@ -29,13 +31,18 @@ namespace GameTimeNext.Core.Application.Dashboard
             DashboardView.ViewController.Show(options);
         }
 
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(DashboardApp));
+        }
+
         public override void InitializeApplicationOutput()
         {
             this.DashboardView = new DashboardView();
             this.MainView = DashboardView;
             this.DashboardView.ViewController = new DashboardViewController(this);
-
-            Icon = UIXMdlIcons.Dashboard;
+            this.DashboardView.ListViewRecentGames.SelectorAdapter = new DashboardView_RecentGamesSelectorAdapter(this);
+            this.DashboardView.ListViewRecentGames.SelectorController = new DashboardView_RecentGamesSelectorController(this);
         }
 
         public override bool CanClose()

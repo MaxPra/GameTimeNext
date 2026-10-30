@@ -14,118 +14,93 @@
     d:DesignWidth="980"
     mc:Ignorable="d">
 
-    <Grid Margin="24,20,24,24">
+    <Grid Style="{StaticResource View.Root}">
+        <Grid.Resources>
+            <Style BasedOn="{StaticResource CheckBox.Switch}" TargetType="{x:Type CheckBox}" />
+        </Grid.Resources>
+        
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="16" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="18" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Orientation="Vertical">
-            <TextBlock
-                FontSize="24"
-                FontWeight="Bold"
-                Foreground="{DynamicResource Brush.TextPrimary}"
-                Text="Create Import Package" />
-            <TextBlock
-                Margin="0,4,0,0"
-                Foreground="{DynamicResource Brush.TextSecondary}"
-                Text="Choose an import type and output location, then execute the import." />
-        </StackPanel>
-
         <Border
-            Grid.Row="2"
-            Padding="18"
-            Background="{DynamicResource Brush.Surface}"
-            BorderBrush="{DynamicResource Brush.Border}"
-            BorderThickness="1"
-            CornerRadius="{StaticResource DefaultCornerRadius}">
+            Grid.Row="0"
+            Padding="16"
+            Style="{StaticResource Card}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="14" />
-                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="140" />
-                    <ColumnDefinition Width="14" />
-                    <ColumnDefinition Width="420" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <TextBlock
+                <Button
+                    x:Name="btnExecute"
                     Grid.Row="0"
                     Grid.Column="0"
-                    VerticalAlignment="Center"
-                    Foreground="{DynamicResource Brush.TextSecondary}"
-                    Text="Export Type" />
-
-                <ComboBox
-                    x:Name="CmbExportType"
-                    Grid.Row="0"
-                    Grid.Column="2"
-                    Height="36"
-                    VerticalAlignment="Center"
-                    uixprops:UIXAttachedProperty.AdditionalEntry="(All)"
-                    uixprops:UIXAttachedProperty.Source="From=T1CTABD;Where=TXTYP:eT;Text=DESCR;Value=TXNUM"
-                    SelectedIndex="0"
-                    SelectedValue=""
-                    SelectedValuePath="Tag" />
-
-                <TextBlock
-                    Grid.Row="2"
-                    Grid.Column="0"
-                    VerticalAlignment="Center"
-                    Foreground="{DynamicResource Brush.TextSecondary}"
-                    Text="Output Path" />
-
-                <Grid Grid.Row="2" Grid.Column="2">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="8" />
-                        <ColumnDefinition Width="38" />
-                    </Grid.ColumnDefinitions>
-
-                    <TextBox
-                        x:Name="TxbOutputPath"
-                        Grid.Column="0"
-                        Height="36"
-                        VerticalAlignment="Center" />
-
-                    <Button
-                        x:Name="BtnBrowseOutputPath"
-                        Grid.Column="2"
-                        Width="38"
-                        Height="36"
-                        ToolTip="Browse output folder">
+                    Width="148"
+                    Height="38"
+                    HorizontalAlignment="Left"
+                    Style="{StaticResource Button.Primary}">
+                    <StackPanel Orientation="Horizontal">
                         <TextBlock
-                            HorizontalAlignment="Center"
+                            Margin="0,0,6,0"
                             VerticalAlignment="Center"
-                            FontFamily="Segoe MDL2 Assets"
-                            FontSize="14"
-                            Text="&#xE838;" />
-                    </Button>
-                </Grid>
+                            FontFamily="{StaticResource Font.Icons}"
+                            Text="&#xE768;" />
+                        <TextBlock VerticalAlignment="Center" Text="Execute" />
+                    </StackPanel>
+                </Button>
             </Grid>
         </Border>
 
-        <Button
-            x:Name="BtnExecute"
-            Grid.Row="4"
-            Width="148"
-            Height="38"
-            HorizontalAlignment="Left"
-            IsDefault="True">
-            <StackPanel Orientation="Horizontal">
+        <Border
+            Grid.Row="2"
+            Padding="16"
+            Style="{StaticResource Card}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="16" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
                 <TextBlock
-                    Margin="0,0,6,0"
+                    Grid.Column="0"
                     VerticalAlignment="Center"
-                    FontFamily="Segoe MDL2 Assets"
-                    Text="&#xE768;" />
-                <TextBlock VerticalAlignment="Center" Text="Execute" />
-            </StackPanel>
-        </Button>
+                    Foreground="{DynamicResource Brush.TextSecondary}"
+                    Text="Use prod database" />
+
+                <CheckBox
+                    x:Name="chbUseProdDb"
+                    Grid.Column="2"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center" />
+
+                <Button
+                    x:Name="btnTestImport"
+                    Grid.Column="4"
+                    Width="148"
+                    Height="38"
+                    HorizontalAlignment="Left">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock
+                            Margin="0,0,6,0"
+                            VerticalAlignment="Center"
+                            FontFamily="{StaticResource Font.Icons}"
+                            Text="&#xE9D9;" />
+                        <TextBlock VerticalAlignment="Center" Text="Test Import" />
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </Border>
+        
     </Grid>
 </uix:UIXUserControlBase>

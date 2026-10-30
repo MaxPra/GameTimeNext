@@ -108,8 +108,8 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
             }
             else
             {
-                // Wenn kein aktiver Playthrough gefunden wurde, nachfragen und
-                // Abbruch, falls keiner angelegt werden soll
+                // If no active playthrough was found, ask and
+                // abort if none should be created
                 if (!CFProfilesApp.AskForNewPlaythroughCreationIfNotActive(AppEnvironment.CurrentPfid, this))
                     return;
 
@@ -144,7 +144,7 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
             if (!AppEnvironment.GetAppConfig().AppSettings.EnableSessionTimeQuery)
                 return;
 
-            // Kombination Strg + Shift + T
+            // Combination Ctrl + Shift + T
             if (keyPressTracker.IsCombinationPressedOnce(VirtualKey.VK_CONTROL, VirtualKey.VK_SHIFT, VirtualKey.VK_T))
             {
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
@@ -185,6 +185,11 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
         public static VirtualKey GetVirtualKeyByValue(Dictionary<VirtualKey, string> list, string value)
         {
             return list.FirstOrDefault(x => x.Value == value).Key;
+        }
+
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(GlobalKeyInputProcess));
         }
 
         public override void InitializeApplicationOutput()

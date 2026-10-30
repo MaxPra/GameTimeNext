@@ -1,0 +1,26 @@
+{
+  "$schema": "https://raw.githubusercontent.com/theron-wang/Tailwind-CSS-for-Visual-Studio/refs/heads/main/tailwind.extension.schema.json",
+  "BuildFiles": [
+    {
+      "Input": "..\\RemoteMonitoring\\wwwroot\\precompile.css",
+      "Output": "",
+      "Behavior": "Default"
+    }
+  ],
+  "PackageConfigurationFile": null,
+  "CustomRegexes": {
+    "Razor": {
+      "Override": false,
+      "Values": []
+    },
+    "HTML": {
+      "Override": false,
+      "Values": []
+    },
+    "JavaScript": {
+      "Override": false,
+      "Values": []
+    }
+  },
+  "UseCli": false
+}

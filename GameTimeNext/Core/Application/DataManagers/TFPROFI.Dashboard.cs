@@ -45,9 +45,12 @@ namespace GameTimeNext.Core.Application.DataManagers
         {
             string query = Queries.BuildQueryDaysPlayed(timeSpanStart, timeSpanEnd, pfid);
 
-            using (var reader = UIXQuery.ExecuteCustom(query, AppEnvironment.GetDataBaseManager().GetConnection()))
+            using (var reader = UIXQuery.QueryCustom(query, AppEnvironment.GetDataBaseManager().GetConnection()))
+            {
                 if (reader.Read())
                     return UIXQuery.GetInt32(reader, "DAYS");
+                reader.Close();
+            }
 
             return 0;
         }
@@ -84,7 +87,7 @@ namespace GameTimeNext.Core.Application.DataManagers
                         UIXQuery.GetString(reader, "GANA"),
                         UIXQuery.GetDateTime(reader, "PLTO"),
                         TFPROFI.GetGameTimeInMinutes(UIXQuery.GetInt64(reader, "PFID"), timeSpanStart, timeSpanEnd),
-                        Path.Combine(AppConfig.Storage.ProfileCoversDirectoryPath ?? string.Empty, UIXQuery.GetString(reader, "PPFN"))
+                        UIXQuery.GetString(reader, "PPFN")
                     );
 
             return ("n.A.", DateTime.MinValue, 0, string.Empty);
@@ -100,7 +103,7 @@ namespace GameTimeNext.Core.Application.DataManagers
                         UIXQuery.GetString(reader, "GANA"),
                         GetPlaytime(timeSpanStart, timeSpanEnd, UIXQuery.GetInt64(reader, "PFID")),
                         GetDaysPlayed(timeSpanStart, timeSpanEnd, UIXQuery.GetInt64(reader, "PFID")),
-                        Path.Combine(AppConfig.Storage.ProfileCoversDirectoryPath ?? string.Empty, UIXQuery.GetString(reader, "PPFN"))
+                        UIXQuery.GetString(reader, "PPFN")
                     );
 
             return ("n.A.", 0, 0, string.Empty);
@@ -129,7 +132,7 @@ namespace GameTimeNext.Core.Application.DataManagers
                     }
                     else if (plto > timeSpanEnd)
                     {
-                        playtime += (timeSpanEnd - plfr).TotalMinutes;
+                        playtime += Math.Max((timeSpanEnd - plfr).TotalMinutes, 0);
                     }
                 }
 

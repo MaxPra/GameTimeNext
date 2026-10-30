@@ -13,9 +13,14 @@ namespace GameTimeNext.Core.Application.MigrationTasks
                 new MigTask_026b_005(),
                 new MigTask_033b_007(),
                 new MigTask_100b_008(),
+                new MigTask_100b_009(),
+                new MigTask_100b_010(),
+                new MigTask_100b_011(),
             };
 
             migrations.ForEach(mT =>mT.Execute());
+
+            AppEnvironment.AppVersion.SetAppVersionInConfig();
         }
 
         public static void RestartGTN()
@@ -23,7 +28,7 @@ namespace GameTimeNext.Core.Application.MigrationTasks
             System.Windows.Application.Current.Dispatcher.Invoke(() =>
             {
                 CFMBOX cfmbox = new CFMBOX();
-                cfmbox.Show($"{AppConfig.Root.ApplicationName} will now be restarted in order to activate the new version!", CFMBOXResult.Ok, CFMBOXIcon.Info);
+                cfmbox.Show(cfmbox.GetErrorMessage("GLO0018", AppConfig.Root.ApplicationName), CFMBOXResult.Ok, CFMBOXIcon.Info);
 
                 AppEnvironment.RestartGTNApplication();
             });

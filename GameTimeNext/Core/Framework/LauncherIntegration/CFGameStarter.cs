@@ -8,7 +8,7 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
     {
         public static void ActivateProfileSettings(CProfileSettings cProfileSettings)
         {
-            // Wenn HDR im Profil aktiviert --> HDR aktivieren
+            // If HDR is enabled in the profile --> enable HDR
             if (cProfileSettings.HDREnabled)
             {
                 CFHDR.SetHdrForAllActiveDisplays(true);
@@ -17,7 +17,7 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
 
         public static void DeactivateProfileSettings(CProfileSettings cProfileSettings)
         {
-            // Wenn HDR im Profil aktiviert --> HDR aktivieren
+            // If HDR is enabled in the profile --> enable HDR
             if (cProfileSettings.HDREnabled)
             {
                 CFHDR.SetHdrForAllActiveDisplays(false);

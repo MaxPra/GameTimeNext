@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:uix="clr-namespace:UIX.ViewController.Engine.FrameworkElements.UserControls;assembly=UIX.ViewController.Engine"
+    xmlns:uixcb="clr-namespace:UIX.ViewController.Engine.FrameworkElements.ComboBoxes;assembly=UIX.ViewController.Engine"
     xmlns:uixprops="clr-namespace:UIX.ViewController.Engine.AttachedProperties;assembly=UIX.ViewController.Engine"
     xmlns:uixsel="clr-namespace:UIX.ViewController.Engine.FrameworkElements.Selectors;assembly=UIX.ViewController.Engine"
     HorizontalAlignment="Stretch"
@@ -15,7 +16,7 @@
     d:DesignWidth="1100"
     mc:Ignorable="d">
 
-    <Grid Margin="20,16,20,20">
+    <Grid Style="{StaticResource View.Root}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="16" />
@@ -25,10 +26,7 @@
         <Border
             Grid.Row="0"
             Padding="16"
-            Background="{DynamicResource Brush.Surface}"
-            BorderBrush="{DynamicResource Brush.Border}"
-            BorderThickness="1"
-            CornerRadius="{StaticResource DefaultCornerRadius}">
+            Style="{StaticResource Card}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -42,13 +40,21 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="8" />
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
                 <Grid Grid.Column="0" HorizontalAlignment="Left">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="80" />
-                        <ColumnDefinition Width="14" />
+                        <ColumnDefinition Width="12" />
                         <ColumnDefinition Width="180" />
                     </Grid.ColumnDefinitions>
 
@@ -57,11 +63,13 @@
                         Foreground="{DynamicResource Brush.TextSecondary}"
                         Text="Type" />
 
-                    <ComboBox
+                    <uixcb:UIXComboBox
                         x:Name="CmbType"
                         Grid.Column="2"
                         Height="36"
                         VerticalAlignment="Center"
+                        uixprops:UIXAttachedProperty.Source="From=T1CTABD;Where=TXTYP:mT;Text=DESCR;Value=TXNUM"
+                        AdditionalEntry="(All)"
                         SelectedIndex="0"
                         SelectedValue=""
                         SelectedValuePath="Tag" />
@@ -70,7 +78,7 @@
                 <Grid Grid.Column="2" HorizontalAlignment="Left">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="130" />
-                        <ColumnDefinition Width="14" />
+                        <ColumnDefinition Width="12" />
                         <ColumnDefinition Width="220" />
                     </Grid.ColumnDefinitions>
 
@@ -88,7 +96,7 @@
                 <Grid Grid.Column="4" HorizontalAlignment="Left">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="130" />
-                        <ColumnDefinition Width="14" />
+                        <ColumnDefinition Width="12" />
                         <ColumnDefinition Width="300" />
                     </Grid.ColumnDefinitions>
 
@@ -106,14 +114,13 @@
                 <Button
                     x:Name="BtnAdd"
                     Grid.Column="6"
-                    Width="38"
-                    Height="38"
                     VerticalAlignment="Center"
+                    Style="{StaticResource Button.Icon}"
                     ToolTip="Add metadata">
                     <TextBlock
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
-                        FontFamily="Segoe MDL2 Assets"
+                        FontFamily="{StaticResource Font.Icons}"
                         FontSize="14"
                         Text="&#xE710;" />
                 </Button>
@@ -121,30 +128,70 @@
                 <Button
                     x:Name="BtnRefresh"
                     Grid.Column="8"
-                    Width="38"
-                    Height="38"
                     VerticalAlignment="Center"
                     IsDefault="True"
+                    Style="{StaticResource Button.Icon}"
                     ToolTip="Refresh metadata">
                     <TextBlock
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
-                        FontFamily="Segoe MDL2 Assets"
+                        FontFamily="{StaticResource Font.Icons}"
                         FontSize="14"
                         Text="&#xE72C;" />
                 </Button>
 
                 <Button
-                    x:Name="BtnOpenGenClass"
+                    x:Name="BtnGenerateAll"
                     Grid.Column="10"
-                    Width="38"
-                    Height="38"
                     VerticalAlignment="Center"
+                    Style="{StaticResource Button.Icon}"
+                    ToolTip="Generate all Metadata">
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontFamily="{StaticResource Font.Icons}"
+                        FontSize="14"
+                        Text="&#xE8B8;" />
+                </Button>
+
+                <Button
+                    x:Name="BtnGenerateMetadataTables"
+                    Grid.Column="12"
+                    VerticalAlignment="Center"
+                    Style="{StaticResource Button.Icon}"
+                    ToolTip="Generate classes of the metadata tables (T1METAH, T1METAP)">
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontFamily="{StaticResource Font.Icons}"
+                        FontSize="14"
+                        Text="&#xE8B8;" />
+                </Button>
+
+                <Button
+                    x:Name="BtnOpenLog"
+                    Grid.Column="14"
+                    VerticalAlignment="Center"
+                    Style="{StaticResource Button.Icon}"
+                    ToolTip="Open log">
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontFamily="{StaticResource Font.Icons}"
+                        FontSize="14"
+                        Text="&#xE8B7;" />
+                </Button>
+
+                <Button
+                    x:Name="BtnOpenGenClass"
+                    Grid.Column="16"
+                    VerticalAlignment="Center"
+                    Style="{StaticResource Button.Icon}"
                     ToolTip="Open genClass folder">
                     <TextBlock
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
-                        FontFamily="Segoe MDL2 Assets"
+                        FontFamily="{StaticResource Font.Icons}"
                         FontSize="14"
                         Text="&#xE8B7;" />
                 </Button>
@@ -160,8 +207,6 @@
             CanUserResizeRows="False"
             HeadersVisibility="Column"
             IsReadOnly="True"
-            ItemsSource="{Binding MetadataDataGridRows}"
-            SelectedItem="{Binding SelectedRow, Mode=TwoWay}"
             SelectionMode="Single"
             SelectionUnit="FullRow">
             <uixsel:UIXDataGrid.Columns>
@@ -177,6 +222,13 @@
                     Width="250"
                     Binding="{Binding COMTYPE}"
                     Header="Type" />
+                <DataGridTemplateColumn Width="150" Header="Generate required">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding COGENER, Mode=OneWay}" Style="{StaticResource DataGrid.CheckBox.Display}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
             </uixsel:UIXDataGrid.Columns>
         </uixsel:UIXDataGrid>
     </Grid>

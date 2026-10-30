@@ -1,0 +1,648 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI">
+
+    <!--
+        Big Picture mode (BigPictureView): designed for 1080 px height and scaled to the screen (ViewScale), so all
+        sizes here are TV sizes, read from the couch. Look of GameTimeNext: glass cards with a lit edge (CardStyles),
+        the tab bar of the main window for the pivots, the accent for selection.
+    -->
+
+    <SolidColorBrush x:Key="Brush.BigPicture.Background" Color="#FF06080C" />
+    <SolidColorBrush x:Key="Brush.BigPicture.Dialog" Color="#F2151820" />
+    <SolidColorBrush x:Key="Brush.BigPicture.DialogBackdrop" Color="#B3000000" />
+    <SolidColorBrush x:Key="Brush.BigPicture.Divider" Color="#26FFFFFF" />
+
+    <!--  Corner radius of cards and covers: the one of the cards, a little larger for the TV size  -->
+    <CornerRadius x:Key="BigPicture.CornerRadius">10</CornerRadius>
+
+    <!--  Controller button colors (Xbox layout, so they are recognized at a glance)  -->
+    <SolidColorBrush x:Key="Brush.BigPicture.ButtonA" Color="#FF3FA34D" />
+    <SolidColorBrush x:Key="Brush.BigPicture.ButtonB" Color="#FFD2453F" />
+    <SolidColorBrush x:Key="Brush.BigPicture.ButtonX" Color="#FF2F78D4" />
+    <SolidColorBrush x:Key="Brush.BigPicture.ButtonY" Color="#FFD49A16" />
+    <SolidColorBrush x:Key="Brush.BigPicture.ButtonBumper" Color="#33FFFFFF" />
+
+    <!--  PlayStation symbol colors, used when a PlayStation controller is connected  -->
+    <SolidColorBrush x:Key="Brush.BigPicture.ButtonCross" Color="#FF4F86D9" />
+    <SolidColorBrush x:Key="Brush.BigPicture.ButtonCircle" Color="#FFD2453F" />
+    <SolidColorBrush x:Key="Brush.BigPicture.ButtonSquare" Color="#FFC2669F" />
+    <SolidColorBrush x:Key="Brush.BigPicture.ButtonTriangle" Color="#FF2FA88A" />
+
+    <!--  Darkens the background towards the bottom (hints) and the top (row of covers)  -->
+    <LinearGradientBrush x:Key="GradientBrush.BigPicture.ShadeVertical" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="#99000000" />
+        <GradientStop Offset="0.35" Color="#40000000" />
+        <GradientStop Offset="0.7" Color="#66000000" />
+        <GradientStop Offset="1" Color="#E6000000" />
+    </LinearGradientBrush>
+
+    <!--  Darkens the left side, where the name and the times are  -->
+    <LinearGradientBrush x:Key="GradientBrush.BigPicture.ShadeHorizontal" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Offset="0" Color="#CC000000" />
+        <GradientStop Offset="0.55" Color="#59000000" />
+        <GradientStop Offset="1" Color="#00000000" />
+    </LinearGradientBrush>
+
+    <!--  Fades the key art (large cover on the right) into the background  -->
+    <LinearGradientBrush x:Key="GradientBrush.BigPicture.KeyArtMask" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Offset="0" Color="#00000000" />
+        <GradientStop Offset="0.45" Color="#99000000" />
+        <GradientStop Offset="1" Color="#FF000000" />
+    </LinearGradientBrush>
+
+    <!--  Headings in the display cut of Segoe UI where available  -->
+    <FontFamily x:Key="Font.BigPicture.Display">Segoe UI Variable Display, Segoe UI</FontFamily>
+    <FontFamily x:Key="Font.BigPicture.Icons">Segoe Fluent Icons, Segoe MDL2 Assets</FontFamily>
+
+    <!--  ========== Texts ==========  -->
+
+    <Style x:Key="BigPicture.Text" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+        <Setter Property="FontSize" Value="22" />
+        <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
+    </Style>
+
+    <Style
+        x:Key="BigPicture.Text.Secondary"
+        BasedOn="{StaticResource BigPicture.Text}"
+        TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}" />
+    </Style>
+
+    <Style
+        x:Key="BigPicture.Text.Icon"
+        BasedOn="{StaticResource BigPicture.Text}"
+        TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource Font.BigPicture.Icons}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <!--  Name of the selected game  -->
+    <Style
+        x:Key="BigPicture.Text.Title"
+        BasedOn="{StaticResource BigPicture.Text}"
+        TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource Font.BigPicture.Display}" />
+        <Setter Property="FontSize" Value="64" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="LineHeight" Value="72" />
+        <Setter Property="LineStackingStrategy" Value="BlockLineHeight" />
+        <Setter Property="MaxHeight" Value="144" />
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <!--  Caption above a time  -->
+    <Style
+        x:Key="BigPicture.Text.StatCaption"
+        BasedOn="{StaticResource BigPicture.Text.Secondary}"
+        TargetType="TextBlock">
+        <Setter Property="FontSize" Value="18" />
+    </Style>
+
+    <!--  Time of the selected game, large  -->
+    <Style
+        x:Key="BigPicture.Text.StatValue"
+        BasedOn="{StaticResource BigPicture.Text}"
+        TargetType="TextBlock">
+        <Setter Property="Margin" Value="0,2,0,0" />
+        <Setter Property="FontFamily" Value="{StaticResource Font.BigPicture.Display}" />
+        <Setter Property="FontSize" Value="46" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <Style
+        x:Key="BigPicture.HintText"
+        BasedOn="{StaticResource BigPicture.Text}"
+        TargetType="TextBlock">
+        <Setter Property="Margin" Value="10,0,32,0" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="FontSize" Value="21" />
+    </Style>
+
+    <!--  Thin line between the times  -->
+    <Style x:Key="BigPicture.StatDivider" TargetType="Border">
+        <Setter Property="Width" Value="1" />
+        <Setter Property="Margin" Value="36,6,36,6" />
+        <Setter Property="Background" Value="{StaticResource Brush.BigPicture.Divider}" />
+    </Style>
+
+    <!--  ========== Glass card (CardStyles in TV size) ==========  -->
+
+    <Style x:Key="BigPicture.Card" TargetType="Border">
+        <Setter Property="CornerRadius" Value="{StaticResource BigPicture.CornerRadius}" />
+        <Setter Property="Background" Value="{StaticResource Brush.Card.Background}" />
+        <Setter Property="BorderBrush" Value="{StaticResource Brush.Card.Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+    </Style>
+
+    <!--  ========== Controller buttons ==========  -->
+
+    <!--  Round controller button, flat in its color (Background) with a little light from the top and a fine edge; the letter as Content  -->
+    <Style x:Key="BigPicture.ControllerButton" TargetType="ContentControl">
+        <Setter Property="Width" Value="36" />
+        <Setter Property="Height" Value="36" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="FontSize" Value="17" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="IsTabStop" Value="False" />
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ContentControl">
+                    <Grid>
+                        <Ellipse Fill="{TemplateBinding Background}" />
+                        <Ellipse>
+                            <Ellipse.Fill>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                    <GradientStop Offset="0" Color="#24FFFFFF" />
+                                    <GradientStop Offset="0.55" Color="#00FFFFFF" />
+                                    <GradientStop Offset="1" Color="#14000000" />
+                                </LinearGradientBrush>
+                            </Ellipse.Fill>
+                        </Ellipse>
+                        <Ellipse Stroke="#2EFFFFFF" StrokeThickness="1" />
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--  Shoulder button (LB / RB): the same, as a small glass bar  -->
+    <Style
+        x:Key="BigPicture.ControllerBumper"
+        BasedOn="{StaticResource BigPicture.ControllerButton}"
+        TargetType="ContentControl">
+        <!--  Grows for longer labels (CREATE, keys of the keyboard)  -->
+        <Setter Property="Width" Value="Auto" />
+        <Setter Property="MinWidth" Value="48" />
+        <Setter Property="Padding" Value="9,0" />
+        <Setter Property="Height" Value="28" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Background" Value="{StaticResource Brush.BigPicture.ButtonBumper}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ContentControl">
+                    <Grid>
+                        <Border Background="{TemplateBinding Background}" CornerRadius="8" />
+                        <Border
+                            BorderBrush="#2EFFFFFF"
+                            BorderThickness="1"
+                            CornerRadius="8" />
+                        <ContentPresenter
+                            Margin="{TemplateBinding Padding}"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--  ========== Top bar ==========  -->
+
+    <!--  Round glass button of the top bar (search, filter, menu, exit) for mouse users  -->
+    <Style x:Key="BigPicture.TopBarButton" TargetType="Button">
+        <Setter Property="Width" Value="48" />
+        <Setter Property="Height" Value="48" />
+        <Setter Property="Margin" Value="12,0,0,0" />
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border
+                        x:Name="Surface"
+                        Background="{StaticResource Brush.Card.Background}"
+                        BorderBrush="{StaticResource Brush.Card.Border}"
+                        BorderThickness="1"
+                        CornerRadius="24">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Surface" Property="Background" Value="{StaticResource Brush.Card.BackgroundHover}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--  Small glass label, e.g. an active filter  -->
+    <Style
+        x:Key="BigPicture.Chip"
+        BasedOn="{StaticResource BigPicture.Card}"
+        TargetType="Border">
+        <Setter Property="Margin" Value="16,0,0,0" />
+        <Setter Property="Padding" Value="12,5" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="CornerRadius" Value="14" />
+    </Style>
+
+    <!--  ========== Pivots (tab bar of the main window in TV size) ==========  -->
+
+    <Style x:Key="BigPicture.PivotBar" TargetType="Border">
+        <Setter Property="Padding" Value="4" />
+        <Setter Property="Background" Value="{StaticResource Brush.Input.Background}" />
+        <Setter Property="BorderBrush" Value="{StaticResource Brush.Card.Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <!--  Pivot (DataContext BigPicturePivot): the current one as raised glass with the accent line, like a selected tab  -->
+    <Style x:Key="BigPicture.Pivot" TargetType="Button">
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid>
+                        <Border
+                            x:Name="Surface"
+                            Background="Transparent"
+                            BorderBrush="Transparent"
+                            BorderThickness="1"
+                            CornerRadius="9" />
+
+                        <Border
+                            x:Name="Underline"
+                            Width="28"
+                            Height="3"
+                            Margin="0,0,0,4"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Bottom"
+                            Background="{DynamicResource Brush.Accent}"
+                            CornerRadius="2"
+                            Opacity="0" />
+
+                        <TextBlock
+                            x:Name="Title"
+                            Margin="24,8,24,11"
+                            FontSize="20"
+                            FontWeight="SemiBold"
+                            Foreground="{DynamicResource Brush.TextSecondary}"
+                            Text="{Binding Title}" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Surface" Property="Background" Value="{StaticResource Brush.Item.Hover}" />
+                        </Trigger>
+                        <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                            <Setter TargetName="Surface" Property="Background" Value="{StaticResource Brush.Card.BackgroundHover}" />
+                            <Setter TargetName="Surface" Property="BorderBrush" Value="{StaticResource Brush.Card.Border}" />
+                            <Setter TargetName="Underline" Property="Opacity" Value="1" />
+                            <Setter TargetName="Title" Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+                        </DataTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--  ========== Covers ==========  -->
+
+    <!--
+        Cover in the row (DataContext BigPictureGameTile): the other covers are dimmed a little, the selected one grows
+        and gets the accent edge with a soft glow. The selection is moved by the controller, so this follows IsSelected,
+        not the keyboard focus.
+    -->
+    <Style x:Key="BigPicture.Cover" TargetType="Button">
+        <Setter Property="Width" Value="196" />
+        <Setter Property="Height" Value="294" />
+        <Setter Property="Margin" Value="0,0,24,0" />
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
+        <Setter Property="RenderTransform">
+            <Setter.Value>
+                <ScaleTransform ScaleX="1" ScaleY="1" />
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid>
+                        <!--  Collapsed unless selected: every visible shadow is rendered again while the row scrolls  -->
+                        <Border
+                            x:Name="Glow"
+                            Background="{DynamicResource Brush.Accent}"
+                            CornerRadius="{StaticResource BigPicture.CornerRadius}"
+                            Visibility="Collapsed">
+                            <Border.Effect>
+                                <DropShadowEffect
+                                    BlurRadius="28"
+                                    Opacity="0.55"
+                                    ShadowDepth="0"
+                                    Color="{DynamicResource Color.Accent}" />
+                            </Border.Effect>
+                        </Border>
+
+                        <Border
+                            ui:ClipBehaviors.CornerRadius="10"
+                            Background="{StaticResource Brush.TileTitleSurface}"
+                            CornerRadius="{StaticResource BigPicture.CornerRadius}">
+                            <ContentPresenter />
+                        </Border>
+
+                        <Border
+                            x:Name="Dim"
+                            Background="#FF000000"
+                            CornerRadius="{StaticResource BigPicture.CornerRadius}"
+                            IsHitTestVisible="False"
+                            Opacity="0.3" />
+
+                        <Border
+                            x:Name="Edge"
+                            BorderBrush="{StaticResource Brush.Card.Border}"
+                            BorderThickness="1"
+                            CornerRadius="{StaticResource BigPicture.CornerRadius}"
+                            IsHitTestVisible="False" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Dim" Property="Opacity" Value="0.1" />
+                        </Trigger>
+                        <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                            <Setter TargetName="Glow" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="Dim" Property="Opacity" Value="0" />
+                            <Setter TargetName="Edge" Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
+                            <Setter TargetName="Edge" Property="BorderThickness" Value="3" />
+                        </DataTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                <DataTrigger.EnterActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation
+                                Storyboard.TargetProperty="RenderTransform.ScaleX"
+                                To="1.08"
+                                Duration="0:0:0.16" />
+                            <DoubleAnimation
+                                Storyboard.TargetProperty="RenderTransform.ScaleY"
+                                To="1.08"
+                                Duration="0:0:0.16" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </DataTrigger.EnterActions>
+                <DataTrigger.ExitActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation
+                                Storyboard.TargetProperty="RenderTransform.ScaleX"
+                                To="1"
+                                Duration="0:0:0.16" />
+                            <DoubleAnimation
+                                Storyboard.TargetProperty="RenderTransform.ScaleY"
+                                To="1"
+                                Duration="0:0:0.16" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </DataTrigger.ExitActions>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <!--  "Playing" badge on the cover of the running game, in the dark glass of the platform badge  -->
+    <Style x:Key="BigPicture.RunningBadge" TargetType="Border">
+        <Setter Property="Margin" Value="8" />
+        <Setter Property="Padding" Value="8,3" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+        <Setter Property="Background" Value="{StaticResource Brush.TileBadgeBackground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Visibility" Value="{Binding IsRunning, Converter={StaticResource BoolToVisibilityConverter}}" />
+    </Style>
+
+    <!--  ========== Details ==========  -->
+
+    <!--  Play / quit of the selected game: accent pill, danger color while it quits the running game (Tag "Quit")  -->
+    <Style x:Key="BigPicture.PlayButton" TargetType="Button">
+        <Setter Property="Height" Value="64" />
+        <Setter Property="MinWidth" Value="240" />
+        <Setter Property="Padding" Value="14,0,30,0" />
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border
+                        x:Name="Surface"
+                        Padding="{TemplateBinding Padding}"
+                        Background="{DynamicResource Brush.Accent}"
+                        CornerRadius="32">
+                        <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Surface" Property="Background" Value="{DynamicResource Brush.AccentHover}" />
+                        </Trigger>
+                        <Trigger Property="Tag" Value="Quit">
+                            <Setter TargetName="Surface" Property="Background" Value="{DynamicResource Brush.Danger}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Surface" Property="Background" Value="{StaticResource Brush.Card.BackgroundHover}" />
+                            <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--  ========== Search ==========  -->
+
+    <!--  Search field above the on-screen keyboard; also takes the input of a real keyboard  -->
+    <Style x:Key="BigPicture.SearchBox" TargetType="TextBox">
+        <Setter Property="Height" Value="64" />
+        <Setter Property="Padding" Value="20,0" />
+        <Setter Property="FontSize" Value="28" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+        <Setter Property="CaretBrush" Value="{DynamicResource Brush.Accent}" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TextBox">
+                    <!--  No padding on the border: the TextBox applies its Padding to the content host itself  -->
+                    <Border
+                        Background="{StaticResource Brush.Input.Background}"
+                        BorderBrush="{DynamicResource Brush.Accent}"
+                        BorderThickness="2"
+                        CornerRadius="{StaticResource BigPicture.CornerRadius}">
+                        <Grid>
+                            <ScrollViewer
+                                x:Name="PART_ContentHost"
+                                Margin="0"
+                                VerticalAlignment="Center"
+                                Focusable="False" />
+                            <TextBlock
+                                x:Name="Placeholder"
+                                Margin="{TemplateBinding Padding}"
+                                VerticalAlignment="Center"
+                                FontSize="{TemplateBinding FontSize}"
+                                Foreground="{DynamicResource Brush.TextSecondary}"
+                                IsHitTestVisible="False"
+                                Text="Search your library"
+                                Visibility="Collapsed" />
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="Text" Value="">
+                            <Setter TargetName="Placeholder" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--  Key of the on-screen keyboard (DataContext BigPictureKeyTile): glass card, accent surface when selected  -->
+    <Style x:Key="BigPicture.Key" TargetType="Button">
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border
+                        x:Name="Surface"
+                        Background="{StaticResource Brush.Card.Background}"
+                        BorderBrush="{StaticResource Brush.Card.Border}"
+                        BorderThickness="1"
+                        CornerRadius="{StaticResource BigPicture.CornerRadius}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Surface" Property="Background" Value="{StaticResource Brush.Card.BackgroundHover}" />
+                        </Trigger>
+                        <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                            <Setter TargetName="Surface" Property="Background" Value="{DynamicResource Brush.Accent}" />
+                            <Setter TargetName="Surface" Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
+                        </DataTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--  ========== Dialogs ==========  -->
+
+    <!--  Switch of the filter (DataContext BigPictureFilterEntry); headers are shown as text instead  -->
+    <Style x:Key="BigPicture.FilterEntry" TargetType="Button">
+        <Setter Property="Height" Value="60" />
+        <Setter Property="Margin" Value="0,0,0,8" />
+        <Setter Property="Padding" Value="20,0" />
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border
+                        x:Name="Surface"
+                        Padding="{TemplateBinding Padding}"
+                        Background="{StaticResource Brush.Card.Background}"
+                        BorderBrush="{StaticResource Brush.Card.Border}"
+                        BorderThickness="1"
+                        CornerRadius="{StaticResource BigPicture.CornerRadius}">
+                        <ContentPresenter VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Surface" Property="Background" Value="{StaticResource Brush.Card.BackgroundHover}" />
+                        </Trigger>
+                        <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                            <Setter TargetName="Surface" Property="Background" Value="{DynamicResource Brush.Accent}" />
+                            <Setter TargetName="Surface" Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
+                        </DataTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsHeader}" Value="True">
+                <Setter Property="Visibility" Value="Collapsed" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style
+        x:Key="BigPicture.FilterHeader"
+        BasedOn="{StaticResource BigPicture.Text.Secondary}"
+        TargetType="TextBlock">
+        <Setter Property="Margin" Value="4,18,0,10" />
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Visibility" Value="Collapsed" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsHeader}" Value="True">
+                <Setter Property="Visibility" Value="Visible" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <!--  Check mark of a filter switch  -->
+    <Style
+        x:Key="BigPicture.FilterCheck"
+        BasedOn="{StaticResource BigPicture.Text.Icon}"
+        TargetType="TextBlock">
+        <Setter Property="Width" Value="40" />
+        <Setter Property="FontSize" Value="24" />
+        <Setter Property="Text" Value="&#xE739;" />
+        <Setter Property="Opacity" Value="0.6" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsChecked}" Value="True">
+                <Setter Property="Text" Value="&#xE73A;" />
+                <Setter Property="Opacity" Value="1" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <!--  Entry of the menu / of a question (DataContext BigPictureMenuOption)  -->
+    <Style x:Key="BigPicture.MenuOption" TargetType="Button">
+        <Setter Property="Height" Value="68" />
+        <Setter Property="Margin" Value="0,0,0,10" />
+        <Setter Property="Padding" Value="24,0" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border
+                        x:Name="Surface"
+                        Padding="{TemplateBinding Padding}"
+                        Background="{StaticResource Brush.Card.Background}"
+                        BorderBrush="{StaticResource Brush.Card.Border}"
+                        BorderThickness="1"
+                        CornerRadius="{StaticResource BigPicture.CornerRadius}">
+                        <ContentPresenter VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Surface" Property="Background" Value="{StaticResource Brush.Card.BackgroundHover}" />
+                        </Trigger>
+                        <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                            <Setter TargetName="Surface" Property="Background" Value="{DynamicResource Brush.Accent}" />
+                            <Setter TargetName="Surface" Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
+                        </DataTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

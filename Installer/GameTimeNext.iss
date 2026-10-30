@@ -1,8 +1,26 @@
 #define AppName "GameTimeNext"
 #define AppExeName AppName + ".exe"
-#define AppVersionSemantic "0.4.0"
-#define AppVersionSuffix "beta"
 #define AppPublisher "CryloudStudios"
+
+#define BuildDirectory "out"
+#define BinDirectory "..\GameTimeNext\bin\Release\net10.0-windows10.0.26100.0"
+#define AppExePath BinDirectory + "\" + AppExeName
+#define BinDirectoryRemoteMonitoring "..\RemoteMonitoring\bin\Release\net10.0\publish"
+
+;Version is taken from the built exe (maintained only in GameTimeNext.csproj)
+#define VerMajor
+#define VerMinor
+#define VerRev
+#define VerBuild
+#expr GetVersionComponents(AppExePath, VerMajor, VerMinor, VerRev, VerBuild)
+#define AppVersionSemantic Str(VerMajor) + "." + Str(VerMinor) + "." + Str(VerRev)
+
+;ProductVersion is the InformationalVersion, e.g. "0.4.0-beta+2026-06-21": the suffix is the part between "-" and "+"
+#define ProductVersion GetStringFileInfo(AppExePath, "ProductVersion")
+#define AppVersionSuffix Copy(ProductVersion, Pos("-", ProductVersion) + 1)
+#if Pos("+", AppVersionSuffix) > 0
+  #define AppVersionSuffix Copy(AppVersionSuffix, 1, Pos("+", AppVersionSuffix) - 1)
+#endif
 
 #if AppVersionSuffix != ""
   #define AppVersion AppVersionSemantic + "-" + AppVersionSuffix
@@ -11,10 +29,6 @@
   #define AppVersion AppVersionSemantic
   #define AppShortcutName AppName
 #endif
-
-#define BuildDirectory "out"
-#define BinDirectory "..\GameTimeNext\bin\Release\net10.0-windows"
-#define BinDirectoryRemoteMonitoring "..\RemoteMonitoring\bin\Release\net10.0\publish"
 
 [Setup]
 AppId={{AA642EDE-2EA3-4C94-8325-0E112FA8FBF5}
@@ -55,9 +69,8 @@ Source: "{#BinDirectory}\*.deps.json"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BinDirectory}\runtimes\win-x64\*.dll"; DestDir: "{app}\runtimes\win-x64"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 ;App Specific
-Source: "{#BinDirectory}\ImportPackages\*.*"; DestDir: "{localappdata}\{#AppPublisher}\{#AppName}\temp\import"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "{#BinDirectory}\Core\*.*"; DestDir: "{app}\Core"; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "*\UpdateChanges_vNEXT.txt,ImportPackages\*"
-Source: "{#BinDirectory}\UI\*.*"; DestDir: "{app}\UI"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\GameTimeNext\ImportPackages\*.zip"; DestDir: "{localappdata}\{#AppPublisher}\{#AppName}\temp\import"; Flags: ignoreversion
+Source: "{#BinDirectory}\Core\*.*"; DestDir: "{app}\Core"; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "*\UpdateChanges_vNEXT.md"
 
 ;Remote Monitoring
 Source: "{#BinDirectoryRemoteMonitoring}\*.exe"; DestDir: "{app}\RemoteMonitoring"; Flags: ignoreversion

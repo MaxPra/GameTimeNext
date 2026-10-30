@@ -2,6 +2,8 @@
     x:Class="GameTimeNext.Core.Application.Settings.Views.SettingsView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:uixsel="clr-namespace:UIX.ViewController.Engine.FrameworkElements.Selectors;assembly=UIX.ViewController.Engine"
+    xmlns:uixcb="clr-namespace:UIX.ViewController.Engine.FrameworkElements.ComboBoxes;assembly=UIX.ViewController.Engine"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:GameTimeNext.Core.Application.Settings.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -15,13 +17,13 @@
     d:DesignWidth="2000"
     mc:Ignorable="d">
 
-    <Grid Margin="10">
+    <Grid Style="{StaticResource View.Root}">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <TabControl
+        <uixsel:UIXTabControl
             x:Name="tbcSettings"
             Grid.Row="0"
             Background="Transparent"
@@ -30,9 +32,9 @@
             Style="{StaticResource VerticalSettingsTabControlStyle}"
             TabStripPlacement="Left">
 
-            <TabControl.Resources>
+            <uixsel:UIXTabControl.Resources>
                 <Style BasedOn="{StaticResource CheckBox.Switch}" TargetType="{x:Type CheckBox}" />
-            </TabControl.Resources>
+            </uixsel:UIXTabControl.Resources>
 
             <TabItem Header="General" Style="{StaticResource VerticalSettingsTabItemStyle}">
                 <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
@@ -41,51 +43,48 @@
                         <TextBlock Style="{StaticResource SettingsPageTitleStyle}" Text="General" />
 
                         <TextBlock
-                            Margin="0,4,0,18"
+                            Margin="0,4,0,16"
                             Style="{StaticResource SettingsPageSubtitleStyle}"
                             Text="General application settings and appearance behavior." />
 
-                        <Grid Margin="0,0,0,28">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="16" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="12" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="12" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
+                        <GroupBox
+                            Header="General"
+                            Style="{StaticResource GroupBox.Card}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="12" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="12" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="12" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
 
-                            <TextBlock
-                                Grid.Row="0"
-                                Foreground="{DynamicResource Brush.TextPrimary}"
-                                Style="{StaticResource SettingsGroupTitleStyle}"
-                                Text="General" />
+                                <Grid Grid.Row="0" HorizontalAlignment="Left">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="220" />
+                                        <ColumnDefinition Width="16" />
+                                        <ColumnDefinition Width="54" />
+                                        <ColumnDefinition Width="24" />
+                                        <ColumnDefinition Width="170" />
+                                        <ColumnDefinition Width="16" />
+                                        <ColumnDefinition Width="54" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
 
-                            <Grid Grid.Row="2" HorizontalAlignment="Left">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="220" />
-                                    <ColumnDefinition Width="16" />
-                                    <ColumnDefinition Width="54" />
-                                    <ColumnDefinition Width="24" />
-                                    <ColumnDefinition Width="170" />
-                                    <ColumnDefinition Width="16" />
-                                    <ColumnDefinition Width="54" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        VerticalAlignment="Center"
+                                        Foreground="{DynamicResource Brush.TextSecondary}"
+                                        Text="Activate blackout key combination" />
 
-                                <TextBlock
-                                    Grid.Column="0"
-                                    VerticalAlignment="Center"
-                                    Foreground="{DynamicResource Brush.TextSecondary}"
-                                    Text="Activate blackout key combination" />
-
-                                <CheckBox
-                                    x:Name="cbActivateBlackoutKeyCombination"
-                                    Grid.Column="2"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Center"
-                                    ToolTip="Blacks out all screens to help protect OLED displays (Ctrl + B)." />
+                                    <CheckBox
+                                        x:Name="cbActivateBlackoutKeyCombination"
+                                        Grid.Column="2"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center"
+                                        ToolTip="Blacks out all screens to help protect OLED displays (Ctrl + B)." />
 
                                 <TextBlock
                                     Grid.Column="4"
@@ -101,431 +100,482 @@
                                     ToolTip="Shows an animated particle clock when all monitors are blacked out." />
                             </Grid>
 
-                            <Grid Grid.Row="4" HorizontalAlignment="Left">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="220" />
-                                    <ColumnDefinition Width="16" />
-                                    <ColumnDefinition Width="54" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
+                                <Grid Grid.Row="2" HorizontalAlignment="Left">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="220" />
+                                        <ColumnDefinition Width="16" />
+                                        <ColumnDefinition Width="54" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
 
-                                <TextBlock
-                                    Grid.Column="0"
-                                    VerticalAlignment="Center"
-                                    Foreground="{DynamicResource Brush.TextSecondary}"
-                                    Text="Automatic start (minimized)" />
-
-                                <CheckBox
-                                    x:Name="cbAutoStartMinimized"
-                                    Grid.Column="2"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Center"
-                                    ToolTip="Starts the application minimized when launched automatically." />
-                            </Grid>
-
-                            <!--  New: remind to take a break option  -->
-                            <Grid Grid.Row="6" HorizontalAlignment="Left">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="220" />
-                                    <ColumnDefinition Width="16" />
-                                    <ColumnDefinition Width="54" />
-                                    <ColumnDefinition Width="8" />
-                                    <ColumnDefinition Width="80" />
-                                    <ColumnDefinition Width="30" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-
-                                <TextBlock
-                                    Grid.Column="0"
-                                    VerticalAlignment="Center"
-                                    Foreground="{DynamicResource Brush.TextSecondary}"
-                                    Text="Remind me to take a break" />
-
-                                <CheckBox
-                                    x:Name="cbRemindTakeBreak"
-                                    Grid.Column="2"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Center"
-                                    ToolTip="Enable periodic break reminders." />
-
-                                <TextBox
-                                    x:Name="txbBreakReminderHours"
-                                    Grid.Column="4"
-                                    Width="80"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Center"
-                                    ToolTip="Enter number of hours between reminders." />
-                                <TextBlock
-                                    Grid.Column="5"
-                                    Margin="8,0,0,0"
-                                    VerticalAlignment="Center"
-                                    Foreground="{DynamicResource Brush.TextSecondary}"
-                                    Text="hrs" />
-                            </Grid>
-                        </Grid>
-
-                        <Grid Margin="0,0,0,28">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="16" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="12" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-
-                            <TextBlock
-                                Grid.Row="0"
-                                Foreground="{DynamicResource Brush.TextPrimary}"
-                                Style="{StaticResource SettingsGroupTitleStyle}"
-                                Text="Steam Grid DB" />
-
-                            <Grid Grid.Row="2" HorizontalAlignment="Left">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="220" />
-                                    <ColumnDefinition Width="16" />
-                                    <ColumnDefinition Width="320" />
-                                    <ColumnDefinition Width="50" />
-                                </Grid.ColumnDefinitions>
-
-                                <TextBlock
-                                    Grid.Column="0"
-                                    VerticalAlignment="Center"
-                                    Foreground="{DynamicResource Brush.TextSecondary}"
-                                    Text="API key" />
-
-                                <TextBox
-                                    x:Name="txbSteamGridDbApiKey"
-                                    Grid.Column="2"
-                                    Width="320"
-                                    HorizontalAlignment="Left"
-                                    ToolTip="API key used to retrieve game artwork from Steam Grid DB." />
-
-                                <Button
-                                    x:Name="btnOpenSteamGridDB"
-                                    Grid.Column="3"
-                                    Width="36"
-                                    Height="36"
-                                    ToolTip="Open Steam Grid DB and get your API key.">
                                     <TextBlock
-                                        HorizontalAlignment="Center"
+                                        Grid.Column="0"
                                         VerticalAlignment="Center"
-                                        FontFamily="Segoe MDL2 Assets"
-                                        FontSize="16"
-                                        Text="&#xE128;" />
-                                </Button>
-                            </Grid>
+                                        Foreground="{DynamicResource Brush.TextSecondary}"
+                                        Text="Automatic start (minimized)" />
 
-                            <TextBlock
-                                Grid.Row="4"
-                                Foreground="{DynamicResource Brush.TextSecondary}"
-                                Text="Used to retrieve game artwork and grid images." />
-                        </Grid>
+                                    <CheckBox
+                                        x:Name="cbAutoStartMinimized"
+                                        Grid.Column="2"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center"
+                                        ToolTip="Starts the application minimized when launched automatically." />
+                                </Grid>
 
-                        <Grid Margin="0,0,0,28">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="16" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="14" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="14" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="12" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
+                                <!--  New: remind to take a break option  -->
+                                <Grid Grid.Row="4" HorizontalAlignment="Left">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="220" />
+                                        <ColumnDefinition Width="16" />
+                                        <ColumnDefinition Width="54" />
+                                        <ColumnDefinition Width="8" />
+                                        <ColumnDefinition Width="80" />
+                                        <ColumnDefinition Width="30" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
 
-                            <TextBlock
-                                Grid.Row="0"
-                                Foreground="{DynamicResource Brush.TextPrimary}"
-                                Style="{StaticResource SettingsGroupTitleStyle}"
-                                Text="IGDB API" />
-
-                            <Grid Grid.Row="2" HorizontalAlignment="Left">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="200" />
-                                    <ColumnDefinition Width="10" />
-                                    <ColumnDefinition Width="16" />
-                                    <ColumnDefinition Width="54" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-
-                                <TextBlock
-                                    Grid.Column="0"
-                                    Grid.ColumnSpan="2"
-                                    Foreground="{DynamicResource Brush.TextSecondary}"
-                                    Text="Enable Integration" />
-
-                                <CheckBox
-                                    x:Name="cbEnableIGDBIntegration"
-                                    Grid.Column="3"
-                                    Grid.ColumnSpan="2" />
-                            </Grid>
-
-                            <Grid Grid.Row="4" HorizontalAlignment="Left">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="220" />
-                                    <ColumnDefinition Width="16" />
-                                    <ColumnDefinition Width="320" />
-                                    <ColumnDefinition Width="50" />
-                                </Grid.ColumnDefinitions>
-
-                                <TextBlock
-                                    Grid.Column="0"
-                                    VerticalAlignment="Center"
-                                    Foreground="{DynamicResource Brush.TextSecondary}"
-                                    Text="Client ID" />
-
-                                <TextBox
-                                    x:Name="txbIgdbClientId"
-                                    Grid.Column="2"
-                                    Width="320"
-                                    HorizontalAlignment="Left"
-                                    ToolTip="Client ID used for IGDB / Twitch authentication." />
-
-                                <Button
-                                    x:Name="btnOpenIgdbClientId"
-                                    Grid.Column="3"
-                                    Width="36"
-                                    Height="36"
-                                    ToolTip="Open Twitch Developer Portal to get your client ID.">
                                     <TextBlock
-                                        HorizontalAlignment="Center"
+                                        Grid.Column="0"
                                         VerticalAlignment="Center"
-                                        FontFamily="Segoe MDL2 Assets"
-                                        FontSize="16"
-                                        Text="&#xE128;" />
-                                </Button>
-                            </Grid>
+                                        Foreground="{DynamicResource Brush.TextSecondary}"
+                                        Text="Remind me to take a break" />
 
-                            <Grid Grid.Row="6" HorizontalAlignment="Left">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="220" />
-                                    <ColumnDefinition Width="16" />
-                                    <ColumnDefinition Width="320" />
-                                    <ColumnDefinition Width="50" />
-                                </Grid.ColumnDefinitions>
+                                    <CheckBox
+                                        x:Name="cbRemindTakeBreak"
+                                        Grid.Column="2"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center"
+                                        ToolTip="Enable periodic break reminders." />
 
-                                <TextBlock
-                                    Grid.Column="0"
-                                    VerticalAlignment="Center"
-                                    Foreground="{DynamicResource Brush.TextSecondary}"
-                                    Text="Client Secret" />
-
-                                <TextBox
-                                    x:Name="txbIgdbClientSecret"
-                                    Grid.Column="2"
-                                    Width="320"
-                                    HorizontalAlignment="Left"
-                                    ToolTip="Client secret used for IGDB / Twitch authentication." />
-
-                                <Button
-                                    x:Name="btnOpenIgdbClientSecret"
-                                    Grid.Column="3"
-                                    Width="36"
-                                    Height="36"
-                                    ToolTip="Open Twitch Developer Portal to get your client secret.">
+                                    <TextBox
+                                        x:Name="txbBreakReminderHours"
+                                        Grid.Column="4"
+                                        Width="80"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center"
+                                        ToolTip="Enter number of hours between reminders." />
                                     <TextBlock
-                                        HorizontalAlignment="Center"
+                                        Grid.Column="5"
+                                        Margin="8,0,0,0"
                                         VerticalAlignment="Center"
-                                        FontFamily="Segoe MDL2 Assets"
-                                        FontSize="16"
-                                        Text="&#xE128;" />
-                                </Button>
-                            </Grid>
+                                        Foreground="{DynamicResource Brush.TextSecondary}"
+                                        Text="hrs" />
+                                </Grid>
 
-                            <TextBlock
-                                Grid.Row="8"
-                                Foreground="{DynamicResource Brush.TextSecondary}"
-                                Text="Required for IGDB access via Twitch developer credentials." />
-                        </Grid>
+                                <Grid Grid.Row="6" HorizontalAlignment="Left">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="220" />
+                                        <ColumnDefinition Width="16" />
+                                        <ColumnDefinition Width="54" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
 
-                        <Grid Margin="0,0,0,28">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="16" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-
-                            <TextBlock
-                                Grid.Row="0"
-                                Foreground="{DynamicResource Brush.TextPrimary}"
-                                Style="{StaticResource SettingsGroupTitleStyle}"
-                                Text="Appearance" />
-
-                            <Grid Grid.Row="2" HorizontalAlignment="Left">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="200" />
-                                    <ColumnDefinition Width="10" />
-                                    <ColumnDefinition Width="16" />
-                                    <ColumnDefinition Width="54" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-
-                                <TextBlock
-                                    Grid.Column="0"
-                                    Grid.ColumnSpan="2"
-                                    Foreground="{DynamicResource Brush.TextSecondary}"
-                                    Text="Allow profile-specific style changes" />
-
-                                <CheckBox
-                                    x:Name="cbAllowProfileSpecificStyleChanges"
-                                    Grid.Column="3"
-                                    Grid.ColumnSpan="2" />
-                            </Grid>
-                        </Grid>
-
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="16" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="12" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="14" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-
-                            <TextBlock
-                                Grid.Row="0"
-                                Foreground="{DynamicResource Brush.TextPrimary}"
-                                Style="{StaticResource SettingsGroupTitleStyle}"
-                                Text="Backup" />
-
-                            <Grid Grid.Row="2" HorizontalAlignment="Left">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="220" />
-                                    <ColumnDefinition Width="16" />
-                                    <ColumnDefinition Width="320" />
-                                    <ColumnDefinition Width="8" />
-                                    <ColumnDefinition Width="36" />
-                                    <ColumnDefinition Width="12" />
-                                    <ColumnDefinition Width="130" />
-                                </Grid.ColumnDefinitions>
-
-                                <TextBlock
-                                    Grid.Column="0"
-                                    VerticalAlignment="Center"
-                                    Foreground="{DynamicResource Brush.TextSecondary}"
-                                    Text="Backup export path" />
-
-                                <TextBox
-                                    x:Name="txbBackupExportPath"
-                                    Grid.Column="2"
-                                    Width="320"
-                                    HorizontalAlignment="Left"
-                                    IsReadOnly="True"
-                                    ToolTip="Path used to export a backup." />
-
-                                <Button
-                                    x:Name="btnBrowseBackupExportPath"
-                                    Grid.Column="4"
-                                    Width="36"
-                                    Height="36"
-                                    ToolTip="Select a backup export path.">
                                     <TextBlock
-                                        HorizontalAlignment="Center"
+                                        Grid.Column="0"
                                         VerticalAlignment="Center"
-                                        FontFamily="Segoe MDL2 Assets"
-                                        FontSize="16"
-                                        Text="&#xE188;" />
-                                </Button>
+                                        Foreground="{DynamicResource Brush.TextSecondary}"
+                                        Text="Add new games shrink-wrapped" />
 
-                                <Button
-                                    x:Name="btnCreateBackup"
-                                    Grid.Column="6"
-                                    Width="130"
-                                    Height="36"
-                                    Content="Create backup"
-                                    ToolTip="Create a backup at the selected export path." />
+                                    <CheckBox
+                                        x:Name="cbSealNewGames"
+                                        Grid.Column="2"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center"
+                                        ToolTip="New games are added still shrink-wrapped. Unwrap them (context menu or Unwrap game) before the first launch." />
+                                </Grid>
                             </Grid>
+                        </GroupBox>
 
-                            <Grid Grid.Row="4" HorizontalAlignment="Left">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="220" />
-                                    <ColumnDefinition Width="16" />
-                                    <ColumnDefinition Width="54" />
-                                    <ColumnDefinition Width="18" />
-                                    <ColumnDefinition Width="100" />
-                                    <ColumnDefinition Width="20" />
-                                    <ColumnDefinition Width="54" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
+                        <GroupBox
+                            Header="Steam Grid DB"
+                            Style="{StaticResource GroupBox.Card}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="12" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
 
-                                <TextBlock
-                                    Grid.Column="0"
-                                    VerticalAlignment="Center"
-                                    Foreground="{DynamicResource Brush.TextSecondary}"
-                                    Text="Auto backup" />
+                                <Grid Grid.Row="0" HorizontalAlignment="Left">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="220" />
+                                        <ColumnDefinition Width="16" />
+                                        <ColumnDefinition Width="320" />
+                                        <ColumnDefinition Width="50" />
+                                    </Grid.ColumnDefinitions>
 
-                                <CheckBox
-                                    x:Name="cbAutoBackup"
-                                    Grid.Column="2"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Center"
-                                    ToolTip="Creates a backup automatically whenever the application starts or closes." />
-
-                                <TextBlock
-                                    Grid.Column="4"
-                                    VerticalAlignment="Center"
-                                    Foreground="{DynamicResource Brush.TextSecondary}"
-                                    Text="Auto delete" />
-
-                                <CheckBox
-                                    x:Name="cbAutoDeleteBackups"
-                                    Grid.Column="6"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Center"
-                                    ToolTip="Automatically deletes backups older than three days and keeps only the most recent backups from the last three days." />
-                            </Grid>
-
-                            <Grid Grid.Row="6" HorizontalAlignment="Left">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="220" />
-                                    <ColumnDefinition Width="16" />
-                                    <ColumnDefinition Width="320" />
-                                    <ColumnDefinition Width="8" />
-                                    <ColumnDefinition Width="36" />
-                                    <ColumnDefinition Width="12" />
-                                    <ColumnDefinition Width="130" />
-                                </Grid.ColumnDefinitions>
-
-                                <TextBlock
-                                    Grid.Column="0"
-                                    VerticalAlignment="Center"
-                                    Foreground="{DynamicResource Brush.TextSecondary}"
-                                    Text="Backup import path" />
-
-                                <TextBox
-                                    x:Name="txbBackupImportPath"
-                                    Grid.Column="2"
-                                    Width="320"
-                                    HorizontalAlignment="Left"
-                                    IsReadOnly="True"
-                                    ToolTip="Path used to import a backup." />
-
-                                <Button
-                                    x:Name="btnBrowseBackupImportPath"
-                                    Grid.Column="4"
-                                    Width="36"
-                                    Height="36"
-                                    ToolTip="Select a backup import file.">
                                     <TextBlock
-                                        HorizontalAlignment="Center"
+                                        Grid.Column="0"
                                         VerticalAlignment="Center"
-                                        FontFamily="Segoe MDL2 Assets"
-                                        FontSize="16"
-                                        Text="&#xE8B7;" />
-                                </Button>
+                                        Foreground="{DynamicResource Brush.TextSecondary}"
+                                        Text="API key" />
 
-                                <Button
-                                    x:Name="btnImportBackup"
-                                    Grid.Column="6"
-                                    Width="130"
-                                    Height="36"
-                                    Content="Import backup"
-                                    ToolTip="Import a backup from the selected path." />
+                                    <TextBox
+                                        x:Name="txbSteamGridDbApiKey"
+                                        Grid.Column="2"
+                                        Width="320"
+                                        HorizontalAlignment="Left"
+                                        ToolTip="API key used to retrieve game artwork from Steam Grid DB." />
+
+                                    <Button
+                                        x:Name="btnOpenSteamGridDB"
+                                        Grid.Column="3"
+                                        ToolTip="Open Steam Grid DB and get your API key."
+                                        Style="{StaticResource Button.Icon}">
+                                        <TextBlock
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            FontFamily="{StaticResource Font.Icons}"
+                                            FontSize="14"
+                                            Text="&#xE128;" />
+                                    </Button>
+                                </Grid>
+
+                                <TextBlock
+                                    Grid.Row="2"
+                                    Style="{StaticResource Text.Hint}"
+                                    Text="Used to retrieve game artwork and grid images." />
                             </Grid>
-                        </Grid>
+                        </GroupBox>
+
+                        <GroupBox
+                            Header="IGDB API"
+                            Style="{StaticResource GroupBox.Card}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="16" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="16" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="12" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <Grid Grid.Row="0" HorizontalAlignment="Left">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="220" />
+                                        <ColumnDefinition Width="16" />
+                                        <ColumnDefinition Width="54" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        VerticalAlignment="Center"
+                                        Foreground="{DynamicResource Brush.TextSecondary}"
+                                        Text="Enable Integration" />
+
+                                    <CheckBox
+                                        x:Name="cbEnableIGDBIntegration"
+                                        Grid.Column="2"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center" />
+                                </Grid>
+
+                                <Grid Grid.Row="2" HorizontalAlignment="Left">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="220" />
+                                        <ColumnDefinition Width="16" />
+                                        <ColumnDefinition Width="320" />
+                                        <ColumnDefinition Width="50" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        VerticalAlignment="Center"
+                                        Foreground="{DynamicResource Brush.TextSecondary}"
+                                        Text="Client ID" />
+
+                                    <TextBox
+                                        x:Name="txbIgdbClientId"
+                                        Grid.Column="2"
+                                        Width="320"
+                                        HorizontalAlignment="Left"
+                                        ToolTip="Client ID used for IGDB / Twitch authentication." />
+
+                                    <Button
+                                        x:Name="btnOpenIgdbClientId"
+                                        Grid.Column="3"
+                                        ToolTip="Open Twitch Developer Portal to get your client ID."
+                                        Style="{StaticResource Button.Icon}">
+                                        <TextBlock
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            FontFamily="{StaticResource Font.Icons}"
+                                            FontSize="14"
+                                            Text="&#xE128;" />
+                                    </Button>
+                                </Grid>
+
+                                <Grid Grid.Row="4" HorizontalAlignment="Left">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="220" />
+                                        <ColumnDefinition Width="16" />
+                                        <ColumnDefinition Width="320" />
+                                        <ColumnDefinition Width="50" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        VerticalAlignment="Center"
+                                        Foreground="{DynamicResource Brush.TextSecondary}"
+                                        Text="Client Secret" />
+
+                                    <TextBox
+                                        x:Name="txbIgdbClientSecret"
+                                        Grid.Column="2"
+                                        Width="320"
+                                        HorizontalAlignment="Left"
+                                        ToolTip="Client secret used for IGDB / Twitch authentication." />
+
+                                    <Button
+                                        x:Name="btnOpenIgdbClientSecret"
+                                        Grid.Column="3"
+                                        ToolTip="Open Twitch Developer Portal to get your client secret."
+                                        Style="{StaticResource Button.Icon}">
+                                        <TextBlock
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            FontFamily="{StaticResource Font.Icons}"
+                                            FontSize="14"
+                                            Text="&#xE128;" />
+                                    </Button>
+                                </Grid>
+
+                                <TextBlock
+                                    Grid.Row="6"
+                                    Style="{StaticResource Text.Hint}"
+                                    Text="Required for IGDB access via Twitch developer credentials." />
+                            </Grid>
+                        </GroupBox>
+
+                        <GroupBox
+                            Header="Appearance"
+                            Style="{StaticResource GroupBox.Card}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="12" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="12" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <Grid Grid.Row="0" HorizontalAlignment="Left">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="220" />
+                                        <ColumnDefinition Width="16" />
+                                        <ColumnDefinition Width="54" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        VerticalAlignment="Center"
+                                        Foreground="{DynamicResource Brush.TextSecondary}"
+                                        Text="Allow profile-specific colors" />
+
+                                    <CheckBox
+                                        x:Name="cbAllowProfileSpecificStyleChanges"
+                                        Grid.Column="2"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center" />
+                                </Grid>
+
+                                <Grid Grid.Row="2" HorizontalAlignment="Left">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="220" />
+                                        <ColumnDefinition Width="16" />
+                                        <ColumnDefinition Width="320" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        VerticalAlignment="Center"
+                                        Foreground="{DynamicResource Brush.TextSecondary}"
+                                        Text="Dynamic Background" />
+
+                                    <uixcb:UIXComboBox
+                                        x:Name="cmbBackgroundSource"
+                                        AdditionalEntry="(None)"
+                                        Grid.Column="2"
+                                        Height="36"
+                                        VerticalAlignment="Center"
+                                        SelectedValuePath="Tag"
+                                        ToolTip="Image used as blurred main window background: the desktop wallpaper or the cover of the selected profile. (None) disables it." />
+                                </Grid>
+
+                                <Grid Grid.Row="4" HorizontalAlignment="Left">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="220" />
+                                        <ColumnDefinition Width="16" />
+                                        <ColumnDefinition Width="54" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        VerticalAlignment="Center"
+                                        Foreground="{DynamicResource Brush.TextSecondary}"
+                                        Text="Dark tinted glass" />
+
+                                    <CheckBox
+                                        x:Name="cbDarkTintedGlass"
+                                        Grid.Column="2"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center"
+                                        ToolTip="Tints the window background and the glass surfaces darker, closer to a classic dark mode." />
+                                </Grid>
+                            </Grid>
+                        </GroupBox>
+
+                        <GroupBox
+                            Header="Backup"
+                            Style="{StaticResource GroupBox.Card}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="12" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="16" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <Grid Grid.Row="0" HorizontalAlignment="Left">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="220" />
+                                        <ColumnDefinition Width="16" />
+                                        <ColumnDefinition Width="320" />
+                                        <ColumnDefinition Width="8" />
+                                        <ColumnDefinition Width="36" />
+                                        <ColumnDefinition Width="12" />
+                                        <ColumnDefinition Width="130" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        VerticalAlignment="Center"
+                                        Foreground="{DynamicResource Brush.TextSecondary}"
+                                        Text="Backup export path" />
+
+                                    <TextBox
+                                        x:Name="txbBackupExportPath"
+                                        Grid.Column="2"
+                                        Width="320"
+                                        HorizontalAlignment="Left"
+                                        IsReadOnly="True"
+                                        ToolTip="Path used to export a backup." />
+
+                                    <Button
+                                        x:Name="btnBrowseBackupExportPath"
+                                        Grid.Column="4"
+                                        ToolTip="Select a backup export path."
+                                        Style="{StaticResource Button.Icon}">
+                                        <TextBlock
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            FontFamily="{StaticResource Font.Icons}"
+                                            FontSize="14"
+                                            Text="&#xE188;" />
+                                    </Button>
+
+                                    <Button
+                                        x:Name="btnCreateBackup"
+                                        Grid.Column="6"
+                                        Width="130"
+                                        Height="36"
+                                        Content="Create backup"
+                                        ToolTip="Create a backup at the selected export path." />
+                                </Grid>
+
+                                <Grid Grid.Row="2" HorizontalAlignment="Left">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="220" />
+                                        <ColumnDefinition Width="16" />
+                                        <ColumnDefinition Width="54" />
+                                        <ColumnDefinition Width="16" />
+                                        <ColumnDefinition Width="100" />
+                                        <ColumnDefinition Width="20" />
+                                        <ColumnDefinition Width="54" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        VerticalAlignment="Center"
+                                        Foreground="{DynamicResource Brush.TextSecondary}"
+                                        Text="Auto backup" />
+
+                                    <CheckBox
+                                        x:Name="cbAutoBackup"
+                                        Grid.Column="2"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center"
+                                        ToolTip="Creates a backup automatically whenever the application starts or closes." />
+
+                                    <TextBlock
+                                        Grid.Column="4"
+                                        VerticalAlignment="Center"
+                                        Foreground="{DynamicResource Brush.TextSecondary}"
+                                        Text="Auto delete" />
+
+                                    <CheckBox
+                                        x:Name="cbAutoDeleteBackups"
+                                        Grid.Column="6"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center"
+                                        ToolTip="Automatically deletes backups older than three days and keeps only the most recent backups from the last three days." />
+                                </Grid>
+
+                                <Grid Grid.Row="4" HorizontalAlignment="Left">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="220" />
+                                        <ColumnDefinition Width="16" />
+                                        <ColumnDefinition Width="320" />
+                                        <ColumnDefinition Width="8" />
+                                        <ColumnDefinition Width="36" />
+                                        <ColumnDefinition Width="12" />
+                                        <ColumnDefinition Width="130" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        VerticalAlignment="Center"
+                                        Foreground="{DynamicResource Brush.TextSecondary}"
+                                        Text="Backup import path" />
+
+                                    <TextBox
+                                        x:Name="txbBackupImportPath"
+                                        Grid.Column="2"
+                                        Width="320"
+                                        HorizontalAlignment="Left"
+                                        IsReadOnly="True"
+                                        ToolTip="Path used to import a backup." />
+
+                                    <Button
+                                        x:Name="btnBrowseBackupImportPath"
+                                        Grid.Column="4"
+                                        ToolTip="Select a backup import file."
+                                        Style="{StaticResource Button.Icon}">
+                                        <TextBlock
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            FontFamily="{StaticResource Font.Icons}"
+                                            FontSize="14"
+                                            Text="&#xE8B7;" />
+                                    </Button>
+
+                                    <Button
+                                        x:Name="btnImportBackup"
+                                        Grid.Column="6"
+                                        Width="130"
+                                        Height="36"
+                                        Content="Import backup"
+                                        ToolTip="Import a backup from the selected path." />
+                                </Grid>
+                            </Grid>
+                        </GroupBox>
 
                     </StackPanel>
                 </ScrollViewer>
@@ -538,54 +588,169 @@
                         <TextBlock Style="{StaticResource SettingsPageTitleStyle}" Text="Monitoring" />
 
                         <TextBlock
-                            Margin="0,4,0,18"
+                            Margin="0,4,0,16"
                             Style="{StaticResource SettingsPageSubtitleStyle}"
                             Text="Configure game monitoring behavior and blackout handling." />
 
-                        <Grid Margin="0,0,0,32">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="16" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="12" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-
-                            <TextBlock
-                                Grid.Row="0"
-                                Foreground="{DynamicResource Brush.TextPrimary}"
-                                Style="{StaticResource SettingsGroupTitleStyle}"
-                                Text="Monitoring behavior" />
-
-                            <Grid Grid.Row="2">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="260" />
-                                    <ColumnDefinition Width="260" />
-                                </Grid.ColumnDefinitions>
+                        <GroupBox
+                            Header="Monitoring behavior"
+                            Style="{StaticResource GroupBox.Card}">
+                            <Grid>
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="12" />
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="12" />
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
-                                <Grid Grid.Row="0" Grid.Column="0">
+                                <Grid Grid.Row="0">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="170" />
-                                        <ColumnDefinition Width="16" />
-                                        <ColumnDefinition Width="54" />
+                                        <ColumnDefinition Width="260" />
+                                        <ColumnDefinition Width="260" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="12" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="12" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <Grid Grid.Row="0" Grid.Column="0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="170" />
+                                            <ColumnDefinition Width="16" />
+                                            <ColumnDefinition Width="54" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock
+                                            Grid.Column="0"
+                                            VerticalAlignment="Center"
+                                            Foreground="{DynamicResource Brush.TextSecondary}"
+                                            Text="Key active" />
+                                        <CheckBox x:Name="cbMonitoringKeyActive" Grid.Column="2" />
+                                    </Grid>
+
+                                    <Grid Grid.Row="4" Grid.Column="0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="170" />
+                                            <ColumnDefinition Width="16" />
+                                            <ColumnDefinition Width="54" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock
+                                            Grid.Column="0"
+                                            VerticalAlignment="Center"
+                                            Foreground="{DynamicResource Brush.TextSecondary}"
+                                            Text="Enable session time query" />
+
+                                        <CheckBox
+                                            x:Name="cbEnableSessionTimeQuery"
+                                            Grid.Column="2"
+                                            HorizontalAlignment="Left"
+                                            VerticalAlignment="Center"
+                                            ToolTip="When enabled, pressing Ctrl+Shift+T will display the current recorded playtime." />
+                                    </Grid>
+
+                                    <Grid Grid.Row="0" Grid.Column="1">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="160" />
+                                            <ColumnDefinition Width="16" />
+                                            <ColumnDefinition Width="54" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock
+                                            Grid.Column="0"
+                                            VerticalAlignment="Center"
+                                            Foreground="{DynamicResource Brush.TextSecondary}"
+                                            Text="Show toast notification" />
+                                        <CheckBox x:Name="cbShowToastNotification" Grid.Column="2" />
+                                    </Grid>
+
+                                    <Grid Grid.Row="2" Grid.Column="0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="170" />
+                                            <ColumnDefinition Width="16" />
+                                            <ColumnDefinition Width="54" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock
+                                            Grid.Column="0"
+                                            VerticalAlignment="Center"
+                                            Foreground="{DynamicResource Brush.TextSecondary}"
+                                            Text="Show monitoring indicator" />
+                                        <CheckBox x:Name="cbShowMonitoringIndicator" Grid.Column="2" />
+                                    </Grid>
+
+                                    <Grid Grid.Row="2" Grid.Column="1">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="160" />
+                                            <ColumnDefinition Width="16" />
+                                            <ColumnDefinition Width="54" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock
+                                            Grid.Column="0"
+                                            VerticalAlignment="Center"
+                                            Foreground="{DynamicResource Brush.TextSecondary}"
+                                            Text="Blackout side monitors" />
+                                        <CheckBox x:Name="cbBlackoutSideMonitors" Grid.Column="2" />
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                        </GroupBox>
+
+                        <GroupBox
+                            x:Name="pnlMonitoringKey"
+                            Header="Monitoring hotkey"
+                            Style="{StaticResource GroupBox.Card}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="8" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <Grid Grid.Row="0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="140" />
+                                        <ColumnDefinition Width="8" />
+                                        <ColumnDefinition Width="36" />
                                     </Grid.ColumnDefinitions>
 
-                                    <TextBlock
+                                    <TextBox
+                                        x:Name="txbMonitoringKey"
                                         Grid.Column="0"
-                                        VerticalAlignment="Center"
-                                        Foreground="{DynamicResource Brush.TextSecondary}"
-                                        Text="Key active" />
-                                    <CheckBox x:Name="cbMonitoringKeyActive" Grid.Column="2" />
+                                        IsEnabled="False" />
+
+                                    <Button
+                                        x:Name="btnCaptureMonitoringKey"
+                                        Grid.Column="2"
+                                        Style="{StaticResource Button.Icon}">
+                                        <Image
+                                            Width="16"
+                                            Height="16"
+                                            Source="/UI/Ressources/GTN_ICON_MONITOR_KEY.png" />
+                                    </Button>
                                 </Grid>
 
-                                <Grid Grid.Row="4" Grid.Column="0">
+                                <TextBlock
+                                    Grid.Row="2"
+                                    Style="{StaticResource Text.Hint}"
+                                    Text="Press the button to listen for a new hotkey." />
+                            </Grid>
+                        </GroupBox>
+
+                        <GroupBox
+                            Header="Session Cleanup"
+                            Style="{StaticResource GroupBox.Card}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="12" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <Grid Grid.Row="0" HorizontalAlignment="Left">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="170" />
                                         <ColumnDefinition Width="16" />
@@ -596,165 +761,39 @@
                                         Grid.Column="0"
                                         VerticalAlignment="Center"
                                         Foreground="{DynamicResource Brush.TextSecondary}"
-                                        Text="Enable session time query" />
+                                        Text="Enable Cleanup" />
 
                                     <CheckBox
-                                        x:Name="cbEnableSessionTimeQuery"
+                                        x:Name="cbEnableSessionCleanup"
                                         Grid.Column="2"
                                         HorizontalAlignment="Left"
-                                        VerticalAlignment="Center"
-                                        ToolTip="When enabled, pressing Ctrl+Shift+T will display the current recorded playtime." />
+                                        VerticalAlignment="Center" />
                                 </Grid>
 
-                                <Grid Grid.Row="0" Grid.Column="1">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="160" />
-                                        <ColumnDefinition Width="16" />
-                                        <ColumnDefinition Width="54" />
-                                    </Grid.ColumnDefinitions>
-
-                                    <TextBlock
-                                        Grid.Column="0"
-                                        VerticalAlignment="Center"
-                                        Foreground="{DynamicResource Brush.TextSecondary}"
-                                        Text="Show toast notification" />
-                                    <CheckBox x:Name="cbShowToastNotification" Grid.Column="2" />
-                                </Grid>
-
-                                <Grid Grid.Row="2" Grid.Column="0">
+                                <Grid Grid.Row="2" HorizontalAlignment="Left">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="170" />
                                         <ColumnDefinition Width="16" />
-                                        <ColumnDefinition Width="54" />
+                                        <ColumnDefinition Width="80" />
+                                        <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
 
                                     <TextBlock
                                         Grid.Column="0"
                                         VerticalAlignment="Center"
                                         Foreground="{DynamicResource Brush.TextSecondary}"
-                                        Text="Show monitoring indicator" />
-                                    <CheckBox x:Name="cbShowMonitoringIndicator" Grid.Column="2" />
-                                </Grid>
+                                        Text="Minimum Seconds" />
 
-                                <Grid Grid.Row="2" Grid.Column="1">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="160" />
-                                        <ColumnDefinition Width="16" />
-                                        <ColumnDefinition Width="54" />
-                                    </Grid.ColumnDefinitions>
-
-                                    <TextBlock
-                                        Grid.Column="0"
+                                    <TextBox
+                                        x:Name="txbSessionCleanupSeconds"
+                                        Grid.Column="2"
+                                        Width="80"
+                                        HorizontalAlignment="Left"
                                         VerticalAlignment="Center"
-                                        Foreground="{DynamicResource Brush.TextSecondary}"
-                                        Text="Blackout side monitors" />
-                                    <CheckBox x:Name="cbBlackoutSideMonitors" Grid.Column="2" />
+                                        ToolTip="Minimum playtime in seconds for a session to be valid." />
                                 </Grid>
                             </Grid>
-                        </Grid>
-
-                        <Grid x:Name="pnlMonitoringKey" Margin="0,0,0,32">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="16" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="8" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-
-                            <TextBlock
-                                Grid.Row="0"
-                                Style="{StaticResource SettingsGroupTitleStyle}"
-                                Text="Monitoring hotkey" />
-
-                            <Grid Grid.Row="2">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="140" />
-                                    <ColumnDefinition Width="8" />
-                                    <ColumnDefinition Width="36" />
-                                </Grid.ColumnDefinitions>
-
-                                <TextBox
-                                    x:Name="txbMonitoringKey"
-                                    Grid.Column="0"
-                                    IsEnabled="False" />
-
-                                <Button
-                                    x:Name="btnCaptureMonitoringKey"
-                                    Grid.Column="2"
-                                    Width="36"
-                                    Height="36">
-                                    <Image
-                                        Width="16"
-                                        Height="16"
-                                        Source="/UI/Ressources/GTN_ICON_MONITOR_KEY.png" />
-                                </Button>
-                            </Grid>
-
-                            <TextBlock
-                                Grid.Row="4"
-                                Foreground="{DynamicResource Brush.TextSecondary}"
-                                Text="Press the button to listen for a new hotkey." />
-                        </Grid>
-
-                        <Grid Margin="0,0,0,32">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="12" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="12" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-
-                            <TextBlock
-                                Grid.Row="0"
-                                Foreground="{DynamicResource Brush.TextPrimary}"
-                                Style="{StaticResource SettingsGroupTitleStyle}"
-                                Text="Session Cleanup" />
-
-                            <Grid Grid.Row="2" HorizontalAlignment="Left">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="170" />
-                                    <ColumnDefinition Width="16" />
-                                    <ColumnDefinition Width="54" />
-                                </Grid.ColumnDefinitions>
-
-                                <TextBlock
-                                    Grid.Column="0"
-                                    VerticalAlignment="Center"
-                                    Foreground="{DynamicResource Brush.TextSecondary}"
-                                    Text="Enable Cleanup" />
-
-                                <CheckBox
-                                    x:Name="cbEnableSessionCleanup"
-                                    Grid.Column="2"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Center" />
-                            </Grid>
-
-                            <Grid Grid.Row="4" HorizontalAlignment="Left">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="170" />
-                                    <ColumnDefinition Width="16" />
-                                    <ColumnDefinition Width="80" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-
-                                <TextBlock
-                                    Grid.Column="0"
-                                    VerticalAlignment="Center"
-                                    Foreground="{DynamicResource Brush.TextSecondary}"
-                                    Text="Minimum Seconds" />
-
-                                <TextBox
-                                    x:Name="txbSessionCleanupSeconds"
-                                    Grid.Column="2"
-                                    Width="80"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Center"
-                                    ToolTip="Minimum playtime in seconds for a session to be valid." />
-                            </Grid>
-                        </Grid>
+                        </GroupBox>
 
                         <Grid>
                             <Grid.RowDefinitions>
@@ -812,122 +851,112 @@
                         <TextBlock Style="{StaticResource SettingsPageTitleStyle}" Text="About" />
 
                         <TextBlock
-                            Margin="0,4,0,18"
+                            Margin="0,4,0,16"
                             Style="{StaticResource SettingsPageSubtitleStyle}"
                             Text="Application information, version details and credits." />
 
-                        <Grid Margin="0,0,0,28">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="16" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="10" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
+                        <GroupBox
+                            Header="Application"
+                            Style="{StaticResource GroupBox.Card}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="12" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
 
-                            <TextBlock
-                                Grid.Row="0"
-                                Foreground="{DynamicResource Brush.TextPrimary}"
-                                Style="{StaticResource SettingsGroupTitleStyle}"
-                                Text="Application" />
+                                <TextBlock
+                                    x:Name="txVersion"
+                                    Grid.Row="0"
+                                    Style="{StaticResource Text.BodyStrong}"
+                                    Text="Beta 0.1.0" />
 
-                            <TextBlock
-                                x:Name="txVersion"
-                                Grid.Row="2"
-                                Foreground="{DynamicResource Brush.TextSecondary}"
-                                Text="Beta 0.1.0" />
+                                <TextBlock
+                                    Grid.Row="2"
+                                    Foreground="{DynamicResource Brush.TextSecondary}"
+                                    Text="GameTimeNext is currently in beta." />
+                            </Grid>
+                        </GroupBox>
 
-                            <TextBlock
-                                Grid.Row="4"
-                                Foreground="{DynamicResource Brush.TextSecondary}"
-                                Text="GameTimeNext is currently in beta." />
-                        </Grid>
+                        <GroupBox
+                            Header="Credits"
+                            Style="{StaticResource GroupBox.Card}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="12" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="8" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
 
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="16" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="10" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="8" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
+                                <TextBlock
+                                    Grid.Row="0"
+                                    Style="{StaticResource Text.Hint}"
+                                    Text="Some icons used in this application are provided by Icons8." />
 
-                            <TextBlock
-                                Grid.Row="0"
-                                Foreground="{DynamicResource Brush.TextPrimary}"
-                                Style="{StaticResource SettingsGroupTitleStyle}"
-                                Text="Credits" />
+                                <TextBlock Grid.Row="2" Foreground="{DynamicResource Brush.TextSecondary}">
+                                    <Run Text="Developed by" />
+                                </TextBlock>
+                                <Border
+                                    Grid.Row="4"
+                                    Padding="16"
+                                    HorizontalAlignment="Left"
+                                    Style="{StaticResource Card.Inset}">
+                                    <StackPanel>
+                                        <Image
+                                            Width="210"
+                                            Height="210"
+                                            HorizontalAlignment="Center"
+                                            Source="/UI/Ressources/GTN_CLS_ICON.png" />
 
-                            <TextBlock
-                                Grid.Row="2"
-                                Foreground="{DynamicResource Brush.TextSecondary}"
-                                Text="Some icons used in this application are provided by Icons8." />
+                                        <StackPanel
+                                            Margin="0,16,0,0"
+                                            HorizontalAlignment="Center"
+                                            Orientation="Horizontal">
+                                            <Border
+                                                Padding="4"
+                                                Background="#0AFFFFFF"
+                                                BorderBrush="{DynamicResource Brush.Border}"
+                                                BorderThickness="1"
+                                                CornerRadius="14">
+                                                <Image
+                                                    Width="94"
+                                                    Height="94"
+                                                    Source="/UI/Ressources/GTN_ICON_CLSMP.png" />
+                                            </Border>
 
-                            <TextBlock Grid.Row="4" Foreground="{DynamicResource Brush.TextSecondary}">
-                                <Run Text="Developed by" />
-                            </TextBlock>
-                            <Border
-                                Grid.Row="6"
-                                Padding="14"
-                                HorizontalAlignment="Left"
-                                Background="#12000000"
-                                BorderBrush="{DynamicResource Brush.Border}"
-                                BorderThickness="1"
-                                CornerRadius="12">
-                                <StackPanel>
-                                    <Image
-                                        Width="210"
-                                        Height="210"
-                                        HorizontalAlignment="Center"
-                                        Source="/UI/Ressources/GTN_CLS_ICON.png" />
-
-                                    <StackPanel
-                                        Margin="0,14,0,0"
-                                        HorizontalAlignment="Center"
-                                        Orientation="Horizontal">
-                                        <Border
-                                            Padding="4"
-                                            Background="#0AFFFFFF"
-                                            BorderBrush="{DynamicResource Brush.Border}"
-                                            BorderThickness="1"
-                                            CornerRadius="14">
-                                            <Image
-                                                Width="94"
-                                                Height="94"
-                                                Source="/UI/Ressources/GTN_ICON_CLSMP.png" />
-                                        </Border>
-
-                                        <Border
-                                            Margin="12,0,0,0"
-                                            Padding="4"
-                                            Background="#0AFFFFFF"
-                                            BorderBrush="{DynamicResource Brush.Border}"
-                                            BorderThickness="1"
-                                            CornerRadius="14">
-                                            <Image
-                                                Width="94"
-                                                Height="94"
-                                                Source="/UI/Ressources/GTN_ICON_CLSOF.png" />
-                                        </Border>
+                                            <Border
+                                                Margin="12,0,0,0"
+                                                Padding="4"
+                                                Background="#0AFFFFFF"
+                                                BorderBrush="{DynamicResource Brush.Border}"
+                                                BorderThickness="1"
+                                                CornerRadius="14">
+                                                <Image
+                                                    Width="94"
+                                                    Height="94"
+                                                    Source="/UI/Ressources/GTN_ICON_CLSOF.png" />
+                                            </Border>
+                                        </StackPanel>
                                     </StackPanel>
-                                </StackPanel>
-                            </Border>
-                        </Grid>
+                                </Border>
+                            </Grid>
+                        </GroupBox>
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
 
-        </TabControl>
+        </uixsel:UIXTabControl>
 
-        <Grid Grid.Row="1" Margin="0,28,0,8">
+        <Grid Grid.Row="1" Margin="0,24,0,8">
             <Button
                 x:Name="btnSave"
                 Width="140"
                 Height="36"
                 HorizontalAlignment="Right"
-                Content="Save settings" />
+                Content="Save settings"
+                Style="{StaticResource Button.Primary}" />
         </Grid>
     </Grid>
 </uix:UIXUserControlBase>

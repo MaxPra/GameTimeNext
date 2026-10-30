@@ -1,4 +1,6 @@
-﻿namespace RemoteMonitoring
+﻿using System.Globalization;
+
+namespace RemoteMonitoring
 {
     public static class FnLog
     {
@@ -27,7 +29,7 @@
         {
             ConsoleColor origin = Console.ForegroundColor;
 
-            switch (type.ToLower())
+            switch (type.ToLower(CultureInfo.CurrentCulture))
             {
                 case "error":
                     Console.ForegroundColor = ConsoleColor.Red;
@@ -44,7 +46,7 @@
             Console.Write(source.GetType().Name);
             Console.Write("] ");
 
-            if (!type.ToLower().Equals("error")) Console.ForegroundColor = origin;
+            if (!type.ToLower(CultureInfo.CurrentCulture).Equals("error")) Console.ForegroundColor = origin;
 
             Console.WriteLine(message);
             

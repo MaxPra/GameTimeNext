@@ -11,7 +11,7 @@ using UIX.ViewController.Engine.Runnables;
 
 namespace GameTimeNext.Core.Application.Profiles.Controller
 {
-    public class ProfilesExecutablesEditViewController : UIXViewControllerBase
+    internal class ProfilesExecutablesEditViewController : UIXViewControllerBase<ProfilesExecutablesEditApp, ProfilesExecutablesEditView>
     {
 
         ProfilesExecutablesEditViewModel? _profilesExecutablesEditViewModel = null;
@@ -38,7 +38,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
         }
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
         }
 
@@ -55,6 +55,10 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         }
 
         protected override void Event_Minimize()
+        {
+        }
+
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
         {
         }
 
@@ -75,34 +79,24 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
         }
 
-        private ProfilesExecutablesEditApp GetApp()
-        {
-            return (ProfilesExecutablesEditApp)App;
-        }
-
-        private ProfilesExecutablesEditView GetWnd()
-        {
-            return (ProfilesExecutablesEditView)View!;
-        }
-
         private void BuildExecutablesList()
         {
             List<Executable> executables = FnSystem.FindExecutables(GetApp().GameFolder);
 
-            // Nicht Spiel-Exe aussortieren
+            // Filter out non-game executables
             executables = FnSystem.SortOutExecutables(executables);
 
             _profilesExecutablesEditViewModel = new ProfilesExecutablesEditViewModel();
             _profilesExecutablesEditViewModel.Executables = new System.Collections.ObjectModel.ObservableCollection<Executable>(executables);
 
-            GetWnd().DataContext = _profilesExecutablesEditViewModel;
+            GetView().DataContext = _profilesExecutablesEditViewModel;
         }
 
         private void ShowExitWarning()
         {
             CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
 
-            CFMBOXResult result = cfmbox.Show("Question", $"Cancel selection of valid executables?\nSome {AppConfig.Root.ApplicationName} features may not be available for this profile afterward.", CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
+            CFMBOXResult result = cfmbox.Show(GetErrorMessage("PRO0004", AppConfig.Root.ApplicationName), CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
 
             if (result == CFMBOXResult.Yes)
             {

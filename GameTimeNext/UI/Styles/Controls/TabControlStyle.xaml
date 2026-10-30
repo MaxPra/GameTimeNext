@@ -1,16 +1,21 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:uiFramework="clr-namespace:GameTimeNext.Core.Framework.UI">
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:uiFramework="clr-namespace:GameTimeNext.Core.Framework.UI"
+    xmlns:uixsel="clr-namespace:UIX.ViewController.Engine.FrameworkElements.Selectors;assembly=UIX.ViewController.Engine" xmlns:uixprops="clr-namespace:UIX.ViewController.Engine.AttachedProperties;assembly=UIX.ViewController.Engine">
 
     <Style x:Key="ModernTabItemStyle" TargetType="{x:Type TabItem}">
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Padding" Value="18,9" />
-        <Setter Property="Margin" Value="0" />
+        <Setter Property="Padding" Value="16,8" />
+        <!--  Gap to the next tab (and to the "+" button), same as the add button's own margin  -->
+        <Setter Property="Margin" Value="0,0,6,0" />
         <Setter Property="FontSize" Value="13" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual.Control}" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="VerticalContentAlignment" Value="Stretch" />
@@ -18,11 +23,11 @@
             <Setter.Value>
                 <DataTemplate>
                     <TextBlock
+                        VerticalAlignment="Center"
                         FontSize="{Binding FontSize, RelativeSource={RelativeSource AncestorType=TabItem}}"
                         FontWeight="{Binding FontWeight, RelativeSource={RelativeSource AncestorType=TabItem}}"
                         Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=TabItem}}"
-                        Text="{Binding}"
-                        VerticalAlignment="Center" />
+                        Text="{Binding}" />
                 </DataTemplate>
             </Setter.Value>
         </Setter>
@@ -41,8 +46,8 @@
 
                         <Border
                             x:Name="HoverBg"
-                            Background="{DynamicResource Brush.Surface}"
-                            CornerRadius="3"
+                            Background="{StaticResource Brush.Item.Hover}"
+                            CornerRadius="{StaticResource Control.CornerRadius}"
                             IsHitTestVisible="False"
                             Opacity="0" />
 
@@ -59,8 +64,8 @@
                                     <TextBlock
                                         x:Name="IconText"
                                         VerticalAlignment="Center"
-                                        FontFamily="Segoe MDL2 Assets"
-                                        FontSize="20"
+                                        FontFamily="{StaticResource Font.Icons}"
+                                        FontSize="16"
                                         Foreground="{DynamicResource Brush.TextSecondary}"
                                         Text="{TemplateBinding Uid}" />
                                 </Border>
@@ -71,10 +76,10 @@
                                     VerticalAlignment="Center"
                                     ContentSource="Header"
                                     RecognizesAccessKey="True"
+                                    TextBlock.Foreground="{DynamicResource Brush.TextSecondary}"
                                     TextElement.FontSize="{TemplateBinding FontSize}"
                                     TextElement.FontWeight="{TemplateBinding FontWeight}"
-                                    TextElement.Foreground="{DynamicResource Brush.TextSecondary}"
-                                    TextBlock.Foreground="{DynamicResource Brush.TextSecondary}" />
+                                    TextElement.Foreground="{DynamicResource Brush.TextSecondary}" />
                             </StackPanel>
                         </Border>
                     </Grid>
@@ -126,6 +131,70 @@
     </Style>
 
 
+    <!--
+        "+" after the last tab: small glass square, centered in the track with the same gap on all sides
+        (width follows the remaining height). Card brushes via DynamicResource: CardStyles.xaml is merged later.
+    -->
+    <Geometry x:Key="TabAddButton.Glyph">M4.5,0 L4.5,9 M0,4.5 L9,4.5</Geometry>
+    <Geometry x:Key="TabFavoritesButton.Glyph">M0.5,2.5 L4.5,6.5 L8.5,2.5</Geometry>
+
+    <!--  The glyph (9 x 9 line drawing) is the button's Tag, so the "favorites" button can share the template  -->
+    <Style x:Key="TabAddButtonStyle" TargetType="{x:Type Button}">
+        <Setter Property="Tag" Value="{StaticResource TabAddButton.Glyph}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+        <Setter Property="Background" Value="{DynamicResource Brush.Card.Background}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Card.Border}" />
+        <!--  No left margin: the last tab already brings the gap  -->
+        <Setter Property="Margin" Value="0,6,6,6" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+        <Setter Property="Width" Value="{Binding ActualHeight, RelativeSource={RelativeSource Self}}" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Border
+                        x:Name="Bg"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="{StaticResource Control.CornerRadius}">
+                        <Path
+                            Width="9"
+                            Height="9"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Data="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}"
+                            Stroke="{TemplateBinding Foreground}"
+                            StrokeEndLineCap="Round"
+                            StrokeLineJoin="Round"
+                            StrokeStartLineCap="Round"
+                            StrokeThickness="1.6" />
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bg" Property="Background" Value="{DynamicResource Brush.Card.BackgroundHover}" />
+                            <Setter TargetName="Bg" Property="BorderBrush" Value="{DynamicResource Brush.Accent.Outline}" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Bg" Property="Background" Value="{StaticResource Brush.Item.Selected}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--  Down arrow before the "+": opens the start order of the favorites (TabControlBehaviors.ShowFavoritesButton)  -->
+    <Style
+        x:Key="TabFavoritesButtonStyle"
+        BasedOn="{StaticResource TabAddButtonStyle}"
+        TargetType="{x:Type Button}">
+        <Setter Property="Tag" Value="{StaticResource TabFavoritesButton.Glyph}" />
+    </Style>
+
     <Style x:Key="ModernTabControlStyle" TargetType="{x:Type TabControl}">
         <Setter Property="Background" Value="{DynamicResource Brush.Background}" />
         <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
@@ -137,6 +206,8 @@
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="VerticalContentAlignment" Value="Stretch" />
         <Setter Property="uiFramework:TabControlBehaviors.EnableSelectionSwoosh" Value="True" />
+        <!--  Views inside the tabs drop their own outer margin, the content area below provides it (View.Root)  -->
+        <Setter Property="uiFramework:ViewHost.IsTabContent" Value="True" />
 
         <Setter Property="ItemsPanel">
             <Setter.Value>
@@ -163,37 +234,92 @@
                             </Grid.RowDefinitions>
 
                             <!--  Segmented tab track  -->
+                            <!--
+                                Recessed track; the selection runner is a lighter glass surface (card look, neutral
+                                instead of accent tinted) with a thin accent line. Card brushes via DynamicResource:
+                                CardStyles.xaml is merged later.
+                            -->
                             <Border
                                 x:Name="TabTrackHost"
                                 Grid.Row="0"
                                 Margin="12,12,12,0"
-                                Padding="0"
-                                Background="Transparent"
-                                BorderBrush="{DynamicResource Brush.Border}"
-                                BorderThickness="1"
-                                CornerRadius="3">
+                                Padding="3"
+                                Background="{StaticResource Brush.Input.Background}"
+                                BorderThickness="0"
+                                CornerRadius="{StaticResource Popup.CornerRadius}">
                                 <Grid x:Name="TabTrackContentHost" ClipToBounds="True">
                                     <Border
                                         x:Name="SelectionRunner"
                                         Width="0"
                                         HorizontalAlignment="Left"
                                         VerticalAlignment="Stretch"
-                                        Background="{DynamicResource Brush.Accent}"
-                                        BorderBrush="{DynamicResource Brush.Accent}"
+                                        Background="{DynamicResource Brush.Card.BackgroundHover}"
+                                        BorderBrush="{DynamicResource Brush.Card.Border}"
                                         BorderThickness="1"
-                                        CornerRadius="3"
+                                        CornerRadius="{StaticResource Control.CornerRadius}"
                                         IsHitTestVisible="False">
                                         <Border.RenderTransform>
                                             <TranslateTransform x:Name="SelectionRunnerTransform" X="0" />
                                         </Border.RenderTransform>
+                                        <Border
+                                            Height="2"
+                                            Margin="14,0,14,3"
+                                            VerticalAlignment="Bottom"
+                                            Background="{DynamicResource Brush.Accent}"
+                                            CornerRadius="1" />
                                     </Border>
 
-                                    <ItemsPresenter />
+                                    <StackPanel Orientation="Horizontal">
+                                        <!--
+                                            Invisible zero-width strut with the metrics of a tab (vertical padding,
+                                            icon and header line), so the track keeps its height when all tabs are closed.
+                                        -->
+                                        <Grid
+                                            Width="0"
+                                            Margin="0,8"
+                                            IsHitTestVisible="False"
+                                            Visibility="Hidden">
+                                            <!--  NoWrap: the implicit TextBlock style wraps, which would break the text into one line per letter at zero width  -->
+                                            <TextBlock
+                                                FontFamily="{StaticResource Font.Icons}"
+                                                FontSize="16"
+                                                Text="&#xE710;"
+                                                TextWrapping="NoWrap" />
+                                            <TextBlock
+                                                FontSize="13"
+                                                FontWeight="SemiBold"
+                                                Text="Ag"
+                                                TextWrapping="NoWrap" />
+                                        </Grid>
+
+                                        <ItemsPresenter />
+
+                                        <!--
+                                            Optional favorites button and "+" after the last tab (TabControlBehaviors.ShowFavoritesButton /
+                                            ShowAddButton). The clicks bubble to the window and are dispatched to the controller as
+                                            EV_btnTabFavorites / EV_BtnTabAdd.
+                                        -->
+                                        <Button
+                                            x:Name="btnTabFavorites"
+                                            Style="{StaticResource TabFavoritesButtonStyle}"
+                                            ToolTip="{Binding Path=(uiFramework:TabControlBehaviors.FavoritesButtonToolTip), RelativeSource={RelativeSource TemplatedParent}}"
+                                            Visibility="Collapsed" />
+
+                                        <Button
+                                            x:Name="BtnTabAdd"
+                                            Style="{StaticResource TabAddButtonStyle}"
+                                            ToolTip="{Binding Path=(uiFramework:TabControlBehaviors.AddButtonToolTip), RelativeSource={RelativeSource TemplatedParent}}"
+                                            Visibility="Collapsed" />
+                                    </StackPanel>
                                 </Grid>
                             </Border>
 
                             <!--  Tab content  -->
-                            <Grid Grid.Row="1" Margin="0,12,12,12" ClipToBounds="True">
+                            <!--  Same side inset as the tab track, so every view lines up with it  -->
+                            <Grid
+                                Grid.Row="1"
+                                Margin="12"
+                                ClipToBounds="True">
                                 <ContentControl
                                     x:Name="SelectedContentHost"
                                     HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
@@ -212,6 +338,30 @@
                         </Grid>
                     </Border>
 
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="uiFramework:TabControlBehaviors.ShowAddButton" Value="True">
+                            <Setter TargetName="BtnTabAdd" Property="Visibility" Value="Visible" />
+                        </Trigger>
+
+                        <Trigger Property="uiFramework:TabControlBehaviors.ShowFavoritesButton" Value="True">
+                            <Setter TargetName="btnTabFavorites" Property="Visibility" Value="Visible" />
+                        </Trigger>
+
+                        <!--  Without tabs there is no preceding tab margin: same gap on the left as on the other sides  -->
+                        <Trigger Property="HasItems" Value="False">
+                            <Setter TargetName="BtnTabAdd" Property="Margin" Value="6" />
+                            <Setter TargetName="btnTabFavorites" Property="Margin" Value="6" />
+                        </Trigger>
+
+                        <!--  The favorites button brings the left gap, the "+" follows it  -->
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="HasItems" Value="False" />
+                                <Condition Property="uiFramework:TabControlBehaviors.ShowFavoritesButton" Value="True" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="BtnTabAdd" Property="Margin" Value="0,6,6,6" />
+                        </MultiTrigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -227,54 +377,85 @@
         <Setter Property="FontSize" Value="13" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual.Control}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type TabItem}">
-                    <Border
-                        x:Name="RootBorder"
-                        Padding="{TemplateBinding Padding}"
-                        Background="Transparent"
-                        CornerRadius="3">
-                        <StackPanel
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Orientation="Horizontal">
-                            <Border
-                                x:Name="DefaultIconHost"
-                                Margin="0,0,7,0"
-                                Background="Transparent"
-                                Visibility="Visible">
-                                <TextBlock
-                                    x:Name="DefaultIconText"
-                                    VerticalAlignment="Center"
-                                    FontFamily="Segoe MDL2 Assets"
-                                    FontSize="14"
-                                    Foreground="{DynamicResource Brush.TextSecondary}"
-                                    Text="{TemplateBinding Uid}" />
-                            </Border>
+                    <!--
+                        Text headers inherit color, size and weight from the presenter below (muted / selected);
+                        the implicit TextBlock style would otherwise pin them to white.
+                    -->
+                    <ControlTemplate.Resources>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="VerticalAlignment" Value="Center" />
+                        </Style>
+                    </ControlTemplate.Resources>
 
-                            <ContentPresenter
+                    <Grid>
+                        <Border
+                            x:Name="RootBorder"
+                            Padding="{TemplateBinding Padding}"
+                            Background="Transparent"
+                            CornerRadius="3">
+                            <StackPanel
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
-                                ContentSource="Header"
-                                RecognizesAccessKey="True"
-                                TextElement.FontSize="{TemplateBinding FontSize}"
-                                TextElement.FontWeight="{TemplateBinding FontWeight}"
-                                TextElement.Foreground="{TemplateBinding Foreground}" />
-                        </StackPanel>
-                    </Border>
+                                Orientation="Horizontal">
+                                <Border
+                                    x:Name="DefaultIconHost"
+                                    Margin="0,0,7,0"
+                                    Background="Transparent"
+                                    Visibility="Visible">
+                                    <TextBlock
+                                        x:Name="DefaultIconText"
+                                        VerticalAlignment="Center"
+                                        FontFamily="{StaticResource Font.Icons}"
+                                        FontSize="14"
+                                        Foreground="{DynamicResource Brush.TextSecondary}"
+                                        Text="{TemplateBinding Uid}" />
+                                </Border>
+
+                                <!--  Validation error on a field of this tab (UIXTabValidation.HasErrors, set by the engine); takes the place of the tab icon  -->
+                                <TextBlock
+                                    x:Name="ErrorIcon"
+                                    Margin="0,0,7,0"
+                                    VerticalAlignment="Center"
+                                    FontFamily="{StaticResource Font.Icons}"
+                                    FontSize="14"
+                                    Foreground="{DynamicResource Brush.Danger}"
+                                    Text="&#xE783;"
+                                    Visibility="Collapsed" />
+
+                                <ContentPresenter
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    ContentSource="Header"
+                                    RecognizesAccessKey="True"
+                                    TextElement.FontSize="{TemplateBinding FontSize}"
+                                    TextElement.FontWeight="{TemplateBinding FontWeight}"
+                                    TextElement.Foreground="{TemplateBinding Foreground}" />
+                            </StackPanel>
+                        </Border>
+
+                        <!--  Selected tab: accent underline sitting on the header separator  -->
+                        <Border
+                            x:Name="Underline"
+                            Height="2"
+                            Margin="8,0"
+                            VerticalAlignment="Bottom"
+                            Background="{DynamicResource Brush.Accent}"
+                            CornerRadius="1"
+                            Opacity="0" />
+                    </Grid>
 
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="RootBorder" Property="Background" Value="{DynamicResource Brush.Surface}" />
+                            <Setter TargetName="Underline" Property="Opacity" Value="0.4" />
                             <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
                         </Trigger>
 
                         <Trigger Property="IsSelected" Value="True">
-                            <Setter TargetName="RootBorder" Property="Background" Value="{DynamicResource Brush.Accent}" />
-                            <Setter TargetName="RootBorder" Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
-                            <Setter TargetName="RootBorder" Property="BorderThickness" Value="1" />
+                            <Setter TargetName="Underline" Property="Opacity" Value="1" />
                             <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
                             <Setter Property="FontWeight" Value="SemiBold" />
                             <Setter TargetName="DefaultIconText" Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
@@ -293,6 +474,13 @@
                         <Trigger Property="Uid" Value="">
                             <Setter TargetName="DefaultIconHost" Property="Visibility" Value="Collapsed" />
                         </Trigger>
+
+                        <!--  Last, so it wins over hover: the header stays in the danger color  -->
+                        <Trigger Property="uixprops:UIXTabValidation.HasErrors" Value="True">
+                            <Setter TargetName="DefaultIconHost" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="ErrorIcon" Property="Visibility" Value="Visible" />
+                            <Setter Property="Foreground" Value="{DynamicResource Brush.Danger}" />
+                        </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
@@ -300,9 +488,9 @@
     </Style>
 
     <Style x:Key="DefaultTabControlStyle" TargetType="{x:Type TabControl}">
-        <Setter Property="Background" Value="{DynamicResource Brush.Background}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
-        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
@@ -321,14 +509,14 @@
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
 
+                            <!--  No side insets: the view root (View.Root) already provides the outer margin  -->
                             <Border
                                 Grid.Row="0"
-                                Padding="12,10,14,0"
+                                Padding="0,4,0,0"
                                 Background="Transparent"
                                 BorderBrush="{DynamicResource Brush.Border}"
                                 BorderThickness="0,0,0,1">
                                 <TabPanel
-                                    Margin="0,0,6,0"
                                     HorizontalAlignment="Left"
                                     Background="Transparent"
                                     ClipToBounds="False"
@@ -336,10 +524,14 @@
                                     KeyboardNavigation.TabIndex="1" />
                             </Border>
 
+                            <!--
+                                Deliberately not named PART_SelectedContentHost: with that name WPF moves keyboard focus
+                                into the content on a tab click, which scrolls the first focusable element to the top.
+                            -->
                             <ContentPresenter
-                                x:Name="PART_SelectedContentHost"
+                                x:Name="SelectedContentHost"
                                 Grid.Row="1"
-                                Margin="12,14,12,12"
+                                Margin="0,16,0,0"
                                 ContentSource="SelectedContent" />
                         </Grid>
                     </Border>
@@ -351,5 +543,8 @@
     <Style BasedOn="{StaticResource DefaultTabItemStyle}" TargetType="{x:Type TabItem}" />
 
     <Style BasedOn="{StaticResource DefaultTabControlStyle}" TargetType="{x:Type TabControl}" />
+
+    <!--  Engine TabControl (UIXTabControl): implicit styles only apply to the exact type  -->
+    <Style BasedOn="{StaticResource {x:Type TabControl}}" TargetType="{x:Type uixsel:UIXTabControl}" />
 
 </ResourceDictionary>

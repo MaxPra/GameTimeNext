@@ -16,6 +16,11 @@ namespace GameTimeNext.Core.Application.Codetables
 
         public CodetablesEntryEditAppRunParameters RunParameters { get; set; } = new CodetablesEntryEditAppRunParameters();
 
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(CodetablesEntryEditApp));
+        }
+
         public override void InitializeApplicationOutput()
         {
             CodetablesEntryEditView = new CodetablesEntryEditView();
