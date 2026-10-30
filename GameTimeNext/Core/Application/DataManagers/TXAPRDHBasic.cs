@@ -36,6 +36,20 @@ namespace GameTimeNext.Core.Application.DataManagers
             return obj;
         }
 
+        public virtual T1APRDH Copy(T1APRDH objFrom)
+        {
+            T1APRDH obj = CreateNew();
+            obj.APDES = objFrom.APDES;
+            obj.APHPT = objFrom.APHPT;
+            obj.APMCP = objFrom.APMCP;
+            return obj;
+        }
+
+        public virtual T1APRDH DeepCopy(T1APRDH objFrom)
+        {
+            throw new NotImplementedException();
+        }
+
         public virtual void Save(T1APRDH obj)
         {
             if (obj is null)

@@ -162,6 +162,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     CodeBuilder code = new CodeBuilder();
 
                     Dictionary<T1METAP, UIXSqliteDataType> primkFields = fields.Where(p => p.Key.PRIMK).ToDictionary();
+                    Dictionary<T1METAP, UIXSqliteDataType> nonPrimkOrAuditFields = fields.Where(p => !p.Key.PRIMK && !TFMETAP.AuditFields.Contains(p.Key.PONAM)).ToDictionary();
                     bool hasCrat = Helpers.HasField(fields, "CRAT");
                     bool hasChat = Helpers.HasField(fields, "CHAT");
                     bool hasCrus = Helpers.HasField(fields, "CRUS");
@@ -211,6 +212,24 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                         code.AddLine($"{classNameT1} obj = new {classNameT1}();");
                         code.AddLine("obj.State = UIXTableObjectState.New;");
                         code.AddLine("return obj;");
+                        code.EndBlock();
+
+                        // Copy
+                        code.AddLine();
+                        code.BeginBlock($"public virtual {classNameT1} Copy({classNameT1} objFrom)");
+                        code.AddLine($"{classNameT1} obj = CreateNew();");
+                        foreach (KeyValuePair<T1METAP, UIXSqliteDataType> field in nonPrimkOrAuditFields)
+                        {
+                            code.AddLine($"obj.{field.Key.PONAM} = objFrom.{field.Key.PONAM};");
+                        }
+                        code.AddLine("return obj;");
+                        code.EndBlock();
+
+                        // DeepCopy
+                        code.AddLine();
+                        code.BeginBlock($"public virtual {classNameT1} DeepCopy({classNameT1} objFrom)");
+                        // OFDO: Implement TXBasic.DeepCopy()
+                        code.AddLine("throw new NotImplementedException();");
                         code.EndBlock();
 
                         // Save

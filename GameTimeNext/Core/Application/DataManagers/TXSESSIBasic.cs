@@ -36,6 +36,22 @@ namespace GameTimeNext.Core.Application.DataManagers
             return obj;
         }
 
+        public virtual T1SESSI Copy(T1SESSI objFrom)
+        {
+            T1SESSI obj = CreateNew();
+            obj.PFID = objFrom.PFID;
+            obj.PTID = objFrom.PTID;
+            obj.PLFR = objFrom.PLFR;
+            obj.PLTO = objFrom.PLTO;
+            obj.PLTI = objFrom.PLTI;
+            return obj;
+        }
+
+        public virtual T1SESSI DeepCopy(T1SESSI objFrom)
+        {
+            throw new NotImplementedException();
+        }
+
         public virtual void Save(T1SESSI obj)
         {
             if (obj is null)

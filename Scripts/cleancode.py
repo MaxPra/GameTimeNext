@@ -24,12 +24,9 @@ ALLOWED_SOURCES = {
     "GameTimeNext": {
         "GameTimeNext/Core/Framework/Config/AppConfig.Paths.cs": 1,
         "GameTimeNext/App.xaml.cs": 1,
-        "GameTimeNext/Core/Framework/Config/AppConfigOld.cs": 1000,
     },
 
-    "GameTimeNXT": {
-        "GameTimeNext/Core/Framework/Config/AppConfigOld.cs": 1000,
-    },
+    "GameTimeNXT": {},
 
     "MaxPra": {
         "GameTimeNext/Core/Framework/Config/AppConfig.Paths.cs": 1,

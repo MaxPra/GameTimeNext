@@ -41,9 +41,7 @@ namespace GameTimeNext.Core.Application.ErrorMessages
         public void Copy(Action<ErrorMessagesEditViewController.ErrorMessagesEditViewReturn> callback, T1ERMSG t1ermsgSource)
         {
             // The number is the primary key, so the copy starts without one and the user has to enter a new number
-            T1ERMSG = new TXERMSG().CreateNew();
-            T1ERMSG.ERMSG = t1ermsgSource.ERMSG;
-            T1ERMSG.ERHIN = t1ermsgSource.ERHIN;
+            T1ERMSG = new TXERMSG().Copy(t1ermsgSource);
 
             ErrorMessagesEditView!.ViewIndicator.Clear();
             ErrorMessagesEditView!.ViewIndicator.Add("CO");

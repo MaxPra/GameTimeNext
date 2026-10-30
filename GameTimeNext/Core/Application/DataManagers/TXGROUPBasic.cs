@@ -36,6 +36,19 @@ namespace GameTimeNext.Core.Application.DataManagers
             return obj;
         }
 
+        public virtual T1GROUP Copy(T1GROUP objFrom)
+        {
+            T1GROUP obj = CreateNew();
+            obj.GRNA = objFrom.GRNA;
+            obj.GTYP = objFrom.GTYP;
+            return obj;
+        }
+
+        public virtual T1GROUP DeepCopy(T1GROUP objFrom)
+        {
+            throw new NotImplementedException();
+        }
+
         public virtual void Save(T1GROUP obj)
         {
             if (obj is null)
