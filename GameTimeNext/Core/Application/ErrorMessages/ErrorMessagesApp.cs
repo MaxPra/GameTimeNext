@@ -1,4 +1,5 @@
 using GameTimeNext.Core.Application.ErrorMessages.Controller;
+using GameTimeNext.Core.Application.ErrorMessages.Selectors;
 using GameTimeNext.Core.Application.ErrorMessages.Views;
 using System.Windows.Controls;
 using UIX.ViewController.Engine.Runnables;
@@ -56,6 +57,8 @@ namespace GameTimeNext.Core.Application.ErrorMessages
             ErrorMessagesView = new ErrorMessagesView();
             MainView = ErrorMessagesView;
             ErrorMessagesView.ViewController = new ErrorMessagesViewController(this);
+            ErrorMessagesView.dgErrorMessages.SelectorAdapter = new ErrorMessagesView_ErrorMessagesSelectorAdapter(this);
+            ErrorMessagesView.dgErrorMessages.SelectorController = new ErrorMessagesView_ErrorMessagesSelectorController(this);
         }
 
         public override void SetWindowProperties(UIXApplicationStartOptions options)

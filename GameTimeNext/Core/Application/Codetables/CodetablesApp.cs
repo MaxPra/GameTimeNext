@@ -1,4 +1,5 @@
 ﻿using GameTimeNext.Core.Application.Codetables.Controller;
+using GameTimeNext.Core.Application.Codetables.Selectors;
 using GameTimeNext.Core.Application.Codetables.Views;
 using System.Windows.Controls;
 using UIX.ViewController.Engine.Runnables;
@@ -57,6 +58,10 @@ namespace GameTimeNext.Core.Application.Codetables
             CodetablesView = new CodetablesView();
             MainView = CodetablesView;
             CodetablesView.ViewController = new CodetablesViewController(this);
+
+            // -- Selectors
+            CodetablesView.DgCodetables.SelectorAdapter = new CodetablesView_CodetablesSelectorAdapter(this);
+            CodetablesView.DgCodetables.SelectorController = new CodetablesView_CodetablesSelectorController(this);
         }
 
         public override bool CanClose()

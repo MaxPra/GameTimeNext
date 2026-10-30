@@ -2,20 +2,20 @@
 
     <!--
         Card system (first used in the profile detail view, to be adopted across GTN step by step).
-
+        
         Glass surfaces (translucent light + lit edge) so cards blend with any background, headings in normal case,
         information as label/value rows separated by hairlines instead of a box per value.
-
+        
         Building blocks:
-          GroupBox.Card         heading above + content on a card       (replacement for the classic GroupBox)
-          GroupBox.Section      heading above + content without card
-          Card                  plain card surface (Border)
-          Card.Inset            recessed area inside a card (lists, nested boxes)
-          Card.Interactive      card with hover feedback (clickable cards)
-          Card.Row              label/value row inside a card; rows after the first get a hairline on top
-          Card.RowLabel         muted label (left)
-          Card.RowValue         value (right)
-          Card.Caption          small muted text, e.g. above a prominent value
+        GroupBox.Card         heading above + content on a card       (replacement for the classic GroupBox)
+        GroupBox.Section      heading above + content without card
+        Card                  plain card surface (Border)
+        Card.Inset            recessed area inside a card (lists, nested boxes)
+        Card.Interactive      card with hover feedback (clickable cards)
+        Card.Row              label/value row inside a card; rows after the first get a hairline on top
+        Card.RowLabel         muted label (left)
+        Card.RowValue         value (right)
+        Card.Caption          small muted text, e.g. above a prominent value
     -->
 
     <!--  ===== Values =====  -->

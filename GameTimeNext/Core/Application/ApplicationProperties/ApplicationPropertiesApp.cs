@@ -1,5 +1,6 @@
 ﻿using GameTimeNext.Core.Application.ApplicationProperties.Controller;
 using GameTimeNext.Core.Application.ApplicationProperties.DataWrapper;
+using GameTimeNext.Core.Application.ApplicationProperties.Selectors;
 using GameTimeNext.Core.Application.ApplicationProperties.Views;
 using System.Windows.Controls;
 using UIX.ViewController.Engine.Runnables;
@@ -63,6 +64,8 @@ namespace GameTimeNext.Core.Application.ApplicationProperties
             ApplicationPropertiesView = new ApplicationPropertiesView();
             MainView = ApplicationPropertiesView;
             ApplicationPropertiesView.ViewController = new ApplicationPropertiesViewController(this);
+            ApplicationPropertiesView.dgApplicationProperties.SelectorAdapter = new ApplicationPropertiesView_ApplicationPropertiesSelectorAdapter(this);
+            ApplicationPropertiesView.dgApplicationProperties.SelectorController = new ApplicationPropertiesView_ApplicationPropertiesSelectorController(this);
 
             // -- Combined edit area
             ApplicationPropertiesDetailView = new ApplicationPropertiesDetailView();

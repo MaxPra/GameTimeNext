@@ -1,14 +1,13 @@
 using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.Screensetups.Viewmodels;
 using GameTimeNext.Core.Application.Screensetups.Views;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework.UI.Dialogs;
-using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements.ComboBoxes;
+using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.FrameworkElements.UserControls;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
@@ -18,8 +17,6 @@ namespace GameTimeNext.Core.Application.Screensetups.Controller
 {
     public class ScreensetupsEditViewController : UIXViewControllerBase<ScreensetupsEditApp, ScreensetupsEditView>
     {
-
-        private ScreensetupsEditViewModel? _viewModel;
 
         // Audio device id -> plain device name (without availability suffix)
         private Dictionary<string, string> _audioDeviceNames = new Dictionary<string, string>();
@@ -46,11 +43,15 @@ namespace GameTimeNext.Core.Application.Screensetups.Controller
             {
                 FnControls.LoadTabContent(GetView().tabControl);
 
-                BuildMonitorGrid();
                 BuildAudioDevices();
             }
 
             GetView().TxbName.Focus();
+        }
+
+        protected override async Task BuildFirstImplAsync()
+        {
+            await GetView().DgMonitors.LoadDataAsync();
         }
 
         protected override void BuildImpl()
@@ -68,7 +69,7 @@ namespace GameTimeNext.Core.Application.Screensetups.Controller
             if (GetView().TxbDescription.Text.Length > 200)
                 AddViewError(GetView().TxbDescription, GetErrorMessage("GLO0004", "Description", "200"));
 
-            List<ScreensetupMonitorDataGridRow> monitorRows = _viewModel?.MonitorDataGridRows?.ToList() ?? new List<ScreensetupMonitorDataGridRow>();
+            List<ScreensetupMonitorDataGridRow> monitorRows = GetMonitorRows();
 
             if (!monitorRows.Any(r => r.COMOEN))
                 AddViewError(GetView().DgMonitors, GetErrorMessage("SCS0001"));
@@ -99,14 +100,14 @@ namespace GameTimeNext.Core.Application.Screensetups.Controller
         {
             long ssid = GetApp().T1SCRSH!.SSID;
 
-            if (ssid == 0 || _viewModel?.MonitorDataGridRows == null)
+            if (ssid == 0)
                 return;
 
             // Replace all monitors of this screensetup
             TXSCRSP txscrsp = new TXSCRSP();
             txscrsp.DeleteAllWhereSSID(ssid);
 
-            foreach (ScreensetupMonitorDataGridRow monitorRow in _viewModel.MonitorDataGridRows)
+            foreach (ScreensetupMonitorDataGridRow monitorRow in GetMonitorRows())
             {
                 T1SCRSP t1scrsp = txscrsp.CreateNew();
                 t1scrsp.SSID = ssid;
@@ -139,72 +140,9 @@ namespace GameTimeNext.Core.Application.Screensetups.Controller
         {
         }
 
-        private void BuildMonitorGrid()
+        private List<ScreensetupMonitorDataGridRow> GetMonitorRows()
         {
-            // A copy starts with the monitors of its source screensetup
-            long ssid = GetView().ViewIndicator.Contains("CO") ? GetApp().CopySourceSSID : GetApp().T1SCRSH!.SSID;
-
-            IReadOnlyList<UIXMonitorInfo> monitors = UIXMonitorManager.GetMonitors();
-            List<T1SCRSP> t1scrsps = TFSCRSP.GetMonitorsOfScreensetup(ssid);
-
-            // A new screensetup starts with the current Windows state
-            bool isCreateNew = GetView().ViewIndicator.Contains("CN");
-
-            List<ScreensetupMonitorDataGridRow> rows = new List<ScreensetupMonitorDataGridRow>();
-
-            // The order of GetMonitors() is stable, so the number matches the identify overlay
-            for (int i = 0; i < monitors.Count; i++)
-            {
-                UIXMonitorInfo monitor = monitors[i];
-                T1SCRSP? t1scrsp = t1scrsps.FirstOrDefault(p => p.MOID == monitor.Id);
-
-                ScreensetupMonitorDataGridRow row = GetView().DgMonitors.CreateNewRow<ScreensetupMonitorDataGridRow>();
-                row.COMOID = monitor.Id;
-                row.COMONA = monitor.Name;
-                row.CONUMB = (i + 1).ToString(CultureInfo.CurrentCulture);
-                row.COSTAT = FormatMonitorState(monitor);
-                row.COISCON = true;
-                row.COMOEN = t1scrsp?.MOEN ?? (isCreateNew && monitor.IsActive);
-                row.COMOPR = t1scrsp?.MOPR ?? (isCreateNew && monitor.IsPrimary);
-
-                rows.Add(row);
-            }
-
-            // Keep stored monitors that are not connected right now, otherwise they would be lost on save
-            foreach (T1SCRSP t1scrsp in t1scrsps.Where(p => !monitors.Any(m => m.Id == p.MOID)))
-            {
-                ScreensetupMonitorDataGridRow row = GetView().DgMonitors.CreateNewRow<ScreensetupMonitorDataGridRow>();
-                row.COMOID = t1scrsp.MOID;
-                row.COMONA = t1scrsp.MONA;
-                row.CONUMB = "-";
-                row.COSTAT = "Not connected";
-                row.COISCON = false;
-                row.COMOEN = t1scrsp.MOEN;
-                row.COMOPR = t1scrsp.MOPR;
-
-                rows.Add(row);
-            }
-
-            // Only one monitor can be primary
-            foreach (ScreensetupMonitorDataGridRow row in rows)
-                row.PropertyChanged += MonitorRow_PropertyChanged;
-
-            _viewModel = new ScreensetupsEditViewModel();
-            _viewModel.MonitorDataGridRows = new System.Collections.ObjectModel.ObservableCollection<ScreensetupMonitorDataGridRow>(rows);
-
-            View.DataContext = _viewModel;
-        }
-
-        private void MonitorRow_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName != nameof(ScreensetupMonitorDataGridRow.COMOPR) || sender is not ScreensetupMonitorDataGridRow changedRow || !changedRow.COMOPR)
-                return;
-
-            foreach (ScreensetupMonitorDataGridRow row in _viewModel?.MonitorDataGridRows ?? Enumerable.Empty<ScreensetupMonitorDataGridRow>())
-            {
-                if (!ReferenceEquals(row, changedRow))
-                    row.COMOPR = false;
-            }
+            return GetView().DgMonitors.Items.OfType<ScreensetupMonitorDataGridRow>().ToList();
         }
 
         private void BuildAudioDevices()
@@ -241,22 +179,9 @@ namespace GameTimeNext.Core.Application.Screensetups.Controller
                 ?? cmbAudioDevice.Items[0];
         }
 
-        private static string FormatMonitorState(UIXMonitorInfo monitor)
-        {
-            if (!monitor.IsActive)
-                return "Off";
-
-            string resolution = $"{monitor.Width} x {monitor.Height}";
-
-            return monitor.IsPrimary ? $"On, primary ({resolution})" : $"On ({resolution})";
-        }
-
         protected void EV_BtnUseCurrentState()
         {
-            if (_viewModel?.MonitorDataGridRows == null)
-                return;
-
-            foreach (ScreensetupMonitorDataGridRow monitorRow in _viewModel.MonitorDataGridRows)
+            foreach (ScreensetupMonitorDataGridRow monitorRow in GetMonitorRows())
             {
                 UIXMonitorInfo? monitor = monitorRow.COISCON ? UIXMonitorManager.GetMonitor(monitorRow.COMOID) : null;
 

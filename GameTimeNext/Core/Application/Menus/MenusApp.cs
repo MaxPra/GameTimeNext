@@ -1,5 +1,6 @@
 using GameTimeNext.Core.Application.Menus.Controller;
 using GameTimeNext.Core.Application.Menus.DataWrapper;
+using GameTimeNext.Core.Application.Menus.Selectors;
 using GameTimeNext.Core.Application.Menus.Views;
 using System.Windows.Controls;
 using UIX.ViewController.Engine.Runnables;
@@ -48,6 +49,8 @@ namespace GameTimeNext.Core.Application.Menus
             MenusView.ViewIndicator.Add("ED");
             MainView = MenusView;
             MenusView.ViewController = new MenusViewController(this);
+            MenusView.dgMenus.SelectorAdapter = new MenusView_MenusSelectorAdapter(this);
+            MenusView.dgMenus.SelectorController = new MenusView_MenusSelectorController(this);
 
             // -- Combined edit area
             MenusDetailView = new MenusDetailView();

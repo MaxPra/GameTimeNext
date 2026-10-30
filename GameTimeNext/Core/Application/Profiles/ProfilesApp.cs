@@ -1,5 +1,6 @@
 ﻿using GameTimeNext.Core.Application.Profiles.Controller;
 using GameTimeNext.Core.Application.Profiles.DataWrapper;
+using GameTimeNext.Core.Application.Profiles.Selectors;
 using GameTimeNext.Core.Application.Profiles.Views;
 using GameTimeNext.Core.Application.TimeMonitoring;
 using GameTimeNext.Core.Framework;
@@ -58,6 +59,8 @@ namespace GameTimeNext.Core.Application.Profiles
             this.ProfilesView = new ProfilesView();
             this.MainView = ProfilesView;
             this.ProfilesView.ViewController = new ProfilesViewController(this);
+            this.ProfilesView.ListBoxProfiles.SelectorAdapter = new ProfilesView_ProfilesSelectorAdapter(this);
+            this.ProfilesView.ListBoxProfiles.SelectorController = new ProfilesView_ProfilesSelectorController(this);
 
             // -- Profiles Detailview
             this.ProfilesDetailView = new ProfilesDetailView();

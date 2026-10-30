@@ -3,7 +3,6 @@ using GameTimeNext.Core.Application.Dashboard.ViewModels;
 using GameTimeNext.Core.Application.Dashboard.Views;
 using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Profiles;
-using GameTimeNext.Core.Application.Profiles.Viewmodel;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Config;
@@ -15,6 +14,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Media.Imaging;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.Events;
+using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
@@ -22,7 +22,6 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
 {
     public class DashboardViewController : UIXViewControllerBase<DashboardApp, DashboardView>
     {
-        DashboardViewModel? viewModel = null;
         short timeSpanOffset = 0;
         DateTime? timeSpanStart = null;
         DateTime timeSpanEnd = DateTime.Today.AddDays(1).AddTicks(-1);
@@ -36,8 +35,6 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
 
         protected override void Init()
         {
-            viewModel = new DashboardViewModel();
-
             GetApp().Loader.SetRandomTexts(
                     "Preparing your dashboard...",
                     "Collecting your latest gaming stats...",
@@ -70,7 +67,7 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
 
         protected override async Task BuildFirstImplAsync()
         {
-            await BuildPlayedProfilesListBoxAsync();
+            await GetView().ListViewRecentGames.LoadDataAsync();
         }
 
         protected override void BuildFirstImpl()
@@ -133,7 +130,7 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
                     AppEnvironment.GetAppConfig().UserSettings.SelectedDashboardMode = (short)GetView().CmbTimeRange.SelectedIndex;
                     AppEnvironment.SaveAppConfig();
 
-                    await BuildPlayedProfilesListBoxAsync();
+                    await GetView().ListViewRecentGames.LoadDataAsync();
                     Open(true);
                 }
 
@@ -228,35 +225,12 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
             return $"{start.ToString("d", CultureInfo.CurrentCulture)} – {end.ToString("d", CultureInfo.CurrentCulture)}";
         }
 
-        private async Task BuildPlayedProfilesListBoxAsync()
+        /// <summary>
+        /// The selected period: start (null = all time) and end.
+        /// </summary>
+        public (DateTime? Start, DateTime End) GetTimeSpan()
         {
-            GetApp().Loader.Begin();
-
-            await Task.Run(() =>
-            {
-                List<T1PROFI> t1profis = TFPROFI.GetPlayedProfiles(timeSpanStart, timeSpanEnd);
-                List<ProfilesListBoxItem> profiles = BuildProfileListBoxItems(t1profis);
-
-                View.Dispatcher.Invoke(() =>
-                {
-                    viewModel = new DashboardViewModel();
-                    viewModel!.T1Profis = new System.Collections.ObjectModel.ObservableCollection<ProfilesListBoxItem>(profiles);
-                    GetView().DataContext = viewModel;
-
-                    GetApp().Loader.Stop();
-                });
-            });
-        }
-
-        private List<ProfilesListBoxItem> BuildProfileListBoxItems(List<T1PROFI> t1profiles)
-        {
-            return t1profiles.Select(prof => new ProfilesListBoxItem
-            {
-                ItemObject = prof,
-                COCOVIM = CFProfilesApp.LoadProfileCover(prof.PPFN),
-                COISPLA = FnSystem.IsExeFoundInPath(prof.EXGF),
-                COCPLTI = FnTime.FormatMinutesAsHoursAndMinutes(TFPROFI.GetGameTimeInMinutes(prof.PFID, timeSpanStart, timeSpanEnd))
-            }).ToList();
+            return (timeSpanStart, timeSpanEnd);
         }
 
         private void FillSectionPlaytimeOverview()

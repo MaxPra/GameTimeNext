@@ -1,30 +1,21 @@
 using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Metadata.Data;
-using GameTimeNext.Core.Application.Metadata.Viewmodels;
 using GameTimeNext.Core.Application.Metadata.Views;
-using GameTimeNext.Core.Application.Profiles;
-using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.DataBase.Migration;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using System.Text.RegularExpressions;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
-using UIX.ViewController.Engine.FrameworkElements;
+using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.FrameworkElements.UserControls;
-using UIX.ViewController.Engine.Migration.Types;
-using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
-using static UIX.ViewController.Engine.FrameworkElements.UIXContextMenuFactory;
 
 namespace GameTimeNext.Core.Application.Metadata.Controller
 {
     public class MetadataEditViewController : UIXViewControllerBase<MetadataEditApp, MetadataEditView>
     {
-
-        MetadataEditViewModel? _viewModel;
 
         public MetadataEditViewController(UIXApplication app) : base(app)
         {
@@ -46,7 +37,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
         protected override async Task BuildFirstImplAsync()
         {
-            await BuildDG();
+            await GetView().DgFields.LoadDataAsync();
         }
 
         protected override void BuildImpl()
@@ -128,171 +119,15 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
         {
         }
 
-        private async Task BuildDG()
+        /// <summary>
+        /// The positions changed: the classes have to be generated again.
+        /// </summary>
+        public void MarkGenerationRequired()
         {
-            GetApp().Loader.Begin();
+            GetApp().T1METAH!.GENER = false;
+            new TXMETAH().Save(GetApp().T1METAH!);
 
-            await Task.Run(() =>
-            {
-                List<MetadataPosDataGridRow> metadataRows = BuildMetadataPosRows();
-
-                View.Dispatcher.Invoke(() =>
-                {
-                    _viewModel = new MetadataEditViewModel();
-                    _viewModel.MetadataPositionDataGridRows = new System.Collections.ObjectModel.ObservableCollection<MetadataPosDataGridRow>(metadataRows);
-
-                    GetView().DataContext = _viewModel;
-                    GetApp().Loader.Stop();
-                });
-            });
-        }
-
-        private List<MetadataPosDataGridRow> BuildMetadataPosRows()
-        {
-            List<MetadataPosDataGridRow> rows = new List<MetadataPosDataGridRow>();
-
-            TXMETAP txmetap = new TXMETAP();
-
-            UIXQuery query = BuildQueryMetadataPositions();
-
-            using (var reader = query.Execute())
-            {
-                while (reader.Read())
-                {
-                    string menam = UIXQuery.GetString(reader, K1METAP.Name, K1METAP.Fields.MENAM, string.Empty);
-                    string ponam = UIXQuery.GetString(reader, K1METAP.Name, K1METAP.Fields.PONAM, string.Empty);
-
-                    T1METAP? t1metap = txmetap.Read(menam, ponam);
-                    if (t1metap is null)
-                        continue;
-
-                    MetadataPosDataGridRow row = GetView().DgFields.CreateNewRow<MetadataPosDataGridRow>();
-                    row.COPONAM = t1metap.PONAM;
-                    row.COPORDE = t1metap.PORDE;
-                    row.COMENAM = t1metap.MENAM;
-                    row.CODATYP = UIXSqliteDataType.GetByKey(t1metap.DATYP).Name;
-                    row.CODESCR = t1metap.DESCR;
-                    row.COPRIMK = t1metap.PRIMK;
-                    row.CODALEN = t1metap.DALEN;
-                    row.RowObject = t1metap;
-
-                    rows.Add(row);
-                }
-            }
-
-            return rows;
-        }
-
-        private UIXQuery BuildQueryMetadataPositions()
-        {
-            UIXQuery query = new UIXQuery(K1METAP.Name, AppEnvironment.GetDataBaseManager().GetConnection());
-
-            query.AddField(K1METAP.Name, K1METAP.Fields.MENAM);
-            query.AddField(K1METAP.Name, K1METAP.Fields.PONAM);
-
-            View.Dispatcher.Invoke(() =>
-            {
-                if (!FnString.IsNullEmptyOrWhitespace(GetView().TxbFieldSearch.Text))
-                {
-                    if (!FnString.IsNullEmptyOrWhitespace(GetView().TxbFieldSearch.Text))
-                    {
-                        string search = GetView().TxbFieldSearch.Text.Trim();
-                        string like = $"%{search}%";
-
-                        query.AddWhereRaw(
-                            $"({K1METAP.Name}.{K1METAP.Fields.PONAM} LIKE ? OR {K1METAP.Name}.{K1METAP.Fields.DESCR} LIKE ?)",
-                            like, like);
-                    }
-                }
-            });
-
-            query.AddWhere(K1METAP.Name, K1METAP.Fields.MENAM, QueryCompareType.EQUALS, GetApp().T1METAH!.MENAM);
-
-            query.AddOrderBy(K1METAP.Name, K1METAP.Fields.PORDE, OrderDirection.ASC);
-
-            return query;
-        }
-
-        protected void EV_DgFields_CtxtOpening(FrameworkElement target)
-        {
-            DataGridRow row = target as DataGridRow;
-
-            if (row == null)
-                return;
-
-            if (row.DataContext is not MetadataPosDataGridRow metadataRow)
-                return;
-
-            if (_viewModel != null)
-                _viewModel.SelectedRow = metadataRow;
-
-            GetView().DgFields.SelectedItem = metadataRow;
-
-            BuildContextMenu(row, metadataRow);
-
-            if (row.ContextMenu == null)
-                return;
-
-            row.ContextMenu.PlacementTarget = row;
-            row.ContextMenu.Placement = PlacementMode.MousePoint;
-            row.ContextMenu.IsOpen = true;
-        }
-
-        private void BuildContextMenu(DataGridRow row, MetadataPosDataGridRow metadataPosRow)
-        {
-            ContextMenuBuilder contextBuilder = UIXContextMenuFactory.Create("ProfilesListBoxContextMenu");
-            contextBuilder.SetStyle(ProfilesContextMenuBuilder.contextMenuStyle);
-
-            T1METAP t1metah = (T1METAP)metadataPosRow.RowObject!;
-
-            contextBuilder.AddItem("ctxtEdit", "Edit", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Edit), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
-
-            contextBuilder.AddItem("ctxtDelete", "Delete", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Delete), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
-
-            if (contextBuilder.HasItems())
-                row.ContextMenu = contextBuilder.Build();
-            else
-                row.ContextMenu = null;
-        }
-
-        protected void EV_ctxtEdit()
-        {
-            if (_viewModel?.SelectedRow?.RowObject is not T1METAP selectedT1empo)
-                return;
-
-            MetadataPosEditApp metadataEditApp = GetApp().GetApplication<MetadataPosEditApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
-            metadataEditApp.Edit(async (result) =>
-            {
-                if (result.HasChanged)
-                {
-                    await BuildDG();
-
-                    GetApp().T1METAH!.GENER = false;
-                    new TXMETAH().Save(GetApp().T1METAH!);
-
-                    Build();
-                }
-
-            }, selectedT1empo);
-        }
-
-        protected void EV_ctxtDelete()
-        {
-            if (_viewModel?.SelectedRow?.RowObject is not T1METAP selectedT1empo)
-                return;
-
-            CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
-
-            CFMBOXResult result = cfmbox.Show(GetErrorMessage("GLO0001", "this metadata position"), CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
-
-            if (result == CFMBOXResult.Yes)
-            {
-                new TXMETAP().Delete(selectedT1empo.MENAM, selectedT1empo.PONAM);
-
-                GetApp().T1METAH!.GENER = false;
-                new TXMETAH().Save(GetApp().T1METAH!);
-            }
-
+            Build();
         }
 
         protected void EV_BtnSave()
@@ -311,7 +146,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
         protected async Task EV_BtnRefresh()
         {
-            await BuildDG();
+            await GetView().DgFields.LoadDataAsync();
         }
 
         protected async Task EV_BtnGenerate()
@@ -343,7 +178,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
                 GetApp().Loader.Stop();
             }
 
-            await BuildDG();
+            await GetView().DgFields.LoadDataAsync();
         }
 
         protected async Task EV_BtnAdd()
@@ -351,7 +186,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
             MetadataPosEditApp metadataPosEditApp = GetApp().GetApplication<MetadataPosEditApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
             metadataPosEditApp.CreateNew(GetApp().T1METAH!);
 
-            await BuildDG();
+            await GetView().DgFields.LoadDataAsync();
 
             GetApp().T1METAH!.GENER = false;
             new TXMETAH().Save(GetApp().T1METAH!);
@@ -376,7 +211,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
                 GetApp().Loader.Stop();
             }
 
-            await BuildDG();
+            await GetView().DgFields.LoadDataAsync();
 
             Build();
         }

@@ -1,4 +1,5 @@
 using GameTimeNext.Core.Application.Screensetups.Controller;
+using GameTimeNext.Core.Application.Screensetups.Selectors;
 using GameTimeNext.Core.Application.Screensetups.Views;
 using System.Windows.Controls;
 using UIX.ViewController.Engine.Runnables;
@@ -57,6 +58,8 @@ namespace GameTimeNext.Core.Application.Screensetups
             ScreensetupsView = new ScreensetupsView();
             MainView = ScreensetupsView;
             ScreensetupsView!.ViewController = new ScreensetupsViewController(this);
+            ScreensetupsView.DgScreensetups.SelectorAdapter = new ScreensetupsView_ScreensetupsSelectorAdapter(this);
+            ScreensetupsView.DgScreensetups.SelectorController = new ScreensetupsView_ScreensetupsSelectorController(this);
         }
 
         public override bool CanClose()

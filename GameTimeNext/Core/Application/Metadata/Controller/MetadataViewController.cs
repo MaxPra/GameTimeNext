@@ -1,32 +1,22 @@
 using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Metadata.Data;
-using GameTimeNext.Core.Application.Metadata.Viewmodels;
 using GameTimeNext.Core.Application.Metadata.Views;
-using GameTimeNext.Core.Application.Profiles;
-using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.DataBase.Migration;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using System.Diagnostics;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
-using UIX.ViewController.Engine.FrameworkElements;
-using UIX.ViewController.Engine.Querying;
+using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.Runnables;
-using UIX.ViewController.Engine.Utils;
-using static UIX.ViewController.Engine.FrameworkElements.UIXContextMenuFactory;
 
 namespace GameTimeNext.Core.Application.Metadata.Controller
 {
     public class MetadataViewController : UIXViewControllerBase<MetadataApp, MetadataView>
     {
-        private MetadataViewModel? _viewModel;
-
         public MetadataViewController(UIXApplication app) : base(app)
         {
-            _viewModel = new MetadataViewModel();
         }
 
         protected override void Init()
@@ -44,6 +34,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
         protected override async Task BuildFirstImplAsync()
         {
+            await GetView().DgMetadata.LoadDataAsync();
         }
 
         protected override void BuildImpl()
@@ -78,166 +69,6 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
         {
         }
 
-        protected void EV_DgMetadata_CtxtOpening(FrameworkElement target)
-        {
-            DataGridRow row = target as DataGridRow;
-
-            if (row == null)
-                return;
-
-            if (row.DataContext is not MetadataDataGridRow metadataRow)
-                return;
-
-            if (_viewModel != null)
-                _viewModel.SelectedRow = metadataRow;
-
-            GetView().DgMetadata.SelectedItem = metadataRow;
-
-            BuildContextMenu(row, metadataRow);
-
-            if (row.ContextMenu == null)
-                return;
-
-            row.ContextMenu.PlacementTarget = row;
-            row.ContextMenu.Placement = PlacementMode.MousePoint;
-            row.ContextMenu.IsOpen = true;
-        }
-
-        private void BuildContextMenu(DataGridRow row, MetadataDataGridRow mdRow)
-        {
-            ContextMenuBuilder contextBuilder = UIXContextMenuFactory.Create("ProfilesListBoxContextMenu");
-            contextBuilder.SetStyle(ProfilesContextMenuBuilder.contextMenuStyle);
-
-            T1METAH t1metah = (T1METAH)mdRow.RowObject!;
-
-            contextBuilder.AddItem("ctxtEdit", "Edit", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Edit), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
-
-            contextBuilder.AddItem("ctxtDelete", "Delete", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Delete), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
-
-            if (contextBuilder.HasItems())
-                row.ContextMenu = contextBuilder.Build();
-            else
-                row.ContextMenu = null;
-        }
-
-        protected void EV_ctxtEdit()
-        {
-            if (_viewModel?.SelectedRow?.RowObject is not T1METAH selectedT1metah)
-                return;
-
-            MetadataEditApp metadataEditApp = GetApp().GetApplication<MetadataEditApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
-            metadataEditApp.Edit(selectedT1metah);
-        }
-
-        protected async Task EV_ctxtDelete()
-        {
-            if (_viewModel?.SelectedRow?.RowObject is not T1METAH selectedT1metah)
-                return;
-
-            CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
-
-            CFMBOXResult result = cfmbox.Show(
-                GetErrorMessage("MET0001", selectedT1metah.MENAM),
-                CFMBOXResult.Yes | CFMBOXResult.No,
-                CFMBOXIcon.Question);
-
-            if (result != CFMBOXResult.Yes)
-                return;
-
-            TFMETAH.DeleteMetadataAndLinkedData(selectedT1metah, deleteTable: true);
-
-            await EV_BtnRefresh();
-        }
-
-        private async Task BuildDG()
-        {
-            GetApp().Loader.Begin();
-
-            await Task.Run(() =>
-            {
-                List<MetadataDataGridRow> metadataRows = BuildMetadataRows();
-
-                View.Dispatcher.Invoke(() =>
-                {
-                    _viewModel = new MetadataViewModel();
-                    _viewModel.MetadataDataGridRows = new System.Collections.ObjectModel.ObservableCollection<MetadataDataGridRow>(metadataRows);
-
-                    GetView().DataContext = _viewModel;
-                    GetApp().Loader.Stop();
-                });
-            });
-        }
-
-        private List<MetadataDataGridRow> BuildMetadataRows()
-        {
-            List<T1METAH> t1metahs = GetT1metahs();
-            List<MetadataDataGridRow> metadataRows = new List<MetadataDataGridRow>();
-
-            foreach (T1METAH t1metah in t1metahs)
-            {
-                // Create new row
-                MetadataDataGridRow row = GetView().DgMetadata.CreateNewRow<MetadataDataGridRow>();
-                row.COMENAM = t1metah.MENAM;
-                row.CODESCR = t1metah.DESCR;
-                row.COMTYPE = TFCTABD.GetDescription("mT", t1metah.MTYPE);
-                row.COGENER = !t1metah.GENER;
-                row.RowObject = t1metah;
-
-                metadataRows.Add(row);
-            }
-
-            return metadataRows;
-        }
-
-        private List<T1METAH> GetT1metahs()
-        {
-            List<T1METAH> t1metahs = new List<T1METAH>();
-
-            UIXQuery query = BuildQueryMetadata();
-
-            using (var reader = query.Execute())
-            {
-                while (reader.Read())
-                {
-                    string menam = UIXQuery.GetString(reader, K1METAH.Name, K1METAH.Fields.MENAM, string.Empty);
-
-                    // Read object from database
-                    TXMETAH txmetah = new TXMETAH();
-                    T1METAH? t1metah = txmetah.Read(menam);
-
-                    if (t1metah is not null)
-                        t1metahs.Add(t1metah);
-                }
-            }
-
-            return t1metahs;
-        }
-
-        private UIXQuery BuildQueryMetadata()
-        {
-            UIXQuery query = new UIXQuery(K1METAH.Name, AppEnvironment.GetDataBaseManager().GetConnection());
-
-            // Add fields
-            query.AddField(K1METAH.Name, K1METAH.Fields.MENAM);
-
-            View.Dispatcher.Invoke(() =>
-            {
-                if (!FnString.IsNullEmptyOrWhitespace(GetView().TxbTableObjectName.Text))
-                    query.AddWhere(K1METAH.Name, K1METAH.Fields.MENAM, QueryCompareType.LIKE, GetView().TxbTableObjectName.Text);
-
-                if (!FnString.IsNullEmptyOrWhitespace(GetView().TxbDescription.Text))
-                    query.AddWhere(K1METAH.Name, K1METAH.Fields.DESCR, QueryCompareType.LIKE, GetView().TxbDescription.Text);
-
-                if (!FnString.IsNullEmptyOrWhitespace(GetView().CmbType.SelectedValue.ToString()!))
-                    query.AddWhere(K1METAH.Name, K1METAH.Fields.MTYPE, QueryCompareType.EQUALS, GetView().CmbType.SelectedValue.ToString()!);
-            });
-
-            query.SetTopX(1000);
-            query.AddOrderBy(K1METAH.Name, K1METAH.Fields.MENAM, OrderDirection.ASC);
-
-            return query;
-        }
-
         protected void EV_BtnAdd()
         {
             MetadataEditApp metadataEditApp = GetApp().GetApplication<MetadataEditApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
@@ -246,7 +77,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
         protected async Task EV_BtnRefresh()
         {
-            await BuildDG();
+            await GetView().DgMetadata.LoadDataAsync();
         }
 
         protected async Task EV_BtnGenerateAll()
@@ -255,7 +86,10 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
             {
                 GetApp().Loader.Begin();
 
-                List<T1METAH> t1metahs = GetT1metahs();
+                List<T1METAH> t1metahs = TFMETAH.GetMetadata(
+                    GetView().TxbTableObjectName.Text,
+                    GetView().TxbDescription.Text,
+                    GetView().CmbType.SelectedValue?.ToString() ?? string.Empty);
 
                 foreach (T1METAH t1metah in t1metahs)
                 {
@@ -280,7 +114,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
                 GetApp().Loader.Stop();
             }
 
-            await BuildDG();
+            await GetView().DgMetadata.LoadDataAsync();
         }
 
         protected async Task EV_BtnGenerateMetadataTables()

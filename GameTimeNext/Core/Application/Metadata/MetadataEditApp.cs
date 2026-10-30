@@ -1,5 +1,6 @@
 using GameTimeNext.Core.Application.Metadata.Controller;
 using GameTimeNext.Core.Application.Metadata.Data;
+using GameTimeNext.Core.Application.Metadata.Selectors;
 using GameTimeNext.Core.Application.Metadata.Views;
 using UIX.ViewController.Engine.Runnables;
 
@@ -23,6 +24,8 @@ namespace GameTimeNext.Core.Application.Metadata
 
             MetadataEditViewController = new MetadataEditViewController(this);
             MetadataEditView.ViewController = MetadataEditViewController;
+            MetadataEditView.DgFields.SelectorAdapter = new MetadataEditView_FieldsSelectorAdapter(this);
+            MetadataEditView.DgFields.SelectorController = new MetadataEditView_FieldsSelectorController(this);
         }
 
         public void CreateNew()

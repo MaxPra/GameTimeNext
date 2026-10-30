@@ -1,5 +1,6 @@
 using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Screensetups.Controller;
+using GameTimeNext.Core.Application.Screensetups.Selectors;
 using GameTimeNext.Core.Application.Screensetups.Views;
 using GameTimeNext.Core.Application.TableObjects;
 using UIX.ViewController.Engine.Runnables;
@@ -28,6 +29,8 @@ namespace GameTimeNext.Core.Application.Screensetups
 
             ScreensetupsEditViewController = new ScreensetupsEditViewController(this);
             ScreensetupsEditView.ViewController = ScreensetupsEditViewController;
+            ScreensetupsEditView.DgMonitors.SelectorAdapter = new ScreensetupsEditView_MonitorsSelectorAdapter(this);
+            ScreensetupsEditView.DgMonitors.SelectorController = new ScreensetupsEditView_MonitorsSelectorController(this);
         }
 
         public void CreateNew(Action<ScreensetupsEditViewController.ScreensetupsEditViewReturn> callback)
