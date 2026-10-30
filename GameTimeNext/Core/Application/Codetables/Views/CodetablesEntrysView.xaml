@@ -129,8 +129,6 @@
                     CanUserResizeRows="False"
                     HeadersVisibility="Column"
                     IsReadOnly="True"
-                    ItemsSource="{Binding CodetableEntryDataGridRows}"
-                    SelectedItem="{Binding SelectedRow, Mode=TwoWay}"
                     SelectionMode="Single"
                     SelectionUnit="FullRow">
                     <uixsel:UIXDataGrid.Columns>

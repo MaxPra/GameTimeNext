@@ -1,4 +1,8 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:uiFramework="clr-namespace:GameTimeNext.Core.Framework.UI">
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:uiFramework="clr-namespace:GameTimeNext.Core.Framework.UI"
+    xmlns:uixsel="clr-namespace:UIX.ViewController.Engine.FrameworkElements.Selectors;assembly=UIX.ViewController.Engine" xmlns:uixprops="clr-namespace:UIX.ViewController.Engine.AttachedProperties;assembly=UIX.ViewController.Engine">
 
     <Style x:Key="ModernTabItemStyle" TargetType="{x:Type TabItem}">
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}" />
@@ -19,11 +23,11 @@
             <Setter.Value>
                 <DataTemplate>
                     <TextBlock
+                        VerticalAlignment="Center"
                         FontSize="{Binding FontSize, RelativeSource={RelativeSource AncestorType=TabItem}}"
                         FontWeight="{Binding FontWeight, RelativeSource={RelativeSource AncestorType=TabItem}}"
                         Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=TabItem}}"
-                        Text="{Binding}"
-                        VerticalAlignment="Center" />
+                        Text="{Binding}" />
                 </DataTemplate>
             </Setter.Value>
         </Setter>
@@ -72,10 +76,10 @@
                                     VerticalAlignment="Center"
                                     ContentSource="Header"
                                     RecognizesAccessKey="True"
+                                    TextBlock.Foreground="{DynamicResource Brush.TextSecondary}"
                                     TextElement.FontSize="{TemplateBinding FontSize}"
                                     TextElement.FontWeight="{TemplateBinding FontWeight}"
-                                    TextElement.Foreground="{DynamicResource Brush.TextSecondary}"
-                                    TextBlock.Foreground="{DynamicResource Brush.TextSecondary}" />
+                                    TextElement.Foreground="{DynamicResource Brush.TextSecondary}" />
                             </StackPanel>
                         </Border>
                     </Grid>
@@ -163,8 +167,8 @@
                             VerticalAlignment="Center"
                             Data="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}"
                             Stroke="{TemplateBinding Foreground}"
-                            StrokeLineJoin="Round"
                             StrokeEndLineCap="Round"
+                            StrokeLineJoin="Round"
                             StrokeStartLineCap="Round"
                             StrokeThickness="1.6" />
                     </Border>
@@ -312,7 +316,10 @@
 
                             <!--  Tab content  -->
                             <!--  Same side inset as the tab track, so every view lines up with it  -->
-                            <Grid Grid.Row="1" Margin="12" ClipToBounds="True">
+                            <Grid
+                                Grid.Row="1"
+                                Margin="12"
+                                ClipToBounds="True">
                                 <ContentControl
                                     x:Name="SelectedContentHost"
                                     HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
@@ -385,49 +392,60 @@
                     </ControlTemplate.Resources>
 
                     <Grid>
-                    <Border
-                        x:Name="RootBorder"
-                        Padding="{TemplateBinding Padding}"
-                        Background="Transparent"
-                        CornerRadius="3">
-                        <StackPanel
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Orientation="Horizontal">
-                            <Border
-                                x:Name="DefaultIconHost"
-                                Margin="0,0,7,0"
-                                Background="Transparent"
-                                Visibility="Visible">
+                        <Border
+                            x:Name="RootBorder"
+                            Padding="{TemplateBinding Padding}"
+                            Background="Transparent"
+                            CornerRadius="3">
+                            <StackPanel
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Orientation="Horizontal">
+                                <Border
+                                    x:Name="DefaultIconHost"
+                                    Margin="0,0,7,0"
+                                    Background="Transparent"
+                                    Visibility="Visible">
+                                    <TextBlock
+                                        x:Name="DefaultIconText"
+                                        VerticalAlignment="Center"
+                                        FontFamily="{StaticResource Font.Icons}"
+                                        FontSize="14"
+                                        Foreground="{DynamicResource Brush.TextSecondary}"
+                                        Text="{TemplateBinding Uid}" />
+                                </Border>
+
+                                <!--  Validation error on a field of this tab (UIXTabValidation.HasErrors, set by the engine); takes the place of the tab icon  -->
                                 <TextBlock
-                                    x:Name="DefaultIconText"
+                                    x:Name="ErrorIcon"
+                                    Margin="0,0,7,0"
                                     VerticalAlignment="Center"
                                     FontFamily="{StaticResource Font.Icons}"
                                     FontSize="14"
-                                    Foreground="{DynamicResource Brush.TextSecondary}"
-                                    Text="{TemplateBinding Uid}" />
-                            </Border>
+                                    Foreground="{DynamicResource Brush.Danger}"
+                                    Text="&#xE783;"
+                                    Visibility="Collapsed" />
 
-                            <ContentPresenter
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                ContentSource="Header"
-                                RecognizesAccessKey="True"
-                                TextElement.FontSize="{TemplateBinding FontSize}"
-                                TextElement.FontWeight="{TemplateBinding FontWeight}"
-                                TextElement.Foreground="{TemplateBinding Foreground}" />
-                        </StackPanel>
-                    </Border>
+                                <ContentPresenter
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    ContentSource="Header"
+                                    RecognizesAccessKey="True"
+                                    TextElement.FontSize="{TemplateBinding FontSize}"
+                                    TextElement.FontWeight="{TemplateBinding FontWeight}"
+                                    TextElement.Foreground="{TemplateBinding Foreground}" />
+                            </StackPanel>
+                        </Border>
 
-                    <!--  Selected tab: accent underline sitting on the header separator  -->
-                    <Border
-                        x:Name="Underline"
-                        Height="2"
-                        Margin="8,0"
-                        VerticalAlignment="Bottom"
-                        Background="{DynamicResource Brush.Accent}"
-                        CornerRadius="1"
-                        Opacity="0" />
+                        <!--  Selected tab: accent underline sitting on the header separator  -->
+                        <Border
+                            x:Name="Underline"
+                            Height="2"
+                            Margin="8,0"
+                            VerticalAlignment="Bottom"
+                            Background="{DynamicResource Brush.Accent}"
+                            CornerRadius="1"
+                            Opacity="0" />
                     </Grid>
 
                     <ControlTemplate.Triggers>
@@ -455,6 +473,13 @@
 
                         <Trigger Property="Uid" Value="">
                             <Setter TargetName="DefaultIconHost" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+
+                        <!--  Last, so it wins over hover: the header stays in the danger color  -->
+                        <Trigger Property="uixprops:UIXTabValidation.HasErrors" Value="True">
+                            <Setter TargetName="DefaultIconHost" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="ErrorIcon" Property="Visibility" Value="Visible" />
+                            <Setter Property="Foreground" Value="{DynamicResource Brush.Danger}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -518,5 +543,8 @@
     <Style BasedOn="{StaticResource DefaultTabItemStyle}" TargetType="{x:Type TabItem}" />
 
     <Style BasedOn="{StaticResource DefaultTabControlStyle}" TargetType="{x:Type TabControl}" />
+
+    <!--  Engine TabControl (UIXTabControl): implicit styles only apply to the exact type  -->
+    <Style BasedOn="{StaticResource {x:Type TabControl}}" TargetType="{x:Type uixsel:UIXTabControl}" />
 
 </ResourceDictionary>

@@ -1,4 +1,5 @@
 ﻿using GameTimeNext.Core.Application.General.Controller;
+using GameTimeNext.Core.Application.General.Selectors;
 using GameTimeNext.Core.Application.General.Views;
 using System.Runtime.InteropServices;
 using System.Windows.Controls;
@@ -43,6 +44,8 @@ namespace GameTimeNext.Core.Application.General
             // -- Favorites start order (popup of the tab bar)
             FavAppsStartOrderView = new FavAppsStartOrderView();
             FavAppsStartOrderView.ViewController = new FavAppsStartOrderViewController(this);
+            FavAppsStartOrderView.dgFavApps.SelectorAdapter = new FavAppsStartOrderView_FavAppsSelectorAdapter(this);
+            FavAppsStartOrderView.dgFavApps.SelectorController = new FavAppsStartOrderView_FavAppsSelectorController(this);
             FavAppsStartOrderView.ContentPresenter = _mainWindow.cpFavAppsStartOrder;
             FavAppsStartOrderView.Popup = _mainWindow.popFavAppsStartOrder;
         }

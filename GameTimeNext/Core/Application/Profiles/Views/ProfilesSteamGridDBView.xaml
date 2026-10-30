@@ -2,6 +2,7 @@
     x:Class="GameTimeNext.Core.Application.Profiles.Views.ProfilesSteamGridDBView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:uixsel="clr-namespace:UIX.ViewController.Engine.FrameworkElements.Selectors;assembly=UIX.ViewController.Engine"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:GameTimeNext.Core.Application.Profiles.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -34,15 +35,13 @@
                 Grid.Column="0"
                 Padding="12,8"
                 Style="{StaticResource Card}">
-                <ListBox
+                <uixsel:UIXListBox
                     x:Name="lbSteamGridCovers"
-                    ItemsSource="{Binding Images}"
                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                     ScrollViewer.VerticalScrollBarVisibility="Auto"
-                    SelectedItem="{Binding SelectedImage, Mode=TwoWay}"
                     SelectionMode="Single"
                     Style="{StaticResource SteamGridDBCoverListBoxStyle}">
-                    <ListBox.ItemsPanel>
+                    <uixsel:UIXListBox.ItemsPanel>
                         <ItemsPanelTemplate>
                             <!--
                                 Spacing on the panel, not as ListBox padding: room for lift and glow that scrolls with the covers.
@@ -50,9 +49,9 @@
                             -->
                             <WrapPanel Margin="0,4" />
                         </ItemsPanelTemplate>
-                    </ListBox.ItemsPanel>
+                    </uixsel:UIXListBox.ItemsPanel>
     
-                    <ListBox.ItemTemplate>
+                    <uixsel:UIXListBox.ItemTemplate>
                         <DataTemplate>
                             <!--  ImageBrush instead of Image + clip: the corner radius follows any cover size  -->
                             <Border CornerRadius="{StaticResource SteamGridDB.CoverCornerRadius}" RenderOptions.BitmapScalingMode="HighQuality">
@@ -61,8 +60,8 @@
                                 </Border.Background>
                             </Border>
                         </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+                    </uixsel:UIXListBox.ItemTemplate>
+                </uixsel:UIXListBox>
             </Border>
 
             <!--  Preview of the selected cover: case and disc as in the library (style GameCase.Preview, base 450 x 400)  -->

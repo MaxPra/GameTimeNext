@@ -1,4 +1,5 @@
 using GameTimeNext.Core.Application.Playthroughs.Controller;
+using GameTimeNext.Core.Application.Playthroughs.Selectors;
 using GameTimeNext.Core.Application.Playthroughs.Views;
 using System.Windows.Controls;
 using UIX.ViewController.Engine.Runnables;
@@ -56,6 +57,8 @@ namespace GameTimeNext.Core.Application.Playthroughs
             PlaythroughsView = new PlaythroughsView();
             MainView = PlaythroughsView;
             PlaythroughsView.ViewController = new PlaythroughsViewController(this);
+            PlaythroughsView.DgPlaythroughs.SelectorAdapter = new PlaythroughsView_PlaythroughsSelectorAdapter(this);
+            PlaythroughsView.DgPlaythroughs.SelectorController = new PlaythroughsView_PlaythroughsSelectorController(this);
         }
 
         public override bool CanClose()

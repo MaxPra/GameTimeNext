@@ -1,4 +1,5 @@
 ﻿using GameTimeNext.Core.Application.Profiles.Controller;
+using GameTimeNext.Core.Application.Profiles.Selectors;
 using GameTimeNext.Core.Application.Profiles.Views;
 using UIX.ViewController.Engine.Runnables;
 
@@ -23,6 +24,8 @@ namespace GameTimeNext.Core.Application.Profiles
             _profilesLauncherImportViewController = new ProfilesLauncherImportViewController(this);
 
             _profilesLauncherImportView.ViewController = _profilesLauncherImportViewController;
+            _profilesLauncherImportView.dgGames.SelectorAdapter = new ProfilesLauncherImportView_GamesSelectorAdapter(this);
+            _profilesLauncherImportView.dgGames.SelectorController = new ProfilesLauncherImportView_GamesSelectorController(this);
         }
 
         public void Search(Action<ProfilesLauncherImportViewController.ProfilesLauncherImportViewReturn> callback)

@@ -58,8 +58,8 @@
                             x:Name="PART_Popup"
                             AllowsTransparency="True"
                             Focusable="False"
-                            IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}"
                             HorizontalOffset="6"
+                            IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}"
                             Placement="Right"
                             PopupAnimation="{DynamicResource {x:Static SystemParameters.MenuPopupAnimationKey}}"
                             VerticalOffset="-5">
@@ -145,7 +145,10 @@
         <Style.Resources>
             <Style BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="{x:Type TextBlock}" />
             <Style BasedOn="{StaticResource ModernContextMenuItemStyle}" TargetType="{x:Type MenuItem}" />
-            <Style x:Key="{x:Static MenuItem.SeparatorStyleKey}" BasedOn="{StaticResource ModernContextMenuSeparatorStyle}" TargetType="{x:Type Separator}" />
+            <Style
+                x:Key="{x:Static MenuItem.SeparatorStyleKey}"
+                BasedOn="{StaticResource ModernContextMenuSeparatorStyle}"
+                TargetType="{x:Type Separator}" />
         </Style.Resources>
     </Style>
 

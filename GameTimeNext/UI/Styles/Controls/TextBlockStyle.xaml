@@ -16,15 +16,15 @@
     <!--
         ===== Type ramp =====
         One scale for the whole app (Segoe UI):
-          Text.Display      28  SemiBold   hero value or name (e.g. most played game)
-          Text.Title        20  SemiBold   title of a view or dialog
-          Text.Subtitle     16  SemiBold   section heading
-          Text.BodyStrong   14  SemiBold   emphasized body text, card headings, values
-          Text.Body         14  Normal     body text
-          Text.Label        14  Normal     muted label in front of an input
-          Text.Hint         13  Normal     muted explanation below / next to a setting
-          Text.Caption      12  Normal     muted small text (units, captions of values)
-          Text.Icon         icon glyph (Font.Icons) in the color of its container
+        Text.Display      28  SemiBold   hero value or name (e.g. most played game)
+        Text.Title        20  SemiBold   title of a view or dialog
+        Text.Subtitle     16  SemiBold   section heading
+        Text.BodyStrong   14  SemiBold   emphasized body text, card headings, values
+        Text.Body         14  Normal     body text
+        Text.Label        14  Normal     muted label in front of an input
+        Text.Hint         13  Normal     muted explanation below / next to a setting
+        Text.Caption      12  Normal     muted small text (units, captions of values)
+        Text.Icon         icon glyph (Font.Icons) in the color of its container
     -->
 
     <Style

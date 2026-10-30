@@ -24,7 +24,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <TabControl x:Name="tabControl" Grid.Row="0">
+        <uixsel:UIXTabControl x:Name="tabControl" Grid.Row="0">
             <TabItem Header="General">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -154,7 +154,6 @@
                         CanUserResizeRows="False"
                         HeadersVisibility="Column"
                         IsReadOnly="True"
-                        ItemsSource="{Binding MonitorDataGridRows}"
                         SelectionMode="Single"
                         SelectionUnit="FullRow">
                         <uixsel:UIXDataGrid.Columns>
@@ -195,7 +194,7 @@
                     </uixsel:UIXDataGrid>
                 </Grid>
             </TabItem>
-        </TabControl>
+        </uixsel:UIXTabControl>
 
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>

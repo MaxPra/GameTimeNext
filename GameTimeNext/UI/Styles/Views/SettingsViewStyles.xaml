@@ -1,6 +1,7 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:uixprops="clr-namespace:UIX.ViewController.Engine.AttachedProperties;assembly=UIX.ViewController.Engine"
     xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI">
 
     <SolidColorBrush x:Key="Brush.SettingsTab.NormalBackground" Color="Transparent" />
@@ -176,12 +177,27 @@
                         CornerRadius="{StaticResource Control.CornerRadius}"
                         SnapsToDevicePixels="True">
                         <!--  Left: room for the accent bar of the runner  -->
-                        <ContentPresenter
+                        <StackPanel
                             Margin="16,0,12,0"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center"
-                            ContentSource="Header"
-                            RecognizesAccessKey="True" />
+                            Orientation="Horizontal">
+                            <!--  Validation error on a field of this tab (UIXTabValidation.HasErrors, set by the engine)  -->
+                            <TextBlock
+                                x:Name="ErrorIcon"
+                                Margin="0,0,8,0"
+                                VerticalAlignment="Center"
+                                FontFamily="{StaticResource Font.Icons}"
+                                FontSize="14"
+                                Foreground="{DynamicResource Brush.Danger}"
+                                Text="&#xE783;"
+                                Visibility="Collapsed" />
+
+                            <ContentPresenter
+                                VerticalAlignment="Center"
+                                ContentSource="Header"
+                                RecognizesAccessKey="True" />
+                        </StackPanel>
                     </Border>
 
                     <ControlTemplate.Triggers>
@@ -201,6 +217,12 @@
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Foreground" Value="{DynamicResource Brush.TextDisabled}" />
                             <Setter TargetName="RootBorder" Property="Opacity" Value="0.5" />
+                        </Trigger>
+
+                        <!--  Last, so it wins over hover: the header stays in the danger color  -->
+                        <Trigger Property="uixprops:UIXTabValidation.HasErrors" Value="True">
+                            <Setter TargetName="ErrorIcon" Property="Visibility" Value="Visible" />
+                            <Setter Property="Foreground" Value="{DynamicResource Brush.Danger}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

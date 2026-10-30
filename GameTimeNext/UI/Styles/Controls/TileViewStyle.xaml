@@ -244,12 +244,21 @@
                             <!--  Tab and strip  -->
                             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="TearTabTurn" Storyboard.TargetProperty="Angle">
                                 <LinearDoubleKeyFrame KeyTime="0" Value="0" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:0.16" Value="-28" EasingFunction="{StaticResource EaseOut}" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:0.62" Value="-40" EasingFunction="{StaticResource EaseInOut}" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseOut}"
+                                    KeyTime="0:0:0.16"
+                                    Value="-28" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseInOut}"
+                                    KeyTime="0:0:0.62"
+                                    Value="-40" />
                             </DoubleAnimationUsingKeyFrames>
                             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="TearTabMove" Storyboard.TargetProperty="X">
                                 <LinearDoubleKeyFrame KeyTime="0" Value="0" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:0.16" Value="5" EasingFunction="{StaticResource EaseOut}" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseOut}"
+                                    KeyTime="0:0:0.16"
+                                    Value="5" />
                                 <EasingDoubleKeyFrame KeyTime="0:0:0.62" Value="-264">
                                     <EasingDoubleKeyFrame.EasingFunction>
                                         <CubicEase EasingMode="EaseIn" />
@@ -258,8 +267,14 @@
                             </DoubleAnimationUsingKeyFrames>
                             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="TearTabMove" Storyboard.TargetProperty="Y">
                                 <LinearDoubleKeyFrame KeyTime="0" Value="0" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:0.16" Value="-4" EasingFunction="{StaticResource EaseOut}" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:0.62" Value="-14" EasingFunction="{StaticResource EaseInOut}" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseOut}"
+                                    KeyTime="0:0:0.16"
+                                    Value="-4" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseInOut}"
+                                    KeyTime="0:0:0.62"
+                                    Value="-14" />
                             </DoubleAnimationUsingKeyFrames>
                             <DoubleAnimation
                                 BeginTime="0:0:0.52"
@@ -394,8 +409,14 @@
                             <!--  Light over the freed cover, then a sweep across it  -->
                             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="UnwrapFlash" Storyboard.TargetProperty="Opacity">
                                 <LinearDoubleKeyFrame KeyTime="0:0:0.6" Value="0" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:0.74" Value="1" EasingFunction="{StaticResource EaseOut}" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:1.15" Value="0" EasingFunction="{StaticResource EaseInOut}" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseOut}"
+                                    KeyTime="0:0:0.74"
+                                    Value="1" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseInOut}"
+                                    KeyTime="0:0:1.15"
+                                    Value="0" />
                             </DoubleAnimationUsingKeyFrames>
                             <DoubleAnimation
                                 BeginTime="0:0:0.72"
@@ -409,43 +430,91 @@
                             <!--  Sparkles around the case, one after the other  -->
                             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Sparkle1Scale" Storyboard.TargetProperty="ScaleX">
                                 <LinearDoubleKeyFrame KeyTime="0:0:0.8" Value="0" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:0.95" Value="1" EasingFunction="{StaticResource EaseOut}" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:1.2" Value="0" EasingFunction="{StaticResource EaseInOut}" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseOut}"
+                                    KeyTime="0:0:0.95"
+                                    Value="1" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseInOut}"
+                                    KeyTime="0:0:1.2"
+                                    Value="0" />
                             </DoubleAnimationUsingKeyFrames>
                             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Sparkle1Scale" Storyboard.TargetProperty="ScaleY">
                                 <LinearDoubleKeyFrame KeyTime="0:0:0.8" Value="0" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:0.95" Value="1" EasingFunction="{StaticResource EaseOut}" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:1.2" Value="0" EasingFunction="{StaticResource EaseInOut}" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseOut}"
+                                    KeyTime="0:0:0.95"
+                                    Value="1" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseInOut}"
+                                    KeyTime="0:0:1.2"
+                                    Value="0" />
                             </DoubleAnimationUsingKeyFrames>
                             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Sparkle2Scale" Storyboard.TargetProperty="ScaleX">
                                 <LinearDoubleKeyFrame KeyTime="0:0:0.88" Value="0" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:1.03" Value="1" EasingFunction="{StaticResource EaseOut}" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:1.28" Value="0" EasingFunction="{StaticResource EaseInOut}" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseOut}"
+                                    KeyTime="0:0:1.03"
+                                    Value="1" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseInOut}"
+                                    KeyTime="0:0:1.28"
+                                    Value="0" />
                             </DoubleAnimationUsingKeyFrames>
                             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Sparkle2Scale" Storyboard.TargetProperty="ScaleY">
                                 <LinearDoubleKeyFrame KeyTime="0:0:0.88" Value="0" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:1.03" Value="1" EasingFunction="{StaticResource EaseOut}" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:1.28" Value="0" EasingFunction="{StaticResource EaseInOut}" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseOut}"
+                                    KeyTime="0:0:1.03"
+                                    Value="1" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseInOut}"
+                                    KeyTime="0:0:1.28"
+                                    Value="0" />
                             </DoubleAnimationUsingKeyFrames>
                             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Sparkle3Scale" Storyboard.TargetProperty="ScaleX">
                                 <LinearDoubleKeyFrame KeyTime="0:0:0.96" Value="0" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:1.11" Value="1" EasingFunction="{StaticResource EaseOut}" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:1.36" Value="0" EasingFunction="{StaticResource EaseInOut}" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseOut}"
+                                    KeyTime="0:0:1.11"
+                                    Value="1" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseInOut}"
+                                    KeyTime="0:0:1.36"
+                                    Value="0" />
                             </DoubleAnimationUsingKeyFrames>
                             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Sparkle3Scale" Storyboard.TargetProperty="ScaleY">
                                 <LinearDoubleKeyFrame KeyTime="0:0:0.96" Value="0" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:1.11" Value="1" EasingFunction="{StaticResource EaseOut}" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:1.36" Value="0" EasingFunction="{StaticResource EaseInOut}" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseOut}"
+                                    KeyTime="0:0:1.11"
+                                    Value="1" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseInOut}"
+                                    KeyTime="0:0:1.36"
+                                    Value="0" />
                             </DoubleAnimationUsingKeyFrames>
                             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Sparkle4Scale" Storyboard.TargetProperty="ScaleX">
                                 <LinearDoubleKeyFrame KeyTime="0:0:1.02" Value="0" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:1.17" Value="1" EasingFunction="{StaticResource EaseOut}" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:1.42" Value="0" EasingFunction="{StaticResource EaseInOut}" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseOut}"
+                                    KeyTime="0:0:1.17"
+                                    Value="1" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseInOut}"
+                                    KeyTime="0:0:1.42"
+                                    Value="0" />
                             </DoubleAnimationUsingKeyFrames>
                             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Sparkle4Scale" Storyboard.TargetProperty="ScaleY">
                                 <LinearDoubleKeyFrame KeyTime="0:0:1.02" Value="0" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:1.17" Value="1" EasingFunction="{StaticResource EaseOut}" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:1.42" Value="0" EasingFunction="{StaticResource EaseInOut}" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseOut}"
+                                    KeyTime="0:0:1.17"
+                                    Value="1" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseInOut}"
+                                    KeyTime="0:0:1.42"
+                                    Value="0" />
                             </DoubleAnimationUsingKeyFrames>
 
                             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="WrapLayer" Storyboard.TargetProperty="Visibility">
@@ -456,13 +525,25 @@
                             <!--  The case pops (from the shelf) as the film is off  -->
                             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CasePop" Storyboard.TargetProperty="ScaleX">
                                 <LinearDoubleKeyFrame KeyTime="0:0:1.02" Value="1" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:1.16" Value="1.05" EasingFunction="{StaticResource EaseOut}" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:1.45" Value="1" EasingFunction="{StaticResource EaseInOut}" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseOut}"
+                                    KeyTime="0:0:1.16"
+                                    Value="1.05" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseInOut}"
+                                    KeyTime="0:0:1.45"
+                                    Value="1" />
                             </DoubleAnimationUsingKeyFrames>
                             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CasePop" Storyboard.TargetProperty="ScaleY">
                                 <LinearDoubleKeyFrame KeyTime="0:0:1.02" Value="1" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:1.16" Value="1.05" EasingFunction="{StaticResource EaseOut}" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:1.45" Value="1" EasingFunction="{StaticResource EaseInOut}" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseOut}"
+                                    KeyTime="0:0:1.16"
+                                    Value="1.05" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseInOut}"
+                                    KeyTime="0:0:1.45"
+                                    Value="1" />
                             </DoubleAnimationUsingKeyFrames>
                         </Storyboard>
 
@@ -477,9 +558,18 @@
                                 Duration="0:0:0.7" />
                             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="TearTabTurn" Storyboard.TargetProperty="Angle">
                                 <LinearDoubleKeyFrame KeyTime="0" Value="0" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:0.12" Value="-18" EasingFunction="{StaticResource EaseOut}" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="6" EasingFunction="{StaticResource EaseInOut}" />
-                                <EasingDoubleKeyFrame KeyTime="0:0:0.45" Value="0" EasingFunction="{StaticResource EaseInOut}" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseOut}"
+                                    KeyTime="0:0:0.12"
+                                    Value="-18" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseInOut}"
+                                    KeyTime="0:0:0.3"
+                                    Value="6" />
+                                <EasingDoubleKeyFrame
+                                    EasingFunction="{StaticResource EaseInOut}"
+                                    KeyTime="0:0:0.45"
+                                    Value="0" />
                             </DoubleAnimationUsingKeyFrames>
                         </Storyboard>
                     </ControlTemplate.Resources>
@@ -506,22 +596,22 @@
                             <Border.CacheMode>
                                 <BitmapCache SnapsToDevicePixels="True" />
                             </Border.CacheMode>
-                        <Border
-                            x:Name="ShadowLayer"
-                            Background="{DynamicResource Brush.Background}"
-                            CornerRadius="6"
-                            IsHitTestVisible="False"
-                            Opacity="{StaticResource Case.ShadowOpacityNormal}">
-                            <Border.Effect>
-                                <DropShadowEffect
-                                    BlurRadius="18"
-                                    Direction="270"
-                                    Opacity="1"
-                                    RenderingBias="Quality"
-                                    ShadowDepth="6"
-                                    Color="#FF000000" />
-                            </Border.Effect>
-                        </Border>
+                            <Border
+                                x:Name="ShadowLayer"
+                                Background="{DynamicResource Brush.Background}"
+                                CornerRadius="6"
+                                IsHitTestVisible="False"
+                                Opacity="{StaticResource Case.ShadowOpacityNormal}">
+                                <Border.Effect>
+                                    <DropShadowEffect
+                                        BlurRadius="18"
+                                        Direction="270"
+                                        Opacity="1"
+                                        RenderingBias="Quality"
+                                        ShadowDepth="6"
+                                        Color="#FF000000" />
+                                </Border.Effect>
+                            </Border>
                         </Border>
 
                         <!--  Selection: accent outline around the case, behind it (cover and disc pass in front of it)  -->
@@ -538,227 +628,227 @@
                             <Border.CacheMode>
                                 <BitmapCache SnapsToDevicePixels="True" />
                             </Border.CacheMode>
-                        <Viewport3D ClipToBounds="False" IsHitTestVisible="False">
-                            <Viewport3D.Camera>
+                            <Viewport3D ClipToBounds="False" IsHitTestVisible="False">
+                                <Viewport3D.Camera>
+                                    <!--
+                                        FieldOfView = 2 * atan(0.7 / 14): the visible width at z = 0 is exactly the mesh width (1.4),
+                                        so the closed case is rendered 1:1 within CaseHost. The distance keeps the perspective mild:
+                                        the opened cover grows by only ~12 px at its free edge, ~14 px when selected (room above the first profile row: ProfilesView).
+                                    -->
+                                    <PerspectiveCamera
+                                        FarPlaneDistance="20"
+                                        FieldOfView="5.72482"
+                                        LookDirection="0,0,-14"
+                                        NearPlaneDistance="1"
+                                        Position="0,0,14"
+                                        UpDirection="0,1,0" />
+                                </Viewport3D.Camera>
+
                                 <!--
-                                    FieldOfView = 2 * atan(0.7 / 14): the visible width at z = 0 is exactly the mesh width (1.4),
-                                    so the closed case is rendered 1:1 within CaseHost. The distance keeps the perspective mild:
-                                    the opened cover grows by only ~12 px at its free edge, ~14 px when selected (room above the first profile row: ProfilesView).
+                                    Light from the front: surfaces facing the viewer (case, disc, closed cover) stay at their exact colors
+                                    (ambient + directional = white), the opened cover turns slightly darker.
                                 -->
-                                <PerspectiveCamera
-                                    FarPlaneDistance="20"
-                                    FieldOfView="5.72482"
-                                    LookDirection="0,0,-14"
-                                    NearPlaneDistance="1"
-                                    Position="0,0,14"
-                                    UpDirection="0,1,0" />
-                            </Viewport3D.Camera>
+                                <ModelVisual3D>
+                                    <ModelVisual3D.Content>
+                                        <Model3DGroup>
+                                            <AmbientLight Color="#FF8A8A8A" />
+                                            <DirectionalLight Direction="0,0,-1" Color="#FF757575" />
+                                        </Model3DGroup>
+                                    </ModelVisual3D.Content>
+                                </ModelVisual3D>
 
-                            <!--
-                                Light from the front: surfaces facing the viewer (case, disc, closed cover) stay at their exact colors
-                                (ambient + directional = white), the opened cover turns slightly darker.
-                            -->
-                            <ModelVisual3D>
-                                <ModelVisual3D.Content>
-                                    <Model3DGroup>
-                                        <AmbientLight Color="#FF8A8A8A" />
-                                        <DirectionalLight Direction="0,0,-1" Color="#FF757575" />
-                                    </Model3DGroup>
-                                </ModelVisual3D.Content>
-                            </ModelVisual3D>
+                                <!--  Back of the case: glass with the recessed tray, only visible while the cover is open  -->
+                                <Viewport2DVisual3D>
+                                    <Viewport2DVisual3D.Geometry>
+                                        <MeshGeometry3D
+                                            Positions="-0.7,-1.041463,0  0.7,-1.041463,0  0.7,1.041463,0  -0.7,1.041463,0"
+                                            TextureCoordinates="0,1 1,1 1,0 0,0"
+                                            TriangleIndices="0 1 2  0 2 3" />
+                                    </Viewport2DVisual3D.Geometry>
 
-                            <!--  Back of the case: glass with the recessed tray, only visible while the cover is open  -->
-                            <Viewport2DVisual3D>
-                                <Viewport2DVisual3D.Geometry>
-                                    <MeshGeometry3D
-                                        Positions="-0.7,-1.041463,0  0.7,-1.041463,0  0.7,1.041463,0  -0.7,1.041463,0"
-                                        TextureCoordinates="0,1 1,1 1,0 0,0"
-                                        TriangleIndices="0 1 2  0 2 3" />
-                                </Viewport2DVisual3D.Geometry>
+                                    <Viewport2DVisual3D.Material>
+                                        <DiffuseMaterial Brush="#FFFFFFFF" Viewport2DVisual3D.IsVisualHostMaterial="True" />
+                                    </Viewport2DVisual3D.Material>
 
-                                <Viewport2DVisual3D.Material>
-                                    <DiffuseMaterial Brush="#FFFFFFFF" Viewport2DVisual3D.IsVisualHostMaterial="True" />
-                                </Viewport2DVisual3D.Material>
+                                    <Viewport2DVisual3D.Visual>
+                                        <!--  Drawn in base units (246 x 366) and scaled to the tile size  -->
+                                        <Border Width="{Binding ActualWidth, ElementName=CaseHost}" Height="{Binding ActualHeight, ElementName=CaseHost}">
+                                            <Viewbox Stretch="Fill">
+                                                <Grid Width="246" Height="366">
+                                                    <Border
+                                                        Background="{DynamicResource Brush.Card.Background}"
+                                                        BorderBrush="{DynamicResource Brush.Card.Border}"
+                                                        BorderThickness="1"
+                                                        CornerRadius="6" />
+                                                    <Border
+                                                        Margin="3"
+                                                        Background="{DynamicResource Brush.Card.Inset}"
+                                                        CornerRadius="4" />
+                                                </Grid>
+                                            </Viewbox>
+                                        </Border>
+                                    </Viewport2DVisual3D.Visual>
+                                </Viewport2DVisual3D>
 
-                                <Viewport2DVisual3D.Visual>
-                                    <!--  Drawn in base units (246 x 366) and scaled to the tile size  -->
-                                    <Border Width="{Binding ActualWidth, ElementName=CaseHost}" Height="{Binding ActualHeight, ElementName=CaseHost}">
-                                        <Viewbox Stretch="Fill">
-                                            <Grid Width="246" Height="366">
-                                                <Border
-                                                    Background="{DynamicResource Brush.Card.Background}"
-                                                    BorderBrush="{DynamicResource Brush.Card.Border}"
-                                                    BorderThickness="1"
-                                                    CornerRadius="6" />
-                                                <Border
-                                                    Margin="3"
-                                                    Background="{DynamicResource Brush.Card.Inset}"
-                                                    CornerRadius="4" />
-                                            </Grid>
-                                        </Viewbox>
-                                    </Border>
-                                </Viewport2DVisual3D.Visual>
-                            </Viewport2DVisual3D>
+                                <!--
+                                    Disc (224 px = 1.274797 units), centered under the cover, between back and cover (z).
+                                    Printed like a game disc: the cover over the whole data side, clear hub in the middle.
+                                -->
+                                <Viewport2DVisual3D>
+                                    <Viewport2DVisual3D.Geometry>
+                                        <MeshGeometry3D
+                                            Positions="-0.637398,-0.637398,0.001  0.637398,-0.637398,0.001  0.637398,0.637398,0.001  -0.637398,0.637398,0.001"
+                                            TextureCoordinates="0,1 1,1 1,0 0,0"
+                                            TriangleIndices="0 1 2  0 2 3" />
+                                    </Viewport2DVisual3D.Geometry>
 
-                            <!--
-                                Disc (224 px = 1.274797 units), centered under the cover, between back and cover (z).
-                                Printed like a game disc: the cover over the whole data side, clear hub in the middle.
-                            -->
-                            <Viewport2DVisual3D>
-                                <Viewport2DVisual3D.Geometry>
-                                    <MeshGeometry3D
-                                        Positions="-0.637398,-0.637398,0.001  0.637398,-0.637398,0.001  0.637398,0.637398,0.001  -0.637398,0.637398,0.001"
-                                        TextureCoordinates="0,1 1,1 1,0 0,0"
-                                        TriangleIndices="0 1 2  0 2 3" />
-                                </Viewport2DVisual3D.Geometry>
+                                    <Viewport2DVisual3D.Material>
+                                        <DiffuseMaterial Brush="#FFFFFFFF" Viewport2DVisual3D.IsVisualHostMaterial="True" />
+                                    </Viewport2DVisual3D.Material>
 
-                                <Viewport2DVisual3D.Material>
-                                    <DiffuseMaterial Brush="#FFFFFFFF" Viewport2DVisual3D.IsVisualHostMaterial="True" />
-                                </Viewport2DVisual3D.Material>
+                                    <Viewport2DVisual3D.Transform>
+                                        <Transform3DGroup>
+                                            <RotateTransform3D
+                                                CenterX="0"
+                                                CenterY="0"
+                                                CenterZ="0.001">
+                                                <RotateTransform3D.Rotation>
+                                                    <AxisAngleRotation3D
+                                                        x:Name="DiscSpin"
+                                                        Angle="0"
+                                                        Axis="0,0,1" />
+                                                </RotateTransform3D.Rotation>
+                                            </RotateTransform3D>
+                                            <TranslateTransform3D x:Name="DiscSlide" OffsetX="0" />
+                                        </Transform3DGroup>
+                                    </Viewport2DVisual3D.Transform>
 
-                                <Viewport2DVisual3D.Transform>
-                                    <Transform3DGroup>
-                                        <RotateTransform3D
-                                            CenterX="0"
-                                            CenterY="0"
-                                            CenterZ="0.001">
-                                            <RotateTransform3D.Rotation>
-                                                <AxisAngleRotation3D
-                                                    x:Name="DiscSpin"
-                                                    Angle="0"
-                                                    Axis="0,0,1" />
-                                            </RotateTransform3D.Rotation>
-                                        </RotateTransform3D>
-                                        <TranslateTransform3D x:Name="DiscSlide" OffsetX="0" />
-                                    </Transform3DGroup>
-                                </Viewport2DVisual3D.Transform>
+                                    <Viewport2DVisual3D.Visual>
+                                        <Border Width="{Binding ActualWidth, ElementName=CaseHost}" Height="{Binding ActualWidth, ElementName=CaseHost}">
+                                            <Viewbox Stretch="Fill">
+                                                <Grid
+                                                    Width="224"
+                                                    Height="224"
+                                                    OpacityMask="{StaticResource Brush.Case.DiscHoleMask}">
+                                                    <!--
+                                                        Cover print; shows the game title readable when that fits (DiscPrint), turned so it ends
+                                                        on the visible right side after the spin of SbSelect (-120: PrintAngle -30)
+                                                    -->
+                                                    <Ellipse ui:DiscPrint.Cover="{Binding Tag, ElementName=CaseHost}" ui:DiscPrint.PrintAngle="-30" />
+                                                    <!--  Gloss of the disc surface  -->
+                                                    <Ellipse Fill="{StaticResource Brush.Case.Disc}" />
+                                                    <!--  Rim: clear edge, catches the light in the accent color (stroke set while open, see the cache note above)  -->
+                                                    <Ellipse Stroke="{DynamicResource Brush.Card.Border}" StrokeThickness="3" />
+                                                    <Ellipse
+                                                        x:Name="DiscAccentRim"
+                                                        Opacity="0.6"
+                                                        StrokeThickness="1" />
+                                                    <!--  Black plastic hub with a fine stacking ring; the hole itself is cut out by the opacity mask  -->
+                                                    <Ellipse
+                                                        Width="88"
+                                                        Height="88"
+                                                        Fill="{StaticResource Brush.Case.Hub}"
+                                                        Stroke="{DynamicResource Brush.Card.Border}"
+                                                        StrokeThickness="1" />
+                                                    <Ellipse
+                                                        Width="62"
+                                                        Height="62"
+                                                        Stroke="#14FFFFFF"
+                                                        StrokeThickness="1" />
+                                                    <!--  Edge of the hole (half of the stroke stays outside the mask)  -->
+                                                    <Ellipse
+                                                        Width="34"
+                                                        Height="34"
+                                                        Stroke="#33FFFFFF"
+                                                        StrokeThickness="2" />
+                                                </Grid>
+                                            </Viewbox>
+                                        </Border>
+                                    </Viewport2DVisual3D.Visual>
+                                </Viewport2DVisual3D>
 
-                                <Viewport2DVisual3D.Visual>
-                                    <Border Width="{Binding ActualWidth, ElementName=CaseHost}" Height="{Binding ActualWidth, ElementName=CaseHost}">
-                                        <Viewbox Stretch="Fill">
-                                            <Grid
-                                                Width="224"
-                                                Height="224"
-                                                OpacityMask="{StaticResource Brush.Case.DiscHoleMask}">
-                                                <!--
-                                                    Cover print; shows the game title readable when that fits (DiscPrint), turned so it ends
-                                                    on the visible right side after the spin of SbSelect (-120: PrintAngle -30)
-                                                -->
-                                                <Ellipse ui:DiscPrint.Cover="{Binding Tag, ElementName=CaseHost}" ui:DiscPrint.PrintAngle="-30" />
-                                                <!--  Gloss of the disc surface  -->
-                                                <Ellipse Fill="{StaticResource Brush.Case.Disc}" />
-                                                <!--  Rim: clear edge, catches the light in the accent color (stroke set while open, see the cache note above)  -->
-                                                <Ellipse Stroke="{DynamicResource Brush.Card.Border}" StrokeThickness="3" />
-                                                <Ellipse
-                                                    x:Name="DiscAccentRim"
-                                                    Opacity="0.6"
-                                                    StrokeThickness="1" />
-                                                <!--  Black plastic hub with a fine stacking ring; the hole itself is cut out by the opacity mask  -->
-                                                <Ellipse
-                                                    Width="88"
-                                                    Height="88"
-                                                    Fill="{StaticResource Brush.Case.Hub}"
-                                                    Stroke="{DynamicResource Brush.Card.Border}"
-                                                    StrokeThickness="1" />
-                                                <Ellipse
-                                                    Width="62"
-                                                    Height="62"
-                                                    Stroke="#14FFFFFF"
-                                                    StrokeThickness="1" />
-                                                <!--  Edge of the hole (half of the stroke stays outside the mask)  -->
-                                                <Ellipse
-                                                    Width="34"
-                                                    Height="34"
-                                                    Stroke="#33FFFFFF"
-                                                    StrokeThickness="2" />
-                                            </Grid>
-                                        </Viewbox>
-                                    </Border>
-                                </Viewport2DVisual3D.Visual>
-                            </Viewport2DVisual3D>
+                                <!--
+                                    Front cover over the whole case, hinged at its left edge (x = -0.7): nothing stays behind on the
+                                    left when it opens. Slightly in front of back and disc (z) to avoid z-fighting.
+                                -->
+                                <Viewport2DVisual3D>
+                                    <Viewport2DVisual3D.Geometry>
+                                        <MeshGeometry3D
+                                            Positions="-0.7,-1.041463,0.002  0.7,-1.041463,0.002  0.7,1.041463,0.002  -0.7,1.041463,0.002"
+                                            TextureCoordinates="0,1 1,1 1,0 0,0"
+                                            TriangleIndices="0 1 2  0 2 3" />
+                                    </Viewport2DVisual3D.Geometry>
 
-                            <!--
-                                Front cover over the whole case, hinged at its left edge (x = -0.7): nothing stays behind on the
-                                left when it opens. Slightly in front of back and disc (z) to avoid z-fighting.
-                            -->
-                            <Viewport2DVisual3D>
-                                <Viewport2DVisual3D.Geometry>
-                                    <MeshGeometry3D
-                                        Positions="-0.7,-1.041463,0.002  0.7,-1.041463,0.002  0.7,1.041463,0.002  -0.7,1.041463,0.002"
-                                        TextureCoordinates="0,1 1,1 1,0 0,0"
-                                        TriangleIndices="0 1 2  0 2 3" />
-                                </Viewport2DVisual3D.Geometry>
+                                    <Viewport2DVisual3D.Material>
+                                        <DiffuseMaterial Brush="#FFFFFFFF" Viewport2DVisual3D.IsVisualHostMaterial="True" />
+                                    </Viewport2DVisual3D.Material>
 
-                                <Viewport2DVisual3D.Material>
-                                    <DiffuseMaterial Brush="#FFFFFFFF" Viewport2DVisual3D.IsVisualHostMaterial="True" />
-                                </Viewport2DVisual3D.Material>
+                                    <!--  Two rotations around the same hinge: opened (hover or selected) + the extra angle of the selected case  -->
+                                    <Viewport2DVisual3D.Transform>
+                                        <Transform3DGroup>
+                                            <RotateTransform3D
+                                                CenterX="-0.7"
+                                                CenterY="0"
+                                                CenterZ="0.002">
+                                                <RotateTransform3D.Rotation>
+                                                    <AxisAngleRotation3D
+                                                        x:Name="CoverHinge"
+                                                        Angle="0"
+                                                        Axis="0,1,0" />
+                                                </RotateTransform3D.Rotation>
+                                            </RotateTransform3D>
+                                            <RotateTransform3D
+                                                CenterX="-0.7"
+                                                CenterY="0"
+                                                CenterZ="0.002">
+                                                <RotateTransform3D.Rotation>
+                                                    <AxisAngleRotation3D
+                                                        x:Name="CoverHingeSelected"
+                                                        Angle="0"
+                                                        Axis="0,1,0" />
+                                                </RotateTransform3D.Rotation>
+                                            </RotateTransform3D>
+                                        </Transform3DGroup>
+                                    </Viewport2DVisual3D.Transform>
 
-                                <!--  Two rotations around the same hinge: opened (hover or selected) + the extra angle of the selected case  -->
-                                <Viewport2DVisual3D.Transform>
-                                    <Transform3DGroup>
-                                        <RotateTransform3D
-                                            CenterX="-0.7"
-                                            CenterY="0"
-                                            CenterZ="0.002">
-                                            <RotateTransform3D.Rotation>
-                                                <AxisAngleRotation3D
-                                                    x:Name="CoverHinge"
-                                                    Angle="0"
-                                                    Axis="0,1,0" />
-                                            </RotateTransform3D.Rotation>
-                                        </RotateTransform3D>
-                                        <RotateTransform3D
-                                            CenterX="-0.7"
-                                            CenterY="0"
-                                            CenterZ="0.002">
-                                            <RotateTransform3D.Rotation>
-                                                <AxisAngleRotation3D
-                                                    x:Name="CoverHingeSelected"
-                                                    Angle="0"
-                                                    Axis="0,1,0" />
-                                            </RotateTransform3D.Rotation>
-                                        </RotateTransform3D>
-                                    </Transform3DGroup>
-                                </Viewport2DVisual3D.Transform>
+                                    <Viewport2DVisual3D.Visual>
+                                        <Border Width="{Binding ActualWidth, ElementName=CaseHost}" Height="{Binding ActualHeight, ElementName=CaseHost}">
+                                            <Viewbox Stretch="Fill">
+                                                <Grid Width="246" Height="366">
+                                                    <!--  Glass lip around the cover; opaque base below, so the cover hides the disc completely  -->
+                                                    <Border Background="{DynamicResource Brush.Background}" CornerRadius="6" />
+                                                    <Border Background="{DynamicResource Brush.Card.Background}" CornerRadius="6" />
 
-                                <Viewport2DVisual3D.Visual>
-                                    <Border Width="{Binding ActualWidth, ElementName=CaseHost}" Height="{Binding ActualHeight, ElementName=CaseHost}">
-                                        <Viewbox Stretch="Fill">
-                                            <Grid Width="246" Height="366">
-                                                <!--  Glass lip around the cover; opaque base below, so the cover hides the disc completely  -->
-                                                <Border Background="{DynamicResource Brush.Background}" CornerRadius="6" />
-                                                <Border Background="{DynamicResource Brush.Card.Background}" CornerRadius="6" />
+                                                    <!--  Cover (2:3); top/left like before: overflow is cut at the bottom/right  -->
+                                                    <Border
+                                                        Margin="3"
+                                                        CornerRadius="4"
+                                                        RenderOptions.BitmapScalingMode="HighQuality">
+                                                        <Border.Background>
+                                                            <ImageBrush
+                                                                AlignmentX="Left"
+                                                                AlignmentY="Top"
+                                                                ImageSource="{Binding Tag, ElementName=CaseHost}"
+                                                                Stretch="UniformToFill" />
+                                                        </Border.Background>
+                                                    </Border>
 
-                                                <!--  Cover (2:3); top/left like before: overflow is cut at the bottom/right  -->
-                                                <Border
-                                                    Margin="3"
-                                                    CornerRadius="4"
-                                                    RenderOptions.BitmapScalingMode="HighQuality">
-                                                    <Border.Background>
-                                                        <ImageBrush
-                                                            AlignmentX="Left"
-                                                            AlignmentY="Top"
-                                                            ImageSource="{Binding Tag, ElementName=CaseHost}"
-                                                            Stretch="UniformToFill" />
-                                                    </Border.Background>
-                                                </Border>
+                                                    <Border
+                                                        Margin="3"
+                                                        Background="{StaticResource Brush.Case.Gloss}"
+                                                        CornerRadius="4" />
 
-                                                <Border
-                                                    Margin="3"
-                                                    Background="{StaticResource Brush.Case.Gloss}"
-                                                    CornerRadius="4" />
-
-                                                <!--  Lit edge like the cards  -->
-                                                <Border
-                                                    BorderBrush="{DynamicResource Brush.Card.Border}"
-                                                    BorderThickness="1"
-                                                    CornerRadius="6" />
-                                            </Grid>
-                                        </Viewbox>
-                                    </Border>
-                                </Viewport2DVisual3D.Visual>
-                            </Viewport2DVisual3D>
-                        </Viewport3D>
+                                                    <!--  Lit edge like the cards  -->
+                                                    <Border
+                                                        BorderBrush="{DynamicResource Brush.Card.Border}"
+                                                        BorderThickness="1"
+                                                        CornerRadius="6" />
+                                                </Grid>
+                                            </Viewbox>
+                                        </Border>
+                                    </Viewport2DVisual3D.Visual>
+                                </Viewport2DVisual3D>
+                            </Viewport3D>
                         </Border>
 
                         <!--
@@ -1183,7 +1273,7 @@
         its disc stands in front of the cover, shifted to the right so most of the cover art stays visible, slightly turned.
         ContentControl with the cover image as content, drawn in base units 340 x 430 (scale it with a Viewbox).
         Hover opens the cover a little further, turns the disc a little and lifts it.
-
+        
         Stage (base units): case 246 x 366 at 16,26 (bottom 392 on the plinth top), plinth 0 - 340 at 386 - 416,
         disc 196 at 134,202 (center 232,300, bottom on the plinth). The open cover grows ~7 (hover ~10) beyond the case.
     -->
@@ -1543,7 +1633,7 @@
         case (print turned -30, disc 120 clockwise), so its print reads like in the library. No plinth and no opened
         cover: that stays the showcase of the most played game. ContentControl with the cover image as content, base
         units 450 x 400 (scale it with a Viewbox). A new cover rolls the disc out again.
-
+        
         Stage (base units): case 246 x 366 at 0,17; disc 240 at 206,80 (overlaps the case by 40, centered on its middle).
     -->
     <Style x:Key="GameCase.Preview" TargetType="{x:Type ContentControl}">
@@ -1601,9 +1691,9 @@
                             Width="240"
                             Height="240"
                             Margin="206,80,0,0"
-                            Panel.ZIndex="1"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Top"
+                            Panel.ZIndex="1"
                             RenderTransformOrigin="0.5,0.5">
                             <Grid.RenderTransform>
                                 <TransformGroup>
