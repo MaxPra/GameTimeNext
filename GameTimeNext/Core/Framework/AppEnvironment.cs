@@ -96,8 +96,6 @@ namespace GameTimeNext.Core.Framework
 
         public static void Initalize()
         {
-            HandleBackup();
-
             MigrationFactory.Metadata.MigrateTables();
 
             CheckShowChangeLog();
@@ -142,16 +140,19 @@ namespace GameTimeNext.Core.Framework
 
         public static void RestartGTNApplication()
         {
-            var exePath = Environment.ProcessPath!;
-            string startArguments = FnSystem.GetStartArgumentsString();
-
-            Process.Start(new ProcessStartInfo
+            if (!FnSystem.IsDebug())
             {
-                FileName = "cmd.exe",
-                Arguments = $"/C timeout /t 3 > nul && start \"\" \"{exePath}\" {startArguments}",
-                CreateNoWindow = true,
-                UseShellExecute = false
-            });
+                var exePath = Environment.ProcessPath!;
+                string startArguments = FnSystem.GetStartArgumentsString();
+
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = "cmd.exe",
+                    Arguments = $"/C timeout /t 3 > nul && start \"\" \"{exePath}\" {startArguments}",
+                    CreateNoWindow = true,
+                    UseShellExecute = false
+                });
+            }
 
             System.Windows.Application.Current.Shutdown();
         }
@@ -169,7 +170,7 @@ namespace GameTimeNext.Core.Framework
         // [------------------------------------------------]
         // [------------------ PRIVATE ---------------------]
         // [------------------------------------------------]
-        private static void HandleBackup()
+        public static void HandleBackup()
         {
             // Restore backup here
             if (GetAppConfig().AppSettings.BackupType == BackupType.IMPORT_BACKUP)
