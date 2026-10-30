@@ -795,43 +795,42 @@
                             </Grid>
                         </GroupBox>
 
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="16" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="8" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="12" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
+                        <GroupBox
+                            Header="Remote Monitoring"
+                            Style="{StaticResource GroupBox.Card}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="8" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
 
-                            <TextBlock
-                                Grid.Row="0"
-                                Foreground="{DynamicResource Brush.TextPrimary}"
-                                Style="{StaticResource SettingsGroupTitleStyle}"
-                                Text="Remote Monitoring" />
+                                <Grid Grid.Row="0" HorizontalAlignment="Left">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="170" />
+                                        <ColumnDefinition Width="16" />
+                                        <ColumnDefinition Width="54" />
+                                    </Grid.ColumnDefinitions>
 
-                            <Grid Grid.Row="2">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="170" />
-                                    <ColumnDefinition Width="16" />
-                                    <ColumnDefinition Width="54" />
-                                </Grid.ColumnDefinitions>
-
-                                <TextBlock
+                                    <TextBlock
                                         Grid.Column="0"
                                         VerticalAlignment="Center"
                                         Foreground="{DynamicResource Brush.TextSecondary}"
                                         Text="Remote Monitoring active" />
-                                <CheckBox x:Name="cbRemoteMonitoringActive" Grid.Column="2" />
-                            </Grid>
 
-                            <TextBlock
-                                x:Name="txtRemoteMonitoringPort"
-                                Grid.Row="4"
-                                Foreground="{DynamicResource Brush.Success}" />
-                        </Grid>
+                                    <CheckBox
+                                        x:Name="cbRemoteMonitoringActive"
+                                        Grid.Column="2"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center" />
+                                </Grid>
+
+                                <TextBlock
+                                    x:Name="txtRemoteMonitoringPort"
+                                    Grid.Row="2"
+                                    Foreground="{DynamicResource Brush.Success}" />
+                            </Grid>
+                        </GroupBox>
 
                     </StackPanel>
                 </ScrollViewer>
