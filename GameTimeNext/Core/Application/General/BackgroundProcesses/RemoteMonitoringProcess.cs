@@ -12,6 +12,8 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
 {
     public class RemoteMonitoringProcess : UIXBackgroundProcess
     {
+        private static bool _DEBUG_STARTBLAZOR = false;
+
         private Process? _blazorProcess;
         private RemoteMonitoringSocketServer? _socketServerProcess;
 
@@ -22,7 +24,9 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
             if (!AppEnvironment.GetAppConfig().AppSettings.RemoteMonitoring) return;
 
             HandleSocket();
-            HandleBlazor();
+
+            if (!FnSystem.IsDebug() || _DEBUG_STARTBLAZOR)
+                HandleBlazor();
         }
 
         private void HandleSocket()
@@ -30,14 +34,17 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
             if (_socketServerProcess is not null) return;
 
             FnLog.AddInfo(this, "Starting socketServerProcess...");
-            try
+            if (!FnSystem.IsDebug())
             {
-                _socketPort = GetFreePort(desiredPort: _socketPort);
-            }
-            catch (Exception ex)
-            {
-                FnLog.AddError(this, "Could not get free port.", ex);
-                return;
+                try
+                {
+                    _socketPort = GetFreePort(desiredPort: _socketPort);
+                }
+                catch (Exception ex)
+                {
+                    FnLog.AddError(this, "Could not get free port.", ex);
+                    return;
+                }
             }
 
             // Run socket server
@@ -67,16 +74,19 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
             FnLog.AddInfo(this, "Starting blazorProcess...");
 
             int port = 50505;
-            try
+            if (!FnSystem.IsDebug())
             {
-                port = GetFreePort(desiredPort: port, IPAddress.Any);
-                CallDispatcher!.Trigger("EXEV_RemoteMonitoringPortChanged", port); // SettingsViewController
+                try
+                {
+                    port = GetFreePort(desiredPort: port, IPAddress.Any);
+                }
+                catch (Exception ex)
+                {
+                    FnLog.AddError(this, "Could not get free port.", ex);
+                    return;
+                }
             }
-            catch (Exception ex)
-            {
-                FnLog.AddError(this, "Could not get free port.", ex);
-                return;
-            }
+            CallDispatcher!.Trigger("EXEV_RemoteMonitoringPortChanged", port); // SettingsViewController
 
             string baseDir = Path.Combine(AppConfig.Root.ApplicationDirectoryPath, "RemoteMonitoring");
             FnDirectory.EnsureDirectoryExists(baseDir);
