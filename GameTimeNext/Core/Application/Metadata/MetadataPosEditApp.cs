@@ -25,7 +25,7 @@ namespace GameTimeNext.Core.Application.Metadata
             MetadataPosEditView.ViewController = MetadataPosEditViewController;
         }
 
-        public void CreateNew(T1METAH t1metah)
+        public void CreateNew(Action<MetadataPosEditViewController.MetadataPosEditViewReturn> callback, T1METAH t1metah)
         {
             T1METAP = new TXMETAP().CreateNew();
             T1METAP.MENAM = t1metah.MENAM;
@@ -33,6 +33,7 @@ namespace GameTimeNext.Core.Application.Metadata
             MetadataPosEditView!.ViewIndicator.Clear();
             MetadataPosEditView!.ViewIndicator.Add("CN");
             MetadataPosEditView!.Title = "Create Metadata Field";
+            MetadataPosEditViewController!.SetResultCallback(callback);
 
             MetadataPosEditViewController!.Show();
         }

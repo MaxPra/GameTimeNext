@@ -1,4 +1,4 @@
-using GameTimeNext.Core.Application.DataManagers;
+﻿using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Metadata.Data;
 using GameTimeNext.Core.Application.Metadata.Views;
 using GameTimeNext.Core.Framework.DataBase.Migration;
@@ -124,10 +124,20 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
         /// </summary>
         public void MarkGenerationRequired()
         {
-            GetApp().T1METAH!.GENER = false;
-            new TXMETAH().Save(GetApp().T1METAH!);
+            SaveGenerated(false);
 
             Build();
+        }
+
+        /// <summary>
+        /// Saves the generation state of the header directly; it is no unsaved change of the view.
+        /// </summary>
+        private void SaveGenerated(bool generated)
+        {
+            GetApp().T1METAH!.GENER = generated;
+            new TXMETAH().Save(GetApp().T1METAH!);
+
+            AcceptTableObjectsAsSaved();
         }
 
         protected void EV_BtnSave()
@@ -164,8 +174,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
                     MigrationFactory.FromCsv.MigrateTables(MigrationFactory.ImportType.MetadataGenerator);
                 });
 
-                GetApp().T1METAH!.GENER = true;
-                new TXMETAH().Save(GetApp().T1METAH!);
+                SaveGenerated(true);
 
                 GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("MET0002"), CFMBOXResult.Ok, CFMBOXIcon.Success);
             }
@@ -181,17 +190,18 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
             await GetView().DgFields.LoadDataAsync();
         }
 
-        protected async Task EV_BtnAdd()
+        protected void EV_BtnAdd()
         {
             MetadataPosEditApp metadataPosEditApp = GetApp().GetApplication<MetadataPosEditApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
-            metadataPosEditApp.CreateNew(GetApp().T1METAH!);
+            metadataPosEditApp.CreateNew(async (result) =>
+            {
+                if (!result.HasChanged)
+                    return;
 
-            await GetView().DgFields.LoadDataAsync();
+                await GetView().DgFields.LoadDataAsync();
 
-            GetApp().T1METAH!.GENER = false;
-            new TXMETAH().Save(GetApp().T1METAH!);
-
-            Build();
+                MarkGenerationRequired();
+            }, GetApp().T1METAH!);
         }
 
         protected async Task EV_btnAutoReorder()
@@ -201,10 +211,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
                 GetApp().Loader.Begin();
 
                 if (TFMETAP.AutoReorder(GetApp().T1METAH!.MENAM))
-                {
-                    GetApp().T1METAH!.GENER = false;
-                    new TXMETAH().Save(GetApp().T1METAH!);
-                }
+                    SaveGenerated(false);
             }
             finally
             {
