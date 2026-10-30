@@ -1,9 +1,10 @@
 ﻿using GameTimeNext.Core.Application.General.Controller;
-using GameTimeNext.Core.Framework.Logging;
+using GameTimeNext.Core.Application.General.Views;
 using System.Runtime.InteropServices;
 using System.Windows.Controls;
 using System.Windows.Interop;
 using UIX.ViewController.Engine.Runnables;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.General
 {
@@ -14,12 +15,19 @@ namespace GameTimeNext.Core.Application.General
         MainWindowController? _mainWindowController;
         MainWindow? _mainWindow;
 
+        public FavAppsStartOrderView? FavAppsStartOrderView { get; set; } = null;
+
         public bool StartMinimized { get; set; } = false;
         public SplashScreen? SplashScreen { get; set; } = null;
 
         public MainApp() : base()
         {
 
+        }
+
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(MainApp));
         }
 
         public override void InitializeApplicationOutput()
@@ -31,6 +39,12 @@ namespace GameTimeNext.Core.Application.General
             MainView = _mainWindow;
             _mainWindowController = new MainWindowController(this);
             _mainWindow.WndController = _mainWindowController;
+
+            // -- Favorites start order (popup of the tab bar)
+            FavAppsStartOrderView = new FavAppsStartOrderView();
+            FavAppsStartOrderView.ViewController = new FavAppsStartOrderViewController(this);
+            FavAppsStartOrderView.ContentPresenter = _mainWindow.cpFavAppsStartOrder;
+            FavAppsStartOrderView.Popup = _mainWindow.popFavAppsStartOrder;
         }
 
         public void Start(UIXApplication hostApplication, ContentPresenter presenter)

@@ -10,7 +10,9 @@
             public const string GRNA = "GRNA";
             public const string GTYP = "GTYP";
             public const string CRAT = "CRAT";
+            public const string CRUS = "CRUS";
             public const string CHAT = "CHAT";
+            public const string CHUS = "CHUS";
         }
     }
 }

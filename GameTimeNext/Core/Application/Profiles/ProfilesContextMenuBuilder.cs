@@ -1,5 +1,6 @@
 ﻿using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.TableObjects;
+using GameTimeNext.Core.Framework.LauncherIntegration;
 using System.IO;
 using System.Windows;
 using UIX.ViewController.Engine.FrameworkElements;
@@ -41,9 +42,16 @@ namespace GameTimeNext.Core.Application.Profiles
             contextBuilder.AddSubMenu(playthroughSubMenu);
         }
 
+        public static void BuildContextUnwrap(ContextMenuBuilder contextBuilder)
+        {
+            contextBuilder.AddItem("ctxtUnwrapGame", "Unwrap game", icon: UIXContextMenuFactory.CreateMdlIcon(""), itemStyle: contextMenuItemStyle);
+
+            contextBuilder.AddSeparator(contextMenuSeparatorStyle);
+        }
+
         public static void BuildContextArchive(ContextMenuBuilder contextBuilder, T1PROFI t1profi)
         {
-            // Archivieren hinzufügen
+            // Add archive
             if (t1profi.ARCH)
                 contextBuilder.AddItem("ctxtUnarchiveProfile", "Unarchive profile", icon: UIXContextMenuFactory.CreateMdlIcon("\uE8B7"), itemStyle: contextMenuItemStyle);
 
@@ -51,17 +59,17 @@ namespace GameTimeNext.Core.Application.Profiles
                 contextBuilder.AddItem("ctxtArchiveProfile", "Archive profile", icon: UIXContextMenuFactory.CreateMdlIcon("\uE8B7"), itemStyle: contextMenuItemStyle);
         }
 
-        public static void BuildContextSteam(ContextMenuBuilder contextBuilder, T1PROFI t1profi)
+        public static void BuildContextLauncher(ContextMenuBuilder contextBuilder, T1PROFI t1profi)
         {
-            if (t1profi.SAID == 0)
+            if (!FnLauncher.IsLinked(t1profi) || FnLauncher.GetLauncher(t1profi)?.SupportsOpenInLauncher != true)
                 return;
 
-            MenuItemBuilder steamSubMenu = UIXContextMenuFactory.Item("ctxtSubMenuSteam", "Steam");
-            steamSubMenu.SetStyle(contextMenuItemStyle);
+            MenuItemBuilder launcherSubMenu = UIXContextMenuFactory.Item("ctxtSubMenuLauncher", FnLauncher.GetLauncherName(t1profi.LNTY));
+            launcherSubMenu.SetStyle(contextMenuItemStyle);
 
-            steamSubMenu.AddItem("ctxtOpenSteamLibrary", "Show steam library", icon: UIXContextMenuFactory.CreateMdlIcon("\uE7FC"), itemStyle: contextMenuItemStyle);
+            launcherSubMenu.AddItem("ctxtOpenInLauncher", "Show in library", icon: UIXContextMenuFactory.CreateMdlIcon("\uE7FC"), itemStyle: contextMenuItemStyle);
 
-            contextBuilder.AddSubMenu(steamSubMenu);
+            contextBuilder.AddSubMenu(launcherSubMenu);
 
             contextBuilder.AddSeparator(ProfilesContextMenuBuilder.contextMenuSeparatorStyle);
         }

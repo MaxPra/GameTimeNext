@@ -1,4 +1,6 @@
-﻿namespace GameTimeNext.Core.Framework.DataBase.TableObjects
+﻿using System.Globalization;
+
+namespace GameTimeNext.Core.Framework.DataBase.TableObjects
 {
     public abstract class TableObjectBase
     {
@@ -39,18 +41,18 @@
 
         protected string NormalizeDateTime(DateTime value)
         {
-            return value.Ticks.ToString();
+            return value.Ticks.ToString(CultureInfo.InvariantCulture);
         }
 
         protected string NormalizeDouble(double value)
         {
             long bits = BitConverter.DoubleToInt64Bits(value);
-            return bits.ToString();
+            return bits.ToString(CultureInfo.InvariantCulture);
         }
 
         protected string NormalizeLong(long value)
         {
-            return value.ToString();
+            return value.ToString(CultureInfo.InvariantCulture);
         }
     }
 }

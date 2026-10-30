@@ -14,9 +14,9 @@ namespace GameTimeNext.Core.Application.TimeMonitoring
         private static double _monitoredTime = 0;
 
         /// <summary>
-        /// Startet das Aufzeichnen der Spielzeit
+        /// Starts recording the playtime
         /// </summary>
-        /// <param name="pfid">Profil ID</param>
+        /// <param name="pfid">Profile ID</param>
         public static void StartMonitoring(long pfid)
         {
             if (pfid == 0)
@@ -28,7 +28,7 @@ namespace GameTimeNext.Core.Application.TimeMonitoring
         }
 
         /// <summary>
-        /// Stoppt das Aufzeichnen der Spielzeit
+        /// Stops recording the playtime
         /// </summary>
         public static void StopMonitoring()
         {
@@ -51,7 +51,7 @@ namespace GameTimeNext.Core.Application.TimeMonitoring
 
         public static void UpdateTableObject()
         {
-            // -- Sessiondaten befüllen
+            // -- Fill session data
             TXSESSI txsessi = new TXSESSI();
             T1SESSI t1sessi = txsessi.CreateNew();
 
@@ -61,14 +61,14 @@ namespace GameTimeNext.Core.Application.TimeMonitoring
             t1sessi.PLTI = GetMonitoredTimeInMinutes();
             if (AppEnvironment.GetAppConfig().AppSettings.EnableSessionCleanup && t1sessi.PLTI < (AppEnvironment.GetAppConfig().AppSettings.SessionCleanupSeconds / 60)) return;
 
-            // Derzeitigen Playthrough ermitteln
+            // Determine the current playthrough
             long ptid = TFPLTHR.GetCurrentPlaythroughPtid(t1sessi.PFID);
 
             t1sessi.PTID = ptid;
 
             txsessi.Save(t1sessi);
 
-            // -- Profildaten befüllen
+            // -- Fill profile data
             TXPROFI txprofi = new TXPROFI();
             T1PROFI t1profi = txprofi.Read(AppEnvironment.CurrentPfid);
 

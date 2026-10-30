@@ -19,12 +19,14 @@
             public const string PARF2 = "PARF2";
             public const string PACO2 = "PACO2";
             public const string PACT2 = "PACT2";
-            public const string CRAT = "CRAT";
-            public const string CHAT = "CHAT";
             public const string NRANA = "NRANA";
             public const string EXPRT = "EXPRT";
             public const string PTOL1 = "PTOL1";
             public const string PTOL2 = "PTOL2";
+            public const string CRAT = "CRAT";
+            public const string CRUS = "CRUS";
+            public const string CHAT = "CHAT";
+            public const string CHUS = "CHUS";
         }
     }
 }

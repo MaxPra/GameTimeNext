@@ -1,6 +1,10 @@
-﻿using GameTimeNext.Core.Application.TableObjects;
+﻿using GameTimeNext.Core.Application.Playthroughs;
+using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
+using GameTimeNext.Core.Framework.UI.Dialogs;
 using UIX.ViewController.Engine.Querying;
+using UIX.ViewController.Engine.Runnables;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.DataManagers
 {
@@ -31,6 +35,58 @@ namespace GameTimeNext.Core.Application.DataManagers
             return maxPTID;
         }
 
+        /// <summary>
+        /// Returns the PFIDs of all profiles that have at least one completed playthrough
+        /// </summary>
+        public static HashSet<long> GetPfidsWithCompletedPlaythrough()
+        {
+            return GetPfidsWithPlaythrough(completed: true, cancelled: false, paused: false);
+        }
+
+        /// <summary>
+        /// Returns the PFIDs of all profiles that have a current playthrough
+        /// (not completed, cancelled or paused - same criteria as HasCurrentPlaythrough)
+        /// </summary>
+        public static HashSet<long> GetPfidsWithCurrentPlaythrough()
+        {
+            return GetPfidsWithPlaythrough(completed: false, cancelled: false, paused: false);
+        }
+
+        /// <summary>
+        /// Returns the PFIDs of all profiles that have at least one paused playthrough
+        /// </summary>
+        public static HashSet<long> GetPfidsWithPausedPlaythrough()
+        {
+            return GetPfidsWithPlaythrough(completed: false, cancelled: false, paused: true);
+        }
+
+        private static HashSet<long> GetPfidsWithPlaythrough(bool completed, bool cancelled, bool paused)
+        {
+            HashSet<long> pfids = new HashSet<long>();
+
+            UIXQuery query = new UIXQuery(K1PLTHR.Name, AppEnvironment.GetDataBaseManager().GetConnection());
+            query.SetDistinct(true);
+            query.AddField(K1PLTHR.Name, K1PLTHR.Fields.PFID);
+            query.AddWhere(K1PLTHR.Name, K1PLTHR.Fields.PTCO, QueryCompareType.EQUALS, completed);
+
+            // A completed playthrough counts regardless of the other flags
+            if (!completed)
+            {
+                query.AddWhere(K1PLTHR.Name, K1PLTHR.Fields.PTCA, QueryCompareType.EQUALS, cancelled);
+                query.AddWhere(K1PLTHR.Name, K1PLTHR.Fields.PTPA, QueryCompareType.EQUALS, paused);
+            }
+
+            using (var reader = query.Execute())
+            {
+                while (reader.Read())
+                {
+                    pfids.Add(UIXQuery.GetInt64(reader, K1PLTHR.Name, K1PLTHR.Fields.PFID));
+                }
+            }
+
+            return pfids;
+        }
+
         public static T1PLTHR GetCurrentPlaythrough(long pfid)
         {
             return new TXPLTHR().Read(GetCurrentPlaythroughPtid(pfid));
@@ -49,7 +105,7 @@ namespace GameTimeNext.Core.Application.DataManagers
 
             List<string> types = new List<string>();
 
-            // Wenn hier mit NEW_PLAYTHROUGH gesucht wird, muss natürlich auch der initiale Playthrough miteinbezogen werden
+            // When searching with NEW_PLAYTHROUGH, the initial playthrough has to be included as well
             if (type == PlaythroughType.NEW_PLAYTHROUGH)
             {
                 types.Add(PlaythroughType.NEW_PLAYTHROUGH);
@@ -78,7 +134,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         }
 
         /// <summary>
-        /// Erstellt einen neuen Playthrough für das übergebene Profil (Neuanlage)
+        /// Creates a new playthrough for the given profile (new entry)
         /// </summary>
         /// <param name="pfid"></param>
         /// <param name="description"></param>
@@ -120,6 +176,19 @@ namespace GameTimeNext.Core.Application.DataManagers
             return sessions;
         }
 
+        public static double GetPlaytimeInMinutes(long ptid)
+        {
+            UIXQuery query = new UIXQuery(K1SESSI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
+            query.AddSum(K1SESSI.Name, K1SESSI.Fields.PLTI, "TotalPlaytime");
+            query.AddWhere(K1SESSI.Name, K1SESSI.Fields.PTID, QueryCompareType.EQUALS, ptid);
+
+            using (var reader = query.Execute())
+                if (reader.Read())
+                    return UIXQuery.GetDouble(reader, "TotalPlaytime");
+
+            return 0;
+        }
+
         public static void DeletePlaythroughAndSessions(long ptid)
         {
             TXPLTHR txplthr = new TXPLTHR();
@@ -135,5 +204,101 @@ namespace GameTimeNext.Core.Application.DataManagers
             txplthr.Delete(ptid);
         }
 
+        public static void UpdatePlaythroughStatus(UIXApplication app, ref T1PLTHR t1plthr, PlaythroughStatus status, T1PLTHR? currentT1plthr = null)
+        {
+            string question = string.Empty;
+            switch (status)
+            {
+                case PlaythroughStatus.Open:
+                    if (!t1plthr.PTPA) break;
+
+                    question = app.GetErrorMessage("PLT0002", "unpause");
+                    if (currentT1plthr is not null)
+                        question += "\n\n" + app.GetErrorMessage("PLT0004");
+                    break;
+                case PlaythroughStatus.Completed:
+                    question = app.GetErrorMessage("PLT0003", "complete");
+                    break;
+                case PlaythroughStatus.Canceled:
+                    question = app.GetErrorMessage("PLT0003", "cancel") + "\n\n" + app.GetErrorMessage("PLT0005");
+                    break;
+                case PlaythroughStatus.Paused:
+                    question = app.GetErrorMessage("PLT0002", "pause");
+                    break;
+            }
+
+            if (!FnString.IsNullEmptyOrWhitespace(question))
+            {
+                CFMBOXResult result = app.GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(question, CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
+                if (result == CFMBOXResult.No) return;
+            }
+
+            switch (status)
+            {
+                case PlaythroughStatus.Open:
+                    t1plthr.PTCO = false;
+                    t1plthr.PTCA = false;
+                    t1plthr.PTPA = false;
+
+                    // Pause current playthrough
+                    if (currentT1plthr is not null)
+                    {
+                        currentT1plthr.PTCO = false;
+                        currentT1plthr.PTCA = false;
+                        currentT1plthr.PTPA = true;
+                        new TXPLTHR().Save(currentT1plthr);
+                    }
+                    break;
+                case PlaythroughStatus.Completed:
+                    t1plthr.PTCO = true;
+                    t1plthr.PTCA = false;
+                    t1plthr.PTPA = false;
+                    break;
+                case PlaythroughStatus.Canceled:
+                    t1plthr.PTCO = false;
+                    t1plthr.PTCA = true;
+                    t1plthr.PTPA = false;
+                    break;
+                case PlaythroughStatus.Paused:
+                    t1plthr.PTCO = false;
+                    t1plthr.PTCA = false;
+                    t1plthr.PTPA = true;
+                    break;
+            }
+
+            new TXPLTHR().Save(t1plthr);
+
+            // Optional rating after a playthrough has ended, can simply be skipped
+            if (status == PlaythroughStatus.Completed || status == PlaythroughStatus.Canceled)
+                app.GetApplication<PlaythroughRatingApp>().Rate(null, t1plthr);
+        }
+
+        /// <summary>
+        /// Rating of a profile: average of all rated playthroughs (PTRA scale, 1 to 10), 0 if none is rated.
+        /// Completed and canceled playthroughs count the same.
+        /// </summary>
+        public static double GetProfileRating(long pfid)
+        {
+            UIXQuery query = new UIXQuery(K1PLTHR.Name, AppEnvironment.GetDataBaseManager().GetConnection());
+
+            query.AddAggregate(UIXQuery.AggregateFunc.AVG, K1PLTHR.Name, K1PLTHR.Fields.PTRA, alias: "K1PLTHR_AVG_PTRA");
+
+            query.AddWhere(K1PLTHR.Name, K1PLTHR.Fields.PFID, QueryCompareType.EQUALS, pfid);
+            query.AddWhere(K1PLTHR.Name, K1PLTHR.Fields.PTRA, QueryCompareType.GREATER_THAN, 0);
+
+            using (var reader = query.Execute())
+                if (reader.Read())
+                    return UIXQuery.GetDouble(reader, "K1PLTHR_AVG_PTRA");
+
+            return 0;
+        }
+
+        public enum PlaythroughStatus
+        {
+            Open,
+            Completed,
+            Canceled,
+            Paused
+        }
     }
 }

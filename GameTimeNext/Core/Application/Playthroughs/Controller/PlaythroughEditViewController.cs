@@ -1,6 +1,7 @@
 using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Playthroughs.Views;
 using GameTimeNext.Core.Application.TableObjects;
+using GameTimeNext.Core.Framework.Utils;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -9,10 +10,11 @@ using UIX.ViewController.Engine.Events;
 using UIX.ViewController.Engine.FrameworkElements.UserControls;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
+using GameTimeNext.Core.Framework.UI.Dialogs;
 
 namespace GameTimeNext.Core.Application.Playthroughs.Controller
 {
-    public class PlaythroughEditViewController : UIXViewControllerBase
+    public class PlaythroughEditViewController : UIXViewControllerBase<PlaythroughEditApp, PlaythroughEditView>
     {
         public PlaythroughEditViewController(UIXApplication app) : base(app)
         {
@@ -33,8 +35,14 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
 
         protected override void BuildFirstImpl()
         {
-            // Nur bei Create New wird eine Auswahl des Typs erlaubt
+            // Selecting the type is only allowed in create-new mode
             FnControls.SetEnabled(GetView().cmbType, GetView().ViewIndicator.Contains("CN"));
+
+            // A playthrough that has not been played yet can't be rated
+            bool isRatingVisible = !GetView().ViewIndicator.Contains("CN");
+            FnControls.SetVisible(GetView().lblRating, isRatingVisible);
+            FnControls.SetVisible(GetView().rtgRating, isRatingVisible);
+            FnControls.SetVisible(GetView().grpRatingComment, isRatingVisible);
 
             UIXManualCodetable mCt = new UIXManualCodetable();
 
@@ -46,8 +54,6 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
                     mCt.AddEntry(t1ctabd.TXNUM, t1ctabd.DESCR);
             }
 
-            mCt.AddAdditionalEntry("(None)");
-
             mCt.ApplyTo(GetView().cmbType);
         }
 
@@ -55,13 +61,13 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
         {
         }
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
             if (FnString.IsNullEmptyOrWhitespace(GetView().txbDescription.Text))
-                AddViewError(GetView().txbDescription, "Invalid input: description has to be specified.");
+                AddViewError(GetView().txbDescription, GetErrorMessage("GLO0003", "Description"));
 
             if (FnString.IsNullEmptyOrWhitespace(GetView().cmbType.SelectedValue?.ToString()!))
-                AddViewError(GetView().cmbType, "Invalid input: type has to be specified.");
+                AddViewError(GetView().cmbType, GetErrorMessage("GLO0003", "Type"));
         }
 
         protected override void DataWrapperSelectionChangedImpl(Selector source)
@@ -81,13 +87,19 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
         {
         }
 
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
+        {
+            CFMBOX.AskUnsavedChanges(GetApp(), args);
+        }
+
         protected override void FillDBOImpl()
         {
+            GetApp().T1plthr.PTRA = CFPlaythroughsApp.ToRatingValue(GetView().rtgRating.Value);
         }
 
         protected override void FillViewImpl()
         {
-
+            GetView().rtgRating.Value = GetApp().T1plthr.PTRA;
         }
 
         protected override void SaveDBOImpl()
@@ -110,22 +122,12 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
                     {
                         GetView().txbDescription.Text = "Playthrough #" + (TFPLTHR.GetCurrentPlaythroughCount(GetApp().T1profi.PFID, PlaythroughType.NEW_PLAYTHROUGH) + 1);
                     }
-                    else
+                    else if (value == PlaythroughType.DLC && GetView().txbDescription.Text.StartsWith("Playthrough #"))
                     {
                         GetView().txbDescription.Text = string.Empty;
                     }
                 }
             }
-        }
-
-        private PlaythroughEditView GetView()
-        {
-            return (PlaythroughEditView)View;
-        }
-
-        private PlaythroughEditApp GetApp()
-        {
-            return (PlaythroughEditApp)App;
         }
 
         protected void EV_btnSave()

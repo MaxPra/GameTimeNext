@@ -6,8 +6,7 @@ using GameTimeNext.Core.Application.Settings;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.DataBase;
-using GameTimeNext.Core.Framework.DataBase.DevSync;
-using GameTimeNext.Core.Framework.DataBase.Import;
+using GameTimeNext.Core.Framework.DataBase.Migration;
 using GameTimeNext.Core.Framework.Files;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.Utils;
@@ -37,7 +36,6 @@ namespace GameTimeNext.Core.Framework
 
         public static Dictionary<string, string?> StartArguments { get; set; } = new Dictionary<string, string?>();
         public static Dictionary<string, UIXApplication> StartedApplications { get => _startedApplications; set => _startedApplications = value; }
-        public static List<SearchableApplication> AvailableApplications { get; set; } = new List<SearchableApplication>();
         public static Dictionary<string, UIXBackgroundProcess> StartedBackgroundProcesses { get => _startedBackgroundProcesses; set => _startedBackgroundProcesses = value; }
         public static List<InformationListItem> InformationList { get; set; } = new List<InformationListItem>();
 
@@ -101,16 +99,15 @@ namespace GameTimeNext.Core.Framework
         {
             HandleBackup();
 
-            InitializeStartableApps();
+            MigrationFactory.Metadata.MigrateTables();
 
             CheckShowChangeLog();
 
-            DataBaseImporter.Import();
-
-            if (FnSystem.IsDebug())
-                DevSyncCsvSyncService.ImportAllFromCsv();
+            MigrationFactory.ImportPackage.ImportPackages();
+            MigrationFactory.FromCsv.MigrateTables(MigrationFactory.ImportType.DevSync);
 
             MigrationManager.Migrate();
+            GetDataBaseManager().EnsureT1groupSeeded();
 
             if (GetAppConfig().AppSettings.EnableSessionCleanup)
                 InitializeCleanup();
@@ -181,7 +178,7 @@ namespace GameTimeNext.Core.Framework
         // [------------------------------------------------]
         private static void HandleBackup()
         {
-            // Backup hier einspielen
+            // Restore backup here
             if (GetAppConfig().AppSettings.BackupType == BackupType.IMPORT_BACKUP)
             {
                 try
@@ -190,10 +187,10 @@ namespace GameTimeNext.Core.Framework
                 }
                 catch (Exception)
                 {
-                    InformationList.Add(new InformationListItem(CFMBOXIcon.Error, "Could not import backupfile:\n" + GetAppConfig().AppSettings.BackupImportPath + "."));
+                    InformationList.Add(InformationListItem.FromErrorMessage(CFMBOXIcon.Error, "GLO0013", "importing the backup", GetAppConfig().AppSettings.BackupImportPath));
                 }
 
-                // Hier nochmal AppConfig laden, da vorher durch Backupimport überschrieben
+                // Reload AppConfig here because it was overwritten by the backup import
                 LoadAppConfig();
             }
             else
@@ -206,14 +203,11 @@ namespace GameTimeNext.Core.Framework
                 if (FnSystem.IsDebug())
                 {
                     backupPath = AppConfig.Dev.BackupDirectoryPath;
-
-                    if (!Directory.Exists(backupPath))
-                        Directory.CreateDirectory(backupPath);
                 }
 
                 if (!Directory.Exists(backupPath))
                 {
-                    InformationList.Add(new InformationListItem(CFMBOXIcon.Error, "Could not create auto backup.\nBackup export path doesn't exist."));
+                    InformationList.Add(InformationListItem.FromErrorMessage(CFMBOXIcon.Error, "SET0002", backupPath));
                     return;
                 }
 
@@ -223,13 +217,20 @@ namespace GameTimeNext.Core.Framework
                 }
                 catch (Exception e)
                 {
-                    InformationList.Add(new InformationListItem(CFMBOXIcon.Error, "Something went wrong while auto-backup creation!"));
+                    InformationList.Add(InformationListItem.FromErrorMessage(CFMBOXIcon.Error, "GLO0012", "creating the automatic backup"));
                 }
             }
         }
 
         private static void CheckShowChangeLog()
         {
+            // Start argument -showchangelog: always show the unreleased changes (vNEXT), to check the changelog dialog
+            if (AppEnvironment.StartArguments.ContainsKey("showchangelog"))
+            {
+                AddChangeLogInformation("UpdateChanges_vNEXT");
+                return;
+            }
+
             string versionOldRaw = AppEnvironment.GetAppConfig().AppVersion;
 
             AppVersion versionOld = new AppVersion();
@@ -247,35 +248,50 @@ namespace GameTimeNext.Core.Framework
                 if (currentVersion.IsBeta)
                     sb.Append("beta");
 
-                sb.Append(".txt");
-
-                string text = string.Empty;
-
-                try
-                {
-                    text = File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Core", "Application", "UpdateChanges", sb.ToString()));
-                }
-                catch (Exception)
-                {
-                    return;
-                }
-
-                if (FnString.IsNullEmptyOrWhitespace(text))
-                    return;
-
-                InformationListItem infoListItem = new InformationListItem(CFMBOXIcon.Info, sb.ToString(), text);
-                infoListItem.MBoxType = CFMBOXType.Memotext;
-                infoListItem.Buttons = CFMBOXResult.Ok;
-
-                InformationList.Add(infoListItem);
-
+                AddChangeLogInformation(sb.ToString());
             }
+        }
+
+        /// <summary>
+        /// Queues the changelog (Core/Application/UpdateChanges, file name without extension) to be shown after start:
+        /// a Markdown file (.md) rendered as formatted text, otherwise the plain text file (.txt, older versions) as memo text.
+        /// </summary>
+        private static void AddChangeLogInformation(string baseFileName)
+        {
+            string directory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Core", "Application", "UpdateChanges");
+            string markdownPath = Path.Combine(directory, baseFileName + ".md");
+            bool isMarkdown = File.Exists(markdownPath);
+
+            string fileName = baseFileName + (isMarkdown ? ".md" : ".txt");
+            string text = string.Empty;
+
+            try
+            {
+                text = File.ReadAllText(Path.Combine(directory, fileName));
+            }
+            catch (Exception)
+            {
+                return;
+            }
+
+            if (FnString.IsNullEmptyOrWhitespace(text))
+                return;
+
+            // Markdown brings its own heading (version), so the title only names the dialog
+            string title = isMarkdown ? "What's new" : fileName;
+
+            InformationListItem infoListItem = new InformationListItem(CFMBOXIcon.Info, title, text);
+            infoListItem.MBoxType = isMarkdown ? CFMBOXType.Markdown : CFMBOXType.Memotext;
+            infoListItem.Buttons = CFMBOXResult.Ok;
+
+            InformationList.Add(infoListItem);
         }
 
         public static void LoadAppConfig()
         {
             if (!File.Exists(AppConfig.Storage.AppConfigFilePath))
             {
+                FnDirectory.EnsureDirectoryExists(AppConfig.Storage.StorageDirectoryPath);
                 FileStream fs = File.Create(AppConfig.Storage.AppConfigFilePath);
                 fs.Close();
             }
@@ -289,36 +305,6 @@ namespace GameTimeNext.Core.Framework
             }
 
             _appConfig = JsonSerializer.Deserialize<AppConfig>(appConfigText);
-        }
-
-        private static void InitializeStartableApps()
-        {
-            string jsonFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Core", "Application", "StartableApps.json");
-
-            if (!File.Exists(jsonFilePath))
-            {
-                InformationList.Add(new InformationListItem(CFMBOXIcon.Error, $"StartableApps.json not found at: {jsonFilePath}"));
-                return;
-            }
-
-            try
-            {
-                string jsonContent = File.ReadAllText(jsonFilePath);
-                var apps = JsonSerializer.Deserialize<List<SearchableApplication>>(jsonContent);
-
-                if (apps != null && apps.Count > 0)
-                {
-                    AvailableApplications.AddRange(apps);
-                }
-                else
-                {
-                    InformationList.Add(new InformationListItem(CFMBOXIcon.Warning, "No applications found in StartableApps.json"));
-                }
-            }
-            catch (Exception ex)
-            {
-                InformationList.Add(new InformationListItem(CFMBOXIcon.Error, $"Error loading StartableApps.json: {ex.Message}"));
-            }
         }
 
         private static void InitializeCleanup()

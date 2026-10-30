@@ -12,7 +12,6 @@
     Height="760"
     MinWidth="900"
     MinHeight="680"
-    ResizeMode="CanResize"
     ShowMaximizeButton="False"
     ShowMinimizeButton="False"
     WindowStartupLocation="CenterOwner"
@@ -23,33 +22,20 @@
     <Grid>
         <Border Background="Transparent" />
 
-        <Grid Margin="18">
+        <Grid Style="{StaticResource View.Root}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="14" />
+                <RowDefinition Height="16" />
                 <RowDefinition Height="*" />
-                <RowDefinition Height="14" />
+                <RowDefinition Height="16" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <Grid Grid.Row="0" Margin="16,0,16,0">
+            <Grid Grid.Row="0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-
-                <StackPanel Orientation="Vertical">
-                    <TextBlock
-                        FontSize="20"
-                        FontWeight="SemiBold"
-                        Foreground="{DynamicResource Brush.TextPrimary}"
-                        Text="Crop cover image" />
-
-                    <TextBlock
-                        Margin="0,4,0,0"
-                        Foreground="{DynamicResource Brush.TextSecondary}"
-                        Text="Move the selection and resize it at the corners. Aspect ratio stays fixed at 600 × 900." />
-                </StackPanel>
 
                 <Border
                     Grid.Column="1"
@@ -70,7 +56,6 @@
 
             <Border
                 Grid.Row="2"
-                Margin="16,0,16,0"
                 Padding="16"
                 Style="{StaticResource CropWorkspaceBorderStyle}">
                 <Grid>
@@ -175,11 +160,11 @@
                 </Grid>
             </Border>
 
-            <Grid Grid.Row="4" Margin="16,0,16,0">
+            <Grid Grid.Row="4">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="10" />
+                    <ColumnDefinition Width="8" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
@@ -195,7 +180,8 @@
                     Grid.Column="3"
                     Width="140"
                     Height="36"
-                    Content="Apply crop" />
+                    Content="Apply crop"
+                    Style="{StaticResource Button.Primary}" />
             </Grid>
         </Grid>
     </Grid>

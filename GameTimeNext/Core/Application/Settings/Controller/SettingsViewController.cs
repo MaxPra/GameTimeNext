@@ -1,4 +1,6 @@
-﻿using GameTimeNext.Core.Application.General;
+﻿using System.Globalization;
+using GameTimeNext.Core.Application.General;
+using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Profiles.BackgroundProcesses;
 using GameTimeNext.Core.Application.Settings.Views;
 using GameTimeNext.Core.Application.TableObjects;
@@ -18,7 +20,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Settings.Controller
 {
-    internal class SettingsViewController : UIXViewControllerBase
+    internal class SettingsViewController : UIXViewControllerBase<SettingsApp, SettingsView>
     {
 
         private AppSettings? _appSettings = null;
@@ -49,6 +51,8 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             }
 
             FnControls.SetEnabled(GetView().cbAutoStartMinimized, !FnSystem.IsDebug());
+
+            FillComboboxBackgroundSource();
         }
 
         protected override void BuildImpl()
@@ -90,16 +94,16 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             FnControls.SetEnabled(GetView().btnOpenIgdbClientSecret, GetView().cbEnableIGDBIntegration.IsChecked == true);
         }
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
             if (!FnControls.ContainsOnlyNumericValue(GetView().txbBreakReminderHours))
             {
-                AddViewError(GetView().txbBreakReminderHours, "Only numeric values allowed!");
+                AddViewError(GetView().txbBreakReminderHours, GetErrorMessage("GLO0009"));
             }
 
             if (!FnControls.ContainsOnlyNumericValue(GetView().txbSessionCleanupSeconds))
             {
-                AddViewError(GetView().txbSessionCleanupSeconds, "Only numeric values allowed!");
+                AddViewError(GetView().txbSessionCleanupSeconds, GetErrorMessage("GLO0009"));
             }
         }
 
@@ -109,6 +113,11 @@ namespace GameTimeNext.Core.Application.Settings.Controller
 
         protected override void TriggeredEvent(FrameworkElement source, string eventName)
         {
+        }
+
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
+        {
+            CFMBOX.AskUnsavedChanges(GetApp(), args);
         }
 
         protected override void FillDBOImpl()
@@ -134,7 +143,12 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             GetView().cbActivateBlackoutKeyCombination.IsChecked = _appSettings!.ActivateBlackoutKeyCombination;
             GetView().cbShowTextOnBlackout.IsChecked = _appSettings.EnableFullBlackoutText;
             GetView().cbAutoStartMinimized.IsChecked = _appSettings.AutoStartMinimized;
+            GetView().cbSealNewGames.IsChecked = _appSettings.SealNewGames;
             GetView().cbAllowProfileSpecificStyleChanges.IsChecked = _appSettings!.AllowProfileSpecificStyleChanges;
+            GetView().cbDarkTintedGlass.IsChecked = _appSettings.DarkTintedGlass;
+            GetView().cmbBackgroundSource.SelectedValue = _appSettings.BackgroundSource;
+            if (GetView().cmbBackgroundSource.SelectedItem == null)
+                GetView().cmbBackgroundSource.SelectedValue = string.Empty;
             GetView().txbSteamGridDbApiKey.Text = _appSettings!.SteamGridDbKey;
 
             // Backup
@@ -148,7 +162,28 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             GetView().txbIgdbClientSecret.Text = _appSettings.TwitchIGDBClientSecret;
 
             GetView().cbRemindTakeBreak.IsChecked = _appSettings.BreakReminder;
-            GetView().txbBreakReminderHours.Text = _appSettings.BreakReminderHrs.ToString();
+            GetView().txbBreakReminderHours.Text = _appSettings.BreakReminderHrs.ToString(CultureInfo.CurrentCulture);
+        }
+
+        private void FillComboboxBackgroundSource()
+        {
+            // The additional entry "(None)" (set in the view) disables the dynamic background
+            UIXManualCodetable uIXManualCodetable = new UIXManualCodetable();
+
+            TXCTABD txctabd = new TXCTABD();
+            List<T1CTABD> entrys = txctabd.GetEntries(BackgroundSource.CODETABLE);
+
+            foreach (T1CTABD entry in entrys)
+            {
+                uIXManualCodetable.AddEntry(entry.TXNUM, entry.DESCR);
+            }
+
+            uIXManualCodetable.ApplyTo(GetView().cmbBackgroundSource);
+        }
+
+        private string GetSelectedBackgroundSource()
+        {
+            return GetView().cmbBackgroundSource.SelectedValue as string ?? string.Empty;
         }
 
         private void FillTabMonitoring()
@@ -161,7 +196,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             GetView().txbMonitoringKey.Text = _appSettings!.MonitoringKey;
             GetView().cbEnableSessionTimeQuery.IsChecked = _appSettings!.EnableSessionTimeQuery;
             GetView().cbEnableSessionCleanup.IsChecked = _appSettings!.EnableSessionCleanup;
-            GetView().txbSessionCleanupSeconds.Text = _appSettings!.SessionCleanupSeconds.ToString();
+            GetView().txbSessionCleanupSeconds.Text = _appSettings!.SessionCleanupSeconds.ToString(CultureInfo.CurrentCulture);
         }
 
         private void FillDBOGeneral()
@@ -169,7 +204,10 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             _appSettings!.ActivateBlackoutKeyCombination = GetView().cbActivateBlackoutKeyCombination.IsChecked == true;
             _appSettings!.EnableFullBlackoutText = GetView().cbShowTextOnBlackout.IsChecked == true;
             _appSettings!.AutoStartMinimized = GetView().cbAutoStartMinimized.IsChecked == true;
+            _appSettings!.SealNewGames = GetView().cbSealNewGames.IsChecked == true;
             _appSettings!.AllowProfileSpecificStyleChanges = GetView().cbAllowProfileSpecificStyleChanges.IsChecked == true;
+            _appSettings!.BackgroundSource = GetSelectedBackgroundSource();
+            _appSettings!.DarkTintedGlass = GetView().cbDarkTintedGlass.IsChecked == true;
             _appSettings!.SteamGridDbKey = GetView().txbSteamGridDbApiKey.Text;
             _appSettings!.BackupExportPath = GetView().txbBackupExportPath.Text;
             _appSettings!.AutoBackup = GetView().cbAutoBackup.IsChecked == true;
@@ -221,21 +259,6 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             FnSystem.SetAutoStart(_appSettings!.AutoStartMinimized && !FnSystem.IsDebug(), true);
         }
 
-        private SettingsView GetView()
-        {
-            return (SettingsView)View;
-        }
-
-        private SettingsApp GetApp()
-        {
-            return (SettingsApp)App;
-        }
-
-        protected void EXEV_remoteMonitoringPortChanged(int port)
-        {
-            GetView().txtRemoteMonitoringPort.Text = $"Web-App accessible via port {port}.";
-        }
-
         protected void EV_btnCaptureMonitoringKey()
         {
 
@@ -282,7 +305,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             });
         }
 
-        protected void btnOpenIgdbClientSecret()
+        protected void EV_btnOpenIgdbClientSecret()
         {
             Process.Start(new ProcessStartInfo
             {
@@ -315,7 +338,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
         {
             if (!Directory.Exists(GetView().txbBackupExportPath.Text))
             {
-                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Error", "Chosen backup path doesn't exist!", CFMBOXResult.Ok, CFMBOXIcon.Error);
+                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("GLO0014", "backup path", GetView().txbBackupExportPath.Text), CFMBOXResult.Ok, CFMBOXIcon.Error);
                 return;
             }
 
@@ -325,8 +348,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             {
                 exportPath = AppConfig.Dev.BackupDirectoryPath;
 
-                if (!Directory.Exists(exportPath))
-                    Directory.CreateDirectory(exportPath);
+                FnDirectory.EnsureDirectoryExists(exportPath);
             }
 
             GetApp().Loader.Begin("Creating backup...");
@@ -343,7 +365,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
                 {
                     GetView().Dispatcher.Invoke(() =>
                     {
-                        GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Error", "Something went wrong while backup creation!", CFMBOXResult.Ok, CFMBOXIcon.Error);
+                        GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("GLO0012", "creating the backup"), CFMBOXResult.Ok, CFMBOXIcon.Error);
                     });
 
                     success = false;
@@ -355,33 +377,39 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             });
 
             if (success)
-                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Success", "Backup was created successfully!", CFMBOXResult.Ok, CFMBOXIcon.Success);
+                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("GLO0011", "The backup"), CFMBOXResult.Ok, CFMBOXIcon.Success);
         }
 
         protected async Task EV_btnImportBackup()
         {
             if (!File.Exists(GetView().txbBackupImportPath.Text))
-                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Error", "Chosen import file doesn't exist!", CFMBOXResult.Ok, CFMBOXIcon.Error);
+            {
+                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("GLO0014", "import file", GetView().txbBackupImportPath.Text), CFMBOXResult.Ok, CFMBOXIcon.Error);
+                return;
+            }
 
-            CFMBOXResult result = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Info", "The application will be restarted now and will then importing the backup.\nYour current Settings will be saved now.\nDo you want to proceed?", CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Info);
+            CFMBOXResult result = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("SET0001", AppConfig.Root.ApplicationName), CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Info);
 
             if (result == CFMBOXResult.Yes)
             {
                 AppEnvironment.GetAppConfig().AppSettings.BackupType = BackupType.IMPORT_BACKUP;
                 AppEnvironment.GetAppConfig().AppSettings.BackupImportPath = GetView().txbBackupImportPath.Text;
 
-                // Aktuelle Einstellungen speichern
+                // Save current settings
                 SaveDBO();
 
-                // GameTimeNext neustarten
+                // Restart GameTimeNext
                 AppEnvironment.RestartGTNApplication();
             }
         }
 
         protected void EV_btnSave()
         {
-            if (GetView().cbAllowProfileSpecificStyleChanges.IsChecked == false)
-                FnTheme.ApplyDefaultTheme();
+            // Default accent when disabled, the current profile's accent when enabled
+            FnTheme.ApplyProfileAccentColors(AppEnvironment.GetCurrentProfile());
+
+            FnTheme.ApplyWallpaperBackground(GetSelectedBackgroundSource());
+            FnTheme.ApplyGlassTint(GetView().cbDarkTintedGlass.IsChecked == true);
         }
     }
 }

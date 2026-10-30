@@ -13,7 +13,7 @@ using UIX.ViewController.Engine.Runnables;
 
 namespace GameTimeNext.Core.Application.General.FavAppsReorder.Controller
 {
-    public class FavAppsReorderViewController : UIXViewControllerBase
+    public class FavAppsReorderViewController : UIXViewControllerBase<FavAppsReorderApp, FavAppsReorderView>
     {
         private FavAppsReorderViewModel? _favAppsReorderViewModel;
         private object? _draggedItem;
@@ -42,18 +42,22 @@ namespace GameTimeNext.Core.Application.General.FavAppsReorder.Controller
         {
             BuildFavoriteApplicationsList();
             RegisterDragDropEvents();
-            GetWnd().lvFavAppsReorder.Focus();
+            GetView().lvFavAppsReorder.Focus();
         }
 
         protected override void BuildImpl()
         {
         }
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
         }
 
         protected override void DataWrapperSelectionChangedImpl(Selector source)
+        {
+        }
+
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
         {
         }
 
@@ -121,16 +125,6 @@ namespace GameTimeNext.Core.Application.General.FavAppsReorder.Controller
         {
         }
 
-        private FavAppsReorderApp GetApp()
-        {
-            return (FavAppsReorderApp)App;
-        }
-
-        private FavAppsReorderView GetWnd()
-        {
-            return (FavAppsReorderView)View;
-        }
-
         private void BuildFavoriteApplicationsList()
         {
             List<FavoriteApplication> favoriteApps = GetFavoriteApplications();
@@ -140,7 +134,7 @@ namespace GameTimeNext.Core.Application.General.FavAppsReorder.Controller
 
             View.DataContext = _favAppsReorderViewModel;
 
-            GetWnd().lvFavAppsReorder.SelectedIndex = -1;
+            GetView().lvFavAppsReorder.SelectedIndex = -1;
 
             _originalFavAppsOrder = favoriteApps;
         }
@@ -152,7 +146,7 @@ namespace GameTimeNext.Core.Application.General.FavAppsReorder.Controller
 
         private void RegisterDragDropEvents()
         {
-            var listView = GetWnd().lvFavAppsReorder;
+            var listView = GetView().lvFavAppsReorder;
 
             listView.AddHandler(UIElement.PreviewMouseLeftButtonDownEvent, new MouseButtonEventHandler(OnPreviewMouseLeftButtonDown), true);
             listView.AddHandler(UIElement.DropEvent, new DragEventHandler(OnDrop), true);
@@ -231,7 +225,7 @@ namespace GameTimeNext.Core.Application.General.FavAppsReorder.Controller
                 }
             }
 
-            HandleUIEvent(GetWnd().lvFavAppsReorder, UIXEventNames.UIElement.DragOver, e);
+            HandleUIEvent(GetView().lvFavAppsReorder, UIXEventNames.UIElement.DragOver, e);
         }
 
         private void OnDragLeave(object sender, DragEventArgs e)
@@ -285,7 +279,7 @@ namespace GameTimeNext.Core.Application.General.FavAppsReorder.Controller
 
                 _favAppsReorderViewModel.FavoriteApplications.Insert(newIndex, (FavoriteApplication)draggedItem);
 
-                // -- Hier Favorite Applications lt. jetziger Listbox neu anordnen und in der AppConfig aktualisieren
+                // -- Reorder favorite applications according to the current ListBox and update them in the AppConfig
                 FnUserSettings.ReorderFavoriteApplications(_favAppsReorderViewModel.FavoriteApplications.ToList());
 
                 AppEnvironment.GetAppConfig().UserSettings.FavApps = _favAppsReorderViewModel.FavoriteApplications.ToList();

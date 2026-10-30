@@ -6,6 +6,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Codetables
 {
+    [UIXAppIcon(UIXMdlIcons.BulletList)]
     public class CodetablesApp : UIXApplication, IUIXApplicationStarter
     {
 
@@ -36,21 +37,26 @@ namespace GameTimeNext.Core.Application.Codetables
             CodetablesView.ViewIndicator.Clear();
             CodetablesView.ViewIndicator.Add("ED");
 
+            // Fixed width: the view sizes itself (Width Auto) and the sub window is not resizable
             CodetablesView.ViewController.Show(
                 new UIXApplicationStartOptions
                 {
-                    Target = UIXApplicationStartTarget.Window
+                    Target = UIXApplicationStartTarget.Window,
+                    WindowWidth = 1100
                 });
         }
 
+
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(CodetablesApp));
+        }
 
         public override void InitializeApplicationOutput()
         {
             CodetablesView = new CodetablesView();
             MainView = CodetablesView;
             CodetablesView.ViewController = new CodetablesViewController(this);
-
-            Icon = UIXMdlIcons.BulletList;
         }
 
         public override bool CanClose()

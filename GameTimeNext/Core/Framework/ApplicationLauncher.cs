@@ -1,9 +1,12 @@
 ﻿using GameTimeNext.Core.Application.General.UserSettings;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Threading;
 using UIX.ViewController.Engine.FrameworkElements;
+using UIX.ViewController.Engine.FrameworkElements.Windows;
 using UIX.ViewController.Engine.Runnables;
+using UIX.ViewController.Engine.Utils;
 using static UIX.ViewController.Engine.FrameworkElements.UIXContextMenuFactory;
 
 namespace GameTimeNext.Core.Framework
@@ -16,12 +19,32 @@ namespace GameTimeNext.Core.Framework
         public ApplicationLauncher(TabControl tabControl)
         {
             TabControl = tabControl;
+
+            // Unsaved changes in a tab that isn't selected are asked in that tab
+            UIXWindowHost.BringIntoViewHandler = SelectTabOfHost;
+        }
+
+        private void SelectTabOfHost(UIXWindowHost host)
+        {
+            TabItem? tab = TabControl.Items.OfType<TabItem>().FirstOrDefault(t => t.Content is ContentPresenter presenter && ReferenceEquals(presenter.Content, host.Element));
+
+            if (tab != null)
+                TabControl.SelectedItem = tab;
         }
 
         public TabItem LaunchApplication(string className, UIXApplication host, string header)
         {
             Type type = Type.GetType(className)
         ?? throw new Exception($"Application type '{className}' not found.");
+
+            // Application is already open: switch to its tab instead of starting it again
+            TabItem? existingTab = FindApplicationTab(type.FullName!);
+            if (existingTab != null)
+            {
+                this.TabControl.SelectedItem = existingTab;
+                FocusTabContent(existingTab);
+                return null!;
+            }
 
             UIXApplication app = (UIXApplication)Activator.CreateInstance(type)!;
 
@@ -41,7 +64,7 @@ namespace GameTimeNext.Core.Framework
                 VerticalAlignment = VerticalAlignment.Stretch
             };
 
-            tabItem.Tag = type.FullName!; // wichtig für BuildContextMenu/StartedApplications
+            tabItem.Tag = type.FullName!; // important for BuildContextMenu/StartedApplications
             tabItem.Content = presenter;
 
 
@@ -59,17 +82,42 @@ namespace GameTimeNext.Core.Framework
 
             this.TabControl.Items.Add(tabItem);
             this.TabControl.SelectedItem = tabItem;
+            FocusTabContent(tabItem);
 
             host.MainView.Dispatcher.Invoke(
         DispatcherPriority.Background,
         new Action(() => { }));
 
-            // Wenn derzeitige gestartete App in den Favoriten "primary start" aktiviert hat, dann zurückgeben
+            // Return the currently started app if "primary start" is enabled for it in the favorites
             FavoriteApplication favoriteApplication = FnUserSettings.GetFavoriteApplication(AppEnvironment.GetAppConfig().UserSettings.FavApps, type.FullName);
             if (favoriteApplication != null && favoriteApplication.PrimaryStart)
                 return tabItem;
             else
                 return null!;
+        }
+
+        /// <summary>
+        /// Moves the keyboard focus from the tab header into the view of the tab once it is shown. Otherwise a tab
+        /// opened by keyboard (e.g. Enter in the application search) keeps the focus with its focus ring on the header.
+        /// A view that has set its own focus keeps it.
+        /// </summary>
+        private void FocusTabContent(TabItem tab)
+        {
+            TabControl.Dispatcher.BeginInvoke(() =>
+            {
+                if (!tab.IsSelected || !tab.IsKeyboardFocused || tab.Content is not UIElement content)
+                    return;
+
+                content.MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
+            }, DispatcherPriority.ContextIdle);
+        }
+
+        private TabItem? FindApplicationTab(string typeFullName)
+        {
+            if (!AppEnvironment.StartedApplications.ContainsKey(typeFullName))
+                return null;
+
+            return this.TabControl.Items.OfType<TabItem>().FirstOrDefault(t => t.Tag?.ToString() == typeFullName);
         }
 
         public void StartFavorites(UIXApplication host)
@@ -92,7 +140,7 @@ namespace GameTimeNext.Core.Framework
                     primaryTab = primaryTabTemp;
             }
 
-            // Am Ende den Tab mit dem primären Start selektieren
+            // Finally select the tab with the primary start
             if (primaryTab != null)
                 primaryTab.IsSelected = true;
 
@@ -106,6 +154,11 @@ namespace GameTimeNext.Core.Framework
             UIXApplication app = AppEnvironment.StartedApplications[typeName];
 
             if (!app.CanClose())
+                return;
+
+            // Windows opened from the tab belong to its view and are closed with it; unsaved changes in them or in
+            // the view are asked first, and the tab stays open if the user keeps something open
+            if (!app.TryCloseViews())
                 return;
 
             AppEnvironment.StartedApplications.Remove(type!.FullName!);
@@ -144,12 +197,10 @@ namespace GameTimeNext.Core.Framework
 
             var favApps = AppEnvironment.GetAppConfig().UserSettings.FavApps.OrderBy(a => a.Order).ToList();
 
-            if (favApps != null && favApps.Count > 1)
-            {
-                contextBuilder.AddSeparator(contextMenuSeparatorStyle);
+            // Help text of the application (T1APRDH), shown as Markdown in the CFMBOX
+            contextBuilder.AddSeparator(contextMenuSeparatorStyle);
+            contextBuilder.AddItem("ctxtHelp", "Help", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Help), itemStyle: contextMenuItemStyle);
 
-                contextBuilder.AddItem("ctxtEditOrder", "Edit favorite apps order", icon: UIXContextMenuFactory.CreateMdlIcon("\uE7C2"), itemStyle: contextMenuItemStyle);
-            }
 
             if (contextBuilder.HasItems())
                 tabItem.ContextMenu = contextBuilder.Build();

@@ -24,14 +24,16 @@ ALLOWED_SOURCES = {
     "GameTimeNext": {
         "GameTimeNext/Core/Framework/Config/AppConfig.Paths.cs": 1,
         "GameTimeNext/App.xaml.cs": 1,
-        "GameTimeNext/Core/Framework/Config/AppConfigOld.cs": 1000,
     },
 
-    "GameTimeNXT": {
-        "GameTimeNext/Core/Framework/Config/AppConfigOld.cs": 1000,
-    },
+    "GameTimeNXT": {},
 
     "MaxPra": {
+        "GameTimeNext/Core/Framework/Config/AppConfig.Paths.cs": 1,
+        "GameTimeNext/App.xaml.cs": 1,
+    },
+
+    "CryloudStudios": {
         "GameTimeNext/Core/Framework/Config/AppConfig.Paths.cs": 1,
         "GameTimeNext/App.xaml.cs": 1,
     },
@@ -70,8 +72,7 @@ ALLOWED_CODE_SEARCHES = {
     # },
     "DirectorySeparatorChar": {
         "GameTimeNext/Core/Framework/Config/AppConfigOld.cs": 1000,
-        "GameTimeNext/Core/Framework/LauncherIntegration/SteamImportHelper.cs": 1,
-        "GameTimeNext/Core/Framework/LauncherIntegration/SteamLocatorService.cs": 1,
+        "GameTimeNext/Core/Framework/LauncherIntegration/Steam/SteamLocator.cs": 1,
         "GameTimeNext/Core/Framework/Utils/FnSystem.cs": 1,
     },
 }

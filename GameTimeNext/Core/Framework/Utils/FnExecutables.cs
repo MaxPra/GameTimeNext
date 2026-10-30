@@ -17,7 +17,7 @@ namespace GameTimeNext.Core.Framework.Utils
 
             foreach (var kvp in cExecutables.KeyValuePairs)
             {
-                // Nur aktive Exes in die Liste aufnehmen
+                // Only add active executables to the list
                 if (kvp.Value)
                     activeExes.Add(kvp.Key);
             }
@@ -25,9 +25,37 @@ namespace GameTimeNext.Core.Framework.Utils
             return activeExes;
         }
 
+        /// <summary>
+        /// True if at least one active executable of the profile exists in its game folder (including subfolders),
+        /// i.e. the game is installed where the profile expects it.
+        /// </summary>
+        public static bool IsAnyActiveExecutableInstalled(T1PROFI t1profi)
+        {
+            HashSet<string> activeExes = GetAllActiveExecutablesFromDBObj(t1profi).ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            if (activeExes.Count == 0)
+                return false;
+
+            EnumerationOptions options = new EnumerationOptions
+            {
+                RecurseSubdirectories = true,
+                IgnoreInaccessible = true
+            };
+
+            try
+            {
+                return Directory.EnumerateFiles(t1profi.EXGF, "*.exe", options).Any(file => activeExes.Contains(Path.GetFileName(file)));
+            }
+            catch (Exception)
+            {
+                // e.g. the drive was removed meanwhile
+                return false;
+            }
+        }
+
 
         /// <summary>
-        /// Liefert alle Exes (auch in Unterordnern) zum übergebenen Ordnerpfad
+        /// Returns all executables (including subfolders) for the given folder path
         /// </summary>
         /// <param name="directoryPath"></param>
         /// <returns></returns>
@@ -38,10 +66,10 @@ namespace GameTimeNext.Core.Framework.Utils
             if (!Directory.Exists(directoryPath))
                 return allExes;
 
-            // Alle .exe-Dateien im angegebenen Verzeichnis und in Unterverzeichnissen abrufen
+            // Get all .exe files in the given directory and its subdirectories
             string[] exeFiles = Directory.GetFiles(directoryPath, "*.exe", SearchOption.AllDirectories);
 
-            // Alle gefundenen .exe-Dateien sammeln
+            // Collect all found .exe files
             foreach (string exeFile in exeFiles)
             {
                 allExes.Add(Path.GetFileName(exeFile));

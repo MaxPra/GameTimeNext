@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- Variant for 48-64 px: geometry of the small variant, with a light glass cover and gradient line -->
+  <defs>
+    <linearGradient id="tile" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1F1F29"/>
+      <stop offset="1" stop-color="#0B0B10"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="232" y1="172" x2="752" y2="852" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.09"/>
+      <stop offset="1" stop-color="#15629E" stop-opacity="0.30"/>
+    </linearGradient>
+    <linearGradient id="line" x1="232" y1="172" x2="752" y2="852" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7CC8F7"/>
+      <stop offset="0.5" stop-color="#3DA4F0"/>
+      <stop offset="1" stop-color="#2A8FDF"/>
+    </linearGradient>
+  </defs>
+  <rect x="16" y="16" width="992" height="992" rx="210" fill="url(#tile)"/>
+  <rect x="17.5" y="17.5" width="989" height="989" rx="208.5" fill="none" stroke="#FFFFFF" stroke-opacity="0.10" stroke-width="3"/>
+  <rect x="232" y="172" width="520" height="680" rx="90" fill="url(#glass)" stroke="#FFFFFF" stroke-opacity="0.18" stroke-width="8"/>
+  <path d="M 547 172 L 322 172 A 90 90 0 0 0 232 262 L 232 762 A 90 90 0 0 0 322 852 L 662 852 A 90 90 0 0 0 752 762 L 752 566 A 40 40 0 0 0 712 526 L 392 526 M 572 526 L 572 852 M 572 526 L 726 826"
+        fill="none" stroke="url(#line)" stroke-width="76" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="752" cy="172" r="58" fill="#8ED1FA"/>
+</svg>

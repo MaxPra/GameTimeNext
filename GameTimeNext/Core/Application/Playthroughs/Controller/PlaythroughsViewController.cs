@@ -5,6 +5,7 @@ using GameTimeNext.Core.Application.Profiles;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.UI.Dialogs;
+using GameTimeNext.Core.Framework.Utils;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -15,11 +16,12 @@ using UIX.ViewController.Engine.FrameworkElements.UserControls;
 using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
+using UIX.ViewController.Engine.Viewmodel;
 using static UIX.ViewController.Engine.FrameworkElements.UIXContextMenuFactory;
 
 namespace GameTimeNext.Core.Application.Playthroughs.Controller
 {
-    public class PlaythroughsViewController : UIXViewControllerBase
+    public class PlaythroughsViewController : UIXViewControllerBase<PlaythroughsApp, PlaythroughsView>
     {
         private PlaythroughsViewModel? _viewModel;
 
@@ -66,11 +68,15 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
         {
         }
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
         }
 
         protected override void FillViewImpl()
+        {
+        }
+
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
         {
         }
 
@@ -89,16 +95,6 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
         protected override void Event_Closing()
         {
             Exit(true);
-        }
-
-        private PlaythroughsApp GetApp()
-        {
-            return (PlaythroughsApp)App;
-        }
-
-        private PlaythroughsView GetView()
-        {
-            return (PlaythroughsView)View;
         }
 
         protected void EV_DgPlaythroughs_CtxtOpening(FrameworkElement target)
@@ -131,7 +127,21 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
             ContextMenuBuilder contextBuilder = UIXContextMenuFactory.Create("PlaythroughDataGridContextMenu");
             contextBuilder.SetStyle(ProfilesContextMenuBuilder.contextMenuStyle);
 
-            T1PLTHR t1plthr = (T1PLTHR)ptRow.RowObject!;
+            // Profile rows: start a new playthrough (only while none is running, same as in the profiles view)
+            if (ptRow.RowObject is T1PROFI t1profi)
+            {
+                if (!TFPLTHR.HasCurrentPlaythrough(t1profi.PFID))
+                    contextBuilder.AddItem("ctxtStartNewPlaythrough", "Start new playthrough", icon: UIXContextMenuFactory.CreateMdlIcon(""), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
+
+                dgRow.ContextMenu = contextBuilder.HasItems() ? contextBuilder.Build() : null;
+                return;
+            }
+
+            if (ptRow.RowObject is not T1PLTHR t1plthr)
+            {
+                dgRow.ContextMenu = null;
+                return;
+            }
 
             contextBuilder.AddItem("ctxtEdit", "Edit", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Edit), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
 
@@ -164,7 +174,7 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
 
             await Task.Run(() =>
             {
-                List<PlaythroughDataGridRow> rows = BuildRowsPlaythroughs();
+                List<PlaythroughDataGridRow> rows = BuildRows();
 
                 View.Dispatcher.Invoke(() =>
                 {
@@ -178,7 +188,10 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
             });
         }
 
-        private List<PlaythroughDataGridRow> BuildRowsPlaythroughs()
+        /// <summary>
+        /// Builds the tree rows: one row per profile (ordered by name) with its playthroughs below.
+        /// </summary>
+        private List<PlaythroughDataGridRow> BuildRows()
         {
             List<PlaythroughDataGridRow> rows = new List<PlaythroughDataGridRow>();
 
@@ -188,26 +201,77 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
             {
                 while (reader.Read())
                 {
-
                     long ptid = UIXQuery.GetInt64(reader, K1PLTHR.Name, K1PLTHR.Fields.PTID);
 
-                    TXPLTHR txplthr = new TXPLTHR();
-                    T1PLTHR t1plthr = txplthr.Read(ptid);
+                    T1PLTHR t1plthr = new TXPLTHR().Read(ptid);
 
-                    PlaythroughDataGridRow row = GetView().DgPlaythroughs.CreateNewRow<PlaythroughDataGridRow>();
-                    row.COGANA = TFPROFI.GetProfileName(t1plthr.PFID);
-                    row.COPTDE = t1plthr.PTDE;
-                    row.COPTTY = TFCTABD.GetDescription("pL", t1plthr.PTTY);
-                    row.COPTCO = t1plthr.PTCO;
-                    row.COPTCA = t1plthr.PTCA;
-                    row.COPTPA = t1plthr.PTPA;
-                    row.RowObject = t1plthr;
+                    long pfid = BuildRowsProfiles(rows, t1plthr.PFID);
 
-                    rows.Add(row);
+                    BuildRowsPlaythroughs(rows, pfid, t1plthr);
                 }
             }
 
             return rows;
+        }
+
+        /// <summary>
+        /// Adds the parent row of the profile, if it does not exist yet, and returns the PFID.
+        /// </summary>
+        private long BuildRowsProfiles(List<PlaythroughDataGridRow> rows, long pfid)
+        {
+            UIXStructureKey structureKey = new UIXStructureKey().Add(pfid);
+
+            if (rows.Exists(r => r.StructureKey == structureKey))
+                return pfid;
+
+            T1PROFI t1profi = new TXPROFI().Read(pfid);
+
+            PlaythroughDataGridRow row = GetView().DgPlaythroughs.CreateNewRow<PlaythroughDataGridRow>();
+            row.StructureKey = structureKey;
+            // Initially expanded; after a refresh the grid restores the state the user left
+            row.IsExpanded = true;
+            row.CONAME = t1profi?.GANA ?? string.Empty;
+            row.COPTPLMI = GetProfilePlaytimeInMinutes(pfid);
+            row.COPTPL = FnTime.FormatMinutesAsHoursAndMinutes(row.COPTPLMI, FnTime.NoValue);
+            row.RowObject = t1profi;
+
+            rows.Add(row);
+
+            return pfid;
+        }
+
+        /// <summary>
+        /// Playtime of the profile: sum of the sessions of its playthroughs that match the filters of the list.
+        /// </summary>
+        private double GetProfilePlaytimeInMinutes(long pfid)
+        {
+            UIXQuery query = BuildQueryProfilePlaytime(pfid);
+
+            using (var reader = query.Execute())
+                if (reader.Read())
+                    return UIXQuery.GetDouble(reader, "TotalPlaytime");
+
+            return 0;
+        }
+
+        /// <summary>
+        /// Adds the row of the playthrough below its profile.
+        /// </summary>
+        private void BuildRowsPlaythroughs(List<PlaythroughDataGridRow> rows, long pfid, T1PLTHR t1plthr)
+        {
+            PlaythroughDataGridRow row = GetView().DgPlaythroughs.CreateNewRow<PlaythroughDataGridRow>();
+            row.StructureKey = new UIXStructureKey().Add(pfid).Add(t1plthr.PTID);
+            row.IsPlaythroughRow = true;
+            row.CONAME = t1plthr.PTDE;
+            row.COPTTY = TFCTABD.GetDescription("pL", t1plthr.PTTY);
+            row.COPTCO = t1plthr.PTCO;
+            row.COPTCA = t1plthr.PTCA;
+            row.COPTPA = t1plthr.PTPA;
+            row.COPTPLMI = TFPLTHR.GetPlaytimeInMinutes(t1plthr.PTID);
+            row.COPTPL = FnTime.FormatMinutesAsHoursAndMinutes(row.COPTPLMI, FnTime.NoValue);
+            row.RowObject = t1plthr;
+
+            rows.Add(row);
         }
 
         private UIXQuery BuildQueryPlaythroughs()
@@ -216,14 +280,47 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
 
             query.AddField(K1PLTHR.Name, K1PLTHR.Fields.PTID);
 
+            // Profile join for the name filter and the order of the profile rows
+            UIXQueryTable table_profiles = query.AddJoinTable(K1PROFI.Name, JoinType.INNER);
+            table_profiles.AddJoinCondition(K1PLTHR.Name, K1PLTHR.Fields.PFID, QueryCompareType.EQUALS, K1PROFI.Name, K1PROFI.Fields.PFID);
+
+            query.AddOrderBy(K1PROFI.Name, K1PROFI.Fields.GANA, OrderDirection.ASC);
+            query.AddOrderBy(K1PLTHR.Name, K1PLTHR.Fields.PTID, OrderDirection.ASC);
+
+            AddWherePlaythroughFilters(query);
+
+            return query;
+        }
+
+        private UIXQuery BuildQueryProfilePlaytime(long pfid)
+        {
+            UIXQuery query = new UIXQuery(K1SESSI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
+
+            query.AddSum(K1SESSI.Name, K1SESSI.Fields.PLTI, "TotalPlaytime");
+
+            UIXQueryTable table_playthroughs = query.AddJoinTable(K1PLTHR.Name, JoinType.INNER);
+            table_playthroughs.AddJoinCondition(K1SESSI.Name, K1SESSI.Fields.PTID, QueryCompareType.EQUALS, K1PLTHR.Name, K1PLTHR.Fields.PTID);
+
+            UIXQueryTable table_profiles = query.AddJoinTable(K1PROFI.Name, JoinType.INNER);
+            table_profiles.AddJoinCondition(K1PLTHR.Name, K1PLTHR.Fields.PFID, QueryCompareType.EQUALS, K1PROFI.Name, K1PROFI.Fields.PFID);
+
+            query.AddWhere(K1PLTHR.Name, K1PLTHR.Fields.PFID, QueryCompareType.EQUALS, pfid);
+
+            AddWherePlaythroughFilters(query);
+
+            return query;
+        }
+
+        /// <summary>
+        /// Filters of the toolbar. The query has to join T1PLTHR and T1PROFI.
+        /// </summary>
+        private void AddWherePlaythroughFilters(UIXQuery query)
+        {
             View.Dispatcher.Invoke(() =>
             {
 
                 if (!FnString.IsNullEmptyOrWhitespace(GetView().TxbProfileName.Text))
                 {
-                    UIXQueryTable table_profiles = query.AddJoinTable(K1PROFI.Name, JoinType.INNER);
-                    table_profiles.AddJoinCondition(K1PLTHR.Name, K1PLTHR.Fields.PFID, QueryCompareType.EQUALS, K1PROFI.Name, K1PROFI.Fields.PFID);
-
                     query.AddWhere(K1PROFI.Name, K1PROFI.Fields.GANA, QueryCompareType.LIKE, GetView().TxbProfileName.Text);
                 }
 
@@ -244,12 +341,13 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
                 if (GetView().ChbCanceled.IsChecked == true)
                     query.AddWhere(K1PLTHR.Name, K1PLTHR.Fields.PTCA, QueryCompareType.EQUALS, true);
 
+                if (GetView().ChbPaused.IsChecked == true)
+                    query.AddWhere(K1PLTHR.Name, K1PLTHR.Fields.PTPA, QueryCompareType.EQUALS, true);
+
                 if (GetApp().AppRunSelections.Pfid > 0)
                     query.AddWhere(K1PLTHR.Name, K1PLTHR.Fields.PFID, QueryCompareType.EQUALS, GetApp().AppRunSelections.Pfid);
 
             });
-
-            return query;
         }
 
         protected void EV_ctxtEdit()
@@ -268,15 +366,30 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
             }, selectedT1plthr);
         }
 
+        protected void EV_ctxtStartNewPlaythrough()
+        {
+            if (_viewModel?.SelectedRow?.RowObject is not T1PROFI selectedT1profi)
+                return;
+
+            PlaythroughEditApp editApp = GetApp().GetApplication<PlaythroughEditApp>();
+            editApp.CreateNew(async (r) =>
+            {
+                if (!r.HasChanged)
+                    return;
+
+                await BuildDataGridAsync();
+
+                GetViewReturn<PlaythroughsViewReturn>().HasChanged = true;
+
+            }, selectedT1profi);
+        }
+
         protected async Task EV_ctxtCompletePlaythrough()
         {
             if (_viewModel?.SelectedRow?.RowObject is not T1PLTHR selectedT1plthr)
                 return;
 
-            // Playthrough als Abgeschlossen markieren
-            selectedT1plthr.PTCO = true;
-            selectedT1plthr.PTPA = false;
-            new TXPLTHR().Save(selectedT1plthr);
+            TFPLTHR.UpdatePlaythroughStatus(GetApp(), ref selectedT1plthr, TFPLTHR.PlaythroughStatus.Completed);
 
             await BuildDataGridAsync();
 
@@ -289,16 +402,7 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
             if (_viewModel?.SelectedRow?.RowObject is not T1PLTHR selectedT1plthr)
                 return;
 
-            string text = "Do you really want to cancel your current playthrough?\nYou won't be able to undo this action!\n\nInformation: The gametime of this playthrough will be added to your overall gametime!";
-            CFMBOXResult result = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Question", text, CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
-
-            if (result == CFMBOXResult.No)
-                return;
-
-            // Playthrough canceln
-            selectedT1plthr.PTCA = true;
-            selectedT1plthr.PTPA = false;
-            new TXPLTHR().Save(selectedT1plthr);
+            TFPLTHR.UpdatePlaythroughStatus(GetApp(), ref selectedT1plthr, TFPLTHR.PlaythroughStatus.Canceled);
 
             await BuildDataGridAsync();
 
@@ -310,15 +414,7 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
             if (_viewModel?.SelectedRow?.RowObject is not T1PLTHR selectedT1plthr)
                 return;
 
-            string text = "Do you really want to pause this playthrough?";
-            CFMBOXResult result = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Question", text, CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
-
-            if (result == CFMBOXResult.No)
-                return;
-
-            // Pause playthrough
-            selectedT1plthr.PTPA = true;
-            new TXPLTHR().Save(selectedT1plthr);
+            TFPLTHR.UpdatePlaythroughStatus(GetApp(), ref selectedT1plthr, TFPLTHR.PlaythroughStatus.Paused);
 
             await BuildDataGridAsync();
 
@@ -331,25 +427,7 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
                 return;
 
             T1PLTHR currentPlaythrough = TFPLTHR.GetCurrentPlaythrough(selectedT1plthr.PFID);
-            string text = "Do you really want to unpause this playthrough?";
-
-            if (currentPlaythrough is not null)
-                text += "\n\nInformation: Your current playthrough will be paused!";
-
-            CFMBOXResult result = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Question", text, CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
-            if (result == CFMBOXResult.No)
-                return;
-
-            // Pause current playthrough
-            if (currentPlaythrough is not null)
-            {
-                currentPlaythrough.PTPA = true;
-                new TXPLTHR().Save(currentPlaythrough);
-            }
-
-            // Unpause selected playthrough
-            selectedT1plthr.PTPA = false;
-            new TXPLTHR().Save(selectedT1plthr);
+            TFPLTHR.UpdatePlaythroughStatus(GetApp(), ref selectedT1plthr, TFPLTHR.PlaythroughStatus.Open, currentT1plthr: currentPlaythrough);
 
             await BuildDataGridAsync();
 
@@ -363,7 +441,7 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
 
             CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window);
 
-            CFMBOXResult result = cfmbox.Show("Delete Playthrough", "Are you sure you want to delete this playthrough?\nAll linked sessions will also be deleted!", CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Warning);
+            CFMBOXResult result = cfmbox.Show(GetErrorMessage("GLO0002", "this playthrough"), CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Warning);
 
             if (result == CFMBOXResult.Yes)
             {

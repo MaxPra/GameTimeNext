@@ -6,14 +6,16 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
+using UIX.ViewController.Engine.FrameworkElements.ComboBoxes;
 using UIX.ViewController.Engine.FrameworkElements.UserControls;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 using static GameTimeNext.Core.Application.Codetables.CodetablesEntryEditApp;
+using GameTimeNext.Core.Framework.UI.Dialogs;
 
 namespace GameTimeNext.Core.Application.Codetables.Controller
 {
-    public class CodetablesEntryEditViewController : UIXViewControllerBase
+    public class CodetablesEntryEditViewController : UIXViewControllerBase<CodetablesEntryEditApp, CodetablesEntryEditView>
     {
 
         private const int MAX_PARAM_COUNT = 2;
@@ -44,23 +46,23 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
             ApplyRunParameters();
 
-            if (GetWnd().ViewIndicator.Contains("ED"))
-                GetWnd().TxbDescription.Focus();
-            if (GetWnd().ViewIndicator.Contains("CN"))
-                GetWnd().TxbTextNumber.Focus();
+            if (GetView().ViewIndicator.Contains("ED"))
+                GetView().TxbDescription.Focus();
+            if (GetView().ViewIndicator.Contains("CN"))
+                GetView().TxbTextNumber.Focus();
 
-            FnControls.SetEnabled(GetWnd().TxbTextNumber, GetWnd().ViewIndicator.Contains("CN"));
-            FnControls.SetVisible(GetWnd().BtnSave, GetWnd().ViewIndicator.Count != 0);
+            FnControls.SetEnabled(GetView().TxbTextNumber, GetView().ViewIndicator.Contains("CN"));
+            FnControls.SetVisible(GetView().BtnSave, GetView().ViewIndicator.Count != 0);
 
             _parmControls = ControlParameterVisibility();
-            BuildManuelCodetableParameters();
+            BuildManualCodetableParameters();
         }
 
         protected override void BuildImpl()
         {
         }
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
             CheckParameterRequired();
 
@@ -71,6 +73,11 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
         protected override void FillViewImpl()
         {
+        }
+
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
+        {
+            CFMBOX.AskUnsavedChanges(GetApp(), args);
         }
 
         protected override void FillDBOImpl()
@@ -107,7 +114,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
         {
             GetViewReturn<CodetablesEntryEditViewReturn>().Canceled = false;
             GetViewReturn<CodetablesEntryEditViewReturn>().HasChanged = GetApp().T1CTABD!.HasChanged();
-            GetViewReturn<CodetablesEntryEditViewReturn>().Platform = GetWnd().TxbTextNumber.Text;
+            GetViewReturn<CodetablesEntryEditViewReturn>().Platform = GetView().TxbTextNumber.Text;
 
             Exit(true);
         }
@@ -117,19 +124,9 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
             GetViewReturn<CodetablesEntryEditViewReturn>().Canceled = false;
             GetViewReturn<CodetablesEntryEditViewReturn>().HasChanged = false;
             GetViewReturn<CodetablesEntryEditViewReturn>().Skipped = true;
-            GetViewReturn<CodetablesEntryEditViewReturn>().Platform = GetWnd().TxbTextNumber.Text;
+            GetViewReturn<CodetablesEntryEditViewReturn>().Platform = GetView().TxbTextNumber.Text;
 
             Exit(true);
-        }
-
-        private CodetablesEntryEditApp GetApp()
-        {
-            return (CodetablesEntryEditApp)App;
-        }
-
-        private CodetablesEntryEditView GetWnd()
-        {
-            return (CodetablesEntryEditView)View;
         }
 
         private void ApplyRunParameters()
@@ -138,17 +135,17 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
             // Override Save Button Text
             if (!FnString.IsNullEmptyOrWhitespace(runParameters.OverrideSaveButtonText))
-                GetWnd().BtnSave.Content = runParameters.OverrideSaveButtonText;
+                GetView().BtnSave.Content = runParameters.OverrideSaveButtonText;
 
             // Show Skipbutton
-            FnControls.SetVisible(GetWnd().BtnSkip, runParameters.ShowSkipButton);
+            FnControls.SetVisible(GetView().BtnSkip, runParameters.ShowSkipButton);
         }
 
-        private void BuildManuelCodetableParameters()
+        private void BuildManualCodetableParameters()
         {
             TXCTABD txctabd = new TXCTABD();
 
-            T1CTABH t1ctabh = new TXCTABH().Read(GetApp().T1CTABD!.TXTYP);
+            T1CTABH t1ctabh = new TXCTABH().Read(GetApp().T1CTABD!.TXTYP)!;
 
             for (int i = 1; i <= MAX_PARAM_COUNT; i++)
             {
@@ -168,12 +165,10 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
                     manualCodetable.AddEntry(entry.TXNUM, entry.DESCR);
                 }
 
-                ComboBox paramCombobox = (ComboBox)GetWnd().FindName($"{ControlType.ByCode[controlType].XamlPrefix}Param{i}");
+                UIXComboBox paramCombobox = (UIXComboBox)GetView().FindName($"{ControlType.ByCode[controlType].XamlPrefix}Param{i}");
 
-                if (!t1ctabh.GetValue<bool>($"PARF{i}"))
-                {
-                    manualCodetable.AddAdditionalEntry("(None)");
-                }
+                // A required parameter offers no "(None)"
+                paramCombobox.AdditionalEntry = t1ctabh.GetValue<bool>($"PARF{i}") ? string.Empty : "(None)";
 
                 manualCodetable.ApplyTo(paramCombobox);
                 paramCombobox.ToolTip = controlTooltip;
@@ -181,7 +176,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
         }
 
         /// <summary>
-        /// Steuert abhängig der Einstellungen in T1CTABH die Sichtbarkeit der zusätzlichen Parameter Controls und speichert diese in einem Dictionary für die weitere Validierung ab
+        /// Controls the visibility of the additional parameter controls depending on the T1CTABH settings and stores them in a dictionary for later validation
         /// </summary>
         /// <returns></returns>
         private Dictionary<string, ParameterControl> ControlParameterVisibility()
@@ -189,20 +184,20 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
             Dictionary<string, ParameterControl> paramControls = new Dictionary<string, ParameterControl>();
 
-            // Codetabellen-Kopf lesen
-            T1CTABH t1ctabh = new TXCTABH().Read(GetApp().T1CTABD!.TXTYP);
+            // Read codetable header
+            T1CTABH t1ctabh = new TXCTABH().Read(GetApp().T1CTABD!.TXTYP)!;
 
             for (int i = 1; i <= MAX_PARAM_COUNT; i++)
             {
-                // Prüfen, ob der Parameter überhaupt aktiv ist
+                // Check whether the parameter is active at all
                 if (t1ctabh.GetValue<bool>($"PAAC{i}") == false)
                     continue;
 
                 string controlType = t1ctabh.GetValue<string>($"PACO{i}")!;
                 string tooltip = t1ctabh.GetValue<string>($"PTOL{i}")!;
 
-                FrameworkElement control = (FrameworkElement)GetWnd().FindName($"{ControlType.ByCode[controlType].XamlPrefix}Param{i}");
-                TextBlock label = (TextBlock)GetWnd().FindName($"LblParam{i}");
+                FrameworkElement control = (FrameworkElement)GetView().FindName($"{ControlType.ByCode[controlType].XamlPrefix}Param{i}");
+                TextBlock label = (TextBlock)GetView().FindName($"LblParam{i}");
 
                 if (control == null)
                     continue;
@@ -228,41 +223,67 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
         private void CheckTextNumber()
         {
-            T1CTABH t1ctabh = new TXCTABH().Read(GetApp().T1CTABD!.TXTYP);
+            TextBox control = GetView().TxbTextNumber;
+            string value = control.Text;
+            T1CTABH t1ctabh = new TXCTABH().Read(GetApp().T1CTABD!.TXTYP)!;
 
-            if (FnString.IsNullEmptyOrWhitespace(GetWnd().TxbTextNumber.Text))
+            if (FnString.IsNullEmptyOrWhitespace(value))
             {
-                AddViewError(GetWnd().TxbTextNumber, "Text Number is required.");
+                AddViewError(control, GetErrorMessage("GLO0003", "Textnumber"));
+            }
+            if (value.Split('_').Last().Length > 5)
+            {
+                AddViewError(control, GetErrorMessage("GLO0004", "Textnumber", "5"));
             }
 
-            if (GetWnd().TxbTextNumber.Text.StartsWith("D_") && !FnSystem.IsDebug() && t1ctabh!.NRANA)
+            if (t1ctabh!.NRANA)
             {
-                AddViewError(GetWnd().TxbTextNumber, "Text Number must not start with D_ (only for developer-entrys)");
+                if (FnSystem.IsDebug() && !FnSystem.RunWithUserPermissions())
+                {
+                    // Dev-Mode
+                    if (!value.StartsWith("D_") && !value.StartsWith("U_"))
+                    {
+                        AddViewError(control, GetErrorMessage("GLO0010", "Textnumber", "D_ or U_"));
+                    }
+                }
+                else
+                {
+                    // User-Mode
+                    if (value.StartsWith("D_"))
+                    {
+                        AddViewError(control, GetErrorMessage("CTA0001"));
+                    }
+                    else if (!value.StartsWith("U_"))
+                    {
+                        AddViewError(control, GetErrorMessage("GLO0010", "Textnumber", "U_"));
+                    }
+                }
             }
 
-            //if (!GetWnd().TxbTextNumber.Text.StartsWith("D_") && FnSystem.IsDebug() && t1ctabh!.NRANA)
-            //{
-            //    AddViewError(GetWnd().TxbTextNumber, "Text Number must start with D_");
-            //}
+            TXCTABD txctabd = new TXCTABD();
+            if (GetView().ViewIndicator.Contains("CN") && txctabd.Exists(t1ctabh.TXTYP, value))
+            {
+                AddViewError(control, GetErrorMessage("GLO0008", "Textnumber", value));
+            }
         }
 
         /// <summary>
-        /// Prüft, ob die zusätzlichen Parameter befüllt (falls required) und gib ggf. Fehlermeldung aus
+        /// Checks whether the additional parameters are filled (if required) and shows an error message if not
         /// </summary>
         private void CheckParameterRequired()
         {
             if (_parmControls.Count == 0)
                 return;
 
-            // Codetabellen-Kopf lesen
-            T1CTABH t1ctabh = new TXCTABH().Read(GetApp().T1CTABD!.TXTYP);
+            // Read codetable header
+            T1CTABH t1ctabh = new TXCTABH().Read(GetApp().T1CTABD!.TXTYP)!;
 
             for (int i = 1; i <= _parmControls.Count; i++)
             {
                 ParameterControl paramControl = _parmControls.ElementAt(i - 1).Value;
 
-                // Bei Checkbox erfolgt keine Prüfung (auch wenn required)
-                // Das macht nämlich keinen Sinn, weil eine Checkbox nur true oder false sein kann
+                // No check for checkboxes (even if required)
+                // It makes no sense, because a checkbox can only be true or false
                 if (!paramControl.IsRequired || paramControl.Control is CheckBox)
                 {
                     continue;
@@ -281,7 +302,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
                 if (FnString.IsNullEmptyOrWhitespace(value))
                 {
-                    AddViewError(paramControl.Control!, "This Parameter is required.");
+                    AddViewError(paramControl.Control!, GetErrorMessage("GLO0003", "Parameter"));
                 }
             }
         }

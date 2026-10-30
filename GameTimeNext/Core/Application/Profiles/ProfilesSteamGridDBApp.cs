@@ -13,6 +13,11 @@ namespace GameTimeNext.Core.Application.Profiles
         public long SteamAppId { get; set; }
         public string GameName { get; set; }
 
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(ProfilesSteamGridDBApp));
+        }
+
         public override void InitializeApplicationOutput()
         {
             // View

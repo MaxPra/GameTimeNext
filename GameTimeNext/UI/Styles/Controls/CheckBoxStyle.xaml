@@ -1,6 +1,22 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--
+        Check boxes:
+          (implicit)       label left, box right
+          CheckBox.Left    box left, label right
+          CheckBox.Switch  on/off switch (settings)
+          CheckBox.ListItem  box left, label right, as an entry of a list (whole row clickable, hover tint)
+        Box: 18px, filled with the accent color when checked. Height stays flexible so rows define the layout.
+    -->
 
     <Geometry x:Key="Geometry.CheckBox.Tick">M 3 8 L 7 12 L 14 4</Geometry>
+
+    <SolidColorBrush x:Key="Brush.CheckBox.Tick" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="Brush.Switch.Track" Color="#FF2E2E38" />
+    <SolidColorBrush x:Key="Brush.Switch.TrackHover" Color="#FF383843" />
+    <SolidColorBrush x:Key="Brush.Switch.Knob" Color="#FFF0F0F2" />
+
+    <!--  ===== Switch =====  -->
 
     <Style x:Key="CheckBox.Switch" TargetType="{x:Type CheckBox}">
         <Setter Property="SnapsToDevicePixels" Value="True" />
@@ -10,28 +26,28 @@
         <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
-        <Setter Property="Width" Value="54" />
-        <Setter Property="Height" Value="30" />
+        <Setter Property="Width" Value="40" />
+        <Setter Property="Height" Value="22" />
+        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual.Control}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type CheckBox}">
                     <Grid Background="Transparent">
                         <Border
                             x:Name="Track"
-                            Width="54"
-                            Height="30"
-                            Background="#2E2E38"
-                            BorderBrush="#3D3D48"
-                            BorderThickness="1"
-                            CornerRadius="15" />
+                            Width="40"
+                            Height="22"
+                            Background="{StaticResource Brush.Switch.Track}"
+                            CornerRadius="11"
+                            Effect="{StaticResource Effect.Control}" />
 
                         <Ellipse
                             x:Name="Knob"
-                            Width="24"
-                            Height="24"
+                            Width="16"
+                            Height="16"
                             Margin="3,0,0,0"
                             HorizontalAlignment="Left"
-                            Fill="#F0F0F0">
+                            Fill="{StaticResource Brush.Switch.Knob}">
                             <Ellipse.RenderTransform>
                                 <TranslateTransform x:Name="KnobShift" X="0" />
                             </Ellipse.RenderTransform>
@@ -39,16 +55,19 @@
                     </Grid>
 
                     <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Track" Property="Background" Value="{DynamicResource Brush.Accent.Muted}" />
+                        </Trigger>
+
                         <Trigger Property="IsChecked" Value="True">
                             <Setter TargetName="Track" Property="Background" Value="{DynamicResource Brush.Accent}" />
-                            <Setter TargetName="Track" Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
                             <Trigger.EnterActions>
                                 <BeginStoryboard>
                                     <Storyboard>
                                         <DoubleAnimation
                                             Storyboard.TargetName="KnobShift"
                                             Storyboard.TargetProperty="X"
-                                            To="24"
+                                            To="18"
                                             Duration="0:0:0.14">
                                             <DoubleAnimation.EasingFunction>
                                                 <CubicEase EasingMode="EaseOut" />
@@ -72,10 +91,6 @@
                                     </Storyboard>
                                 </BeginStoryboard>
                             </Trigger.ExitActions>
-                        </Trigger>
-
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Track" Property="BorderBrush" Value="#585865" />
                         </Trigger>
 
                         <MultiTrigger>
@@ -83,12 +98,12 @@
                                 <Condition Property="IsChecked" Value="True" />
                                 <Condition Property="IsMouseOver" Value="True" />
                             </MultiTrigger.Conditions>
-                            <Setter TargetName="Track" Property="BorderBrush" Value="{DynamicResource Brush.AccentHover}" />
+                            <Setter TargetName="Track" Property="Background" Value="{DynamicResource Brush.AccentHover}" />
                         </MultiTrigger>
 
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="Track" Property="Opacity" Value="0.55" />
-                            <Setter TargetName="Knob" Property="Opacity" Value="0.55" />
+                            <Setter TargetName="Track" Property="Opacity" Value="0.45" />
+                            <Setter TargetName="Knob" Property="Opacity" Value="0.6" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -96,34 +111,30 @@
         </Setter>
     </Style>
 
-    <!--  Default (global): Checkbox rechts  -->
-    <Style TargetType="{x:Type CheckBox}">
+    <!--  ===== Check box =====  -->
 
+    <Style x:Key="CheckBox.Base" TargetType="{x:Type CheckBox}">
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
         <Setter Property="Cursor" Value="Hand" />
-
         <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="VerticalAlignment" Value="Center" />
-
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
-        <Setter Property="Background" Value="{DynamicResource Brush.Surface}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
-        <Setter Property="BorderThickness" Value="1.5" />
-
+        <Setter Property="Background" Value="{StaticResource Brush.Input.Background}" />
+        <Setter Property="BorderBrush" Value="{StaticResource Brush.Input.BorderHover}" />
+        <Setter Property="BorderThickness" Value="1" />
         <Setter Property="FontSize" Value="13" />
-        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="MinHeight" Value="24" />
+        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual.Control}" />
+    </Style>
 
-        <!--  match TextBox height for a consistent control size  -->
-        <Setter Property="MinHeight" Value="38" />
-        <Setter Property="Height" Value="38" />
+    <!--  Default (global): label left, box right  -->
+    <Style BasedOn="{StaticResource CheckBox.Base}" TargetType="{x:Type CheckBox}">
         <Setter Property="Padding" Value="0,0,12,0" />
-        <Setter Property="MinWidth" Value="36" />
-
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type CheckBox}">
-                    <Grid Background="Transparent">
+                    <Grid x:Name="Root" Background="Transparent">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
@@ -141,125 +152,66 @@
                         <Border
                             x:Name="Box"
                             Grid.Column="1"
-                            Width="{TemplateBinding Height}"
-                            Height="{TemplateBinding Height}"
-                            HorizontalAlignment="Right"
+                            Width="18"
+                            Height="18"
                             VerticalAlignment="Center"
+                            Effect="{StaticResource Effect.Control}"
                             Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="{StaticResource DefaultCornerRadius}">
-                            <Grid>
-                                <Path
-                                    x:Name="Tick"
-                                    Width="14"
-                                    Height="12"
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center"
-                                    Data="{StaticResource Geometry.CheckBox.Tick}"
-                                    Opacity="0"
-                                    Stretch="Uniform"
-                                    Stroke="{DynamicResource Brush.Accent}"
-                                    StrokeDashArray="20 20"
-                                    StrokeDashCap="Round"
-                                    StrokeDashOffset="20"
-                                    StrokeEndLineCap="Round"
-                                    StrokeLineJoin="Round"
-                                    StrokeStartLineCap="Round"
-                                    StrokeThickness="2" />
-                            </Grid>
+                            CornerRadius="{StaticResource Item.CornerRadius}">
+                            <Path
+                                x:Name="Tick"
+                                Width="10"
+                                Height="9"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Data="{StaticResource Geometry.CheckBox.Tick}"
+                                Opacity="0"
+                                Stretch="Uniform"
+                                Stroke="{StaticResource Brush.CheckBox.Tick}"
+                                StrokeEndLineCap="Round"
+                                StrokeLineJoin="Round"
+                                StrokeStartLineCap="Round"
+                                StrokeThickness="2" />
                         </Border>
                     </Grid>
 
                     <ControlTemplate.Triggers>
+                        <!--  Without a label (label in a separate TextBlock): no gap, the box lines up with the inputs  -->
+                        <Trigger Property="HasContent" Value="False">
+                            <Setter TargetName="ContentHost" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
 
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Box" Property="BorderBrush" Value="{DynamicResource Brush.AccentHover}" />
+                            <Setter TargetName="Box" Property="BorderBrush" Value="{DynamicResource Brush.Accent.Outline}" />
                         </Trigger>
 
                         <Trigger Property="IsChecked" Value="True">
-                            <Trigger.EnterActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation
-                                            Storyboard.TargetName="Tick"
-                                            Storyboard.TargetProperty="Opacity"
-                                            To="1"
-                                            Duration="0:0:0.05" />
-                                        <DoubleAnimation
-                                            Storyboard.TargetName="Tick"
-                                            Storyboard.TargetProperty="StrokeDashOffset"
-                                            From="20"
-                                            To="0"
-                                            Duration="0:0:0.18" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </Trigger.EnterActions>
-
-                            <Trigger.ExitActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation
-                                            Storyboard.TargetName="Tick"
-                                            Storyboard.TargetProperty="Opacity"
-                                            To="0"
-                                            Duration="0:0:0.08" />
-                                        <DoubleAnimation
-                                            Storyboard.TargetName="Tick"
-                                            Storyboard.TargetProperty="StrokeDashOffset"
-                                            To="20"
-                                            Duration="0:0:0.01" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </Trigger.ExitActions>
-                        </Trigger>
-
-                        <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="Box" Property="Opacity" Value="0.9" />
+                            <Setter TargetName="Box" Property="Background" Value="{DynamicResource Brush.Accent}" />
+                            <Setter TargetName="Box" Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
+                            <Setter TargetName="Tick" Property="Opacity" Value="1" />
                         </Trigger>
 
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Foreground" Value="{DynamicResource Brush.TextDisabled}" />
-                            <Setter TargetName="Box" Property="Opacity" Value="0.6" />
-                            <Setter TargetName="Tick" Property="Stroke" Value="{DynamicResource Brush.TextDisabled}" />
-                            <Setter TargetName="ContentHost" Property="Opacity" Value="0.7" />
+                            <Setter TargetName="Root" Property="Opacity" Value="0.45" />
                         </Trigger>
-
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-
     </Style>
 
-    <!--  Alternative: Checkbox links  -->
-    <Style x:Key="CheckBox.Left" TargetType="{x:Type CheckBox}">
-
-        <Setter Property="SnapsToDevicePixels" Value="True" />
-        <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="Cursor" Value="Hand" />
-
-        <Setter Property="HorizontalAlignment" Value="Left" />
-        <Setter Property="VerticalAlignment" Value="Center" />
-
-        <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
-        <Setter Property="Background" Value="{DynamicResource Brush.Surface}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
-        <Setter Property="BorderThickness" Value="1.5" />
-
-        <Setter Property="FontSize" Value="13" />
-        <Setter Property="FontWeight" Value="SemiBold" />
-
-        <!--  match TextBox height for a consistent control size  -->
-        <Setter Property="MinHeight" Value="38" />
-        <Setter Property="Height" Value="38" />
-        <Setter Property="Padding" Value="12,0,0,0" />
-        <Setter Property="MinWidth" Value="36" />
-
+    <!--  Alternative: box left, label right  -->
+    <Style
+        x:Key="CheckBox.Left"
+        BasedOn="{StaticResource CheckBox.Base}"
+        TargetType="{x:Type CheckBox}">
+        <Setter Property="Padding" Value="10,0,0,0" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type CheckBox}">
-                    <Grid Background="Transparent">
+                    <Grid x:Name="Root" Background="Transparent">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
@@ -268,33 +220,28 @@
                         <Border
                             x:Name="Box"
                             Grid.Column="0"
-                            Width="{TemplateBinding Height}"
-                            Height="{TemplateBinding Height}"
-                            HorizontalAlignment="Left"
+                            Width="18"
+                            Height="18"
                             VerticalAlignment="Center"
+                            Effect="{StaticResource Effect.Control}"
                             Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="{StaticResource DefaultCornerRadius}">
-                            <Grid>
-                                <Path
-                                    x:Name="Tick"
-                                    Width="14"
-                                    Height="12"
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center"
-                                    Data="{StaticResource Geometry.CheckBox.Tick}"
-                                    Opacity="0"
-                                    Stretch="Uniform"
-                                    Stroke="{DynamicResource Brush.Accent}"
-                                    StrokeDashArray="20 20"
-                                    StrokeDashCap="Round"
-                                    StrokeDashOffset="20"
-                                    StrokeEndLineCap="Round"
-                                    StrokeLineJoin="Round"
-                                    StrokeStartLineCap="Round"
-                                    StrokeThickness="2" />
-                            </Grid>
+                            CornerRadius="{StaticResource Item.CornerRadius}">
+                            <Path
+                                x:Name="Tick"
+                                Width="10"
+                                Height="9"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Data="{StaticResource Geometry.CheckBox.Tick}"
+                                Opacity="0"
+                                Stretch="Uniform"
+                                Stroke="{StaticResource Brush.CheckBox.Tick}"
+                                StrokeEndLineCap="Round"
+                                StrokeLineJoin="Round"
+                                StrokeStartLineCap="Round"
+                                StrokeThickness="2" />
                         </Border>
 
                         <ContentPresenter
@@ -308,64 +255,115 @@
                     </Grid>
 
                     <ControlTemplate.Triggers>
+                        <!--  Without a label (label in a separate TextBlock): no gap, the box lines up with the inputs  -->
+                        <Trigger Property="HasContent" Value="False">
+                            <Setter TargetName="ContentHost" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
 
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Box" Property="BorderBrush" Value="{DynamicResource Brush.AccentHover}" />
+                            <Setter TargetName="Box" Property="BorderBrush" Value="{DynamicResource Brush.Accent.Outline}" />
                         </Trigger>
 
                         <Trigger Property="IsChecked" Value="True">
-                            <Trigger.EnterActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation
-                                            Storyboard.TargetName="Tick"
-                                            Storyboard.TargetProperty="Opacity"
-                                            To="1"
-                                            Duration="0:0:0.05" />
-                                        <DoubleAnimation
-                                            Storyboard.TargetName="Tick"
-                                            Storyboard.TargetProperty="StrokeDashOffset"
-                                            From="20"
-                                            To="0"
-                                            Duration="0:0:0.18" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </Trigger.EnterActions>
-
-                            <Trigger.ExitActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation
-                                            Storyboard.TargetName="Tick"
-                                            Storyboard.TargetProperty="Opacity"
-                                            To="0"
-                                            Duration="0:0:0.08" />
-                                        <DoubleAnimation
-                                            Storyboard.TargetName="Tick"
-                                            Storyboard.TargetProperty="StrokeDashOffset"
-                                            To="20"
-                                            Duration="0:0:0.01" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </Trigger.ExitActions>
-                        </Trigger>
-
-                        <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="Box" Property="Opacity" Value="0.9" />
+                            <Setter TargetName="Box" Property="Background" Value="{DynamicResource Brush.Accent}" />
+                            <Setter TargetName="Box" Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
+                            <Setter TargetName="Tick" Property="Opacity" Value="1" />
                         </Trigger>
 
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Foreground" Value="{DynamicResource Brush.TextDisabled}" />
-                            <Setter TargetName="Box" Property="Opacity" Value="0.6" />
-                            <Setter TargetName="Tick" Property="Stroke" Value="{DynamicResource Brush.TextDisabled}" />
-                            <Setter TargetName="ContentHost" Property="Opacity" Value="0.7" />
+                            <Setter TargetName="Root" Property="Opacity" Value="0.45" />
                         </Trigger>
-
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
 
+    <!--  List entry: like CheckBox.Left, but stretched over the row with hover / checked tint (filter lists, ...)  -->
+    <Style
+        x:Key="CheckBox.ListItem"
+        BasedOn="{StaticResource CheckBox.Base}"
+        TargetType="{x:Type CheckBox}">
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="Padding" Value="10,0,0,0" />
+        <Setter Property="Margin" Value="0,1" />
+        <Setter Property="MinHeight" Value="32" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type CheckBox}">
+                    <Border
+                        x:Name="Row"
+                        Padding="8,0"
+                        Background="Transparent"
+                        CornerRadius="{StaticResource Item.CornerRadius}"
+                        SnapsToDevicePixels="True">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Border
+                                x:Name="Box"
+                                Grid.Column="0"
+                                Width="18"
+                                Height="18"
+                                VerticalAlignment="Center"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="{StaticResource Item.CornerRadius}">
+                                <Path
+                                    x:Name="Tick"
+                                    Width="10"
+                                    Height="9"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Data="{StaticResource Geometry.CheckBox.Tick}"
+                                    Opacity="0"
+                                    Stretch="Uniform"
+                                    Stroke="{StaticResource Brush.CheckBox.Tick}"
+                                    StrokeEndLineCap="Round"
+                                    StrokeLineJoin="Round"
+                                    StrokeStartLineCap="Round"
+                                    StrokeThickness="2" />
+                            </Border>
+
+                            <ContentPresenter
+                                Grid.Column="1"
+                                Margin="{TemplateBinding Padding}"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                ContentSource="Content"
+                                RecognizesAccessKey="True"
+                                TextElement.Foreground="{TemplateBinding Foreground}" />
+                        </Grid>
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Row" Property="Background" Value="{StaticResource Brush.Item.Hover}" />
+                            <Setter TargetName="Box" Property="BorderBrush" Value="{DynamicResource Brush.Accent.Outline}" />
+                        </Trigger>
+
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="Box" Property="Background" Value="{DynamicResource Brush.Accent}" />
+                            <Setter TargetName="Box" Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
+                            <Setter TargetName="Tick" Property="Opacity" Value="1" />
+                        </Trigger>
+
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="Row" Property="Background" Value="{StaticResource Brush.Item.Hover}" />
+                        </Trigger>
+
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Row" Property="Opacity" Value="0.45" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
 </ResourceDictionary>

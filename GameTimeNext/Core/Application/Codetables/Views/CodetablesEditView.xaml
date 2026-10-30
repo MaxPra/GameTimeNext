@@ -2,6 +2,7 @@
     x:Class="GameTimeNext.Core.Application.Codetables.Views.CodetablesEditView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:uixcb="clr-namespace:UIX.ViewController.Engine.FrameworkElements.ComboBoxes;assembly=UIX.ViewController.Engine"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI.Base"
@@ -15,25 +16,23 @@
     WindowStartupLocation="CenterOwner"
     mc:Ignorable="d">
 
-    <Grid Margin="18">
+    <Grid Style="{StaticResource View.Root}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="16" />
             <RowDefinition Height="*" />
             <RowDefinition Height="16" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <TabControl x:Name="tabControl" Grid.Row="2">
+        <TabControl x:Name="tabControl" Grid.Row="0">
             <TabItem Header="General">
-                <Grid Margin="10">
+                <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
-                        <RowDefinition Height="10" />
+                        <RowDefinition Height="12" />
                         <RowDefinition Height="Auto" />
-                        <RowDefinition Height="10" />
+                        <RowDefinition Height="12" />
                         <RowDefinition Height="Auto" />
-                        <RowDefinition Height="10" />
+                        <RowDefinition Height="12" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
@@ -47,7 +46,7 @@
                         Grid.Row="0"
                         Grid.Column="0"
                         VerticalAlignment="Center"
-                        Opacity="0.8"
+                        Style="{StaticResource Text.Label}"
                         Text="Text type" />
 
                     <TextBox
@@ -64,7 +63,7 @@
                         Grid.Row="2"
                         Grid.Column="0"
                         VerticalAlignment="Center"
-                        Opacity="0.8"
+                        Style="{StaticResource Text.Label}"
                         Text="Description" />
 
                     <TextBox
@@ -75,13 +74,13 @@
                         VerticalContentAlignment="Center"
                         uixprops:UIXAttachedProperty.Path="T1CTABH.DESCR" />
 
-                    <ComboBox
+                    <uixcb:UIXComboBox
                         x:Name="CmbPermission"
                         Grid.Row="4"
                         Grid.Column="2"
                         Height="36"
                         VerticalAlignment="Center"
-                        uixprops:UIXAttachedProperty.AdditionalEntry="(None)"
+                        AdditionalEntry="(None)"
                         uixprops:UIXAttachedProperty.Path="T1CTABH.PERMI"
                         uixprops:UIXAttachedProperty.Source="From=T1CTABD;Where=TXTYP:cP;Text=DESCR;Value=TXNUM"
                         SelectedIndex="0"
@@ -92,14 +91,14 @@
                         Grid.Row="4"
                         Grid.Column="0"
                         VerticalAlignment="Center"
-                        Opacity="0.8"
+                        Style="{StaticResource Text.Label}"
                         Text="Permission" />
 
                     <TextBlock
                         Grid.Row="6"
                         Grid.Column="0"
                         VerticalAlignment="Center"
-                        Opacity="0.8"
+                        Style="{StaticResource Text.Label}"
                         Text="Number Range active" />
 
                     <StackPanel
@@ -123,12 +122,12 @@
             </TabItem>
 
             <TabItem Header="Parameters">
-                <Grid Margin="10">
+                <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="12" />
                         <RowDefinition Height="Auto" />
-                        <RowDefinition Height="10" />
+                        <RowDefinition Height="12" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
@@ -150,38 +149,38 @@
                         Grid.Row="0"
                         Grid.Column="0"
                         VerticalAlignment="Center"
-                        Opacity="0.8"
+                        Style="{StaticResource Text.Label}"
                         Text="Active" />
                     <TextBlock
                         Grid.Row="0"
                         Grid.Column="2"
                         VerticalAlignment="Center"
-                        Opacity="0.8"
+                        Style="{StaticResource Text.Label}"
                         Text="Description" />
                     <TextBlock
                         Grid.Row="0"
                         Grid.Column="4"
                         VerticalAlignment="Center"
-                        Opacity="0.8"
+                        Style="{StaticResource Text.Label}"
                         Text="Tooltip" />
                     <TextBlock
                         Grid.Row="0"
                         Grid.Column="6"
                         VerticalAlignment="Center"
-                        Opacity="0.8"
+                        Style="{StaticResource Text.Label}"
                         Text="Required Field" />
                     <TextBlock
                         Grid.Row="0"
                         Grid.Column="8"
                         VerticalAlignment="Center"
-                        Opacity="0.8"
+                        Style="{StaticResource Text.Label}"
                         Text="Control-Type" />
                     <TextBlock
                         x:Name="LblParamCodetable"
                         Grid.Row="0"
                         Grid.Column="10"
                         VerticalAlignment="Center"
-                        Opacity="0.8"
+                        Style="{StaticResource Text.Label}"
                         Text="Codetable" />
 
                     <CheckBox
@@ -210,25 +209,25 @@
                         Grid.Column="6"
                         VerticalAlignment="Center"
                         uixprops:UIXAttachedProperty.Path="T1CTABH.PARF1" />
-                    <ComboBox
+                    <uixcb:UIXComboBox
                         x:Name="CmbParam1ControlType"
                         Grid.Row="2"
                         Grid.Column="8"
                         Height="36"
                         VerticalAlignment="Center"
-                        uixprops:UIXAttachedProperty.AdditionalEntry="(None)"
+                        AdditionalEntry="(None)"
                         uixprops:UIXAttachedProperty.Path="T1CTABH.PACO1"
                         uixprops:UIXAttachedProperty.Source="From=T1CTABD;Where=TXTYP:cO;Text=DESCR;Value=TXNUM"
                         SelectedIndex="0"
                         SelectedValue=""
                         SelectedValuePath="Tag" />
-                    <ComboBox
+                    <uixcb:UIXComboBox
                         x:Name="CmbParam1Codetable"
                         Grid.Row="2"
                         Grid.Column="10"
                         Height="36"
                         VerticalAlignment="Center"
-                        uixprops:UIXAttachedProperty.AdditionalEntry="(None)"
+                        AdditionalEntry="(None)"
                         uixprops:UIXAttachedProperty.Path="T1CTABH.PACT1"
                         uixprops:UIXAttachedProperty.Source="From=T1CTABH;Text=DESCR;Value=TXTYP"
                         SelectedIndex="0"
@@ -260,25 +259,25 @@
                         Grid.Column="6"
                         VerticalAlignment="Center"
                         uixprops:UIXAttachedProperty.Path="T1CTABH.PARF2" />
-                    <ComboBox
+                    <uixcb:UIXComboBox
                         x:Name="CmbParam2ControlType"
                         Grid.Row="4"
                         Grid.Column="8"
                         Height="36"
                         VerticalAlignment="Center"
-                        uixprops:UIXAttachedProperty.AdditionalEntry="(None)"
+                        AdditionalEntry="(None)"
                         uixprops:UIXAttachedProperty.Path="T1CTABH.PACO2"
                         uixprops:UIXAttachedProperty.Source="From=T1CTABD;Where=TXTYP:cO;Text=DESCR;Value=TXNUM"
                         SelectedIndex="0"
                         SelectedValue=""
                         SelectedValuePath="Tag" />
-                    <ComboBox
+                    <uixcb:UIXComboBox
                         x:Name="CmbParam2Codetable"
                         Grid.Row="4"
                         Grid.Column="10"
                         Height="36"
                         VerticalAlignment="Center"
-                        uixprops:UIXAttachedProperty.AdditionalEntry="(None)"
+                        AdditionalEntry="(None)"
                         uixprops:UIXAttachedProperty.Path="T1CTABH.PACT2"
                         uixprops:UIXAttachedProperty.Source="From=T1CTABH;Text=DESCR;Value=TXTYP"
                         SelectedIndex="0"
@@ -288,7 +287,7 @@
             </TabItem>
         </TabControl>
 
-        <Grid Grid.Row="4">
+        <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
@@ -300,7 +299,8 @@
                 Width="140"
                 Height="36"
                 Content="Save"
-                IsDefault="True" />
+                IsDefault="True"
+                Style="{StaticResource Button.Primary}" />
         </Grid>
     </Grid>
 </ui:GTNWindowView>

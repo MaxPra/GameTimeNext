@@ -1,7 +1,9 @@
 using GameTimeNext.Core.Application.CreateImportPackage.Views;
 using GameTimeNext.Core.Application.DataManagers;
+using GameTimeNext.Core.Framework.Config;
+using GameTimeNext.Core.Framework.DataBase.Migration;
 using GameTimeNext.Core.Framework.UI.Dialogs;
-using GameTimeNext.Core.Framework.Utils;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
@@ -10,7 +12,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.CreateImportPackage.Controller
 {
-    public class CreateImportPackageViewController : UIXViewControllerBase
+    public class CreateImportPackageViewController : UIXViewControllerBase<CreateImportPackageApp, CreateImportPackageView>
     {
         public CreateImportPackageViewController(UIXApplication app) : base(app)
         {
@@ -29,10 +31,8 @@ namespace GameTimeNext.Core.Application.CreateImportPackage.Controller
         {
         }
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
-            if (FnString.IsNullEmptyOrWhitespace(GetView().TxbOutputPath.Text))
-                AddViewError(GetView().TxbOutputPath, "Output path cannot be empty.");
         }
 
         protected override void DataWrapperSelectionChangedImpl(Selector source)
@@ -40,6 +40,10 @@ namespace GameTimeNext.Core.Application.CreateImportPackage.Controller
         }
 
         protected override void TriggeredEvent(FrameworkElement source, string eventName)
+        {
+        }
+
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
         {
         }
 
@@ -55,27 +59,24 @@ namespace GameTimeNext.Core.Application.CreateImportPackage.Controller
         {
         }
 
-        private CreateImportPackageApp GetApp()
+        /// <summary>
+        /// Removes the previous packages and leftover temp folders, but keeps the folder itself: a deleted folder
+        /// that is still watched (e.g. by Visual Studio) stays "delete pending", and creating it again fails with
+        /// access denied until the last handle is closed.
+        /// </summary>
+        private static void ClearOutputDirectory(string outputDirPath)
         {
-            return (CreateImportPackageApp)App;
+            if (!Directory.Exists(outputDirPath))
+                return;
+
+            foreach (string filePath in Directory.GetFiles(outputDirPath))
+                File.Delete(filePath);
+
+            foreach (string directoryPath in Directory.GetDirectories(outputDirPath))
+                Directory.Delete(directoryPath, true);
         }
 
-        private CreateImportPackageView GetView()
-        {
-            return (CreateImportPackageView)View;
-        }
-
-        protected void EV_BtnBrowseOutputPath()
-        {
-            string outputPath = FnSystemDialogs.ShowFolderDialog("Select Output Path", false);
-
-            if (FnString.IsNullEmptyOrWhitespace(outputPath))
-                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Select a valid output path!", CFMBOXResult.Ok, CFMBOXIcon.Error);
-
-            GetView().TxbOutputPath.Text = outputPath;
-        }
-
-        protected async Task EV_BtnExecute()
+        protected async Task EV_btnExecute()
         {
             Check();
 
@@ -84,19 +85,21 @@ namespace GameTimeNext.Core.Application.CreateImportPackage.Controller
 
             GetApp().Loader.Begin("Creating Import Package...");
 
-            string outputPath = GetView().TxbOutputPath.Text;
-            string exportType = GetView().CmbExportType.SelectedValue.ToString()!;
-
             bool error = false;
 
             await Task.Run(() =>
             {
                 try
                 {
-                    CFCreateImportPackageApp.CreateImportPackage(outputPath, exportType);
+                    string outputDirPath = AppConfig.Dev.ImportPackagesDirectoryPath;
+
+                    ClearOutputDirectory(outputDirPath);
+
+                    MigrationFactory.ImportPackage.ExportPackage(outputDirPath);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    FnLog.AddError(this, "Creating the import package failed.", ex);
                     error = true;
                 }
 
@@ -109,14 +112,38 @@ namespace GameTimeNext.Core.Application.CreateImportPackage.Controller
 
             if (error)
             {
-                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("An error occured.", CFMBOXResult.Ok, CFMBOXIcon.Error);
+                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("GLO0012", "creating the import package"), CFMBOXResult.Ok, CFMBOXIcon.Error);
             }
             else
             {
-                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Import package created successfully", CFMBOXResult.Ok, CFMBOXIcon.Success);
+                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("GLO0011", "The import package"), CFMBOXResult.Ok, CFMBOXIcon.Success);
             }
+        }
 
+        protected async Task EV_btnTestImport()
+        {
+            CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
 
+            try
+            {
+                GetApp().Loader.Begin();
+                GetApp().Loader.SetText("Inmidst of testing ^^");
+
+                bool useProdDb = GetView().chbUseProdDb.IsChecked.Equals(true);
+                GetApp().StartTestImportPackage(useProdDb);
+                cfmbox.Show(GetErrorMessage("IMP0001"), CFMBOXResult.Ok, CFMBOXIcon.Info);
+                GetApp().EndTestImportPackage();
+            }
+            catch (Exception ex)
+            {
+                string errMsg = GetErrorMessage("GLO0012", "testing the import package");
+                cfmbox.Show(errMsg, CFMBOXResult.Ok, CFMBOXIcon.Error);
+                FnLog.AddError(this, errMsg, ex);
+            }
+            finally
+            {
+                GetApp().Loader.Stop();
+            }
         }
     }
 }

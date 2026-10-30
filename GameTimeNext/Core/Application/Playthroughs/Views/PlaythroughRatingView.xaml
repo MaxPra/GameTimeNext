@@ -1,0 +1,89 @@
+<ui:GTNWindowView
+    x:Class="GameTimeNext.Core.Application.Playthroughs.Views.PlaythroughRatingView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:fui="clr-namespace:GameTimeNext.Core.Framework.UI"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI.Base"
+    xmlns:uixmd="clr-namespace:UIX.ViewController.Engine.FrameworkElements.Markdown;assembly=UIX.ViewController.Engine"
+    xmlns:uixprops="clr-namespace:UIX.ViewController.Engine.AttachedProperties;assembly=UIX.ViewController.Engine"
+    Title="Rate playthrough"
+    Width="640"
+    Height="560"
+    ShowMaximizeButton="False"
+    ShowMinimizeButton="False"
+    WindowStartupLocation="CenterOwner"
+    mc:Ignorable="d">
+
+    <Grid Style="{StaticResource View.Root}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="16" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="16" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!--  Game, playthrough and stars  -->
+        <Border
+            Grid.Row="0"
+            Padding="16"
+            Style="{StaticResource Card}">
+            <StackPanel HorizontalAlignment="Center">
+                <TextBlock
+                    x:Name="txGameName"
+                    HorizontalAlignment="Center"
+                    Style="{StaticResource Text.Title}"
+                    TextTrimming="CharacterEllipsis" />
+
+                <TextBlock
+                    x:Name="txPlaythrough"
+                    Margin="0,4,0,0"
+                    HorizontalAlignment="Center"
+                    Foreground="{DynamicResource Brush.TextSecondary}"
+                    TextTrimming="CharacterEllipsis" />
+
+                <fui:StarRating
+                    x:Name="rtgRating"
+                    Margin="0,16,0,4"
+                    HorizontalAlignment="Center"
+                    StarSize="36"
+                    StarSpacing="8" />
+
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    Style="{StaticResource Card.Caption}"
+                    Text="Click the left half of a star for half a star" />
+            </StackPanel>
+        </Border>
+
+        <GroupBox
+            Grid.Row="2"
+            Margin="0"
+            Header="Comment (optional)"
+            Style="{StaticResource GroupBox.Card}">
+            <uixmd:UIXMarkdownEditor x:Name="txbComment" uixprops:UIXAttachedProperty.Path="T1PLTHR.PTRC" />
+        </GroupBox>
+
+        <StackPanel
+            Grid.Row="4"
+            HorizontalAlignment="Right"
+            Orientation="Horizontal">
+            <Button
+                x:Name="btnSkip"
+                Width="140"
+                Height="36"
+                Margin="0,0,8,0"
+                Content="Skip" />
+
+            <Button
+                x:Name="btnSave"
+                Width="140"
+                Height="36"
+                Content="Save"
+                IsDefault="True"
+                Style="{StaticResource Button.Primary}" />
+        </StackPanel>
+    </Grid>
+</ui:GTNWindowView>

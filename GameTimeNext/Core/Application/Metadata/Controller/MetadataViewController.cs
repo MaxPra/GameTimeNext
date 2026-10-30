@@ -1,9 +1,11 @@
+using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Metadata.Data;
 using GameTimeNext.Core.Application.Metadata.Viewmodels;
 using GameTimeNext.Core.Application.Metadata.Views;
 using GameTimeNext.Core.Application.Profiles;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Config;
+using GameTimeNext.Core.Framework.DataBase.Migration;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using System.Diagnostics;
 using System.Windows;
@@ -18,14 +20,7 @@ using static UIX.ViewController.Engine.FrameworkElements.UIXContextMenuFactory;
 
 namespace GameTimeNext.Core.Application.Metadata.Controller
 {
-
-    /************ TODO **************/
-    // - T1METAH und T1METAP nicht in Metdaten übernehmnen (Systemtabellen werden immer noch händisch erzeugt / wird sowieso nicht so viel daran geändert)
-    // - Danach alle bisherigen manuellen Tabellen in Metadaten übenehmen
-
-
-
-    public class MetadataViewController : UIXViewControllerBase
+    public class MetadataViewController : UIXViewControllerBase<MetadataApp, MetadataView>
     {
         private MetadataViewModel? _viewModel;
 
@@ -36,6 +31,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
         protected override void Init()
         {
+            AddSource("T1CTABD", new TXCTABD());
         }
 
         protected override void TriggeredEvent(FrameworkElement source, string eventName)
@@ -44,7 +40,6 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
         protected override void BuildFirstImpl()
         {
-            InitializeTypeFilter();
         }
 
         protected override async Task BuildFirstImplAsync()
@@ -59,11 +54,15 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
         {
         }
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
         }
 
         protected override void FillViewImpl()
+        {
+        }
+
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
         {
         }
 
@@ -77,16 +76,6 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
         protected override void DataWrapperSelectionChangedImpl(Selector source)
         {
-        }
-
-        private MetadataApp GetApp()
-        {
-            return (MetadataApp)App;
-        }
-
-        private MetadataView GetView()
-        {
-            return (MetadataView)View;
         }
 
         protected void EV_DgMetadata_CtxtOpening(FrameworkElement target)
@@ -148,7 +137,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
             CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
 
             CFMBOXResult result = cfmbox.Show(
-                "Delete metadata and generated table?",
+                GetErrorMessage("MET0001", selectedT1metah.MENAM),
                 CFMBOXResult.Yes | CFMBOXResult.No,
                 CFMBOXIcon.Question);
 
@@ -181,8 +170,28 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
         private List<MetadataDataGridRow> BuildMetadataRows()
         {
-
+            List<T1METAH> t1metahs = GetT1metahs();
             List<MetadataDataGridRow> metadataRows = new List<MetadataDataGridRow>();
+
+            foreach (T1METAH t1metah in t1metahs)
+            {
+                // Create new row
+                MetadataDataGridRow row = GetView().DgMetadata.CreateNewRow<MetadataDataGridRow>();
+                row.COMENAM = t1metah.MENAM;
+                row.CODESCR = t1metah.DESCR;
+                row.COMTYPE = TFCTABD.GetDescription("mT", t1metah.MTYPE);
+                row.COGENER = !t1metah.GENER;
+                row.RowObject = t1metah;
+
+                metadataRows.Add(row);
+            }
+
+            return metadataRows;
+        }
+
+        private List<T1METAH> GetT1metahs()
+        {
+            List<T1METAH> t1metahs = new List<T1METAH>();
 
             UIXQuery query = BuildQueryMetadata();
 
@@ -192,30 +201,23 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
                 {
                     string menam = UIXQuery.GetString(reader, K1METAH.Name, K1METAH.Fields.MENAM, string.Empty);
 
-                    // Objekt aus Datenbank auslesen
+                    // Read object from database
                     TXMETAH txmetah = new TXMETAH();
-                    T1METAH t1metah = txmetah.Read(menam);
+                    T1METAH? t1metah = txmetah.Read(menam);
 
-                    // Neue Zeile erstellen
-                    MetadataDataGridRow row = GetView().DgMetadata.CreateNewRow<MetadataDataGridRow>();
-                    row.COMENAM = t1metah.MENAM;
-                    row.CODESCR = t1metah.DESCR;
-                    row.COMTYPE = MetadataObjectTypes.GetText(t1metah.MTYPE);
-                    row.RowObject = t1metah;
-
-                    metadataRows.Add(row);
-
+                    if (t1metah is not null)
+                        t1metahs.Add(t1metah);
                 }
             }
 
-            return metadataRows;
+            return t1metahs;
         }
 
         private UIXQuery BuildQueryMetadata()
         {
             UIXQuery query = new UIXQuery(K1METAH.Name, AppEnvironment.GetDataBaseManager().GetConnection());
 
-            // Felder hinzufügen
+            // Add fields
             query.AddField(K1METAH.Name, K1METAH.Fields.MENAM);
 
             View.Dispatcher.Invoke(() =>
@@ -236,33 +238,74 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
             return query;
         }
 
-        private void InitializeTypeFilter()
-        {
-            GetView().CmbType.Items.Clear();
-            GetView().CmbType.Items.Add(new ComboBoxItem { Content = "(All)", Tag = string.Empty });
-
-            foreach (MetadataObjectTypes.Entry entry in MetadataObjectTypes.GetEntries())
-            {
-                GetView().CmbType.Items.Add(new ComboBoxItem
-                {
-                    Content = entry.Text,
-                    Tag = entry.Key
-                });
-            }
-
-            GetView().CmbType.SelectedIndex = 0;
-        }
-
         protected void EV_BtnAdd()
         {
             MetadataEditApp metadataEditApp = GetApp().GetApplication<MetadataEditApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
             metadataEditApp.CreateNew();
-
         }
 
         protected async Task EV_BtnRefresh()
         {
             await BuildDG();
+        }
+
+        protected async Task EV_BtnGenerateAll()
+        {
+            try
+            {
+                GetApp().Loader.Begin();
+
+                List<T1METAH> t1metahs = GetT1metahs();
+
+                foreach (T1METAH t1metah in t1metahs)
+                {
+                    await Task.Run(() =>
+                    {
+                        MigrationFactory.Metadata.CodeGenerator.GenerateFor(t1metah);
+                        MigrationFactory.FromCsv.MigrateTables(MigrationFactory.ImportType.MetadataGenerator);
+                    });
+
+                    t1metah.GENER = true;
+                    new TXMETAH().Save(t1metah);
+                }
+
+                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("MET0002"), CFMBOXResult.Ok, CFMBOXIcon.Success);
+            }
+            catch (Exception ex)
+            {
+                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("GLO0013", "generating the classes", ex.Message), CFMBOXResult.Ok, CFMBOXIcon.Error);
+            }
+            finally
+            {
+                GetApp().Loader.Stop();
+            }
+
+            await BuildDG();
+        }
+
+        protected async Task EV_BtnGenerateMetadataTables()
+        {
+            try
+            {
+                GetApp().Loader.Begin();
+
+                await Task.Run(() => MigrationFactory.Metadata.CodeGenerator.GenerateForMetadata());
+
+                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("MET0002"), CFMBOXResult.Ok, CFMBOXIcon.Success);
+            }
+            catch (Exception ex)
+            {
+                GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("GLO0013", "generating the classes", ex.Message), CFMBOXResult.Ok, CFMBOXIcon.Error);
+            }
+            finally
+            {
+                GetApp().Loader.Stop();
+            }
+        }
+
+        protected void EV_BtnOpenLog()
+        {
+            Process.Start("explorer.exe", AppConfig.LogsDirectoryPath);
         }
 
         protected void EV_BtnOpenGenClass()

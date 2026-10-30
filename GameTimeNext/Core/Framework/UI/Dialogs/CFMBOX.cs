@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.Runnables;
 
 namespace GameTimeNext.Core.Framework.UI.Dialogs
@@ -7,6 +8,16 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
     {
         private CFMBOXView? _cfmboxView;
         private CFMBOXController? _cfmboxController;
+
+        /// <summary>
+        /// While set (Big Picture mode), messages are shown by it instead of the dialog window.
+        /// </summary>
+        public static ICFMBOXPresenter? Presenter { get; set; }
+
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(CFMBOX));
+        }
 
         public override void InitializeApplicationOutput()
         {
@@ -45,8 +56,26 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
 
         public CFMBOXResult Show(string title, string message, CFMBOXResult buttons, CFMBOXIcon icon, Window? owner, CFMBOXType type = CFMBOXType.Default)
         {
+            CFMBOXResult? presentedResult = Presenter?.Show(title, message, buttons, icon, type);
+
+            if (presentedResult.HasValue)
+                return presentedResult.Value;
+
             CreateFreshDialog();
             return _cfmboxController!.ShowDialog(title, message, buttons, icon, owner, type);
+        }
+
+        /// <summary>
+        /// Standard question for UnsavedChangesImpl of a controller: Yes saves (then closes), No discards the changes,
+        /// Cancel (or closing the message box) keeps the view open.
+        /// </summary>
+        public static void AskUnsavedChanges(UIXApplication app, UIXUnsavedChangesArgs args)
+        {
+            CFMBOXResult result = app.GetApplication<CFMBOX>(UIXApplicationStartTarget.Window)
+                .Show(app.GetErrorMessage("GLO0022"), CFMBOXResult.Yes | CFMBOXResult.No | CFMBOXResult.Cancel, CFMBOXIcon.Question);
+
+            args.Save = result == CFMBOXResult.Yes;
+            args.Cancel = result != CFMBOXResult.Yes && result != CFMBOXResult.No;
         }
 
         private void CreateFreshDialog()

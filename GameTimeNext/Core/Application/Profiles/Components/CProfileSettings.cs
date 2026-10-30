@@ -6,10 +6,19 @@ namespace GameTimeNext.Core.Application.Profiles.Components
     {
 
         public bool HDREnabled { get; set; } = false;
-        public string SteamGameArgs { get; set; } = string.Empty;
+        public string LaunchArgs { get; set; } = string.Empty;
 
         public bool OverrideGlobalBlackout { get; set; } = false;
         public bool BlackoutSideMonitors { get; set; } = false;
+
+        // Still shrink-wrapped (setting SealNewGames); only effective while that setting is on
+        public bool Sealed { get; set; } = false;
+
+        /// <summary>
+        /// Suspends the game while the Big Picture mode is brought in front of it, so it doesn't react to the
+        /// controller there (FnLauncher.PauseGame). On by default, also for profiles saved before the setting existed.
+        /// </summary>
+        public bool PauseInBigPicture { get; set; } = true;
 
         public CProfileSettings() { }
 

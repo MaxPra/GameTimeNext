@@ -1,130 +1,53 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net10.0-windows</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <UseWPF>true</UseWPF>
-    <ApplicationIcon>UI\Ressources\GTN_APP_ICON.ico</ApplicationIcon>
-  </PropertyGroup>
+	<PropertyGroup>
+		<Authors>CryLoud Studios</Authors>
+		<Copyright>© $(Authors)</Copyright>
+		<TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
+		<SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+		<PlatformTarget>x64</PlatformTarget>
+
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<UseWPF>true</UseWPF>
+		<OutputType>WinExe</OutputType>
+
+		<ApplicationIcon>UI\Ressources\GTN_APP_ICON.ico</ApplicationIcon>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
+	</PropertyGroup>
 
 	<PropertyGroup>
-		<Version>0.4.0</Version>
+		<VersionSemantic>0.4.0</VersionSemantic>
 		<VersionTag>beta</VersionTag>
 		<BuildDate>2026-06-21</BuildDate>
 
-		<InformationalVersion>$(Version)-$(VersionTag)+$(BuildDate)</InformationalVersion>
+		<AssemblyVersion>$(VersionSemantic)</AssemblyVersion>
+		<FileVersion>$(AssemblyVersion)</FileVersion>
+		<VersionPrefix>$(AssemblyVersion)</VersionPrefix>
+		<VersionSuffix>$(VersionTag)</VersionSuffix>
 
-		<PlatformTarget>x64</PlatformTarget>
+		<InformationalVersion>$(VersionSemantic)-$(VersionTag)+$(BuildDate)</InformationalVersion>
 	</PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="Core\Application\UpdateChanges\UpdateChanges_v0.2.4beta.txt" />
-    <None Remove="UI\Ressources\GTN_APP_ICON.ico" />
-    <None Remove="UI\Ressources\GTN_ICON_ADD_PROFILE.png" />
-    <None Remove="UI\Ressources\GTN_ICON_CLSMP.png" />
-    <None Remove="UI\Ressources\GTN_ICON_CLSOF.png" />
-    <None Remove="UI\Ressources\GTN_ICON_MONITOR_KEY.png" />
-    <None Remove="UI\Ressources\GTN_ICON_PLAYABLE.png" />
-    <None Remove="UI\Ressources\ICON_DEBUG.png" />
-  </ItemGroup>
+	<ItemGroup>
+		<!-- Changelogs (UpdateChanges_v*), read from the output directory at startup -->
+		<None Remove="Core\Application\UpdateChanges\**" />
+		<Content Include="Core\Application\UpdateChanges\**" CopyToOutputDirectory="PreserveNewest" />
 
-  <ItemGroup>
-    <Content Include="Core\Application\UpdateChanges\UpdateChanges_v0.3.3beta.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Core\Application\UpdateChanges\UpdateChanges_vNEXT.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Core\Application\UpdateChanges\UpdateChanges_v0.4.0beta.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Core\Application\UpdateChanges\UpdateChanges_v0.3.2beta.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Core\Application\UpdateChanges\UpdateChanges_v0.3.1beta.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Core\Application\UpdateChanges\UpdateChanges_v0.3.0beta.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Core\Application\UpdateChanges\UpdateChanges_v0.2.8beta.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Core\Application\UpdateChanges\UpdateChanges_v0.2.7beta.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Core\Application\UpdateChanges\UpdateChanges_v0.2.6beta.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Core\Application\UpdateChanges\UpdateChanges_v0.2.5beta.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="UI\Ressources\GTN_APP_ICON.ico">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
+		<!-- Images, embedded in the assembly and referenced as pack URIs (/UI/Ressources/...); not copied to the output -->
+		<None Remove="UI\Ressources\**" />
+		<Resource Include="UI\Ressources\**" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.3" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
-    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.1.7" />
-    <PackageReference Include="System.Data.SQLite" Version="2.0.2" />
-  </ItemGroup>
+	<ItemGroup>
+		<!-- Native e_sqlite3 library required by System.Data.SQLite 2.x -->
+		<PackageReference Include="SourceGear.sqlite3" Version="3.53.4" />
+		<PackageReference Include="System.Data.SQLite" Version="2.0.2" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\UIX.ViewController.Engine\UIX.ViewController.Engine.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Core\Application\UpdateChanges\UpdateChanges_v0.2.4beta.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Resource Include="UI\Ressources\GTN_APP_ICON.ico">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="UI\Ressources\GTN_ICON_ADD_PROFILE.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="UI\Ressources\GTN_ICON_CLSMP.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="UI\Ressources\GTN_ICON_CLSOF.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="UI\Ressources\GTN_ICON_MONITOR_KEY.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="UI\Ressources\GTN_ICON_PLAYABLE.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="UI\Ressources\ICON_DEBUG.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="UI\Ressources\GTN_CLS_ICON.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Core\Application\CreateImportPackage\ViewModels\" />
-    <Folder Include="Core\Application\Metadata\ViewModel\" />
-    <Folder Include="Core\Application\Settings\Viewmodels\" />
-    <Folder Include="Core\Framework\ErrorHandling\" />
-    <Folder Include="Core\Framework\UI\AttachedProperties\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Core\Application\StartableApps.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="ImportPackages\Import_Package_452c6973071d4ac2b05cc85d76d0dd75.zip">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="ImportPackages\Import_Package_609d8c29b84e458a9e0e9c7115efca27.zip">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\UIX.ViewController.Engine\UIX.ViewController.Engine.csproj" />
+		<ProjectReference Include="..\..\UIXMonitorTweaks\UIXMonitorTweaks.csproj" />
+	</ItemGroup>
 
 </Project>

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="104 104 804 804">
+  <!-- Taskbar variant: no tile, solid color, heavy stroke -->
+  <path d="M 547 172 L 322 172 A 90 90 0 0 0 232 262 L 232 762 A 90 90 0 0 0 322 852 L 662 852 A 90 90 0 0 0 752 762 L 752 566 A 40 40 0 0 0 712 526 L 492 526" fill="none" stroke="#2F95E8" stroke-width="104" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="768" cy="172" r="64" fill="#2F95E8"/>
+</svg>

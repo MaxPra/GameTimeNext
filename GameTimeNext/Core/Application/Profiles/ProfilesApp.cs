@@ -11,6 +11,7 @@ using static GameTimeNext.Core.Application.Profiles.Controller.ProfilesViewContr
 
 namespace GameTimeNext.Core.Application.Profiles
 {
+    [UIXAppIcon(UIXMdlIcons.GameProfile)]
     public class ProfilesApp : UIXApplication, IUIXApplicationStarter
     {
 
@@ -51,10 +52,14 @@ namespace GameTimeNext.Core.Application.Profiles
             ProfilesBatchApp.Start(this);
         }
 
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(ProfilesApp));
+        }
+
         public override void InitializeApplicationOutput()
         {
-            _filterCache = new FilterCache();
-            _filterCache = AppEnvironment.GetAppConfig().FilterCache;
+            _filterCache = AppEnvironment.GetAppConfig().FilterCache ?? new FilterCache();
 
             // -- Profiles View (Overview)
             this.ProfilesView = new ProfilesView();
@@ -76,8 +81,6 @@ namespace GameTimeNext.Core.Application.Profiles
             this.ProfilesFilterView.ViewController = new ProfilesFilterViewController(this);
             this.ProfilesFilterView.ContentPresenter = ProfilesView.CPFilter;
             this.ProfilesFilterView.Popup = ProfilesView.PopFilter;
-
-            Icon = UIXMdlIcons.GameProfile;
 
         }
 

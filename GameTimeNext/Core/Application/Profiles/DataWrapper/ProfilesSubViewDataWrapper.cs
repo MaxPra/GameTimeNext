@@ -12,7 +12,7 @@ namespace GameTimeNext.Core.Application.Profiles.DataWrapper
         {
         }
 
-        public override T1PROFI? ResolveTableObjectFromSelectedItem(object? selectedItem)
+        public override T1PROFI? ResolveDataFromSelectedItem(object? selectedItem)
         {
             if (selectedItem is ProfilesListBoxItem listBoxItem)
                 return listBoxItem.ItemObject as T1PROFI;

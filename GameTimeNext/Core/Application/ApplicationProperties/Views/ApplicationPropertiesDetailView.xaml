@@ -1,0 +1,129 @@
+﻿<uixcontrols:UIXUserControlBase
+    x:Class="GameTimeNext.Core.Application.ApplicationProperties.Views.ApplicationPropertiesDetailView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:uixcontrols="clr-namespace:UIX.ViewController.Engine.FrameworkElements.UserControls;assembly=UIX.ViewController.Engine"
+    xmlns:uixmd="clr-namespace:UIX.ViewController.Engine.FrameworkElements.Markdown;assembly=UIX.ViewController.Engine"
+    xmlns:uixprops="clr-namespace:UIX.ViewController.Engine.AttachedProperties;assembly=UIX.ViewController.Engine"
+    d:DesignHeight="760"
+    d:DesignWidth="620"
+    mc:Ignorable="d">
+
+    <Border Padding="16" Style="{StaticResource Card}">
+        <DockPanel>
+
+            <!--  Header: icon and name of the application  -->
+            <Grid Margin="0,0,0,24" DockPanel.Dock="Top">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="16" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Border
+                    Grid.Column="0"
+                    Width="48"
+                    Height="48"
+                    Background="{DynamicResource Brush.Card.Inset}"
+                    CornerRadius="{StaticResource Card.CornerRadius}">
+                    <TextBlock
+                        x:Name="txIcon"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontFamily="{StaticResource Font.Icons}"
+                        FontSize="22" />
+                </Border>
+
+                <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                    <TextBlock
+                        x:Name="txTitle"
+                        Style="{StaticResource Text.Title}"
+                        TextTrimming="CharacterEllipsis" />
+                    <TextBlock
+                        x:Name="txSubtitle"
+                        Margin="0,4,0,0"
+                        Style="{StaticResource Text.Caption}"
+                        TextTrimming="CharacterEllipsis" />
+                </StackPanel>
+            </Grid>
+
+            <!--  Actions: pinned to the bottom  -->
+            <Grid Margin="0,16,0,0" DockPanel.Dock="Bottom">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!--  Closes the edit area without saving (Esc); "Discard" for a new definition, "Cancel" otherwise  -->
+                <Button
+                    x:Name="btnCancel"
+                    Grid.Column="0"
+                    Height="36"
+                    HorizontalAlignment="Stretch"
+                    Content="Cancel" />
+
+                <Button
+                    x:Name="btnSave"
+                    Grid.Column="2"
+                    Height="36"
+                    HorizontalAlignment="Stretch"
+                    Content="Save"
+                    Style="{StaticResource Button.Primary}" />
+            </Grid>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <TextBlock
+                    Grid.Row="0"
+                    Margin="0,0,0,8"
+                    Style="{StaticResource Text.Label}"
+                    Text="App name" />
+                <TextBox
+                    x:Name="txbId"
+                    Grid.Row="1"
+                    uixprops:UIXAttachedProperty.Path="T1APRDH.APDID"
+                    Style="{StaticResource TextBox.Default}" />
+
+                <TextBlock
+                    Grid.Row="2"
+                    Margin="0,16,0,8"
+                    Style="{StaticResource Text.Label}"
+                    Text="Description" />
+                <TextBox
+                    x:Name="txbDescription"
+                    Grid.Row="3"
+                    uixprops:UIXAttachedProperty.Path="T1APRDH.APDES"
+                    Style="{StaticResource TextBox.Default}" />
+
+                <CheckBox
+                    x:Name="chbMenuCallPossible"
+                    Grid.Row="4"
+                    Margin="0,16,0,0"
+                    Content="Menu call possible"
+                    uixprops:UIXAttachedProperty.Path="T1APRDH.APMCP" />
+
+                <TextBlock
+                    Grid.Row="5"
+                    Margin="0,16,0,8"
+                    Style="{StaticResource Text.Label}"
+                    Text="Help text" />
+                <uixmd:UIXMarkdownEditor
+                    x:Name="txbHelpText"
+                    Grid.Row="6"
+                    uixprops:UIXAttachedProperty.Path="T1APRDH.APHPT" />
+            </Grid>
+        </DockPanel>
+    </Border>
+</uixcontrols:UIXUserControlBase>

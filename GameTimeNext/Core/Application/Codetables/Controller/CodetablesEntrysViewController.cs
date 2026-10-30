@@ -19,7 +19,7 @@ using static UIX.ViewController.Engine.FrameworkElements.UIXContextMenuFactory;
 
 namespace GameTimeNext.Core.Application.Codetables.Controller
 {
-    public class CodetablesEntrysViewController : UIXViewControllerBase
+    public class CodetablesEntrysViewController : UIXViewControllerBase<CodetablesEntrysApp, CodetablesEntrysView>
     {
 
         private CodetablesEntrysViewModel? _viewModel;
@@ -46,7 +46,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
         protected override async Task BuildFirstImplAsync()
         {
-            FnControls.SetVisible(GetWnd().BtnAdd, GetWnd().ViewIndicator.Contains("ED"));
+            FnControls.SetVisible(GetView().BtnAdd, GetView().ViewIndicator.Contains("ED"));
             await BuildDG();
         }
 
@@ -54,11 +54,15 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
         {
         }
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
         }
 
         protected override void FillViewImpl()
+        {
+        }
+
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
         {
         }
 
@@ -91,10 +95,6 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
         {
         }
 
-        private CodetablesEntrysApp GetApp() => (CodetablesEntrysApp)App;
-
-        private CodetablesEntrysView GetWnd() => (CodetablesEntrysView)View;
-
         private async Task BuildDG()
         {
             GetApp().Loader.Begin();
@@ -107,7 +107,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
                 {
                     _viewModel = new CodetablesEntrysViewModel();
                     _viewModel.CodetableEntryDataGridRows = new System.Collections.ObjectModel.ObservableCollection<CodetableEntryDataGridRow>(rows);
-                    GetWnd().DataContext = _viewModel;
+                    GetView().DataContext = _viewModel;
                     GetApp().Loader.Stop();
                 });
             });
@@ -131,7 +131,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
                     T1CTABD t1ctabd = txctabd.Read(txtyp, txnum);
 
-                    CodetableEntryDataGridRow row = GetWnd().DgCodetableEntrys.CreateNewRow<CodetableEntryDataGridRow>();
+                    CodetableEntryDataGridRow row = GetView().DgCodetableEntrys.CreateNewRow<CodetableEntryDataGridRow>();
                     row.COTXTYP = txtyp;
                     row.COTXNUM = txnum;
                     row.CODESCR = t1ctabd.DESCR;
@@ -164,21 +164,35 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
             contextBuilder.SetStyle(ProfilesContextMenuBuilder.contextMenuStyle);
 
             T1CTABD t1ctabd = (T1CTABD)ctRow.RowObject!;
+            bool userCanEdit = GetUserIsAllowedToEdit(t1ctabd);
 
-            // Nur im Debugmodus dürfen Development-CTs geändert werden
-            if (GetWnd().ViewIndicator.Contains("ED"))
+            // Development codetables may only be changed in debug mode
+            if (userCanEdit)
                 contextBuilder.AddItem("ctxtEdit", "Edit", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Edit), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
 
             contextBuilder.AddItem("ctxtView", "View", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.View), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
 
-            // Nur im Debugmodus dürfen Development-CTs gelöscht werden
-            if (GetWnd().ViewIndicator.Contains("ED") && (!GetApp().T1CTABH!.NRANA && !t1ctabd.TXNUM.StartsWith("D_") || FnSystem.IsDebug()))
+            // Development codetables may only be deleted in debug mode
+            if (userCanEdit)
                 contextBuilder.AddItem("ctxtDelete", "Delete", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Delete), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
 
             if (contextBuilder.HasItems())
                 dgRow.ContextMenu = contextBuilder.Build();
             else
                 dgRow.ContextMenu = null;
+        }
+
+        private bool GetUserIsAllowedToEdit(T1CTABD t1ctabd)
+        {
+            if (!GetView().ViewIndicator.Contains("ED")) return false;
+
+            if (FnSystem.IsDebug() && !FnSystem.RunWithUserPermissions()) return true;
+
+            if (GetApp().T1CTABH.PERMI.Equals("D")) return false;
+
+            if (GetApp().T1CTABH.NRANA && t1ctabd.TXNUM.StartsWith("D_")) return false;
+
+            return true;
         }
 
         protected void EV_DgCodetableEntrys_CtxtOpening(FrameworkElement target)
@@ -230,7 +244,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
             CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
 
-            CFMBOXResult result = cfmbox.Show("Are you sure you want to delete this entry?", CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
+            CFMBOXResult result = cfmbox.Show(GetErrorMessage("GLO0001", "this entry"), CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
 
             if (result == CFMBOXResult.Yes)
             {

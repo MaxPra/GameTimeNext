@@ -1,11 +1,12 @@
-﻿using GameTimeNext.Core.Application.General.AppSearch;
-using GameTimeNext.Core.Application.General.FavAppsReorder;
+﻿using GameTimeNext.Core.Application.BigPicture;
+using GameTimeNext.Core.Application.DataManagers;
+using GameTimeNext.Core.Application.General.AppSearch;
 using GameTimeNext.Core.Application.General.UserSettings;
-using GameTimeNext.Core.Application.General.ViewModels;
+using GameTimeNext.Core.Application.General.Views;
 using GameTimeNext.Core.Application.GTXMigration;
+using GameTimeNext.Core.Application.Profiles;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Config;
-using GameTimeNext.Core.Framework.Logging;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.Utils;
 using System.IO;
@@ -18,15 +19,16 @@ using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.Events;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
-using AppEnvironment = GameTimeNext.Core.Framework.AppEnvironment;
 
 namespace GameTimeNext.Core.Application.General.Controller
 {
-    internal class MainWindowController : UIXWindowControllerBase
+    internal class MainWindowController : UIXWindowControllerBase<MainApp, MainWindow>
     {
         private string _gtxPath = "C:\\GameTimeX";
 
-        private MainWindowViewModel? _mainWindowViewModel = null;
+
+        // Created when the Big Picture mode is opened the first time, then reused
+        private BigPictureApp? _bigPictureApp = null;
 
         public MainWindowController(UIXApplication app) : base(app)
         {
@@ -37,19 +39,25 @@ namespace GameTimeNext.Core.Application.General.Controller
             GetApp().RootController = this;
 
             GetApp().CallDispatcher.Register(this, nameof(EXEV_SwitchToApplication));
+            GetApp().CallDispatcher.Register(this, nameof(EXEV_ExitBigPicture));
         }
 
         protected override void BuildFirstImpl()
         {
-
+            // Setting "Dynamic Background" (at runtime via FnTheme.ApplyWallpaperBackground)
+            // Without dynamic background the main window is translucent (acrylic)
+            bool isDynamicBackground = FnTheme.IsDynamicBackgroundEnabled(AppEnvironment.GetAppConfig().AppSettings.BackgroundSource);
+            GetView().UseWallpaperBackground = isDynamicBackground;
+            GetView().UseBackdropBlur = !isDynamicBackground;
         }
 
         protected override async Task BuildFirstImplAsync()
         {
-            // Für Applauncher Tab Control setzen
-            AppEnvironment.AppLauncher.TabControl = GetWindow().MainTabControl;
+            // Set tab control for the app launcher
+            AppEnvironment.AppLauncher.TabControl = GetView().MainTabControl;
 
-            FnControls.SetVisible(GetWindow().pnlDevPathsHeader, FnSystem.IsDebug());
+            FnControls.SetVisible(GetView().pnlDevPathsHeader, FnSystem.IsDebug());
+            FnControls.SetVisible(GetView().pnlUserModeHeader, FnSystem.IsDebug() && FnSystem.RunWithUserPermissions());
 
             BuildBetaTag();
 
@@ -58,12 +66,12 @@ namespace GameTimeNext.Core.Application.General.Controller
             AppEnvironment.AppLauncher.StartFavorites(GetApp());
 
             FnLog.AddInfo("MainApp", "Starting background processes...");
-            // Hintergrundprozesse starten
+            // Start background processes
             AppEnvironment.StartBackgroundProcesses(GetApp());
 
-            // Warten bis alle ausstehenden Render-Operationen (Prio 7) abgearbeitet
-            // sind, bevor modale Dialoge gezeigt werden. Background-Prio (4) ist
-            // niedriger als Render (7) → Render läuft zuerst durch.
+            // Wait until all pending render operations (priority 7) have been processed
+            // before modal dialogs are shown. Background priority (4) is
+            // lower than Render (7) → rendering runs first.
             await System.Windows.Application.Current.Dispatcher.InvokeAsync(() => { }, DispatcherPriority.Background);
 
             if (GetApp().SplashScreen is not null)
@@ -74,14 +82,18 @@ namespace GameTimeNext.Core.Application.General.Controller
                     System.Windows.Application.Current.MainWindow = null;
             }
 
-            FnControls.SetVisible(GetWindow(), true);
+            FnControls.SetVisible(GetView(), true);
 
-            // WindowState setzen
-            _ = GetWindow().Dispatcher.BeginInvoke(() =>
+            // Set WindowState
+            _ = GetView().Dispatcher.BeginInvoke(() =>
             {
-                GetWindow().WindowState = GetApp().StartMinimized
+                GetView().WindowState = GetApp().StartMinimized
                     ? WindowState.Minimized
                     : WindowState.Maximized;
+
+                // Start argument --bigpicture: open directly in the Big Picture mode (still cloaked, so no flicker)
+                if (!GetApp().StartMinimized && AppEnvironment.StartArguments.ContainsKey("bigpicture"))
+                    EnterBigPicture();
 
                 // Only reveal the window once it has its final state (no flicker)
                 GetApp().SetMainWindowCloaked(false);
@@ -89,7 +101,7 @@ namespace GameTimeNext.Core.Application.General.Controller
 
             System.Windows.Application.Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
 
-            // Fehler anzeigen, die vor MainWindow passiert sind (Appstart)
+            // Show errors that occurred before the MainWindow (app start)
             ShowErrorsFromErrorList();
 
             await CheckGTXMigration();
@@ -100,19 +112,126 @@ namespace GameTimeNext.Core.Application.General.Controller
 
         protected override void BuildImpl()
         {
-            FnControls.SetVisible(GetWindow().txtEmptyTabMessage, GetWindow().MainTabControl.Items.Count == 0);
+            FnControls.SetVisible(GetView().pnlEmptyTabMessage, GetView().MainTabControl.Items.Count == 0);
         }
 
         public override bool HandleGlobalShortcut(KeyEventArgs e)
         {
+            // The Big Picture mode covers the tabs: it gets the keyboard, the shortcuts of the tabs are off
+            if (_bigPictureApp?.IsOpen == true)
+                return _bigPictureApp.HandleKey(e);
+
             if (e.KeyboardDevice.Modifiers.HasFlag(ModifierKeys.Control) && e.Key == Key.M)
             {
-                AppSearchApp? appSearch = GetApp().GetApplication<AppSearchApp>(UIXApplicationStartTarget.Window);
-                appSearch?.Search();
+                OpenAppMenu();
                 return true;
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// "+" after the open applications in the main tab control (template part of the tab control style).
+        /// </summary>
+        protected void EV_BtnTabAdd()
+        {
+            OpenAppMenu();
+        }
+
+        /// <summary>
+        /// Down arrow before the "+" in the main tab control (template part of the tab control style):
+        /// opens the start order of the favorites.
+        /// </summary>
+        protected void EV_btnTabFavorites()
+        {
+            FavAppsStartOrderView view = GetApp().FavAppsStartOrderView!;
+
+            // The popup closes itself on a click outside, without CloseView
+            if (view.IsShown && view.Popup!.IsOpen)
+            {
+                view.CloseView();
+                return;
+            }
+
+            view.Popup!.PlacementTarget = GetView().MainTabControl.Template.FindName("btnTabFavorites", GetView().MainTabControl) as UIElement;
+            view.ShowView(true);
+        }
+
+        /// <summary>
+        /// An open application was dragged to another position in the tab bar. The order of the open tabs is not saved.
+        /// </summary>
+        protected void EV_MainTabControl_DragAndDrop()
+        {
+        }
+
+        /// <summary>
+        /// Big Picture button of the title bar (template part of the window style).
+        /// </summary>
+        protected void EV_btnBigPicture()
+        {
+            EnterBigPicture();
+        }
+
+        /// <summary>
+        /// Switches the window to full screen and shows the Big Picture mode over the tabs.
+        /// </summary>
+        private void EnterBigPicture()
+        {
+            if (_bigPictureApp?.IsOpen == true)
+                return;
+
+            // The running game detection needs the profiles application (GameRunningProcess)
+            EnsureProfilesAppStarted();
+
+            _bigPictureApp ??= GetApp().GetApplication<BigPictureApp>();
+
+            GetView().IsFullScreen = true;
+            _bigPictureApp.Start(GetApp(), GetView().cpBigPicture);
+
+            // WPF renders covered elements too: the tabs below (e.g. animations of the profiles view) would keep costing
+            // frames of the mode. Hidden keeps their layout and state.
+            GetView().MainTabControl.Visibility = Visibility.Hidden;
+            FnControls.SetVisible(GetView().pnlEmptyTabMessage, false);
+
+            FnLog.AddInfo("MainApp", "Big Picture mode opened");
+        }
+
+        /// <summary>
+        /// BigPictureViewController: back to the normal window with its tabs.
+        /// </summary>
+        protected void EXEV_ExitBigPicture()
+        {
+            if (_bigPictureApp?.IsOpen != true)
+                return;
+
+            _bigPictureApp.Close();
+            GetView().IsFullScreen = false;
+
+            GetView().MainTabControl.Visibility = Visibility.Visible;
+            FnControls.SetVisible(GetView().pnlEmptyTabMessage, GetView().MainTabControl.Items.Count == 0);
+
+            // The mode colored the window with the selected game: back to the profile selected in the profiles view
+            FnTheme.ApplyProfileAccentColors(AppEnvironment.CurrentPfid == 0 ? null : new TXPROFI().Read(AppEnvironment.CurrentPfid));
+
+            FnLog.AddInfo("MainApp", "Big Picture mode closed");
+        }
+
+        private void EnsureProfilesAppStarted()
+        {
+            string className = typeof(ProfilesApp).FullName!;
+
+            if (AppEnvironment.IsApplicationRunning(className))
+                return;
+
+            string tabName = "Profiles";
+
+            AppEnvironment.AppLauncher.LaunchApplication(className, GetApp(), tabName);
+        }
+
+        private void OpenAppMenu()
+        {
+            AppSearchApp? appSearch = GetApp().GetApplication<AppSearchApp>(UIXApplicationStartTarget.Window);
+            appSearch?.Search();
         }
 
         protected override void TriggeredEvent(FrameworkElement source, string eventName)
@@ -123,18 +242,22 @@ namespace GameTimeNext.Core.Application.General.Controller
 
                     if (source is TabControl)
                     {
-                        FnControls.SetVisible(GetWindow().txtEmptyTabMessage, GetWindow().MainTabControl.Items.Count == 0);
+                        FnControls.SetVisible(GetView().pnlEmptyTabMessage, GetView().MainTabControl.Items.Count == 0);
                         Event_TabChanged((TabControl)source);
                     }
                     break;
             }
         }
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
         }
 
         protected override void FillViewImpl()
+        {
+        }
+
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
         {
         }
 
@@ -161,7 +284,7 @@ namespace GameTimeNext.Core.Application.General.Controller
         }
 
         /// <summary>
-        /// Wird Tab geändert
+        /// Tab is changed
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -185,8 +308,7 @@ namespace GameTimeNext.Core.Application.General.Controller
                 FnLog.AddInfo("MainApp", "GameTimeX installation found. Prompting user for migration.");
 
                 CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
-                string msg = $"A GameTimeX-Installation was found.\nDo you want to migrate your profiles to {AppConfig.Root.ApplicationName}?";
-                CFMBOXResult result = cfmbox.Show("Start GameTimeX migration?", msg, CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
+                CFMBOXResult result = cfmbox.Show(GetErrorMessage("GTX0001", AppConfig.Root.ApplicationName), CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
 
                 if (result == CFMBOXResult.Yes)
                 {
@@ -206,7 +328,7 @@ namespace GameTimeNext.Core.Application.General.Controller
                         {
                             hasError = true;
                             FnLog.AddError("MainApp", "Error during GTX migration", ex);
-                            GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show("Migration Error", "An error occurred during migration:\n" + ex.Message, CFMBOXResult.Ok, CFMBOXIcon.Error);
+                            GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("GLO0013", "migrating from GameTimeX", ex.Message), CFMBOXResult.Ok, CFMBOXIcon.Error);
                         }
                         finally
                         {
@@ -221,9 +343,9 @@ namespace GameTimeNext.Core.Application.General.Controller
         private void BuildBetaTag()
         {
             if (AppEnvironment.AppVersion.IsBeta)
-                GetWindow().Subtitle = "BETA";
+                GetView().Subtitle = "BETA";
             else
-                GetWindow().Subtitle = string.Empty;
+                GetView().Subtitle = string.Empty;
         }
 
         private void ShowErrorsFromErrorList()
@@ -238,15 +360,47 @@ namespace GameTimeNext.Core.Application.General.Controller
                 CFMBOXResult result;
 
                 if (informationListItem.MBoxType == CFMBOXType.Default)
-                    result = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(informationListItem.Text, informationListItem.Buttons, informationListItem.Icon, informationListItem.MBoxType);
+                    result = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(informationListItem.GetText(GetApp()), informationListItem.Buttons, informationListItem.Icon, informationListItem.MBoxType);
                 else
-                    result = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(informationListItem.Title, informationListItem.Text, informationListItem.Buttons, informationListItem.Icon, informationListItem.MBoxType);
+                    result = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(informationListItem.Title, informationListItem.GetText(GetApp()), informationListItem.Buttons, informationListItem.Icon, informationListItem.MBoxType);
 
                 if (result == CFMBOXResult.Yes)
                     informationListItem.YesAction?.Invoke();
             }
 
             AppEnvironment.InformationList.Clear();
+        }
+
+        protected void EV_ctxtHelp(FrameworkElement target)
+        {
+            if (target is TabItem tab)
+                ShowTabHelp(tab);
+        }
+
+        protected void EV_BtnHelp()
+        {
+            ShowHelp(GetApp(), GetView().Title);
+        }
+
+        private void ShowTabHelp(TabItem tab)
+        {
+            if (!AppEnvironment.StartedApplications.TryGetValue(tab.Tag.ToString()!, out UIXApplication? application))
+                return;
+
+            ShowHelp(application, tab.Header.ToString()!);
+        }
+
+        private void ShowHelp(UIXApplication application, string title)
+        {
+            // Read again instead of the properties loaded at the start of the app, so a changed help text shows up immediately
+            UIXAppProperties properties = UIXApplication.AppPropertiesProvider?.Read(application.AppProperties.ApplicationName) ?? application.AppProperties;
+
+            string helpText = FnString.IsNullEmptyOrWhitespace(properties.ApplicationHelpText)
+                ? "No help is available for this application yet."
+                : properties.ApplicationHelpText;
+
+            GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window)
+                .Show($"Help - {title}", helpText, CFMBOXResult.Ok, CFMBOXIcon.Info, CFMBOXType.MarkdownLarge);
         }
 
         protected void EV_ctxtClose(FrameworkElement target)
@@ -311,33 +465,18 @@ namespace GameTimeNext.Core.Application.General.Controller
             FnUserSettings.UnsetAsPrimaryStart(favApp);
         }
 
-        protected void EV_ctxtEditOrder()
-        {
-            FavAppsReorderApp? favAppsReorderApp = GetApp().GetApplication<FavAppsReorderApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
-
-            favAppsReorderApp.AppResult = (result =>
-            {
-                if (result.HasChanged)
-                {
-                    ReorderTabsByFavApps();
-                }
-            });
-
-            favAppsReorderApp.Reorder();
-        }
-
         protected void EXEV_SwitchToApplication(string applicationFullName)
         {
             if (!AppEnvironment.IsApplicationRunning(applicationFullName))
                 return;
 
-            GetWindow().MainTabControl.SelectedItem = GetWindow().MainTabControl.Items.Cast<TabItem>().FirstOrDefault(t => t.Tag?.ToString() == applicationFullName);
+            GetView().MainTabControl.SelectedItem = GetView().MainTabControl.Items.Cast<TabItem>().FirstOrDefault(t => t.Tag?.ToString() == applicationFullName);
         }
 
         private void ReorderTabsByFavApps()
         {
             var favApps = AppEnvironment.GetAppConfig().UserSettings.FavApps;
-            var tabControl = GetWindow().MainTabControl;
+            var tabControl = GetView().MainTabControl;
 
             if (favApps == null || favApps.Count == 0 || tabControl.Items.Count == 0)
                 return;
@@ -377,14 +516,5 @@ namespace GameTimeNext.Core.Application.General.Controller
             AppEnvironment.AppLauncher.BuildContextMenu(tab, favApp);
         }
 
-        private MainWindow GetWindow()
-        {
-            return (MainWindow)View;
-        }
-
-        private MainApp GetApp()
-        {
-            return (MainApp)App;
-        }
     }
 }

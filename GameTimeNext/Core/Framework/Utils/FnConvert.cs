@@ -1,9 +1,11 @@
-﻿namespace GameTimeNext.Core.Framework.Utils
+﻿using UIX.ViewController.Engine.Migration.Types;
+
+namespace GameTimeNext.Core.Framework.Utils
 {
     public class FnConvert
     {
         /// <summary>
-        /// Wandelt einen String in eine liste um.
+        /// Converts a string into a list.
         /// </summary>
         /// <param name="listStr"></param>
         /// <returns></returns>
@@ -15,7 +17,7 @@
         }
 
         /// <summary>
-        /// Wandelt eine Liste in einen String um.
+        /// Converts a list into a string.
         /// </summary>
         /// <param name="list"></param>
         /// <returns></returns>
@@ -35,16 +37,20 @@
             return listStr;
         }
 
+        /// <summary>
+        /// Converts UI text (current culture, see UIXSqliteDataType.ConversionType.UI) into a double; 0 if empty or invalid.
+        /// </summary>
         public static double ToDouble(string str)
         {
-            double result = 0;
-
-            if (Double.TryParse(str, out result))
+            try
             {
-                return result;
+                object? value = UIXSqliteDataType.Convert(UIXSqliteDataType.ConversionType.UI, UIXSqliteDataType.ConversionType.CSharp, str, UIXSqliteDataType.GetByCsType(typeof(double)));
+                return value is double result ? result : 0;
             }
-
-            return 0;
+            catch (FormatException)
+            {
+                return 0;
+            }
         }
     }
 }

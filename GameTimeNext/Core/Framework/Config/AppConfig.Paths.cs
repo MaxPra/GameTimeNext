@@ -49,9 +49,78 @@ namespace GameTimeNext.Core.Framework.Config
             }
 
             [JsonIgnore]
+            public static string GenClassTableObjectsDirectoryPath
+            {
+                get => ReturnEnsureDirectoryExists(Path.Combine(GenClassDirectoryPath, "TableObjects"));
+            }
+
+            [JsonIgnore]
+            public static string GenClassDataManagersDirectoryPath
+            {
+                get => ReturnEnsureDirectoryExists(Path.Combine(GenClassDirectoryPath, "DataManagers"));
+            }
+
+            [JsonIgnore]
             public static string BackupDirectoryPath
             {
                 get => ReturnEnsureDirectoryExists(Path.Combine(DevDirectoryPath, "backup"));
+            }
+
+            [JsonIgnore]
+            public static string SolutionDirectoryPath
+            {
+                get
+                {
+                    string startingDirectoryPath = Root.ApplicationDirectoryPath;
+
+                    DirectoryInfo? current = new DirectoryInfo(startingDirectoryPath);
+                    while (current is not null)
+                    {
+                        string slnxFilePath = Path.Combine(current.FullName, $"{Root.ApplicationName}.slnx");
+                        if (File.Exists(slnxFilePath))
+                            return current.FullName;
+
+                        current = current.Parent;
+                    }
+
+                    return startingDirectoryPath;
+                }
+            }
+
+            [JsonIgnore]
+            public static string DevSyncDirectoryPath
+            {
+                get => Path.Combine(SolutionDirectoryPath, "devsync");
+            }
+
+            [JsonIgnore]
+            public static string DevSyncDefaultImagesSymbolsDirectoryPath
+            {
+                get => GetImagesAndSymbolsDirectoryPath(DevSyncDirectoryPath);
+            }
+
+            public static string GetImagesAndSymbolsDirectoryPath(string parentDirectoryPath)
+            {
+                string temp = ReturnEnsureDirectoryExists(Path.Combine(parentDirectoryPath, "imagesAndSymbols"), requireParentExists: true);
+                return ReturnEnsureDirectoryExists(Path.Combine(temp, "default"), requireParentExists: true);
+            }
+
+            [JsonIgnore]
+            public static string ImportPackagesDirectoryPath
+            {
+                get => ReturnEnsureDirectoryExists(Path.Combine(SolutionDirectoryPath, Root.ApplicationName, "ImportPackages"));
+            }
+
+            [JsonIgnore]
+            public static string ImportPackageTestDirectoryPath
+            {
+                get => ReturnEnsureDirectoryExists(Path.Combine(DevDirectoryPath, "importPackageTest"));
+            }
+
+            [JsonIgnore]
+            public static string ImportPackageTestFilePath
+            {
+                get => Path.Combine(ImportPackageTestDirectoryPath, Root.DatabaseFileName);
             }
         }
 
@@ -64,7 +133,7 @@ namespace GameTimeNext.Core.Framework.Config
                 {
                     string temp = Root.ApplicationName;
 
-                    // Modi
+                    // Modes
                     if (AppEnvironment.StartArguments is not null && AppEnvironment.StartArguments.ContainsKey("m") && !FnString.IsNullEmptyOrWhitespace(AppEnvironment.StartArguments["m"]))
                         temp += "_m" + AppEnvironment.StartArguments["m"];
 
@@ -135,6 +204,12 @@ namespace GameTimeNext.Core.Framework.Config
             }
 
             [JsonIgnore]
+            public static string NormalDatabaseFilePath
+            {
+                get => Path.Combine(NormalStorageDirectoryPath, Root.DatabaseFileName);
+            }
+
+            [JsonIgnore]
             public static string DatabaseFilePath
             {
                 get => Path.Combine(StorageDirectoryPath, Root.DatabaseFileName);
@@ -165,6 +240,29 @@ namespace GameTimeNext.Core.Framework.Config
             public static string BackupDirectoryPath
             {
                 get => ReturnEnsureDirectoryExists(Path.Combine(_tempDirectoryPath, "backup"));
+            }
+
+            /// <summary>Sections of the covers printed on the discs (DiscPrint), so each cover is analyzed only once.</summary>
+            [JsonIgnore]
+            public static string DiscPrintCacheFilePath
+            {
+                get => Path.Combine(_tempDirectoryPath, "discPrintCache.json");
+            }
+        }
+
+        /// <summary>
+        /// Paths of Windows itself (read only, never created by the app).
+        /// </summary>
+        public static class Windows
+        {
+            /// <summary>
+            /// Copy of the current desktop wallpaper kept by Windows. Also exists for slideshow / Spotlight,
+            /// where the wallpaper setting doesn't point to a single file.
+            /// </summary>
+            [JsonIgnore]
+            public static string TranscodedWallpaperFilePath
+            {
+                get => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Microsoft", "Windows", "Themes", "TranscodedWallpaper");
             }
         }
 
@@ -232,23 +330,14 @@ namespace GameTimeNext.Core.Framework.Config
 
         private static string ReturnEnsureDirectoryExists(string path, bool requireParentExists = false)
         {
-            if (!Directory.Exists(path))
-            {
-                DirectoryInfo? parentDirectoryInfo = new DirectoryInfo(path).Parent;
-                if (!requireParentExists || (parentDirectoryInfo is not null && parentDirectoryInfo.Exists))
-                    Directory.CreateDirectory(path);
-            }
+            FnDirectory.EnsureDirectoryExists(path, requireParentExists);
 
             return path;
         }
 
         private static string ReturnEnsureFileExists(string path)
         {
-            if (!File.Exists(path))
-            {
-                FileStream fs = File.Create(path);
-                fs.Close();
-            }
+            FnFile.EnsureFileExists(path);
 
             return path;
         }

@@ -1,8 +1,13 @@
 ﻿MENAM;DESCR;MTYPE;DSYNC;GENER;CRAT;CRUS;CHAT;CHUS
-T1CTABD;Codetabellen / Entrys;mE;1;1;2026-06-20 15:04:22;prage;2026-06-30 18:26:59;prage
-T1CTABH;Codetabellen / Head;mE;1;1;2026-06-20 15:12:34;prage;2026-07-04 14:55:17;prage
-T1GROUP;Groups;mE;0;1;2026-06-20 00:00:00;system;2026-06-21 11:37:23;prage
-T1GRPPO;Group-Profile;mE;0;1;2026-06-20 00:00:00;system;2026-06-21 11:37:27;prage
-T1PLTHR;Playthroughs;mE;0;1;2026-06-20 00:00:00;system;2026-08-24 21:02:38;OliverFida
-T1PROFI;Profiles;mE;0;1;2026-06-20 00:00:00;system;2026-07-10 22:00:07;prage
-T1SESSI;Sessions;mE;0;1;2026-06-20 00:00:00;system;2026-06-21 11:37:36;prage
+T1CTABD;Codetabellen / Entrys;TO;1;1;2026-06-20 15:04:22;prage;2026-10-30 19:07:55;Oliver Fida
+T1CTABH;Codetabellen / Head;TO;1;1;2026-06-20 15:12:34;prage;2026-10-30 19:07:55;Oliver Fida
+T1GROUP;Groups;TO;0;1;2026-06-20 00:00:00;system;2026-10-30 19:07:55;Oliver Fida
+T1GRPPO;Group-Profile;TO;0;1;2026-06-20 00:00:00;system;2026-10-30 19:07:55;Oliver Fida
+T1PLTHR;Playthroughs;TO;0;1;2026-06-20 00:00:00;system;2026-10-30 19:07:56;Oliver Fida
+T1PROFI;Profiles;TO;0;1;2026-06-20 00:00:00;system;2026-10-30 19:07:56;Oliver Fida
+T1SESSI;Sessions;TO;0;1;2026-06-20 00:00:00;system;2026-10-30 19:07:56;Oliver Fida
+T1SCRSH;Screensetups / Head;TO;0;1;2026-10-24 20:56:41;prage;2026-10-30 19:07:56;Oliver Fida
+T1SCRSP;Screensetups / Monitors;TO;0;1;2026-10-24 21:02:36;prage;2026-10-30 19:07:56;Oliver Fida
+T1APRDH;Application Properties Definition / Head;TO;1;1;2026-10-25 15:32:19;prage;2026-10-30 19:07:55;Oliver Fida
+T1ERMSG;Errormessages;TO;1;1;2026-10-26 14:17:18;prage;2026-10-30 19:07:55;Oliver Fida
+T1MENUE;Menüeinträge;TO;1;1;2026-10-28 18:43:58;prage;2026-10-30 19:07:56;Oliver Fida

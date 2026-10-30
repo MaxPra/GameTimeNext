@@ -1,121 +1,54 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:uixprops="clr-namespace:UIX.ViewController.Engine.AttachedProperties;assembly=UIX.ViewController.Engine">
 
-    <SolidColorBrush x:Key="Brush.Button.Background" Color="#20242D" />
-    <SolidColorBrush x:Key="Brush.Button.Border" Color="#3B4150" />
-    <SolidColorBrush x:Key="Brush.Button.HoverBorder" Color="#576176" />
+    <!--  Former neutral button brushes, kept for compatibility (see ControlTokens.xaml for the current ones)  -->
+    <SolidColorBrush x:Key="Brush.Button.Background" Color="#FF1E1E26" />
+    <SolidColorBrush x:Key="Brush.Button.Border" Color="#FF292932" />
+    <SolidColorBrush x:Key="Brush.Button.HoverBorder" Color="#FF383843" />
 
-    <SolidColorBrush x:Key="Brush.TitleBarButton.Background" Color="#1B1B22" />
-    <SolidColorBrush x:Key="Brush.TitleBarButton.Border" Color="#353542" />
-    <SolidColorBrush x:Key="Brush.TitleBarButton.Hover" Color="#272733" />
-    <SolidColorBrush x:Key="Brush.TitleBarButton.Pressed" Color="#17171F" />
+    <!--
+        ===== Title bar buttons =====
+        Borderless, the icon is the content (glyph bound to the button Foreground, see WindowStyle.xaml).
+        Hover: light glass tint; close: red fill with white icon like the Windows caption buttons.
+    -->
+    <SolidColorBrush x:Key="Brush.TitleBarButton.Icon" Color="#FFB4B4BE" />
+    <SolidColorBrush x:Key="Brush.TitleBarButton.Hover" Color="#17FFFFFF" />
+    <SolidColorBrush x:Key="Brush.TitleBarButton.Pressed" Color="#0DFFFFFF" />
+    <SolidColorBrush x:Key="Brush.TitleBarButton.Close" Color="#FFD9434B" />
+    <SolidColorBrush x:Key="Brush.TitleBarButton.ClosePressed" Color="#FFB23A41" />
 
-    <SolidColorBrush x:Key="Brush.TitleBarButton.Close" Color="#C65B5B" />
-    <SolidColorBrush x:Key="Brush.TitleBarButton.Icon" Color="#C3C3CD" />
-
-    <!--  Title Bar Buttons  -->
     <Style x:Key="TitleBarButtonStyle" TargetType="Button">
-        <Setter Property="Background" Value="{DynamicResource Brush.TitleBarButton.Background}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.TitleBarButton.Border}" />
-        <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="Foreground" Value="{DynamicResource Brush.TitleBarButton.Icon}" />
-        <Setter Property="Width" Value="24" />
-        <Setter Property="Height" Value="24" />
-        <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
-        <Setter Property="FontSize" Value="10" />
-        <Setter Property="FontWeight" Value="Normal" />
-        <Setter Property="Cursor" Value="Arrow" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{StaticResource Brush.TitleBarButton.Icon}" />
+        <Setter Property="Width" Value="34" />
+        <Setter Property="Height" Value="26" />
         <Setter Property="Padding" Value="0" />
-        <Setter Property="HorizontalContentAlignment" Value="Center" />
-        <Setter Property="VerticalContentAlignment" Value="Center" />
-
+        <Setter Property="Cursor" Value="Arrow" />
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
-                    <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
-                        <Border
-                            x:Name="Chrome"
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="4"
-                            RenderTransformOrigin="0.5,0.5">
-                            <Border.RenderTransform>
-                                <TranslateTransform Y="0" />
-                            </Border.RenderTransform>
-                        </Border>
-
-                        <Border
-                            x:Name="HoverOverlay"
-                            Background="{DynamicResource Brush.TitleBarButton.Hover}"
-                            CornerRadius="4"
-                            IsHitTestVisible="False"
-                            Opacity="0" />
-
-                        <Border
-                            x:Name="PressedOverlay"
-                            Background="{DynamicResource Brush.TitleBarButton.Pressed}"
-                            CornerRadius="4"
-                            IsHitTestVisible="False"
-                            Opacity="0" />
-
-                        <ContentPresenter
-                            x:Name="IconPresenter"
-                            Margin="0"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Opacity="0.92"
-                            TextElement.Foreground="{TemplateBinding Foreground}" />
-                    </Grid>
+                    <Border
+                        x:Name="Chrome"
+                        Background="{TemplateBinding Background}"
+                        CornerRadius="{StaticResource Control.CornerRadius}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
 
                     <ControlTemplate.Triggers>
-
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Chrome" Property="BorderBrush" Value="#4B4B5B" />
-                            <Setter TargetName="IconPresenter" Property="Opacity" Value="1" />
-                            <Trigger.EnterActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation
-                                            Storyboard.TargetName="HoverOverlay"
-                                            Storyboard.TargetProperty="Opacity"
-                                            To="1"
-                                            Duration="0:0:0.14" />
-                                        <DoubleAnimation
-                                            Storyboard.TargetName="Chrome"
-                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
-                                            To="-0.75"
-                                            Duration="0:0:0.14" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </Trigger.EnterActions>
-                            <Trigger.ExitActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation
-                                            Storyboard.TargetName="HoverOverlay"
-                                            Storyboard.TargetProperty="Opacity"
-                                            To="0"
-                                            Duration="0:0:0.18" />
-                                        <DoubleAnimation
-                                            Storyboard.TargetName="Chrome"
-                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
-                                            To="0"
-                                            Duration="0:0:0.18" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </Trigger.ExitActions>
+                            <Setter TargetName="Chrome" Property="Background" Value="{StaticResource Brush.TitleBarButton.Hover}" />
+                            <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
                         </Trigger>
-
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="PressedOverlay" Property="Opacity" Value="1" />
-                            <Setter TargetName="IconPresenter" Property="Opacity" Value="1" />
+                            <Setter TargetName="Chrome" Property="Background" Value="{StaticResource Brush.TitleBarButton.Pressed}" />
                         </Trigger>
-
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="Chrome" Property="Opacity" Value="0.38" />
-                            <Setter TargetName="IconPresenter" Property="Opacity" Value="0" />
+                            <Setter Property="Opacity" Value="0.38" />
                         </Trigger>
-
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
@@ -125,110 +58,37 @@
     <Style
         x:Key="TitleBarMinButtonStyle"
         BasedOn="{StaticResource TitleBarButtonStyle}"
-        TargetType="Button">
-        <Setter Property="Foreground" Value="{DynamicResource Brush.TitleBarButton.Icon}" />
-    </Style>
+        TargetType="Button" />
 
     <Style
         x:Key="TitleBarMaxButtonStyle"
         BasedOn="{StaticResource TitleBarButtonStyle}"
-        TargetType="Button">
-        <Setter Property="Foreground" Value="{DynamicResource Brush.TitleBarButton.Icon}" />
-    </Style>
+        TargetType="Button" />
 
-    <!--  Title Bar Close Button  -->
     <Style
         x:Key="TitleBarCloseButtonStyle"
         BasedOn="{StaticResource TitleBarButtonStyle}"
         TargetType="Button">
-        <Setter Property="Cursor" Value="Arrow" />
-        <Setter Property="Foreground" Value="{DynamicResource Brush.TitleBarButton.Icon}" />
-
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
-                    <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
-                        <Border
-                            x:Name="Chrome"
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="4"
-                            RenderTransformOrigin="0.5,0.5">
-                            <Border.RenderTransform>
-                                <TranslateTransform Y="0" />
-                            </Border.RenderTransform>
-                        </Border>
-
-                        <Border
-                            x:Name="CloseHoverOverlay"
-                            Background="#4A2222"
-                            CornerRadius="4"
-                            IsHitTestVisible="False"
-                            Opacity="0" />
-
-                        <Border
-                            x:Name="ClosePressedOverlay"
-                            Background="#3A1A1A"
-                            CornerRadius="4"
-                            IsHitTestVisible="False"
-                            Opacity="0" />
-
-                        <ContentPresenter
-                            x:Name="IconPresenter"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Opacity="0.92"
-                            TextElement.Foreground="{TemplateBinding Foreground}" />
-                    </Grid>
+                    <Border
+                        x:Name="Chrome"
+                        Background="{TemplateBinding Background}"
+                        CornerRadius="{StaticResource Control.CornerRadius}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
 
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource Brush.TitleBarButton.Close}" />
-                            <Setter TargetName="IconPresenter" Property="Opacity" Value="1" />
-                            <Setter Property="Foreground" Value="#FFE6E6E8" />
-                            <Trigger.EnterActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation
-                                            Storyboard.TargetName="CloseHoverOverlay"
-                                            Storyboard.TargetProperty="Opacity"
-                                            To="1"
-                                            Duration="0:0:0.14" />
-                                        <DoubleAnimation
-                                            Storyboard.TargetName="Chrome"
-                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
-                                            To="-0.75"
-                                            Duration="0:0:0.14" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </Trigger.EnterActions>
-                            <Trigger.ExitActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation
-                                            Storyboard.TargetName="CloseHoverOverlay"
-                                            Storyboard.TargetProperty="Opacity"
-                                            To="0"
-                                            Duration="0:0:0.18" />
-                                        <DoubleAnimation
-                                            Storyboard.TargetName="Chrome"
-                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
-                                            To="0"
-                                            Duration="0:0:0.18" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </Trigger.ExitActions>
+                            <Setter TargetName="Chrome" Property="Background" Value="{StaticResource Brush.TitleBarButton.Close}" />
+                            <Setter Property="Foreground" Value="White" />
                         </Trigger>
-
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource Brush.TitleBarButton.Close}" />
-                            <Setter TargetName="ClosePressedOverlay" Property="Opacity" Value="1" />
+                            <Setter TargetName="Chrome" Property="Background" Value="{StaticResource Brush.TitleBarButton.ClosePressed}" />
                         </Trigger>
-
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="Chrome" Property="Opacity" Value="0.38" />
-                            <Setter TargetName="IconPresenter" Property="Opacity" Value="0" />
+                            <Setter Property="Opacity" Value="0.38" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -236,278 +96,401 @@
         </Setter>
     </Style>
 
-    <Style x:Key="Button.Secondary" TargetType="Button">
-        <Setter Property="Height" Value="Auto" />
-        <Setter Property="MinHeight" Value="40" />
-        <Setter Property="Padding" Value="12,6" />
-        <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
-        <Setter Property="Background" Value="{DynamicResource Brush.Accent}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.AccentHover}" />
-        <Setter Property="BorderThickness" Value="2.2" />
-        <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="HorizontalContentAlignment" Value="Center" />
-        <Setter Property="VerticalContentAlignment" Value="Center" />
-        <Setter Property="Cursor" Value="Hand" />
-        <Setter Property="Template">
+    <!--
+        ===== Buttons =====
+        One flat template for all buttons: fill without border, hover/pressed as overlay (works on any fill),
+        accent focus ring only for keyboard navigation (FocusVisualStyle).
+
+          (implicit)        neutral button
+          Button.Primary    accent fill, the main action of a view (Button.Secondary is the old name, kept for compatibility)
+          Button.Ghost      no fill until hovered, for icon buttons and secondary actions
+          Button.Icon       square neutral button for a single icon (no padding, otherwise the icon gets clipped)
+    -->
+
+    <Style x:Key="FocusVisual.Control">
+        <Setter Property="Control.Template">
             <Setter.Value>
-                <ControlTemplate TargetType="Button">
-                    <ControlTemplate.Resources>
-                        <Style TargetType="{x:Type TextBlock}">
-                            <Setter Property="Margin" Value="0" />
-                            <Setter Property="VerticalAlignment" Value="Center" />
-                        </Style>
-                    </ControlTemplate.Resources>
-                    <Grid SnapsToDevicePixels="True">
-
-                        <Border
-                            x:Name="Base"
-                            Padding="{TemplateBinding Padding}"
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="{StaticResource DefaultCornerRadius}" />
-
-                        <Border
-                            x:Name="Hover"
-                            Background="{DynamicResource Brush.AccentHover}"
-                            CornerRadius="{StaticResource DefaultCornerRadius}"
-                            IsHitTestVisible="False"
-                            Opacity="0" />
-
-                        <Border
-                            x:Name="Pressed"
-                            Background="{DynamicResource Brush.AccentPressed}"
-                            CornerRadius="{StaticResource DefaultCornerRadius}"
-                            IsHitTestVisible="False"
-                            Opacity="0" />
-
-                        <ContentPresenter
-                            x:Name="Content"
-                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                            RecognizesAccessKey="True"
-                            TextElement.Foreground="{TemplateBinding Foreground}" />
-
-                    </Grid>
-
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Trigger.EnterActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation
-                                            Storyboard.TargetName="Hover"
-                                            Storyboard.TargetProperty="Opacity"
-                                            To="1"
-                                            Duration="0:0:0.12" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </Trigger.EnterActions>
-                            <Trigger.ExitActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation
-                                            Storyboard.TargetName="Hover"
-                                            Storyboard.TargetProperty="Opacity"
-                                            To="0"
-                                            Duration="0:0:0.18" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </Trigger.ExitActions>
-                        </Trigger>
-
-                        <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="Pressed" Property="Opacity" Value="1" />
-                            <Setter TargetName="Hover" Property="Opacity" Value="0" />
-                        </Trigger>
-
-                        <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="Base" Property="Opacity" Value="0.55" />
-                            <Setter TargetName="Hover" Property="Opacity" Value="0" />
-                            <Setter TargetName="Pressed" Property="Opacity" Value="0" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
+                <ControlTemplate>
+                    <Border
+                        Margin="-3"
+                        BorderBrush="{DynamicResource Brush.Accent}"
+                        BorderThickness="1.5"
+                        CornerRadius="8"
+                        SnapsToDevicePixels="True" />
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
+
+    <ControlTemplate x:Key="Template.Button" TargetType="{x:Type ButtonBase}">
+        <ControlTemplate.Resources>
+            <Style TargetType="{x:Type TextBlock}">
+                <Setter Property="Margin" Value="0" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+            </Style>
+        </ControlTemplate.Resources>
+
+        <Grid x:Name="Root" SnapsToDevicePixels="True">
+            <!--  Shadow only on the background shape (an effect on the content would blur the text)  -->
+            <Border
+                x:Name="Base"
+                Background="{TemplateBinding Background}"
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}"
+                CornerRadius="{StaticResource Control.CornerRadius}"
+                Effect="{StaticResource Effect.Control}" />
+
+            <Border
+                x:Name="Overlay"
+                Background="Transparent"
+                CornerRadius="{StaticResource Control.CornerRadius}"
+                IsHitTestVisible="False" />
+
+            <ContentPresenter
+                x:Name="Content"
+                Margin="{TemplateBinding Padding}"
+                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                RecognizesAccessKey="True"
+                TextElement.Foreground="{TemplateBinding Foreground}">
+                <ContentPresenter.RenderTransform>
+                    <TranslateTransform />
+                </ContentPresenter.RenderTransform>
+            </ContentPresenter>
+
+            <!--  Save confirmation (UIXSaveFeedback.IsSaved, set by the engine after a successful save): a filled circle with a check in place of the content  -->
+            <Grid
+                x:Name="SavedBadge"
+                Width="20"
+                Height="20"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                IsHitTestVisible="False"
+                Opacity="0"
+                RenderTransformOrigin="0.5,0.5">
+                <Grid.RenderTransform>
+                    <ScaleTransform ScaleX="0.6" ScaleY="0.6" />
+                </Grid.RenderTransform>
+
+                <Ellipse Fill="{TemplateBinding Foreground}" />
+
+                <Path
+                    x:Name="SavedCheck"
+                    Width="11"
+                    Height="9"
+                    Margin="0,1,0,0"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Data="M 1,4.5 L 4,7.5 L 10,1"
+                    Stroke="{TemplateBinding Background}"
+                    StrokeDashArray="7 20"
+                    StrokeDashOffset="7"
+                    StrokeEndLineCap="Round"
+                    StrokeLineJoin="Round"
+                    StrokeStartLineCap="Round"
+                    StrokeThickness="2" />
+            </Grid>
+        </Grid>
+
+        <ControlTemplate.Triggers>
+            <!--  One trigger for showing and hiding (see "Trigger animations" in CLAUDE.md)  -->
+            <Trigger Property="uixprops:UIXSaveFeedback.IsSaved" Value="True">
+                <Trigger.EnterActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation
+                                Storyboard.TargetName="Content"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0"
+                                Duration="0:0:0.12" />
+                            <DoubleAnimation
+                                Storyboard.TargetName="Content"
+                                Storyboard.TargetProperty="RenderTransform.(TranslateTransform.Y)"
+                                To="-4"
+                                Duration="0:0:0.12" />
+                            <DoubleAnimation
+                                BeginTime="0:0:0.08"
+                                Storyboard.TargetName="SavedBadge"
+                                Storyboard.TargetProperty="Opacity"
+                                From="0"
+                                To="1"
+                                Duration="0:0:0.1" />
+                            <DoubleAnimation
+                                BeginTime="0:0:0.08"
+                                Storyboard.TargetName="SavedBadge"
+                                Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)"
+                                From="0.6"
+                                To="1"
+                                Duration="0:0:0.22">
+                                <DoubleAnimation.EasingFunction>
+                                    <CubicEase EasingMode="EaseOut" />
+                                </DoubleAnimation.EasingFunction>
+                            </DoubleAnimation>
+                            <DoubleAnimation
+                                BeginTime="0:0:0.08"
+                                Storyboard.TargetName="SavedBadge"
+                                Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)"
+                                From="0.6"
+                                To="1"
+                                Duration="0:0:0.22">
+                                <DoubleAnimation.EasingFunction>
+                                    <CubicEase EasingMode="EaseOut" />
+                                </DoubleAnimation.EasingFunction>
+                            </DoubleAnimation>
+                            <DoubleAnimation
+                                BeginTime="0:0:0.16"
+                                Storyboard.TargetName="SavedCheck"
+                                Storyboard.TargetProperty="StrokeDashOffset"
+                                From="7"
+                                To="0"
+                                Duration="0:0:0.24">
+                                <DoubleAnimation.EasingFunction>
+                                    <CubicEase EasingMode="EaseOut" />
+                                </DoubleAnimation.EasingFunction>
+                            </DoubleAnimation>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.EnterActions>
+                <Trigger.ExitActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation
+                                Storyboard.TargetName="SavedBadge"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0"
+                                Duration="0:0:0.15" />
+                            <DoubleAnimation
+                                BeginTime="0:0:0.1"
+                                Storyboard.TargetName="Content"
+                                Storyboard.TargetProperty="Opacity"
+                                To="1"
+                                Duration="0:0:0.15" />
+                            <DoubleAnimation
+                                BeginTime="0:0:0.1"
+                                Storyboard.TargetName="Content"
+                                Storyboard.TargetProperty="RenderTransform.(TranslateTransform.Y)"
+                                From="4"
+                                To="0"
+                                Duration="0:0:0.15" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.ExitActions>
+            </Trigger>
+
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="Overlay" Property="Background" Value="{StaticResource Brush.Control.HoverOverlay}" />
+            </Trigger>
+
+            <Trigger Property="IsPressed" Value="True">
+                <Setter TargetName="Overlay" Property="Background" Value="{StaticResource Brush.Control.PressedOverlay}" />
+            </Trigger>
+
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter TargetName="Root" Property="Opacity" Value="0.45" />
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
 
     <Style TargetType="Button">
         <Setter Property="Height" Value="Auto" />
-        <Setter Property="MinHeight" Value="40" />
+        <Setter Property="MinHeight" Value="{StaticResource Control.Height}" />
         <Setter Property="Margin" Value="0" />
-        <Setter Property="Padding" Value="10,6" />
+        <Setter Property="Padding" Value="14,6" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
-        <Setter Property="Background" Value="{StaticResource Brush.Button.Background}" />
-        <Setter Property="BorderBrush" Value="{StaticResource Brush.Button.Border}" />
-        <Setter Property="BorderThickness" Value="1.6" />
+        <Setter Property="Background" Value="{StaticResource Brush.Control.Background}" />
+        <Setter Property="BorderBrush" Value="{StaticResource Brush.Control.Edge}" />
+        <Setter Property="BorderThickness" Value="1" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="Cursor" Value="Hand" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="Button">
-                    <ControlTemplate.Resources>
-                        <Style TargetType="{x:Type TextBlock}">
-                            <Setter Property="Margin" Value="0" />
-                            <Setter Property="VerticalAlignment" Value="Center" />
-                        </Style>
-                    </ControlTemplate.Resources>
-                    <Grid>
-                        <Border
-                            x:Name="Base"
-                            Padding="{TemplateBinding Padding}"
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="{StaticResource DefaultCornerRadius}"
-                            SnapsToDevicePixels="True">
-                            <ContentPresenter
-                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                RecognizesAccessKey="True"
-                                TextElement.Foreground="{TemplateBinding Foreground}" />
-                        </Border>
-
-                        <Border
-                            x:Name="HoverBorder"
-                            BorderBrush="{StaticResource Brush.Button.HoverBorder}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="{StaticResource DefaultCornerRadius}"
-                            IsHitTestVisible="False"
-                            Opacity="0" />
-
-                        <Border
-                            x:Name="PressedBorder"
-                            BorderBrush="{DynamicResource Brush.AccentPressed}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="{StaticResource DefaultCornerRadius}"
-                            IsHitTestVisible="False"
-                            Opacity="0" />
-                    </Grid>
-
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Trigger.EnterActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation
-                                            Storyboard.TargetName="HoverBorder"
-                                            Storyboard.TargetProperty="Opacity"
-                                            To="1"
-                                            Duration="0:0:0.12" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </Trigger.EnterActions>
-                            <Trigger.ExitActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation
-                                            Storyboard.TargetName="HoverBorder"
-                                            Storyboard.TargetProperty="Opacity"
-                                            To="0"
-                                            Duration="0:0:0.18" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </Trigger.ExitActions>
-                        </Trigger>
-
-                        <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="PressedBorder" Property="Opacity" Value="1" />
-                            <Setter TargetName="HoverBorder" Property="Opacity" Value="0" />
-                        </Trigger>
-
-                        <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="Base" Property="Opacity" Value="0.55" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
+        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual.Control}" />
+        <Setter Property="Template" Value="{StaticResource Template.Button}" />
+        <!--  Save buttons (btnSave): wait for the check before the view closes, keep it while the view stays open  -->
+        <Setter Property="uixprops:UIXSaveFeedback.WaitTime" Value="0:0:0.45" />
+        <Setter Property="uixprops:UIXSaveFeedback.ShowTime" Value="0:0:1.4" />
+        <Style.Triggers>
+            <!--  Accent outline on hover (drawn by the background border, so the content doesn't move)  -->
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Outline}" />
+                <Setter Property="BorderThickness" Value="1" />
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
-    <Style x:Key="ProfileAccentColorToggleButtonStyle" TargetType="{x:Type ToggleButton}">
-        <Setter Property="Width" Value="32" />
-        <Setter Property="Height" Value="32" />
-        <Setter Property="Margin" Value="0,0,10,0" />
+    <Style
+        x:Key="Button.Primary"
+        BasedOn="{StaticResource {x:Type Button}}"
+        TargetType="Button">
+        <Setter Property="Background" Value="{DynamicResource Brush.Accent}" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{DynamicResource Brush.AccentHover}" />
+                <Setter Property="BorderBrush" Value="{StaticResource Brush.Control.Edge}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!--  Former name of Button.Primary, still used by existing views  -->
+    <Style
+        x:Key="Button.Secondary"
+        BasedOn="{StaticResource Button.Primary}"
+        TargetType="Button" />
+
+    <Style
+        x:Key="Button.Ghost"
+        BasedOn="{StaticResource {x:Type Button}}"
+        TargetType="Button">
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
-        <Setter Property="BorderThickness" Value="2" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!--  Icon only: same height as inputs, square, the icon is centered without the text padding  -->
+    <Style
+        x:Key="Button.Icon"
+        BasedOn="{StaticResource {x:Type Button}}"
+        TargetType="Button">
+        <Setter Property="Width" Value="{StaticResource Control.Height}" />
+        <Setter Property="Height" Value="{StaticResource Control.Height}" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="FontWeight" Value="Normal" />
+    </Style>
+
+    <!--
+        Accent color swatch (profile edit): round color dot; selected shows a ring in its own color and a check mark,
+        hover lifts it slightly. The color comes from Background (set by the controller).
+    -->
+    <Style x:Key="ProfileAccentColorToggleButtonStyle" TargetType="{x:Type ToggleButton}">
+        <Setter Property="Width" Value="52" />
+        <Setter Property="Height" Value="52" />
+        <Setter Property="Margin" Value="0,0,14,0" />
+        <Setter Property="Background" Value="Transparent" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Focusable" Value="False" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ToggleButton}">
-                    <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
-                        <Border
-                            x:Name="OuterGlow"
-                            Margin="-3"
-                            Background="Transparent"
-                            CornerRadius="{StaticResource DefaultCornerRadius}"
+                    <Grid
+                        Width="{TemplateBinding Width}"
+                        Height="{TemplateBinding Height}"
+                        Background="Transparent">
+
+                        <!--  Selection ring in the swatch color, separated from the dot by a small gap  -->
+                        <Ellipse
+                            x:Name="SelectionRing"
                             IsHitTestVisible="False"
-                            Opacity="0">
-                            <Border.Effect>
-                                <DropShadowEffect
-                                    BlurRadius="16"
-                                    Opacity="0.35"
-                                    ShadowDepth="0"
-                                    Color="{DynamicResource Color.Accent}" />
-                            </Border.Effect>
-                        </Border>
+                            Opacity="0"
+                            Stroke="{TemplateBinding Background}"
+                            StrokeThickness="2.5" />
 
-                        <Border
-                            x:Name="MainBorder"
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="{StaticResource DefaultCornerRadius}"
-                            SnapsToDevicePixels="True">
+                        <Grid
+                            x:Name="Swatch"
+                            Margin="7"
+                            RenderTransformOrigin="0.5,0.5">
+                            <Grid.RenderTransform>
+                                <ScaleTransform x:Name="SwatchScale" ScaleX="1" ScaleY="1" />
+                            </Grid.RenderTransform>
 
-                            <Grid>
-                                <Border
-                                    x:Name="HoverOverlay"
-                                    Background="#12FFFFFF"
-                                    CornerRadius="{StaticResource DefaultCornerRadius}"
-                                    Opacity="0" />
+                            <Ellipse
+                                x:Name="Dot"
+                                Fill="{TemplateBinding Background}"
+                                Stroke="#33FFFFFF"
+                                StrokeThickness="1">
+                                <Ellipse.Effect>
+                                    <DropShadowEffect
+                                        BlurRadius="10"
+                                        Opacity="0.35"
+                                        ShadowDepth="2"
+                                        Color="Black" />
+                                </Ellipse.Effect>
+                            </Ellipse>
 
-                                <Border
-                                    x:Name="SelectionBorder"
-                                    Margin="-10"
-                                    Background="Transparent"
-                                    BorderBrush="{DynamicResource Brush.Accent}"
-                                    BorderThickness="3"
-                                    CornerRadius="{StaticResource DefaultCornerRadius}"
-                                    Opacity="0" />
-                            </Grid>
-                        </Border>
+                            <!--  Soft top highlight for some depth  -->
+                            <Ellipse IsHitTestVisible="False">
+                                <Ellipse.Fill>
+                                    <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                                        <GradientStop Offset="0" Color="#30FFFFFF" />
+                                        <GradientStop Offset="0.55" Color="#00FFFFFF" />
+                                    </LinearGradientBrush>
+                                </Ellipse.Fill>
+                            </Ellipse>
+
+                            <TextBlock
+                                x:Name="CheckMark"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                FontFamily="{StaticResource Font.Icons}"
+                                FontSize="15"
+                                FontWeight="Bold"
+                                Foreground="White"
+                                IsHitTestVisible="False"
+                                Opacity="0"
+                                Text="&#xE73E;">
+                                <TextBlock.Effect>
+                                    <DropShadowEffect
+                                        BlurRadius="4"
+                                        Opacity="0.8"
+                                        ShadowDepth="0"
+                                        Color="Black" />
+                                </TextBlock.Effect>
+                            </TextBlock>
+                        </Grid>
                     </Grid>
 
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="HoverOverlay" Property="Opacity" Value="1" />
-                            <Setter TargetName="MainBorder" Property="BorderBrush" Value="{DynamicResource Brush.AccentHover}" />
+                            <Setter TargetName="SelectionRing" Property="Opacity" Value="0.35" />
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="SwatchScale"
+                                            Storyboard.TargetProperty="ScaleX"
+                                            To="1.08"
+                                            Duration="0:0:0.12" />
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="SwatchScale"
+                                            Storyboard.TargetProperty="ScaleY"
+                                            To="1.08"
+                                            Duration="0:0:0.12" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="SwatchScale"
+                                            Storyboard.TargetProperty="ScaleX"
+                                            To="1"
+                                            Duration="0:0:0.12" />
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="SwatchScale"
+                                            Storyboard.TargetProperty="ScaleY"
+                                            To="1"
+                                            Duration="0:0:0.12" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
                         </Trigger>
 
                         <Trigger Property="IsChecked" Value="True">
-                            <Setter TargetName="MainBorder" Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
-                            <Setter TargetName="SelectionBorder" Property="Opacity" Value="1" />
-                            <Setter TargetName="OuterGlow" Property="Opacity" Value="1" />
+                            <Setter TargetName="SelectionRing" Property="Opacity" Value="1" />
+                            <Setter TargetName="CheckMark" Property="Opacity" Value="1" />
                         </Trigger>
 
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="IsMouseOver" Value="True" />
-                                <Condition Property="IsChecked" Value="True" />
-                            </MultiTrigger.Conditions>
-                            <Setter TargetName="HoverOverlay" Property="Opacity" Value="1" />
-                            <Setter TargetName="SelectionBorder" Property="Opacity" Value="1" />
-                            <Setter TargetName="OuterGlow" Property="Opacity" Value="1" />
-                        </MultiTrigger>
-
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="MainBorder" Property="Opacity" Value="0.45" />
+                            <Setter TargetName="Swatch" Property="Opacity" Value="0.4" />
+                            <Setter TargetName="SelectionRing" Property="Opacity" Value="0.4" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

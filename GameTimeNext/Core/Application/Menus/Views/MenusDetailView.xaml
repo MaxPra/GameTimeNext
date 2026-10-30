@@ -1,0 +1,130 @@
+﻿<uixcontrols:UIXUserControlBase
+    x:Class="GameTimeNext.Core.Application.Menus.Views.MenusDetailView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:uixcb="clr-namespace:UIX.ViewController.Engine.FrameworkElements.ComboBoxes;assembly=UIX.ViewController.Engine"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:uixcontrols="clr-namespace:UIX.ViewController.Engine.FrameworkElements.UserControls;assembly=UIX.ViewController.Engine"
+    xmlns:uixprops="clr-namespace:UIX.ViewController.Engine.AttachedProperties;assembly=UIX.ViewController.Engine"
+    d:DesignHeight="600"
+    d:DesignWidth="420"
+    mc:Ignorable="d">
+
+    <Border Padding="16" Style="{StaticResource Card}">
+        <DockPanel>
+
+            <!--  Header: icon and name of the entry  -->
+            <Grid Margin="0,0,0,24" DockPanel.Dock="Top">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="16" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Border
+                    Grid.Column="0"
+                    Width="48"
+                    Height="48"
+                    Background="{DynamicResource Brush.Card.Inset}"
+                    CornerRadius="{StaticResource Card.CornerRadius}">
+                    <TextBlock
+                        x:Name="txIcon"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontFamily="{StaticResource Font.Icons}"
+                        FontSize="22" />
+                </Border>
+
+                <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                    <TextBlock
+                        x:Name="txTitle"
+                        Style="{StaticResource Text.Title}"
+                        TextTrimming="CharacterEllipsis" />
+                    <TextBlock
+                        x:Name="txSubtitle"
+                        Margin="0,4,0,0"
+                        Style="{StaticResource Text.Caption}" />
+                </StackPanel>
+            </Grid>
+
+            <!--  Actions: pinned to the bottom  -->
+            <Grid Margin="0,16,0,0" DockPanel.Dock="Bottom">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!--  Closes the edit area without saving (Esc); "Discard" for a new entry, "Cancel" otherwise  -->
+                <Button
+                    x:Name="btnCancel"
+                    Grid.Column="0"
+                    Height="36"
+                    HorizontalAlignment="Stretch"
+                    Content="Cancel" />
+
+                <Button
+                    x:Name="btnSave"
+                    Grid.Column="2"
+                    Height="36"
+                    HorizontalAlignment="Stretch"
+                    Content="Save"
+                    Style="{StaticResource Button.Primary}" />
+            </Grid>
+
+            <StackPanel>
+                <TextBlock
+                    Margin="0,0,0,8"
+                    Style="{StaticResource Text.Label}"
+                    Text="Type" />
+                <uixcb:UIXComboBox
+                    x:Name="cmbType"
+                    Height="36"
+                    uixprops:UIXAttachedProperty.Path="T1MENUE.METY"
+                    uixprops:UIXAttachedProperty.Source="From=T1CTABD;Where=TXTYP:mN;Text=DESCR;Value=TXNUM"
+                    SelectedValuePath="Tag" />
+
+                <TextBlock
+                    Margin="0,16,0,8"
+                    Style="{StaticResource Text.Label}"
+                    Text="Description" />
+                <TextBox
+                    x:Name="txbDescription"
+                    uixprops:UIXAttachedProperty.Path="T1MENUE.MEDE"
+                    Style="{StaticResource TextBox.Default}" />
+
+                <!--  Only for application calls  -->
+                <StackPanel x:Name="pnlApplication">
+                    <TextBlock
+                        Margin="0,16,0,8"
+                        Style="{StaticResource Text.Label}"
+                        Text="Application" />
+                    <uixcb:UIXComboBox
+                        x:Name="cmbApplication"
+                        AdditionalEntry="(None)"
+                        Height="36"
+                        uixprops:UIXAttachedProperty.Path="T1MENUE.MEAP"
+                        SelectedValuePath="Tag" />
+                    <TextBlock
+                        x:Name="txApplicationDescription"
+                        Margin="0,8,0,0"
+                        Style="{StaticResource Text.Hint}"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+
+                <!--  Dev tools (on a folder: everything below it) are only shown in the application search in debug / dev mode  -->
+                <CheckBox
+                    x:Name="chbDevTool"
+                    Margin="0,16,0,0"
+                    Content="Dev tool"
+                    uixprops:UIXAttachedProperty.Path="T1MENUE.DEVT" />
+                <TextBlock
+                    Margin="0,8,0,0"
+                    Style="{StaticResource Text.Hint}"
+                    Text="Only shown in debug / dev mode. On a folder, this applies to everything in it."
+                    TextWrapping="Wrap" />
+            </StackPanel>
+        </DockPanel>
+    </Border>
+</uixcontrols:UIXUserControlBase>

@@ -4,6 +4,20 @@ namespace GameTimeNext.Core.Framework.Utils
 {
     public partial class FnSystem
     {
+        // Possible start arguments:
+        // -m <modi_key> : Start the application with a specific modi key.
+        // -minimized : Start the application minimized.
+        // --force-metadata-migration : Force the application to perform metadata migration on startup.
+        // --force-user-perms : Force the application to act if ran as Release build, but with debug paths.
+        // --bigpicture : Open the main window directly in the Big Picture mode (TV / controller).
+
+        #region Quick Access Start Arguments
+        public static bool RunWithUserPermissions()
+        {
+            return AppEnvironment.StartArguments.ContainsKey("force-user-perms");
+        }
+        #endregion
+
         public static void ParseStartArguments(string[] args)
         {
             Dictionary<string, string?> retValue = new Dictionary<string, string?>();
@@ -15,7 +29,7 @@ namespace GameTimeNext.Core.Framework.Utils
                 if (arg.StartsWith('-'))
                 {
                     // Key
-                    currentKey = arg.ToLower().Substring(1);
+                    currentKey = arg.ToLowerInvariant().Substring(1);
 
                     if (currentKey.StartsWith('-'))
                     {

@@ -1,0 +1,165 @@
+﻿<ui:GTNWindowView
+    x:Class="GameTimeNext.Core.Application.Menus.Views.MenusView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI.Base"
+    xmlns:uixsel="clr-namespace:UIX.ViewController.Engine.FrameworkElements.Selectors;assembly=UIX.ViewController.Engine"
+    Width="1300"
+    Height="700"
+    HorizontalAlignment="Stretch"
+    VerticalAlignment="Stretch"
+    HorizontalContentAlignment="Stretch"
+    VerticalContentAlignment="Stretch"
+    d:DesignHeight="700"
+    d:DesignWidth="1300"
+    ShowMaximizeButton="False"
+    ShowMinimizeButton="False"
+    mc:Ignorable="d">
+
+    <Grid Style="{StaticResource View.Root}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="16" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Border
+            Grid.Row="0"
+            Padding="16"
+            Style="{StaticResource Card}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="32" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Grid Grid.Column="0" HorizontalAlignment="Left">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="130" />
+                        <ColumnDefinition Width="12" />
+                        <ColumnDefinition Width="280" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock
+                        Grid.Column="0"
+                        VerticalAlignment="Center"
+                        Style="{StaticResource Text.Label}"
+                        Text="Description" />
+
+                    <TextBox
+                        x:Name="txbDescription"
+                        Grid.Column="2"
+                        Style="{StaticResource TextBox.Default}" />
+                </Grid>
+
+                <Button
+                    x:Name="btnAddFolder"
+                    Grid.Column="2"
+                    VerticalAlignment="Center"
+                    Style="{StaticResource Button.Icon}"
+                    ToolTip="Create new folder">
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontFamily="{StaticResource Font.Icons}"
+                        FontSize="14"
+                        Text="&#xE8F4;" />
+                </Button>
+
+                <Button
+                    x:Name="btnAddApplication"
+                    Grid.Column="4"
+                    VerticalAlignment="Center"
+                    Style="{StaticResource Button.Icon}"
+                    ToolTip="Create new application call">
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontFamily="{StaticResource Font.Icons}"
+                        FontSize="14"
+                        Text="&#xE710;" />
+                </Button>
+
+                <Button
+                    x:Name="btnRefresh"
+                    Grid.Column="6"
+                    VerticalAlignment="Center"
+                    IsDefault="True"
+                    Style="{StaticResource Button.Icon}"
+                    ToolTip="Refresh menus">
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontFamily="{StaticResource Font.Icons}"
+                        FontSize="14"
+                        Text="&#xE72C;" />
+                </Button>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <uixsel:UIXTreeGrid
+                x:Name="dgMenus"
+                Grid.Column="0"
+                AutoGenerateColumns="False"
+                CanUserAddRows="False"
+                CanUserDeleteRows="False"
+                CanUserResizeRows="False"
+                HeadersVisibility="Column"
+                IsReadOnly="True"
+                SelectionMode="Single"
+                SelectionUnit="FullRow">
+                <uixsel:UIXTreeGrid.Columns>
+                    <!--  Tree column: folders and application calls, with the entry's icon (row.Icon)  -->
+                    <uixsel:UIXTreeGridTextColumn
+                        Width="500"
+                        MinWidth="260"
+                        Binding="{Binding COMEDE}"
+                        Header="Folder / Application call">
+                        <uixsel:UIXTreeGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                                <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsFolder}" Value="True">
+                                        <Setter Property="FontWeight" Value="SemiBold" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </uixsel:UIXTreeGridTextColumn.ElementStyle>
+                    </uixsel:UIXTreeGridTextColumn>
+
+                    <DataGridTextColumn
+                        Width="160"
+                        Binding="{Binding COMETY}"
+                        Header="Type" />
+
+                    <DataGridTextColumn
+                        Width="260"
+                        Binding="{Binding COMEAP}"
+                        Header="Application" />
+                </uixsel:UIXTreeGrid.Columns>
+            </uixsel:UIXTreeGrid>
+
+            <!--  Combined edit area of the selected entry  -->
+            <ContentPresenter
+                x:Name="cpMenuDetail"
+                Grid.Column="1"
+                Width="420"
+                Margin="16,0,0,0" />
+        </Grid>
+    </Grid>
+</ui:GTNWindowView>

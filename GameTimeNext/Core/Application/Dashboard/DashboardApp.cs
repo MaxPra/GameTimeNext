@@ -6,6 +6,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Dashboard
 {
+    [UIXAppIcon(UIXMdlIcons.Dashboard)]
     public class DashboardApp : UIXApplication, IUIXApplicationStarter
     {
 
@@ -29,13 +30,16 @@ namespace GameTimeNext.Core.Application.Dashboard
             DashboardView.ViewController.Show(options);
         }
 
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(DashboardApp));
+        }
+
         public override void InitializeApplicationOutput()
         {
             this.DashboardView = new DashboardView();
             this.MainView = DashboardView;
             this.DashboardView.ViewController = new DashboardViewController(this);
-
-            Icon = UIXMdlIcons.Dashboard;
         }
 
         public override bool CanClose()

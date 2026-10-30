@@ -136,12 +136,16 @@ namespace GameTimeNext.Core.Framework.UI.Base
             set => SetValue(SubtitleProperty, value);
         }
 
+        /// <summary>
+        /// Resize mode of the window when the view is opened as a sub window. Sub windows are not resizable by default,
+        /// an exception has to set CanResize explicitly.
+        /// </summary>
         public static readonly DependencyProperty ResizeModeProperty =
             DependencyProperty.Register(
                 nameof(ResizeMode),
                 typeof(ResizeMode),
                 typeof(GTNWindowView),
-                new PropertyMetadata(ResizeMode.CanResize));
+                new PropertyMetadata(ResizeMode.NoResize));
 
         public ResizeMode ResizeMode
         {

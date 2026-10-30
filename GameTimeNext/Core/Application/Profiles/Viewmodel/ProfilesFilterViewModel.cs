@@ -5,29 +5,35 @@ namespace GameTimeNext.Core.Application.Profiles.Viewmodel
 {
     public class ProfilesFilterViewModel : GTNViewModelBase
     {
-        public ObservableCollection<ProfilesGroupListBoxItem> T1GROUPs { get; set; }
-        public ObservableCollection<ProfilesGroupListBoxItem> States { get; set; }
+        private bool _showArchived;
+        private bool _onlyRecentlyPlayed;
 
-        private ProfilesGroupListBoxItem _selectedT1GROUP;
-        private ProfilesGroupListBoxItem _selectedState;
+        /// <summary>
+        /// All tags incl. the "(No tags)" entry at the top
+        /// </summary>
+        public ObservableCollection<ProfilesFilterItem> Tags { get; set; }
+        public ObservableCollection<ProfilesFilterItem> Progress { get; set; }
+        public ObservableCollection<ProfilesFilterItem> Availability { get; set; }
+        public ObservableCollection<ProfilesFilterItem> Source { get; set; }
 
-        public ProfilesGroupListBoxItem SelectedT1GROUP
+        public bool ShowArchived
         {
-            get => _selectedT1GROUP;
-            set => SetProperty(ref _selectedT1GROUP, value);
+            get => _showArchived;
+            set => SetProperty(ref _showArchived, value);
         }
 
-        public ProfilesGroupListBoxItem SelectedState
+        public bool OnlyRecentlyPlayed
         {
-            get => _selectedState;
-            set => SetProperty(ref _selectedState, value);
+            get => _onlyRecentlyPlayed;
+            set => SetProperty(ref _onlyRecentlyPlayed, value);
         }
 
         public ProfilesFilterViewModel()
         {
-            T1GROUPs = new ObservableCollection<ProfilesGroupListBoxItem>();
-            States = new ObservableCollection<ProfilesGroupListBoxItem>();
-
+            Tags = new ObservableCollection<ProfilesFilterItem>();
+            Progress = new ObservableCollection<ProfilesFilterItem>();
+            Availability = new ObservableCollection<ProfilesFilterItem>();
+            Source = new ObservableCollection<ProfilesFilterItem>();
         }
     }
 }

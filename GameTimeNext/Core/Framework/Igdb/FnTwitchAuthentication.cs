@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Framework.Igdb
 {
@@ -18,10 +19,10 @@ namespace GameTimeNext.Core.Framework.Igdb
             {
                 Debug.WriteLine("1: GetAccessTokenAsync gestartet");
 
-                if (string.IsNullOrWhiteSpace(clientId))
+                if (FnString.IsNullEmptyOrWhitespace(clientId))
                     throw new InvalidOperationException("clientId is empty.");
 
-                if (string.IsNullOrWhiteSpace(clientSecret))
+                if (FnString.IsNullEmptyOrWhitespace(clientSecret))
                     throw new InvalidOperationException("clientSecret is empty.");
 
                 clientId = clientId.Trim();
@@ -63,7 +64,7 @@ namespace GameTimeNext.Core.Framework.Igdb
                         PropertyNameCaseInsensitive = true
                     });
 
-                if (token == null || string.IsNullOrWhiteSpace(token.AccessToken))
+                if (token == null || FnString.IsNullEmptyOrWhitespace(token.AccessToken))
                     throw new InvalidOperationException("Access Token could not be read!");
 
                 return token.AccessToken;

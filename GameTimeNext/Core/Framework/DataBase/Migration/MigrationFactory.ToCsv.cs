@@ -1,0 +1,194 @@
+﻿using GameTimeNext.Core.Application.DataManagers;
+using GameTimeNext.Core.Application.Metadata.Data;
+using GameTimeNext.Core.Application.TableObjects;
+using GameTimeNext.Core.Framework.Config;
+using GameTimeNext.Core.Framework.Utils;
+using System.Data.SQLite;
+using System.IO;
+using System.Text;
+using UIX.ViewController.Engine.DataBaseObjects;
+using UIX.ViewController.Engine.Migration.Types;
+using UIX.ViewController.Engine.Querying;
+using UIX.ViewController.Engine.Utils;
+
+namespace GameTimeNext.Core.Framework.DataBase.Migration
+{
+    internal static partial class MigrationFactory
+    {
+        public static class ToCsv
+        {
+            public static char _CSV_SEPERATOR = ';';
+
+            public static void ExportCsvFileFor(SQLiteConnection connection, UIXTableObjectBase obj, ImportType importType, string? outputDirectoryPath = null)
+            {
+                string tableName = obj.GetType().Name;
+
+                if (importType.Equals(ImportType.ImportPackages))
+                {
+                    T1METAH t1metah = (T1METAH)obj;
+                    tableName = t1metah.MENAM;
+                }
+
+                ExportCsvFileFor(connection, tableName, importType, outputDirectoryPath: outputDirectoryPath);
+            }
+
+            // OFDO (#OF001): Maybe split Metadata export and others
+            public static void ExportCsvFileFor(SQLiteConnection connection, string tableName, ImportType importType, string? outputDirectoryPath = null)
+            {
+                if (!FnSystem.IsDebug() || FnSystem.RunWithUserPermissions()) return;
+                TXMETAH txmetah = new TXMETAH();
+                T1METAH? t1metah = txmetah.Read(tableName);
+                if ((t1metah is null || !t1metah.DSYNC) && !tableName.StartsWith("t1meta", StringComparison.InvariantCultureIgnoreCase)) return;
+
+                TableSchema? tS = SchemaGenerator.GenerateSingleFromMetadata(tableName);
+                if (tS is null) return;
+
+                // Get column names and types
+                Dictionary<string, UIXSqliteDataType> columns = tS.Columns.ToDictionary(
+                    c => c.PONAM,
+                    c => c.DATYP
+                );
+
+                // Add headers
+                List<string> csvLines = new List<string>()
+                {
+                    String.Join(_CSV_SEPERATOR, columns.Keys),
+                };
+
+                using (var reader = UIXQuery.QueryCustom($"SELECT {tS.GetColumnNamesForSql()} FROM {tableName};", connection))
+                {
+                    // Iterate rows
+                    while (reader.Read())
+                    {
+                        List<string> values = new List<string>();
+                        // Iterate columns
+                        for (int i = 0; i < columns.Count; i++)
+                        {
+                            UIXSqliteDataType dataType = columns.ElementAt(i).Value;
+                            object value;
+
+                            if (reader.IsDBNull(i))
+                                value = DBNull.Value;
+                            else if (dataType.Key.Equals("05"))
+                                value = reader.GetString(i); // Raw string, the conversion parses it
+                            else
+                                value = reader.GetValue(i);
+
+                            string valueCsv = (string)UIXSqliteDataType.Convert(UIXSqliteDataType.ConversionType.Sqlite, UIXSqliteDataType.ConversionType.CSV, value, dataType)!;
+                            values.Add(EscapeCsv(valueCsv, _CSV_SEPERATOR));
+                        }
+
+                        if (tS.IsCodetableTabd && CheckPreventTabdExport(columns, values, importType)) continue;
+
+                        csvLines.Add(String.Join(_CSV_SEPERATOR, values));
+                    }
+
+                    reader.Close();
+                }
+
+                string actualOutputDirectoryPath = AppConfig.Dev.DevSyncDirectoryPath;
+                if (importType.Equals(ImportType.ImportPackages))
+                {
+                    if (FnString.IsNullEmptyOrWhitespace(outputDirectoryPath))
+                        throw new ArgumentException("Output directory path cannot be null or empty for ImportPackages export type.");
+
+                    actualOutputDirectoryPath = outputDirectoryPath!;
+                }
+
+                FnDirectory.EnsureDirectoryExists(actualOutputDirectoryPath);
+
+                string filePath = Path.Combine(actualOutputDirectoryPath, $"{tableName}.csv");
+                File.WriteAllLines(filePath, csvLines, Encoding.UTF8);
+
+                if (tS.IsCodetableTable)
+                {
+                    ExportCodetableDefaultFiles(importType, destinationDirectoryPathOverride: actualOutputDirectoryPath);
+                }
+            }
+
+            private static bool CheckPreventTabdExport(Dictionary<string, UIXSqliteDataType> columns, List<string> values, ImportType importType)
+            {
+                int indexTxtyp = columns.Keys.ToList().IndexOf("TXTYP");
+                string txtyp = values[indexTxtyp];
+
+                TXCTABH txctabh = new TXCTABH();
+                T1CTABH? t1ctabh = txctabh.Read(txtyp);
+                if (t1ctabh is null) return true;
+
+                if (importType.Equals(ImportType.DevSync)) return false; // Export everything for devSync
+
+                if (!t1ctabh.EXPRT) return true; // Export not allowed if Export is not enabled
+                if (t1ctabh.PERMI.Equals("D")) return false; // Export allowed for PERMI = D
+                if (!t1ctabh.NRANA) return true; // Export not allowed if NumberRange is false
+
+                string val = values[columns.Keys.ToList().IndexOf("TXNUM")];
+                if (val.StartsWith("D_", StringComparison.InvariantCultureIgnoreCase)) return false; // Export allowed if Textnumber starts with D_
+
+                return true; // Export not allowed fallback
+            }
+
+            private static void ExportCodetableDefaultFiles(ImportType importType, string? destinationDirectoryPathOverride = null)
+            {
+                string sourceDirectoryPath = AppConfig.Storage.DefaultImagesSymbolsDirectoryPath;
+                string destinationDirectoryPath = AppConfig.Dev.DevSyncDefaultImagesSymbolsDirectoryPath;
+                if (importType.Equals(ImportType.ImportPackages))
+                {
+                    if (FnString.IsNullEmptyOrWhitespace(destinationDirectoryPathOverride))
+                        throw new ArgumentException("Destination directory path cannot be null or empty for ImportPackages export type.");
+
+                    destinationDirectoryPath = AppConfig.Dev.GetImagesAndSymbolsDirectoryPath(destinationDirectoryPathOverride!);
+                }
+
+                if (Directory.Exists(destinationDirectoryPath))
+                {
+                    Directory.Delete(destinationDirectoryPath, true);
+                    FnDirectory.EnsureDirectoryExists(destinationDirectoryPath);
+                }
+
+                if (!Directory.Exists(sourceDirectoryPath))
+                    return;
+
+                CopyDirectory(sourceDirectoryPath, destinationDirectoryPath);
+            }
+
+            private static string EscapeCsv(string value, char separator)
+            {
+                if (value is null)
+                    return string.Empty;
+
+                bool mustQuote = value.Contains(separator) || value.Contains('"') || value.Contains('\n') || value.Contains('\r');
+                if (!mustQuote)
+                    return value;
+
+                return '"' + value.Replace("\"", "\"\"") + '"';
+            }
+
+#if DEBUG
+            /// <summary>
+            /// Used for development purposes only.
+            /// Triggers the export for all tables.
+            /// </summary>
+            [Obsolete("This method is for development purposes only and cannot be used in production.")]
+            public static void DEBUG_ReexportAllTables()
+            {
+                SQLiteConnection connection = AppEnvironment.GetDataBaseManager().GetConnection();
+                using (var reader = UIXQuery.QueryCustom($"SELECT MENAM, DSYNC FROM T1METAH;", connection))
+                {
+                    while (reader.Read())
+                    {
+                        string menam = UIXQuery.GetString(reader, "MENAM");
+                        bool dsync = UIXQuery.GetBool(reader, "DSYNC");
+                        // Only DSYNC enabled tables and metadata tables are exported
+                        if (!menam.Equals("T1METAH") && !menam.Equals("T1METAP") && !dsync)
+                            continue;
+
+                        ExportCsvFileFor(connection, menam, MigrationFactory.ImportType.DevSync);
+                    }
+
+                    reader.Close();
+                }
+            }
+#endif
+        }
+    }
+}

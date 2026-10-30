@@ -13,7 +13,9 @@
             public const string PLTO = "PLTO";
             public const string PLTI = "PLTI";
             public const string CRAT = "CRAT";
+            public const string CRUS = "CRUS";
             public const string CHAT = "CHAT";
+            public const string CHUS = "CHUS";
         }
     }
 }

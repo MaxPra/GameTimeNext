@@ -18,7 +18,7 @@ using static UIX.ViewController.Engine.FrameworkElements.UIXContextMenuFactory;
 
 namespace GameTimeNext.Core.Application.Codetables.Controller
 {
-    public class CodetablesViewController : UIXViewControllerBase
+    public class CodetablesViewController : UIXViewControllerBase<CodetablesApp, CodetablesView>
     {
 
         private CodetablesViewModel? _viewModel;
@@ -40,8 +40,8 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
         protected override void BuildFirstImpl()
         {
-            // Hinzufügenbutton nur bei Debug / Developmentmodus anzeigen
-            FnControls.SetVisible(GetView().BtnAddCodetable, FnSystem.IsDebug());
+            // Show the add button only in debug / development mode
+            FnControls.SetVisible(GetView().BtnAddCodetable, FnSystem.IsDebug() && !FnSystem.RunWithUserPermissions());
         }
 
         protected override async Task BuildFirstImplAsync()
@@ -57,13 +57,17 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
         }
 
-        protected override void Check()
+        protected override void CheckImpl()
         {
         }
 
         protected override void FillViewImpl()
         {
 
+        }
+
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
+        {
         }
 
         protected override void FillDBOImpl()
@@ -78,16 +82,6 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
         {
         }
         #endregion
-
-        private CodetablesApp GetApp()
-        {
-            return (CodetablesApp)App;
-        }
-
-        private CodetablesView GetView()
-        {
-            return (CodetablesView)View;
-        }
 
         private async Task BuildCodetableViewModel()
         {
@@ -182,17 +176,17 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
             T1CTABH t1ctabh = (T1CTABH)ctRow.RowObject!;
 
-            // Nur im Debugmodus dürfen Development-CTs geändert werden
-            if (t1ctabh.PERMI == "D" && FnSystem.IsDebug() || t1ctabh.PERMI == "U")
+            // Development codetables may only be changed in debug mode
+            if ((t1ctabh.PERMI == "D" && FnSystem.IsDebug() && !FnSystem.RunWithUserPermissions()) || t1ctabh.PERMI == "U")
                 contextBuilder.AddItem("ctxtEdit", "Edit", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Edit), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
 
             contextBuilder.AddItem("ctxtView", "View", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.View), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
 
-            if (FnSystem.IsDebug())
+            if (FnSystem.IsDebug() && !FnSystem.RunWithUserPermissions())
                 contextBuilder.AddItem("ctxtProperties", "Properties", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Info), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
 
-            // Nur im Debugmodus dürfen Development-CTs gelöscht werden
-            if (FnSystem.IsDebug())
+            // Development codetables may only be deleted in debug mode
+            if (FnSystem.IsDebug() && !FnSystem.RunWithUserPermissions())
                 contextBuilder.AddItem("ctxtDelete", "Delete", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Delete), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
 
             if (contextBuilder.HasItems())
@@ -233,7 +227,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
             CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
 
-            CFMBOXResult result = cfmbox.Show("Are you sure you want to delete this codetable?", CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
+            CFMBOXResult result = cfmbox.Show(GetErrorMessage("GLO0002", "this codetable"), CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
 
             if (result == CFMBOXResult.Yes)
             {
@@ -255,7 +249,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
                     return;
 
                 await EV_BtnRefresh();
-            }, selectedT1ctabh, (FnSystem.IsDebug()));
+            }, selectedT1ctabh, (FnSystem.IsDebug() && !FnSystem.RunWithUserPermissions()));
         }
 
         protected void EV_ctxtEdit()
