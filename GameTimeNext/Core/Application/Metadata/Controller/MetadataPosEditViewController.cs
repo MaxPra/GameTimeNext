@@ -99,7 +99,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
                 FnControls.SetVisible(GetView().txbLength, false);
                 FnControls.SetVisible(GetView().lblLength, false);
 
-                FnControls.SetVisible(GetView().lblDefault, false);
+                FnControls.SetVisible(GetView().grpDefault, false);
                 FnControls.SetVisible(GetView().chbDefault, false);
                 FnControls.SetVisible(GetView().chbDefaultBool, false);
                 FnControls.SetVisible(GetView().txbDefault, false);
@@ -122,7 +122,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
             bool isActive = GetView().chbDefault.IsChecked ?? false;
 
-            FnControls.SetVisible(GetView().lblDefault, dataType.IsDefaultAllowed);
+            FnControls.SetVisible(GetView().grpDefault, dataType.IsDefaultAllowed);
             FnControls.SetVisible(GetView().chbDefault, dataType.IsDefaultAllowed);
             FnControls.SetVisible(GetView().chbDefaultBool, dataType.IsDefaultAllowed && isActive && "06".Equals(selectedDataType));
             FnControls.SetVisible(GetView().txbDefault, dataType.IsDefaultAllowed && isActive && !"06".Equals(selectedDataType));
@@ -272,7 +272,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
             GetView().chbDefaultBool.IsChecked = false;
         }
 
-        protected void EV_BtnSave()
+        protected void EV_btnSave()
         {
 
             GetViewReturn<MetadataPosEditViewReturn>().HasChanged = GetApp().T1METAP!.HasChanged();

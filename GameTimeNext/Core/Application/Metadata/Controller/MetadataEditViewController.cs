@@ -1,3 +1,4 @@
+using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Metadata.Data;
 using GameTimeNext.Core.Application.Metadata.Viewmodels;
 using GameTimeNext.Core.Application.Metadata.Views;
@@ -36,11 +37,11 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
         protected override void Init()
         {
             AddIdentifier("T1METAH", GetApp().T1METAH!);
+            AddSource("T1CTABD", new TXCTABD());
         }
 
         protected override void BuildFirstImpl()
         {
-            InitializeMetadataTypeCombo();
         }
 
         protected override async Task BuildFirstImplAsync()
@@ -210,19 +211,6 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
             query.AddOrderBy(K1METAP.Name, K1METAP.Fields.PORDE, OrderDirection.ASC);
 
             return query;
-        }
-
-        private void InitializeMetadataTypeCombo()
-        {
-            UIXManualCodetable codetable = new UIXManualCodetable();
-
-            foreach (MetadataObjectTypes.Entry entry in MetadataObjectTypes.GetEntries())
-                codetable.AddEntry(entry.Key, entry.Text);
-
-            codetable.ApplyTo(GetView().CmbType);
-
-            if (GetView().CmbType.Items.Count > 0)
-                GetView().CmbType.SelectedIndex = 0;
         }
 
         protected void EV_DgFields_CtxtOpening(FrameworkElement target)

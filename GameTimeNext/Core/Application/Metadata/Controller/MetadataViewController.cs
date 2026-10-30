@@ -1,3 +1,4 @@
+using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Metadata.Data;
 using GameTimeNext.Core.Application.Metadata.Viewmodels;
 using GameTimeNext.Core.Application.Metadata.Views;
@@ -30,6 +31,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
         protected override void Init()
         {
+            AddSource("T1CTABD", new TXCTABD());
         }
 
         protected override void TriggeredEvent(FrameworkElement source, string eventName)
@@ -38,7 +40,6 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
         protected override void BuildFirstImpl()
         {
-            InitializeTypeFilter();
         }
 
         protected override async Task BuildFirstImplAsync()
@@ -178,7 +179,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
                 MetadataDataGridRow row = GetView().DgMetadata.CreateNewRow<MetadataDataGridRow>();
                 row.COMENAM = t1metah.MENAM;
                 row.CODESCR = t1metah.DESCR;
-                row.COMTYPE = MetadataObjectTypes.GetText(t1metah.MTYPE);
+                row.COMTYPE = TFCTABD.GetDescription("mT", t1metah.MTYPE);
                 row.COGENER = !t1metah.GENER;
                 row.RowObject = t1metah;
 
@@ -235,18 +236,6 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
             query.AddOrderBy(K1METAH.Name, K1METAH.Fields.MENAM, OrderDirection.ASC);
 
             return query;
-        }
-
-        private void InitializeTypeFilter()
-        {
-            UIXManualCodetable codetable = new UIXManualCodetable();
-
-            foreach (MetadataObjectTypes.Entry entry in MetadataObjectTypes.GetEntries())
-                codetable.AddEntry(entry.Key, entry.Text);
-
-            codetable.ApplyTo(GetView().CmbType);
-
-            GetView().CmbType.SelectedIndex = 0;
         }
 
         protected void EV_BtnAdd()

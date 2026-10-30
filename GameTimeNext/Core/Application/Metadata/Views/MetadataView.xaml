@@ -65,6 +65,7 @@
 
                     <uixcb:UIXComboBox
                         x:Name="CmbType"
+                        uixprops:UIXAttachedProperty.Source="From=T1CTABD;Where=TXTYP:mT;Text=DESCR;Value=TXNUM"
                         AdditionalEntry="(All)"
                         Grid.Column="2"
                         Height="36"
