@@ -54,8 +54,6 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
                     mCt.AddEntry(t1ctabd.TXNUM, t1ctabd.DESCR);
             }
 
-            mCt.AddAdditionalEntry("(None)");
-
             mCt.ApplyTo(GetView().cmbType);
         }
 

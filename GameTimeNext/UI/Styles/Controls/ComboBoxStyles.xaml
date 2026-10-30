@@ -1,4 +1,7 @@
-<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:uixcb="clr-namespace:UIX.ViewController.Engine.FrameworkElements.ComboBoxes;assembly=UIX.ViewController.Engine">
 
     <!--  Same values as the Input/Popup/Item tokens (ControlTokens.xaml)  -->
     <SolidColorBrush x:Key="Brush.ComboBox.Background" Color="#FF0E0E12" />
@@ -12,6 +15,70 @@
     <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="Transparent" />
     <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="Transparent" />
     <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="{DynamicResource Color.TextPrimary}" />
+
+    <!--
+        Codetable entry of a UIXComboBox (UIXManualCodetable, UIXAttachedProperty.Source): the key as a badge in front of the text,
+        in the drop down and in the selection box. The text takes the foreground of the item / ComboBox (disabled state).
+        The key column is shared by all entries (SharedSizeGroup, scope set by the UIXComboBox style), so the badges
+        have the width of the longest key and all texts start on one line.
+    -->
+    <DataTemplate DataType="{x:Type uixcb:UIXComboBoxEntry}">
+        <Grid>
+            <Grid x:Name="EntryGrid">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="UIXComboBoxKey" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Border
+                    x:Name="KeyBadge"
+                    Grid.Column="0"
+                    MinWidth="28"
+                    Margin="0,0,8,0"
+                    Padding="6,1"
+                    VerticalAlignment="Center"
+                    BorderBrush="{StaticResource Brush.ComboBox.BorderHover}"
+                    BorderThickness="1"
+                    CornerRadius="{StaticResource Item.CornerRadius}">
+                    <TextBlock
+                        Margin="0"
+                        HorizontalAlignment="Center"
+                        FontSize="12"
+                        FontWeight="SemiBold"
+                        Foreground="{DynamicResource Brush.TextSecondary}"
+                        Text="{Binding Key}"
+                        TextWrapping="NoWrap" />
+                </Border>
+                <TextBlock
+                    Grid.Column="1"
+                    Margin="0"
+                    Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Control}}}"
+                    Text="{Binding Text}"
+                    TextTrimming="CharacterEllipsis"
+                    TextWrapping="NoWrap" />
+            </Grid>
+
+            <!--  "(None)" / "(All)": no key, muted text, not indented to the text column  -->
+            <TextBlock
+                x:Name="AdditionalText"
+                Margin="0"
+                Foreground="{DynamicResource Brush.TextSecondary}"
+                Text="{Binding Text}"
+                TextTrimming="CharacterEllipsis"
+                TextWrapping="NoWrap"
+                Visibility="Collapsed" />
+        </Grid>
+
+        <DataTemplate.Triggers>
+            <DataTrigger Binding="{Binding ShowKey}" Value="False">
+                <Setter TargetName="KeyBadge" Property="Visibility" Value="Collapsed" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding IsAdditional}" Value="True">
+                <Setter TargetName="EntryGrid" Property="Visibility" Value="Collapsed" />
+                <Setter TargetName="AdditionalText" Property="Visibility" Value="Visible" />
+            </DataTrigger>
+        </DataTemplate.Triggers>
+    </DataTemplate>
 
     <Style TargetType="{x:Type ComboBoxItem}">
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
@@ -195,6 +262,14 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+
+    <!--
+        Implicit styles only match the exact type, so the codetable ComboBox takes over the ComboBox look.
+        Shared size scope: the key column of the entries (drop down and selection box) has one width.
+    -->
+    <Style BasedOn="{StaticResource {x:Type ComboBox}}" TargetType="{x:Type uixcb:UIXComboBox}">
+        <Setter Property="Grid.IsSharedSizeScope" Value="True" />
     </Style>
 
 </ResourceDictionary>

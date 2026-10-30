@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
+using UIX.ViewController.Engine.FrameworkElements.ComboBoxes;
 using UIX.ViewController.Engine.FrameworkElements.UserControls;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
@@ -212,20 +213,16 @@ namespace GameTimeNext.Core.Application.Screensetups.Controller
 
             _audioDeviceNames = new Dictionary<string, string>();
 
-            ComboBox cmbAudioDevice = GetView().CmbAudioDevice;
-            cmbAudioDevice.Items.Clear();
-            cmbAudioDevice.Items.Add(new ComboBoxItem { Content = "(Unchanged)", Tag = string.Empty });
+            UIXComboBox cmbAudioDevice = GetView().CmbAudioDevice;
+
+            UIXManualCodetable codetable = new UIXManualCodetable();
 
             // Unavailable devices (e.g. a TV that is switched off) are listed on purpose
             foreach (UIXAudioDevice audioDevice in CFScreensetupsApp.GetAudioManager().GetPlaybackDevices())
             {
                 _audioDeviceNames[audioDevice.Id] = audioDevice.Name;
 
-                cmbAudioDevice.Items.Add(new ComboBoxItem
-                {
-                    Content = audioDevice.IsAvailable ? audioDevice.Name : $"{audioDevice.Name} (not available)",
-                    Tag = audioDevice.Id
-                });
+                codetable.AddEntry(audioDevice.Id, audioDevice.IsAvailable ? audioDevice.Name : $"{audioDevice.Name} (not available)");
             }
 
             // Show the stored device even if Windows does not know it anymore, so it is not lost on save
@@ -233,12 +230,10 @@ namespace GameTimeNext.Core.Application.Screensetups.Controller
             {
                 _audioDeviceNames[t1scrsh.ADID] = t1scrsh.ADNA;
 
-                cmbAudioDevice.Items.Add(new ComboBoxItem
-                {
-                    Content = $"{t1scrsh.ADNA} (not found)",
-                    Tag = t1scrsh.ADID
-                });
+                codetable.AddEntry(t1scrsh.ADID, $"{t1scrsh.ADNA} (not found)");
             }
+
+            codetable.ApplyTo(cmbAudioDevice);
 
             cmbAudioDevice.SelectedItem = cmbAudioDevice.Items
                 .OfType<ComboBoxItem>()

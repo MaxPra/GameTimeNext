@@ -165,9 +165,8 @@ namespace GameTimeNext.Core.Application.Settings.Controller
 
         private void FillComboboxBackgroundSource()
         {
-            // Empty entry disables the dynamic background
+            // The additional entry "(None)" (set in the view) disables the dynamic background
             UIXManualCodetable uIXManualCodetable = new UIXManualCodetable();
-            uIXManualCodetable.AddAdditionalEntry("(None)");
 
             TXCTABD txctabd = new TXCTABD();
             List<T1CTABD> entrys = txctabd.GetEntries(BackgroundSource.CODETABLE);

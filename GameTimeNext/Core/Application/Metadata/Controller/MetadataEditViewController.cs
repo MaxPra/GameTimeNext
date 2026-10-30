@@ -214,16 +214,12 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
         private void InitializeMetadataTypeCombo()
         {
-            GetView().CmbType.Items.Clear();
+            UIXManualCodetable codetable = new UIXManualCodetable();
 
             foreach (MetadataObjectTypes.Entry entry in MetadataObjectTypes.GetEntries())
-            {
-                GetView().CmbType.Items.Add(new ComboBoxItem
-                {
-                    Content = entry.Text,
-                    Tag = entry.Key
-                });
-            }
+                codetable.AddEntry(entry.Key, entry.Text);
+
+            codetable.ApplyTo(GetView().CmbType);
 
             if (GetView().CmbType.Items.Count > 0)
                 GetView().CmbType.SelectedIndex = 0;

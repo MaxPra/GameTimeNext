@@ -2,6 +2,7 @@
     x:Class="GameTimeNext.Core.Application.Settings.Views.SettingsView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:uixcb="clr-namespace:UIX.ViewController.Engine.FrameworkElements.ComboBoxes;assembly=UIX.ViewController.Engine"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:GameTimeNext.Core.Application.Settings.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -394,8 +395,9 @@
                                         Foreground="{DynamicResource Brush.TextSecondary}"
                                         Text="Dynamic Background" />
 
-                                    <ComboBox
+                                    <uixcb:UIXComboBox
                                         x:Name="cmbBackgroundSource"
+                                        AdditionalEntry="(None)"
                                         Grid.Column="2"
                                         Height="36"
                                         VerticalAlignment="Center"

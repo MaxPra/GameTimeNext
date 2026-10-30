@@ -118,12 +118,12 @@ namespace GameTimeNext.Core.Application.Menus.Controller
         {
             _applications = TFAPRDH.GetMenuCallableApplications();
 
-            ComboBox cmbApplication = GetView().cmbApplication;
-            cmbApplication.Items.Clear();
-            cmbApplication.Items.Add(new ComboBoxItem { Content = "(None)", Tag = string.Empty });
+            UIXManualCodetable codetable = new UIXManualCodetable();
 
             foreach (T1APRDH t1aprdh in _applications)
-                cmbApplication.Items.Add(new ComboBoxItem { Content = t1aprdh.APDID, Tag = t1aprdh.APDID });
+                codetable.AddEntry(t1aprdh.APDID, t1aprdh.APDES);
+
+            codetable.ApplyTo(GetView().cmbApplication);
         }
 
         private void BuildHeader(T1MENUE t1menue, bool isFolder)

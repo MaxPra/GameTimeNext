@@ -226,12 +226,12 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
             _cmbTargetPlayTypeFilledCompletely = false;
 
-            GetView().cmbEstimatedTimeType.Items.Clear();
-
-            GetView().cmbEstimatedTimeType.Items.Add(new ComboBoxItem { Content = "(None)", Tag = EstimatedTimeTypes.EST_TIME_NONE });
-            GetView().cmbEstimatedTimeType.Items.Add(new ComboBoxItem { Content = "Main Story", Tag = EstimatedTimeTypes.EST_TIME_MAIN });
-            GetView().cmbEstimatedTimeType.Items.Add(new ComboBoxItem { Content = "Main Story + Extra", Tag = EstimatedTimeTypes.EST_TIME_MAIN_EXTRA });
-            GetView().cmbEstimatedTimeType.Items.Add(new ComboBoxItem { Content = "Completionist", Tag = EstimatedTimeTypes.EST_TIME_COMPLETIONIST });
+            UIXManualCodetable codetable = new UIXManualCodetable();
+            codetable.AddEntry(EstimatedTimeTypes.EST_TIME_NONE, "(None)");
+            codetable.AddEntry(EstimatedTimeTypes.EST_TIME_MAIN, "Main Story");
+            codetable.AddEntry(EstimatedTimeTypes.EST_TIME_MAIN_EXTRA, "Main Story + Extra");
+            codetable.AddEntry(EstimatedTimeTypes.EST_TIME_COMPLETIONIST, "Completionist");
+            codetable.ApplyTo(GetView().cmbEstimatedTimeType);
 
             _cmbTargetPlayTypeFilledCompletely = true;
 

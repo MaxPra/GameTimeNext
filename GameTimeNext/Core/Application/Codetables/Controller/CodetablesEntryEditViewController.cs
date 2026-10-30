@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
+using UIX.ViewController.Engine.FrameworkElements.ComboBoxes;
 using UIX.ViewController.Engine.FrameworkElements.UserControls;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
@@ -164,12 +165,10 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
                     manualCodetable.AddEntry(entry.TXNUM, entry.DESCR);
                 }
 
-                ComboBox paramCombobox = (ComboBox)GetView().FindName($"{ControlType.ByCode[controlType].XamlPrefix}Param{i}");
+                UIXComboBox paramCombobox = (UIXComboBox)GetView().FindName($"{ControlType.ByCode[controlType].XamlPrefix}Param{i}");
 
-                if (!t1ctabh.GetValue<bool>($"PARF{i}"))
-                {
-                    manualCodetable.AddAdditionalEntry("(None)");
-                }
+                // A required parameter offers no "(None)"
+                paramCombobox.AdditionalEntry = t1ctabh.GetValue<bool>($"PARF{i}") ? string.Empty : "(None)";
 
                 manualCodetable.ApplyTo(paramCombobox);
                 paramCombobox.ToolTip = controlTooltip;

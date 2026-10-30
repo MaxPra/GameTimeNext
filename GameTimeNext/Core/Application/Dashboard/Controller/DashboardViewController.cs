@@ -60,7 +60,9 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
             // Suppress pipeline
             using (SuppressRunEventPipeline())
             {
-                GetView().CmbTimeRange.SelectedIndex = AppEnvironment.GetAppConfig().UserSettings.SelectedDashboardMode;
+                FillComboboxTimeRange();
+
+                GetView().CmbTimeRange.SelectedIndex =AppEnvironment.GetAppConfig().UserSettings.SelectedDashboardMode;
                 timeSpanOffset = AppEnvironment.GetAppConfig().UserSettings.SelectedDashboardOffset;
                 ChangeTimeSpanDays();
             }
@@ -136,6 +138,22 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
                 }
 
             }
+        }
+
+        /// <summary>
+        /// Periods of the dashboard; the selection is evaluated and stored by index, so the order must not change.
+        /// </summary>
+        private void FillComboboxTimeRange()
+        {
+            UIXManualCodetable codetable = new UIXManualCodetable();
+            codetable.AddEntry("LAST7", "Last 7 Days");
+            codetable.AddEntry("LAST30", "Last 30 Days");
+            codetable.AddEntry("LAST365", "Last 365 Days");
+            codetable.AddEntry("DAY", "Day");
+            codetable.AddEntry("WEEK", "Week");
+            codetable.AddEntry("MONTH", "Month");
+            codetable.AddEntry("ALL", "All Time");
+            codetable.ApplyTo(GetView().CmbTimeRange);
         }
 
         private void ChangeTimeSpanDays()

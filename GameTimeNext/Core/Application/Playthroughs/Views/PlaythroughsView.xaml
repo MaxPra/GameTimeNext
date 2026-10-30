@@ -2,6 +2,7 @@
     x:Class="GameTimeNext.Core.Application.Playthroughs.Views.PlaythroughsView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:uixcb="clr-namespace:UIX.ViewController.Engine.FrameworkElements.ComboBoxes;assembly=UIX.ViewController.Engine"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI.Base"
@@ -169,12 +170,12 @@
                         Foreground="{DynamicResource Brush.TextSecondary}"
                         Text="Type" />
 
-                    <ComboBox
+                    <uixcb:UIXComboBox
                         x:Name="CmbPlaythroughType"
                         Grid.Column="2"
                         Height="36"
                         VerticalAlignment="Center"
-                        uixprops:UIXAttachedProperty.AdditionalEntry="(All)"
+                        AdditionalEntry="(All)"
                         uixprops:UIXAttachedProperty.Source="From=T1CTABD;Where=TXTYP:pL;Text=DESCR;Value=TXNUM"
                         SelectedIndex="0"
                         SelectedValue=""
