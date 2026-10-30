@@ -1,11 +1,11 @@
-﻿namespace GameTimeNext.Shared.SocketCom.ProfilesCom
+﻿using GameTimeNext.Shared.Base;
+
+namespace GameTimeNext.Shared.Profiles
 {
-    public class OlisProfileDTO
+    public class ProfileDto : DtoBase
     {
         public required int Id { get; set; }
         public required string Title { get; set; }
         public required string AccentColorHex { get; set; }
-
-        public OlisProfileDTO() { }
     }
 }

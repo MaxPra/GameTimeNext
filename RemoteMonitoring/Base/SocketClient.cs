@@ -1,9 +1,9 @@
-﻿using GameTimeNext.Shared.SocketCom;
+﻿using GameTimeNext.Shared.Base;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 
-namespace RemoteMonitoring
+namespace RemoteMonitoring.Base
 {
     public class SocketClient
     {
@@ -58,13 +58,13 @@ namespace RemoteMonitoring
             _pingTask = PingLoopAsync();
         }
 
-        public async Task<string?> SendAsync(AvailableRequests request)
+        public async Task<string?> SendAsync(RequestMessageBase requestMessage)
         {
             if (_cts is null || _client is null || _reader is null || _writer is null) throw new WrongOrderException();
 
-            string requestMessage = JsonSerializer.Serialize(request);
+            string requestJson = JsonSerializer.Serialize(requestMessage);
 
-            Task writeTask = _writer.WriteLineAsync(requestMessage);
+            Task writeTask = _writer.WriteLineAsync(requestJson);
             bool writeSuccess = await ExecuteTaskWithTimeoutAsync(writeTask);
             if (!writeSuccess)
                 return null;
@@ -146,7 +146,7 @@ namespace RemoteMonitoring
             {
                 await Task.Delay(_pingIntervalMs, _cts!.Token);
 
-                string? response = await SendAsync(AvailableRequests.Ping);
+                string? response = await SendAsync(new PingRequestMessage());
                 if (response is null || !response.Equals("Pong"))
                 {
                     FnLog.AddError(this, "Ping failed!");

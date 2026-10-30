@@ -1,6 +1,8 @@
 ﻿@page "/"
+@using GameTimeNext.Shared.Profiles
 @rendermode InteractiveServer
 @inject SocketClient Socket
+@inject ProfilesApiService ProfilesApiService
 
 <PageTitle>Profiles</PageTitle>
 
@@ -8,7 +10,7 @@
     <h1 class="text-2xl font-bold">Profiles</h1>
 
     <div class="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-5 2xl:grid-cols-7">
-        @foreach (OlisProfileDTO profile in Profiles)
+        @foreach (ProfileDto profile in Profiles)
         {
             <div @onclick="() => SelectProfile(profile)">
                 <Profile Title="@profile.Title" AccentColor="@profile.AccentColorHex" IsHighlighted="IsSelected(profile)" />
@@ -18,8 +20,8 @@
 </div>
 
 @code {
-    private OlisProfileDTO? SelectedProfile;
-    private List<OlisProfileDTO> Profiles { get; } = new();
+    private ProfileDto? SelectedProfile;
+    private List<ProfileDto> Profiles { get; } = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -28,18 +30,17 @@
 
     private async Task RefreshProfiles()
     {
-        ApiService service = new ApiService(Socket);
         Profiles.Clear();
-        List<OlisProfileDTO> profiles = await service.GetAllProfiles();
+        List<ProfileDto> profiles = await ProfilesApiService.GetAllProfiles();
         Profiles.AddRange(profiles);
     }
 
-    private void SelectProfile(OlisProfileDTO profile)
+    private void SelectProfile(ProfileDto profile)
     {
         SelectedProfile = profile;
     }
 
-    private bool IsSelected(OlisProfileDTO profile)
+    private bool IsSelected(ProfileDto profile)
     {
         return SelectedProfile?.Id == profile.Id;
     }

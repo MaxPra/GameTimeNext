@@ -1,8 +1,8 @@
 ﻿using GameTimeNext.Core.Application.Profiles.Batch;
 using GameTimeNext.Core.Framework;
-using GameTimeNext.Shared.SocketCom;
-using GameTimeNext.Shared.SocketCom.ProfilesCom;
-using System.Diagnostics;
+using GameTimeNext.Shared;
+using GameTimeNext.Shared.Base;
+using GameTimeNext.Shared.Profiles;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -60,13 +60,14 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
                 if (message == null)
                     break;
 
-                await HandleResponse(writer, message);
+                await HandleRequest(writer, message);
             }
         }
 
-        private async Task HandleResponse(StreamWriter writer, string requestMessage)
+        private async Task HandleRequest(StreamWriter writer, string requestMessage)
         {
-            AvailableRequests request = JsonSerializer.Deserialize<AvailableRequests>(requestMessage);
+            using JsonDocument document = JsonDocument.Parse(requestMessage);
+            AvailableRequests request = document.RootElement.GetProperty(nameof(RequestMessageBase.Request)).Deserialize<AvailableRequests>();
 
             if (request.Equals(AvailableRequests.Ping))
             {
@@ -83,84 +84,101 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
             //    return;
             //}
 
+            // OFDOI: ?Generic? conversion between T1 and Dto
+
             switch (request)
             {
                 case AvailableRequests.AllProfiles:
-                    List<OlisProfileDTO> t1profis = new List<OlisProfileDTO>
+                    List<ProfileDto> t1profis = new List<ProfileDto>
                     {
-                        new OlisProfileDTO
+                        new ProfileDto
                         {
                             Id = 0,
                             Title = "over the hill Demo",
                             AccentColorHex = "4FBAD9",
                             //ImageUrl = "https://cdn2.steamgriddb.com/thumb/02410847e3dabcc0a3c4889f1abaf025.jpg"
                         },
-                        new OlisProfileDTO
+                        new ProfileDto
                         {
                             Id = 1,
                             Title = "Euro Truck Simulator 2",
                             AccentColorHex = "EC9C3C",
                             //ImageUrl = "https://cdn2.steamgriddb.com/thumb/8227c2ce0e9af9745a927e89d6107994.jpg"
                         },
-                        new OlisProfileDTO
+                        new ProfileDto
                         {
                             Id = 2,
                             Title = "Palworld",
                             AccentColorHex = "1B91CC",
                         },
-                        new OlisProfileDTO
+                        new ProfileDto
                         {
                             Id = 3,
                             Title = "BioShock Remastered",
                             AccentColorHex = "0A6066",
                         },
-                        new OlisProfileDTO
+                        new ProfileDto
                         {
                             Id = 4,
                             Title = "Paralives",
                             AccentColorHex = "1EC4E9",
                         },
-                        new OlisProfileDTO
+                        new ProfileDto
                         {
                             Id = 5,
                             Title = "Minecraft (1.2.5)",
                             AccentColorHex = "2F47B6",
                         },
-                        new OlisProfileDTO
+                        new ProfileDto
                         {
                             Id = 6,
                             Title = "Portal Reloaded",
                             AccentColorHex = "15940F",
                         },
-                        new OlisProfileDTO
+                        new ProfileDto
                         {
                             Id = 7,
                             Title = "Red Dead Redemption 2",
                             AccentColorHex = "B0311B",
                         },
-                        new OlisProfileDTO
+                        new ProfileDto
                         {
                             Id = 8,
                             Title = "Portal Stories: Mel",
                             AccentColorHex = "C45626",
                         },
-                        new OlisProfileDTO
+                        new ProfileDto
                         {
                             Id = 9,
                             Title = "Thinking with Time Machine",
                             AccentColorHex = "15B0D5",
                         },
-                        new OlisProfileDTO
+                        new ProfileDto
                         {
                             Id = 10,
                             Title = "Portal 2: Community Edition",
                             AccentColorHex = "D15C23",
                         }
                     };
-                    string serialized = JsonSerializer.Serialize(t1profis);
-                    writer.WriteLine(serialized);
+                    await SendResponse(writer, t1profis);
+                    return;
+                case AvailableRequests.Profile:
+                    ProfileDto t1profi = new ProfileDto
+                    {
+                        Id = 1,
+                        Title = "Euro Truck Simulator 2",
+                        AccentColorHex = "EC9C3C",
+                        //ImageUrl = "https://cdn2.steamgriddb.com/thumb/8227c2ce0e9af9745a927e89d6107994.jpg"
+                    };
+                    await SendResponse(writer, t1profi);
                     return;
             }
+        }
+
+        private async Task SendResponse(StreamWriter writer, object response)
+        {
+            string serialized = JsonSerializer.Serialize(response);
+            writer.WriteLine(serialized);
         }
 
         protected override void OnStop()
