@@ -187,6 +187,110 @@
                         </GroupBox>
 
                         <GroupBox
+                            Header="Game import"
+                            Style="{StaticResource GroupBox.Card}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="12" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="12" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <Grid Grid.Row="0" HorizontalAlignment="Left">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="220" />
+                                        <ColumnDefinition Width="16" />
+                                        <ColumnDefinition Width="54" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        VerticalAlignment="Center"
+                                        Foreground="{DynamicResource Brush.TextSecondary}"
+                                        Text="Add new games automatically" />
+
+                                    <CheckBox
+                                        x:Name="cbAutoImportGames"
+                                        Grid.Column="2"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center"
+                                        ToolTip="Newly installed games of the checked launchers are added as profiles shortly after their installation." />
+                                </Grid>
+
+                                <Grid Grid.Row="2" HorizontalAlignment="Left">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="220" />
+                                        <ColumnDefinition Width="16" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        Margin="0,1,0,0"
+                                        VerticalAlignment="Top"
+                                        Foreground="{DynamicResource Brush.TextSecondary}"
+                                        Text="Launchers" />
+
+                                    <!--
+                                        One checkbox per launcher that supports an import. Only the items are drawn: the ListBox frame
+                                        (white background while disabled) and the selection look are left out, the checkbox is the state
+                                        and dims itself while the import is switched off.
+                                    -->
+                                    <uixsel:UIXListBox
+                                        x:Name="lbAutoImportLaunchers"
+                                        Grid.Column="2"
+                                        Focusable="False">
+                                        <uixsel:UIXListBox.Template>
+                                            <ControlTemplate TargetType="{x:Type ListBox}">
+                                                <ItemsPresenter />
+                                            </ControlTemplate>
+                                        </uixsel:UIXListBox.Template>
+
+                                        <uixsel:UIXListBox.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <!--  Fixed column width: the launchers line up in columns, three per row  -->
+                                                <WrapPanel MaxWidth="660" ItemWidth="220" />
+                                            </ItemsPanelTemplate>
+                                        </uixsel:UIXListBox.ItemsPanel>
+
+                                        <uixsel:UIXListBox.ItemContainerStyle>
+                                            <Style TargetType="{x:Type ListBoxItem}">
+                                                <Setter Property="Focusable" Value="False" />
+                                                <Setter Property="Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                                            <ContentPresenter />
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </uixsel:UIXListBox.ItemContainerStyle>
+
+                                        <uixsel:UIXListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <CheckBox
+                                                    Margin="0,0,12,12"
+                                                    HorizontalAlignment="Left"
+                                                    Content="{Binding CONAME}"
+                                                    IsChecked="{Binding COISSEL, Mode=TwoWay}"
+                                                    Style="{StaticResource CheckBox.Left}" />
+                                            </DataTemplate>
+                                        </uixsel:UIXListBox.ItemTemplate>
+                                    </uixsel:UIXListBox>
+                                </Grid>
+
+                                <TextBlock
+                                    Grid.Row="4"
+                                    Style="{StaticResource Text.Hint}"
+                                    Text="Games that already have a profile, or whose profile was deleted, are not added again. When a launcher is switched on, you decide once what happens with the games installed already."
+                                    TextWrapping="Wrap" />
+                            </Grid>
+                        </GroupBox>
+
+                        <GroupBox
                             Header="Steam Grid DB"
                             Style="{StaticResource GroupBox.Card}">
                             <Grid>

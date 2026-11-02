@@ -50,6 +50,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             GetApp().CallDispatcher.Register(this, nameof(EXEV_GameLaunched));
             GetApp().CallDispatcher.Register(this, nameof(EXEV_GameClosed));
             GetApp().CallDispatcher.Register(this, nameof(EXEV_ProfileDetailViewPositionChanged));
+            GetApp().CallDispatcher.Register(this, nameof(EXEV_ProfilesAutoImported));
 
             // Set loader texts
             GetApp().Loader.SetRandomTexts(
@@ -178,8 +179,24 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             }
 
             if (selectedItem != null)
-                listBoxProfiles.SelectedItem = selectedItem;
+            {
+                IsSelectingProfile = true;
+
+                try
+                {
+                    listBoxProfiles.SelectedItem = selectedItem;
+                }
+                finally
+                {
+                    IsSelectingProfile = false;
+                }
+            }
         }
+
+        /// <summary>
+        /// True while the list selects a profile itself after it was built (not chosen by the user).
+        /// </summary>
+        public bool IsSelectingProfile { get; private set; }
 
         private ProfilesListBoxItem? GetSelectedItem()
         {
@@ -201,6 +218,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             TFPROFI.Unseal(t1profi);
 
             item.COISSEA = false;
+            item.COISNEW = false;
 
             ProfilesDetailSubViewController profileDetailViewController = (ProfilesDetailSubViewController)GetApp().ProfilesDetailView.ViewController;
             profileDetailViewController.UpdateUIUnwrapped();
@@ -286,6 +304,19 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         protected void EXEV_ProfileDetailViewPositionChanged()
         {
             ApplyDetailViewPosition();
+        }
+
+        /// <summary>
+        /// The automatic import added profiles (LauncherAutoImportProcess): shows them, the selection stays.
+        /// Not while a game is monitored: the list must not be rebuilt then; it is rebuilt when monitoring stops
+        /// (EXEV_GameTimeMonitoringStopped), which shows the new profiles too.
+        /// </summary>
+        protected async Task EXEV_ProfilesAutoImported()
+        {
+            if (CFGameTimeMonitoring.IsMonitoring)
+                return;
+
+            await BuildProfilesListBoxAsync(AppEnvironment.CurrentPfid);
         }
 
         /// <summary>

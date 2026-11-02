@@ -111,7 +111,8 @@ namespace GameTimeNext.Core.Application.Profiles.Selectors
                         COCOVIM = CFProfilesApp.LoadProfileCover(prof.PPFN),
                         COISPLA = FnSystem.IsExeFoundInPath(prof.EXGF),
                         COPLFPA = File.Exists(platformSymbolFullPath) ? FnImage.LoadImageWithoutLock(platformSymbolFullPath, 50, 50) : null,
-                        COISSEA = TFPROFI.IsSealed(prof)
+                        COISSEA = TFPROFI.IsSealed(prof),
+                        COISNEW = TFPROFI.IsMarkedNew(prof)
                     };
 
                     result.Add(item);

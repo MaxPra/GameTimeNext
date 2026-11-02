@@ -47,8 +47,16 @@ namespace GameTimeNext.Core.Application.Profiles.Selectors
 
         protected void EV_SelectionChanged()
         {
-            if (GetSelectedItem<ProfilesListBoxItem>()?.ItemObject is T1PROFI t1profi)
-                AppEnvironment.SetCurrentProfile(t1profi);
+            ProfilesListBoxItem? item = GetSelectedItem<ProfilesListBoxItem>();
+
+            if (item?.ItemObject is not T1PROFI t1profi)
+                return;
+
+            AppEnvironment.SetCurrentProfile(t1profi);
+
+            // Badge "New" of the automatic import: gone once the user selected the game (not the selection of the list build)
+            if (item.COISNEW && !GetViewController<ProfilesViewController>().IsSelectingProfile && TFPROFI.ClearNewMarkOnSelection(t1profi))
+                item.COISNEW = false;
         }
 
         protected void EV_CtxtOpening(FrameworkElement target)

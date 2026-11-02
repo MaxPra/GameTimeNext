@@ -15,6 +15,12 @@ namespace GameTimeNext.Core.Application.Profiles.Components
         public bool Sealed { get; set; } = false;
 
         /// <summary>
+        /// Added by the automatic import and not looked at yet: the tile shows the badge "New" until the profile is
+        /// selected (a sealed one keeps it until it is unwrapped).
+        /// </summary>
+        public bool IsNew { get; set; } = false;
+
+        /// <summary>
         /// Suspends the game while the Big Picture mode is brought in front of it, so it doesn't react to the
         /// controller there (FnLauncher.PauseGame). On by default, also for profiles saved before the setting existed.
         /// </summary>
