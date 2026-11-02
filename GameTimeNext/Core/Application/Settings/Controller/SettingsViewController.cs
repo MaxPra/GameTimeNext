@@ -61,6 +61,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             FnControls.SetEnabled(GetView().cbAutoStartMinimized, !FnSystem.IsDebug());
 
             FillComboboxBackgroundSource();
+            FillComboboxProfileDetailViewPosition();
         }
 
         protected override void BuildImpl()
@@ -157,6 +158,9 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             GetView().cmbBackgroundSource.SelectedValue = _appSettings.BackgroundSource;
             if (GetView().cmbBackgroundSource.SelectedItem == null)
                 GetView().cmbBackgroundSource.SelectedValue = string.Empty;
+            GetView().cmbProfileDetailViewPosition.SelectedValue = _appSettings.ProfileDetailViewPosition;
+            if (GetView().cmbProfileDetailViewPosition.SelectedItem == null)
+                GetView().cmbProfileDetailViewPosition.SelectedValue = "02";
             GetView().txbSteamGridDbApiKey.Text = _appSettings!.SteamGridDbKey;
 
             // Backup
@@ -189,6 +193,21 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             uIXManualCodetable.ApplyTo(GetView().cmbBackgroundSource);
         }
 
+        private void FillComboboxProfileDetailViewPosition()
+        {
+            UIXManualCodetable uIXManualCodetable = new UIXManualCodetable();
+
+            TXCTABD txctabd = new TXCTABD();
+            List<T1CTABD> entrys = txctabd.GetEntries("dP");
+
+            foreach (T1CTABD entry in entrys)
+            {
+                uIXManualCodetable.AddEntry(entry.TXNUM, entry.DESCR);
+            }
+
+            uIXManualCodetable.ApplyTo(GetView().cmbProfileDetailViewPosition);
+        }
+
         private string GetSelectedBackgroundSource()
         {
             return GetView().cmbBackgroundSource.SelectedValue as string ?? string.Empty;
@@ -215,6 +234,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             _appSettings!.AllowProfileSpecificStyleChanges = GetView().cbAllowProfileSpecificStyleChanges.IsChecked == true;
             _appSettings!.BackgroundSource = GetSelectedBackgroundSource();
             _appSettings!.DarkTintedGlass = GetView().cbDarkTintedGlass.IsChecked == true;
+            _appSettings!.ProfileDetailViewPosition = GetView().cmbProfileDetailViewPosition.SelectedValue as string ?? "02";
             _appSettings!.SteamGridDbKey = GetView().txbSteamGridDbApiKey.Text;
             _appSettings!.BackupExportPath = GetView().txbBackupExportPath.Text;
             _appSettings!.AutoBackup = GetView().cbAutoBackup.IsChecked == true;
@@ -416,6 +436,10 @@ namespace GameTimeNext.Core.Application.Settings.Controller
 
             FnTheme.ApplyWallpaperBackground(GetSelectedBackgroundSource());
             FnTheme.ApplyGlassTint(GetView().cbDarkTintedGlass.IsChecked == true);
+
+            // An open profiles view moves its detail view to the chosen side
+            if (GetApp().CallDispatcher.IsRegistered("EXEV_ProfileDetailViewPositionChanged"))
+                GetApp().CallDispatcher.Trigger("EXEV_ProfileDetailViewPositionChanged");
         }
     }
 }

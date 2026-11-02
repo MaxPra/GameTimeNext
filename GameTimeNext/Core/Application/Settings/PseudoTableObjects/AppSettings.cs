@@ -96,6 +96,9 @@ namespace GameTimeNext.Core.Application.TableObjects
         [UIXSignatureField(26)]
         public bool SealNewGames { get; set; }
 
+        /// <summary>Entry of codetable dP: side of the profiles view the detail view is shown on (01 = left, 02 = right).</summary>
+        [UIXSignatureField(27)]
+        public string ProfileDetailViewPosition { get; set; }
 
 
         public AppSettings()
@@ -107,6 +110,7 @@ namespace GameTimeNext.Core.Application.TableObjects
             BackgroundSource = string.Empty;
             DarkTintedGlass = false;
             SealNewGames = false;
+            ProfileDetailViewPosition = "02";
 
             MonitoringKeyActive = false;
             ShowToastNotification = false;

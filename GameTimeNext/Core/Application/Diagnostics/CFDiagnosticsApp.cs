@@ -15,7 +15,7 @@ namespace GameTimeNext.Core.Application.Diagnostics
         /// <summary>
         /// Most entries the log list shows; the newest are taken.
         /// </summary>
-        public const int LogTopX = 1000;
+        public const int LogTopX = 2000;
 
         /// <summary>
         /// Formats a point in time for the lists (current culture), empty for null.

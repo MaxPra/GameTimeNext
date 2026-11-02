@@ -49,6 +49,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             GetApp().CallDispatcher.Register(this, nameof(EXEV_SwitchProfile));
             GetApp().CallDispatcher.Register(this, nameof(EXEV_GameLaunched));
             GetApp().CallDispatcher.Register(this, nameof(EXEV_GameClosed));
+            GetApp().CallDispatcher.Register(this, nameof(EXEV_ProfileDetailViewPositionChanged));
 
             // Set loader texts
             GetApp().Loader.SetRandomTexts(
@@ -84,6 +85,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected override void BuildFirstImpl()
         {
+            ApplyDetailViewPosition();
         }
 
         protected override async Task BuildFirstImplAsync()
@@ -279,6 +281,36 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             ProfilesDetailSubViewController profileDetailViewController = (ProfilesDetailSubViewController)GetApp().ProfilesDetailView.ViewController;
             profileDetailViewController.UpdateUIMonitoringStopped();
+        }
+
+        protected void EXEV_ProfileDetailViewPositionChanged()
+        {
+            ApplyDetailViewPosition();
+        }
+
+        /// <summary>
+        /// Places the detail view on the side chosen in the settings (codetable dP) by swapping the outer columns.
+        /// </summary>
+        private void ApplyDetailViewPosition()
+        {
+            ProfilesView view = GetView();
+            bool detailLeft = AppEnvironment.GetAppConfig().AppSettings.ProfileDetailViewPosition == "01";
+
+            ColumnDefinition gap = view.grdProfiles.ColumnDefinitions[1];
+            view.grdProfiles.ColumnDefinitions.Clear();
+            view.grdProfiles.ColumnDefinitions.Add(detailLeft ? view.colProfileDetail : view.colProfiles);
+            view.grdProfiles.ColumnDefinitions.Add(gap);
+            view.grdProfiles.ColumnDefinitions.Add(detailLeft ? view.colProfiles : view.colProfileDetail);
+
+            int profilesColumn = detailLeft ? 2 : 0;
+            Grid.SetColumn(view.brdProfiles, profilesColumn);
+            Grid.SetColumn(view.MonitoringOverlay, profilesColumn);
+            Grid.SetColumn(view.LaunchingOverlay, profilesColumn);
+            Grid.SetColumn(view.brdProfileDetail, detailLeft ? 0 : 2);
+
+            // The gap to the detail view moves to its side; the list keeps the tiles aligned with the toolbar
+            view.brdProfilesToolbar.Margin = detailLeft ? new Thickness(16, 0, 0, 12) : new Thickness(0, 0, 16, 12);
+            view.ListBoxProfiles.Margin = detailLeft ? new Thickness(4, -8, 0, 0) : new Thickness(-12, -8, 0, 0);
         }
 
         protected async Task EXEV_SwitchProfile()
