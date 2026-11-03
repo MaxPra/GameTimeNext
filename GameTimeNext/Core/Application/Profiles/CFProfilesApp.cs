@@ -104,8 +104,7 @@ namespace GameTimeNext.Core.Application.Profiles
 
             System.Windows.Application.Current.Dispatcher.Invoke(() =>
             {
-                ToastMessage tm = new ToastMessage("Attention!", AppConfig.Root.ApplicationName + " needs your attention!");
-                tm.Show();
+                CFToast.Show("Attention!", AppConfig.Root.ApplicationName + " needs your attention!");
 
                 CFMBOX cfmbox = app.GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
                 CFMBOXResult result = cfmbox.Show(app.GetErrorMessage("PLT0001"), CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
