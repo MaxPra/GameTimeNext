@@ -96,6 +96,29 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
         }
 
         /// <summary>
+        /// Returns the installed games of the given launchers (only those that support an import). Without
+        /// LauncherName: it is read from the codetable, and this runs in background processes, without database access.
+        /// </summary>
+        public static List<LauncherGame> GetInstalledGames(IEnumerable<string> launcherTypes)
+        {
+            return GetImportLaunchers(launcherTypes)
+                .SelectMany(l => GetInstalledGamesSafe(l, string.Empty))
+                .ToList();
+        }
+
+        /// <summary>
+        /// Returns the launcher types (keys of the codetable "lT") of all launchers that support an import.
+        /// </summary>
+        public static List<string> GetImportLauncherTypes()
+        {
+            return LauncherRegistry.GetAll()
+                .Where(l => l.SupportsImport)
+                .Select(l => l.LauncherType)
+                .ToList();
+        }
+
+
+        /// <summary>
         /// Applies the profile settings (e.g. HDR) and starts the game through its launcher.
         /// Returns false if the game isn't installed or the launch was cancelled before the launcher was started.
         /// </summary>
@@ -422,10 +445,20 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
             }
         }
 
+        private static IEnumerable<ILauncherIntegration> GetImportLaunchers(IEnumerable<string> launcherTypes)
+        {
+            HashSet<string> types = launcherTypes.ToHashSet(StringComparer.Ordinal);
+
+            return LauncherRegistry.GetAll().Where(l => l.SupportsImport && types.Contains(l.LauncherType));
+        }
+
         private static List<LauncherGame> GetInstalledGamesSafe(ILauncherIntegration launcher)
         {
-            string launcherName = GetLauncherName(launcher.LauncherType);
+            return GetInstalledGamesSafe(launcher, GetLauncherName(launcher.LauncherType));
+        }
 
+        private static List<LauncherGame> GetInstalledGamesSafe(ILauncherIntegration launcher, string launcherName)
+        {
             try
             {
                 return launcher.GetInstalledGames().Select(g => g with { LauncherName = launcherName }).ToList();

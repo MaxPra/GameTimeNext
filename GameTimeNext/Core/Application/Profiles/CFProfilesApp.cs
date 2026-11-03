@@ -11,7 +11,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Profiles
 {
-    public class CFProfilesApp
+    public partial class CFProfilesApp
     {
         private static readonly Uri PlaceholderCoverUri = new Uri("pack://application:,,,/UI/Ressources/GTN_COVER_PLACEHOLDER.png", UriKind.Absolute);
 

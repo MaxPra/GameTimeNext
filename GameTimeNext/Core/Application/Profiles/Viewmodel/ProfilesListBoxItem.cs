@@ -29,6 +29,21 @@ namespace GameTimeNext.Core.Application.Profiles.Viewmodel
             }
         }
 
+        // Added by the automatic import and not looked at yet (TFPROFI.IsMarkedNew): badge "New" on the tile
+        private bool _coisnew;
+        public bool COISNEW
+        {
+            get => _coisnew;
+            set
+            {
+                if (_coisnew == value)
+                    return;
+
+                _coisnew = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(COISNEW)));
+            }
+        }
+
         public event PropertyChangedEventHandler? PropertyChanged;
     }
 }

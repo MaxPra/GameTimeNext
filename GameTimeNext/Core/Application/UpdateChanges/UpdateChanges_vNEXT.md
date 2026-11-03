@@ -35,6 +35,8 @@
   Open it with the controller icon in the title bar, or start GameTimeNext directly in it with the start argument `--bigpicture`.
   The selected game is shown large with its playtimes and current playthrough; LB / RB switch between your recently played games, the whole library and the search.
   Search your library with the on-screen keyboard (Y), start or stop monitoring and quit games from the game options (X), black out all monitors (View), and switch between a running game and Big Picture with the Xbox button or View + Menu.
+- **Automatic game import** (*Settings > General > Game import*): newly installed games of your launchers (Steam, Epic, Xbox, GOG, Ubisoft Connect, Rockstar) are added as profiles shortly after their installation finished, with the first cover from SteamGridDB (or the placeholder cover) and the executables preselected.
+  When you switch it on, you decide once whether the games installed already are added too. New profiles show the badge **New** until you select them (shrink-wrapped games until you unwrap them). Games that already have a profile, or whose profile you deleted, are never added again.
 
 ## Bug fixes
 

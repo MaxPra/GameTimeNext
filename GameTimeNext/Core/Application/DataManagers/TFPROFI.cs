@@ -118,9 +118,50 @@ namespace GameTimeNext.Core.Application.DataManagers
                 return;
 
             cProfileSettings.Sealed = false;
+
+            // Unwrapping is looking at the new game
+            cProfileSettings.IsNew = false;
             t1profi.PRSE = cProfileSettings.Serialize();
 
             new TXPROFI().Save(t1profi);
+        }
+
+        /// <summary>
+        /// True if the profile was added by the automatic import and not looked at yet (badge "New").
+        /// </summary>
+        public static bool IsMarkedNew(T1PROFI t1profi)
+        {
+            return new CProfileSettings(t1profi.PRSE).Dezerialize().IsNew;
+        }
+
+        /// <summary>
+        /// Removes the badge "New" when the profile is selected and saves it. A sealed game keeps it: it is removed
+        /// when the game is unwrapped. Returns true if the badge was removed.
+        /// </summary>
+        public static bool ClearNewMarkOnSelection(T1PROFI t1profi)
+        {
+            CProfileSettings cProfileSettings = new CProfileSettings(t1profi.PRSE).Dezerialize();
+
+            if (!cProfileSettings.IsNew || IsSealed(t1profi))
+                return false;
+
+            cProfileSettings.IsNew = false;
+            t1profi.PRSE = cProfileSettings.Serialize();
+
+            new TXPROFI().Save(t1profi);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Saves a profile created without the edit view (automatic import) together with its initial playthrough,
+        /// as saving a new profile in the edit view does.
+        /// </summary>
+        public static void SaveNewProfile(T1PROFI t1profi)
+        {
+            new TXPROFI().Save(t1profi);
+
+            TFPLTHR.CreateNewPlaythrough(t1profi.PFID);
         }
 
         public static List<T1PLTHR> GetAllPlaythroughs(T1PROFI t1profi)

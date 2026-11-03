@@ -50,3 +50,6 @@ IMP0001;"ImportPackage imported successfully.
 Please check the temporarty database!";Used for ImportPackage testing.;2026-10-26 16:52:27;Oliver Fida;2026-10-26 16:52:27;Oliver Fida
 DGN0001;"Do you really want to delete the entire app log?
 Confirm with your favorite app (hint: it's the one asking).";;2026-10-30 22:43:26;prage;2026-10-30 22:43:26;prage
+PRO0009;Installed games without a profile found: &1\nShould &2 add them all now?;Asked once when a launcher is switched on for the automatic game import. Yes: they are added a few at a time in the background. No: only games installed from now on are added, the others can still be added with the launcher import of a new profile.;2026-11-02 18:00:00;prage;2026-11-02 18:00:00;prage
+PRO0010;New game added;Title of the toast after the automatic game import added one game (its name is the text).;2026-11-02 18:00:00;prage;2026-11-02 18:00:00;prage
+PRO0011;&1 new games added;Title of the toast after the automatic game import added several games (their names are the text).;2026-11-02 18:00:00;prage;2026-11-02 18:00:00;prage
