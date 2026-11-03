@@ -439,6 +439,10 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 ? AppEnvironment.GetAppConfig().AppSettings.SealNewGames
                 : new CProfileSettings(GetApp().T1Profi.PRSE).Dezerialize().Sealed;
 
+            // Badge "New" of the automatic import: not edited here either
+            cProfileSettings.IsNew = !GetView().ViewIndicator.Contains("CN")
+                && new CProfileSettings(GetApp().T1Profi.PRSE).Dezerialize().IsNew;
+
             cProfileSettings.HDREnabled = GetView().cbEnableHdrOnStart.IsChecked == true;
             cProfileSettings.LaunchArgs = GetView().txbLaunchArgs.Text.Trim();
             cProfileSettings.PauseInBigPicture = GetView().cbPauseInBigPicture.IsChecked == true;

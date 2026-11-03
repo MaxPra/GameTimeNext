@@ -1,4 +1,5 @@
 ﻿using GameTimeNext.Core.Application.Settings.Controller;
+using GameTimeNext.Core.Application.Settings.Selectors;
 using GameTimeNext.Core.Application.Settings.Views;
 using System.Windows.Controls;
 using UIX.ViewController.Engine.Runnables;
@@ -26,6 +27,10 @@ namespace GameTimeNext.Core.Application.Settings
 
             _settingsViewController = new SettingsViewController(this);
             _settingsView.ViewController = _settingsViewController;
+
+            // Selectors
+            _settingsView.lbAutoImportLaunchers.SelectorAdapter = new SettingsView_AutoImportLaunchersSelectorAdapter(this);
+            _settingsView.lbAutoImportLaunchers.SelectorController = new SettingsView_AutoImportLaunchersSelectorController(this);
         }
 
         public void Start(UIXApplication hostApplication, ContentPresenter presenter)

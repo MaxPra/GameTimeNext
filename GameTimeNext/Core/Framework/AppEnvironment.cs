@@ -131,8 +131,14 @@ namespace GameTimeNext.Core.Framework
             gameRunningProcess.Initialize(new TXPROFI().ReadAll());
             gameRunningProcess.Start(500);
 
+            // LauncherAutoImportProcess
+            LauncherAutoImportProcess launcherAutoImportProcess = app.GetBackgroundProcess<LauncherAutoImportProcess>();
+            launcherAutoImportProcess.CallDispatcher = app.CallDispatcher;
+            launcherAutoImportProcess.Start(20000);
+
             StartedBackgroundProcesses.Add(typeof(GlobalKeyInputProcess).FullName!, globalKeyInputProcess);
             StartedBackgroundProcesses.Add(typeof(GameRunningProcess).FullName!, gameRunningProcess);
+            StartedBackgroundProcesses.Add(typeof(LauncherAutoImportProcess).FullName!, launcherAutoImportProcess);
         }
 
         public static void StopBackgroundProcesses()

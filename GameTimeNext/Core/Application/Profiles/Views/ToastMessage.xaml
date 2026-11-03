@@ -4,123 +4,56 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI"
     Title="ToastMessage"
-    Width="360"
-    Height="132"
+    Width="340"
     AllowsTransparency="True"
     Background="Transparent"
     Focusable="False"
-    Loaded="Window_Loaded"
     ResizeMode="NoResize"
     ShowActivated="False"
     ShowInTaskbar="False"
+    SizeToContent="Height"
     Topmost="True"
     WindowStartupLocation="Manual"
     WindowStyle="None"
-    ui:AcrylicBlur.IsEnabled="True"
     mc:Ignorable="d">
 
-    <Window.Resources>
-        <Storyboard x:Key="ToastProgressStoryboard">
-            <DoubleAnimation
-                FillBehavior="HoldEnd"
-                Storyboard.TargetName="ProgressScale"
-                Storyboard.TargetProperty="ScaleX"
-                From="1"
-                To="0"
-                Duration="0:0:4" />
-        </Storyboard>
-    </Window.Resources>
-
     <!--
-        Glass like the splash screen: acrylic blur behind the window (AcrylicBlur), the root border draws the tint.
-        The blur fills the whole window with the system corner radius, so no outer margin / shadow.
+        Shown, stacked and animated by CFToast. Glass like the popups: acrylic blur behind the window, the glass layer
+        draws the tint. The blur always fills the whole window, so it is only switched on once the content has popped in;
+        until then the opaque layer (bdSolid) covers the glass and fades out afterwards.
     -->
     <Grid
+        x:Name="grdRoot"
+        Opacity="0"
+        RenderTransformOrigin="0.5,0.5"
         SnapsToDevicePixels="True"
         TextOptions.TextFormattingMode="Display"
         TextOptions.TextRenderingMode="ClearType"
         UseLayoutRounding="True">
+        <Grid.RenderTransform>
+            <ScaleTransform x:Name="sctRoot" ScaleX="0.92" ScaleY="0.92" />
+        </Grid.RenderTransform>
 
-        <Border Style="{StaticResource ToastRootBorderStyle}">
+        <Border Style="{StaticResource ToastGlassStyle}" />
+        <Border x:Name="bdSolid" Style="{StaticResource ToastSolidStyle}" />
+        <Border Style="{StaticResource ToastSheenStyle}" />
+
+        <Border Style="{StaticResource ToastFrameStyle}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="12" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <Border Grid.ColumnSpan="2" Style="{StaticResource ToastSheenStyle}" />
+                <Image x:Name="imgIcon" Style="{StaticResource ToastIconStyle}" />
 
-                <Border Grid.Column="0" Style="{StaticResource ToastAccentBarStyle}" />
-
-                <Grid Grid.Column="1" Margin="12,14,16,14">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="8" />
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="12" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-
-                    <Grid Grid.Row="0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-
-                        <TextBlock
-                            x:Name="TbTitle"
-                            Grid.Column="0"
-                            Style="{StaticResource ToastTitleTextStyle}"
-                            Text="Info" />
-
-                        <TextBlock
-                            x:Name="TbCategory"
-                            Grid.Column="1"
-                            Margin="12,0,0,0"
-                            Style="{StaticResource ToastCategoryTextStyle}"
-                            Text="GameTimeNext" />
-                    </Grid>
-
-                    <Border Grid.Row="1" Style="{StaticResource ToastDividerStyle}" />
-
-                    <TextBlock
-                        x:Name="TbMessage"
-                        Grid.Row="2"
-                        Margin="0,2,0,0"
-                        Style="{StaticResource ToastMessageTextStyle}"
-                        Text="Text" />
-
-                    <Grid Grid.Row="4">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="8" />
-                        </Grid.RowDefinitions>
-
-                        <TextBlock
-                            x:Name="TbTimestamp"
-                            Grid.Row="0"
-                            Style="{StaticResource ToastSecondaryTextStyle}"
-                            Text="Right now" />
-
-                        <Grid Grid.Row="1" Margin="0,6,0,0">
-                            <Border Style="{StaticResource ToastProgressTrackStyle}" />
-                            <Border Style="{StaticResource ToastProgressBarStyle}">
-                                <Border.RenderTransform>
-                                    <ScaleTransform x:Name="ProgressScale" ScaleX="1" ScaleY="1" />
-                                </Border.RenderTransform>
-                            </Border>
-                        </Grid>
-                    </Grid>
-                </Grid>
+                <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                    <TextBlock x:Name="txTitle" Style="{StaticResource ToastTitleTextStyle}" />
+                    <TextBlock x:Name="txMessage" Style="{StaticResource ToastMessageTextStyle}" />
+                </StackPanel>
             </Grid>
         </Border>
     </Grid>
-
-    <Window.Triggers>
-        <EventTrigger RoutedEvent="Window.Loaded">
-            <BeginStoryboard Storyboard="{StaticResource ToastProgressStoryboard}" />
-        </EventTrigger>
-    </Window.Triggers>
 </Window>
