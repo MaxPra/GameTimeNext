@@ -405,8 +405,8 @@
 
     <Style TargetType="{x:Type DatePicker}">
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
-        <Setter Property="Background" Value="{StaticResource Brush.Input.Background}" />
-        <Setter Property="BorderBrush" Value="{StaticResource Brush.Input.Border}" />
+        <Setter Property="Background" Value="{StaticResource Brush.Input.Glass}" />
+        <Setter Property="BorderBrush" Value="{StaticResource Brush.Input.Edge}" />
         <Setter Property="BorderThickness" Value="{StaticResource Control.BorderThickness}" />
         <Setter Property="Height" Value="{StaticResource Control.Height}" />
         <Setter Property="MinHeight" Value="{StaticResource Control.Height}" />
@@ -421,13 +421,6 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type DatePicker}">
                     <Grid>
-                        <!--  Shadow shape behind the field (an effect on Bd would blur the text)  -->
-                        <Border
-                            Background="{StaticResource Brush.Input.Background}"
-                            CornerRadius="{StaticResource Control.CornerRadius}"
-                            Effect="{StaticResource Effect.Control}"
-                            IsHitTestVisible="False" />
-
                         <Border
                             x:Name="Bd"
                             Background="{TemplateBinding Background}"
@@ -478,6 +471,10 @@
                             </Grid>
                         </Border>
 
+                        <Border Style="{StaticResource Input.HoverRim}" />
+                        <Border Style="{StaticResource Input.FocusRim}" />
+                        <Border Style="{StaticResource Input.OpenRim}" />
+
                         <!--  The DatePicker puts its Calendar into this popup  -->
                         <Popup
                             x:Name="PART_Popup"
@@ -489,15 +486,6 @@
                     </Grid>
 
                     <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Brush.Accent.Outline}" />
-                        </Trigger>
-                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
-                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
-                        </Trigger>
-                        <Trigger Property="IsDropDownOpen" Value="True">
-                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
-                        </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Foreground" Value="{DynamicResource Brush.TextDisabled}" />
                             <Setter TargetName="Bd" Property="Opacity" Value="0.65" />

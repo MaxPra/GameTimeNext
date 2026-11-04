@@ -1,8 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="164 168 688 688">
-  <!-- Taskbar variant (24/32 px): no tile, solid colors, heavy line -->
-  <g fill="none" stroke-width="136">
-    <path d="M 236.3 479.2 A 236 236 0 1 0 558.4 293.2" stroke="#2F95E8"/>
-    <path d="M 706 512 L 706 748" stroke="#2F95E8" stroke-linecap="round"/>
-    <path d="M 502.8 278.3 A 236 236 0 0 0 251.2 423.6" stroke="#8ED1FA"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 -114 228 228">
+  <!-- Taskbar variant (24/32 px): the first "a" of the wordmark (same geometry and line), no tile, fills the slot -->
+  <defs>
+    <linearGradient id="line" x1="0" y1="-114" x2="0" y2="114" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#5DB6F3"/>
+      <stop offset="1" stop-color="#2A8FDF"/>
+    </linearGradient>
+    <linearGradient id="segment" x1="20" y1="0" x2="120" y2="-100" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#BFE4FF"/>
+      <stop offset="1" stop-color="#8ED1FA"/>
+    </linearGradient>
+  </defs>
+  <g fill="none" stroke-width="28">
+    <path d="M 15.5,-17.4 A 100,100 0 1 0 148.2,-94.0" stroke="url(#line)"/>
+    <path d="M 214,0 L 214,100" stroke="url(#line)" stroke-linecap="round"/>
+    <path d="M 131.4,-98.5 A 100,100 0 0 0 20.0,-34.2" stroke="url(#segment)"/>
   </g>
 </svg>

@@ -34,8 +34,16 @@
 
     <SolidColorBrush x:Key="Brush.Input.Background" Color="#FF0E0E12" />
     <SolidColorBrush x:Key="Brush.Input.BackgroundHover" Color="#FF111116" />
-    <SolidColorBrush x:Key="Brush.Input.Border" Color="#FF292932" />
     <SolidColorBrush x:Key="Brush.Input.BorderHover" Color="#FF383843" />
+    <!--
+        Fields (TextBox, ComboBox, DatePicker, Markdown editor) are recessed into the surface: a translucent dark fill and a quiet
+        edge that catches light at the bottom. No shadow and no highlights: the light belongs to the buttons, otherwise it gets overloaded.
+    -->
+    <SolidColorBrush x:Key="Brush.Input.Glass" Color="#590A0A0E" />
+    <LinearGradientBrush x:Key="Brush.Input.Edge" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="#14FFFFFF" />
+        <GradientStop Offset="1" Color="#29FFFFFF" />
+    </LinearGradientBrush>
 
     <!--
         ===== Accent tints =====
@@ -98,5 +106,111 @@
         Opacity="0.45"
         ShadowDepth="4"
         Color="#FF000000" />
+
+    <!--
+        Outlines of a field, layers in its template that fade with the state of the field (same timing as the buttons).
+        Named in the template, so a validation error can switch them off.
+    -->
+    <Style x:Key="Input.Rim" TargetType="Border">
+        <Setter Property="BorderThickness" Value="{StaticResource Control.BorderThickness}" />
+        <Setter Property="CornerRadius" Value="{StaticResource Control.CornerRadius}" />
+        <Setter Property="IsHitTestVisible" Value="False" />
+        <Setter Property="Opacity" Value="0" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+    </Style>
+
+    <Style
+        x:Key="Input.HoverRim"
+        BasedOn="{StaticResource Input.Rim}"
+        TargetType="Border">
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Outline}" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource TemplatedParent}}" Value="True">
+                <DataTrigger.EnterActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation
+                                Storyboard.TargetProperty="Opacity"
+                                To="0.8"
+                                Duration="0:0:0.2" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </DataTrigger.EnterActions>
+                <DataTrigger.ExitActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation
+                                Storyboard.TargetProperty="Opacity"
+                                To="0"
+                                Duration="0:0:0.26" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </DataTrigger.ExitActions>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style
+        x:Key="Input.FocusRim"
+        BasedOn="{StaticResource Input.Rim}"
+        TargetType="Border">
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsKeyboardFocusWithin, RelativeSource={RelativeSource TemplatedParent}}" Value="True">
+                <DataTrigger.EnterActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation
+                                Storyboard.TargetProperty="Opacity"
+                                To="1"
+                                Duration="0:0:0.14" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </DataTrigger.EnterActions>
+                <DataTrigger.ExitActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation
+                                Storyboard.TargetProperty="Opacity"
+                                To="0"
+                                Duration="0:0:0.26" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </DataTrigger.ExitActions>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <!--  Drop down of a ComboBox / DatePicker is open (the keyboard focus can be in the popup then)  -->
+    <Style
+        x:Key="Input.OpenRim"
+        BasedOn="{StaticResource Input.Rim}"
+        TargetType="Border">
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}" Value="True">
+                <DataTrigger.EnterActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation
+                                Storyboard.TargetProperty="Opacity"
+                                To="1"
+                                Duration="0:0:0.14" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </DataTrigger.EnterActions>
+                <DataTrigger.ExitActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation
+                                Storyboard.TargetProperty="Opacity"
+                                To="0"
+                                Duration="0:0:0.26" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </DataTrigger.ExitActions>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
 
 </ResourceDictionary>

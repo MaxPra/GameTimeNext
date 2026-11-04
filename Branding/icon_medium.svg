@@ -1,21 +1,24 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
-  <!-- Variant for 48-64 px: tile, thicker line, no glow -->
+  <!-- Variant for 48-64 px: tile with the first "a" of the wordmark (same geometry and line), no glow -->
   <defs>
     <linearGradient id="tile" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#1F1F29"/>
       <stop offset="1" stop-color="#0B0B10"/>
     </linearGradient>
-    <linearGradient id="line" x1="230" y1="230" x2="790" y2="790" gradientUnits="userSpaceOnUse">
+    <linearGradient id="line" x1="0" y1="-114" x2="0" y2="114" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#5DB6F3"/>
-      <stop offset="0.5" stop-color="#3DA4F0"/>
       <stop offset="1" stop-color="#2A8FDF"/>
+    </linearGradient>
+    <linearGradient id="segment" x1="20" y1="0" x2="120" y2="-100" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#BFE4FF"/>
+      <stop offset="1" stop-color="#8ED1FA"/>
     </linearGradient>
   </defs>
   <rect x="16" y="16" width="992" height="992" rx="210" fill="url(#tile)"/>
   <rect x="17.5" y="17.5" width="989" height="989" rx="208.5" fill="none" stroke="#FFFFFF" stroke-opacity="0.10" stroke-width="3"/>
-  <g transform="translate(42 0)" fill="none" stroke-width="126">
-    <path d="M 201.3 469.4 A 272 272 0 1 0 567.5 258.1" stroke="url(#line)"/>
-    <path d="M 742 512 L 742 784" stroke="url(#line)" stroke-linecap="round"/>
-    <path d="M 512.6 243.3 A 272 272 0 0 0 216.1 414.5" stroke="#8ED1FA"/>
+  <g transform="translate(170 512) scale(3)" fill="none" stroke-width="28">
+    <path d="M 15.5,-17.4 A 100,100 0 1 0 148.2,-94.0" stroke="url(#line)"/>
+    <path d="M 214,0 L 214,100" stroke="url(#line)" stroke-linecap="round"/>
+    <path d="M 131.4,-98.5 A 100,100 0 0 0 20.0,-34.2" stroke="url(#segment)"/>
   </g>
 </svg>

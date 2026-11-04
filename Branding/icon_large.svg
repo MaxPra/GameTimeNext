@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
-  <!-- 256 px variant: tile, lowercase "a" as a line (ring with stem); the upper left quarter of the ring is the light progress segment -->
+  <!-- 256 px variant: tile with the first "a" of the wordmark (same geometry and line); the upper left quarter of the ring is the light progress segment -->
   <defs>
     <linearGradient id="tile" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#1D1D27"/>
@@ -13,25 +13,24 @@
       <stop offset="0" stop-color="#3498E5" stop-opacity="0.16"/>
       <stop offset="1" stop-color="#3498E5" stop-opacity="0"/>
     </radialGradient>
-    <linearGradient id="line" x1="300" y1="300" x2="740" y2="740" gradientUnits="userSpaceOnUse">
+    <linearGradient id="line" x1="0" y1="-114" x2="0" y2="114" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#5DB6F3"/>
-      <stop offset="0.5" stop-color="#3498E5"/>
-      <stop offset="1" stop-color="#2289DA"/>
+      <stop offset="1" stop-color="#2A8FDF"/>
     </linearGradient>
-    <linearGradient id="segment" x1="300" y1="320" x2="520" y2="300" gradientUnits="userSpaceOnUse">
+    <linearGradient id="segment" x1="20" y1="0" x2="120" y2="-100" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#BFE4FF"/>
       <stop offset="1" stop-color="#8ED1FA"/>
     </linearGradient>
     <filter id="blur" x="-30%" y="-30%" width="160%" height="160%">
-      <feGaussianBlur stdDeviation="26"/>
+      <feGaussianBlur stdDeviation="9"/>
     </filter>
     <clipPath id="tileClip">
       <rect x="64" y="64" width="896" height="896" rx="200"/>
     </clipPath>
     <!-- Keeps the cuts dark: the glow is left out there -->
-    <mask id="cuts" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
-      <rect width="1024" height="1024" fill="#FFFFFF"/>
-      <path d="M 528.1 332.3 L 554.0 235.7 M 300.3 463.9 L 203.7 438.0" stroke="#000000" stroke-width="30"/>
+    <mask id="cuts" maskUnits="userSpaceOnUse" x="-200" y="-300" width="700" height="600">
+      <rect x="-200" y="-300" width="700" height="600" fill="#FFFFFF"/>
+      <path d="M 46.4,-18.1 L -11.6,-33.6 M 132.1,-67.6 L 147.6,-125.6" stroke="#000000" stroke-width="12"/>
     </mask>
   </defs>
 
@@ -42,18 +41,17 @@
   </g>
   <rect x="65.5" y="65.5" width="893" height="893" rx="198.5" fill="none" stroke="url(#tileEdge)" stroke-width="3"/>
 
-  <g transform="translate(32 0)" fill="none" stroke-width="96">
+  <g transform="translate(227 512) scale(2.5)" fill="none" stroke-width="28">
     <!-- Soft glow -->
     <g mask="url(#cuts)">
       <g filter="url(#blur)" opacity="0.45" stroke="#3498E5">
-        <path d="M 247.6 471.0 A 236 236 0 1 0 560.7 290.2 M 716 512 L 716 748" stroke-linecap="round"/>
-        <path d="M 521.0 279.6 A 236 236 0 0 0 258.2 431.3"/>
+        <path d="M 15.5,-17.4 A 100,100 0 1 0 148.2,-94.0 M 214,0 L 214,100" stroke-linecap="round"/>
+        <path d="M 131.4,-98.5 A 100,100 0 0 0 20.0,-34.2"/>
       </g>
     </g>
-    <!-- Ring and stem -->
-    <path d="M 247.6 471.0 A 236 236 0 1 0 560.7 290.2" stroke="url(#line)"/>
-    <path d="M 716 512 L 716 748" stroke="url(#line)" stroke-linecap="round"/>
-    <!-- Progress segment -->
-    <path d="M 521.0 279.6 A 236 236 0 0 0 258.2 431.3" stroke="url(#segment)"/>
+    <!-- Ring, stem and progress segment -->
+    <path d="M 15.5,-17.4 A 100,100 0 1 0 148.2,-94.0" stroke="url(#line)"/>
+    <path d="M 214,0 L 214,100" stroke="url(#line)" stroke-linecap="round"/>
+    <path d="M 131.4,-98.5 A 100,100 0 0 0 20.0,-34.2" stroke="url(#segment)"/>
   </g>
 </svg>

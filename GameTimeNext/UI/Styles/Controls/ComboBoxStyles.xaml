@@ -4,9 +4,7 @@
     xmlns:uixcb="clr-namespace:UIX.ViewController.Engine.FrameworkElements.ComboBoxes;assembly=UIX.ViewController.Engine">
 
     <!--  Same values as the Input/Popup/Item tokens (ControlTokens.xaml)  -->
-    <SolidColorBrush x:Key="Brush.ComboBox.Background" Color="#FF0E0E12" />
     <SolidColorBrush x:Key="Brush.ComboBox.PopupBackground" Color="#FF17171D" />
-    <SolidColorBrush x:Key="Brush.ComboBox.Border" Color="#FF292932" />
     <SolidColorBrush x:Key="Brush.ComboBox.BorderHover" Color="#FF383843" />
     <SolidColorBrush x:Key="Brush.ComboBox.ItemHover" Color="#FF212129" />
     <SolidColorBrush x:Key="Brush.ComboBox.ItemSelected" Color="#FF26262F" />
@@ -138,8 +136,8 @@
 
     <Style TargetType="{x:Type ComboBox}">
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
-        <Setter Property="Background" Value="{StaticResource Brush.ComboBox.Background}" />
-        <Setter Property="BorderBrush" Value="{StaticResource Brush.ComboBox.Border}" />
+        <Setter Property="Background" Value="{StaticResource Brush.Input.Glass}" />
+        <Setter Property="BorderBrush" Value="{StaticResource Brush.Input.Edge}" />
         <Setter Property="BorderThickness" Value="{StaticResource Control.BorderThickness}" />
         <Setter Property="Padding" Value="12,0,12,0" />
         <Setter Property="MinHeight" Value="{StaticResource Control.Height}" />
@@ -152,13 +150,6 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ComboBox}">
                     <Grid>
-                        <!--  Shadow shape behind the box (an effect on OuterBorder would blur the text)  -->
-                        <Border
-                            Background="{StaticResource Brush.Input.Background}"
-                            CornerRadius="{StaticResource Control.CornerRadius}"
-                            Effect="{StaticResource Effect.Control}"
-                            IsHitTestVisible="False" />
-
                         <Border
                             x:Name="OuterBorder"
                             Background="{TemplateBinding Background}"
@@ -216,6 +207,10 @@
                             </Grid>
                         </Border>
 
+                        <Border Style="{StaticResource Input.HoverRim}" />
+                        <Border Style="{StaticResource Input.FocusRim}" />
+                        <Border Style="{StaticResource Input.OpenRim}" />
+
                         <Popup
                             x:Name="Popup"
                             AllowsTransparency="True"
@@ -242,18 +237,6 @@
                     </Grid>
 
                     <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource Brush.Accent.Outline}" />
-                        </Trigger>
-
-                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
-                            <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
-                        </Trigger>
-
-                        <Trigger Property="IsDropDownOpen" Value="True">
-                            <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
-                        </Trigger>
-
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Foreground" Value="{DynamicResource Brush.TextDisabled}" />
                             <Setter TargetName="OuterBorder" Property="Opacity" Value="0.65" />

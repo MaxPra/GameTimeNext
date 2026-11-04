@@ -2,10 +2,11 @@
 # Usage: powershell -ExecutionPolicy Bypass -File Branding\build_icon.ps1
 #
 # Size -> source:
-#   16        icon_16.svg      (no tile, segment only as lighter color)
-#   24, 32    icon_small.svg   (no tile, solid colors, wide cuts)
-#   48, 64    icon_medium.svg  (tile, gradient, no glow)
-#   256       icon_large.svg   (tile, gradient, glow, light edge)
+# All sizes show the first "a" of the wordmark.
+#   16        icon_16.svg      (no tile)
+#   24, 32    icon_small.svg   (no tile)
+#   48, 64    icon_medium.svg  (tile, no glow)
+#   256       icon_large.svg   (tile, glow, light edge)
 # Additionally icon_large.svg is rendered as logo_1024.png (splash, installer, GitHub).
 
 $ErrorActionPreference = 'Stop'

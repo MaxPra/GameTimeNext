@@ -1,18 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="3178" height="496" viewBox="0 -124.0 1589 248">
-  <!-- Wordmark "arcora": same line style as the app icon (ring radius 100, line 48, round ends); the first "a" carries the light progress segment -->
+<svg xmlns="http://www.w3.org/2000/svg" width="2992" height="456" viewBox="0 -114 1496 228">
+  <!-- Wordmark "arcora": lowercase letters built from rings (radius 100, line 28, round ends) in the accent gradient. The first "a" is the mark of the app icon: open ring with short stem and the light progress segment between two cuts -->
   <defs>
-    <linearGradient id="line" x1="0" y1="-124.0" x2="0" y2="124.0" gradientUnits="userSpaceOnUse">
+    <linearGradient id="line" x1="0" y1="-114" x2="0" y2="114" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#5DB6F3"/>
       <stop offset="1" stop-color="#2A8FDF"/>
     </linearGradient>
-    <linearGradient id="segment" x1="24" y1="0" x2="124" y2="-100" gradientUnits="userSpaceOnUse">
+    <linearGradient id="segment" x1="20" y1="0" x2="120" y2="-100" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#BFE4FF"/>
       <stop offset="1" stop-color="#8ED1FA"/>
     </linearGradient>
   </defs>
-  <g fill="none" stroke-width="48">
-    <path d="M 25.0,-13.9 A 100,100 0 1 0 161.5,-92.7 M 822,0 A 100,100 0 1 0 1022,0 A 100,100 0 1 0 822,0 Z M 1365,0 A 100,100 0 1 0 1565,0 A 100,100 0 1 0 1365,0 Z" stroke="url(#line)"/>
-    <path d="M 224,0 L 224,100 M 312,-100 L 312,100 M 312.0,-0.0 A 100,100 0 0 1 482.7,-70.7 M 737.7,-70.7 A 100,100 0 1 0 737.7,70.7 M 1110,-100 L 1110,100 M 1110.0,-0.0 A 100,100 0 0 1 1280.7,-70.7 M 1565,0 L 1565,100" stroke="url(#line)" stroke-linecap="round"/>
-    <path d="M 137.9,-99.0 A 100,100 0 0 0 31.3,-37.5" stroke="url(#segment)"/>
+  <g fill="none" stroke-width="28">
+    <path d="M 15.5,-17.4 A 100,100 0 1 0 148.2,-94.0 M 770.8,0 A 100,100 0 1 0 970.8,0 A 100,100 0 1 0 770.8,0 Z M 1281.4,0 A 100,100 0 1 0 1481.4,0 A 100,100 0 1 0 1281.4,0 Z" stroke="url(#line)"/>
+    <path d="M 214.0,0 L 214.0,100 M 294.0,-100 L 294.0,100 M 294.0,0 A 100,100 0 0 1 470.6,-64.3 M 701.2,-64.3 A 100,100 0 1 0 701.2,64.3 M 1050.8,-100 L 1050.8,100 M 1050.8,0 A 100,100 0 0 1 1227.4,-64.3 M 1481.4,0 L 1481.4,100" stroke="url(#line)" stroke-linecap="round"/>
+    <path d="M 131.4,-98.5 A 100,100 0 0 0 20.0,-34.2" stroke="url(#segment)"/>
   </g>
 </svg>

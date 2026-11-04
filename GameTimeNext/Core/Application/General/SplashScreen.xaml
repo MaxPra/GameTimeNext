@@ -41,20 +41,20 @@
                 Canvas.Top="-228"
                 Data="M 247.6,471.0 A 236,236 0 1 0 560.7,290.2"
                 Stroke="{StaticResource Splash.MarkLine}"
-                StrokeThickness="96" />
+                StrokeThickness="66" />
             <Path
                 Canvas.Left="-196"
                 Canvas.Top="-228"
                 Data="M 716,512 L 716,748"
                 Stroke="{StaticResource Splash.MarkLine}"
                 StrokeEndLineCap="Round"
-                StrokeThickness="96" />
+                StrokeThickness="66" />
             <Path
                 Canvas.Left="-196"
                 Canvas.Top="-228"
                 Data="M 521.0,279.6 A 236,236 0 0 0 258.2,431.3"
                 Stroke="{StaticResource Splash.MarkSegment}"
-                StrokeThickness="96" />
+                StrokeThickness="66" />
         </Canvas>
 
         <Style x:Key="Splash.Badge" TargetType="Border">
@@ -132,33 +132,33 @@
                 <StackPanel Orientation="Horizontal">
                     <StackPanel VerticalAlignment="Center">
                         <StackPanel Orientation="Horizontal">
-                            <!--  Wordmark, geometry from Branding/wordmark.svg (viewBox 0 -124 1589 248)  -->
-                            <Viewbox Height="48" VerticalAlignment="Center">
-                                <Canvas Width="1589" Height="248">
+                            <!--  Wordmark, geometry from Branding/wordmark.svg (viewBox 0 -114 1496 228)  -->
+                            <Viewbox Height="44" VerticalAlignment="Center">
+                                <Canvas Width="1496" Height="228">
                                     <Canvas.Effect>
                                         <DropShadowEffect
-                                            BlurRadius="24"
+                                            BlurRadius="20"
                                             Opacity="0.35"
                                             ShadowDepth="0"
                                             Color="{DynamicResource Color.Accent}" />
                                     </Canvas.Effect>
                                     <Path
-                                        Canvas.Top="124"
-                                        Data="M 25.0,-13.9 A 100,100 0 1 0 161.5,-92.7 M 822,0 A 100,100 0 1 0 1022,0 A 100,100 0 1 0 822,0 Z M 1365,0 A 100,100 0 1 0 1565,0 A 100,100 0 1 0 1365,0 Z"
+                                        Canvas.Top="114"
+                                        Data="M 15.5,-17.4 A 100,100 0 1 0 148.2,-94.0 M 770.8,0 A 100,100 0 1 0 970.8,0 A 100,100 0 1 0 770.8,0 Z M 1281.4,0 A 100,100 0 1 0 1481.4,0 A 100,100 0 1 0 1281.4,0 Z"
                                         Stroke="{StaticResource Splash.WordmarkLine}"
-                                        StrokeThickness="48" />
+                                        StrokeThickness="28" />
                                     <Path
-                                        Canvas.Top="124"
-                                        Data="M 224,0 L 224,100 M 312,-100 L 312,100 M 312.0,-0.0 A 100,100 0 0 1 482.7,-70.7 M 737.7,-70.7 A 100,100 0 1 0 737.7,70.7 M 1110,-100 L 1110,100 M 1110.0,-0.0 A 100,100 0 0 1 1280.7,-70.7 M 1565,0 L 1565,100"
+                                        Canvas.Top="114"
+                                        Data="M 214.0,0 L 214.0,100 M 294.0,-100 L 294.0,100 M 294.0,0 A 100,100 0 0 1 470.6,-64.3 M 701.2,-64.3 A 100,100 0 1 0 701.2,64.3 M 1050.8,-100 L 1050.8,100 M 1050.8,0 A 100,100 0 0 1 1227.4,-64.3 M 1481.4,0 L 1481.4,100"
                                         Stroke="{StaticResource Splash.WordmarkLine}"
                                         StrokeEndLineCap="Round"
                                         StrokeStartLineCap="Round"
-                                        StrokeThickness="48" />
+                                        StrokeThickness="28" />
                                     <Path
-                                        Canvas.Top="124"
-                                        Data="M 137.9,-99.0 A 100,100 0 0 0 31.3,-37.5"
+                                        Canvas.Top="114"
+                                        Data="M 131.4,-98.5 A 100,100 0 0 0 20.0,-34.2"
                                         Stroke="{StaticResource Splash.MarkSegment}"
-                                        StrokeThickness="48" />
+                                        StrokeThickness="28" />
                                 </Canvas>
                             </Viewbox>
 
