@@ -26,6 +26,9 @@ namespace GameTimeNext
         {
             base.OnStartup(e);
 
+            // App font (Manrope) as default of every window, before the first window (splash) is created
+            FnFont.ApplyAsDefault();
+
             // Ensure that only one instance is running
             if (!FnSystem.IsDebug() && !FnSystem.TryAcquireSingleInstance())
             {
