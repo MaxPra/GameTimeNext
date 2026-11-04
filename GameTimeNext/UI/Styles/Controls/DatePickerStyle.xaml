@@ -126,6 +126,7 @@
         <Setter Property="Height" Value="32" />
         <Setter Property="MinWidth" Value="32" />
         <Setter Property="Padding" Value="8,0" />
+        <Setter Property="FontFamily" Value="{StaticResource Font.Text}" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
         <Setter Property="Background" Value="Transparent" />
@@ -334,6 +335,7 @@
     <!--  ===== Text field of the DatePicker =====  -->
 
     <Style x:Key="DatePicker.TextBox" TargetType="{x:Type DatePickerTextBox}">
+        <Setter Property="FontFamily" Value="{StaticResource Font.Text}" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
         <Setter Property="CaretBrush" Value="{DynamicResource Brush.TextPrimary}" />
         <Setter Property="SelectionBrush" Value="{DynamicResource Brush.Accent}" />

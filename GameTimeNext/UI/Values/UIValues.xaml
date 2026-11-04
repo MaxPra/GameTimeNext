@@ -12,7 +12,7 @@
 
     <!--
         Text font of the whole app: Manrope (UI/Fonts, embedded in the assembly, all weights in one family), Segoe UI as fallback.
-        Set as default of every window by FnFont.ApplyAsDefault at startup; code that draws text itself uses FnFont.Text().
+        Set as default font of TextBlock and TextElement by FnFont.ApplyAsDefault at startup; code that draws text itself uses FnFont.Text().
     -->
     <FontFamily x:Key="Font.Text">pack://application:,,,/GameTimeNext;component/UI/Fonts/#Manrope, Segoe UI</FontFamily>
 
