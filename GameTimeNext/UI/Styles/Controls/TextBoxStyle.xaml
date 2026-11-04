@@ -29,7 +29,7 @@
         <Setter Property="Height" Value="{StaticResource Control.Height}" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="FontWeight" Value="Normal" />
-        <Setter Property="FontFamily" Value="Segoe UI" />
+        <Setter Property="FontFamily" Value="{StaticResource Font.Text}" />
 
         <Setter Property="ui:TextBoxBehaviors.SelectAllOnFocus" Value="True" />
 

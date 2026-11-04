@@ -53,7 +53,9 @@
 
         <Setter Property="Padding" Value="11,8" />
         <Setter Property="FontSize" Value="13" />
+        <!--  Monospace while editing the Markdown text, the app font in the rendered preview  -->
         <Setter Property="FontFamily" Value="Cascadia Mono, Consolas" />
+        <Setter Property="PreviewFontFamily" Value="{StaticResource Font.Text}" />
         <Setter Property="VerticalContentAlignment" Value="Top" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
