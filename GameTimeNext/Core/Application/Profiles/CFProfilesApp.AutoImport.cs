@@ -122,7 +122,7 @@ namespace GameTimeNext.Core.Application.Profiles
                 ? app.GetErrorMessage("PRO0010")
                 : app.GetErrorMessage("PRO0011", gameNames.Count);
 
-            new ToastMessage(title, string.Join("\n", gameNames)).Show();
+            CFToast.Show(title, string.Join("\n", gameNames));
         }
 
         /// <summary>

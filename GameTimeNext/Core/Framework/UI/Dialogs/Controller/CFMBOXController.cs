@@ -277,7 +277,7 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
 
                 GetView().SpText.Visibility = Visibility.Collapsed;
                 GetView().TxbMemotext.Visibility = Visibility.Collapsed;
-                GetView().FdsvMarkdown.Document = UIXMarkdownRenderer.ToFlowDocument(message);
+                GetView().FdsvMarkdown.Document = UIXMarkdownRenderer.ToFlowDocument(message, GetView().FdsvMarkdown.FontFamily);
                 GetView().BdMarkdown.Visibility = Visibility.Visible;
 
                 // Wrapped text has no natural width: fixed reading width, the height follows the content up to a maximum

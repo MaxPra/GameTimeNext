@@ -75,6 +75,33 @@ namespace GameTimeNext.Core.Framework.UI
         /// </summary>
         public static bool TryEnable(IntPtr hwnd)
         {
+            if (!TrySetAccent(hwnd, ACCENT_ENABLE_ACRYLICBLURBEHIND))
+                return false;
+
+            try
+            {
+                // Rounds the blur to the window shape
+                int cornerPreference = DWMWCP_ROUND;
+                DwmSetWindowAttribute(hwnd, DWMWA_WINDOW_CORNER_PREFERENCE, ref cornerPreference, sizeof(int));
+            }
+            catch (DllNotFoundException)
+            {
+            }
+            catch (EntryPointNotFoundException)
+            {
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Removes the blur again (e.g. while a window animates its content, the blur always fills the whole window).
+        /// Returns false if it isn't supported or the call failed.
+        /// </summary>
+        public static bool TryDisable(IntPtr hwnd) => TrySetAccent(hwnd, ACCENT_DISABLED);
+
+        private static bool TrySetAccent(IntPtr hwnd, int accentState)
+        {
             if (!IsSupported || hwnd == IntPtr.Zero)
                 return false;
 
@@ -82,7 +109,7 @@ namespace GameTimeNext.Core.Framework.UI
             {
                 var accent = new ACCENT_POLICY
                 {
-                    AccentState = ACCENT_ENABLE_ACRYLICBLURBEHIND,
+                    AccentState = accentState,
                     // Practically no tint from the system, the content brings its own
                     GradientColor = 0x01000000
                 };
@@ -101,19 +128,12 @@ namespace GameTimeNext.Core.Framework.UI
                         SizeOfData = accentSize
                     };
 
-                    if (SetWindowCompositionAttribute(hwnd, ref data) == 0)
-                        return false;
+                    return SetWindowCompositionAttribute(hwnd, ref data) != 0;
                 }
                 finally
                 {
                     Marshal.FreeHGlobal(accentPtr);
                 }
-
-                // Rounds the blur to the window shape
-                int cornerPreference = DWMWCP_ROUND;
-                DwmSetWindowAttribute(hwnd, DWMWA_WINDOW_CORNER_PREFERENCE, ref cornerPreference, sizeof(int));
-
-                return true;
             }
             catch (DllNotFoundException)
             {
@@ -129,6 +149,7 @@ namespace GameTimeNext.Core.Framework.UI
 
         private const int MinBuildRoundedCorners = 22000;
         private const int WCA_ACCENT_POLICY = 19;
+        private const int ACCENT_DISABLED = 0;
         private const int ACCENT_ENABLE_ACRYLICBLURBEHIND = 4;
         private const int DWMWA_WINDOW_CORNER_PREFERENCE = 33;
         private const int DWMWCP_ROUND = 2;

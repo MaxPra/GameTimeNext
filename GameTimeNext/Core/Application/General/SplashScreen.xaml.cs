@@ -27,7 +27,8 @@ namespace GameTimeNext.Core.Application.General
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            FnControls.SetVisible(DevBadge, FnSystem.IsDebug());
+            FnControls.SetVisible(brdBeta, AppEnvironment.AppVersion.IsBeta);
+            FnControls.SetVisible(brdDevBadge, FnSystem.IsDebug());
             FnControls.SetVisible(txtDevelopmentPathActive, FnSystem.IsDebug());
         }
     }

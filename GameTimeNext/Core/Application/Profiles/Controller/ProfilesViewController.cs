@@ -362,8 +362,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             if (CFBigPictureApp.IsOpen)
                 return;
 
-            ToastMessage tm = new ToastMessage("Switched profile...", (GetSelectedItem()?.ItemObject as T1PROFI)?.GANA ?? string.Empty);
-            tm.Show();
+            CFToast.Show("Switched profile...", (GetSelectedItem()?.ItemObject as T1PROFI)?.GANA ?? string.Empty);
         }
 
         protected async Task EXEV_GameLaunched()

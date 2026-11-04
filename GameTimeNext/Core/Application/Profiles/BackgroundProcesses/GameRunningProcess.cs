@@ -225,10 +225,9 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
 
                     System.Windows.Application.Current.Dispatcher.Invoke(() =>
                     {
-                        ToastMessage tm = new ToastMessage(
+                        CFToast.Show(
                             "Break reminder",
                             "You've played " + AppEnvironment.GetAppConfig().AppSettings.BreakReminderHrs + " hours\nTime for a break!");
-                        tm.Show();
                     });
                 }
 

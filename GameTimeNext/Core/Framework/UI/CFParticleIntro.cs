@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using GameTimeNext.Core.Framework.Utils;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -362,7 +363,7 @@ namespace GameTimeNext.Core.Framework.UI
                 Title,
                 CultureInfo.CurrentCulture,
                 FlowDirection.LeftToRight,
-                new Typeface(new FontFamily("Segoe UI Variable Display, Segoe UI"), FontStyles.Normal, FontWeights.SemiBold, FontStretches.Normal),
+                new Typeface(FnFont.Text(), FontStyles.Normal, FontWeights.SemiBold, FontStretches.Normal),
                 TitleSize * scale,
                 Brushes.White,
                 pixelsPerDip);
@@ -376,7 +377,7 @@ namespace GameTimeNext.Core.Framework.UI
                 spaced,
                 CultureInfo.CurrentCulture,
                 FlowDirection.LeftToRight,
-                new Typeface(new FontFamily("Segoe UI"), FontStyles.Normal, FontWeights.Bold, FontStretches.Normal),
+                new Typeface(FnFont.Text(), FontStyles.Normal, FontWeights.Bold, FontStretches.Normal),
                 SubtitleSize * scale,
                 subtitleBrush,
                 pixelsPerDip);

@@ -345,7 +345,7 @@ namespace GameTimeNext.Core.Application.General.Controller
         private void BuildBetaTag()
         {
             if (AppEnvironment.AppVersion.IsBeta)
-                GetView().Subtitle = "BETA";
+                GetView().Subtitle = "beta";
             else
                 GetView().Subtitle = string.Empty;
         }

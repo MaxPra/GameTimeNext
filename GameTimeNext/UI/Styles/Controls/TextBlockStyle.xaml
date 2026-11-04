@@ -15,7 +15,7 @@
 
     <!--
         ===== Type ramp =====
-        One scale for the whole app (Segoe UI):
+        One scale for the whole app (Font.Text, Manrope):
         Text.Display      28  SemiBold   hero value or name (e.g. most played game)
         Text.Title        20  SemiBold   title of a view or dialog
         Text.Subtitle     16  SemiBold   section heading

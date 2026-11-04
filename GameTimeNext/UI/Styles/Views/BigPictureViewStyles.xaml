@@ -52,8 +52,8 @@
         <GradientStop Offset="1" Color="#FF000000" />
     </LinearGradientBrush>
 
-    <!--  Headings in the display cut of Segoe UI where available  -->
-    <FontFamily x:Key="Font.BigPicture.Display">Segoe UI Variable Display, Segoe UI</FontFamily>
+    <!--  Headings in the app font (Manrope), like the rest of the app  -->
+    <FontFamily x:Key="Font.BigPicture.Display">pack://application:,,,/GameTimeNext;component/UI/Fonts/#Manrope, Segoe UI</FontFamily>
     <FontFamily x:Key="Font.BigPicture.Icons">Segoe Fluent Icons, Segoe MDL2 Assets</FontFamily>
 
     <!--  ========== Texts ==========  -->

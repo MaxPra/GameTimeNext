@@ -40,6 +40,16 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
         {
             // Show the add button only in debug / development mode
             FnControls.SetVisible(GetView().BtnAddCodetable, FnSystem.IsDebug() && !FnSystem.RunWithUserPermissions());
+
+            if (FnSystem.IsDebug())
+            {
+                GetView().CmbPermission.SelectedValue = string.Empty;
+            }
+            else
+            {
+                GetView().CmbPermission.SelectedValue = "U";
+            }
+
         }
 
         protected override async Task BuildFirstImplAsync()

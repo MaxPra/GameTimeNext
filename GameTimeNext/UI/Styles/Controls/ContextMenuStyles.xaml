@@ -123,6 +123,8 @@
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
         <Setter Property="Padding" Value="4" />
         <Setter Property="MinWidth" Value="200" />
+        <!--  Explicit, the menu is an own popup root and would otherwise inherit the font of its owner  -->
+        <Setter Property="FontFamily" Value="{StaticResource Font.Text}" />
         <Setter Property="FontSize" Value="13" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="HasDropShadow" Value="False" />

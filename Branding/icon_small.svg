@@ -1,5 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="104 104 804 804">
-  <!-- Taskbar variant: no tile, solid color, heavy stroke -->
-  <path d="M 547 172 L 322 172 A 90 90 0 0 0 232 262 L 232 762 A 90 90 0 0 0 322 852 L 662 852 A 90 90 0 0 0 752 762 L 752 566 A 40 40 0 0 0 712 526 L 492 526" fill="none" stroke="#2F95E8" stroke-width="104" stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="768" cy="172" r="64" fill="#2F95E8"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="164 168 688 688">
+  <!-- Taskbar variant (24/32 px): no tile, solid colors, heavy line -->
+  <g fill="none" stroke-width="136">
+    <path d="M 236.3 479.2 A 236 236 0 1 0 558.4 293.2" stroke="#2F95E8"/>
+    <path d="M 706 512 L 706 748" stroke="#2F95E8" stroke-linecap="round"/>
+    <path d="M 502.8 278.3 A 236 236 0 0 0 251.2 423.6" stroke="#8ED1FA"/>
+  </g>
 </svg>

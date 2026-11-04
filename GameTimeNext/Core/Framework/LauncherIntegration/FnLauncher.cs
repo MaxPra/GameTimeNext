@@ -176,7 +176,7 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
 
                 CFGameStarter.DeactivateProfileSettings(cProfileSettings);
 
-                new ToastMessage("Launch failed", $"{t1profi.GANA} could not be started.\nDetails are in the log.").Show();
+                CFToast.Show("Launch failed", $"{t1profi.GANA} could not be started.\nDetails are in the log.");
                 return false;
             }
 
@@ -248,7 +248,7 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
             }
 
             if (!allEnded)
-                new ToastMessage("Quit failed", $"{t1profi.GANA} could not be ended completely.\nDetails are in the log.").Show();
+                CFToast.Show("Quit failed", $"{t1profi.GANA} could not be ended completely.\nDetails are in the log.");
 
             return allEnded;
         }
@@ -428,7 +428,7 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
                 // e.g. the launcher was uninstalled and its URI isn't registered anymore
                 FnLog.AddError(nameof(FnLauncher), $"Showing {t1profi.GANA} in launcher {launcher.LauncherType} failed (game ID '{t1profi.LNID}')", ex);
 
-                new ToastMessage("Launcher not available", $"{GetLauncherName(t1profi.LNTY)} could not be opened.\nDetails are in the log.").Show();
+                CFToast.Show("Launcher not available", $"{GetLauncherName(t1profi.LNTY)} could not be opened.\nDetails are in the log.");
             }
         }
 
