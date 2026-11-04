@@ -2,10 +2,11 @@
 
     <!--
         Check boxes:
-        (implicit)       label left, box right
+        (implicit)       label left, on/off switch right
+        CheckBox.Switch  on/off switch, the label is optional
         CheckBox.Left    box left, label right
-        CheckBox.Switch  on/off switch (settings)
         CheckBox.ListItem  box left, label right, as an entry of a list (whole row clickable, hover tint)
+        CheckBox.Cell    box only, for list cells (basis of the DataGrid check box styles)
         Box: 18px, filled with the accent color when checked. Height stays flexible so rows define the layout.
     -->
 
@@ -26,35 +27,58 @@
         <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
-        <Setter Property="Width" Value="40" />
-        <Setter Property="Height" Value="22" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Padding" Value="0,0,12,0" />
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual.Control}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type CheckBox}">
                     <Grid Background="Transparent">
-                        <Border
-                            x:Name="Track"
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <ContentPresenter
+                            x:Name="ContentHost"
+                            Grid.Column="0"
+                            Margin="{TemplateBinding Padding}"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            ContentSource="Content"
+                            RecognizesAccessKey="True" />
+
+                        <Grid
+                            Grid.Column="1"
                             Width="40"
                             Height="22"
-                            Background="{StaticResource Brush.Switch.Track}"
-                            CornerRadius="11"
-                            Effect="{StaticResource Effect.Control}" />
+                            VerticalAlignment="Center">
+                            <Border
+                                x:Name="Track"
+                                Background="{StaticResource Brush.Switch.Track}"
+                                CornerRadius="11"
+                                Effect="{StaticResource Effect.Control}" />
 
-                        <Ellipse
-                            x:Name="Knob"
-                            Width="16"
-                            Height="16"
-                            Margin="3,0,0,0"
-                            HorizontalAlignment="Left"
-                            Fill="{StaticResource Brush.Switch.Knob}">
-                            <Ellipse.RenderTransform>
-                                <TranslateTransform x:Name="KnobShift" X="0" />
-                            </Ellipse.RenderTransform>
-                        </Ellipse>
+                            <Ellipse
+                                x:Name="Knob"
+                                Width="16"
+                                Height="16"
+                                Margin="3,0,0,0"
+                                HorizontalAlignment="Left"
+                                Fill="{StaticResource Brush.Switch.Knob}">
+                                <Ellipse.RenderTransform>
+                                    <TranslateTransform x:Name="KnobShift" X="0" />
+                                </Ellipse.RenderTransform>
+                            </Ellipse>
+                        </Grid>
                     </Grid>
 
                     <ControlTemplate.Triggers>
+                        <!--  Without a label (label in a separate TextBlock): no gap, the switch lines up with the inputs  -->
+                        <Trigger Property="HasContent" Value="False">
+                            <Setter TargetName="ContentHost" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="Track" Property="Background" Value="{DynamicResource Brush.Accent.Muted}" />
                         </Trigger>
@@ -104,11 +128,17 @@
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="Track" Property="Opacity" Value="0.45" />
                             <Setter TargetName="Knob" Property="Opacity" Value="0.6" />
+                            <Setter TargetName="ContentHost" Property="Opacity" Value="0.45" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+
+    <!--  Default (global): label left, switch right  -->
+    <Style BasedOn="{StaticResource CheckBox.Switch}" TargetType="{x:Type CheckBox}">
+        <Setter Property="MinHeight" Value="24" />
     </Style>
 
     <!--  ===== Check box =====  -->
@@ -128,8 +158,11 @@
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual.Control}" />
     </Style>
 
-    <!--  Default (global): label left, box right  -->
-    <Style BasedOn="{StaticResource CheckBox.Base}" TargetType="{x:Type CheckBox}">
+    <!--  List cells: box only (a label would be on the left)  -->
+    <Style
+        x:Key="CheckBox.Cell"
+        BasedOn="{StaticResource CheckBox.Base}"
+        TargetType="{x:Type CheckBox}">
         <Setter Property="Padding" Value="0,0,12,0" />
         <Setter Property="Template">
             <Setter.Value>

@@ -98,9 +98,11 @@
 
     <!--
         ===== Buttons =====
-        One flat template for all buttons: fill without border, hover/pressed as overlay (works on any fill),
-        accent focus ring only for keyboard navigation (FocusVisualStyle).
-        
+        One template for all buttons: fill with a glass layer on top (white light, so it works on any fill),
+        hover/pressed fade in as overlays (the hover outline comes from Brush.Accent.Outline, which a style can override
+        in its Style.Resources), accent focus ring only for keyboard navigation (FocusVisualStyle).
+        Without a border (Button.Ghost) there is no surface, so the glass layer is off.
+
         (implicit)        neutral button
         Button.Primary    accent fill, the main action of a view (Button.Secondary is the old name, kept for compatibility)
         Button.Ghost      no fill until hovered, for icon buttons and secondary actions
@@ -122,6 +124,30 @@
         </Setter>
     </Style>
 
+    <!--  Glass: translucent fill of neutral buttons, the background shows through  -->
+    <SolidColorBrush x:Key="Brush.Button.Glass" Color="#0FFFFFFF" />
+
+    <!--  Glass: thin diagonal rim, the light catches the upper left and the lower right corner, almost nothing between them  -->
+    <LinearGradientBrush x:Key="Brush.Button.GlassRim" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0" Color="#52FFFFFF" />
+        <GradientStop Offset="0.3" Color="#12FFFFFF" />
+        <GradientStop Offset="0.7" Color="#08FFFFFF" />
+        <GradientStop Offset="1" Color="#2EFFFFFF" />
+    </LinearGradientBrush>
+
+    <!--  Glass: soft light inside the same two corners, no gradient across the whole surface  -->
+    <RadialGradientBrush x:Key="Brush.Button.GlassLightStart" Center="0,0" GradientOrigin="0,0" RadiusX="0.8" RadiusY="1.6">
+        <GradientStop Offset="0" Color="#0DFFFFFF" />
+        <GradientStop Offset="1" Color="#00FFFFFF" />
+    </RadialGradientBrush>
+    <RadialGradientBrush x:Key="Brush.Button.GlassLightEnd" Center="1,1" GradientOrigin="1,1" RadiusX="0.6" RadiusY="1.2">
+        <GradientStop Offset="0" Color="#08FFFFFF" />
+        <GradientStop Offset="1" Color="#00FFFFFF" />
+    </RadialGradientBrush>
+
+    <!--  Check of the save confirmation, on the circle in the text color  -->
+    <SolidColorBrush x:Key="Brush.Button.SavedCheck" Color="#FF14141A" />
+
     <ControlTemplate x:Key="Template.Button" TargetType="{x:Type ButtonBase}">
         <ControlTemplate.Resources>
             <Style TargetType="{x:Type TextBlock}">
@@ -130,21 +156,59 @@
             </Style>
         </ControlTemplate.Resources>
 
-        <Grid x:Name="Root" SnapsToDevicePixels="True">
+        <Grid
+            x:Name="Root"
+            RenderTransformOrigin="0.5,0.5"
+            SnapsToDevicePixels="True">
+            <Grid.RenderTransform>
+                <ScaleTransform ScaleX="1" ScaleY="1" />
+            </Grid.RenderTransform>
+
             <!--  Shadow only on the background shape (an effect on the content would blur the text)  -->
             <Border
                 x:Name="Base"
                 Background="{TemplateBinding Background}"
-                BorderBrush="{TemplateBinding BorderBrush}"
-                BorderThickness="{TemplateBinding BorderThickness}"
                 CornerRadius="{StaticResource Control.CornerRadius}"
                 Effect="{StaticResource Effect.Control}" />
 
+            <!--  Light inside the glass  -->
+            <Grid x:Name="Glass" IsHitTestVisible="False">
+                <Border Background="{StaticResource Brush.Button.GlassLightStart}" CornerRadius="{StaticResource Control.CornerRadius}" />
+                <Border Background="{StaticResource Brush.Button.GlassLightEnd}" CornerRadius="{StaticResource Control.CornerRadius}" />
+            </Grid>
+
+            <!--  Rim in its own layer: under the shadow effect the fine line would be rasterized and look uneven  -->
+            <Border
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}"
+                CornerRadius="{StaticResource Control.CornerRadius}"
+                IsHitTestVisible="False"
+                SnapsToDevicePixels="True" />
+
+            <!--  Hover and pressed states are layers that fade, so nothing changes abruptly  -->
+            <Border
+                x:Name="HoverRim"
+                BorderBrush="{DynamicResource Brush.Accent.Outline}"
+                BorderThickness="1"
+                CornerRadius="{StaticResource Control.CornerRadius}"
+                IsHitTestVisible="False"
+                Opacity="0"
+                SnapsToDevicePixels="True" />
+
             <Border
                 x:Name="Overlay"
-                Background="Transparent"
+                Background="{StaticResource Brush.Control.HoverOverlay}"
                 CornerRadius="{StaticResource Control.CornerRadius}"
-                IsHitTestVisible="False" />
+                IsHitTestVisible="False"
+                Opacity="0" />
+
+            <Border
+                x:Name="PressedOverlay"
+                Background="{StaticResource Brush.Control.PressedOverlay}"
+                CornerRadius="{StaticResource Control.CornerRadius}"
+                IsHitTestVisible="False"
+                Opacity="0" />
+
 
             <ContentPresenter
                 x:Name="Content"
@@ -182,7 +246,7 @@
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Data="M 1,4.5 L 4,7.5 L 10,1"
-                    Stroke="{TemplateBinding Background}"
+                    Stroke="{StaticResource Brush.Button.SavedCheck}"
                     StrokeDashArray="7 20"
                     StrokeDashOffset="7"
                     StrokeEndLineCap="Round"
@@ -278,11 +342,130 @@
             </Trigger>
 
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter TargetName="Overlay" Property="Background" Value="{StaticResource Brush.Control.HoverOverlay}" />
+                <Trigger.EnterActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation
+                                Storyboard.TargetName="Overlay"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0.7"
+                                Duration="0:0:0.2">
+                                <DoubleAnimation.EasingFunction>
+                                    <CubicEase EasingMode="EaseOut" />
+                                </DoubleAnimation.EasingFunction>
+                            </DoubleAnimation>
+                            <DoubleAnimation
+                                Storyboard.TargetName="HoverRim"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0.8"
+                                Duration="0:0:0.2">
+                                <DoubleAnimation.EasingFunction>
+                                    <CubicEase EasingMode="EaseOut" />
+                                </DoubleAnimation.EasingFunction>
+                            </DoubleAnimation>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.EnterActions>
+                <Trigger.ExitActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation
+                                Storyboard.TargetName="Overlay"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0"
+                                Duration="0:0:0.26">
+                                <DoubleAnimation.EasingFunction>
+                                    <CubicEase EasingMode="EaseOut" />
+                                </DoubleAnimation.EasingFunction>
+                            </DoubleAnimation>
+                            <DoubleAnimation
+                                Storyboard.TargetName="HoverRim"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0"
+                                Duration="0:0:0.26">
+                                <DoubleAnimation.EasingFunction>
+                                    <CubicEase EasingMode="EaseOut" />
+                                </DoubleAnimation.EasingFunction>
+                            </DoubleAnimation>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.ExitActions>
             </Trigger>
 
+            <Trigger Property="BorderThickness" Value="0">
+                <Setter TargetName="Glass" Property="Visibility" Value="Collapsed" />
+            </Trigger>
+
+            <!--  Pressed: sinks in quickly, springs back softly on release  -->
             <Trigger Property="IsPressed" Value="True">
-                <Setter TargetName="Overlay" Property="Background" Value="{StaticResource Brush.Control.PressedOverlay}" />
+                <Trigger.EnterActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation
+                                Storyboard.TargetName="PressedOverlay"
+                                Storyboard.TargetProperty="Opacity"
+                                To="1"
+                                Duration="0:0:0.08" />
+                            <DoubleAnimation
+                                Storyboard.TargetName="Glass"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0.5"
+                                Duration="0:0:0.08" />
+                            <DoubleAnimation
+                                Storyboard.TargetName="Root"
+                                Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)"
+                                To="0.98"
+                                Duration="0:0:0.09">
+                                <DoubleAnimation.EasingFunction>
+                                    <CubicEase EasingMode="EaseOut" />
+                                </DoubleAnimation.EasingFunction>
+                            </DoubleAnimation>
+                            <DoubleAnimation
+                                Storyboard.TargetName="Root"
+                                Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)"
+                                To="0.96"
+                                Duration="0:0:0.09">
+                                <DoubleAnimation.EasingFunction>
+                                    <CubicEase EasingMode="EaseOut" />
+                                </DoubleAnimation.EasingFunction>
+                            </DoubleAnimation>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.EnterActions>
+                <Trigger.ExitActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation
+                                Storyboard.TargetName="PressedOverlay"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0"
+                                Duration="0:0:0.2" />
+                            <DoubleAnimation
+                                Storyboard.TargetName="Glass"
+                                Storyboard.TargetProperty="Opacity"
+                                To="1"
+                                Duration="0:0:0.2" />
+                            <DoubleAnimation
+                                Storyboard.TargetName="Root"
+                                Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)"
+                                To="1"
+                                Duration="0:0:0.26">
+                                <DoubleAnimation.EasingFunction>
+                                    <BackEase Amplitude="0.5" EasingMode="EaseOut" />
+                                </DoubleAnimation.EasingFunction>
+                            </DoubleAnimation>
+                            <DoubleAnimation
+                                Storyboard.TargetName="Root"
+                                Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)"
+                                To="1"
+                                Duration="0:0:0.26">
+                                <DoubleAnimation.EasingFunction>
+                                    <BackEase Amplitude="0.5" EasingMode="EaseOut" />
+                                </DoubleAnimation.EasingFunction>
+                            </DoubleAnimation>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.ExitActions>
             </Trigger>
 
             <Trigger Property="IsEnabled" Value="False">
@@ -297,8 +480,8 @@
         <Setter Property="Margin" Value="0" />
         <Setter Property="Padding" Value="14,6" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
-        <Setter Property="Background" Value="{StaticResource Brush.Control.Background}" />
-        <Setter Property="BorderBrush" Value="{StaticResource Brush.Control.Edge}" />
+        <Setter Property="Background" Value="{StaticResource Brush.Button.Glass}" />
+        <Setter Property="BorderBrush" Value="{StaticResource Brush.Button.GlassRim}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
@@ -309,26 +492,22 @@
         <!--  Save buttons (btnSave): wait for the check before the view closes, keep it while the view stays open  -->
         <Setter Property="uixprops:UIXSaveFeedback.WaitTime" Value="0:0:0.45" />
         <Setter Property="uixprops:UIXSaveFeedback.ShowTime" Value="0:0:1.4" />
-        <Style.Triggers>
-            <!--  Accent outline on hover (drawn by the background border, so the content doesn't move)  -->
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Outline}" />
-                <Setter Property="BorderThickness" Value="1" />
-            </Trigger>
-        </Style.Triggers>
     </Style>
 
     <Style
         x:Key="Button.Primary"
         BasedOn="{StaticResource {x:Type Button}}"
         TargetType="Button">
-        <Setter Property="Background" Value="{DynamicResource Brush.Accent}" />
-        <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="{DynamicResource Brush.AccentHover}" />
-                <Setter Property="BorderBrush" Value="{StaticResource Brush.Control.Edge}" />
-            </Trigger>
-        </Style.Triggers>
+        <Style.Resources>
+            <!--  Hover rim of the template: the glass rim, brighter (an accent line would not stand out on the fill)  -->
+            <LinearGradientBrush x:Key="Brush.Accent.Outline" StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Offset="0" Color="#80FFFFFF" />
+                <GradientStop Offset="0.3" Color="#2EFFFFFF" />
+                <GradientStop Offset="0.7" Color="#1AFFFFFF" />
+                <GradientStop Offset="1" Color="#59FFFFFF" />
+            </LinearGradientBrush>
+        </Style.Resources>
+        <Setter Property="Background" Value="{DynamicResource Brush.Accent.Glass}" />
     </Style>
 
     <!--  Former name of Button.Primary, still used by existing views  -->

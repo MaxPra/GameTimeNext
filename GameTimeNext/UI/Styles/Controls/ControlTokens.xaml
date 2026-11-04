@@ -21,7 +21,6 @@
 
     <!--  ===== Buttons =====  -->
 
-    <SolidColorBrush x:Key="Brush.Control.Background" Color="#FF1E1E26" />
     <!--  Lit top edge: separates controls from dark / translucent backgrounds (together with Effect.Control)  -->
     <LinearGradientBrush x:Key="Brush.Control.Edge" StartPoint="0,0" EndPoint="0,1">
         <GradientStop Offset="0" Color="#26FFFFFF" />
@@ -51,6 +50,11 @@
     <SolidColorBrush
         x:Key="Brush.Accent.Muted"
         Opacity="0.32"
+        Color="{DynamicResource Color.Accent}" />
+    <!--  Tinted glass: fill of primary buttons, translucent but clearly in the accent color  -->
+    <SolidColorBrush
+        x:Key="Brush.Accent.Glass"
+        Opacity="0.8"
         Color="{DynamicResource Color.Accent}" />
     <SolidColorBrush
         x:Key="Brush.Accent.Outline"
