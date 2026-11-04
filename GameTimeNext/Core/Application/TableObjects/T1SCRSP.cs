@@ -26,15 +26,33 @@ namespace GameTimeNext.Core.Application.TableObjects
         public bool MOPR { get; set; } = false;
 
         [UIXSignatureField(6)]
-        public DateTime CRAT { get; set; } = DateTime.MinValue;
+        public long MOWI { get; set; } = 0;
 
         [UIXSignatureField(7)]
-        public string CRUS { get; set; } = "";
+        public long MOHE { get; set; } = 0;
 
         [UIXSignatureField(8)]
-        public DateTime CHAT { get; set; } = DateTime.MinValue;
+        public long MORF { get; set; } = 0;
 
         [UIXSignatureField(9)]
+        public string MOOR { get; set; } = "";
+
+        [UIXSignatureField(10)]
+        public string MOPL { get; set; } = "";
+
+        [UIXSignatureField(11)]
+        public long MOSC { get; set; } = 0;
+
+        [UIXSignatureField(12)]
+        public DateTime CRAT { get; set; } = DateTime.MinValue;
+
+        [UIXSignatureField(13)]
+        public string CRUS { get; set; } = "";
+
+        [UIXSignatureField(14)]
+        public DateTime CHAT { get; set; } = DateTime.MinValue;
+
+        [UIXSignatureField(15)]
         public string CHUS { get; set; } = "";
 
         public override void Save()

@@ -30,7 +30,7 @@
 - Full blackout can now be toggled via hotkey while monitoring a console game.
 - Added the option **Dynamic Background** (*Settings > Appearance*): a blurred image is used as background of the main window.
   The background source can be chosen: the current Windows wallpaper or the cover of the selected profile.
-- Added a new **Screensetups** application: save which monitors are switched on, which one is the primary monitor and which audio device is used, and switch between them with one click.
+- Added a new **Screensetups** application: save which monitors are switched on, which one is the primary monitor, the resolution, refresh rate, orientation, placement and scaling of each monitor and which audio device is used, and switch between them with one click.
 - Added the **Big Picture mode** for the TV: your library in full screen with large covers, operated with a game controller (Xbox / XInput), the keyboard or the mouse.
   Open it with the controller icon in the title bar, or start GameTimeNext directly in it with the start argument `--bigpicture`.
   The selected game is shown large with its playtimes and current playthrough; LB / RB switch between your recently played games, the whole library and the search.
