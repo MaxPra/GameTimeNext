@@ -59,18 +59,8 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
             if (!_screensetupOptions.TryGetValue(key, out T1SCRSH? t1scrsh))
                 return;
 
-            string? errorMessage;
-
-            GetApp().Loader.Begin("Switching to " + t1scrsh.SSNA + "...");
-
-            try
-            {
-                errorMessage = await CFScreensetupsApp.ApplyScreensetupAsync(GetApp(), t1scrsh);
-            }
-            finally
-            {
-                GetApp().Loader.Stop();
-            }
+            // Shows the loader itself (not while asking to keep the display settings)
+            string? errorMessage = await CFScreensetupsApp.ApplyScreensetupAsync(GetApp(), t1scrsh);
 
             FnLog.AddInfo(GetApp(), errorMessage == null
                 ? $"Screensetup {t1scrsh.SSNA} applied from the Big Picture mode"

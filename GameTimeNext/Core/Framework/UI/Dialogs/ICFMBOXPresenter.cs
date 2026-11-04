@@ -10,5 +10,15 @@
         /// (the dialog window is shown then).
         /// </summary>
         CFMBOXResult? Show(string title, string message, CFMBOXResult buttons, CFMBOXIcon icon, CFMBOXType type);
+
+        /// <summary>
+        /// Replaces the text of the message that is shown right now (e.g. the countdown of a CFMBOXTimeout).
+        /// </summary>
+        void UpdateMessage(string message);
+
+        /// <summary>
+        /// Closes the message that is shown right now: Show returns result (e.g. when a CFMBOXTimeout runs out).
+        /// </summary>
+        void Close(CFMBOXResult result);
     }
 }

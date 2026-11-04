@@ -50,6 +50,11 @@ namespace GameTimeNext.Core.Application.Screensetups.Selectors
                 row.COISCON = true;
                 row.COMOEN = t1scrsp?.MOEN ?? (isCreateNew && monitor.IsActive);
                 row.COMOPR = t1scrsp?.MOPR ?? (isCreateNew && monitor.IsPrimary);
+                row.CurrentWidth = monitor.Mode?.Width ?? 0;
+                row.CurrentHeight = monitor.Mode?.Height ?? 0;
+                row.SupportedModes = UIXMonitorManager.GetSupportedModes(monitor.Id);
+                row.SupportedScales = UIXMonitorManager.GetSupportedScales(monitor.Id);
+                SetMode(row, t1scrsp);
 
                 rows.Add(row);
             }
@@ -65,6 +70,7 @@ namespace GameTimeNext.Core.Application.Screensetups.Selectors
                 row.COISCON = false;
                 row.COMOEN = t1scrsp.MOEN;
                 row.COMOPR = t1scrsp.MOPR;
+                SetMode(row, t1scrsp);
 
                 rows.Add(row);
             }
@@ -88,14 +94,31 @@ namespace GameTimeNext.Core.Application.Screensetups.Selectors
             }
         }
 
+        private static void SetMode(ScreensetupMonitorDataGridRow row, T1SCRSP? t1scrsp)
+        {
+            // New screensetups and monitors without a stored mode let Windows choose
+            row.ModeWidth = t1scrsp?.MOWI ?? 0;
+            row.ModeHeight = t1scrsp?.MOHE ?? 0;
+            row.ModeRefreshRate = t1scrsp?.MORF ?? 0;
+            row.ModeOrientation = t1scrsp?.MOOR ?? string.Empty;
+            row.ModePlacement = t1scrsp?.MOPL ?? string.Empty;
+            row.ModeScale = t1scrsp?.MOSC ?? 0;
+            row.COMODE = CFScreensetupsApp.FormatMode(row.ModeWidth, row.ModeHeight, row.ModeRefreshRate, row.ModeOrientation, row.ModeScale);
+            row.COPLAC = CFScreensetupsApp.FormatPlacement(row.ModePlacement);
+        }
+
         private static string FormatMonitorState(UIXMonitorInfo monitor)
         {
             if (!monitor.IsActive)
                 return "Off";
 
-            string resolution = $"{monitor.Width} x {monitor.Height}";
+            // The orientation is only named when the monitor is rotated
+            string orientationKey = monitor.Orientation == UIXDisplayOrientation.Landscape ? string.Empty : CFScreensetupsApp.GetOrientationKey(monitor.Orientation);
+            // The scaling is only named when it isn't 100 %
+            string mode = CFScreensetupsApp.FormatMode(monitor.Mode?.Width ?? 0, monitor.Mode?.Height ?? 0, monitor.RefreshRate, orientationKey,
+                monitor.ScalePercent == 100 ? 0 : monitor.ScalePercent);
 
-            return monitor.IsPrimary ? $"On, primary ({resolution})" : $"On ({resolution})";
+            return monitor.IsPrimary ? $"On, primary ({mode})" : $"On ({mode})";
         }
     }
 }

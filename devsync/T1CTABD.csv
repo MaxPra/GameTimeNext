@@ -42,3 +42,11 @@ dP;02;Right;;;2026-11-02 08:04:35;prage;2026-11-02 08:04:35;prage
 lG;PEND;Pending;;;2026-11-02 17:21:17;prage;2026-11-02 17:21:17;prage
 lG;IMPO;Imported;;;2026-11-02 17:21:24;prage;2026-11-02 17:21:24;prage
 lG;SKIP;Skipped;;;2026-11-02 17:21:30;prage;2026-11-02 17:21:30;prage
+mO;LAND;Landscape;;;2026-11-04 12:00:00;Oliver Fida;2026-11-04 12:00:00;Oliver Fida
+mO;PORT;Portrait;;;2026-11-04 12:00:00;Oliver Fida;2026-11-04 12:00:00;Oliver Fida
+mO;LANDF;Landscape (flipped);;;2026-11-04 12:00:00;Oliver Fida;2026-11-04 12:00:00;Oliver Fida
+mO;PORTF;Portrait (flipped);;;2026-11-04 12:00:00;Oliver Fida;2026-11-04 12:00:00;Oliver Fida
+mP;LEFT;Left of the primary monitor;;;2026-11-04 12:00:00;Oliver Fida;2026-11-04 12:00:00;Oliver Fida
+mP;RIGHT;Right of the primary monitor;;;2026-11-04 12:00:00;Oliver Fida;2026-11-04 12:00:00;Oliver Fida
+mP;ABOVE;Above the primary monitor;;;2026-11-04 12:00:00;Oliver Fida;2026-11-04 12:00:00;Oliver Fida
+mP;BELOW;Below the primary monitor;;;2026-11-04 12:00:00;Oliver Fida;2026-11-04 12:00:00;Oliver Fida

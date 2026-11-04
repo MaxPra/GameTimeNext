@@ -9,8 +9,8 @@
     xmlns:uixprops="clr-namespace:UIX.ViewController.Engine.AttachedProperties;assembly=UIX.ViewController.Engine"
     xmlns:uixsel="clr-namespace:UIX.ViewController.Engine.FrameworkElements.Selectors;assembly=UIX.ViewController.Engine"
     Title="Screensetup"
-    Width="900"
-    Height="560"
+    Width="1100"
+    Height="738"
     ResizeMode="NoResize"
     ShowMaximizeButton="False"
     ShowMinimizeButton="False"
@@ -104,6 +104,10 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="12" />
                         <RowDefinition Height="*" />
+                        <RowDefinition Height="16" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="6" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
                     <Grid Grid.Row="0">
@@ -128,7 +132,7 @@
                             Height="36"
                             Padding="12,0"
                             Content="Use current state"
-                            ToolTip="Take over the monitors that are switched on right now" />
+                            ToolTip="Take over the monitors that are switched on right now, with their display mode and placement" />
 
                         <Button
                             x:Name="BtnIdentify"
@@ -169,6 +173,14 @@
                                 Width="250"
                                 Binding="{Binding COSTAT}"
                                 Header="Current state" />
+                            <DataGridTextColumn
+                                Width="230"
+                                Binding="{Binding COMODE}"
+                                Header="Display mode" />
+                            <DataGridTextColumn
+                                Width="200"
+                                Binding="{Binding COPLAC}"
+                                Header="Placement" />
                             <DataGridTemplateColumn Width="90" Header="Enabled">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
@@ -192,6 +204,107 @@
                             </DataGridTemplateColumn>
                         </uixsel:UIXDataGrid.Columns>
                     </uixsel:UIXDataGrid>
+
+                    <Grid Grid.Row="4">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="12" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="12" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="12" />
+                            <ColumnDefinition Width="220" />
+                            <ColumnDefinition Width="24" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="12" />
+                            <ColumnDefinition Width="260" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock
+                            Grid.Column="0"
+                            VerticalAlignment="Center"
+                            Style="{StaticResource Text.Label}"
+                            Text="Resolution" />
+
+                        <uixcb:UIXComboBox
+                            x:Name="cmbResolution"
+                            Grid.Column="2"
+                            Height="36"
+                            VerticalAlignment="Center"
+                            AdditionalEntry="(Automatic)"
+                            ShowKeys="False" />
+
+                        <TextBlock
+                            Grid.Column="4"
+                            VerticalAlignment="Center"
+                            Style="{StaticResource Text.Label}"
+                            Text="Refresh rate" />
+
+                        <uixcb:UIXComboBox
+                            x:Name="cmbRefreshRate"
+                            Grid.Column="6"
+                            Height="36"
+                            VerticalAlignment="Center"
+                            AdditionalEntry="(Automatic)"
+                            ShowKeys="False" />
+
+                        <TextBlock
+                            Grid.Row="2"
+                            Grid.Column="0"
+                            VerticalAlignment="Center"
+                            Style="{StaticResource Text.Label}"
+                            Text="Orientation" />
+
+                        <uixcb:UIXComboBox
+                            x:Name="cmbOrientation"
+                            Grid.Row="2"
+                            Grid.Column="2"
+                            Height="36"
+                            VerticalAlignment="Center"
+                            AdditionalEntry="(Unchanged)" />
+
+                        <TextBlock
+                            Grid.Row="2"
+                            Grid.Column="4"
+                            VerticalAlignment="Center"
+                            Style="{StaticResource Text.Label}"
+                            Text="Placement" />
+
+                        <uixcb:UIXComboBox
+                            x:Name="cmbPlacement"
+                            Grid.Row="2"
+                            Grid.Column="6"
+                            Height="36"
+                            VerticalAlignment="Center"
+                            AdditionalEntry="(Unchanged)" />
+
+                        <TextBlock
+                            Grid.Row="4"
+                            Grid.Column="0"
+                            VerticalAlignment="Center"
+                            Style="{StaticResource Text.Label}"
+                            Text="Scaling" />
+
+                        <uixcb:UIXComboBox
+                            x:Name="cmbScaling"
+                            Grid.Row="4"
+                            Grid.Column="2"
+                            Height="36"
+                            VerticalAlignment="Center"
+                            AdditionalEntry="(Unchanged)"
+                            ShowKeys="False" />
+                    </Grid>
+
+                    <TextBlock
+                        Grid.Row="6"
+                        Style="{StaticResource Text.Hint}"
+                        Text="Select a monitor to choose its display mode and placement. Modes can only be read while a monitor is on; &quot;(Automatic)&quot; lets Windows choose. The placement is relative to the primary monitor (ignored for the primary monitor itself). The scaling steps are the ones of the current resolution."
+                        TextWrapping="Wrap" />
                 </Grid>
             </TabItem>
         </uixsel:UIXTabControl>

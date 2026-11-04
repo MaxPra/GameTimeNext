@@ -361,6 +361,23 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
         }
 
         /// <summary>
+        /// Replaces the text of the waiting message box (countdown of a CFMBOXTimeout, run by CFMBOX).
+        /// </summary>
+        public void UpdateMessage(string message)
+        {
+            if (_messageBoxFrame != null)
+                GetView().txMenuMessage.Text = message;
+        }
+
+        /// <summary>
+        /// Lets the waiting message box return with result (a CFMBOXTimeout ran out).
+        /// </summary>
+        public void Close(CFMBOXResult result)
+        {
+            EndMessageBox(result);
+        }
+
+        /// <summary>
         /// Lets the waiting CFMBOX.Show return (null: with the button of B).
         /// </summary>
         private void EndMessageBox(CFMBOXResult? result)

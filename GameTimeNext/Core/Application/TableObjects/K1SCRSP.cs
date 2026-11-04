@@ -12,6 +12,12 @@
             public const string MONA = "MONA";
             public const string MOEN = "MOEN";
             public const string MOPR = "MOPR";
+            public const string MOWI = "MOWI";
+            public const string MOHE = "MOHE";
+            public const string MORF = "MORF";
+            public const string MOOR = "MOOR";
+            public const string MOPL = "MOPL";
+            public const string MOSC = "MOSC";
             public const string CRAT = "CRAT";
             public const string CRUS = "CRUS";
             public const string CHAT = "CHAT";
