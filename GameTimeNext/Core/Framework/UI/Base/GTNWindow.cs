@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using GameTimeNext.Core.Framework.Config;
+using System.Collections;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Windows;
@@ -524,6 +525,9 @@ namespace GameTimeNext.Core.Framework.UI.Base
                 _maxButton.Click += MaxButton_Click;
                 _maxButton.Visibility = ShowMaximizeButton ? Visibility.Visible : Visibility.Collapsed;
             }
+
+            if (GetTemplateChild("BtnHelp") is Button helpButton)
+                helpButton.ToolTip = $"Help for {AppConfig.Root.ApplicationName}";
 
             if (_applicationSearchBox != null)
             {

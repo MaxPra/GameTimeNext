@@ -10,7 +10,8 @@ namespace GameTimeNext.Core.Framework.Config
         public static class Root
         {
             public static string PublisherName = "CryloudStudios";
-            public static string ApplicationName = "GameTimeNext";
+            public static string ApplicationName = "arcora";
+            public static string InternalApplicationName = "GameTimeNext";
             public static string DatabaseFileName = ApplicationName + "Db.db";
             public static string LogDatabaseFileName = "LogDb.db";
             public static string AppConfigFileName = "appConfig.gtnconf";
@@ -77,7 +78,7 @@ namespace GameTimeNext.Core.Framework.Config
                     DirectoryInfo? current = new DirectoryInfo(startingDirectoryPath);
                     while (current is not null)
                     {
-                        string slnxFilePath = Path.Combine(current.FullName, $"{Root.ApplicationName}.slnx");
+                        string slnxFilePath = Path.Combine(current.FullName, $"{Root.InternalApplicationName}.slnx");
                         if (File.Exists(slnxFilePath))
                             return current.FullName;
 
@@ -109,7 +110,7 @@ namespace GameTimeNext.Core.Framework.Config
             [JsonIgnore]
             public static string ImportPackagesDirectoryPath
             {
-                get => ReturnEnsureDirectoryExists(Path.Combine(SolutionDirectoryPath, Root.ApplicationName, "ImportPackages"));
+                get => ReturnEnsureDirectoryExists(Path.Combine(SolutionDirectoryPath, Root.InternalApplicationName, "ImportPackages"));
             }
 
             [JsonIgnore]

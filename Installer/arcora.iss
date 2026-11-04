@@ -1,4 +1,4 @@
-#define AppName "GameTimeNext"
+#define AppName "arcora"
 #define AppExeName AppName + ".exe"
 #define AppPublisher "CryloudStudios"
 
@@ -82,7 +82,7 @@ Name: "{autodesktop}\{#AppShortcutName}"; Filename: "{app}\{#AppExeName}"; Tasks
 Filename: "{app}\{#AppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(AppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
 
 [Code]
-#include "Includes\GameTimeNext_RemoveOldInstalls.iss"
+#include "Includes\arcora_RemoveOldInstalls.iss"
 
 function InitializeSetup(): Boolean;
 begin

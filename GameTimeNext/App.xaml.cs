@@ -49,7 +49,7 @@ namespace GameTimeNext
 
             if (!startMinimized)
             {
-                splash = new Core.Application.General.SplashScreen();
+                splash = new Core.Application.General.SplashScreen { Title = AppConfig.Root.ApplicationName };
                 splash.Show();
             }
 
@@ -176,7 +176,7 @@ namespace GameTimeNext
             UpdateCheckResult result = FnGithub.CheckForUpdateAsync(
                 AppEnvironment.AppVersion.Version.ToString(),
                 "MaxPra",
-                "GameTimeNext"
+                AppConfig.Root.InternalApplicationName
             ).GetAwaiter().GetResult();
 
             if (result.UpdateAvailable)

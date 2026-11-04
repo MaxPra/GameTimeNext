@@ -67,9 +67,9 @@ begin
   // msiexec's own exit code alone rarely explains what went wrong.
   // ForceDirectories is a no-op if the folder already exists, and this
   // early in Setup it may not exist yet.
-  ForceDirectories(ExpandConstant('{localappdata}\GameTimeNext'));
+  ForceDirectories(ExpandConstant('{localappdata}\arcora'));
   LogSwitch :=
-    ' /L*v "' + ExpandConstant('{localappdata}') + '\GameTimeNext\OldMsiUninstall.log"';
+    ' /L*v "' + ExpandConstant('{localappdata}') + '\arcora\OldMsiUninstall.log"';
 
   if Scope = msSystemWide then
   begin

@@ -1,5 +1,5 @@
 const
-  // GameTimeNext.iss's [Setup] AppId directive was originally written as
+  // arcora.iss's [Setup] AppId directive was originally written as
   // {{...}} with a double closing brace - an escaping mistake, since only
   // the opening brace needs doubling ({{ -> literal "{"). That made every
   // install built before the fix (system-wide betas, and any per-user
@@ -134,9 +134,9 @@ begin
   // ForceDirectories is a no-op if the folder already exists, and this
   // early in Setup (before our own [Files] entries are installed) it may
   // not exist yet.
-  ForceDirectories(ExpandConstant('{localappdata}\GameTimeNext'));
+  ForceDirectories(ExpandConstant('{localappdata}\arcora'));
   LogSwitch :=
-    ' /LOG="' + ExpandConstant('{localappdata}') + '\GameTimeNext\OldInnoUninstall.log"';
+    ' /LOG="' + ExpandConstant('{localappdata}') + '\arcora\OldInnoUninstall.log"';
 
   if Scope = scSystemWide then
   begin

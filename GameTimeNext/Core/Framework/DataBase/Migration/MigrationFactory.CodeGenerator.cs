@@ -30,8 +30,8 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
 
                     Dictionary<T1METAP, UIXSqliteDataType> fields = GenerateFields(t1metaps);
                     TableSchema tSchema = SchemaGenerator.GenerateSingleFromMetadata(t1metah.MENAM);
-                    string nsTableObjects = $"{AppConfig.Root.ApplicationName}.Core.Application.TableObjects";
-                    string nsDataManagers = $"{AppConfig.Root.ApplicationName}.Core.Application.DataManagers";
+                    string nsTableObjects = $"{AppConfig.Root.InternalApplicationName}.Core.Application.TableObjects";
+                    string nsDataManagers = $"{AppConfig.Root.InternalApplicationName}.Core.Application.DataManagers";
                     Generate(app, suffix, tSchema, t1metah.DSYNC, fields, nsTableObjects, nsDataManagers);
                 }
 
@@ -40,7 +40,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                 /// </summary>
                 public static void GenerateForMetadata(UIXApplication app)
                 {
-                    string nsMetadata = $"{AppConfig.Root.ApplicationName}.Core.Application.Metadata.Data";
+                    string nsMetadata = $"{AppConfig.Root.InternalApplicationName}.Core.Application.Metadata.Data";
 
                     foreach (TableSchema tSchema in METADATA)
                     {
@@ -172,8 +172,8 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     // Imports
                     if (!nsTableObjects.Equals(nsDataManagers))
                         code.AddLine($"using {nsTableObjects};");
-                    code.AddLine($"using {AppConfig.Root.ApplicationName}.Core.Framework;");
-                    code.AddLine($"using {AppConfig.Root.ApplicationName}.Core.Framework.DataBase.Migration;");
+                    code.AddLine($"using {AppConfig.Root.InternalApplicationName}.Core.Framework;");
+                    code.AddLine($"using {AppConfig.Root.InternalApplicationName}.Core.Framework.DataBase.Migration;");
                     code.AddLine($"using System.Data.SQLite;");
                     code.AddLine($"using System.Globalization;");
                     code.AddLine($"using UIX.ViewController.Engine.DataBaseObjects;");

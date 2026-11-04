@@ -121,7 +121,7 @@ namespace GameTimeNext.Core.Application.Menus.Controller
             UIXManualCodetable codetable = new UIXManualCodetable();
 
             foreach (T1APRDH t1aprdh in _applications)
-                codetable.AddEntry(t1aprdh.APDID, t1aprdh.APDES);
+                codetable.AddEntry(t1aprdh.APDID, TFAPRDH.ResolvePlaceholders(t1aprdh.APDES));
 
             codetable.ApplyTo(GetView().cmbApplication);
         }
@@ -141,7 +141,7 @@ namespace GameTimeNext.Core.Application.Menus.Controller
             string typeDescription = TFCTABD.GetDescription("mN", GetSelectedType());
             GetView().txSubtitle.Text = FnString.IsNullEmptyOrWhitespace(apdid) ? typeDescription : $"{typeDescription} · {apdid}";
 
-            GetView().txApplicationDescription.Text = _applications.FirstOrDefault(a => a.APDID == apdid)?.APDES ?? string.Empty;
+            GetView().txApplicationDescription.Text = TFAPRDH.ResolvePlaceholders(_applications.FirstOrDefault(a => a.APDID == apdid)?.APDES ?? string.Empty);
             FnControls.SetVisible(GetView().txApplicationDescription, !FnString.IsNullEmptyOrWhitespace(GetView().txApplicationDescription.Text));
         }
 

@@ -20,8 +20,8 @@ namespace GameTimeNext.Core.Framework
             return new UIXAppProperties
             {
                 ApplicationName = t1aprdh.APDID,
-                ApplicationDescription = t1aprdh.APDES,
-                ApplicationHelpText = t1aprdh.APHPT,
+                ApplicationDescription = TFAPRDH.ResolvePlaceholders(t1aprdh.APDES),
+                ApplicationHelpText = TFAPRDH.ResolvePlaceholders(t1aprdh.APHPT),
                 IsMenuCallPossible = t1aprdh.APMCP
             };
         }

@@ -49,6 +49,10 @@ namespace GameTimeNext.Core.Application.General.Controller
             bool isDynamicBackground = FnTheme.IsDynamicBackgroundEnabled(AppEnvironment.GetAppConfig().AppSettings.BackgroundSource);
             GetView().UseWallpaperBackground = isDynamicBackground;
             GetView().UseBackdropBlur = !isDynamicBackground;
+
+            GetView().Title = AppConfig.Root.ApplicationName;
+            GetView().txWelcomeTitle.Text = $"Welcome to {AppConfig.Root.ApplicationName}";
+            GetView().txHelpTitle.Text = $"Learn how {AppConfig.Root.ApplicationName} works";
         }
 
         protected override async Task BuildFirstImplAsync()

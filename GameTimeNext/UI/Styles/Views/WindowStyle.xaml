@@ -291,7 +291,6 @@
                                                     x:Name="BtnHelp"
                                                     Margin="0,0,8,0"
                                                     Style="{StaticResource TitleBarButtonStyle}"
-                                                    ToolTip="Help for GameTimeNext"
                                                     Visibility="Collapsed">
                                                     <TextBlock
                                                         FontFamily="{StaticResource Font.Icons}"

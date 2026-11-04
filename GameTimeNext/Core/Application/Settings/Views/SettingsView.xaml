@@ -961,9 +961,9 @@
                                     Text="Beta 0.1.0" />
 
                                 <TextBlock
+                                    x:Name="txBetaNotice"
                                     Grid.Row="2"
-                                    Foreground="{DynamicResource Brush.TextSecondary}"
-                                    Text="GameTimeNext is currently in beta." />
+                                    Foreground="{DynamicResource Brush.TextSecondary}" />
                             </Grid>
                         </GroupBox>
 

@@ -53,7 +53,7 @@
     </LinearGradientBrush>
 
     <!--  Headings in the app font (Manrope), like the rest of the app  -->
-    <FontFamily x:Key="Font.BigPicture.Display">pack://application:,,,/GameTimeNext;component/UI/Fonts/#Manrope, Segoe UI</FontFamily>
+    <FontFamily x:Key="Font.BigPicture.Display">pack://application:,,,/UI/Fonts/#Manrope, Segoe UI</FontFamily>
     <FontFamily x:Key="Font.BigPicture.Icons">Segoe Fluent Icons, Segoe MDL2 Assets</FontFamily>
 
     <!--  ========== Texts ==========  -->

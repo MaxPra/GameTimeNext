@@ -1,5 +1,5 @@
-#include "GameTimeNext_RemoveOldMsiInstall.iss"
-#include "GameTimeNext_RemoveSystemWideInnoInstall.iss"
+#include "arcora_RemoveOldMsiInstall.iss"
+#include "arcora_RemoveSystemWideInnoInstall.iss"
 
 // Best-effort: if an old (or currently running) copy of the app is open,
 // its files will be locked and any old uninstaller we try to run below

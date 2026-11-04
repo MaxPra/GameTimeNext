@@ -100,6 +100,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected override void BuildFirstImpl()
         {
+            GetView().btnUsePlaceholderCover.ToolTip = $"Use the {AppConfig.Root.ApplicationName} placeholder cover";
+
             using (SuppressRunEventPipeline())
             {
                 BuildTagGrid(GetApp().T1Profi.PFID);

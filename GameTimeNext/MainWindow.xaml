@@ -8,7 +8,6 @@
     xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI.Base"
     xmlns:uiFramework="clr-namespace:GameTimeNext.Core.Framework.UI"
     xmlns:uixsel="clr-namespace:UIX.ViewController.Engine.FrameworkElements.Selectors;assembly=UIX.ViewController.Engine"
-    Title="arcora"
     Width="1350"
     Height="1000"
     MinWidth="1350"
@@ -217,12 +216,12 @@
                 </Border>
 
                 <TextBlock
+                    x:Name="txWelcomeTitle"
                     Margin="0,16,0,0"
                     HorizontalAlignment="Center"
                     FontSize="24"
                     FontWeight="SemiBold"
-                    Foreground="{DynamicResource Brush.TextPrimary}"
-                    Text="Welcome to GameTimeNext" />
+                    Foreground="{DynamicResource Brush.TextPrimary}" />
 
                 <TextBlock
                     Margin="0,6,0,0"
@@ -284,7 +283,7 @@
                             Text="&#xE897;" />
                     </Border>
                     <StackPanel Grid.Row="2" Grid.Column="2">
-                        <TextBlock Style="{StaticResource EmptyState.Title}" Text="Learn how GameTimeNext works" />
+                        <TextBlock x:Name="txHelpTitle" Style="{StaticResource EmptyState.Title}" />
                         <TextBlock Style="{StaticResource EmptyState.Hint}" Text="Click the question mark at the top right of the title bar." />
                     </StackPanel>
 

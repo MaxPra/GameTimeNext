@@ -69,8 +69,7 @@
                     x:Name="btnUsePlaceholderCover"
                     Height="36"
                     Margin="0,8,0,0"
-                    Content="Placeholder"
-                    ToolTip="Use the GameTimeNext placeholder cover" />
+                    Content="Placeholder" />
             </StackPanel>
 
             <uixsel:UIXTabControl x:Name="tabControl" Grid.Column="2">
