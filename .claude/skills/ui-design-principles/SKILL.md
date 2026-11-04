@@ -10,7 +10,7 @@ description: "Beim Entwerfen oder Überarbeiten von Benutzeroberflächen (WPF, W
 ## Übernehmen (Prinzipien)
 
 - **Hierarchie:** Das Wichtigste ist auf einen Blick erkennbar. Primäre Aktion klar hervorheben, Nebensächliches zurücknehmen.
-- **Klarheit:** Gut lesbare Schriftgrößen, eindeutige Beschriftungen, keine mehrdeutigen Icons ohne Text.
+- **Klarheit:** Gut lesbare Schriftgrößen, eindeutige Beschriftungen, keine mehrdeutigen Icons ohne Text. Es darf nichts abgeschnitten sein: Beschriftungen stehen in Spalten mit automatischer Breite, nicht in festen Breiten, die nur mit der gerade verwendeten Schrift und dem gerade verwendeten Text passen.
 - **Zurückhaltung:** Die Oberfläche dient dem Inhalt. Keine Effekte, Verläufe oder Animationen ohne Zweck.
 - **Konsistenz:** Gleiche Abstände, gleiche Bedienelemente und gleiches Verhalten im ganzen Programm. Ein festes Abstandsraster (z. B. 4 oder 8 px) verwenden.
 - **Einheitliche Höhe:** Buttons, Textboxen, ComboBoxen und andere Eingabeelemente sind gleich hoch, damit sie nebeneinander eine saubere Linie bilden. Die Höhe kommt aus einem gemeinsamen Wert (in GTN: `Control.Height`), nicht aus Padding und Textgröße, und einzelne Views setzen keine eigene Höhe. Nach Style-Änderungen die tatsächliche Höhe messen: Nur Listenzeilen dürfen kleinere Elemente haben.
