@@ -30,6 +30,10 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
             }
             catch (Exception ex)
             {
+                // Stopped while the cycle was running (exit): the failure is a consequence of the closed databases / dispatcher
+                if (Cts?.IsCancellationRequested == true)
+                    return;
+
                 FnLog.AddError(this, "The automatic game import failed", ex);
             }
         }

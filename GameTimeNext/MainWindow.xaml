@@ -8,7 +8,7 @@
     xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI.Base"
     xmlns:uiFramework="clr-namespace:GameTimeNext.Core.Framework.UI"
     xmlns:uixsel="clr-namespace:UIX.ViewController.Engine.FrameworkElements.Selectors;assembly=UIX.ViewController.Engine"
-    Title="GameTimeNXT"
+    Title="arcora"
     Width="1350"
     Height="1000"
     MinWidth="1350"
@@ -23,7 +23,7 @@
     ShowBigPictureButton="True"
     ShowHelpButton="True"
     Style="{StaticResource GTNWindowStyle}"
-    Subtitle="BETA"
+    Subtitle="beta"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
 

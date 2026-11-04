@@ -57,14 +57,16 @@ namespace GameTimeNext.Core.Framework.DataBase
         }
 
         /// <summary>
-        /// Writes the entry into T1SYLOG. Throws if the log database is not open or the insert fails; the caller falls back then.
+        /// Writes the entry into T1SYLOG. Returns false if the log database is not open (e.g. after it was closed on exit),
+        /// throws if the insert fails; the caller falls back in both cases.
         /// </summary>
-        public void InsertT1sylog(UIXLogEntry entry)
+        public bool InsertT1sylog(UIXLogEntry entry)
         {
             lock (SyncRoot)
             {
+                // No exception here: entries after the close on exit are expected (background processes still finishing)
                 if (_connection == null || _connection.State != ConnectionState.Open)
-                    throw new InvalidOperationException("The log database is not open.");
+                    return false;
 
                 using var command = new SQLiteCommand("INSERT INTO T1SYLOG (LGTS, LGTY, LGSR, LGMS, LGEX, LGCL, LGST) VALUES (@LGTS, @LGTY, @LGSR, @LGMS, @LGEX, @LGCL, @LGST);", _connection);
 
@@ -77,6 +79,7 @@ namespace GameTimeNext.Core.Framework.DataBase
                 command.Parameters.AddWithValue("@LGST", (object?)entry.StackTrace ?? DBNull.Value);
 
                 command.ExecuteNonQuery();
+                return true;
             }
         }
 
