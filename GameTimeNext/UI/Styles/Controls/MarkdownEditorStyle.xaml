@@ -1,7 +1,8 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:uixmd="clr-namespace:UIX.ViewController.Engine.FrameworkElements.Markdown;assembly=UIX.ViewController.Engine">
+    xmlns:uixmd="clr-namespace:UIX.ViewController.Engine.FrameworkElements.Markdown;assembly=UIX.ViewController.Engine"
+    xmlns:uixprops="clr-namespace:UIX.ViewController.Engine.AttachedProperties;assembly=UIX.ViewController.Engine">
 
     <!--  Edit / Preview switch of the Markdown editor: segments on an input surface, the active one on the selection glass  -->
     <Style x:Key="MarkdownEditor.TabButton" TargetType="{x:Type ToggleButton}">
@@ -187,6 +188,12 @@
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Foreground" Value="{DynamicResource Brush.TextDisabled}" />
                             <Setter TargetName="Bd" Property="Opacity" Value="0.65" />
+                        </Trigger>
+
+                        <!--  Marked by the engine (red adorner on top): no hover / focus outline next to the mark  -->
+                        <Trigger Property="uixprops:UIXFieldValidation.HasError" Value="True">
+                            <Setter TargetName="HoverRim" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="FocusRim" Property="Visibility" Value="Collapsed" />
                         </Trigger>
 
                         <Trigger Property="Validation.HasError" Value="True">

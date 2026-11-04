@@ -1,7 +1,8 @@
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:uixcb="clr-namespace:UIX.ViewController.Engine.FrameworkElements.ComboBoxes;assembly=UIX.ViewController.Engine">
+    xmlns:uixcb="clr-namespace:UIX.ViewController.Engine.FrameworkElements.ComboBoxes;assembly=UIX.ViewController.Engine"
+    xmlns:uixprops="clr-namespace:UIX.ViewController.Engine.AttachedProperties;assembly=UIX.ViewController.Engine">
 
     <!--  Same values as the Input/Popup/Item tokens (ControlTokens.xaml)  -->
     <SolidColorBrush x:Key="Brush.ComboBox.PopupBackground" Color="#FF17171D" />
@@ -207,9 +208,9 @@
                             </Grid>
                         </Border>
 
-                        <Border Style="{StaticResource Input.HoverRim}" />
-                        <Border Style="{StaticResource Input.FocusRim}" />
-                        <Border Style="{StaticResource Input.OpenRim}" />
+                        <Border x:Name="HoverRim" Style="{StaticResource Input.HoverRim}" />
+                        <Border x:Name="FocusRim" Style="{StaticResource Input.FocusRim}" />
+                        <Border x:Name="OpenRim" Style="{StaticResource Input.OpenRim}" />
 
                         <Popup
                             x:Name="Popup"
@@ -240,6 +241,13 @@
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Foreground" Value="{DynamicResource Brush.TextDisabled}" />
                             <Setter TargetName="OuterBorder" Property="Opacity" Value="0.65" />
+                        </Trigger>
+
+                        <!--  Marked by the engine (red adorner on top): no hover / focus outline next to the mark  -->
+                        <Trigger Property="uixprops:UIXFieldValidation.HasError" Value="True">
+                            <Setter TargetName="HoverRim" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="FocusRim" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="OpenRim" Property="Visibility" Value="Collapsed" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

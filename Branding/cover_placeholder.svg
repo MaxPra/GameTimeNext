@@ -1,11 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="600" height="900" viewBox="0 0 600 900">
-  <!-- Placeholder cover (2:3) for profiles without a fitting cover: the glass cover of the app icon, G line only started -->
+  <!-- Placeholder cover (2:3) for profiles without a fitting cover: the first "a" of the wordmark (same geometry and line as the app icon) with its light progress segment -->
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#1D1D27"/>
       <stop offset="1" stop-color="#0A0A0E"/>
     </linearGradient>
-    <radialGradient id="ambient" cx="300" cy="560" r="420" gradientUnits="userSpaceOnUse">
+    <radialGradient id="ambient" cx="300" cy="450" r="420" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#3498E5" stop-opacity="0.30"/>
       <stop offset="0.6" stop-color="#2289DA" stop-opacity="0.08"/>
       <stop offset="1" stop-color="#3498E5" stop-opacity="0"/>
@@ -18,26 +18,22 @@
       <stop offset="0.6" stop-color="#000000" stop-opacity="0"/>
       <stop offset="1" stop-color="#000000" stop-opacity="0.55"/>
     </radialGradient>
-    <linearGradient id="glass" x1="343" y1="292" x2="673" y2="732" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.10"/>
-      <stop offset="0.55" stop-color="#FFFFFF" stop-opacity="0.03"/>
-      <stop offset="1" stop-color="#15629E" stop-opacity="0.28"/>
+    <linearGradient id="line" x1="0" y1="-114" x2="0" y2="114" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#5DB6F3"/>
+      <stop offset="1" stop-color="#2A8FDF"/>
     </linearGradient>
-    <linearGradient id="glassEdge" x1="343" y1="292" x2="673" y2="732" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.45"/>
-      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0.08"/>
+    <linearGradient id="segment" x1="20" y1="0" x2="120" y2="-100" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#BFE4FF"/>
+      <stop offset="1" stop-color="#8ED1FA"/>
     </linearGradient>
-    <linearGradient id="line" x1="343" y1="292" x2="343" y2="560" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#7CC8F7"/>
-      <stop offset="1" stop-color="#3498E5"/>
-    </linearGradient>
-    <radialGradient id="tip" cx="0.5" cy="0.5" r="0.5">
-      <stop offset="0" stop-color="#BFE4FF" stop-opacity="0.9"/>
-      <stop offset="1" stop-color="#3498E5" stop-opacity="0"/>
-    </radialGradient>
     <filter id="blur" x="-30%" y="-30%" width="160%" height="160%">
-      <feGaussianBlur stdDeviation="18"/>
+      <feGaussianBlur stdDeviation="9"/>
     </filter>
+    <!-- Keeps the cuts dark: the glow is left out there -->
+    <mask id="cuts" maskUnits="userSpaceOnUse" x="-200" y="-300" width="700" height="600">
+      <rect x="-200" y="-300" width="700" height="600" fill="#FFFFFF"/>
+      <path d="M 30.9,-22.3 L 3.9,-29.5 M 136.3,-83.1 L 143.5,-110.1" stroke="#000000" stroke-width="12"/>
+    </mask>
   </defs>
 
   <!-- Background -->
@@ -45,31 +41,17 @@
   <rect width="600" height="900" fill="url(#ambient)"/>
   <rect width="600" height="900" fill="url(#ambientTop)"/>
 
-  <!-- Same geometry as icon_large.svg, centered on the cover -->
-  <g transform="translate(300 450) scale(0.98) translate(-480 -468)">
-    <!-- Library cards behind -->
-    <rect x="263" y="204" width="278" height="370" rx="46" fill="#FFFFFF" fill-opacity="0.025" stroke="#FFFFFF" stroke-opacity="0.07" stroke-width="3"/>
-    <rect x="303" y="248" width="304" height="405" rx="50" fill="#FFFFFF" fill-opacity="0.035" stroke="#FFFFFF" stroke-opacity="0.11" stroke-width="3"/>
-
-    <!-- Front cover (glass) -->
-    <rect x="343" y="292" width="330" height="440" rx="56" fill="#0E0E14"/>
-    <rect x="343" y="292" width="330" height="440" rx="56" fill="url(#glass)" stroke="url(#glassEdge)" stroke-width="3"/>
-
-    <!-- Track of the whole mark (G with T and N), not played yet -->
-    <path d="M 595 292 L 399 292 A 56 56 0 0 0 343 348 L 343 676 A 56 56 0 0 0 399 732 L 617 732 A 56 56 0 0 0 673 676 L 673 551 A 30 30 0 0 0 643 521 L 423 521 M 548 521 L 548 732 M 548 521 L 657 716"
-          fill="none" stroke="#FFFFFF" stroke-opacity="0.035" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"/>
-
-    <!-- Started progress line: glow, then line (first part of the G only) -->
-    <g filter="url(#blur)" opacity="0.65">
-      <path d="M 595 292 L 399 292 A 56 56 0 0 0 343 348 L 343 554"
-            fill="none" stroke="#3498E5" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"/>
-      <circle cx="673" cy="292" r="25" fill="#3498E5"/>
+  <!-- The "a", centered on the cover -->
+  <g transform="translate(140 450) scale(1.4)" fill="none" stroke-width="28">
+    <g mask="url(#cuts)">
+      <g filter="url(#blur)" opacity="0.55" stroke="#3498E5">
+        <path d="M 15.5,-17.4 A 100,100 0 1 0 148.2,-94.0 M 214,0 L 214,100" stroke-linecap="round"/>
+        <path d="M 131.4,-98.5 A 100,100 0 0 0 20.0,-34.2"/>
+      </g>
     </g>
-    <path d="M 595 292 L 399 292 A 56 56 0 0 0 343 348 L 343 554"
-          fill="none" stroke="url(#line)" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"/>
-    <circle cx="673" cy="292" r="25" fill="#8ED1FA"/>
-    <!-- Leading tip of the progress line -->
-    <circle cx="343" cy="554" r="34" fill="url(#tip)" opacity="0.6"/>
+    <path d="M 15.5,-17.4 A 100,100 0 1 0 148.2,-94.0" stroke="url(#line)"/>
+    <path d="M 214,0 L 214,100" stroke="url(#line)" stroke-linecap="round"/>
+    <path d="M 131.4,-98.5 A 100,100 0 0 0 20.0,-34.2" stroke="url(#segment)"/>
   </g>
 
   <rect width="600" height="900" fill="url(#vignette)"/>

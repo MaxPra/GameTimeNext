@@ -30,7 +30,7 @@
     <!-- Keeps the cuts dark: the glow is left out there -->
     <mask id="cuts" maskUnits="userSpaceOnUse" x="-200" y="-300" width="700" height="600">
       <rect x="-200" y="-300" width="700" height="600" fill="#FFFFFF"/>
-      <path d="M 46.4,-18.1 L -11.6,-33.6 M 132.1,-67.6 L 147.6,-125.6" stroke="#000000" stroke-width="12"/>
+      <path d="M 30.9,-22.3 L 3.9,-29.5 M 136.3,-83.1 L 143.5,-110.1" stroke="#000000" stroke-width="12"/>
     </mask>
   </defs>
 

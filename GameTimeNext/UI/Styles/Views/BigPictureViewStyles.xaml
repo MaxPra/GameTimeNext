@@ -206,33 +206,68 @@
 
     <!--  ========== Top bar ==========  -->
 
-    <!--  Round glass button of the top bar (search, filter, menu, exit) for mouse users  -->
+    <!--
+        The mark as a vector (first "a" of Branding/wordmark.svg), so it stays sharp at every size of the TV view.
+        An .ico as Image source would show its first frame (16 px) scaled up.
+    -->
+    <DrawingImage x:Key="BigPicture.Mark">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <GeometryDrawing Geometry="M 15.5,-17.4 A 100,100 0 1 0 148.2,-94.0">
+                    <GeometryDrawing.Pen>
+                        <Pen Thickness="28">
+                            <Pen.Brush>
+                                <LinearGradientBrush MappingMode="Absolute" StartPoint="0,-114" EndPoint="0,114">
+                                    <GradientStop Offset="0" Color="#5DB6F3" />
+                                    <GradientStop Offset="1" Color="#2A8FDF" />
+                                </LinearGradientBrush>
+                            </Pen.Brush>
+                        </Pen>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Geometry="M 214,0 L 214,100">
+                    <GeometryDrawing.Pen>
+                        <Pen EndLineCap="Round" Thickness="28">
+                            <Pen.Brush>
+                                <LinearGradientBrush MappingMode="Absolute" StartPoint="0,-114" EndPoint="0,114">
+                                    <GradientStop Offset="0" Color="#5DB6F3" />
+                                    <GradientStop Offset="1" Color="#2A8FDF" />
+                                </LinearGradientBrush>
+                            </Pen.Brush>
+                        </Pen>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Geometry="M 131.4,-98.5 A 100,100 0 0 0 20.0,-34.2">
+                    <GeometryDrawing.Pen>
+                        <Pen Thickness="28">
+                            <Pen.Brush>
+                                <LinearGradientBrush MappingMode="Absolute" StartPoint="20,0" EndPoint="120,-100">
+                                    <GradientStop Offset="0" Color="#BFE4FF" />
+                                    <GradientStop Offset="1" Color="#8ED1FA" />
+                                </LinearGradientBrush>
+                            </Pen.Brush>
+                        </Pen>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+
+    <!--  Glass button of the top bar (search, filter, menu, exit) for mouse users: the template of all buttons, like "+" in the tab bar of the main window  -->
     <Style x:Key="BigPicture.TopBarButton" TargetType="Button">
         <Setter Property="Width" Value="48" />
         <Setter Property="Height" Value="48" />
         <Setter Property="Margin" Value="12,0,0,0" />
+        <Setter Property="Padding" Value="0" />
         <Setter Property="Focusable" Value="False" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="Button">
-                    <Border
-                        x:Name="Surface"
-                        Background="{StaticResource Brush.Card.Background}"
-                        BorderBrush="{StaticResource Brush.Card.Border}"
-                        BorderThickness="1"
-                        CornerRadius="24">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Surface" Property="Background" Value="{StaticResource Brush.Card.BackgroundHover}" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
+        <Setter Property="Background" Value="{StaticResource Brush.Button.Glass}" />
+        <Setter Property="BorderBrush" Value="{StaticResource Brush.Button.GlassRim}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Template" Value="{StaticResource Template.Button}" />
     </Style>
 
     <!--  Small glass label, e.g. an active filter  -->
@@ -243,15 +278,18 @@
         <Setter Property="Margin" Value="16,0,0,0" />
         <Setter Property="Padding" Value="12,5" />
         <Setter Property="VerticalAlignment" Value="Center" />
-        <Setter Property="CornerRadius" Value="14" />
+        <Setter Property="Background" Value="{StaticResource Brush.Tab.TrackGlass}" />
+        <Setter Property="BorderBrush" Value="{StaticResource Brush.Button.GlassRim}" />
+        <Setter Property="CornerRadius" Value="12" />
     </Style>
 
     <!--  ========== Pivots (tab bar of the main window in TV size) ==========  -->
 
+    <!--  Same glass as the tab bar of the main window (ModernTabControlStyle): dark translucent track, diagonal rim, light in the corners (layers in the view)  -->
     <Style x:Key="BigPicture.PivotBar" TargetType="Border">
         <Setter Property="Padding" Value="4" />
-        <Setter Property="Background" Value="{StaticResource Brush.Input.Background}" />
-        <Setter Property="BorderBrush" Value="{StaticResource Brush.Card.Border}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="{StaticResource Brush.Button.GlassRim}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="CornerRadius" Value="12" />
         <Setter Property="VerticalAlignment" Value="Center" />
@@ -273,6 +311,13 @@
                             CornerRadius="9" />
 
                         <Border
+                            x:Name="HoverSurface"
+                            Background="{StaticResource Brush.Item.Hover}"
+                            CornerRadius="9"
+                            IsHitTestVisible="False"
+                            Opacity="0" />
+
+                        <Border
                             x:Name="Underline"
                             Width="28"
                             Height="3"
@@ -292,15 +337,41 @@
                             Text="{Binding Title}" />
                     </Grid>
                     <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Surface" Property="Background" Value="{StaticResource Brush.Item.Hover}" />
-                        </Trigger>
                         <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                            <Setter TargetName="Surface" Property="Background" Value="{StaticResource Brush.Card.BackgroundHover}" />
-                            <Setter TargetName="Surface" Property="BorderBrush" Value="{StaticResource Brush.Card.Border}" />
+                            <Setter TargetName="Surface" Property="Background" Value="{StaticResource Brush.Item.Selected}" />
+                            <Setter TargetName="Surface" Property="BorderBrush" Value="{StaticResource Brush.Button.GlassRim}" />
                             <Setter TargetName="Underline" Property="Opacity" Value="1" />
                             <Setter TargetName="Title" Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
                         </DataTrigger>
+                        <!--  Hover fades like the tabs of the main window; the selected pivot has its surface instead  -->
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource TemplatedParent}}" Value="True" />
+                                <Condition Binding="{Binding IsSelected}" Value="False" />
+                            </MultiDataTrigger.Conditions>
+                            <MultiDataTrigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="HoverSurface"
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="1"
+                                            Duration="0:0:0.2" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </MultiDataTrigger.EnterActions>
+                            <MultiDataTrigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="HoverSurface"
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="0"
+                                            Duration="0:0:0.26" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </MultiDataTrigger.ExitActions>
+                        </MultiDataTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
