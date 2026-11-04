@@ -478,7 +478,8 @@
         <Setter Property="Height" Value="Auto" />
         <Setter Property="MinHeight" Value="{StaticResource Control.Height}" />
         <Setter Property="Margin" Value="0" />
-        <Setter Property="Padding" Value="14,6" />
+        <!--  No vertical padding: the height comes from MinHeight, so a button is as high as a text box (text line + TextBlock margin would exceed it)  -->
+        <Setter Property="Padding" Value="14,0" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
         <Setter Property="Background" Value="{StaticResource Brush.Button.Glass}" />
         <Setter Property="BorderBrush" Value="{StaticResource Brush.Button.GlassRim}" />

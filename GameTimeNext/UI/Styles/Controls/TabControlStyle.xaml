@@ -4,6 +4,9 @@
     xmlns:uiFramework="clr-namespace:GameTimeNext.Core.Framework.UI"
     xmlns:uixsel="clr-namespace:UIX.ViewController.Engine.FrameworkElements.Selectors;assembly=UIX.ViewController.Engine" xmlns:uixprops="clr-namespace:UIX.ViewController.Engine.AttachedProperties;assembly=UIX.ViewController.Engine">
 
+    <!--  Glass track: dark tint, so the muted tab texts stay readable on a bright cover behind it  -->
+    <SolidColorBrush x:Key="Brush.Tab.TrackGlass" Color="#660E0E12" />
+
     <Style x:Key="ModernTabItemStyle" TargetType="{x:Type TabItem}">
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}" />
         <Setter Property="Background" Value="Transparent" />
@@ -93,7 +96,6 @@
                         </Trigger>
 
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="HoverBg" Property="Opacity" Value="1" />
                             <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
                             <Setter TargetName="IconText" Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
                             <Setter TargetName="HeaderPresenter" Property="TextElement.Foreground" Value="{DynamicResource Brush.TextPrimary}" />
@@ -102,7 +104,6 @@
 
                         <Trigger Property="IsSelected" Value="True">
                             <Setter Property="Foreground" Value="White" />
-                            <Setter TargetName="HoverBg" Property="Opacity" Value="0" />
                             <Setter TargetName="IconText" Property="Foreground" Value="White" />
                             <Setter TargetName="HeaderPresenter" Property="TextElement.Foreground" Value="White" />
                             <Setter TargetName="HeaderPresenter" Property="TextBlock.Foreground" Value="White" />
@@ -124,6 +125,44 @@
                             <Setter TargetName="IconHost" Property="Visibility" Value="Collapsed" />
                         </Trigger>
 
+                        <!--  Hover fades like the buttons; the selected tab has the runner instead  -->
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsMouseOver" Value="True" />
+                                <Condition Property="IsSelected" Value="False" />
+                            </MultiTrigger.Conditions>
+                            <MultiTrigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="HoverBg"
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="1"
+                                            Duration="0:0:0.2">
+                                            <DoubleAnimation.EasingFunction>
+                                                <CubicEase EasingMode="EaseOut" />
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </MultiTrigger.EnterActions>
+                            <MultiTrigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="HoverBg"
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="0"
+                                            Duration="0:0:0.26">
+                                            <DoubleAnimation.EasingFunction>
+                                                <CubicEase EasingMode="EaseOut" />
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </MultiTrigger.ExitActions>
+                        </MultiTrigger>
+
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
@@ -133,7 +172,7 @@
 
     <!--
         "+" after the last tab: small glass square, centered in the track with the same gap on all sides
-        (width follows the remaining height). Card brushes via DynamicResource: CardStyles.xaml is merged later.
+        (width follows the remaining height). Same template as all buttons, so glass, hover and pressed are the same.
     -->
     <Geometry x:Key="TabAddButton.Glyph">M4.5,0 L4.5,9 M0,4.5 L9,4.5</Geometry>
     <Geometry x:Key="TabFavoritesButton.Glyph">M0.5,2.5 L4.5,6.5 L8.5,2.5</Geometry>
@@ -142,8 +181,12 @@
     <Style x:Key="TabAddButtonStyle" TargetType="{x:Type Button}">
         <Setter Property="Tag" Value="{StaticResource TabAddButton.Glyph}" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
-        <Setter Property="Background" Value="{DynamicResource Brush.Card.Background}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Card.Border}" />
+        <Setter Property="Background" Value="{StaticResource Brush.Button.Glass}" />
+        <Setter Property="BorderBrush" Value="{StaticResource Brush.Button.GlassRim}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
         <!--  No left margin: the last tab already brings the gap  -->
         <Setter Property="Margin" Value="0,6,6,6" />
         <Setter Property="VerticalAlignment" Value="Stretch" />
@@ -151,38 +194,22 @@
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Focusable" Value="False" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
-        <Setter Property="Template">
+        <Setter Property="Template" Value="{StaticResource Template.Button}" />
+        <Setter Property="ContentTemplate">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type Button}">
-                    <Border
-                        x:Name="Bg"
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="1"
-                        CornerRadius="{StaticResource Control.CornerRadius}">
-                        <Path
-                            Width="9"
-                            Height="9"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Data="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}"
-                            Stroke="{TemplateBinding Foreground}"
-                            StrokeEndLineCap="Round"
-                            StrokeLineJoin="Round"
-                            StrokeStartLineCap="Round"
-                            StrokeThickness="1.6" />
-                    </Border>
-
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Bg" Property="Background" Value="{DynamicResource Brush.Card.BackgroundHover}" />
-                            <Setter TargetName="Bg" Property="BorderBrush" Value="{DynamicResource Brush.Accent.Outline}" />
-                        </Trigger>
-                        <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="Bg" Property="Background" Value="{StaticResource Brush.Item.Selected}" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
+                <DataTemplate>
+                    <Path
+                        Width="9"
+                        Height="9"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Data="{Binding Tag, RelativeSource={RelativeSource AncestorType=Button}}"
+                        Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                        StrokeEndLineCap="Round"
+                        StrokeLineJoin="Round"
+                        StrokeStartLineCap="Round"
+                        StrokeThickness="1.6" />
+                </DataTemplate>
             </Setter.Value>
         </Setter>
     </Style>
@@ -235,17 +262,26 @@
 
                             <!--  Segmented tab track  -->
                             <!--
-                                Recessed track; the selection runner is a lighter glass surface (card look, neutral
-                                instead of accent tinted) with a thin accent line. Card brushes via DynamicResource:
-                                CardStyles.xaml is merged later.
+                                Glass track like the buttons (translucent fill, diagonal rim, light in the corners); the
+                                selection runner is a lighter glass surface with a thin accent line. Padding + rim = 3.
                             -->
+                            <Grid
+                                Grid.Row="0"
+                                Margin="12,12,12,0"
+                                IsHitTestVisible="False">
+                                <Border Background="{StaticResource Brush.Tab.TrackGlass}" CornerRadius="{StaticResource Popup.CornerRadius}" />
+                                <Border Background="{StaticResource Brush.Button.GlassLightStart}" CornerRadius="{StaticResource Popup.CornerRadius}" />
+                                <Border Background="{StaticResource Brush.Button.GlassLightEnd}" CornerRadius="{StaticResource Popup.CornerRadius}" />
+                            </Grid>
+
                             <Border
                                 x:Name="TabTrackHost"
                                 Grid.Row="0"
                                 Margin="12,12,12,0"
-                                Padding="3"
-                                Background="{StaticResource Brush.Input.Background}"
-                                BorderThickness="0"
+                                Padding="2"
+                                Background="Transparent"
+                                BorderBrush="{StaticResource Brush.Button.GlassRim}"
+                                BorderThickness="1"
                                 CornerRadius="{StaticResource Popup.CornerRadius}">
                                 <Grid x:Name="TabTrackContentHost" ClipToBounds="True">
                                     <Border
@@ -253,8 +289,8 @@
                                         Width="0"
                                         HorizontalAlignment="Left"
                                         VerticalAlignment="Stretch"
-                                        Background="{DynamicResource Brush.Card.BackgroundHover}"
-                                        BorderBrush="{DynamicResource Brush.Card.Border}"
+                                        Background="{StaticResource Brush.Item.Selected}"
+                                        BorderBrush="{StaticResource Brush.Button.GlassRim}"
                                         BorderThickness="1"
                                         CornerRadius="{StaticResource Control.CornerRadius}"
                                         IsHitTestVisible="False">
