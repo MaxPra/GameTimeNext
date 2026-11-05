@@ -396,12 +396,28 @@ namespace GameTimeNext.Core.Application.General.Controller
             ShowHelp(application, tab.Header.ToString()!);
         }
 
+        // Help cards of the welcome screen: the text comes from the application definition of the module
+        protected void EV_btnHelpProfiles() => ShowHelpOf(nameof(ProfilesApp), "Profiles");
+        protected void EV_btnHelpPlaythroughs() => ShowHelpOf("PlaythroughsApp", "Playthroughs");
+        protected void EV_btnHelpDashboard() => ShowHelpOf("DashboardApp", "Dashboard");
+        protected void EV_btnHelpScreensetups() => ShowHelpOf("ScreensetupsApp", "Screensetups");
+        protected void EV_btnHelpBigPicture() => ShowHelpOf(nameof(BigPictureApp), "Big Picture mode");
+        protected void EV_btnHelpSettings() => ShowHelpOf("SettingsApp", "Settings");
+
         private void ShowHelp(UIXApplication application, string title)
         {
-            // Read again instead of the properties loaded at the start of the app, so a changed help text shows up immediately
-            UIXAppProperties properties = UIXApplication.AppPropertiesProvider?.Read(application.AppProperties.ApplicationName) ?? application.AppProperties;
+            ShowHelpOf(application.AppProperties.ApplicationName, title);
+        }
 
-            string helpText = FnString.IsNullEmptyOrWhitespace(properties.ApplicationHelpText)
+        /// <summary>
+        /// Shows the help text of an application definition (key = class name of the application) in the help window.
+        /// </summary>
+        private void ShowHelpOf(string applicationId, string title)
+        {
+            // Read again instead of the properties loaded at the start of the app, so a changed help text shows up immediately
+            UIXAppProperties? properties = UIXApplication.AppPropertiesProvider?.Read(applicationId);
+
+            string helpText = properties is null || FnString.IsNullEmptyOrWhitespace(properties.ApplicationHelpText)
                 ? "No help is available for this application yet."
                 : properties.ApplicationHelpText;
 

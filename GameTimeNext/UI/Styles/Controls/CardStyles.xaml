@@ -82,6 +82,44 @@
         </Style.Triggers>
     </Style>
 
+    <!--  Clickable card with a Click event (Card.Interactive look, but for a Button, e.g. the help cards of the welcome screen)  -->
+    <Style
+        x:Key="Card.Button"
+        BasedOn="{StaticResource {x:Type Button}}"
+        TargetType="Button">
+        <Setter Property="Height" Value="NaN" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="Margin" Value="0,0,0,8" />
+        <Setter Property="Padding" Value="16,12" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border
+                        x:Name="bdCard"
+                        Padding="{TemplateBinding Padding}"
+                        Background="{StaticResource Brush.Card.Background}"
+                        BorderBrush="{StaticResource Brush.Card.Border}"
+                        BorderThickness="1"
+                        CornerRadius="{StaticResource Card.CornerRadius}"
+                        SnapsToDevicePixels="True">
+                        <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="bdCard" Property="Background" Value="{StaticResource Brush.Card.BackgroundHover}" />
+                            <Setter TargetName="bdCard" Property="BorderBrush" Value="{DynamicResource Brush.Accent.Outline}" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="bdCard" Property="BorderBrush" Value="{DynamicResource Brush.Accent.Outline}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!--  ===== Rows =====  -->
 
     <Style x:Key="Card.Row" TargetType="Border">
