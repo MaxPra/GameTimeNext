@@ -10,6 +10,7 @@ using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.Files;
 using GameTimeNext.Core.Framework.LauncherIntegration;
+using GameTimeNext.Core.Framework.UI;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.UserInput;
 using GameTimeNext.Core.Framework.Utils;
@@ -241,6 +242,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             GetView().cbAutoImportGames.IsChecked = _appSettings.AutoImportGames;
             GetView().cbAllowProfileSpecificStyleChanges.IsChecked = _appSettings!.AllowProfileSpecificStyleChanges;
             GetView().cbDarkTintedGlass.IsChecked = _appSettings.DarkTintedGlass;
+            GetView().cbUseAppCursor.IsChecked = _appSettings.UseAppCursor;
             GetView().cmbBackgroundSource.SelectedValue = _appSettings.BackgroundSource;
             if (GetView().cmbBackgroundSource.SelectedItem == null)
                 GetView().cmbBackgroundSource.SelectedValue = string.Empty;
@@ -320,6 +322,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             _appSettings!.AllowProfileSpecificStyleChanges = GetView().cbAllowProfileSpecificStyleChanges.IsChecked == true;
             _appSettings!.BackgroundSource = GetSelectedBackgroundSource();
             _appSettings!.DarkTintedGlass = GetView().cbDarkTintedGlass.IsChecked == true;
+            _appSettings!.UseAppCursor = GetView().cbUseAppCursor.IsChecked == true;
             _appSettings!.ProfileDetailViewPosition = GetView().cmbProfileDetailViewPosition.SelectedValue as string ?? "02";
             _appSettings!.SteamGridDbKey = GetView().txbSteamGridDbApiKey.Text;
             _appSettings!.BackupExportPath = GetView().txbBackupExportPath.Text;
@@ -524,6 +527,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
 
             FnTheme.ApplyWallpaperBackground(GetSelectedBackgroundSource());
             FnTheme.ApplyGlassTint(GetView().cbDarkTintedGlass.IsChecked == true);
+            CFCursors.Enabled = GetView().cbUseAppCursor.IsChecked == true;
 
             // An open profiles view moves its detail view to the chosen side
             if (GetApp().CallDispatcher.IsRegistered("EXEV_ProfileDetailViewPositionChanged"))

@@ -466,6 +466,8 @@
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="12" />
                                     <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="12" />
+                                    <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
                                 <Grid Grid.Row="0" HorizontalAlignment="Left">
@@ -553,6 +555,28 @@
                                         Height="36"
                                         VerticalAlignment="Center"
                                         ToolTip="Side of the profiles view on which the details of the selected profile are shown." />
+                                </Grid>
+
+                                <Grid Grid.Row="8" HorizontalAlignment="Left">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="220" />
+                                        <ColumnDefinition Width="16" />
+                                        <ColumnDefinition Width="54" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        VerticalAlignment="Center"
+                                        Foreground="{DynamicResource Brush.TextSecondary}"
+                                        Text="Own mouse cursor" />
+
+                                    <CheckBox
+                                        x:Name="cbUseAppCursor"
+                                        Grid.Column="2"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center"
+                                        ToolTip="Uses the black cursors of the app (arrow, hand, text, ...) inside its windows. Off: the cursors of Windows." />
                                 </Grid>
                             </Grid>
                         </GroupBox>

@@ -6,6 +6,7 @@ using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.Files;
 using GameTimeNext.Core.Framework.GitHub;
 using GameTimeNext.Core.Framework.LauncherIntegration;
+using GameTimeNext.Core.Framework.UI;
 using GameTimeNext.Core.Framework.Utils;
 using System.Diagnostics;
 using System.Windows;
@@ -28,6 +29,9 @@ namespace GameTimeNext
 
             // App font (Manrope) as default of every window, before the first window (splash) is created
             FnFont.ApplyAsDefault();
+
+            // App mouse cursors (only inside the windows of this app), before the first window is shown
+            CFCursors.Apply();
 
             // Ensure that only one instance is running
             if (!FnSystem.IsDebug() && !FnSystem.TryAcquireSingleInstance())
@@ -92,6 +96,7 @@ namespace GameTimeNext
             // Blurred background image (desktop wallpaper or profile cover) as base of the window background (setting)
             FnTheme.ApplyWallpaperBackground(AppEnvironment.GetAppConfig().AppSettings.BackgroundSource);
             FnTheme.ApplyGlassTint(AppEnvironment.GetAppConfig().AppSettings.DarkTintedGlass);
+            CFCursors.Enabled = AppEnvironment.GetAppConfig().AppSettings.UseAppCursor;
 
             FnLog.Add(GTNLogType.AppStart, "MainApp", "*** Initializing Application... ***");
 
