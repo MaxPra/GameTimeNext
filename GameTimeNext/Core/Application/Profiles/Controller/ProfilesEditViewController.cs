@@ -576,21 +576,6 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             }
         }
 
-        private void FillComboboxPlatformsManual()
-        {
-            UIXManualCodetable uIXManualCodetable = new UIXManualCodetable();
-
-            TXCTABD txctabd = new TXCTABD();
-            List<T1CTABD> entrys = txctabd.GetEntries("pF");
-
-            foreach (T1CTABD entry in entrys)
-            {
-                uIXManualCodetable.AddEntry(entry.TXNUM, entry.DESCR);
-            }
-
-            uIXManualCodetable.ApplyTo(GetView().cmbPlatform);
-        }
-
         private void BuildLauncherSection()
         {
             T1PROFI t1profi = GetApp().T1Profi;
@@ -925,36 +910,6 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 CFProfilesEditApp.OpenHowLongToBeatForGame(GetView().txbProfileName.Text);
 
             ShowManualEstTimesEditView();
-        }
-
-        protected void EV_btnAddPlatformWizard()
-        {
-            CodetablesEntryEditApp entryeditAppImages = GetApp().GetApplication<CodetablesEntryEditApp>("Create new image with wizard", UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
-            entryeditAppImages.RunParameters.OverrideSaveButtonText = "Next";
-            entryeditAppImages.RunParameters.ShowSkipButton = true;
-
-            entryeditAppImages.CreateNew(r =>
-            {
-                if (r.Canceled)
-                    return;
-
-                CodetablesEntryEditApp entryEditAppPlatforms = GetApp().GetApplication<CodetablesEntryEditApp>("Create new platform with wizard", UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
-                entryEditAppPlatforms.RunParameters.ShowSkipButton = true;
-                entryEditAppPlatforms.CreateNew(r =>
-                {
-                    if (r.Canceled || r.Skipped)
-                        return;
-
-                    using (SuppressRunEventPipeline())
-                    {
-                        FillComboboxPlatformsManual();
-
-                        if (GetView().cmbPlatform.Items.Count > 0)
-                            GetView().cmbPlatform.SelectedValue = r.Platform;
-                    }
-                }, "pF");
-
-            }, "iM");
         }
 
         protected void EV_btnSave()

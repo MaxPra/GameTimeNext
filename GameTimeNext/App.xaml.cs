@@ -111,6 +111,7 @@ namespace GameTimeNext
 
             // Same for T1ERMSG: error messages are only available from here on
             UIXApplication.ErrorMessageProvider = new ErrorMessageProvider();
+            UIXApplication.NewEntryProvider = new NewEntryProvider();
 
             // Delete old backups
             FnLog.Add(GTNLogType.AppStart, "MainApp", "Deleting old backups...");

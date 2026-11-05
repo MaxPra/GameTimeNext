@@ -14,11 +14,13 @@
             public const string PARF1 = "PARF1";
             public const string PACO1 = "PACO1";
             public const string PACT1 = "PACT1";
+            public const string PAAP1 = "PAAP1";
             public const string PAAC2 = "PAAC2";
             public const string PADE2 = "PADE2";
             public const string PARF2 = "PARF2";
             public const string PACO2 = "PACO2";
             public const string PACT2 = "PACT2";
+            public const string PAAP2 = "PAAP2";
             public const string NRANA = "NRANA";
             public const string EXPRT = "EXPRT";
             public const string PTOL1 = "PTOL1";

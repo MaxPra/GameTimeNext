@@ -60,8 +60,8 @@ namespace GameTimeNext.Core.Application.Codetables
             CodetablesView.ViewController = new CodetablesViewController(this);
 
             // -- Selectors
-            CodetablesView.DgCodetables.SelectorAdapter = new CodetablesView_CodetablesSelectorAdapter(this);
-            CodetablesView.DgCodetables.SelectorController = new CodetablesView_CodetablesSelectorController(this);
+            CodetablesView.dgCodetables.SelectorAdapter = new CodetablesView_CodetablesSelectorAdapter(this);
+            CodetablesView.dgCodetables.SelectorController = new CodetablesView_CodetablesSelectorController(this);
         }
 
         public override bool CanClose()

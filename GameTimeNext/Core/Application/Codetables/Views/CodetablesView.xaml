@@ -24,6 +24,8 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="16" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="12" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Border
@@ -64,7 +66,7 @@
                         Text="Text type" />
 
                     <TextBox
-                        x:Name="TxbTextType"
+                        x:Name="txbTextType"
                         Grid.Column="2"
                         Style="{StaticResource TextBox.Default}" />
                 </Grid>
@@ -85,7 +87,7 @@
                         Text="Permission" />
 
                     <uixcb:UIXComboBox
-                        x:Name="CmbPermission"
+                        x:Name="cmbPermission"
                         Grid.Column="2"
                         Height="36"
                         VerticalAlignment="Center"
@@ -97,7 +99,7 @@
                 </Grid>
 
                 <Button
-                    x:Name="BtnAddCodetable"
+                    x:Name="btnAddCodetable"
                     Grid.Row="0"
                     Grid.Column="4"
                     VerticalAlignment="Center"
@@ -112,7 +114,7 @@
                 </Button>
 
                 <Button
-                    x:Name="BtnRefresh"
+                    x:Name="btnRefresh"
                     Grid.Row="0"
                     Grid.Column="6"
                     VerticalAlignment="Center"
@@ -143,38 +145,72 @@
                         Text="Description" />
 
                     <TextBox
-                        x:Name="TxbDescription"
+                        x:Name="txbDescription"
                         Grid.Column="2"
                         Style="{StaticResource TextBox.Default}" />
                 </Grid>
             </Grid>
         </Border>
 
-        <uixsel:UIXDataGrid
-            x:Name="DgCodetables"
-            Grid.Row="2"
-            AutoGenerateColumns="False"
-            CanUserAddRows="False"
-            CanUserDeleteRows="False"
-            CanUserResizeRows="False"
-            HeadersVisibility="Column"
-            IsReadOnly="True"
-            SelectionMode="Single"
-            SelectionUnit="FullRow">
-            <uixsel:UIXDataGrid.Columns>
-                <DataGridTextColumn
-                    Width="0.2*"
-                    Binding="{Binding COTXTYP}"
-                    Header="Text type" />
-                <DataGridTextColumn
-                    Width="0.5*"
-                    Binding="{Binding CODESCR}"
-                    Header="Designation" />
-                <DataGridTextColumn
-                    Width="*"
-                    Binding="{Binding COPERMI}"
-                    Header="Permission" />
-            </uixsel:UIXDataGrid.Columns>
-        </uixsel:UIXDataGrid>
+        <Grid Grid.Row="2">
+            <uixsel:UIXDataGrid
+                x:Name="dgCodetables"
+                AutoGenerateColumns="False"
+                CanUserAddRows="False"
+                CanUserDeleteRows="False"
+                CanUserResizeRows="False"
+                HeadersVisibility="Column"
+                IsReadOnly="True"
+                SelectionMode="Single"
+                SelectionUnit="FullRow">
+                <uixsel:UIXDataGrid.Columns>
+                    <DataGridTextColumn
+                        Width="0.2*"
+                        Binding="{Binding COTXTYP}"
+                        Header="Text type" />
+                    <DataGridTextColumn
+                        Width="0.5*"
+                        Binding="{Binding CODESCR}"
+                        Header="Designation" />
+                    <DataGridTextColumn
+                        Width="*"
+                        Binding="{Binding COPERMI}"
+                        Header="Permission" />
+                </uixsel:UIXDataGrid.Columns>
+            </uixsel:UIXDataGrid>
+
+            <!--  Empty state: shown by the selector adapter when nothing matches  -->
+            <StackPanel
+                x:Name="pnlNoResults"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                IsHitTestVisible="False"
+                Visibility="Collapsed">
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    FontFamily="{StaticResource Font.Icons}"
+                    FontSize="28"
+                    Foreground="{DynamicResource Brush.TextSecondary}"
+                    Text="&#xE721;" />
+                <TextBlock
+                    x:Name="txNoResults"
+                    Margin="0,12,0,0"
+                    HorizontalAlignment="Center"
+                    Style="{StaticResource Text.Subtitle}" />
+                <TextBlock
+                    Margin="0,4,0,0"
+                    HorizontalAlignment="Center"
+                    Style="{StaticResource Text.Hint}"
+                    Text="Change the selection and press Refresh." />
+            </StackPanel>
+        </Grid>
+
+        <!--  Footer: the way to open a codetable  -->
+        <TextBlock
+            Grid.Row="4"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Center"
+            Style="{StaticResource Text.Caption}"
+            Text="Double click  Open entries     Right click  More actions" />
     </Grid>
 </ui:GTNWindowView>

@@ -650,3 +650,31 @@ MenusApp;Menus;;1;2026-10-28 19:19:14;prage;2026-10-28 19:19:14;prage
 MetadataApp;Metadata App;;1;2026-10-28 19:19:35;prage;2026-10-28 19:19:35;prage
 ScreensetupsApp;Screensetups;;1;2026-10-28 19:20:07;prage;2026-10-28 19:20:07;prage
 DiagnosticsApp;Diagnostics;;1;2026-10-30 12:00:00;prage;2026-10-30 12:00:00;prage
+SelectionListsApp;Selection Lists;"# Selection Lists
+
+Selection Lists are the **choices** you can pick from in {ApplicationName}, e.g. the **platform** of a game. Here you can add your own choices, change them and delete them.
+
+## How it works
+
+1. Pick a list on the left, e.g. *Platform*.
+2. The right side shows everything you can choose in that list.
+3. Click **Add** to create a new entry. Give it a **name** and fill in the other fields, e.g. the **symbol** of a platform.
+
+| Action | How |
+|---|---|
+| **Add** | Click **Add** above the entries |
+| **Edit** | Double click an entry, or right click and choose **Edit** |
+| **Delete** | Select an entry and press **Del**, or right click and choose **Delete** |
+
+> [!NOTE]
+> Entries with a lock come with {ApplicationName}. You can see them, but you can't change or delete them.
+
+## Example: your own platform
+
+A platform needs a symbol, so create the symbol first:
+
+1. Copy a small image (PNG, ideally square) into the symbol folder `%APPDATA%\CryloudStudios\{ApplicationName}\data\imagesAndSymbols\user`.
+2. Open the list **Images / Symbols**, click **Add**, enter a name and the path of the image, e.g. `\user\switch.png`.
+3. Open the list **Platform**, click **Add**, enter the name, choose the type and your new symbol.
+
+Your platform is now available in the profile of a game.";1;2026-11-05 12:00:00;prage;2026-11-05 12:00:00;prage
