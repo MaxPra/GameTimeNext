@@ -111,9 +111,6 @@ namespace GameTimeNext.Core.Application.TableObjects
         [UIXSignatureField(29)]
         public string AutoImportExcludedLaunchers { get; set; }
 
-        /// <summary>Own black mouse cursors of the app inside its windows (CFCursors); off uses the Windows cursors.</summary>
-        [UIXSignatureField(30)]
-        public bool UseAppCursor { get; set; }
 
         public AppSettings()
         {
@@ -127,7 +124,6 @@ namespace GameTimeNext.Core.Application.TableObjects
             ProfileDetailViewPosition = "02";
             AutoImportGames = false;
             AutoImportExcludedLaunchers = string.Empty;
-            UseAppCursor = true;
 
             MonitoringKeyActive = false;
             ShowToastNotification = false;
