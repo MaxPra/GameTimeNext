@@ -82,14 +82,6 @@ namespace GameTimeNext.Core.Application.General.Controller
             // lower than Render (7) → rendering runs first.
             await System.Windows.Application.Current.Dispatcher.InvokeAsync(() => { }, DispatcherPriority.Background);
 
-            if (GetApp().SplashScreen is not null)
-            {
-                GetApp().SplashScreen?.Close();
-
-                if (ReferenceEquals(System.Windows.Application.Current.MainWindow, GetApp().SplashScreen))
-                    System.Windows.Application.Current.MainWindow = null;
-            }
-
             // Set WindowState
             _ = GetView().Dispatcher.BeginInvoke(() =>
             {
@@ -103,6 +95,14 @@ namespace GameTimeNext.Core.Application.General.Controller
 
                 // Only reveal the window once it has its final state (no flicker)
                 GetApp().SetMainWindowCloaked(false);
+
+                // The window was only shown hidden before, so Windows hasn't activated it: bring it to the front now, while
+                // the splash (same process) still has the foreground, otherwise it only shows up in the taskbar. The splash
+                // lives on its own thread (it is not the MainWindow of the application) and is closed afterwards.
+                if (!GetApp().StartMinimized)
+                    FnForeground.BringToFront(GetView());
+
+                GetApp().SplashScreen?.Close();
             }, DispatcherPriority.ApplicationIdle);
 
             System.Windows.Application.Current.ShutdownMode = ShutdownMode.OnMainWindowClose;

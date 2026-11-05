@@ -21,6 +21,7 @@ namespace GameTimeNext
     public partial class App : Application
     {
         private LogProvider _logProvider = null!;
+        private bool isSplashProcess;
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -28,6 +29,15 @@ namespace GameTimeNext
 
             // App font (Manrope) as default of every window, before the first window (splash) is created
             FnFont.ApplyAsDefault();
+
+            // Started as splash process by the application (see SplashHost): only shows the splash, nothing else
+            if (SplashHost.IsSplashProcess(e.Args))
+            {
+                isSplashProcess = true;
+                AppEnvironment.AppVersion.Get();
+                SplashHost.RunAsSplashProcess(this, e.Args);
+                return;
+            }
 
             // Ensure that only one instance is running
             if (!FnSystem.IsDebug() && !FnSystem.TryAcquireSingleInstance())
@@ -45,13 +55,11 @@ namespace GameTimeNext
             ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
             AppEnvironment.AppVersion.Get();
-            Core.Application.General.SplashScreen? splash = null;
+            SplashHost? splash = null;
 
+            // The splash is its own process, so its animation is not stalled by the start below
             if (!startMinimized)
-            {
-                splash = new Core.Application.General.SplashScreen { Title = AppConfig.Root.ApplicationName };
-                splash.Show();
-            }
+                splash = SplashHost.Start(FnSystem.IsDebug());
 
             InitializeApp();
 
@@ -140,6 +148,10 @@ namespace GameTimeNext
 
         protected override void OnExit(ExitEventArgs e)
         {
+            // The splash process has neither a database nor background processes
+            if (isSplashProcess)
+                return;
+
             FnLog.AddInfo("MainApp", "*** Shutdown initiated ***");
 
             // A game paused by the Big Picture mode must never stay suspended
