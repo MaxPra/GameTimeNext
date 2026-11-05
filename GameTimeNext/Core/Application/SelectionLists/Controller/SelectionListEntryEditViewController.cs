@@ -39,7 +39,13 @@ namespace GameTimeNext.Core.Application.SelectionLists.Controller
 
         protected override void BuildFirstImpl()
         {
-            GetView().txbName.Focus();
+            // A delivered entry keeps its name; only its parameters can be changed (see CFSelectionListsApp.CanOpenEntry)
+            bool nameLocked = !GetView().ViewIndicator.Contains("CN") && !CFSelectionListsApp.IsEntryEditable(GetApp().List!, GetApp().T1CTABD!);
+
+            GetView().txbName.IsEnabled = !nameLocked;
+
+            if (!nameLocked)
+                GetView().txbName.Focus();
 
             BuildParameters();
         }

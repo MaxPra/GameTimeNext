@@ -27,27 +27,32 @@ namespace GameTimeNext.Core.Application.SelectionLists.Selectors
 
             if (list == null)
             {
-                ShowEmptyState(null, 0);
+                ShowEmptyState(null, 0, false);
                 return new List<SelectionListEntryDataGridRow>();
             }
 
-            List<SelectionListEntryDataGridRow> rows = await Task.Run(() => BuildRows(list), token);
+            // Read on the UI thread, the rows are built in the background
+            string search = GetView().txbSearch.Text.Trim();
+
+            List<SelectionListEntryDataGridRow> rows = await Task.Run(() => BuildRows(list, search), token);
 
             // A newer load cancels this one: then the state of the view is left to it
             if (!token.IsCancellationRequested)
-                ShowEmptyState(list, rows.Count);
+                ShowEmptyState(list, rows.Count, !FnString.IsNullEmptyOrWhitespace(search));
 
             return rows;
         }
 
-        private void ShowEmptyState(T1CTABH? list, int count)
+        private void ShowEmptyState(T1CTABH? list, int count, bool isSearching)
         {
-            GetView().txNoEntries.Text = list == null ? "No lists available" : "Nothing here yet";
-            GetView().txNoEntriesHint.Text = list == null ? string.Empty : "Click \"Add\" to create the first entry.";
+            GetView().txNoEntries.Text = list == null ? "No lists available" : isSearching ? "No matching entries" : "Nothing here yet";
+            GetView().txNoEntriesHint.Text = list == null
+                ? string.Empty
+                : isSearching ? "Try another name." : "Click \"Add\" to create the first entry.";
             FnControls.SetVisible(GetView().pnlNoEntries, count == 0);
         }
 
-        private List<SelectionListEntryDataGridRow> BuildRows(T1CTABH list)
+        private List<SelectionListEntryDataGridRow> BuildRows(T1CTABH list, string search)
         {
             List<SelectionListEntryDataGridRow> rows = new List<SelectionListEntryDataGridRow>();
 
@@ -68,6 +73,9 @@ namespace GameTimeNext.Core.Application.SelectionLists.Selectors
                     string txnum = UIXQuery.GetString(reader, K1CTABD.Name, K1CTABD.Fields.TXNUM, string.Empty);
 
                     T1CTABD t1ctabd = txctabd.Read(txtyp, txnum);
+
+                    if (!FnString.IsNullEmptyOrWhitespace(search) && !t1ctabd.DESCR.Contains(search, StringComparison.CurrentCultureIgnoreCase))
+                        continue;
 
                     SelectionListEntryDataGridRow row = GetSelector().CreateNewRow<SelectionListEntryDataGridRow>();
                     row.CONAME = t1ctabd.DESCR;

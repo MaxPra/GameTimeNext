@@ -18,6 +18,7 @@ using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.Utils;
 using System.Diagnostics;
 using System.IO;
+using System.Text.Json.Serialization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -229,19 +230,22 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             // Determine the assigned groups
             T1PROFI t1profi = new TXPROFI().Read(pfid);
 
-            List<long> linkedTagIds = TFPROFI.GetAllLinkedTags(t1profi).Select(t => t.GRID).ToList();
+            List<string> linkedTagKeys = TFPROFI.GetAllLinkedTags(t1profi)
+                .Where(t => !TFCTABD.IsTagHidden(t))
+                .Select(t => t.TXNUM)
+                .ToList();
 
             // Reset everything else, so the started game is guaranteed to be visible
             FilterCache filter = new FilterCache();
             filter.ShowArchived = t1profi.ARCH;
 
             // Only show games sharing a tag with the started game (if it has tags)
-            if (linkedTagIds.Count > 0)
+            if (linkedTagKeys.Count > 0)
             {
                 filter.ExcludeUntagged = true;
-                filter.ExcludedTagIds = new TXGROUP().ReadAll()
-                    .Where(g => g.GTYP == GroupType.Tag && !linkedTagIds.Contains(g.GRID))
-                    .Select(g => g.GRID)
+                filter.ExcludedTagKeys = TFCTABD.GetTags(includeHidden: false)
+                    .Where(t => !linkedTagKeys.Contains(t.TXNUM))
+                    .Select(t => t.TXNUM)
                     .ToList();
             }
 
@@ -448,13 +452,21 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         /// </summary>
         public class FilterCache
         {
-            private List<long> _excludedTagIds = new List<long>();
+            private List<string> _excludedTagKeys = new List<string>();
             private List<string> _excludedOptions = new List<string>();
 
             /// <summary>
-            /// GRIDs of unchecked tags
+            /// Keys (codetable tG) of unchecked tags
             /// </summary>
-            public List<long> ExcludedTagIds { get => _excludedTagIds; set => _excludedTagIds = value ?? new List<long>(); }
+            public List<string> ExcludedTagKeys { get => _excludedTagKeys; set => _excludedTagKeys = value ?? new List<string>(); }
+
+            /// <summary>
+            /// Legacy: GRIDs of unchecked tags before the tags became codetable entries. Only read by the migration
+            /// (MigTask_100b_012), which converts them to ExcludedTagKeys and sets this to null (then it isn't written any more).
+            /// </summary>
+            [JsonPropertyName("ExcludedTagIds")]
+            [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+            public List<long>? LegacyExcludedTagIds { get; set; }
 
             /// <summary>
             /// Hides games without any tag

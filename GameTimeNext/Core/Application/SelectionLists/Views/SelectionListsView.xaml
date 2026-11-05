@@ -17,6 +17,11 @@
     mc:Ignorable="d">
 
     <Grid Style="{StaticResource View.Root}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="16" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="300" />
             <ColumnDefinition Width="16" />
@@ -25,6 +30,8 @@
 
         <!--  The lists the user may extend  -->
         <Border
+            Grid.Row="0"
+            Grid.RowSpan="3"
             Grid.Column="0"
             Padding="16"
             Style="{StaticResource Card}">
@@ -64,8 +71,48 @@
             </Grid>
         </Border>
 
+        <!--  Search in the entries of the chosen list  -->
+        <Border
+            Grid.Row="0"
+            Grid.Column="2"
+            Padding="16"
+            Style="{StaticResource Card}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <TextBox
+                    x:Name="txbSearch"
+                    Grid.Column="0"
+                    Width="320"
+                    VerticalAlignment="Center"
+                    Style="{StaticResource TextBox.Default}"
+                    Tag="Search for name"
+                    ToolTip="Search for name" />
+
+                <Button
+                    x:Name="btnRefresh"
+                    Grid.Column="2"
+                    VerticalAlignment="Center"
+                    Style="{StaticResource Button.Icon}"
+                    ToolTip="Refresh entries">
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontFamily="{StaticResource Font.Icons}"
+                        FontSize="14"
+                        Text="&#xE72C;" />
+                </Button>
+            </Grid>
+        </Border>
+
         <!--  The entries of the chosen list  -->
         <Border
+            Grid.Row="2"
             Grid.Column="2"
             Padding="16"
             Style="{StaticResource Card}">
@@ -88,11 +135,6 @@
                             x:Name="txListTitle"
                             Style="{StaticResource Text.Title}"
                             TextTrimming="CharacterEllipsis" />
-                        <TextBlock
-                            Margin="0,4,0,0"
-                            Style="{StaticResource Text.Hint}"
-                            Text="These are the choices you can pick from in the app."
-                            TextWrapping="Wrap" />
                     </StackPanel>
 
                     <Button

@@ -423,10 +423,10 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             foreach (ProfilesGroupListBoxItem grp in selectedGroups)
             {
-                T1GROUP t1group = (T1GROUP)grp.ItemObject!;
+                T1CTABD tag = (T1CTABD)grp.ItemObject!;
 
                 T1GRPPO tblGrppo = tblmGrppo.CreateNew();
-                tblGrppo.GRID = t1group!.GRID;
+                tblGrppo.TGKY = tag.TXNUM;
                 tblGrppo.PFID = GetApp().T1Profi.PFID;
                 tblmGrppo.Save(tblGrppo);
             }
@@ -605,67 +605,41 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             }
         }
 
+        /// <summary>
+        /// Lists the tags that are not hidden plus the hidden ones the profile still has, so they can be removed.
+        /// </summary>
         private void BuildTagGrid(long pfid)
         {
-            List<ProfilesGroupListBoxItem> t1groups = new List<ProfilesGroupListBoxItem>();
+            Dictionary<string, long> linkedGpidsByTagKey = pfid > 0
+                ? new TXGRPPO().ReadAll()
+                    .Where(g => g.PFID == pfid && !FnString.IsNullEmptyOrWhitespace(g.TGKY))
+                    .GroupBy(g => g.TGKY, StringComparer.Ordinal)
+                    .ToDictionary(g => g.Key, g => g.First().GPID, StringComparer.Ordinal)
+                : new Dictionary<string, long>(StringComparer.Ordinal);
 
-            UIXQuery query = BuildTagGridQuery(pfid);
-
-            using (var reader = query.Execute())
-            {
-                while (reader.Read())
+            List<ProfilesGroupListBoxItem> tagItems = TFCTABD.GetTags(includeHidden: true)
+                .Where(t => !TFCTABD.IsTagHidden(t) || linkedGpidsByTagKey.ContainsKey(t.TXNUM))
+                .Select(t =>
                 {
+                    linkedGpidsByTagKey.TryGetValue(t.TXNUM, out long gpid);
 
-                    long grid = UIXQuery.GetInt64(reader, K1GROUP.Name, K1GROUP.Fields.GRID);
-                    long gpid = UIXQuery.GetInt64(reader, K1GRPPO.Name, K1GRPPO.Fields.GPID);
-
-                    T1GROUP t1group = new TXGROUP().Read(grid);
-                    t1groups.Add(new ProfilesGroupListBoxItem
+                    return new ProfilesGroupListBoxItem
                     {
-                        ItemObject = t1group,
+                        ItemObject = t,
                         COGRPID = gpid,
                         COISSEL = gpid > 0
-                    });
-                }
-            }
-
-            // Filter
-            t1groups = t1groups.Where(s => (s.ItemObject as T1GROUP)?.GTYP == GroupType.Tag).ToList();
+                    };
+                })
+                .ToList();
 
             // Fill view model
             _profilesEditViewModel = new ProfilesEditViewModel();
-            _profilesEditViewModel.T1GROUPs = new System.Collections.ObjectModel.ObservableCollection<ProfilesGroupListBoxItem>(t1groups);
+            _profilesEditViewModel.T1GROUPs = new System.Collections.ObjectModel.ObservableCollection<ProfilesGroupListBoxItem>(tagItems);
 
-
-            if (t1groups != null && t1groups.Count > 0)
-                _profilesEditViewModel.SelectedTBLGROUP = t1groups.FirstOrDefault(p => p.COISSEL);
+            if (tagItems.Count > 0)
+                _profilesEditViewModel.SelectedTBLGROUP = tagItems.FirstOrDefault(p => p.COISSEL);
 
             View.DataContext = _profilesEditViewModel;
-        }
-
-        private UIXQuery BuildTagGridQuery(long pfid)
-        {
-            UIXQuery query = new UIXQuery(K1GROUP.Name, AppEnvironment.GetDataBaseManager().GetConnection());
-
-            // Fields
-            query.AddField(K1GROUP.Name, K1GROUP.Fields.GRID);
-
-            if (pfid > 0)
-            {
-                query.AddField(K1GRPPO.Name, K1GRPPO.Fields.GPID);
-
-                // Left Join T1GRPPO
-                UIXQueryTable t1grppo = query.AddJoinTable(K1GRPPO.Name, JoinType.LEFT);
-                t1grppo.AddJoinCondition(K1GROUP.Name, K1GROUP.Fields.GRID, QueryCompareType.EQUALS, K1GRPPO.Name, K1GRPPO.Fields.GRID);
-
-                if (pfid > 0)
-                    t1grppo.AddJoinCondition(K1GRPPO.Name, K1GRPPO.Fields.PFID, QueryCompareType.EQUALS, pfid);
-            }
-
-            // Where
-            query.AddWhere(K1GROUP.Name, K1GROUP.Fields.GTYP, QueryCompareType.EQUALS, GroupType.Tag);
-
-            return query;
         }
 
         private void SaveAccentColors()

@@ -27,6 +27,7 @@
 - Added a new **Playthroughs** application: playthroughs can be opened from a profile and created, edited, completed and cancelled there.
 - Playthroughs can now be paused and unpaused.
 - Added a new **External** filter for profiles.
+- Tags are now managed in **Selection Lists** (list *Tags*): add your own tags and hide the delivered ones you don't use. Your existing tags, assignments and filters are migrated automatically.
 - Full blackout can now be toggled via hotkey while monitoring a console game.
 - Added the option **Dynamic Background** (*Settings > Appearance*): a blurred image is used as background of the main window.
   The background source can be chosen: the current Windows wallpaper or the cover of the selected profile.

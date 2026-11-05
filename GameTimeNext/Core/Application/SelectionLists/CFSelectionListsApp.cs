@@ -19,6 +19,11 @@ namespace GameTimeNext.Core.Application.SelectionLists
         private const string UserKeyPrefix = "U_";
         private const string DeliveredKeyPrefix = "D_";
 
+        /// <summary>
+        /// Lists whose delivered entries keep their parameters editable (name and deleting stay locked): tags can be hidden.
+        /// </summary>
+        private static readonly HashSet<string> ListsWithEditableDeliveredParameters = new HashSet<string>(StringComparer.Ordinal) { TFCTABD.TagCodetable };
+
         // Characters of a generated key: no 0 / O and 1 / I, so a key can't be misread
         private const string KeyCharacters = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
         private const int KeyLength = 5;
@@ -70,7 +75,27 @@ namespace GameTimeNext.Core.Application.SelectionLists
             if (!IsUserList(list))
                 return false;
 
-            return !(list.NRANA && entry.TXNUM.StartsWith(DeliveredKeyPrefix, StringComparison.Ordinal));
+            return !IsDeliveredEntry(list, entry);
+        }
+
+        /// <summary>
+        /// True for an entry delivered with the app (D_ key of a list with number range).
+        /// </summary>
+        public static bool IsDeliveredEntry(T1CTABH list, T1CTABD entry)
+        {
+            return list.NRANA && entry.TXNUM.StartsWith(DeliveredKeyPrefix, StringComparison.Ordinal);
+        }
+
+        /// <summary>
+        /// True if the user may open the entry: every entry they may change, plus the delivered entries of lists that let the user
+        /// change the parameters of them (e.g. hide a delivered tag). Name and deleting stay locked for those (IsEntryEditable).
+        /// </summary>
+        public static bool CanOpenEntry(T1CTABH list, T1CTABD entry)
+        {
+            if (IsEntryEditable(list, entry))
+                return true;
+
+            return IsUserList(list) && IsDeliveredEntry(list, entry) && ListsWithEditableDeliveredParameters.Contains(list.TXTYP);
         }
 
         /// <summary>

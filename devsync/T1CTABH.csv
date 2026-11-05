@@ -15,3 +15,5 @@ dP;Profile Detailview Position;D;0;;0;;;;0;;0;;;;0;1;;;2026-11-02 08:04:10;prage
 lG;Launcher Game Status;D;0;;0;;;;0;;0;;;;0;1;;;2026-11-02 17:21:08;prage;2026-11-02 17:21:08;prage
 mO;Monitor Orientation;D;0;;0;;;;0;;0;;;;0;1;;;2026-11-04 12:00:00;Oliver Fida;2026-11-04 12:00:00;Oliver Fida
 mP;Monitor Placement;D;0;;0;;;;0;;0;;;;0;1;;;2026-11-04 12:00:00;Oliver Fida;2026-11-04 12:00:00;Oliver Fida
+tG;Tags;U;1;Hidden;1;01;yN;;0;;0;;;;1;1;Hidden tags are no longer offered in filters or for new games. Games that already have the tag keep it.;;2026-11-05 12:00:00;prage;2026-11-05 12:00:00;prage
+yN;Yes / No;D;0;;0;;;;0;;0;;;;0;1;;;2026-11-05 12:00:00;prage;2026-11-05 12:00:00;prage

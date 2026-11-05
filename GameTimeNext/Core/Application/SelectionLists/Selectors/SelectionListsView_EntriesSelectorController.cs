@@ -33,18 +33,19 @@ namespace GameTimeNext.Core.Application.SelectionLists.Selectors
         }
 
         /// <summary>
-        /// Edit (also by double click) and Delete (also by Del) for entries the user may change; none for locked entries.
+        /// Edit (also by double click) and Delete (also by Del) for entries the user may change; locked entries only get Edit
+        /// where their parameters can be changed (CanOpenEntry).
         /// </summary>
         private void BuildContextMenu(DataGridRow dgRow, T1CTABH list, T1CTABD entry)
         {
             ContextMenuBuilder contextBuilder = UIXContextMenuFactory.Create("SelectionListEntriesContextMenu");
             contextBuilder.SetStyle(ProfilesContextMenuBuilder.contextMenuStyle);
 
-            if (CFSelectionListsApp.IsEntryEditable(list, entry))
-            {
+            if (CFSelectionListsApp.CanOpenEntry(list, entry))
                 contextBuilder.AddItem("ctxtEdit", "Edit", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Edit), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
+
+            if (CFSelectionListsApp.IsEntryEditable(list, entry))
                 contextBuilder.AddItem("ctxtDelete", "Delete", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Delete), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
-            }
 
             dgRow.ContextMenu = contextBuilder.HasItems() ? contextBuilder.Build() : null;
         }

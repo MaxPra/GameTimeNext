@@ -14,7 +14,6 @@ namespace GameTimeNext.Core.Application.SelectionLists.Controller
     {
         // Text type of the list whose entries are shown, to not reload them when the same list is selected again
         private string? _shownTxtyp;
-
         public SelectionListsViewController(UIXApplication app) : base(app)
         {
         }
@@ -102,6 +101,9 @@ namespace GameTimeNext.Core.Application.SelectionLists.Controller
 
             _shownTxtyp = list?.TXTYP;
 
+            // The search belongs to one list
+            GetView().txbSearch.Clear();
+
             GetView().txListTitle.Text = list?.DESCR ?? "No lists available";
             FnControls.SetVisible(GetView().btnAdd, list != null);
 
@@ -117,6 +119,19 @@ namespace GameTimeNext.Core.Application.SelectionLists.Controller
                     column.Header = CFSelectionListsApp.GetParameterLabel(list!, i);
             }
 
+            await GetView().dgEntries.LoadDataAsync();
+        }
+
+        /// <summary>
+        /// Enter in the search field (the engine only passes Enter on, not every typed character).
+        /// </summary>
+        protected async Task EV_txbSearch()
+        {
+            await GetView().dgEntries.LoadDataAsync();
+        }
+
+        protected async Task EV_btnRefresh()
+        {
             await GetView().dgEntries.LoadDataAsync();
         }
 

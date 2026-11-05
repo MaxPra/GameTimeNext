@@ -42,24 +42,46 @@ namespace GameTimeNext.Core.Application.DataManagers
             return true;
         }
 
-        public static List<T1GROUP> GetAllLinkedTags(T1PROFI t1profi)
+        /// <summary>
+        /// Tags (entries of codetable tG, hidden ones included) linked with the profile. Links to tags that no longer exist are skipped.
+        /// </summary>
+        public static List<T1CTABD> GetAllLinkedTags(T1PROFI t1profi)
         {
+            List<T1CTABD> tags = new List<T1CTABD>();
+            TXCTABD txctabd = new TXCTABD();
 
-            List<T1GROUP> tags = new List<T1GROUP>();
+            foreach (string tagKey in GetLinkedTagKeys(t1profi.PFID))
+            {
+                T1CTABD? tag = txctabd.Read(TFCTABD.TagCodetable, tagKey);
 
-            UIXQuery query = BuildLinkedTagsQuery(t1profi.PFID);
+                if (tag is not null)
+                    tags.Add(tag);
+            }
+
+            return tags;
+        }
+
+        /// <summary>
+        /// Keys (T1GRPPO.TGKY) of the tags linked with the profile.
+        /// </summary>
+        public static List<string> GetLinkedTagKeys(long pfid)
+        {
+            List<string> tagKeys = new List<string>();
+
+            UIXQuery query = BuildLinkedTagsQuery(pfid);
 
             using (var reader = query.Execute())
             {
                 while (reader.Read())
                 {
-                    long grid = UIXQuery.GetInt64(reader, K1GRPPO.Name, K1GRPPO.Fields.GRID);
+                    string tagKey = UIXQuery.GetString(reader, K1GRPPO.Name, K1GRPPO.Fields.TGKY, def: "");
 
-                    tags.Add(new TXGROUP().Read(grid));
+                    if (!FnString.IsNullEmptyOrWhitespace(tagKey))
+                        tagKeys.Add(tagKey);
                 }
             }
 
-            return tags;
+            return tagKeys;
         }
 
         public static List<T1SESSI> GetAllSessions(T1PROFI t1profi)
@@ -319,7 +341,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             UIXQuery query = new UIXQuery(K1GRPPO.Name, AppEnvironment.GetDataBaseManager().GetConnection());
 
             // Add fields
-            query.AddField(K1GRPPO.Name, K1GRPPO.Fields.GRID);
+            query.AddField(K1GRPPO.Name, K1GRPPO.Fields.TGKY);
 
             // Where restrictions
             query.AddWhere(K1GRPPO.Name, K1GRPPO.Fields.PFID, QueryCompareType.EQUALS, pfid);

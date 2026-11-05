@@ -96,7 +96,6 @@ namespace GameTimeNext.Core.Framework.DataBase
                 ClearT1group();
 
             EnsureDefaultValuesT1groupConditions();
-            EnsureDefaultValuesT1groupTags();
 
             if (migrationNeeded)
                 UpdateT1grppo(oldIds);
@@ -241,48 +240,6 @@ namespace GameTimeNext.Core.Framework.DataBase
             command.CommandText = sql;
 
             command.Parameters.AddWithValue("@gtyp", GroupType.Condition);
-            command.Parameters.AddWithValue("@crat", DateTime.Today);
-            command.Parameters.AddWithValue("@chat", DateTime.Now);
-
-            command.ExecuteNonQuery();
-        }
-
-        private void EnsureDefaultValuesT1groupTags()
-        {
-            var sql = @"
-                        INSERT OR REPLACE INTO T1GROUP (GRID, GRNA, GTYP, CRAT, CHAT)
-                        VALUES
-                        (101, 'Singleplayer', @gtyp, @crat, @chat),
-                        (102, 'Multiplayer', @gtyp, @crat, @chat),
-                        (103, 'Co-op', @gtyp, @crat, @chat),
-                        (104, 'PvP', @gtyp, @crat, @chat),
-
-                        (105, 'Action', @gtyp, @crat, @chat),
-                        (106, 'Adventure', @gtyp, @crat, @chat),
-                        (107, 'RPG', @gtyp, @crat, @chat),
-                        (108, 'Strategy', @gtyp, @crat, @chat),
-                        (109, 'Simulation', @gtyp, @crat, @chat),
-                        (110, 'Shooter', @gtyp, @crat, @chat),
-                        (111, 'Horror', @gtyp, @crat, @chat),
-                        (112, 'Survival', @gtyp, @crat, @chat),
-
-                        (113, 'Open World', @gtyp, @crat, @chat),
-                        (114, 'Sandbox', @gtyp, @crat, @chat),
-                        (115, 'Story Rich', @gtyp, @crat, @chat),
-                        (116, 'Exploration', @gtyp, @crat, @chat),
-                        (117, 'Crafting', @gtyp, @crat, @chat),
-                        (118, 'Building', @gtyp, @crat, @chat),
-
-                        (119, 'First Person', @gtyp, @crat, @chat),
-                        (120, 'Third Person', @gtyp, @crat, @chat),
-                        (121, 'Isometric', @gtyp, @crat, @chat),
-                        (122, 'Top-Down', @gtyp, @crat, @chat);
-                    ";
-
-            using var command = _connection.CreateCommand();
-            command.CommandText = sql;
-
-            command.Parameters.AddWithValue("@gtyp", GroupType.Tag);
             command.Parameters.AddWithValue("@crat", DateTime.Today);
             command.Parameters.AddWithValue("@chat", DateTime.Now);
 

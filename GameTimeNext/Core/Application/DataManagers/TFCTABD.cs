@@ -2,7 +2,7 @@
 
 namespace GameTimeNext.Core.Application.DataManagers
 {
-    public class TFCTABD
+    public partial class TFCTABD
     {
         public static string GetDescription(string txtyp, string txnum)
         {
