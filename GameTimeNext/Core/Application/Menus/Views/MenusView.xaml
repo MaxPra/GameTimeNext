@@ -64,28 +64,37 @@
                     x:Name="btnAddFolder"
                     Grid.Column="2"
                     VerticalAlignment="Center"
-                    Style="{StaticResource Button.Icon}"
                     ToolTip="Create new folder">
-                    <TextBlock
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        FontFamily="{StaticResource Font.Icons}"
-                        FontSize="14"
-                        Text="&#xE8F4;" />
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            FontFamily="{StaticResource Font.Icons}"
+                            FontSize="14"
+                            Text="&#xE8F4;" />
+                        <TextBlock
+                            Margin="8,0,0,0"
+                            VerticalAlignment="Center"
+                            Text="Add folder" />
+                    </StackPanel>
                 </Button>
 
                 <Button
                     x:Name="btnAddApplication"
                     Grid.Column="4"
                     VerticalAlignment="Center"
-                    Style="{StaticResource Button.Icon}"
+                    Style="{StaticResource Button.Primary}"
                     ToolTip="Create new application call">
-                    <TextBlock
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        FontFamily="{StaticResource Font.Icons}"
-                        FontSize="14"
-                        Text="&#xE710;" />
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            FontFamily="{StaticResource Font.Icons}"
+                            FontSize="14"
+                            Text="&#xE710;" />
+                        <TextBlock
+                            Margin="8,0,0,0"
+                            VerticalAlignment="Center"
+                            Text="Add application" />
+                    </StackPanel>
                 </Button>
 
                 <Button

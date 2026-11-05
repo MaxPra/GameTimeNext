@@ -648,7 +648,80 @@ CreateImportPackageApp;Create Import Package;;1;2026-10-28 19:18:25;prage;2026-1
 ErrorMessagesApp;Errormessages;;1;2026-10-28 19:18:45;prage;2026-10-28 19:18:45;prage
 MenusApp;Menus;;1;2026-10-28 19:19:14;prage;2026-10-28 19:19:14;prage
 MetadataApp;Metadata App;;1;2026-10-28 19:19:35;prage;2026-10-28 19:19:35;prage
-ScreensetupsApp;Screensetups;;1;2026-10-28 19:20:07;prage;2026-10-28 19:20:07;prage
+ScreensetupsApp;Screensetups;"# Screensetups
+
+A screensetup stores how your **monitors** and your **audio device** should be set up. With one click {ApplicationName} switches your computer to it, for example from ""desk with two monitors"" to ""TV only, sound through the soundbar"".
+
+## Quick start
+
+1. Click **＋** to create a screensetup and give it a **name**.
+2. Open the tab **Monitors** and click **Use current state**. The monitors that are switched on right now are taken over with their display mode and placement.
+3. Optionally choose an **audio device** in the tab **General**.
+4. **Save**, then click the **play button** in the list to switch to it.
+
+> [!TIP]
+> The easiest way to build a screensetup: set your monitors up in Windows the way you want them, then use **Use current state** and save.
+
+## The list
+
+| Element | Function |
+|---|---|
+| **Name** | Shows only screensetups whose name contains the text. |
+| **＋** | Creates a new screensetup. |
+| **Identify** | Shows a number on every monitor that is switched on, so you can tell them apart. |
+| **⟳ Refresh** | Reloads the list. |
+| **Play button** in a row | Switches to this screensetup. |
+
+Right-click a row to **edit**, **copy**, **switch to** or **delete** a screensetup. The column **Active** marks the screensetup you switched to last.
+
+## Editing a screensetup
+
+### General
+
+| Field | Meaning |
+|---|---|
+| **Name** | Required. |
+| **Description** | Optional note, shown in the list. |
+| **Audio device** | The default audio device that is set after the monitors. *(Unchanged)* leaves the audio device as it is. |
+
+### Monitors
+
+The list shows every monitor of the screensetup. Select one to change its settings below the list.
+
+| Column / field | Meaning |
+|---|---|
+| **Enabled** | Whether the monitor is switched on in this screensetup. |
+| **Primary** | The main monitor (taskbar, new windows). Exactly one monitor must be primary, and it must be enabled. |
+| **Resolution** and **Refresh rate** | *(Automatic)* lets Windows choose. |
+| **Orientation** | Landscape, portrait, ... *(Unchanged)* keeps the current one. |
+| **Placement** | Where the monitor sits relative to the primary monitor (ignored for the primary monitor itself). |
+| **Scaling** | The size of text and apps. The steps offered depend on the resolution. |
+
+> [!NOTE]
+> The possible resolutions and refresh rates can only be read while a monitor is **switched on**. To change the settings of a monitor that is currently off, switch it on first.
+
+> [!TIP]
+> Identical monitors look the same in the list. Click **Identify** while they are switched on to see which one is which.
+
+## Switching
+
+When you switch, {ApplicationName} sets the monitors first and the audio device afterwards. Then it asks **""Keep these display settings?""**
+
+- Click **Yes** to keep them.
+- Without an answer within **10 seconds** the previous display settings are restored automatically, like in the Windows display settings. So a wrong setup never leaves you with a black screen.
+
+## Big Picture mode
+
+In the Big Picture mode the main menu has an entry **Screen setup**. It switches to a screensetup with the controller and moves the mode to the new primary monitor.
+
+## When something doesn't work
+
+| Message | What to do |
+|---|---|
+| *None of the monitors enabled in this screensetup is connected.* | Connect the monitors or enable others in the screensetup. |
+| *Not every display mode could be set.* | Check resolution and refresh rate of the monitors. Modes can only be chosen while a monitor is on. |
+| *The audio device could not be set.* | Check that the device is connected and not on a monitor that is switched off. |
+| *No monitor could be identified.* | **Identify** only works for monitors that are switched on. |";1;2026-10-28 19:20:07;prage;2026-11-05 12:00:00;prage
 DiagnosticsApp;Diagnostics;;1;2026-10-30 12:00:00;prage;2026-10-30 12:00:00;prage
 SelectionListsApp;Selection Lists;"# Selection Lists
 

@@ -161,7 +161,36 @@ namespace GameTimeNext.Core.Framework
             if (!app.TryCloseViews())
                 return;
 
-            AppEnvironment.StartedApplications.Remove(type!.FullName!);
+            RemoveTab(type!.FullName!, tab);
+        }
+
+        /// <summary>
+        /// Closes all open applications that can be closed. Applications that can't be closed stay open. If the user keeps
+        /// something open when asked about unsaved changes, closing stops there (the remaining tabs stay open).
+        /// </summary>
+        public void CloseAll()
+        {
+            foreach (TabItem tab in TabControl.Items.OfType<TabItem>().ToList())
+            {
+                string? typeName = tab.Tag?.ToString();
+
+                if (typeName == null || !AppEnvironment.StartedApplications.TryGetValue(typeName, out UIXApplication? app))
+                    continue;
+
+                if (!app.IsClosable || !app.CanClose())
+                    continue;
+
+                // Asks about unsaved changes; the user keeps the application open -> stop instead of asking for every tab
+                if (!app.TryCloseViews())
+                    return;
+
+                RemoveTab(typeName, tab);
+            }
+        }
+
+        private static void RemoveTab(string typeName, TabItem tab)
+        {
+            AppEnvironment.StartedApplications.Remove(typeName);
 
             TabControl tabControl = ItemsControl.ItemsControlFromItemContainer(tab) as TabControl;
 
@@ -181,7 +210,10 @@ namespace GameTimeNext.Core.Framework
             contextBuilder.SetStyle(contextMenuStyle);
 
             if (application.IsClosable)
+            {
                 contextBuilder.AddItem("ctxtClose", "Close", icon: UIXContextMenuFactory.CreateMdlIcon("\uE8BB"), itemStyle: contextMenuItemStyle);
+                contextBuilder.AddItem("ctxtCloseAll", "Close all", icon: UIXContextMenuFactory.CreateMdlIcon("\uE711"), itemStyle: contextMenuItemStyle);
+            }
 
             if (favApp == null)
                 contextBuilder.AddItem("ctxtFav", "Add to favorites", icon: UIXContextMenuFactory.CreateMdlIcon("\uE734"), itemStyle: contextMenuItemStyle);

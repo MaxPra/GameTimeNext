@@ -435,6 +435,11 @@ namespace GameTimeNext.Core.Application.General.Controller
             }
         }
 
+        protected void EV_ctxtCloseAll()
+        {
+            AppEnvironment.AppLauncher.CloseAll();
+        }
+
         protected void EV_ctxtFav(FrameworkElement target)
         {
             TabItem tab = (TabItem)target;
