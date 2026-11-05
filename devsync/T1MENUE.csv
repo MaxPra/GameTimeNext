@@ -7,11 +7,12 @@
 6;5;02;Screensetups;ScreensetupsApp;0;10;2026-10-28 19:20:43;prage;2026-10-28 19:20:43;prage
 7;5;02;Settings;SettingsApp;0;20;2026-10-28 19:20:56;prage;2026-10-28 19:58:54;prage
 8;0;01;Administration;;0;30;2026-10-28 19:21:17;prage;2026-10-28 19:21:17;prage
-9;8;02;Codetables;CodetablesApp;0;10;2026-10-28 19:21:28;prage;2026-10-28 19:59:54;prage
 11;0;01;Development;;1;40;2026-10-28 19:21:49;prage;2026-10-28 20:09:14;prage
 12;11;02;Metadata;MetadataApp;0;10;2026-10-28 19:22:00;prage;2026-10-28 19:22:00;prage
-13;11;02;Application Properties Definitions;ApplicationPropertiesApp;0;20;2026-10-28 19:22:13;prage;2026-10-28 19:22:13;prage
-14;11;02;Errormessages;ErrorMessagesApp;0;30;2026-10-28 19:22:27;prage;2026-10-28 19:22:27;prage
-15;11;02;Menus;MenusApp;0;40;2026-10-28 19:22:34;prage;2026-10-28 19:22:34;prage
-16;11;02;Create Import Package;CreateImportPackageApp;0;50;2026-10-28 20:00:13;prage;2026-10-28 20:00:13;prage
-17;8;02;Diagnostics;DiagnosticsApp;0;20;2026-10-30 12:00:00;prage;2026-10-30 12:00:00;prage
+13;11;02;Application Properties Definitions;ApplicationPropertiesApp;0;30;2026-10-28 19:22:13;prage;2026-11-05 08:54:02;prage
+14;11;02;Errormessages;ErrorMessagesApp;0;40;2026-10-28 19:22:27;prage;2026-11-05 08:54:01;prage
+15;11;02;Menus;MenusApp;0;50;2026-10-28 19:22:34;prage;2026-11-05 08:53:59;prage
+16;11;02;Create Import Package;CreateImportPackageApp;0;60;2026-10-28 20:00:13;prage;2026-11-05 08:53:57;prage
+17;8;02;Diagnostics;DiagnosticsApp;0;10;2026-10-30 12:00:00;prage;2026-11-05 08:53:27;prage
+19;11;02;Codetables;CodetablesApp;0;20;2026-11-05 08:53:52;prage;2026-11-05 08:54:02;prage
+20;8;02;Selection Lists;SelectionListsApp;0;20;2026-11-05 08:54:23;prage;2026-11-05 08:54:23;prage

@@ -3,6 +3,7 @@ using GameTimeNext.Core.Application.Codetables.Views;
 using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
+using GameTimeNext.Core.Framework.Utils;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.Querying;
@@ -20,11 +21,20 @@ namespace GameTimeNext.Core.Application.Codetables.Selectors
         protected override async Task<IEnumerable<CodetableDataGridRow>> ExecuteAsync(CancellationToken token)
         {
             // Filters are read on the UI thread, the query runs in the background
-            string txtyp = GetView().TxbTextType.Text;
-            string descr = GetView().TxbDescription.Text;
-            string permi = GetView().CmbPermission.SelectedValue?.ToString() ?? string.Empty;
+            string txtyp = GetView().txbTextType.Text;
+            string descr = GetView().txbDescription.Text;
+            string permi = GetView().cmbPermission.SelectedValue?.ToString() ?? string.Empty;
 
-            return await Task.Run(() => BuildRows(txtyp, descr, permi), token);
+            List<CodetableDataGridRow> rows = await Task.Run(() => BuildRows(txtyp, descr, permi), token);
+
+            // A newer load cancels this one: then the state of the view is left to it
+            if (!token.IsCancellationRequested)
+            {
+                GetView().txNoResults.Text = "No codetables found";
+                FnControls.SetVisible(GetView().pnlNoResults, rows.Count == 0);
+            }
+
+            return rows;
         }
 
         private List<CodetableDataGridRow> BuildRows(string txtyp, string descr, string permi)

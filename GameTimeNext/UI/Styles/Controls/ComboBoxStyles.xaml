@@ -66,11 +66,37 @@
                 TextTrimming="CharacterEllipsis"
                 TextWrapping="NoWrap"
                 Visibility="Collapsed" />
+
+            <!--  "Add new entry" (UIXComboBox.NewEntryText): an action at the top, accent colored with a plus  -->
+            <StackPanel
+                x:Name="NewEntryPanel"
+                Orientation="Horizontal"
+                Visibility="Collapsed">
+                <TextBlock
+                    Margin="0,0,8,0"
+                    VerticalAlignment="Center"
+                    FontFamily="{StaticResource Font.Icons}"
+                    FontSize="12"
+                    Foreground="{DynamicResource Brush.Accent}"
+                    Text="&#xE710;" />
+                <TextBlock
+                    Margin="0"
+                    VerticalAlignment="Center"
+                    FontWeight="SemiBold"
+                    Foreground="{DynamicResource Brush.Accent}"
+                    Text="{Binding Text}"
+                    TextTrimming="CharacterEllipsis"
+                    TextWrapping="NoWrap" />
+            </StackPanel>
         </Grid>
 
         <DataTemplate.Triggers>
             <DataTrigger Binding="{Binding ShowKey}" Value="False">
                 <Setter TargetName="KeyBadge" Property="Visibility" Value="Collapsed" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding IsNewEntry}" Value="True">
+                <Setter TargetName="EntryGrid" Property="Visibility" Value="Collapsed" />
+                <Setter TargetName="NewEntryPanel" Property="Visibility" Value="Visible" />
             </DataTrigger>
             <DataTrigger Binding="{Binding IsAdditional}" Value="True">
                 <Setter TargetName="EntryGrid" Property="Visibility" Value="Collapsed" />

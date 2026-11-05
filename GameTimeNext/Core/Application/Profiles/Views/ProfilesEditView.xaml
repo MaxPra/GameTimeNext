@@ -132,37 +132,16 @@
                                     Style="{StaticResource Text.Label}"
                                     Text="Platform" />
 
-                                <Grid Grid.Row="6">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="8" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
-
-                                    <uixcb:UIXComboBox
-                                        x:Name="cmbPlatform"
-                                        Grid.Column="0"
-                                        Height="36"
-                                        AdditionalEntry="(None)"
-                                        uixprops:UIXAttachedProperty.Path="T1PROFI.PLAFO"
-                                        uixprops:UIXAttachedProperty.Source="From=T1CTABD;Where=TXTYP:pF;Text=DESCR;Value=TXNUM"
-                                        SelectedIndex="0"
-                                        SelectedValue=""
-                                        SelectedValuePath="Tag" />
-
-                                    <Button
-                                        x:Name="btnAddPlatformWizard"
-                                        Grid.Column="2"
-                                        Width="36"
-                                        Height="36"
-                                        Style="{StaticResource Button.Icon}"
-                                        ToolTip="Add a platform with the wizard">
-                                        <TextBlock
-                                            FontSize="14"
-                                            Style="{StaticResource Text.Icon}"
-                                            Text="&#xE710;" />
-                                    </Button>
-                                </Grid>
+                                <uixcb:UIXComboBox
+                                    x:Name="cmbPlatform"
+                                    Grid.Row="6"
+                                    Height="36"
+                                    uixprops:UIXAttachedProperty.Path="T1PROFI.PLAFO"
+                                    uixprops:UIXAttachedProperty.Source="From=T1CTABD;Where=TXTYP:pF;Text=DESCR;Value=TXNUM"
+                                    AdditionalEntry="(None)"
+                                    SelectedIndex="0"
+                                    SelectedValue=""
+                                    SelectedValuePath="Tag" />
 
                                 <TextBlock
                                     Grid.Row="8"

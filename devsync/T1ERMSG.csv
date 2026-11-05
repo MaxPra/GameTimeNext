@@ -58,3 +58,5 @@ Confirm with your favorite app (hint: it's the one asking).";;2026-10-30 22:43:2
 PRO0009;Installed games without a profile found: &1\nShould &2 add them all now?;Asked once when a launcher is switched on for the automatic game import. Yes: they are added a few at a time in the background. No: only games installed from now on are added, the others can still be added with the launcher import of a new profile.;2026-11-02 18:00:00;prage;2026-11-02 18:00:00;prage
 PRO0010;New game added;Title of the toast after the automatic game import added one game (its name is the text).;2026-11-02 18:00:00;prage;2026-11-02 18:00:00;prage
 PRO0011;&1 new games added;Title of the toast after the automatic game import added several games (their names are the text).;2026-11-02 18:00:00;prage;2026-11-02 18:00:00;prage
+CTA0002;The action of &1 could not be completed.\n&2;Shown when the button of a codetable parameter fails.;2026-11-05 12:00:00;prage;2026-11-05 12:00:00;prage
+CTA0003;The action &1 of &2 does not exist.;The API class CTAPI_<Name> named in the codetable was not found.;2026-11-05 12:00:00;prage;2026-11-05 12:00:00;prage
