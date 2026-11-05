@@ -2,6 +2,7 @@
 using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.General;
 using GameTimeNext.Core.Application.Profiles.Components;
+using GameTimeNext.Core.Application.SelectionLists;
 using GameTimeNext.Core.Application.Profiles.Types;
 using GameTimeNext.Core.Application.Profiles.Viewmodel;
 using GameTimeNext.Core.Application.Profiles.Views;
@@ -22,6 +23,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.Events;
+using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.FrameworkElements.UserControls;
 using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Runnables;
@@ -33,7 +35,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
     public class ProfilesEditViewController : UIXViewControllerBase<ProfilesEditApp, ProfilesEditView>
     {
 
-        private ProfilesEditViewModel? _profilesEditViewModel;
+        // Guard: refilling the tag ComboBox calls its handler with an empty selection
+        private bool _isFillingTagChoices = false;
 
         private string _coverAppDataPath = string.Empty;
         private string _coverAppFolderFileName = string.Empty;
@@ -83,7 +86,6 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                                             );
 
 
-            _profilesEditViewModel = new ProfilesEditViewModel();
             ViewReturn = new ProfilesEditViewReturn();
 
             _hasProfileCoverChanged = false;
@@ -104,8 +106,6 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             using (SuppressRunEventPipeline())
             {
-                BuildTagGrid(GetApp().T1Profi.PFID);
-
                 // Enabled state of the IGDB estimated time ComboBox
                 //bool isIGDBLinkedCorrectly = !FnString.IsNullEmptyOrWhitespace(AppEnvironment.GetAppConfig().AppSettings.TwitchIGDBClientID) &&
                 //    !FnString.IsNullEmptyOrWhitespace(AppEnvironment.GetAppConfig().AppSettings.TwitchIGDBClientSecret);
@@ -117,6 +117,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected override async Task BuildFirstImplAsync()
         {
+            if (await GetView().lbTags.LoadDataAsync())
+                RefreshTagChoices();
+
             // New profiles start with the placeholder cover, replaced by choosing another one
             if (GetView().ViewIndicator.Contains("CN") && FnString.IsNullEmptyOrWhitespace(GetApp().T1Profi.PPFN))
             {
@@ -414,8 +417,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         private void FillDBOTags()
         {
-            // Read selected groups
-            List<ProfilesGroupListBoxItem> selectedGroups = _profilesEditViewModel!.T1GROUPs.Where(t => t.COISSEL).ToList();
+            // Tags shown as cards
+            List<ProfilesGroupListBoxItem> selectedGroups = GetTagItems();
 
             // Delete all existing entries for this profile
             TXGRPPO tblmGrppo = new TXGRPPO();
@@ -605,41 +608,79 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             }
         }
 
-        /// <summary>
-        /// Lists the tags that are not hidden plus the hidden ones the profile still has, so they can be removed.
-        /// </summary>
-        private void BuildTagGrid(long pfid)
+        private List<ProfilesGroupListBoxItem> GetTagItems()
         {
-            Dictionary<string, long> linkedGpidsByTagKey = pfid > 0
-                ? new TXGRPPO().ReadAll()
-                    .Where(g => g.PFID == pfid && !FnString.IsNullEmptyOrWhitespace(g.TGKY))
-                    .GroupBy(g => g.TGKY, StringComparer.Ordinal)
-                    .ToDictionary(g => g.Key, g => g.First().GPID, StringComparer.Ordinal)
-                : new Dictionary<string, long>(StringComparer.Ordinal);
+            return GetView().lbTags.Items.OfType<ProfilesGroupListBoxItem>().ToList();
+        }
 
-            List<ProfilesGroupListBoxItem> tagItems = TFCTABD.GetTags(includeHidden: true)
-                .Where(t => !TFCTABD.IsTagHidden(t) || linkedGpidsByTagKey.ContainsKey(t.TXNUM))
-                .Select(t =>
-                {
-                    linkedGpidsByTagKey.TryGetValue(t.TXNUM, out long gpid);
+        /// <summary>
+        /// Offers the tags that are not hidden and not yet on the profile in the "Add a tag" ComboBox and shows
+        /// the hint while the profile has no tags.
+        /// </summary>
+        public void RefreshTagChoices()
+        {
+            HashSet<string> assigned = GetTagItems().Select(t => ((T1CTABD)t.ItemObject!).TXNUM).ToHashSet(StringComparer.Ordinal);
 
-                    return new ProfilesGroupListBoxItem
-                    {
-                        ItemObject = t,
-                        COGRPID = gpid,
-                        COISSEL = gpid > 0
-                    };
-                })
-                .ToList();
+            UIXManualCodetable choices = new UIXManualCodetable();
 
-            // Fill view model
-            _profilesEditViewModel = new ProfilesEditViewModel();
-            _profilesEditViewModel.T1GROUPs = new System.Collections.ObjectModel.ObservableCollection<ProfilesGroupListBoxItem>(tagItems);
+            foreach (T1CTABD tag in TFCTABD.GetTags(includeHidden: false).Where(t => !assigned.Contains(t.TXNUM)))
+                choices.AddEntry(tag.TXNUM, tag.DESCR);
 
-            if (tagItems.Count > 0)
-                _profilesEditViewModel.SelectedTBLGROUP = tagItems.FirstOrDefault(p => p.COISSEL);
+            GetView().cmbAddTag.NewEntryText = CFSelectionListsApp.GetExtendableList(TFCTABD.TagCodetable) != null ? "New tag..." : string.Empty;
 
-            View.DataContext = _profilesEditViewModel;
+            _isFillingTagChoices = true;
+
+            try
+            {
+                choices.ApplyTo(GetView().cmbAddTag);
+                GetView().cmbAddTag.SelectedValue = string.Empty;
+            }
+            finally
+            {
+                _isFillingTagChoices = false;
+            }
+
+            FnControls.SetVisible(GetView().txTagsEmpty, assigned.Count == 0);
+        }
+
+        private void AddTag(string key)
+        {
+            T1CTABD? tag = TFCTABD.GetTags(includeHidden: true).FirstOrDefault(t => t.TXNUM == key);
+
+            if (tag == null || GetTagItems().Any(t => ((T1CTABD)t.ItemObject!).TXNUM == key))
+                return;
+
+            if (GetView().lbTags.ItemsSource is System.Collections.ObjectModel.ObservableCollection<ProfilesGroupListBoxItem> tags)
+            {
+                tags.Add(new ProfilesGroupListBoxItem { ItemObject = tag, CONAME = tag.DESCR, COISSEL = true });
+
+                // Alphabetical like everywhere else
+                List<ProfilesGroupListBoxItem> sorted = tags.OrderBy(t => t.CONAME, StringComparer.CurrentCultureIgnoreCase).ToList();
+
+                for (int i = 0; i < sorted.Count; i++)
+                    tags.Move(tags.IndexOf(sorted[i]), i);
+            }
+
+            RefreshTagChoices();
+        }
+
+        protected void EV_cmbAddTag()
+        {
+            if (_isFillingTagChoices)
+                return;
+
+            if (GetView().cmbAddTag.SelectedValue is string key && !FnString.IsNullEmptyOrWhitespace(key))
+                AddTag(key);
+        }
+
+        protected void EV_cmbAddTag_NewEntry(UIXNewEntryArgs args)
+        {
+            T1CTABH? list = CFSelectionListsApp.GetExtendableList(TFCTABD.TagCodetable);
+
+            if (list == null)
+                return;
+
+            CFSelectionListsApp.CreateEntry(GetApp(), list, key => AddTag(key));
         }
 
         private void SaveAccentColors()

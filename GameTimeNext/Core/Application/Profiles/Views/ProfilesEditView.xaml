@@ -328,26 +328,164 @@
                 </TabItem>
 
                 <TabItem Header="Tags">
-                    <!--  The only tab whose content grows with the data (number of tags)  -->
                     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                         <GroupBox x:Name="pnlGroups" Header="Tags">
-                            <ItemsControl ItemsSource="{Binding T1GROUPs}">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <StackPanel />
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
+                            <StackPanel>
+                                <TextBlock Style="{StaticResource Text.Label}" Text="Add a tag" />
 
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <CheckBox
-                                            Margin="0,0,0,12"
-                                            Content="{Binding ItemObject.DESCR}"
-                                            IsChecked="{Binding COISSEL, Mode=TwoWay}"
-                                            Style="{StaticResource CheckBox.Left}" />
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
+                                <uixcb:UIXComboBox
+                                    x:Name="cmbAddTag"
+                                    Width="320"
+                                    Margin="0,8,0,0"
+                                    HorizontalAlignment="Left"
+                                    AdditionalEntry="(Choose a tag)"
+                                    ShowKeys="False"
+                                    ToolTip="Adds the tag to this game." />
+
+                                <!--  Tag cards: only the items are drawn, the cross on a card removes the tag  -->
+                                <uixsel:UIXListBox
+                                    x:Name="lbTags"
+                                    Margin="0,20,0,0"
+                                    Focusable="False">
+                                    <uixsel:UIXListBox.Template>
+                                        <ControlTemplate TargetType="{x:Type ListBox}">
+                                            <ItemsPresenter />
+                                        </ControlTemplate>
+                                    </uixsel:UIXListBox.Template>
+
+                                    <uixsel:UIXListBox.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel />
+                                        </ItemsPanelTemplate>
+                                    </uixsel:UIXListBox.ItemsPanel>
+
+                                    <uixsel:UIXListBox.ItemContainerStyle>
+                                        <Style TargetType="{x:Type ListBoxItem}">
+                                            <Setter Property="Focusable" Value="False" />
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                                        <ContentPresenter />
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </uixsel:UIXListBox.ItemContainerStyle>
+
+                                    <uixsel:UIXListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <!--  Glass pill like the buttons: shadowed fill, light inside, fine rim; hover fades in the outline  -->
+                                            <Grid
+                                                x:Name="grdTag"
+                                                Height="36"
+                                                Margin="0,0,8,8"
+                                                SnapsToDevicePixels="True">
+                                                <Border
+                                                    Background="{StaticResource Brush.Button.Glass}"
+                                                    CornerRadius="18"
+                                                    Effect="{StaticResource Effect.Control}" />
+
+                                                <Grid IsHitTestVisible="False">
+                                                    <Border Background="{StaticResource Brush.Button.GlassLightStart}" CornerRadius="18" />
+                                                    <Border Background="{StaticResource Brush.Button.GlassLightEnd}" CornerRadius="18" />
+                                                </Grid>
+
+                                                <Border
+                                                    BorderBrush="{StaticResource Brush.Button.GlassRim}"
+                                                    BorderThickness="1"
+                                                    CornerRadius="18"
+                                                    IsHitTestVisible="False" />
+
+                                                <Border
+                                                    x:Name="brdTagHover"
+                                                    BorderBrush="{DynamicResource Brush.Accent.Outline}"
+                                                    BorderThickness="1"
+                                                    CornerRadius="18"
+                                                    IsHitTestVisible="False"
+                                                    Opacity="0" />
+
+                                                <StackPanel Margin="16,0,6,0" Orientation="Horizontal">
+                                                    <TextBlock
+                                                        Margin="0"
+                                                        VerticalAlignment="Center"
+                                                        Style="{StaticResource Text.BodyStrong}"
+                                                        Text="{Binding CONAME}" />
+
+                                                    <Button
+                                                        x:Name="btnRemoveTag"
+                                                        Width="24"
+                                                        Height="24"
+                                                        MinWidth="0"
+                                                        MinHeight="0"
+                                                        Margin="8,0,0,0"
+                                                        Padding="0"
+                                                        VerticalAlignment="Center"
+                                                        Cursor="Hand"
+                                                        Focusable="False"
+                                                        ToolTip="Remove tag">
+                                                        <Button.Template>
+                                                            <ControlTemplate TargetType="{x:Type Button}">
+                                                                <Grid Background="Transparent">
+                                                                    <Ellipse
+                                                                        x:Name="bg"
+                                                                        Fill="{StaticResource Brush.Control.HoverOverlay}"
+                                                                        Opacity="0" />
+                                                                    <TextBlock
+                                                                        x:Name="glyph"
+                                                                        Margin="0"
+                                                                        HorizontalAlignment="Center"
+                                                                        VerticalAlignment="Center"
+                                                                        FontFamily="{StaticResource Font.Icons}"
+                                                                        FontSize="9"
+                                                                        Foreground="{DynamicResource Brush.TextSecondary}"
+                                                                        Text="&#xE711;" />
+                                                                </Grid>
+                                                                <ControlTemplate.Triggers>
+                                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                                        <Setter TargetName="bg" Property="Opacity" Value="1" />
+                                                                        <Setter TargetName="glyph" Property="Foreground" Value="White" />
+                                                                    </Trigger>
+                                                                </ControlTemplate.Triggers>
+                                                            </ControlTemplate>
+                                                        </Button.Template>
+                                                    </Button>
+                                                </StackPanel>
+
+                                                <Grid.Triggers>
+                                                    <EventTrigger RoutedEvent="MouseEnter">
+                                                        <BeginStoryboard>
+                                                            <Storyboard>
+                                                                <DoubleAnimation
+                                                                    Storyboard.TargetName="brdTagHover"
+                                                                    Storyboard.TargetProperty="Opacity"
+                                                                    To="1"
+                                                                    Duration="0:0:0.15" />
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </EventTrigger>
+                                                    <EventTrigger RoutedEvent="MouseLeave">
+                                                        <BeginStoryboard>
+                                                            <Storyboard>
+                                                                <DoubleAnimation
+                                                                    Storyboard.TargetName="brdTagHover"
+                                                                    Storyboard.TargetProperty="Opacity"
+                                                                    To="0"
+                                                                    Duration="0:0:0.25" />
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </EventTrigger>
+                                                </Grid.Triggers>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </uixsel:UIXListBox.ItemTemplate>
+                                </uixsel:UIXListBox>
+
+                                <TextBlock
+                                    x:Name="txTagsEmpty"
+                                    Margin="0,20,0,0"
+                                    Style="{StaticResource Text.Hint}"
+                                    Text="This game has no tags yet." />
+                            </StackPanel>
                         </GroupBox>
                     </ScrollViewer>
                 </TabItem>

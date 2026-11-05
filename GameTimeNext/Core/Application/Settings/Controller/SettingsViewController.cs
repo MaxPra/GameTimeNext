@@ -10,6 +10,7 @@ using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.Files;
 using GameTimeNext.Core.Framework.LauncherIntegration;
+using GameTimeNext.Core.Framework.UI;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.UserInput;
 using GameTimeNext.Core.Framework.Utils;
@@ -156,7 +157,6 @@ namespace GameTimeNext.Core.Application.Settings.Controller
         {
             FillDBOGeneral();
             FillDBOMonitoring();
-            FillDBOTags();
             FillDBOAbout();
 
 
@@ -228,7 +228,6 @@ namespace GameTimeNext.Core.Application.Settings.Controller
         {
             FillTabGeneral();
             FillTabMonitoring();
-            FillTabTags();
             FillTabAbout();
         }
 
@@ -346,15 +345,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             _appSettings!.SessionCleanupSeconds = FnConvert.ToDouble(GetView().txbSessionCleanupSeconds.Text);
         }
 
-        private void FillDBOTags()
-        {
-        }
-
         private void FillDBOAbout()
-        {
-        }
-
-        private void FillTabTags()
         {
         }
 
@@ -515,6 +506,27 @@ namespace GameTimeNext.Core.Application.Settings.Controller
                 // Restart GameTimeNext
                 AppEnvironment.RestartGTNApplication();
             }
+        }
+
+        /// <summary>
+        /// Search field: shows only the pages, cards and settings that match.
+        /// </summary>
+        protected void EV_txbSearch()
+        {
+            bool anyShown = SettingsSearch.Apply(GetView().tbcSettings, GetView().txbSearch.Text);
+
+            FnControls.SetVisible(GetView().tbcSettings, anyShown);
+            FnControls.SetVisible(GetView().txSearchEmpty, !anyShown);
+        }
+
+        /// <summary>
+        /// Refresh: shows the saved settings again, unsaved changes are dropped (the settings object only changes on save).
+        /// </summary>
+        protected async Task EV_btnRefresh()
+        {
+            FillViewImpl();
+            await GetView().lbAutoImportLaunchers.LoadDataAsync();
+            BuildImpl();
         }
 
         protected void EV_btnSave()
