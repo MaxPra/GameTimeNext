@@ -64,6 +64,17 @@ namespace GameTimeNext.Core.Framework.UI
 
             // Runs before ScrollViewer.OnMouseWheel, and not when something inside already handled the wheel
             EventManager.RegisterClassHandler(typeof(ScrollViewer), UIElement.MouseWheelEvent, new MouseWheelEventHandler(OnMouseWheel));
+            EventManager.RegisterClassHandler(typeof(FlowDocumentScrollViewer), UIElement.MouseWheelEvent, new MouseWheelEventHandler(OnDocumentMouseWheel));
+        }
+
+        /// <summary>
+        /// Over text the wheel comes from the document (Run, Paragraph), and its route goes through the logical tree straight
+        /// to the viewer, past the ScrollViewer in its template; the viewer would then scroll a small step.
+        /// </summary>
+        private static void OnDocumentMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (sender is DependencyObject viewer && FnVisualTree.FindDescendant<ScrollViewer>(viewer) is ScrollViewer scrollViewer)
+                OnMouseWheel(scrollViewer, e);
         }
 
         private static void OnMouseWheel(object sender, MouseWheelEventArgs e)
