@@ -106,6 +106,11 @@ namespace GameTimeNext.Core.Application.SelectionLists.Controller
             Exit(true);
         }
 
+        protected void EV_btnCancel()
+        {
+            Exit(true);
+        }
+
         private (UIXComboBox Combo, TextBox Text, TextBlock Label, TextBlock Hint, StackPanel Panel, Button Button) GetParameterControls(int index)
         {
             return index == 1
