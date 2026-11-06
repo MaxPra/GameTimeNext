@@ -23,7 +23,7 @@
         <Setter Property="BorderBrush" Value="{StaticResource Brush.Input.Edge}" />
         <Setter Property="BorderThickness" Value="{DynamicResource Thickness.TextBox.Border}" />
 
-        <!--  One pixel higher: the text line of Manrope sits low, this aligns it with the text of buttons and combo boxes next to it  -->
+        <!--  One pixel higher: the text line of Manrope sits low, this centers it in the field (buttons, combo boxes and date pickers lift their text to the same line)  -->
         <Setter Property="Padding" Value="11,5,11,7" />
         <Setter Property="MinHeight" Value="{StaticResource Control.Height}" />
         <Setter Property="Height" Value="{StaticResource Control.Height}" />

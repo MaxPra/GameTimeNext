@@ -478,8 +478,12 @@
         <Setter Property="Height" Value="Auto" />
         <Setter Property="MinHeight" Value="{StaticResource Control.Height}" />
         <Setter Property="Margin" Value="0" />
-        <!--  No vertical padding: the height comes from MinHeight, so a button is as high as a text box (text line + TextBlock margin would exceed it)  -->
-        <Setter Property="Padding" Value="14,0" />
+        <!--
+            The height comes from MinHeight, so a button is as high as a text box (text line + TextBlock margin would exceed it with a real vertical padding).
+            The small bottom padding only lifts the text to the line of text boxes and combo boxes (the text line of Manrope sits low).
+        -->
+        <Setter Property="Padding" Value="14,0,14,2" />
+        <Setter Property="UseLayoutRounding" Value="True" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
         <Setter Property="Background" Value="{StaticResource Brush.Button.Glass}" />
         <Setter Property="BorderBrush" Value="{StaticResource Brush.Button.GlassRim}" />
@@ -493,6 +497,12 @@
         <!--  Save buttons (btnSave): wait for the check before the view closes, keep it while the view stays open  -->
         <Setter Property="uixprops:UIXSaveFeedback.WaitTime" Value="0:0:0.45" />
         <Setter Property="uixprops:UIXSaveFeedback.ShowTime" Value="0:0:1.4" />
+        <Style.Triggers>
+            <!--  Icon glyphs are centered already  -->
+            <Trigger Property="FontFamily" Value="{StaticResource Font.Icons}">
+                <Setter Property="Padding" Value="14,0" />
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
     <Style

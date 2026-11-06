@@ -20,6 +20,7 @@
         in the drop down and in the selection box. The text takes the foreground of the item / ComboBox (disabled state).
         The key column is shared by all entries (SharedSizeGroup, scope set by the UIXComboBox style), so the badges
         have the width of the longest key and all texts start on one line.
+        The bottom margin of the texts lifts them to the line of the TextBox text (the text line of Manrope sits low); the badge stays centered.
     -->
     <DataTemplate DataType="{x:Type uixcb:UIXComboBoxEntry}">
         <Grid>
@@ -40,6 +41,7 @@
                     BorderThickness="1"
                     CornerRadius="{StaticResource Item.CornerRadius}">
                     <TextBlock
+                        x:Name="txKey"
                         Margin="0"
                         HorizontalAlignment="Center"
                         FontSize="12"
@@ -50,7 +52,7 @@
                 </Border>
                 <TextBlock
                     Grid.Column="1"
-                    Margin="0"
+                    Margin="0,0,0,2"
                     Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Control}}}"
                     Text="{Binding Text}"
                     TextTrimming="CharacterEllipsis"
@@ -60,7 +62,7 @@
             <!--  "(None)" / "(All)": no key, muted text, not indented to the text column  -->
             <TextBlock
                 x:Name="AdditionalText"
-                Margin="0"
+                Margin="0,0,0,2"
                 Foreground="{DynamicResource Brush.TextSecondary}"
                 Text="{Binding Text}"
                 TextTrimming="CharacterEllipsis"
@@ -80,7 +82,7 @@
                     Foreground="{DynamicResource Brush.Accent}"
                     Text="&#xE710;" />
                 <TextBlock
-                    Margin="0"
+                    Margin="0,0,0,2"
                     VerticalAlignment="Center"
                     FontWeight="SemiBold"
                     Foreground="{DynamicResource Brush.Accent}"
@@ -102,13 +104,18 @@
                 <Setter TargetName="EntryGrid" Property="Visibility" Value="Collapsed" />
                 <Setter TargetName="AdditionalText" Property="Visibility" Value="Visible" />
             </DataTrigger>
+            <DataTrigger Binding="{Binding IsEnabled, RelativeSource={RelativeSource AncestorType={x:Type Control}}}" Value="False">
+                <Setter TargetName="txKey" Property="Foreground" Value="{DynamicResource Brush.TextDisabled}" />
+                <Setter TargetName="AdditionalText" Property="Foreground" Value="{DynamicResource Brush.TextDisabled}" />
+            </DataTrigger>
         </DataTemplate.Triggers>
     </DataTemplate>
 
     <Style TargetType="{x:Type ComboBoxItem}">
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Padding" Value="10,6" />
+        <!--  With the border and margin of the drop down: below the text of the selection box  -->
+        <Setter Property="Padding" Value="9,6" />
         <Setter Property="HorizontalContentAlignment" Value="Left" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
@@ -166,11 +173,16 @@
         <Setter Property="Background" Value="{StaticResource Brush.Input.Glass}" />
         <Setter Property="BorderBrush" Value="{StaticResource Brush.Input.Edge}" />
         <Setter Property="BorderThickness" Value="{StaticResource Control.BorderThickness}" />
-        <Setter Property="Padding" Value="12,0,12,0" />
+        <!--  Text starts at the same position as the text of a TextBox (its padding plus the inset of the text host)  -->
+        <Setter Property="Padding" Value="13,0,6,0" />
         <Setter Property="MinHeight" Value="{StaticResource Control.Height}" />
+        <Setter Property="Height" Value="{StaticResource Control.Height}" />
         <Setter Property="HorizontalContentAlignment" Value="Left" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
         <Setter Property="Template">
@@ -205,9 +217,10 @@
                                         <ControlTemplate TargetType="{x:Type ToggleButton}">
                                             <Border Background="Transparent">
                                                 <Path
+                                                    x:Name="pthArrow"
                                                     Width="10"
                                                     Height="6"
-                                                    Margin="0,0,14,0"
+                                                    Margin="0,0,13,0"
                                                     HorizontalAlignment="Right"
                                                     VerticalAlignment="Center"
                                                     Data="M 0.75 0.75 L 4.75 4.75 L 8.75 0.75"
@@ -216,6 +229,11 @@
                                                     StrokeStartLineCap="Round"
                                                     StrokeThickness="1.5" />
                                             </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsEnabled" Value="False">
+                                                    <Setter TargetName="pthArrow" Property="Stroke" Value="{DynamicResource Brush.TextDisabled}" />
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
                                         </ControlTemplate>
                                     </ToggleButton.Template>
                                 </ToggleButton>
@@ -223,7 +241,7 @@
                                 <!--  Not hit test visible: clicks pass through to the toggle button below  -->
                                 <ContentPresenter
                                     Grid.Column="0"
-                                    Margin="10,0,6,0"
+                                    Margin="{TemplateBinding Padding}"
                                     HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                     VerticalAlignment="Center"
                                     Content="{TemplateBinding SelectionBoxItem}"
@@ -244,14 +262,11 @@
                             Focusable="False"
                             IsOpen="{TemplateBinding IsDropDownOpen}"
                             Placement="Bottom"
-                            PopupAnimation="Fade">
+                            PopupAnimation="Fade"
+                            VerticalOffset="4">
                             <Grid MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}" MaxHeight="{TemplateBinding MaxDropDownHeight}">
-                                <Border
-                                    Margin="0,4,0,0"
-                                    Background="{StaticResource Brush.Popup.Background}"
-                                    BorderBrush="{StaticResource Brush.Popup.Border}"
-                                    BorderThickness="1"
-                                    CornerRadius="{StaticResource Popup.CornerRadius}">
+                                <!--  Glass like the context menus. No outer margin: the drop down lines up with the field (the gap is the offset of the popup, the blur fills the popup window)  -->
+                                <Border Margin="0" Style="{StaticResource Popup.Surface}">
                                     <ScrollViewer
                                         Margin="4"
                                         CanContentScroll="True"
