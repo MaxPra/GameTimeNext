@@ -1,4 +1,8 @@
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Media.Effects;
+using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
 namespace GameTimeNext.Core.Framework.UI
@@ -15,6 +19,49 @@ namespace GameTimeNext.Core.Framework.UI
     {
         // Until the film is off in SbUnwrap (TileViewStyle.xaml); keep both in sync
         private static readonly TimeSpan UnwrapDuration = TimeSpan.FromSeconds(1.1);
+
+        // Case in base units with the room around it for the blur and the offset of the shadow (keep the transform in TileViewStyle.xaml in sync)
+        private const int ShadowCaseWidth = 246;
+        private const int ShadowCaseHeight = 366;
+        private const int ShadowMargin = 30;
+
+        private static BitmapSource? _shadowImage;
+
+        /// <summary>
+        /// The shadow of a case, rendered once and shared by all cases of a library: an effect per case has to be rendered
+        /// again whenever the tile size changes, for all cases at once.
+        /// </summary>
+        public static BitmapSource ShadowImage => _shadowImage ??= RenderShadowImage();
+
+        private static BitmapSource RenderShadowImage()
+        {
+            // The fill is hidden by the case, the effect needs it to cast a shadow
+            var shape = new Border
+            {
+                Margin = new Thickness(ShadowMargin),
+                Background = new SolidColorBrush(Colors.Black),
+                CornerRadius = new CornerRadius(6),
+                Effect = new DropShadowEffect
+                {
+                    BlurRadius = 18,
+                    Direction = 270,
+                    Opacity = 1,
+                    RenderingBias = RenderingBias.Quality,
+                    ShadowDepth = 6,
+                    Color = Colors.Black
+                }
+            };
+
+            var size = new Size(ShadowCaseWidth + 2 * ShadowMargin, ShadowCaseHeight + 2 * ShadowMargin);
+            shape.Measure(size);
+            shape.Arrange(new Rect(size));
+
+            var image = new RenderTargetBitmap((int)size.Width, (int)size.Height, 96, 96, PixelFormats.Pbgra32);
+            image.Render(shape);
+            image.Freeze();
+
+            return image;
+        }
 
         public static readonly DependencyProperty IsOpenProperty =
             DependencyProperty.RegisterAttached(

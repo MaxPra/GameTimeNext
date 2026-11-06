@@ -9,10 +9,10 @@ namespace GameTimeNext.Core.Framework.UI
     /// Moves the parts of a game case (style GameCase in TileViewStyle.xaml) with springs: the cover on its hinge, the
     /// shadow and the disc. Interrupting a movement (the mouse passing over a row of cases) keeps its velocity.
     ///
-    /// Rendering: a resting case is one finished bitmap. While it moves, that cache would have to be rendered again every
-    /// frame, so it is switched off. The three surfaces of the 3D case have their own caches (from the first movement of
-    /// the case on, so only cases that were moved pay for them): a frame then only draws three finished textures. The
-    /// shadow is never rendered again, only the opacity of its cache changes.
+    /// Rendering: a closed case at rest is flat (ClosedFace), without anything of the 3D case, so a library of closed cases
+    /// costs next to nothing, also when the tile size changes. The 3D case is only shown while the case moves or is open.
+    /// Its three surfaces have their own caches (from the first movement of the case on): a frame then only draws three
+    /// finished textures. The shadow is one image shared by all cases, only its opacity changes.
     /// </summary>
     internal sealed class GameCaseMotion
     {
@@ -56,8 +56,8 @@ namespace GameTimeNext.Core.Framework.UI
         private TranslateTransform3D? _partDiscSlide;
         private AxisAngleRotation3D? _partDiscSpin;
         private UIElement? _partShadow;
-        private UIElement? _partCaseCache;
-        private CacheMode? _restCache;
+        private UIElement? _partClosedFace;
+        private UIElement? _partViewport;
 
         private bool _isSelected;
         private bool _isRunning;
@@ -159,7 +159,7 @@ namespace GameTimeNext.Core.Framework.UI
                     return false;
                 }
 
-                _partCaseCache!.CacheMode = null;
+                SetFlat(false);
                 _isMoving = true;
             }
 
@@ -179,11 +179,20 @@ namespace GameTimeNext.Core.Framework.UI
             if (!IsSettled)
                 return true;
 
-            _partCaseCache!.CacheMode = _restCache;
+            if (_hinge.Value == 0 && _hingeSelected.Value == 0 && _discOut.Value == 0)
+                SetFlat(true);
+
             _isMoving = false;
             _isRunning = false;
 
             return false;
+        }
+
+        // Hidden, not collapsed: no layout pass for the swap
+        private void SetFlat(bool isFlat)
+        {
+            _partClosedFace!.Visibility = isFlat ? Visibility.Visible : Visibility.Hidden;
+            _partViewport!.Visibility = isFlat ? Visibility.Hidden : Visibility.Visible;
         }
 
         /// <summary>Finds the parts in the template (not possible earlier: the state is set while it is applied).</summary>
@@ -197,14 +206,14 @@ namespace GameTimeNext.Core.Framework.UI
             _partDiscSlide = template.FindName("DiscSlide", control) as TranslateTransform3D;
             _partDiscSpin = template.FindName("DiscSpin", control) as AxisAngleRotation3D;
             _partShadow = template.FindName("ShadowHost", control) as UIElement;
-            _partCaseCache = template.FindName("CaseCache", control) as UIElement;
+            _partClosedFace = template.FindName("ClosedFace", control) as UIElement;
 
             if (_partHinge == null || _partHingeSelected == null || _partDiscSlide == null || _partDiscSpin == null
-                || _partShadow == null || _partCaseCache == null
+                || _partShadow == null || _partClosedFace == null
                 || template.FindName("CaseViewport", control) is not Viewport3D viewport)
                 return false;
 
-            _restCache = _partCaseCache.CacheMode;
+            _partViewport = viewport;
 
             // Stays set: taking it away again before the layout it triggers has run crashes WPF
             // (Target of the internal BitmapCacheBrush is null then, NullReferenceException in its OnLayoutUpdated)

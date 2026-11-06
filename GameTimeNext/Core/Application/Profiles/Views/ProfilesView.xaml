@@ -175,6 +175,7 @@
                 <uixsel:UIXListBox
                     x:Name="ListBoxProfiles"
                     ui:ScrollFade.Length="80"
+                    ui:SmoothScroll.WheelStep="140"
                     ui:TileLayout.AutoSize="True"
                     Grid.Row="1"
                     Margin="-12,-8,0,0"

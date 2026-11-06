@@ -501,14 +501,12 @@
 
                     <!--
                         Tag: the cover (content), so the visuals of the 3D surfaces can bind to it by name.
-                        Performance: shadow and 3D case are each cached as a bitmap (BitmapCache on a wrapping Border; an
-                        Effect is applied after the cache of its own element, so the cache must sit on a parent), so
-                        scrolling a library only moves finished images (140 instead of 22 fps with 80 profiles). A cache is
-                        rendered again when its content changes, so nothing inside may follow the accent color while the case
-                        is closed (all caches at once froze the app for seconds on a profile change): the selection ring sits
-                        between the caches, the accent rim of the disc is only set while open (trigger).
-                        Nothing inside a cache may be animated either: cover, disc and the shadow's opacity (on the cache
-                        itself) are moved by GameCaseMotion, which switches the case cache off meanwhile and caches the 3D surfaces.
+                        Performance: a closed case is flat (ClosedFace); the 3D case is only shown while it moves or is open
+                        (GameCaseMotion), never cache it as a whole: every change of the tile size renders all of those caches
+                        again (14 GB of video memory and a frozen window after maximizing a library of 80 profiles). Its surfaces
+                        have their own caches.
+                        No effects or caches per tile either: the shadow is one shared image. The accent rim of the disc is only
+                        set while open (trigger).
                     -->
                     <Grid
                         x:Name="CaseHost"
@@ -518,29 +516,21 @@
                             <ScaleTransform x:Name="CasePop" />
                         </Grid.RenderTransform>
 
-                        <!--  Shadow on the shelf (the layer needs a fill, otherwise the DropShadowEffect has nothing to cast)  -->
-                        <Border
+                        <!--
+                            Shadow on the shelf: one image rendered once, shared by all cases (GameCase.ShadowImage). Layer of the
+                            case size, the transform grows it by the margin around the case within the image (306 / 246, 426 / 366).
+                        -->
+                        <Image
                             x:Name="ShadowHost"
                             IsHitTestVisible="False"
-                            Opacity="{StaticResource Case.ShadowOpacityNormal}">
-                            <Border.CacheMode>
-                                <BitmapCache SnapsToDevicePixels="True" />
-                            </Border.CacheMode>
-                            <Border
-                                Background="{DynamicResource Brush.Background}"
-                                CornerRadius="6"
-                                IsHitTestVisible="False">
-                                <Border.Effect>
-                                    <DropShadowEffect
-                                        BlurRadius="18"
-                                        Direction="270"
-                                        Opacity="1"
-                                        RenderingBias="Quality"
-                                        ShadowDepth="6"
-                                        Color="#FF000000" />
-                                </Border.Effect>
-                            </Border>
-                        </Border>
+                            Opacity="{StaticResource Case.ShadowOpacityNormal}"
+                            RenderTransformOrigin="0.5,0.5"
+                            Source="{x:Static ui:GameCase.ShadowImage}"
+                            Stretch="Fill">
+                            <Image.RenderTransform>
+                                <ScaleTransform ScaleX="1.243902" ScaleY="1.163934" />
+                            </Image.RenderTransform>
+                        </Image>
 
                         <!--  Selection: accent outline around the case, behind it (cover and disc pass in front of it)  -->
                         <Border
@@ -552,235 +542,262 @@
                             IsHitTestVisible="False"
                             Opacity="0" />
 
-                        <Border x:Name="CaseCache" IsHitTestVisible="False">
-                            <Border.CacheMode>
-                                <BitmapCache SnapsToDevicePixels="True" />
-                            </Border.CacheMode>
-                            <Viewport3D
-                                x:Name="CaseViewport"
-                                ClipToBounds="False"
-                                IsHitTestVisible="False">
-                                <Viewport3D.Camera>
-                                    <!--
-                                        FieldOfView = 2 * atan(0.7 / 14): the visible width at z = 0 is exactly the mesh width (1.4),
-                                        so the closed case is rendered 1:1 within CaseHost. The distance keeps the perspective mild:
-                                        the opened cover grows by only ~12 px at its free edge, ~14 px when selected (room above the first profile row: ProfilesView).
-                                    -->
-                                    <PerspectiveCamera
-                                        FarPlaneDistance="20"
-                                        FieldOfView="5.72482"
-                                        LookDirection="0,0,-14"
-                                        NearPlaneDistance="1"
-                                        Position="0,0,14"
-                                        UpDirection="0,1,0" />
-                                </Viewport3D.Camera>
+                        <!--  Closed case: the layers of the front cover below, flat. Takes the place of the 3D case at rest (GameCaseMotion)  -->
+                        <Viewbox
+                            x:Name="ClosedFace"
+                            IsHitTestVisible="False"
+                            Stretch="Fill">
+                            <Grid Width="246" Height="366">
+                                <Border Background="{DynamicResource Brush.Background}" CornerRadius="6" />
+                                <Border Background="{DynamicResource Brush.Card.Background}" CornerRadius="6" />
+                                <Border
+                                    Margin="3"
+                                    CornerRadius="4"
+                                    RenderOptions.BitmapScalingMode="HighQuality">
+                                    <Border.Background>
+                                        <ImageBrush
+                                            AlignmentX="Left"
+                                            AlignmentY="Top"
+                                            ImageSource="{Binding Tag, ElementName=CaseHost}"
+                                            Stretch="UniformToFill" />
+                                    </Border.Background>
+                                </Border>
+                                <Border
+                                    Margin="3"
+                                    Background="{StaticResource Brush.Case.Gloss}"
+                                    CornerRadius="4" />
+                                <Border
+                                    BorderBrush="{DynamicResource Brush.Card.Border}"
+                                    BorderThickness="1"
+                                    CornerRadius="6" />
+                            </Grid>
+                        </Viewbox>
 
+                        <Viewport3D
+                            x:Name="CaseViewport"
+                            ClipToBounds="False"
+                            IsHitTestVisible="False"
+                            Visibility="Hidden">
+                            <Viewport3D.Camera>
                                 <!--
-                                    Light from the front: surfaces facing the viewer (case, disc, closed cover) stay at their exact colors
-                                    (ambient + directional = white), the opened cover turns slightly darker.
+                                    FieldOfView = 2 * atan(0.7 / 14): the visible width at z = 0 is exactly the mesh width (1.4),
+                                    so the closed case is rendered 1:1 within CaseHost. The distance keeps the perspective mild:
+                                    the opened cover grows by only ~12 px at its free edge, ~14 px when selected (room above the first profile row: ProfilesView).
                                 -->
-                                <ModelVisual3D>
-                                    <ModelVisual3D.Content>
-                                        <Model3DGroup>
-                                            <AmbientLight Color="#FF8A8A8A" />
-                                            <DirectionalLight Direction="0,0,-1" Color="#FF757575" />
-                                        </Model3DGroup>
-                                    </ModelVisual3D.Content>
-                                </ModelVisual3D>
+                                <PerspectiveCamera
+                                    FarPlaneDistance="20"
+                                    FieldOfView="5.72482"
+                                    LookDirection="0,0,-14"
+                                    NearPlaneDistance="1"
+                                    Position="0,0,14"
+                                    UpDirection="0,1,0" />
+                            </Viewport3D.Camera>
 
-                                <!--  Back of the case: glass with the recessed tray, only visible while the cover is open  -->
-                                <Viewport2DVisual3D>
-                                    <Viewport2DVisual3D.Geometry>
-                                        <MeshGeometry3D
-                                            Positions="-0.7,-1.041463,0  0.7,-1.041463,0  0.7,1.041463,0  -0.7,1.041463,0"
-                                            TextureCoordinates="0,1 1,1 1,0 0,0"
-                                            TriangleIndices="0 1 2  0 2 3" />
-                                    </Viewport2DVisual3D.Geometry>
+                            <!--
+                                Light from the front: surfaces facing the viewer (case, disc, closed cover) stay at their exact colors
+                                (ambient + directional = white), the opened cover turns slightly darker.
+                            -->
+                            <ModelVisual3D>
+                                <ModelVisual3D.Content>
+                                    <Model3DGroup>
+                                        <AmbientLight Color="#FF8A8A8A" />
+                                        <DirectionalLight Direction="0,0,-1" Color="#FF757575" />
+                                    </Model3DGroup>
+                                </ModelVisual3D.Content>
+                            </ModelVisual3D>
 
-                                    <Viewport2DVisual3D.Material>
-                                        <DiffuseMaterial Brush="#FFFFFFFF" Viewport2DVisual3D.IsVisualHostMaterial="True" />
-                                    </Viewport2DVisual3D.Material>
+                            <!--  Back of the case: glass with the recessed tray, only visible while the cover is open  -->
+                            <Viewport2DVisual3D>
+                                <Viewport2DVisual3D.Geometry>
+                                    <MeshGeometry3D
+                                        Positions="-0.7,-1.041463,0  0.7,-1.041463,0  0.7,1.041463,0  -0.7,1.041463,0"
+                                        TextureCoordinates="0,1 1,1 1,0 0,0"
+                                        TriangleIndices="0 1 2  0 2 3" />
+                                </Viewport2DVisual3D.Geometry>
 
-                                    <Viewport2DVisual3D.Visual>
-                                        <!--  Drawn in base units (246 x 366) and scaled to the tile size  -->
-                                        <Border Width="{Binding ActualWidth, ElementName=CaseHost}" Height="{Binding ActualHeight, ElementName=CaseHost}">
-                                            <Viewbox Stretch="Fill">
-                                                <Grid Width="246" Height="366">
-                                                    <Border
-                                                        Background="{DynamicResource Brush.Card.Background}"
-                                                        BorderBrush="{DynamicResource Brush.Card.Border}"
-                                                        BorderThickness="1"
-                                                        CornerRadius="6" />
-                                                    <Border
-                                                        Margin="3"
-                                                        Background="{DynamicResource Brush.Card.Inset}"
-                                                        CornerRadius="4" />
-                                                </Grid>
-                                            </Viewbox>
-                                        </Border>
-                                    </Viewport2DVisual3D.Visual>
-                                </Viewport2DVisual3D>
+                                <Viewport2DVisual3D.Material>
+                                    <DiffuseMaterial Brush="#FFFFFFFF" Viewport2DVisual3D.IsVisualHostMaterial="True" />
+                                </Viewport2DVisual3D.Material>
 
-                                <!--
-                                    Disc (224 px = 1.274797 units), centered under the cover, between back and cover (z).
-                                    Printed like a game disc: the cover over the whole data side, clear hub in the middle.
-                                -->
-                                <Viewport2DVisual3D>
-                                    <Viewport2DVisual3D.Geometry>
-                                        <MeshGeometry3D
-                                            Positions="-0.637398,-0.637398,0.001  0.637398,-0.637398,0.001  0.637398,0.637398,0.001  -0.637398,0.637398,0.001"
-                                            TextureCoordinates="0,1 1,1 1,0 0,0"
-                                            TriangleIndices="0 1 2  0 2 3" />
-                                    </Viewport2DVisual3D.Geometry>
+                                <Viewport2DVisual3D.Visual>
+                                    <!--  Drawn in base units (246 x 366) and scaled to the tile size  -->
+                                    <Border Width="{Binding ActualWidth, ElementName=CaseHost}" Height="{Binding ActualHeight, ElementName=CaseHost}">
+                                        <Viewbox Stretch="Fill">
+                                            <Grid Width="246" Height="366">
+                                                <Border
+                                                    Background="{DynamicResource Brush.Card.Background}"
+                                                    BorderBrush="{DynamicResource Brush.Card.Border}"
+                                                    BorderThickness="1"
+                                                    CornerRadius="6" />
+                                                <Border
+                                                    Margin="3"
+                                                    Background="{DynamicResource Brush.Card.Inset}"
+                                                    CornerRadius="4" />
+                                            </Grid>
+                                        </Viewbox>
+                                    </Border>
+                                </Viewport2DVisual3D.Visual>
+                            </Viewport2DVisual3D>
 
-                                    <Viewport2DVisual3D.Material>
-                                        <DiffuseMaterial Brush="#FFFFFFFF" Viewport2DVisual3D.IsVisualHostMaterial="True" />
-                                    </Viewport2DVisual3D.Material>
+                            <!--
+                                Disc (224 px = 1.274797 units), centered under the cover, between back and cover (z).
+                                Printed like a game disc: the cover over the whole data side, clear hub in the middle.
+                            -->
+                            <Viewport2DVisual3D>
+                                <Viewport2DVisual3D.Geometry>
+                                    <MeshGeometry3D
+                                        Positions="-0.637398,-0.637398,0.001  0.637398,-0.637398,0.001  0.637398,0.637398,0.001  -0.637398,0.637398,0.001"
+                                        TextureCoordinates="0,1 1,1 1,0 0,0"
+                                        TriangleIndices="0 1 2  0 2 3" />
+                                </Viewport2DVisual3D.Geometry>
 
-                                    <Viewport2DVisual3D.Transform>
-                                        <Transform3DGroup>
-                                            <RotateTransform3D
-                                                CenterX="0"
-                                                CenterY="0"
-                                                CenterZ="0.001">
-                                                <RotateTransform3D.Rotation>
-                                                    <AxisAngleRotation3D
-                                                        x:Name="DiscSpin"
-                                                        Angle="0"
-                                                        Axis="0,0,1" />
-                                                </RotateTransform3D.Rotation>
-                                            </RotateTransform3D>
-                                            <TranslateTransform3D x:Name="DiscSlide" OffsetX="0" />
-                                        </Transform3DGroup>
-                                    </Viewport2DVisual3D.Transform>
+                                <Viewport2DVisual3D.Material>
+                                    <DiffuseMaterial Brush="#FFFFFFFF" Viewport2DVisual3D.IsVisualHostMaterial="True" />
+                                </Viewport2DVisual3D.Material>
 
-                                    <Viewport2DVisual3D.Visual>
-                                        <Border Width="{Binding ActualWidth, ElementName=CaseHost}" Height="{Binding ActualWidth, ElementName=CaseHost}">
-                                            <Viewbox Stretch="Fill">
-                                                <Grid
-                                                    Width="224"
-                                                    Height="224"
-                                                    OpacityMask="{StaticResource Brush.Case.DiscHoleMask}">
-                                                    <!--
-                                                        Cover print; shows the game title readable when that fits (DiscPrint), turned so it ends
-                                                        on the visible right side after the spin of the selected disc (-120: PrintAngle -30)
-                                                    -->
-                                                    <Ellipse ui:DiscPrint.Cover="{Binding Tag, ElementName=CaseHost}" ui:DiscPrint.PrintAngle="-30" />
-                                                    <!--  Gloss of the disc surface  -->
-                                                    <Ellipse Fill="{StaticResource Brush.Case.Disc}" />
-                                                    <!--  Rim: clear edge, catches the light in the accent color (stroke set while open, see the cache note above)  -->
-                                                    <Ellipse Stroke="{DynamicResource Brush.Card.Border}" StrokeThickness="3" />
-                                                    <Ellipse
-                                                        x:Name="DiscAccentRim"
-                                                        Opacity="0.6"
-                                                        StrokeThickness="1" />
-                                                    <!--  Black plastic hub with a fine stacking ring; the hole itself is cut out by the opacity mask  -->
-                                                    <Ellipse
-                                                        Width="88"
-                                                        Height="88"
-                                                        Fill="{StaticResource Brush.Case.Hub}"
-                                                        Stroke="{DynamicResource Brush.Card.Border}"
-                                                        StrokeThickness="1" />
-                                                    <Ellipse
-                                                        Width="62"
-                                                        Height="62"
-                                                        Stroke="#14FFFFFF"
-                                                        StrokeThickness="1" />
-                                                    <!--  Edge of the hole (half of the stroke stays outside the mask)  -->
-                                                    <Ellipse
-                                                        Width="34"
-                                                        Height="34"
-                                                        Stroke="#33FFFFFF"
-                                                        StrokeThickness="2" />
-                                                </Grid>
-                                            </Viewbox>
-                                        </Border>
-                                    </Viewport2DVisual3D.Visual>
-                                </Viewport2DVisual3D>
+                                <Viewport2DVisual3D.Transform>
+                                    <Transform3DGroup>
+                                        <RotateTransform3D
+                                            CenterX="0"
+                                            CenterY="0"
+                                            CenterZ="0.001">
+                                            <RotateTransform3D.Rotation>
+                                                <AxisAngleRotation3D
+                                                    x:Name="DiscSpin"
+                                                    Angle="0"
+                                                    Axis="0,0,1" />
+                                            </RotateTransform3D.Rotation>
+                                        </RotateTransform3D>
+                                        <TranslateTransform3D x:Name="DiscSlide" OffsetX="0" />
+                                    </Transform3DGroup>
+                                </Viewport2DVisual3D.Transform>
 
-                                <!--
-                                    Front cover over the whole case, hinged at its left edge (x = -0.7): nothing stays behind on the
-                                    left when it opens. Slightly in front of back and disc (z) to avoid z-fighting.
-                                -->
-                                <Viewport2DVisual3D>
-                                    <Viewport2DVisual3D.Geometry>
-                                        <MeshGeometry3D
-                                            Positions="-0.7,-1.041463,0.002  0.7,-1.041463,0.002  0.7,1.041463,0.002  -0.7,1.041463,0.002"
-                                            TextureCoordinates="0,1 1,1 1,0 0,0"
-                                            TriangleIndices="0 1 2  0 2 3" />
-                                    </Viewport2DVisual3D.Geometry>
+                                <Viewport2DVisual3D.Visual>
+                                    <Border Width="{Binding ActualWidth, ElementName=CaseHost}" Height="{Binding ActualWidth, ElementName=CaseHost}">
+                                        <Viewbox Stretch="Fill">
+                                            <Grid
+                                                Width="224"
+                                                Height="224"
+                                                OpacityMask="{StaticResource Brush.Case.DiscHoleMask}">
+                                                <!--
+                                                    Cover print; shows the game title readable when that fits (DiscPrint), turned so it ends
+                                                    on the visible right side after the spin of the selected disc (-120: PrintAngle -30)
+                                                -->
+                                                <Ellipse ui:DiscPrint.Cover="{Binding Tag, ElementName=CaseHost}" ui:DiscPrint.PrintAngle="-30" />
+                                                <!--  Gloss of the disc surface  -->
+                                                <Ellipse Fill="{StaticResource Brush.Case.Disc}" />
+                                                <!--  Rim: clear edge, catches the light in the accent color (stroke set while open, see the cache note above)  -->
+                                                <Ellipse Stroke="{DynamicResource Brush.Card.Border}" StrokeThickness="3" />
+                                                <Ellipse
+                                                    x:Name="DiscAccentRim"
+                                                    Opacity="0.6"
+                                                    StrokeThickness="1" />
+                                                <!--  Black plastic hub with a fine stacking ring; the hole itself is cut out by the opacity mask  -->
+                                                <Ellipse
+                                                    Width="88"
+                                                    Height="88"
+                                                    Fill="{StaticResource Brush.Case.Hub}"
+                                                    Stroke="{DynamicResource Brush.Card.Border}"
+                                                    StrokeThickness="1" />
+                                                <Ellipse
+                                                    Width="62"
+                                                    Height="62"
+                                                    Stroke="#14FFFFFF"
+                                                    StrokeThickness="1" />
+                                                <!--  Edge of the hole (half of the stroke stays outside the mask)  -->
+                                                <Ellipse
+                                                    Width="34"
+                                                    Height="34"
+                                                    Stroke="#33FFFFFF"
+                                                    StrokeThickness="2" />
+                                            </Grid>
+                                        </Viewbox>
+                                    </Border>
+                                </Viewport2DVisual3D.Visual>
+                            </Viewport2DVisual3D>
 
-                                    <Viewport2DVisual3D.Material>
-                                        <DiffuseMaterial Brush="#FFFFFFFF" Viewport2DVisual3D.IsVisualHostMaterial="True" />
-                                    </Viewport2DVisual3D.Material>
+                            <!--
+                                Front cover over the whole case, hinged at its left edge (x = -0.7): nothing stays behind on the
+                                left when it opens. Slightly in front of back and disc (z) to avoid z-fighting.
+                            -->
+                            <Viewport2DVisual3D>
+                                <Viewport2DVisual3D.Geometry>
+                                    <MeshGeometry3D
+                                        Positions="-0.7,-1.041463,0.002  0.7,-1.041463,0.002  0.7,1.041463,0.002  -0.7,1.041463,0.002"
+                                        TextureCoordinates="0,1 1,1 1,0 0,0"
+                                        TriangleIndices="0 1 2  0 2 3" />
+                                </Viewport2DVisual3D.Geometry>
 
-                                    <!--  Two rotations around the same hinge: opened (hover or selected) + the extra angle of the selected case  -->
-                                    <Viewport2DVisual3D.Transform>
-                                        <Transform3DGroup>
-                                            <RotateTransform3D
-                                                CenterX="-0.7"
-                                                CenterY="0"
-                                                CenterZ="0.002">
-                                                <RotateTransform3D.Rotation>
-                                                    <AxisAngleRotation3D
-                                                        x:Name="CoverHinge"
-                                                        Angle="0"
-                                                        Axis="0,1,0" />
-                                                </RotateTransform3D.Rotation>
-                                            </RotateTransform3D>
-                                            <RotateTransform3D
-                                                CenterX="-0.7"
-                                                CenterY="0"
-                                                CenterZ="0.002">
-                                                <RotateTransform3D.Rotation>
-                                                    <AxisAngleRotation3D
-                                                        x:Name="CoverHingeSelected"
-                                                        Angle="0"
-                                                        Axis="0,1,0" />
-                                                </RotateTransform3D.Rotation>
-                                            </RotateTransform3D>
-                                        </Transform3DGroup>
-                                    </Viewport2DVisual3D.Transform>
+                                <Viewport2DVisual3D.Material>
+                                    <DiffuseMaterial Brush="#FFFFFFFF" Viewport2DVisual3D.IsVisualHostMaterial="True" />
+                                </Viewport2DVisual3D.Material>
 
-                                    <Viewport2DVisual3D.Visual>
-                                        <Border Width="{Binding ActualWidth, ElementName=CaseHost}" Height="{Binding ActualHeight, ElementName=CaseHost}">
-                                            <Viewbox Stretch="Fill">
-                                                <Grid Width="246" Height="366">
-                                                    <!--  Glass lip around the cover; opaque base below, so the cover hides the disc completely  -->
-                                                    <Border Background="{DynamicResource Brush.Background}" CornerRadius="6" />
-                                                    <Border Background="{DynamicResource Brush.Card.Background}" CornerRadius="6" />
+                                <!--  Two rotations around the same hinge: opened (hover or selected) + the extra angle of the selected case  -->
+                                <Viewport2DVisual3D.Transform>
+                                    <Transform3DGroup>
+                                        <RotateTransform3D
+                                            CenterX="-0.7"
+                                            CenterY="0"
+                                            CenterZ="0.002">
+                                            <RotateTransform3D.Rotation>
+                                                <AxisAngleRotation3D
+                                                    x:Name="CoverHinge"
+                                                    Angle="0"
+                                                    Axis="0,1,0" />
+                                            </RotateTransform3D.Rotation>
+                                        </RotateTransform3D>
+                                        <RotateTransform3D
+                                            CenterX="-0.7"
+                                            CenterY="0"
+                                            CenterZ="0.002">
+                                            <RotateTransform3D.Rotation>
+                                                <AxisAngleRotation3D
+                                                    x:Name="CoverHingeSelected"
+                                                    Angle="0"
+                                                    Axis="0,1,0" />
+                                            </RotateTransform3D.Rotation>
+                                        </RotateTransform3D>
+                                    </Transform3DGroup>
+                                </Viewport2DVisual3D.Transform>
 
-                                                    <!--  Cover (2:3); top/left like before: overflow is cut at the bottom/right  -->
-                                                    <Border
-                                                        Margin="3"
-                                                        CornerRadius="4"
-                                                        RenderOptions.BitmapScalingMode="HighQuality">
-                                                        <Border.Background>
-                                                            <ImageBrush
-                                                                AlignmentX="Left"
-                                                                AlignmentY="Top"
-                                                                ImageSource="{Binding Tag, ElementName=CaseHost}"
-                                                                Stretch="UniformToFill" />
-                                                        </Border.Background>
-                                                    </Border>
+                                <Viewport2DVisual3D.Visual>
+                                    <Border Width="{Binding ActualWidth, ElementName=CaseHost}" Height="{Binding ActualHeight, ElementName=CaseHost}">
+                                        <Viewbox Stretch="Fill">
+                                            <Grid Width="246" Height="366">
+                                                <!--  Glass lip around the cover; opaque base below, so the cover hides the disc completely  -->
+                                                <Border Background="{DynamicResource Brush.Background}" CornerRadius="6" />
+                                                <Border Background="{DynamicResource Brush.Card.Background}" CornerRadius="6" />
 
-                                                    <Border
-                                                        Margin="3"
-                                                        Background="{StaticResource Brush.Case.Gloss}"
-                                                        CornerRadius="4" />
+                                                <!--  Cover (2:3); top/left like before: overflow is cut at the bottom/right  -->
+                                                <Border
+                                                    Margin="3"
+                                                    CornerRadius="4"
+                                                    RenderOptions.BitmapScalingMode="HighQuality">
+                                                    <Border.Background>
+                                                        <ImageBrush
+                                                            AlignmentX="Left"
+                                                            AlignmentY="Top"
+                                                            ImageSource="{Binding Tag, ElementName=CaseHost}"
+                                                            Stretch="UniformToFill" />
+                                                    </Border.Background>
+                                                </Border>
 
-                                                    <!--  Lit edge like the cards  -->
-                                                    <Border
-                                                        BorderBrush="{DynamicResource Brush.Card.Border}"
-                                                        BorderThickness="1"
-                                                        CornerRadius="6" />
-                                                </Grid>
-                                            </Viewbox>
-                                        </Border>
-                                    </Viewport2DVisual3D.Visual>
-                                </Viewport2DVisual3D>
-                            </Viewport3D>
-                        </Border>
+                                                <Border
+                                                    Margin="3"
+                                                    Background="{StaticResource Brush.Case.Gloss}"
+                                                    CornerRadius="4" />
+
+                                                <!--  Lit edge like the cards  -->
+                                                <Border
+                                                    BorderBrush="{DynamicResource Brush.Card.Border}"
+                                                    BorderThickness="1"
+                                                    CornerRadius="6" />
+                                            </Grid>
+                                        </Viewbox>
+                                    </Border>
+                                </Viewport2DVisual3D.Visual>
+                            </Viewport2DVisual3D>
+                        </Viewport3D>
 
                         <!--
                             Shrink wrap of a sealed game (ui:GameCase.IsSealed), drawn in base units over the closed case: milky

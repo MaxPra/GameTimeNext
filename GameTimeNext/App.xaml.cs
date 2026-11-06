@@ -6,6 +6,7 @@ using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.Files;
 using GameTimeNext.Core.Framework.GitHub;
 using GameTimeNext.Core.Framework.LauncherIntegration;
+using GameTimeNext.Core.Framework.UI;
 using GameTimeNext.Core.Framework.Utils;
 using System.Diagnostics;
 using System.Windows;
@@ -29,6 +30,9 @@ namespace GameTimeNext
 
             // App font (Manrope) as default of every window, before the first window (splash) is created
             FnFont.ApplyAsDefault();
+
+            // Mouse wheel moves every ScrollViewer by a spring
+            SmoothScroll.Register();
 
             // Started as splash process by the application (see SplashHost): only shows the splash, nothing else
             if (SplashHost.IsSplashProcess(e.Args))

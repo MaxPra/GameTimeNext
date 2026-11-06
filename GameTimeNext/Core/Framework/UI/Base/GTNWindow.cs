@@ -883,6 +883,13 @@ namespace GameTimeNext.Core.Framework.UI.Base
             if (msg == WM_WINDOWPOSCHANGED)
                 UpdateMaximizedInset(hwnd);
 
+            if (msg == WM_ERASEBKGND && IsNativeFrameActive)
+            {
+                FillWithBackground(hwnd, wParam);
+                handled = true;
+                return new IntPtr(1);
+            }
+
             // With a system menu, DWM draws the native caption buttons on the glass, where they show through the title bar
             if (msg == WM_STYLECHANGING && unchecked((int)wParam.ToInt64()) == GWL_STYLE)
             {
@@ -901,6 +908,20 @@ namespace GameTimeNext.Core.Framework.UI.Base
                 }, DispatcherPriority.Background);
 
             return IntPtr.Zero;
+        }
+
+        /// <summary>
+        /// A window that grows has no rendered frame for the new size until WPF has laid it out and rendered it (about 100 ms
+        /// when it is maximized), and WPF doesn't erase the background: DWM shows the whole window in the system accent color
+        /// until then. Filled with the background of the app instead. Not with the acrylic backdrop: it shows through there.
+        /// </summary>
+        private static void FillWithBackground(IntPtr hwnd, IntPtr hdc)
+        {
+            if (_eraseBrush == IntPtr.Zero)
+                _eraseBrush = CreateSolidBrush(EraseColor);
+
+            if (GetClientRect(hwnd, out RECT client))
+                FillRect(hdc, ref client, _eraseBrush);
         }
 
         private static void AdjustMaximizedSize(IntPtr hwnd, IntPtr lParam)
@@ -1005,6 +1026,23 @@ namespace GameTimeNext.Core.Framework.UI.Base
         private static extern bool GetMonitorInfo(IntPtr hMonitor, ref MONITORINFO lpmi);
 
         private const int SW_HIDE = 0;
+        private const int WM_ERASEBKGND = 0x0014;
+
+        /// <summary>COLORREF (0x00BBGGRR) of Color.Background.</summary>
+        private const int EraseColor = 0x00141010;
+
+        // One brush for all windows, for the whole run of the app
+        private static IntPtr _eraseBrush;
+
+        [DllImport("gdi32.dll")]
+        private static extern IntPtr CreateSolidBrush(int color);
+
+        [DllImport("user32.dll")]
+        private static extern int FillRect(IntPtr hdc, ref RECT rect, IntPtr brush);
+
+        [DllImport("user32.dll")]
+        private static extern bool GetClientRect(IntPtr hwnd, out RECT rect);
+
 
         [DllImport("user32.dll")]
         private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
