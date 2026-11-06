@@ -68,6 +68,55 @@ namespace GameTimeNext.Core.Framework.UI
         public static void SetIsWrapped(DependencyObject obj, bool value)
             => obj.SetValue(IsWrappedProperty, value);
 
+        /// <summary>Set by the triggers of the template on its root: the case is open (hovered or IsOpen, not wrapped). Starts the movement.</summary>
+        public static readonly DependencyProperty MotionOpenProperty =
+            DependencyProperty.RegisterAttached(
+                "MotionOpen",
+                typeof(bool),
+                typeof(GameCase),
+                new PropertyMetadata(false, OnMotionChanged));
+
+        public static bool GetMotionOpen(DependencyObject obj)
+            => (bool)obj.GetValue(MotionOpenProperty);
+
+        public static void SetMotionOpen(DependencyObject obj, bool value)
+            => obj.SetValue(MotionOpenProperty, value);
+
+        /// <summary>Set by the triggers of the template on its root: the case is selected and not wrapped. Starts the movement.</summary>
+        public static readonly DependencyProperty MotionSelectedProperty =
+            DependencyProperty.RegisterAttached(
+                "MotionSelected",
+                typeof(bool),
+                typeof(GameCase),
+                new PropertyMetadata(false, OnMotionChanged));
+
+        public static bool GetMotionSelected(DependencyObject obj)
+            => (bool)obj.GetValue(MotionSelectedProperty);
+
+        public static void SetMotionSelected(DependencyObject obj, bool value)
+            => obj.SetValue(MotionSelectedProperty, value);
+
+        private static readonly DependencyProperty MotionProperty =
+            DependencyProperty.RegisterAttached(
+                "Motion",
+                typeof(GameCaseMotion),
+                typeof(GameCase),
+                new PropertyMetadata(null));
+
+        private static void OnMotionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is not FrameworkElement host)
+                return;
+
+            if (host.GetValue(MotionProperty) is not GameCaseMotion motion)
+            {
+                motion = new GameCaseMotion(host);
+                host.SetValue(MotionProperty, motion);
+            }
+
+            motion.Update();
+        }
+
         // Timer of a running unwrap animation, ends IsWrapped
         private static readonly DependencyProperty UnwrapTimerProperty =
             DependencyProperty.RegisterAttached(

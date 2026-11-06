@@ -133,81 +133,6 @@
                         <CubicEase x:Key="EaseOut" EasingMode="EaseOut" />
                         <CubicEase x:Key="EaseInOut" EasingMode="EaseInOut" />
 
-                        <Storyboard x:Key="SbOpen" FillBehavior="HoldEnd">
-                            <DoubleAnimation
-                                EasingFunction="{StaticResource EaseOut}"
-                                Storyboard.TargetName="CoverHinge"
-                                Storyboard.TargetProperty="Angle"
-                                To="{StaticResource Case.OpenAngle}"
-                                Duration="0:0:0.32" />
-                            <DoubleAnimation
-                                EasingFunction="{StaticResource EaseOut}"
-                                Storyboard.TargetName="ShadowLayer"
-                                Storyboard.TargetProperty="Opacity"
-                                To="{StaticResource Case.ShadowOpacityOpen}"
-                                Duration="0:0:0.32" />
-                        </Storyboard>
-
-                        <!--  Short delay: a retracting disc is back inside before the cover passes over it  -->
-                        <Storyboard x:Key="SbClose" FillBehavior="HoldEnd">
-                            <DoubleAnimation
-                                BeginTime="0:0:0.06"
-                                EasingFunction="{StaticResource EaseInOut}"
-                                Storyboard.TargetName="CoverHinge"
-                                Storyboard.TargetProperty="Angle"
-                                To="0"
-                                Duration="0:0:0.26" />
-                            <DoubleAnimation
-                                EasingFunction="{StaticResource EaseInOut}"
-                                Storyboard.TargetName="ShadowLayer"
-                                Storyboard.TargetProperty="Opacity"
-                                To="{StaticResource Case.ShadowOpacityNormal}"
-                                Duration="0:0:0.26" />
-                        </Storyboard>
-
-                        <!--  Selected: the cover opens a little further, the disc follows it and slides out  -->
-                        <Storyboard x:Key="SbSelect" FillBehavior="HoldEnd">
-                            <DoubleAnimation
-                                EasingFunction="{StaticResource EaseOut}"
-                                Storyboard.TargetName="CoverHingeSelected"
-                                Storyboard.TargetProperty="Angle"
-                                To="{StaticResource Case.SelectedExtraAngle}"
-                                Duration="0:0:0.32" />
-                            <!--  Starts right after the cover begins to move: no noticeable pause after the click  -->
-                            <DoubleAnimation
-                                BeginTime="0:0:0.04"
-                                EasingFunction="{StaticResource EaseOut}"
-                                Storyboard.TargetName="DiscSlide"
-                                Storyboard.TargetProperty="OffsetX"
-                                To="{StaticResource Case.DiscOutOffset}"
-                                Duration="0:0:0.32" />
-                            <!--  Short clockwise spin while it slides out (ends with the slide), fast at first and settling softly  -->
-                            <DoubleAnimation
-                                BeginTime="0:0:0.04"
-                                EasingFunction="{StaticResource EaseOut}"
-                                Storyboard.TargetName="DiscSpin"
-                                Storyboard.TargetProperty="Angle"
-                                From="0"
-                                To="-120"
-                                Duration="0:0:0.38" />
-                        </Storyboard>
-
-                        <Storyboard x:Key="SbDeselect" FillBehavior="HoldEnd">
-                            <DoubleAnimation
-                                BeginTime="0:0:0.06"
-                                EasingFunction="{StaticResource EaseInOut}"
-                                Storyboard.TargetName="CoverHingeSelected"
-                                Storyboard.TargetProperty="Angle"
-                                To="0"
-                                Duration="0:0:0.26" />
-                            <DoubleAnimation
-                                EasingFunction="{StaticResource EaseInOut}"
-                                Storyboard.TargetName="DiscSlide"
-                                Storyboard.TargetProperty="OffsetX"
-                                To="0"
-                                Duration="0:0:0.22" />
-                        </Storyboard>
-
                         <!--  Accent outline: also on a selected sealed case, which doesn't open  -->
                         <Storyboard x:Key="SbRingShow" FillBehavior="HoldEnd">
                             <DoubleAnimation
@@ -582,6 +507,8 @@
                         rendered again when its content changes, so nothing inside may follow the accent color while the case
                         is closed (all caches at once froze the app for seconds on a profile change): the selection ring sits
                         between the caches, the accent rim of the disc is only set while open (trigger).
+                        Nothing inside a cache may be animated either: cover, disc and the shadow's opacity (on the cache
+                        itself) are moved by GameCaseMotion, which switches the case cache off meanwhile and caches the 3D surfaces.
                     -->
                     <Grid
                         x:Name="CaseHost"
@@ -592,16 +519,17 @@
                         </Grid.RenderTransform>
 
                         <!--  Shadow on the shelf (the layer needs a fill, otherwise the DropShadowEffect has nothing to cast)  -->
-                        <Border IsHitTestVisible="False">
+                        <Border
+                            x:Name="ShadowHost"
+                            IsHitTestVisible="False"
+                            Opacity="{StaticResource Case.ShadowOpacityNormal}">
                             <Border.CacheMode>
                                 <BitmapCache SnapsToDevicePixels="True" />
                             </Border.CacheMode>
                             <Border
-                                x:Name="ShadowLayer"
                                 Background="{DynamicResource Brush.Background}"
                                 CornerRadius="6"
-                                IsHitTestVisible="False"
-                                Opacity="{StaticResource Case.ShadowOpacityNormal}">
+                                IsHitTestVisible="False">
                                 <Border.Effect>
                                     <DropShadowEffect
                                         BlurRadius="18"
@@ -624,11 +552,14 @@
                             IsHitTestVisible="False"
                             Opacity="0" />
 
-                        <Border IsHitTestVisible="False">
+                        <Border x:Name="CaseCache" IsHitTestVisible="False">
                             <Border.CacheMode>
                                 <BitmapCache SnapsToDevicePixels="True" />
                             </Border.CacheMode>
-                            <Viewport3D ClipToBounds="False" IsHitTestVisible="False">
+                            <Viewport3D
+                                x:Name="CaseViewport"
+                                ClipToBounds="False"
+                                IsHitTestVisible="False">
                                 <Viewport3D.Camera>
                                     <!--
                                         FieldOfView = 2 * atan(0.7 / 14): the visible width at z = 0 is exactly the mesh width (1.4),
@@ -732,7 +663,7 @@
                                                     OpacityMask="{StaticResource Brush.Case.DiscHoleMask}">
                                                     <!--
                                                         Cover print; shows the game title readable when that fits (DiscPrint), turned so it ends
-                                                        on the visible right side after the spin of SbSelect (-120: PrintAngle -30)
+                                                        on the visible right side after the spin of the selected disc (-120: PrintAngle -30)
                                                     -->
                                                     <Ellipse ui:DiscPrint.Cover="{Binding Tag, ElementName=CaseHost}" ui:DiscPrint.PrintAngle="-30" />
                                                     <!--  Gloss of the disc surface  -->
@@ -1188,9 +1119,8 @@
                     </Grid>
 
                     <!--
-                        Open while hovered or IsOpen and not wrapped, closed otherwise: one trigger owns the opening angle.
-                        Animations of triggers declared later win over earlier ones, so separate open / close triggers on the
-                        same property would block each other.
+                        Open while hovered or IsOpen and not wrapped, closed otherwise. The triggers only set the state on
+                        CaseHost; cover, disc and shadow follow it with springs (GameCaseMotion), so a movement can be interrupted.
                     -->
                     <ControlTemplate.Triggers>
                         <MultiDataTrigger>
@@ -1206,12 +1136,7 @@
                                 <Condition Binding="{Binding Path=(ui:GameCase.IsWrapped), RelativeSource={RelativeSource Self}}" Value="False" />
                             </MultiDataTrigger.Conditions>
                             <Setter TargetName="DiscAccentRim" Property="Stroke" Value="{DynamicResource Brush.Accent}" />
-                            <MultiDataTrigger.EnterActions>
-                                <BeginStoryboard HandoffBehavior="SnapshotAndReplace" Storyboard="{StaticResource SbOpen}" />
-                            </MultiDataTrigger.EnterActions>
-                            <MultiDataTrigger.ExitActions>
-                                <BeginStoryboard HandoffBehavior="SnapshotAndReplace" Storyboard="{StaticResource SbClose}" />
-                            </MultiDataTrigger.ExitActions>
+                            <Setter TargetName="CaseHost" Property="ui:GameCase.MotionOpen" Value="True" />
                         </MultiDataTrigger>
 
                         <Trigger Property="ui:GameCase.IsSelected" Value="True">
@@ -1223,18 +1148,13 @@
                             </Trigger.ExitActions>
                         </Trigger>
 
-                        <!--  Only properties the open trigger doesn't animate: extra angle, disc. Not while wrapped  -->
+                        <!--  Further open, disc out. Not while wrapped  -->
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="ui:GameCase.IsSelected" Value="True" />
                                 <Condition Property="ui:GameCase.IsWrapped" Value="False" />
                             </MultiTrigger.Conditions>
-                            <MultiTrigger.EnterActions>
-                                <BeginStoryboard HandoffBehavior="SnapshotAndReplace" Storyboard="{StaticResource SbSelect}" />
-                            </MultiTrigger.EnterActions>
-                            <MultiTrigger.ExitActions>
-                                <BeginStoryboard HandoffBehavior="SnapshotAndReplace" Storyboard="{StaticResource SbDeselect}" />
-                            </MultiTrigger.ExitActions>
+                            <Setter TargetName="CaseHost" Property="ui:GameCase.MotionSelected" Value="True" />
                         </MultiTrigger>
 
                         <Trigger Property="ui:GameCase.IsSealed" Value="True">
@@ -1927,7 +1847,11 @@
                         </Grid>
                     </Border>
 
-                    <!--  The selected tile is drawn above its neighbors (its disc reaches into the gap), the hovered one above all  -->
+                    <!--
+                        The selected tile is drawn above its neighbors (its disc reaches into the gap, the film of its unwrap falls
+                        over them). No such trigger for hover: changing a ZIndex makes the panel composite all its tiles again, and
+                        an opened cover stays within the gap between the tiles.
+                    -->
                     <ControlTemplate.Triggers>
                         <!--  No platform icon: the title starts at the case edge  -->
                         <DataTrigger Binding="{Binding COPLFPA}" Value="{x:Null}">
@@ -1936,10 +1860,6 @@
 
                         <Trigger Property="IsSelected" Value="True">
                             <Setter Property="Panel.ZIndex" Value="5" />
-                        </Trigger>
-
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Panel.ZIndex" Value="10" />
                         </Trigger>
 
                         <Trigger Property="IsEnabled" Value="False">

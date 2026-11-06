@@ -29,7 +29,7 @@ namespace GameTimeNext.Core.Framework.UI
     /// is then chosen so that every title line lies completely
     /// - within the printed ring (outside the hub, inside the rim),
     /// - in the upper part of the print that stays visible in the selected case: turned by PrintAngle, the print ends a
-    ///   quarter turn clockwise after the spin of the selected disc (SbSelect), so its upper part is then the right side,
+    ///   quarter turn clockwise after the spin of the selected disc (GameCaseMotion), so its upper part is then the right side,
     ///   the only part not covered by the opened front cover. The title runs down that side like on a spine,
     /// - and the section lies within the cover (the print always covers the whole disc).
     /// These are hard conditions; among the sections that meet them, the one closest to the cover's width and centered
