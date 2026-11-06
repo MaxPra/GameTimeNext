@@ -41,8 +41,9 @@
     -->
     <SolidColorBrush x:Key="Brush.Input.Glass" Color="#590A0A0E" />
     <LinearGradientBrush x:Key="Brush.Input.Edge" StartPoint="0,0" EndPoint="0,1">
-        <GradientStop Offset="0" Color="#14FFFFFF" />
-        <GradientStop Offset="1" Color="#29FFFFFF" />
+        <!--  Visible at the top too: with a faint upper edge a field looks lower than a button of the same height  -->
+        <GradientStop Offset="0" Color="#2EFFFFFF" />
+        <GradientStop Offset="1" Color="#33FFFFFF" />
     </LinearGradientBrush>
 
     <!--

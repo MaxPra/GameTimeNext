@@ -124,6 +124,13 @@ namespace GameTimeNext.Core.Framework.UI
 
             SetLastSelectedItem(tabControl, tabControl.SelectedItem);
             AnimateSelectionRunner(tabControl, animate: false);
+
+            // Loaded fires again when the view is shown again: remove first, so the handler stays registered once.
+            if (tabControl.Template.FindName("TabTrackContentHost", tabControl) is FrameworkElement trackHost)
+            {
+                trackHost.SizeChanged -= OnTrackHostSizeChanged;
+                trackHost.SizeChanged += OnTrackHostSizeChanged;
+            }
         }
 
         private static void OnTabControlSizeChanged(object sender, SizeChangedEventArgs e)
@@ -132,6 +139,16 @@ namespace GameTimeNext.Core.Framework.UI
                 return;
 
             AnimateSelectionRunner(tabControl, animate: false);
+        }
+
+        /// <summary>
+        /// A track that hugs its tabs changes its size while the tab control doesn't, e.g. when a tab gets the
+        /// validation error icon or is hidden: the runner follows the selected tab.
+        /// </summary>
+        private static void OnTrackHostSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (sender is FrameworkElement { TemplatedParent: TabControl tabControl })
+                AnimateSelectionRunner(tabControl, animate: false);
         }
 
         /// <summary>
