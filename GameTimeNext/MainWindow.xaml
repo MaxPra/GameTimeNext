@@ -19,6 +19,7 @@
     d:DesignWidth="1200"
     ApplicationSearchPlaceholder="Search Application"
     ShowApplicationSearch="False"
+    ShowAppIcon="True"
     ShowBigPictureButton="True"
     ShowHelpButton="True"
     Style="{StaticResource GTNWindowStyle}"

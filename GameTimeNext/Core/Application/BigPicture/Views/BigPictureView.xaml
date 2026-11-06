@@ -76,7 +76,7 @@
                     <Image
                         Width="36"
                         Height="36"
-                        Source="{StaticResource BigPicture.Mark}" />
+                        Source="{StaticResource App.Mark}" />
                     <TextBlock
                         x:Name="txApplicationName"
                         Margin="14,0,0,0"

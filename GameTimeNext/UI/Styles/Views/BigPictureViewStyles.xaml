@@ -206,53 +206,6 @@
 
     <!--  ========== Top bar ==========  -->
 
-    <!--
-        The mark as a vector (first "a" of Branding/wordmark.svg), so it stays sharp at every size of the TV view.
-        An .ico as Image source would show its first frame (16 px) scaled up.
-    -->
-    <DrawingImage x:Key="BigPicture.Mark">
-        <DrawingImage.Drawing>
-            <DrawingGroup>
-                <GeometryDrawing Geometry="M 15.5,-17.4 A 100,100 0 1 0 148.2,-94.0">
-                    <GeometryDrawing.Pen>
-                        <Pen Thickness="28">
-                            <Pen.Brush>
-                                <LinearGradientBrush MappingMode="Absolute" StartPoint="0,-114" EndPoint="0,114">
-                                    <GradientStop Offset="0" Color="#5DB6F3" />
-                                    <GradientStop Offset="1" Color="#2A8FDF" />
-                                </LinearGradientBrush>
-                            </Pen.Brush>
-                        </Pen>
-                    </GeometryDrawing.Pen>
-                </GeometryDrawing>
-                <GeometryDrawing Geometry="M 214,0 L 214,100">
-                    <GeometryDrawing.Pen>
-                        <Pen EndLineCap="Round" Thickness="28">
-                            <Pen.Brush>
-                                <LinearGradientBrush MappingMode="Absolute" StartPoint="0,-114" EndPoint="0,114">
-                                    <GradientStop Offset="0" Color="#5DB6F3" />
-                                    <GradientStop Offset="1" Color="#2A8FDF" />
-                                </LinearGradientBrush>
-                            </Pen.Brush>
-                        </Pen>
-                    </GeometryDrawing.Pen>
-                </GeometryDrawing>
-                <GeometryDrawing Geometry="M 131.4,-98.5 A 100,100 0 0 0 20.0,-34.2">
-                    <GeometryDrawing.Pen>
-                        <Pen Thickness="28">
-                            <Pen.Brush>
-                                <LinearGradientBrush MappingMode="Absolute" StartPoint="20,0" EndPoint="120,-100">
-                                    <GradientStop Offset="0" Color="#BFE4FF" />
-                                    <GradientStop Offset="1" Color="#8ED1FA" />
-                                </LinearGradientBrush>
-                            </Pen.Brush>
-                        </Pen>
-                    </GeometryDrawing.Pen>
-                </GeometryDrawing>
-            </DrawingGroup>
-        </DrawingImage.Drawing>
-    </DrawingImage>
-
     <!--  Glass button of the top bar (search, filter, menu, exit) for mouse users: the template of all buttons, like "+" in the tab bar of the main window  -->
     <Style x:Key="BigPicture.TopBarButton" TargetType="Button">
         <Setter Property="Width" Value="48" />

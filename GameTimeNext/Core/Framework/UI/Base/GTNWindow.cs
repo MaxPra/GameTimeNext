@@ -179,6 +179,20 @@ namespace GameTimeNext.Core.Framework.UI.Base
             set => SetValue(ShowBigPictureButtonProperty, value);
         }
 
+        /// <summary>Shows the app icon in the title bar, in front of the title.</summary>
+        public static readonly DependencyProperty ShowAppIconProperty =
+            DependencyProperty.Register(
+                nameof(ShowAppIcon),
+                typeof(bool),
+                typeof(GTNWindow),
+                new PropertyMetadata(false));
+
+        public bool ShowAppIcon
+        {
+            get => (bool)GetValue(ShowAppIconProperty);
+            set => SetValue(ShowAppIconProperty, value);
+        }
+
         /// <summary>
         /// Borderless full screen over the whole monitor (also over the taskbar), without title bar. The window state
         /// before is restored when it is switched off again.

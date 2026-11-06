@@ -205,9 +205,21 @@
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="Auto" />
                                                     <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="Auto" />
                                                 </Grid.ColumnDefinitions>
 
+                                                <!--  App icon (ShowAppIcon), the vector: an .ico would show its 16 px frame blurred on scaled monitors  -->
+                                                <Image
+                                                    x:Name="imgAppIcon"
+                                                    Width="16"
+                                                    Height="16"
+                                                    Margin="0,0,8,0"
+                                                    VerticalAlignment="Center"
+                                                    Source="{StaticResource App.Mark}"
+                                                    Visibility="Collapsed" />
+
                                                 <TextBlock
+                                                    Grid.Column="1"
                                                     VerticalAlignment="Center"
                                                     FontWeight="SemiBold"
                                                     Foreground="{DynamicResource Brush.TextPrimary}"
@@ -215,7 +227,7 @@
 
                                                 <Border
                                                     x:Name="PART_SubtitleHost"
-                                                    Grid.Column="1"
+                                                    Grid.Column="2"
                                                     Margin="8,0,0,0"
                                                     Padding="0"
                                                     Background="Transparent"
@@ -422,6 +434,10 @@
 
                         <Trigger Property="ShowBigPictureButton" Value="True">
                             <Setter TargetName="btnBigPicture" Property="Visibility" Value="Visible" />
+                        </Trigger>
+
+                        <Trigger Property="ShowAppIcon" Value="True">
+                            <Setter TargetName="imgAppIcon" Property="Visibility" Value="Visible" />
                         </Trigger>
 
                         <Trigger Property="Subtitle" Value="">

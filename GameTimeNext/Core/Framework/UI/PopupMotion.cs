@@ -74,6 +74,7 @@ namespace GameTimeNext.Core.Framework.UI
             public ScaleTransform? Scale;
             public bool IsClosing;
             public bool IsGlass;
+            public bool IsBlurOn;
 
             /// <summary>Point the popup opens from, relative to its size.</summary>
             public Point Origin;
@@ -121,13 +122,18 @@ namespace GameTimeNext.Core.Framework.UI
             if (source.RootVisual is Window)
                 return;
 
-            bool glass = PopupGlass.GetIsActive(surface) && AcrylicBlur.TryEnable(source.Handle);
+            bool glass = PopupGlass.GetIsActive(surface);
 
             Popup? popup = FindPopup(surface);
 
             // Windows' setting "Animation effects" is off
             if (popup == null || !SystemParameters.ClientAreaAnimation)
+            {
+                if (glass)
+                    AcrylicBlur.TryEnable(source.Handle);
+
                 return;
+            }
 
             if (surface.GetValue(StateProperty) is not MotionState state)
             {
@@ -137,6 +143,7 @@ namespace GameTimeNext.Core.Framework.UI
 
             state.Source = source;
             state.IsGlass = glass;
+            state.IsBlurOn = false;
             state.Reveal = 0;
 
             if (!ReferenceEquals(state.Popup, popup))
@@ -163,6 +170,7 @@ namespace GameTimeNext.Core.Framework.UI
             state.Scale = null;
             state.IsClosing = false;
             state.IsGlass = false;
+            state.IsBlurOn = false;
 
             surface.ClearValue(UIElement.RenderTransformProperty);
             surface.ClearValue(UIElement.RenderTransformOriginProperty);
@@ -185,14 +193,26 @@ namespace GameTimeNext.Core.Framework.UI
             state.IsClosing = false;
             StopReveal(state);
 
-            // Set at once, so the first frame is already right; the movement starts after the layout (a long list
-            // can take a while), otherwise its first part would be skipped
+            // Prepared before the first frame; the movement starts after the layout (a long list can take a while),
+            // otherwise its first part would be skipped
             ScaleTransform? scale = null;
 
             if (state.IsGlass)
             {
-                if (state.Reveal <= 0)
-                    HideWindow(state);
+                // Not directly: this can run while WPF builds the popup window, and a new region makes the window handle
+                // messages and report its size to the popup, which isn't ready for that yet (NullReferenceException in
+                // Popup.OnWindowResize). Send still runs before anything is rendered, and the window shows nothing until then.
+                surface.Dispatcher.BeginInvoke(DispatcherPriority.Send, new Action(() =>
+                {
+                    if (run != state.Run || state.Source == null)
+                        return;
+
+                    if (state.Reveal <= 0)
+                        HideWindow(state);
+
+                    if (!state.IsBlurOn)
+                        state.IsBlurOn = AcrylicBlur.TryEnable(state.Source.Handle);
+                }));
             }
             else
             {
