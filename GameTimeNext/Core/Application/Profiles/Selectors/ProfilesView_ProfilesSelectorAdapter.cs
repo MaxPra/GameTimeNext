@@ -109,6 +109,7 @@ namespace GameTimeNext.Core.Application.Profiles.Selectors
                     {
                         ItemObject = prof,
                         COCOVIM = CFProfilesApp.LoadProfileCover(prof.PPFN),
+                        CODISEC = TFPROFI.GetDiscSection(prof),
                         COISPLA = FnSystem.IsExeFoundInPath(prof.EXGF),
                         COPLFPA = File.Exists(platformSymbolFullPath) ? FnImage.LoadImageWithoutLock(platformSymbolFullPath, 50, 50) : null,
                         COISSEA = TFPROFI.IsSealed(prof),

@@ -70,6 +70,13 @@
                     Height="36"
                     Margin="0,8,0,0"
                     Content="Placeholder" />
+
+                <Button
+                    x:Name="btnDiscPrint"
+                    Height="36"
+                    Margin="0,8,0,0"
+                    Content="Disc image…"
+                    ToolTip="Choose which part of the cover is shown on the disc" />
             </StackPanel>
 
             <uixsel:UIXTabControl x:Name="tabControl" Grid.Column="2">

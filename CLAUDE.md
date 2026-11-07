@@ -28,6 +28,7 @@ dotnet run --project GameTimeNext/GameTimeNext.csproj -- --minimized   # start h
 From `Scripts/unallowed_code.md` and `.github/copilot-instructions.md`:
 - Use `FnString.IsNullEmptyOrWhitespace` instead of `string.IsNullOrWhiteSpace` / `string.IsNullOrEmpty`.
 - Use `FnDirectory.EnsureDirectoryExists` instead of `if (!Directory.Exists) Directory.CreateDirectory`.
+- Use `FnSystemDialogs` (engine, `Utils/`) for file and folder dialogs instead of creating `OpenFileDialog` / `OpenFolderDialog` directly.
 - Paths/app names come from `AppConfig` (`Core/Framework/Config/AppConfig.Paths.cs`), not hard-coded strings.
 - Do not suppress validation on ComboBox `SelectionChanged`; tab validation must run together with field validation/adorner checks.
 - XML doc comments: concise, no icons/emojis.

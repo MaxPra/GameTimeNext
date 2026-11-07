@@ -29,6 +29,7 @@
 - Added a new **External** filter for profiles.
 - Tags are now managed in **Selection Lists** (list *Tags*): add your own tags and hide the delivered ones you don't use. Your existing tags, assignments and filters are migrated automatically.
 - Tags of a game are now shown as cards in the profile editor: add a tag from the list (or create a new one right there) and remove it with the cross on its card.
+- **Disc image** in the profile editor: drag and zoom the cover on the disc to choose what is shown on it. *Automatic* goes back to the position chosen for you.
 - The **Settings** are reorganized into the pages *General*, *Appearance*, *Integrations*, *Backup* and *Monitoring*, and have a search field that finds a setting by its name or description.
 - Full blackout can now be toggled via hotkey while monitoring a console game.
 - Added the option **Dynamic Background** (*Settings > Appearance*): a blurred image is used as background of the main window.

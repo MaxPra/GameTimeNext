@@ -1,6 +1,7 @@
 ﻿using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Config;
+using GameTimeNext.Core.Framework.UI;
 using System.IO;
 using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Utils;
@@ -77,7 +78,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             return ("n.A.", 0, DateTime.MinValue);
         }
 
-        public static (string gana, DateTime lapl, double plti, string ppfn) GetLastPlayed(DateTime? timeSpanStart, DateTime timeSpanEnd)
+        public static (string gana, DateTime lapl, double plti, string ppfn, DiscSection? discSection) GetLastPlayed(DateTime? timeSpanStart, DateTime timeSpanEnd)
         {
             UIXQuery query = Queries.BuildQueryLastPlayed(timeSpanStart, timeSpanEnd);
 
@@ -87,13 +88,14 @@ namespace GameTimeNext.Core.Application.DataManagers
                         UIXQuery.GetString(reader, "GANA"),
                         UIXQuery.GetDateTime(reader, "PLTO"),
                         TFPROFI.GetGameTimeInMinutes(UIXQuery.GetInt64(reader, "PFID"), timeSpanStart, timeSpanEnd),
-                        UIXQuery.GetString(reader, "PPFN")
+                        UIXQuery.GetString(reader, "PPFN"),
+                        ToDiscSection(UIXQuery.GetDouble(reader, "DPRX"), UIXQuery.GetDouble(reader, "DPRY"), UIXQuery.GetDouble(reader, "DPRS"))
                     );
 
-            return ("n.A.", DateTime.MinValue, 0, string.Empty);
+            return ("n.A.", DateTime.MinValue, 0, string.Empty, null);
         }
 
-        public static (string gana, double plti, int days, string ppfn) GetMostPlayed(DateTime? timeSpanStart, DateTime timeSpanEnd)
+        public static (string gana, double plti, int days, string ppfn, DiscSection? discSection) GetMostPlayed(DateTime? timeSpanStart, DateTime timeSpanEnd)
         {
             UIXQuery query = Queries.BuildQueryMostPlayed(timeSpanStart, timeSpanEnd);
 
@@ -103,10 +105,11 @@ namespace GameTimeNext.Core.Application.DataManagers
                         UIXQuery.GetString(reader, "GANA"),
                         GetPlaytime(timeSpanStart, timeSpanEnd, UIXQuery.GetInt64(reader, "PFID")),
                         GetDaysPlayed(timeSpanStart, timeSpanEnd, UIXQuery.GetInt64(reader, "PFID")),
-                        UIXQuery.GetString(reader, "PPFN")
+                        UIXQuery.GetString(reader, "PPFN"),
+                        ToDiscSection(UIXQuery.GetDouble(reader, "DPRX"), UIXQuery.GetDouble(reader, "DPRY"), UIXQuery.GetDouble(reader, "DPRS"))
                     );
 
-            return ("n.A.", 0, 0, string.Empty);
+            return ("n.A.", 0, 0, string.Empty, null);
         }
 
         private static double CalculatePlaytime(DateTime? timeSpanStart, DateTime timeSpanEnd, UIXQuery query)
@@ -238,6 +241,9 @@ namespace GameTimeNext.Core.Application.DataManagers
                 query.AddField(K1PROFI.Name, K1PROFI.Fields.PFID, "PFID");
                 query.AddField(K1PROFI.Name, K1PROFI.Fields.GANA, "GANA");
                 query.AddField(K1PROFI.Name, K1PROFI.Fields.PPFN, "PPFN");
+                query.AddField(K1PROFI.Name, K1PROFI.Fields.DPRX, "DPRX");
+                query.AddField(K1PROFI.Name, K1PROFI.Fields.DPRY, "DPRY");
+                query.AddField(K1PROFI.Name, K1PROFI.Fields.DPRS, "DPRS");
                 query.AddField(K1SESSI.Name, K1SESSI.Fields.PLTO, "PLTO");
 
                 query.AddOrderBy(K1SESSI.Name, K1SESSI.Fields.PLTO, OrderDirection.DESC);
@@ -256,6 +262,9 @@ namespace GameTimeNext.Core.Application.DataManagers
                 query.AddField(K1PROFI.Name, K1PROFI.Fields.PFID, "PFID");
                 query.AddField(K1PROFI.Name, K1PROFI.Fields.GANA, "GANA");
                 query.AddField(K1PROFI.Name, K1PROFI.Fields.PPFN, "PPFN");
+                query.AddField(K1PROFI.Name, K1PROFI.Fields.DPRX, "DPRX");
+                query.AddField(K1PROFI.Name, K1PROFI.Fields.DPRY, "DPRY");
+                query.AddField(K1PROFI.Name, K1PROFI.Fields.DPRS, "DPRS");
                 query.AddSum(K1SESSI.Name, K1SESSI.Fields.PLTI, "PLTI");
 
                 query.AddGroupBy(K1SESSI.Name, K1SESSI.Fields.PFID);

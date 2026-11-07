@@ -510,6 +510,7 @@
                     -->
                     <Grid
                         x:Name="CaseHost"
+                        ui:DiscPrint.Section="{Binding Path=(ui:DiscPrint.Section), RelativeSource={RelativeSource TemplatedParent}}"
                         RenderTransformOrigin="0.5,1"
                         Tag="{Binding Content, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource ImageSourceOnlyConverter}}">
                         <Grid.RenderTransform>
@@ -683,7 +684,10 @@
                                                     Cover print; shows the game title readable when that fits (DiscPrint), turned so it ends
                                                     on the visible right side after the spin of the selected disc (-120: PrintAngle -30)
                                                 -->
-                                                <Ellipse ui:DiscPrint.Cover="{Binding Tag, ElementName=CaseHost}" ui:DiscPrint.PrintAngle="-30" />
+                                                <Ellipse
+                                                    ui:DiscPrint.Cover="{Binding Tag, ElementName=CaseHost}"
+                                                    ui:DiscPrint.PrintAngle="-30"
+                                                    ui:DiscPrint.Section="{Binding Path=(ui:DiscPrint.Section), ElementName=CaseHost}" />
                                                 <!--  Gloss of the disc surface  -->
                                                 <Ellipse Fill="{StaticResource Brush.Case.Disc}" />
                                                 <!--  Rim: clear edge, catches the light in the accent color (stroke set while open, see the cache note above)  -->
@@ -1521,7 +1525,10 @@
                                     Height="224"
                                     OpacityMask="{StaticResource Brush.Case.DiscHoleMask}">
                                     <!--  Print like the selected disc in the library and the cover preview: turned so the title runs down the right side (102 - 12 of DiscTurn = 90)  -->
-                                    <Ellipse ui:DiscPrint.Cover="{Binding Tag, ElementName=Stage}" ui:DiscPrint.PrintAngle="102" />
+                                    <Ellipse
+                                        ui:DiscPrint.Cover="{Binding Tag, ElementName=Stage}"
+                                        ui:DiscPrint.PrintAngle="102"
+                                        ui:DiscPrint.Section="{Binding Path=(ui:DiscPrint.Section), RelativeSource={RelativeSource TemplatedParent}}" />
                                     <Ellipse Fill="{StaticResource Brush.Case.Disc}" />
                                     <Ellipse Stroke="{DynamicResource Brush.Card.Border}" StrokeThickness="3" />
                                     <Ellipse
@@ -1780,6 +1787,7 @@
                             <!--  ===== Case (style GameCase), opened while the tile is hovered or selected, unless still sealed =====  -->
                             <ContentControl
                                 Grid.Row="0"
+                                ui:DiscPrint.Section="{Binding CODISEC}"
                                 ui:GameCase.IsSealed="{Binding COISSEA}"
                                 ui:GameCase.IsSelected="{Binding IsSelected, RelativeSource={RelativeSource TemplatedParent}}"
                                 Content="{Binding COCOVIM}"

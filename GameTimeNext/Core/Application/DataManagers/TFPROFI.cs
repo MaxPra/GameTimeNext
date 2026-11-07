@@ -2,6 +2,7 @@
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Config;
+using GameTimeNext.Core.Framework.UI;
 using System.IO;
 using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Utils;
@@ -154,6 +155,19 @@ namespace GameTimeNext.Core.Application.DataManagers
         public static bool IsMarkedNew(T1PROFI t1profi)
         {
             return new CProfileSettings(t1profi.PRSE).Dezerialize().IsNew;
+        }
+
+        /// <summary>
+        /// The section of the cover the user chose for the disc; null: determined automatically (DiscPrint).
+        /// </summary>
+        public static DiscSection? GetDiscSection(T1PROFI t1profi)
+        {
+            return ToDiscSection(t1profi.DPRX, t1profi.DPRY, t1profi.DPRS);
+        }
+
+        private static DiscSection? ToDiscSection(double x, double y, double size)
+        {
+            return size > 0 ? new DiscSection(x, y, size) : null;
         }
 
         /// <summary>

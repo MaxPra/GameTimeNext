@@ -28,6 +28,9 @@
             public const string ETML = "ETML";
             public const string ARCH = "ARCH";
             public const string PLAFO = "PLAFO";
+            public const string DPRX = "DPRX";
+            public const string DPRY = "DPRY";
+            public const string DPRS = "DPRS";
             public const string CRAT = "CRAT";
             public const string CRUS = "CRUS";
             public const string CHAT = "CHAT";

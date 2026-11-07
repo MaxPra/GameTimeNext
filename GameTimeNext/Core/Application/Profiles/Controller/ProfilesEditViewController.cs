@@ -12,6 +12,7 @@ using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.Igdb;
 using GameTimeNext.Core.Framework.LauncherIntegration;
 using GameTimeNext.Core.Framework.LauncherIntegration.Link;
+using GameTimeNext.Core.Framework.UI;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.Utils;
 using System.Globalization;
@@ -354,6 +355,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             GetView().Dispatcher.Invoke(() =>
             {
                 GetApp().T1Profi.PPFN = _coverAppFolderFileName;
+
+                // The chosen section belongs to the previous image
+                SetDiscSection(null);
             });
 
             GetApp().Loader.Begin();
@@ -894,6 +898,29 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             BitmapImage placeholderCover = CFProfilesApp.LoadPlaceholderCover();
 
             await Task.Run(() => ApplyCoverImageAsync(placeholderCover));
+        }
+
+        protected void EV_btnDiscPrint()
+        {
+            if (GetView().imgCover.Source is not BitmapSource cover)
+                return;
+
+            ProfilesDiscPrintApp app = GetApp().GetApplication<ProfilesDiscPrintApp>(UIXApplicationStartTarget.Window);
+            app.Edit(cover, TFPROFI.GetDiscSection(GetApp().T1Profi), r =>
+            {
+                if (!r.Canceled)
+                    SetDiscSection(r.Section);
+            });
+        }
+
+        /// <summary>
+        /// Sets the section of the cover shown on the disc; null: determined automatically.
+        /// </summary>
+        private void SetDiscSection(DiscSection? section)
+        {
+            GetApp().T1Profi.DPRX = section?.X ?? 0;
+            GetApp().T1Profi.DPRY = section?.Y ?? 0;
+            GetApp().T1Profi.DPRS = section?.Size ?? 0;
         }
 
         /// <summary>

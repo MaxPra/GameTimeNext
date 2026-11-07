@@ -6,6 +6,7 @@ using GameTimeNext.Core.Application.Profiles;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Config;
+using GameTimeNext.Core.Framework.UI;
 using GameTimeNext.Core.Framework.Utils;
 using System.IO;
 using System.Windows;
@@ -319,18 +320,19 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
 
         private void FillSectionLastPlayed()
         {
-            (string gana, DateTime lapl, double plti, string ppfn) = TFPROFI.GetLastPlayed(timeSpanStart, timeSpanEnd);
+            (string gana, DateTime lapl, double plti, string ppfn, DiscSection? discSection) = TFPROFI.GetLastPlayed(timeSpanStart, timeSpanEnd);
             GetView().txtLastPlayedTitle.Text = gana;
             GetView().txtLastPlayedDate.Text = CFProfilesApp.FormatFirstLastDate(lapl);
             GetView().txtLastPlayedTime.Text = FnTime.FormatMinutesAsHoursAndMinutes(plti, FnTime.NoValue);
 
             // No cover without a played game in the time span
+            DiscPrint.SetSection(GetView().ccLastPlayedCase, discSection);
             GetView().ccLastPlayedCase.Content = FnString.IsNullEmptyOrWhitespace(ppfn) ? null : CFProfilesApp.LoadProfileCover(ppfn);
         }
 
         private void FillSectionMostPlayed()
         {
-            (string gana, double plti, int days, string ppfn) = TFPROFI.GetMostPlayed(timeSpanStart, timeSpanEnd);
+            (string gana, double plti, int days, string ppfn, DiscSection? discSection) = TFPROFI.GetMostPlayed(timeSpanStart, timeSpanEnd);
             GetView().txtMostPlayedTitle.Text = gana;
             GetView().txtMostPlayedPlaytime.Text = FnTime.FormatMinutesAsHoursAndMinutes(plti, FnTime.NoValue);
             GetView().txtMostPlayedDays.Text = days.ToString(CultureInfo.CurrentCulture);
@@ -342,6 +344,7 @@ namespace GameTimeNext.Core.Application.Dashboard.Controller
             GetView().scMostPlayedShare.ScaleX = share;
 
             // No cover without a played game in the time span
+            DiscPrint.SetSection(GetView().ccMostPlayedCase, discSection);
             GetView().ccMostPlayedCase.Content = FnString.IsNullEmptyOrWhitespace(ppfn) ? null : CFProfilesApp.LoadProfileCover(ppfn);
         }
 

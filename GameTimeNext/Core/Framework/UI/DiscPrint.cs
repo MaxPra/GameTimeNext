@@ -22,6 +22,12 @@ using WinPixelFormat = Windows.Graphics.Imaging.BitmapPixelFormat;
 namespace GameTimeNext.Core.Framework.UI
 {
     /// <summary>
+    /// Section of a cover printed on a disc, in units of the cover width (the cover is 1 wide and its aspect ratio high).
+    /// Size 0: the analysis found none, the disc shows the centered square.
+    /// </summary>
+    public sealed record DiscSection(double X, double Y, double Size);
+
+    /// <summary>
     /// Prints a cover on a disc (styles GameCase, GameCase.Showcase and GameCase.Preview in TileViewStyle.xaml): set Cover on the disc's
     /// Ellipse and it gets the cover as fill, with a section that shows the game title completely.
     ///
@@ -37,6 +43,7 @@ namespace GameTimeNext.Core.Framework.UI
     /// UniformToFill), which is also shown until the analysis is done.
     /// Results are cached per image content, also on disk (AppConfig.Temp.DiscPrintCacheFilePath), and the analyses run
     /// one after the other on a background thread, so a library with many covers stays responsive.
+    /// A section chosen by the user (Section) replaces the analysis.
     /// </summary>
     public static class DiscPrint
     {
@@ -69,13 +76,30 @@ namespace GameTimeNext.Core.Framework.UI
                 "Cover",
                 typeof(ImageSource),
                 typeof(DiscPrint),
-                new PropertyMetadata(null, OnCoverChanged));
+                new PropertyMetadata(null, OnPrintChanged));
 
         public static ImageSource? GetCover(DependencyObject obj)
             => (ImageSource?)obj.GetValue(CoverProperty);
 
         public static void SetCover(DependencyObject obj, ImageSource? value)
             => obj.SetValue(CoverProperty, value);
+
+        /// <summary>
+        /// Section chosen by the user (TFPROFI.GetDiscSection), printed as it is without an analysis; null: the section
+        /// of the analysis. The templates of the game cases pass it from their ContentControl to the disc.
+        /// </summary>
+        public static readonly DependencyProperty SectionProperty =
+            DependencyProperty.RegisterAttached(
+                "Section",
+                typeof(DiscSection),
+                typeof(DiscPrint),
+                new PropertyMetadata(null, OnPrintChanged));
+
+        public static DiscSection? GetSection(DependencyObject obj)
+            => (DiscSection?)obj.GetValue(SectionProperty);
+
+        public static void SetSection(DependencyObject obj, DiscSection? value)
+            => obj.SetValue(SectionProperty, value);
 
         /// <summary>
         /// Angle (degrees, positive = clockwise on screen) the print is turned by when it shows the title section, so it
@@ -87,7 +111,7 @@ namespace GameTimeNext.Core.Framework.UI
                 "PrintAngle",
                 typeof(double),
                 typeof(DiscPrint),
-                new PropertyMetadata(0.0));
+                new PropertyMetadata(0.0, OnPrintChanged));
 
         public static double GetPrintAngle(DependencyObject obj)
             => (double)obj.GetValue(PrintAngleProperty);
@@ -97,9 +121,6 @@ namespace GameTimeNext.Core.Framework.UI
 
         /// <summary>Lower limit of the disc radius (units of the cover width): the cover is enlarged at most 1.67 times.</summary>
         private const double MinRadius = 0.3;
-
-        /// <summary>Section in units of the cover width (the cover is 1 wide and its aspect ratio high); Size 0: centered square.</summary>
-        private sealed record DiscSection(double X, double Y, double Size);
 
         private static readonly ConcurrentDictionary<string, Task<DiscSection>> Analyses = new();
 
@@ -118,15 +139,24 @@ namespace GameTimeNext.Core.Framework.UI
         /// only a new cover shows the plain print until its analysis is done. Without a fill until then the disc is
         /// empty for a moment, which is not visible: it lies under the closed front cover.
         /// </summary>
-        private static async void OnCoverChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static async void OnPrintChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is not Shape shape)
                 return;
 
-            // Pixels are read on a background thread
-            if (e.NewValue is not BitmapSource cover || !cover.IsFrozen || cover.PixelWidth <= 0 || cover.PixelHeight <= 0)
+            ImageSource? image = GetCover(shape);
+            DiscSection? chosen = GetSection(shape);
+
+            if (chosen != null && image is BitmapSource chosenCover && chosenCover.PixelWidth > 0 && chosenCover.PixelHeight > 0)
             {
-                shape.Fill = e.NewValue is ImageSource image ? CreatePlainBrush(image) : null;
+                shape.Fill = CreateBrush(chosenCover, chosen, GetPrintAngle(shape));
+                return;
+            }
+
+            // Pixels are read on a background thread
+            if (image is not BitmapSource cover || !cover.IsFrozen || cover.PixelWidth <= 0 || cover.PixelHeight <= 0)
+            {
+                shape.Fill = image != null ? CreatePlainBrush(image) : null;
                 return;
             }
 
@@ -136,7 +166,7 @@ namespace GameTimeNext.Core.Framework.UI
             {
                 string key = await Task.Run(() => GetKeyAsync(cover));
 
-                if (!ReferenceEquals(GetCover(shape), cover))
+                if (!AwaitsAnalysis(shape, cover))
                     return;
 
                 if (!Cache.Value.TryGetValue(key, out DiscSection? section))
@@ -145,7 +175,7 @@ namespace GameTimeNext.Core.Framework.UI
 
                     section = await Task.Run(() => Analyses.GetOrAdd(key, _ => AnalyzeAsync(key, cover)));
 
-                    if (!ReferenceEquals(GetCover(shape), cover))
+                    if (!AwaitsAnalysis(shape, cover))
                         return;
                 }
 
@@ -155,9 +185,46 @@ namespace GameTimeNext.Core.Framework.UI
             {
                 FnLog.AddError("MainApp", "Disc print section of a cover could not be determined", ex);
 
-                if (ReferenceEquals(GetCover(shape), cover))
+                if (AwaitsAnalysis(shape, cover))
                     shape.Fill = CreatePlainBrush(cover);
             }
+        }
+
+        /// <summary>False when the disc got another cover or a chosen section while its analysis was running.</summary>
+        private static bool AwaitsAnalysis(Shape shape, BitmapSource cover)
+            => ReferenceEquals(GetCover(shape), cover) && GetSection(shape) == null;
+
+        /// <summary>The centered square of a cover, within the cover.</summary>
+        public static DiscSection GetCenteredSection(BitmapSource cover)
+        {
+            double aspect = (double)cover.PixelHeight / cover.PixelWidth;
+            double size = Math.Min(1, aspect);
+
+            return new DiscSection((1 - size) / 2, (aspect - size) / 2, size);
+        }
+
+        /// <summary>
+        /// The section a cover gets without a chosen one: that of the analysis, otherwise the centered square. Errors are
+        /// logged; the centered square is returned then.
+        /// </summary>
+        public static async Task<DiscSection> GetAutomaticSectionAsync(BitmapSource cover)
+        {
+            try
+            {
+                if (cover.IsFrozen)
+                {
+                    DiscSection section = await Task.Run(() => GetSectionAsync(cover));
+
+                    if (section.Size > 0)
+                        return section;
+                }
+            }
+            catch (Exception ex)
+            {
+                FnLog.AddError("MainApp", "Disc print section of a cover could not be determined", ex);
+            }
+
+            return GetCenteredSection(cover);
         }
 
         /// <summary>The cover centered, like Stretch UniformToFill (no title section or not analyzed yet).</summary>

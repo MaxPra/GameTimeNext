@@ -1,6 +1,6 @@
 using GameTimeNext.Core.Framework.Config;
-using Microsoft.Win32;
 using System.IO;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Codetables.Api
 {
@@ -19,20 +19,11 @@ namespace GameTimeNext.Core.Application.Codetables.Api
 
         public override async Task<CTAPIResult> ExecuteAsync(CTAPIContext context)
         {
-            OpenFileDialog dialog = new OpenFileDialog
-            {
-                Title = "Choose an image",
-                Filter = "Images|" + string.Join(";", SupportedExtensions.Select(e => "*" + e)),
-                CheckFileExists = true,
-                Multiselect = false
-            };
+            string filter = "Images|" + string.Join(";", SupportedExtensions.Select(e => "*" + e));
+            string sourcePath = FnSystemDialogs.ShowFileDialog("Choose an image", filter, false, context.Owner);
 
-            bool? confirmed = context.Owner != null ? dialog.ShowDialog(context.Owner) : dialog.ShowDialog();
-
-            if (confirmed != true)
+            if (FnString.IsNullEmptyOrWhitespace(sourcePath))
                 return CTAPIResult.Cancelled();
-
-            string sourcePath = dialog.FileName;
 
             if (!SupportedExtensions.Contains(Path.GetExtension(sourcePath), StringComparer.OrdinalIgnoreCase))
                 return CTAPIResult.Failure($"This file type is not supported. Please choose one of: {string.Join(", ", SupportedExtensions)}");

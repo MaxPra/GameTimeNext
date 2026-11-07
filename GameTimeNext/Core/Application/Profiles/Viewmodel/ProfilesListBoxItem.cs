@@ -1,3 +1,4 @@
+using GameTimeNext.Core.Framework.UI;
 using System.ComponentModel;
 using System.Windows.Media.Imaging;
 using UIX.ViewController.Engine.Viewmodel;
@@ -7,6 +8,10 @@ namespace GameTimeNext.Core.Application.Profiles.Viewmodel
     public class ProfilesListBoxItem : UIXListItem, INotifyPropertyChanged
     {
         public BitmapImage? COCOVIM { get; set; }
+
+        // Section of the cover chosen for the disc (TFPROFI.GetDiscSection); null: automatic
+        public DiscSection? CODISEC { get; set; }
+
         public bool COISPLA { get; set; }
 
         public BitmapImage? COPLFPA { get; set; }
