@@ -29,8 +29,6 @@ namespace GameTimeNext.Core.Application.Profiles
         public ProfilesDetailView ProfilesDetailView { get; set; }
         public FilterCache FilterCache { get => _filterCache; set => _filterCache = value; }
 
-        public ProfilesBatchApp? ProfilesBatchApp { get; set; } = null;
-
         public void Start(UIXApplication hostApplication, ContentPresenter presenter)
         {
             Start(hostApplication, new UIXApplicationStartOptions
@@ -47,10 +45,6 @@ namespace GameTimeNext.Core.Application.Profiles
             CallDispatcher = hostApplication.CallDispatcher;
 
             ProfilesView.ViewController.Show(options);
-
-            // BatchApp mitstarten, um Hintergrundprozesse zu ermöglichen
-            ProfilesBatchApp = hostApplication.GetApplication<ProfilesBatchApp>();
-            ProfilesBatchApp.Start(this);
         }
 
         protected override void InitializeAppInfo()

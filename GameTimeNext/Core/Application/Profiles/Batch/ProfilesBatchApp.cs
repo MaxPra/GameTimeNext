@@ -2,22 +2,53 @@
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Application.TimeMonitoring;
 using GameTimeNext.Core.Framework;
+using GameTimeNext.Shared.Profiles;
 using UIX.ViewController.Engine.Runnables;
 
 namespace GameTimeNext.Core.Application.Profiles.Batch
 {
-    public class ProfilesBatchApp : UIXApplication
+    public class ProfilesBatchApp : UIXApplication, IUIXBatchAppStarter
     {
-        public override void InitializeApplicationOutput()
-        {
-
-        }
+        private TXPROFI _txprofi = new TXPROFI();
 
         public void Start(UIXApplication hostApplication)
         {
-            this.HostApplication = hostApplication;
-            CallDispatcher = hostApplication.CallDispatcher;
+            HostApplication = hostApplication;
+            // CallDispatcher = hostApplication.CallDispatcher; // OFDOI: CallDispatcher
         }
+
+        public override void InitializeApplicationOutput()
+        {
+        }
+
+        public override void SetWindowProperties(UIXApplicationStartOptions options)
+        {
+        }
+
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(ProfilesBatchApp));
+        }
+
+        public List<ProfileDto> GetAllProfiles()
+        {
+            return _txprofi.ReadAll().Select(t => _txprofi.ToDto(t)).ToList();
+        }
+
+        public ProfileDto? GetProfile(long pfid)
+        {
+            T1PROFI? t1profi = _txprofi.Read(pfid);
+            if (t1profi is null)
+                return null;
+
+            return _txprofi.ToDto(t1profi);
+        }
+    }
+
+    // OFDOI: Remove old BatchApp
+    [Obsolete]
+    public class PrrofilesBatchApp : UIXApplication
+    {
 
         public void StartMonitoringBatch(long pfid)
         {
@@ -69,6 +100,11 @@ namespace GameTimeNext.Core.Application.Profiles.Batch
         protected override void InitializeAppInfo()
         {
             ReadFromAppProperties(nameof(ProfilesBatchApp));
+        }
+
+        public override void InitializeApplicationOutput()
+        {
+
         }
     }
 }

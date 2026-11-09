@@ -1,0 +1,17 @@
+[
+  {
+    "Name": "GTN + RM",
+    "Projects": [
+      {
+        "Path": "GameTimeNext\\GameTimeNext.csproj",
+        "Action": "Start",
+        "DebugTarget": "GameTimeNext"
+      },
+      {
+        "Path": "RemoteMonitoring\\RemoteMonitoring.csproj",
+        "Action": "Start",
+        "DebugTarget": "http"
+      }
+    ]
+  }
+]

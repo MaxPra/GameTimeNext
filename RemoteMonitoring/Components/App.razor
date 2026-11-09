@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@inject AppCircuitHandler Circuit
+@inject SocketClient Socket
+
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -6,11 +9,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base href="/" />
     <ResourcePreloader />
-    <link rel="stylesheet" href="@Assets["lib/bootstrap/dist/css/bootstrap.min.css"]" />
     <link rel="stylesheet" href="@Assets["app.css"]" />
     <link rel="stylesheet" href="@Assets["RemoteMonitoring.styles.css"]" />
     <ImportMap />
-    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="icon" type="image/png" href="favicon.ico" />
     <HeadOutlet />
 </head>
 
@@ -21,3 +23,12 @@
 </body>
 
 </html>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        Socket.Reset();
+        // OFDOI: _ = Socket.StartAsync(Circuit.Cts.Token); // Pass canellationToken, so that everything gets aborted, when the browser window closes.
+        _ = Socket.StartAsync();
+    }
+}

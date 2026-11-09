@@ -57,7 +57,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
 
             _autoImportLauncherTypes = CFProfilesApp.GetAutoImportLauncherTypes(_appSettings);
 
-            GetApp().CallDispatcher.Register(this, nameof(EXEV_remoteMonitoringPortChanged));
+            GetApp().CallDispatcher.Register(this, nameof(EXEV_RemoteMonitoringPortChanged));
         }
 
         protected override async Task BuildFirstImplAsync()
@@ -368,7 +368,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             _autoImportLauncherTypes = CFProfilesApp.GetAutoImportLauncherTypes(_appSettings);
         }
 
-        protected void EXEV_remoteMonitoringPortChanged(int port)
+        protected void EXEV_RemoteMonitoringPortChanged(int port)
         {
             GetView().txtRemoteMonitoringPort.Text = $"Web-App accessible via port {port}.";
         }

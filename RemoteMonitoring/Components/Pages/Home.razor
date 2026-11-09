@@ -1,7 +1,65 @@
 ﻿@page "/"
+@using GameTimeNext.Shared.Profiles
+@rendermode InteractiveServer
+@inject SocketClient Socket
+@inject ProfilesApiService ProfilesApiService
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Profiles</PageTitle>
 
-<h1>Hello, world!</h1>
+<div class="flex flex-col gap-5 p-5">
+    <h1 class="text-2xl font-bold">Profiles</h1>
 
-Welcome to your new app.
+    <div class="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-5 2xl:grid-cols-7">
+        @foreach (ProfileDto profile in Profiles)
+        {
+            <div @onclick="() => SelectProfile(profile)">
+                <Profile Title="@profile.GANA" AccentColor="@profile.AccentColorHex" IsHighlighted="IsSelected(profile)" />
+            </div>
+        }
+    </div>
+
+    <div class="fixed left-0 top-20 p-5 bg-black/25">
+        @if (SelectedProfile is not null)
+        {
+            <p>@SelectedProfile.PFID</p>
+            <h1 class="text-xl font-bold">@SelectedProfile.GANA</h1>
+        }
+    </div>
+
+    <div class="fixed right-0 bottom-20 p-5 bg-black/25">
+        @if (SelectedProfileFresh is not null)
+        {
+            <p>@SelectedProfileFresh.PFID</p>
+            <h1 class="text-xl font-bold">@SelectedProfileFresh.GANA</h1>
+        }
+    </div>
+</div>
+
+@code {
+    private ProfileDto? SelectedProfile;
+    private ProfileDto? SelectedProfileFresh;
+    private List<ProfileDto> Profiles { get; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshProfiles();
+    }
+
+    private async Task RefreshProfiles()
+    {
+        Profiles.Clear();
+        List<ProfileDto> profiles = await ProfilesApiService.GetAllProfiles();
+        Profiles.AddRange(profiles);
+    }
+
+    private async Task SelectProfile(ProfileDto profile)
+    {
+        SelectedProfile = profile;
+        SelectedProfileFresh = await ProfilesApiService.GetProfile(profile.PFID);
+    }
+
+    private bool IsSelected(ProfileDto profile)
+    {
+        return SelectedProfile?.PFID == profile.PFID;
+    }
+}
