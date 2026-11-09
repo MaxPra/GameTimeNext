@@ -186,7 +186,7 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
 
             // Resumes a paused game too
             if (!FnLauncher.SwitchToGame(t1profi))
-                new ToastMessage("Game not found", $"The window of {t1profi.GANA} could not be found.\nMinimize the Big Picture mode in its menu to reach it.").Show();
+                CFToast.Show("Game not found", $"The window of {t1profi.GANA} could not be found.\nMinimize the Big Picture mode in its menu to reach it.");
         }
 
         /// <summary>

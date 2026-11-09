@@ -74,15 +74,24 @@ namespace GameTimeNext.Core.Application.TableObjects
         public string PLAFO { get; set; } = "";
 
         [UIXSignatureField(22)]
-        public DateTime CRAT { get; set; } = DateTime.MinValue;
+        public double DPRX { get; set; } = 0;
 
         [UIXSignatureField(23)]
-        public string CRUS { get; set; } = "";
+        public double DPRY { get; set; } = 0;
 
         [UIXSignatureField(24)]
-        public DateTime CHAT { get; set; } = DateTime.MinValue;
+        public double DPRS { get; set; } = 0;
 
         [UIXSignatureField(25)]
+        public DateTime CRAT { get; set; } = DateTime.MinValue;
+
+        [UIXSignatureField(26)]
+        public string CRUS { get; set; } = "";
+
+        [UIXSignatureField(27)]
+        public DateTime CHAT { get; set; } = DateTime.MinValue;
+
+        [UIXSignatureField(28)]
         public string CHUS { get; set; } = "";
 
         public override void Save()

@@ -76,7 +76,7 @@
                     <Image
                         Width="36"
                         Height="36"
-                        Source="/UI/Ressources/GTN_APP_ICON.ico" />
+                        Source="{StaticResource App.Mark}" />
                     <TextBlock
                         x:Name="txApplicationName"
                         Margin="14,0,0,0"
@@ -96,20 +96,25 @@
                             Margin="0,0,12,0"
                             Content="LB"
                             Style="{StaticResource BigPicture.ControllerBumper}" />
-                        <Border Style="{StaticResource BigPicture.PivotBar}">
-                            <ItemsControl x:Name="itcPivots" Focusable="False">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <StackPanel Orientation="Horizontal" />
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Button x:Name="btnPivot" Style="{StaticResource BigPicture.Pivot}" />
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </Border>
+                        <Grid VerticalAlignment="Center">
+                            <Border Background="{StaticResource Brush.Tab.TrackGlass}" CornerRadius="12" />
+                            <Border Background="{StaticResource Brush.Button.GlassLightStart}" CornerRadius="12" />
+                            <Border Background="{StaticResource Brush.Button.GlassLightEnd}" CornerRadius="12" />
+                            <Border Style="{StaticResource BigPicture.PivotBar}">
+                                <ItemsControl x:Name="itcPivots" Focusable="False">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Button x:Name="btnPivot" Style="{StaticResource BigPicture.Pivot}" />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Border>
+                        </Grid>
                         <ContentControl
                             x:Name="ccPivotNext"
                             Margin="12,0,0,0"

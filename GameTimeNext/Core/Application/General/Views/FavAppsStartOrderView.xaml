@@ -10,9 +10,9 @@
     <StackPanel>
         <TextBlock Style="{StaticResource Text.BodyStrong}" Text="Start order of the favorites" />
         <TextBlock
+            x:Name="txStartOrderHint"
             Margin="0,4,0,12"
             Style="{StaticResource Text.Hint}"
-            Text="These applications open when GameTimeNext starts, in this order. Drag a row to move it."
             TextWrapping="Wrap" />
 
         <TextBlock

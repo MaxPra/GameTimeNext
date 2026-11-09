@@ -54,6 +54,9 @@
     <Color x:Key="Color.Warning">#FFFFA726</Color>
     <Color x:Key="Color.Danger">#FFFF4C66</Color>
 
+    <Color x:Key="Color.AppStart">#FFA78BFA</Color>
+    <SolidColorBrush x:Key="Brush.Log.AppStart" Color="{DynamicResource Color.Log.AppStart}" />
+
     <!--  ===== Brushes (for DynamicResource) =====  -->
     <SolidColorBrush x:Key="Brush.Background" Color="{DynamicResource Color.Background}" />
     <SolidColorBrush x:Key="Brush.Surface" Color="{DynamicResource Color.Surface}" />

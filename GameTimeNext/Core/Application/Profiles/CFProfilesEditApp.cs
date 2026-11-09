@@ -53,12 +53,12 @@ namespace GameTimeNext.Core.Application.Profiles
                     optimizedCount++;
                     savedBytes += oldSize - newSize;
 
-                    FnLog.AddInfo("CoverOptimization", $"Optimized {Path.GetFileName(path)}: {oldSize / 1024} KB -> {newSize / 1024} KB");
+                    FnLog.AddInfo(nameof(CFProfilesEditApp), $"Optimized {Path.GetFileName(path)}: {oldSize / 1024} KB -> {newSize / 1024} KB");
                 }
                 catch (Exception ex)
                 {
                     try { File.Delete(tempPath); } catch { }
-                    FnLog.AddWarning("CoverOptimization", $"Could not optimize {Path.GetFileName(path)}", ex);
+                    FnLog.AddWarning(nameof(CFProfilesEditApp), $"Could not optimize {Path.GetFileName(path)}", ex);
                 }
             }
 

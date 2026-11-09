@@ -32,11 +32,11 @@
             Style="{StaticResource Card}">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="130" />
+                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="12" />
                     <ColumnDefinition Width="240" />
                     <ColumnDefinition Width="24" />
-                    <ColumnDefinition Width="130" />
+                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="12" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
@@ -48,9 +48,8 @@
                     Text="Text type" />
 
                 <TextBox
-                    x:Name="TxbTextType"
+                    x:Name="txbTextType"
                     Grid.Column="2"
-                    Height="36"
                     VerticalAlignment="Center"
                     VerticalContentAlignment="Center"
                     uixprops:UIXAttachedProperty.Path="T1CTABH.TXTYP"
@@ -63,9 +62,8 @@
                     Text="Description" />
 
                 <TextBox
-                    x:Name="TxbDescription"
+                    x:Name="txbDescription"
                     Grid.Column="6"
-                    Height="36"
                     VerticalAlignment="Center"
                     VerticalContentAlignment="Center"
                     uixprops:UIXAttachedProperty.Path="T1CTABH.DESCR"
@@ -93,20 +91,25 @@
                     </Grid.ColumnDefinitions>
 
                     <Button
-                        x:Name="BtnAdd"
+                        x:Name="btnAdd"
                         Grid.Column="1"
                         ToolTip="Add entry"
-                        Style="{StaticResource Button.Icon}">
-                        <TextBlock
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            FontFamily="{StaticResource Font.Icons}"
-                            FontSize="14"
-                            Text="&#xE710;" />
+                        Style="{StaticResource Button.Primary}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                FontFamily="{StaticResource Font.Icons}"
+                                FontSize="14"
+                                Text="&#xE710;" />
+                            <TextBlock
+                                Margin="8,0,0,0"
+                                VerticalAlignment="Center"
+                                Text="Add entry" />
+                        </StackPanel>
                     </Button>
 
                     <Button
-                        x:Name="BtnRefresh"
+                        x:Name="btnRefresh"
                         Grid.Column="3"
                         IsDefault="True"
                         ToolTip="Refresh entries"
@@ -120,28 +123,54 @@
                     </Button>
                 </Grid>
 
-                <uixsel:UIXDataGrid
-                    x:Name="DgCodetableEntrys"
-                    Grid.Row="2"
-                    AutoGenerateColumns="False"
-                    CanUserAddRows="False"
-                    CanUserDeleteRows="False"
-                    CanUserResizeRows="False"
-                    HeadersVisibility="Column"
-                    IsReadOnly="True"
-                    SelectionMode="Single"
-                    SelectionUnit="FullRow">
-                    <uixsel:UIXDataGrid.Columns>
-                        <DataGridTextColumn
-                            Width="0.15*"
-                            Binding="{Binding COTXNUM}"
-                            Header="Textnumber" />
-                        <DataGridTextColumn
-                            Width="*"
-                            Binding="{Binding CODESCR}"
-                            Header="Description" />
-                    </uixsel:UIXDataGrid.Columns>
-                </uixsel:UIXDataGrid>
+                <Grid Grid.Row="2">
+                    <uixsel:UIXDataGrid
+                        x:Name="dgCodetableEntrys"
+                        AutoGenerateColumns="False"
+                        CanUserAddRows="False"
+                        CanUserDeleteRows="False"
+                        CanUserResizeRows="False"
+                        HeadersVisibility="Column"
+                        IsReadOnly="True"
+                        SelectionMode="Single"
+                        SelectionUnit="FullRow">
+                        <uixsel:UIXDataGrid.Columns>
+                            <DataGridTextColumn
+                                Width="0.15*"
+                                Binding="{Binding COTXNUM}"
+                                Header="Textnumber" />
+                            <DataGridTextColumn
+                                Width="*"
+                                Binding="{Binding CODESCR}"
+                                Header="Description" />
+                        </uixsel:UIXDataGrid.Columns>
+                    </uixsel:UIXDataGrid>
+
+                    <!--  Empty state: shown by the selector adapter when the codetable has no entries  -->
+                    <StackPanel
+                        x:Name="pnlNoEntries"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        IsHitTestVisible="False"
+                        Visibility="Collapsed">
+                        <TextBlock
+                            HorizontalAlignment="Center"
+                            FontFamily="{StaticResource Font.Icons}"
+                            FontSize="28"
+                            Foreground="{DynamicResource Brush.TextSecondary}"
+                            Text="&#xE14C;" />
+                        <TextBlock
+                            Margin="0,12,0,0"
+                            HorizontalAlignment="Center"
+                            Style="{StaticResource Text.Subtitle}"
+                            Text="No entries yet" />
+                        <TextBlock
+                            x:Name="txNoEntriesHint"
+                            Margin="0,4,0,0"
+                            HorizontalAlignment="Center"
+                            Style="{StaticResource Text.Hint}" />
+                    </StackPanel>
+                </Grid>
             </Grid>
         </Border>
     </Grid>

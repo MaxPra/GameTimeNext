@@ -23,6 +23,17 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
 
         protected override void Init()
         {
+            // Set loader texts
+            GetApp().Loader.SetRandomTexts(
+                                            "Loading your playthroughs...",
+                                            "Replaying your adventures...",
+                                            "Counting your hours of play...",
+                                            "Checking which journeys you finished...",
+                                            "Looking for paused adventures...",
+                                            "Remembering every run you started...",
+                                            "Adding up your playtime..."
+                                            );
+
             ViewReturn = new PlaythroughsViewReturn();
 
             AddSource("T1CTABD", new TXCTABD());

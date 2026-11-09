@@ -25,6 +25,7 @@ namespace GameTimeNext.Core.Framework
     {
         private static AppConfig _appConfig = new AppConfig();
         private static DataBaseManager _databaseManager = new DataBaseManager();
+        private static LogDataBaseManager _logDatabaseManager = new LogDataBaseManager();
         private static T1PROFI? _t1Profi = new T1PROFI();
         private static ContentControl _loader = new ContentControl();
         private static Dictionary<string, UIXApplication> _startedApplications = new Dictionary<string, UIXApplication>();
@@ -52,6 +53,11 @@ namespace GameTimeNext.Core.Framework
         public static DataBaseManager GetDataBaseManager()
         {
             return _databaseManager;
+        }
+
+        public static LogDataBaseManager GetLogDataBaseManager()
+        {
+            return _logDatabaseManager;
         }
 
         public static T1PROFI? GetCurrentProfile()
@@ -126,6 +132,11 @@ namespace GameTimeNext.Core.Framework
             gameRunningProcess.Initialize(new TXPROFI().ReadAll());
             gameRunningProcess.Start(500);
 
+            // LauncherAutoImportProcess
+            LauncherAutoImportProcess launcherAutoImportProcess = app.GetBackgroundProcess<LauncherAutoImportProcess>();
+            launcherAutoImportProcess.CallDispatcher = app.CallDispatcher;
+            launcherAutoImportProcess.Start(20000);
+
             // RemoteMonitoringProcess
             RemoteMonitoringProcess remoteMonitoringProcess = app.GetBackgroundProcess<RemoteMonitoringProcess>();
             remoteMonitoringProcess.CallDispatcher = app.CallDispatcher;
@@ -133,6 +144,7 @@ namespace GameTimeNext.Core.Framework
 
             StartedBackgroundProcesses.Add(typeof(GlobalKeyInputProcess).FullName!, globalKeyInputProcess);
             StartedBackgroundProcesses.Add(typeof(GameRunningProcess).FullName!, gameRunningProcess);
+            StartedBackgroundProcesses.Add(typeof(LauncherAutoImportProcess).FullName!, launcherAutoImportProcess);
             StartedBackgroundProcesses.Add(typeof(RemoteMonitoringProcess).FullName!, remoteMonitoringProcess);
         }
 

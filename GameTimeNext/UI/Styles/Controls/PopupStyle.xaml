@@ -3,7 +3,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI">
 
-    <Duration x:Key="PopupOpenDuration">0:0:0.16</Duration>
     <CubicEase x:Key="EaseOut" EasingMode="EaseOut" />
 
     <!--  Outer margin of opaque popups: room for the shadow, otherwise the popup window cuts it off  -->
@@ -12,10 +11,11 @@
     <!--
         Surface of a popup (context menu, filter popup, ...). Glass where supported (see PopupGlass):
         translucent tint over the blurred background, no margin / shadow because the blur fills the popup window.
-        Otherwise opaque with shadow.
+        Otherwise opaque with shadow. Opening and closing are animated by PopupMotion, which also switches the blur on.
     -->
     <Style x:Key="Popup.Surface" TargetType="{x:Type Border}">
         <Setter Property="ui:PopupGlass.IsEnabled" Value="True" />
+        <Setter Property="ui:PopupMotion.IsEnabled" Value="True" />
         <Setter Property="Background" Value="{StaticResource Brush.Popup.Background}" />
         <Setter Property="BorderBrush" Value="{StaticResource Brush.Popup.Border}" />
         <Setter Property="BorderThickness" Value="1" />
@@ -38,62 +38,6 @@
         BasedOn="{StaticResource Popup.Surface}"
         TargetType="{x:Type Border}">
         <Setter Property="Padding" Value="14" />
-        <Setter Property="Opacity" Value="0" />
-        <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
-        <Setter Property="RenderTransform">
-            <Setter.Value>
-                <TransformGroup>
-                    <ScaleTransform ScaleX="0.98" ScaleY="0.98" />
-                    <TranslateTransform X="0" Y="-4" />
-                </TransformGroup>
-            </Setter.Value>
-        </Setter>
-
-        <Style.Triggers>
-            <!--  Glass: the blur doesn't move with the content, so open without scale / shift (only fade in)  -->
-            <Trigger Property="ui:PopupGlass.IsActive" Value="True">
-                <Setter Property="RenderTransform">
-                    <Setter.Value>
-                        <TransformGroup>
-                            <ScaleTransform ScaleX="1" ScaleY="1" />
-                            <TranslateTransform X="0" Y="0" />
-                        </TransformGroup>
-                    </Setter.Value>
-                </Setter>
-            </Trigger>
-
-            <EventTrigger RoutedEvent="FrameworkElement.Loaded">
-                <BeginStoryboard>
-                    <Storyboard>
-
-                        <DoubleAnimation
-                            EasingFunction="{StaticResource EaseOut}"
-                            Storyboard.TargetProperty="Opacity"
-                            To="1"
-                            Duration="{StaticResource PopupOpenDuration}" />
-
-                        <DoubleAnimation
-                            EasingFunction="{StaticResource EaseOut}"
-                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)"
-                            To="1"
-                            Duration="{StaticResource PopupOpenDuration}" />
-
-                        <DoubleAnimation
-                            EasingFunction="{StaticResource EaseOut}"
-                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)"
-                            To="1"
-                            Duration="{StaticResource PopupOpenDuration}" />
-
-                        <DoubleAnimation
-                            EasingFunction="{StaticResource EaseOut}"
-                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.Y)"
-                            To="0"
-                            Duration="{StaticResource PopupOpenDuration}" />
-
-                    </Storyboard>
-                </BeginStoryboard>
-            </EventTrigger>
-        </Style.Triggers>
     </Style>
 
 </ResourceDictionary>

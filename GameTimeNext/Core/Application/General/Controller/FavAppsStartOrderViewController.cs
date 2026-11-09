@@ -1,4 +1,5 @@
 ﻿using GameTimeNext.Core.Application.General.Views;
+using GameTimeNext.Core.Framework.Config;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
@@ -17,6 +18,13 @@ namespace GameTimeNext.Core.Application.General.Controller
         #region Event-Pipeline-Methods
         protected override void Init()
         {
+            // Set loader texts
+            GetApp().Loader.SetRandomTexts(
+                                            "Loading your favorites...",
+                                            "Lining up your favorite apps...",
+                                            "Deciding who starts first...",
+                                            "Sorting your favorite tabs..."
+                                            );
         }
 
         protected override void TriggeredEvent(FrameworkElement source, string eventName)
@@ -25,6 +33,7 @@ namespace GameTimeNext.Core.Application.General.Controller
 
         protected override void BuildFirstImpl()
         {
+            GetView().txStartOrderHint.Text = $"These applications open when {AppConfig.Root.ApplicationName} starts, in this order. Drag a row to move it.";
         }
 
         protected override async Task BuildFirstImplAsync()

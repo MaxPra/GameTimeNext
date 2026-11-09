@@ -43,18 +43,13 @@ namespace GameTimeNext.Core.Application.Screensetups.Selectors
 
         private async Task ApplyScreensetup(T1SCRSH t1scrsh)
         {
-            string? errorMessage;
+            // Shows the loader itself (not while asking to keep the display settings)
+            string? errorMessage = await CFScreensetupsApp.ApplyScreensetupAsync(GetApp(), t1scrsh);
 
-            GetApp().Loader.Begin();
-
-            try
-            {
-                errorMessage = await CFScreensetupsApp.ApplyScreensetupAsync(GetApp(), t1scrsh);
-            }
-            finally
-            {
-                GetApp().Loader.Stop();
-            }
+            if (errorMessage == null)
+                FnLog.AddInfo(GetApp(), $"Screensetup {t1scrsh.SSNA} applied");
+            else
+                FnLog.AddWarning(GetApp(), $"Screensetup {t1scrsh.SSNA} not applied completely: {errorMessage}");
 
             if (errorMessage != null)
             {

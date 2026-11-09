@@ -2,6 +2,7 @@
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Config;
+using GameTimeNext.Core.Framework.UI;
 using System.IO;
 using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Utils;
@@ -42,24 +43,46 @@ namespace GameTimeNext.Core.Application.DataManagers
             return true;
         }
 
-        public static List<T1GROUP> GetAllLinkedTags(T1PROFI t1profi)
+        /// <summary>
+        /// Tags (entries of codetable tG, hidden ones included) linked with the profile. Links to tags that no longer exist are skipped.
+        /// </summary>
+        public static List<T1CTABD> GetAllLinkedTags(T1PROFI t1profi)
         {
+            List<T1CTABD> tags = new List<T1CTABD>();
+            TXCTABD txctabd = new TXCTABD();
 
-            List<T1GROUP> tags = new List<T1GROUP>();
+            foreach (string tagKey in GetLinkedTagKeys(t1profi.PFID))
+            {
+                T1CTABD? tag = txctabd.Read(TFCTABD.TagCodetable, tagKey);
 
-            UIXQuery query = BuildLinkedTagsQuery(t1profi.PFID);
+                if (tag is not null)
+                    tags.Add(tag);
+            }
+
+            return tags;
+        }
+
+        /// <summary>
+        /// Keys (T1GRPPO.TGKY) of the tags linked with the profile.
+        /// </summary>
+        public static List<string> GetLinkedTagKeys(long pfid)
+        {
+            List<string> tagKeys = new List<string>();
+
+            UIXQuery query = BuildLinkedTagsQuery(pfid);
 
             using (var reader = query.Execute())
             {
                 while (reader.Read())
                 {
-                    long grid = UIXQuery.GetInt64(reader, K1GRPPO.Name, K1GRPPO.Fields.GRID);
+                    string tagKey = UIXQuery.GetString(reader, K1GRPPO.Name, K1GRPPO.Fields.TGKY, def: "");
 
-                    tags.Add(new TXGROUP().Read(grid));
+                    if (!FnString.IsNullEmptyOrWhitespace(tagKey))
+                        tagKeys.Add(tagKey);
                 }
             }
 
-            return tags;
+            return tagKeys;
         }
 
         public static List<T1SESSI> GetAllSessions(T1PROFI t1profi)
@@ -118,9 +141,63 @@ namespace GameTimeNext.Core.Application.DataManagers
                 return;
 
             cProfileSettings.Sealed = false;
+
+            // Unwrapping is looking at the new game
+            cProfileSettings.IsNew = false;
             t1profi.PRSE = cProfileSettings.Serialize();
 
             new TXPROFI().Save(t1profi);
+        }
+
+        /// <summary>
+        /// True if the profile was added by the automatic import and not looked at yet (badge "New").
+        /// </summary>
+        public static bool IsMarkedNew(T1PROFI t1profi)
+        {
+            return new CProfileSettings(t1profi.PRSE).Dezerialize().IsNew;
+        }
+
+        /// <summary>
+        /// The section of the cover the user chose for the disc; null: determined automatically (DiscPrint).
+        /// </summary>
+        public static DiscSection? GetDiscSection(T1PROFI t1profi)
+        {
+            return ToDiscSection(t1profi.DPRX, t1profi.DPRY, t1profi.DPRS);
+        }
+
+        private static DiscSection? ToDiscSection(double x, double y, double size)
+        {
+            return size > 0 ? new DiscSection(x, y, size) : null;
+        }
+
+        /// <summary>
+        /// Removes the badge "New" when the profile is selected and saves it. A sealed game keeps it: it is removed
+        /// when the game is unwrapped. Returns true if the badge was removed.
+        /// </summary>
+        public static bool ClearNewMarkOnSelection(T1PROFI t1profi)
+        {
+            CProfileSettings cProfileSettings = new CProfileSettings(t1profi.PRSE).Dezerialize();
+
+            if (!cProfileSettings.IsNew || IsSealed(t1profi))
+                return false;
+
+            cProfileSettings.IsNew = false;
+            t1profi.PRSE = cProfileSettings.Serialize();
+
+            new TXPROFI().Save(t1profi);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Saves a profile created without the edit view (automatic import) together with its initial playthrough,
+        /// as saving a new profile in the edit view does.
+        /// </summary>
+        public static void SaveNewProfile(T1PROFI t1profi)
+        {
+            new TXPROFI().Save(t1profi);
+
+            TFPLTHR.CreateNewPlaythrough(t1profi.PFID);
         }
 
         public static List<T1PLTHR> GetAllPlaythroughs(T1PROFI t1profi)
@@ -278,7 +355,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             UIXQuery query = new UIXQuery(K1GRPPO.Name, AppEnvironment.GetDataBaseManager().GetConnection());
 
             // Add fields
-            query.AddField(K1GRPPO.Name, K1GRPPO.Fields.GRID);
+            query.AddField(K1GRPPO.Name, K1GRPPO.Fields.TGKY);
 
             // Where restrictions
             query.AddWhere(K1GRPPO.Name, K1GRPPO.Fields.PFID, QueryCompareType.EQUALS, pfid);

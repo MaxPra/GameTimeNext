@@ -45,7 +45,7 @@
                     <ColumnDefinition Width="12" />
                     <ColumnDefinition Width="250" />
                     <ColumnDefinition Width="24" />
-                    <ColumnDefinition Width="130" />
+                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="12" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
@@ -161,13 +161,18 @@
                             x:Name="BtnAdd"
                             Grid.Column="1"
                             ToolTip="Add field"
-                            Style="{StaticResource Button.Icon}">
-                            <TextBlock
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                FontFamily="{StaticResource Font.Icons}"
-                                FontSize="14"
-                                Text="&#xE710;" />
+                            Style="{StaticResource Button.Primary}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    FontFamily="{StaticResource Font.Icons}"
+                                    FontSize="14"
+                                    Text="&#xE710;" />
+                                <TextBlock
+                                    Margin="8,0,0,0"
+                                    VerticalAlignment="Center"
+                                    Text="Add field" />
+                            </StackPanel>
                         </Button>
 
                         <Button

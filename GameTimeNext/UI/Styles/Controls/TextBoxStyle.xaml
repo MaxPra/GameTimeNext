@@ -1,12 +1,11 @@
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI">
+    xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI"
+    xmlns:uixprops="clr-namespace:UIX.ViewController.Engine.AttachedProperties;assembly=UIX.ViewController.Engine">
 
     <!--  Same values as the Brush.Input.* tokens (ControlTokens.xaml); the keys are used by other styles too  -->
-    <SolidColorBrush x:Key="Brush.TextBox.Background" Color="#FF0E0E12" />
-    <SolidColorBrush x:Key="Brush.TextBox.BackgroundHover" Color="#FF111116" />
-    <SolidColorBrush x:Key="Brush.TextBox.BackgroundFocused" Color="#FF111116" />
+    <SolidColorBrush x:Key="Brush.TextBox.Background" Color="#590A0A0E" />
     <SolidColorBrush x:Key="Brush.TextBox.Border" Color="#FF292932" />
     <SolidColorBrush x:Key="Brush.TextBox.BorderHover" Color="#FF383843" />
 
@@ -21,15 +20,16 @@
         <Setter Property="SelectionOpacity" Value="0.35" />
 
         <Setter Property="Background" Value="{DynamicResource Brush.TextBox.Background}" />
-        <Setter Property="BorderBrush" Value="{StaticResource Brush.TextBox.Border}" />
+        <Setter Property="BorderBrush" Value="{StaticResource Brush.Input.Edge}" />
         <Setter Property="BorderThickness" Value="{DynamicResource Thickness.TextBox.Border}" />
 
-        <Setter Property="Padding" Value="11,6" />
+        <!--  One pixel higher: the text line of Manrope sits low, this centers it in the field (buttons, combo boxes and date pickers lift their text to the same line)  -->
+        <Setter Property="Padding" Value="11,5,11,7" />
         <Setter Property="MinHeight" Value="{StaticResource Control.Height}" />
         <Setter Property="Height" Value="{StaticResource Control.Height}" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="FontWeight" Value="Normal" />
-        <Setter Property="FontFamily" Value="Segoe UI" />
+        <Setter Property="FontFamily" Value="{StaticResource Font.Text}" />
 
         <Setter Property="ui:TextBoxBehaviors.SelectAllOnFocus" Value="True" />
 
@@ -45,15 +45,6 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type TextBox}">
                     <Grid>
-                        <!--  Shadow shape behind the field (an effect on Bd would blur the text)  -->
-                        <Border
-                            Height="{TemplateBinding Height}"
-                            MinHeight="{TemplateBinding MinHeight}"
-                            Background="{StaticResource Brush.Input.Background}"
-                            CornerRadius="{StaticResource Control.CornerRadius}"
-                            Effect="{StaticResource Effect.Control}"
-                            IsHitTestVisible="False" />
-
                         <Border
                             x:Name="Bd"
                             Height="{TemplateBinding Height}"
@@ -82,33 +73,37 @@
                                     IsHitTestVisible="False"
                                     Opacity="0.70"
                                     Text="{TemplateBinding Tag}"
-                                    Visibility="Collapsed" />
+                                    Visibility="Collapsed">
+                                    <!--  The margin moves it further than the text in the text host: same line as the typed text, no jump  -->
+                                    <TextBlock.RenderTransform>
+                                        <TranslateTransform Y="1" />
+                                    </TextBlock.RenderTransform>
+                                </TextBlock>
                             </Grid>
                         </Border>
+
+                        <Border x:Name="HoverRim" Style="{StaticResource Input.HoverRim}" />
+                        <Border x:Name="FocusRim" Style="{StaticResource Input.FocusRim}" />
                     </Grid>
 
                     <ControlTemplate.Triggers>
 
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Brush.TextBox.BackgroundHover}" />
-                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Brush.Accent.Outline}" />
-                        </Trigger>
-
-                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
-                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Brush.TextBox.BackgroundFocused}" />
-                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
-                            <Setter TargetName="Bd" Property="BorderThickness" Value="{DynamicResource Thickness.TextBox.BorderFocused}" />
-                        </Trigger>
-
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Foreground" Value="{DynamicResource Brush.TextDisabled}" />
                             <Setter TargetName="Bd" Property="Opacity" Value="0.65" />
-                            <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource Brush.TextBox.Border}" />
+                        </Trigger>
+
+                        <!--  Marked by the engine (red adorner on top): no hover / focus outline next to the mark  -->
+                        <Trigger Property="uixprops:UIXFieldValidation.HasError" Value="True">
+                            <Setter TargetName="HoverRim" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="FocusRim" Property="Visibility" Value="Collapsed" />
                         </Trigger>
 
                         <Trigger Property="Validation.HasError" Value="True">
                             <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Brush.Danger}" />
                             <Setter TargetName="Bd" Property="BorderThickness" Value="{DynamicResource Thickness.TextBox.BorderFocused}" />
+                            <Setter TargetName="HoverRim" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="FocusRim" Property="Visibility" Value="Collapsed" />
                         </Trigger>
 
                         <MultiTrigger>

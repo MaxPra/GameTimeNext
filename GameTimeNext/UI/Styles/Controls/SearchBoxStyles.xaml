@@ -185,15 +185,11 @@
                             Focusable="False"
                             IsOpen="{TemplateBinding IsDropDownOpen}"
                             Placement="Bottom"
-                            PopupAnimation="Fade">
+                            PopupAnimation="Fade"
+                            VerticalOffset="6">
                             <Grid MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}" MaxHeight="{TemplateBinding MaxDropDownHeight}">
-                                <Border
-                                    Margin="0,6,0,0"
-                                    Background="{StaticResource Brush.Popup.Background}"
-                                    BorderBrush="{StaticResource Brush.Popup.Border}"
-                                    BorderThickness="1"
-                                    CornerRadius="{StaticResource Popup.CornerRadius}"
-                                    Effect="{StaticResource Effect.Popup}">
+                                <!--  Glass like the context menus. No outer margin: the drop down lines up with the field (the gap is the offset of the popup, the blur fills the popup window)  -->
+                                <Border Margin="0" Style="{StaticResource Popup.Surface}">
 
                                     <ScrollViewer Margin="4" SnapsToDevicePixels="True">
                                         <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained" />

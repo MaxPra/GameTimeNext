@@ -22,6 +22,15 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
         protected override void Init()
         {
+            // Set loader texts
+            GetApp().Loader.SetRandomTexts(
+                                            "Loading codetable entries...",
+                                            "Lining up the keys...",
+                                            "Reading every entry of the codetable...",
+                                            "Matching keys with their meanings...",
+                                            "Turning codes into words..."
+                                            );
+
             ViewReturn = new CodetablesEntrysViewReturn();
 
             AddIdentifier("T1CTABH", GetApp().T1CTABH!);
@@ -33,8 +42,8 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
         protected override async Task BuildFirstImplAsync()
         {
-            FnControls.SetVisible(GetView().BtnAdd, GetView().ViewIndicator.Contains("ED"));
-            await GetView().DgCodetableEntrys.LoadDataAsync();
+            FnControls.SetVisible(GetView().btnAdd, GetView().ViewIndicator.Contains("ED"));
+            await GetView().dgCodetableEntrys.LoadDataAsync();
         }
 
         protected override void BuildImpl()
@@ -82,7 +91,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
         {
         }
 
-        protected void EV_BtnAdd()
+        protected void EV_btnAdd()
         {
             CodetablesEntryEditApp app = GetApp().GetApplication<CodetablesEntryEditApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
             app.CreateNew(async (result) =>
@@ -90,15 +99,15 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
                 if (!result.HasChanged)
                     return;
 
-                await GetView().DgCodetableEntrys.LoadDataAsync();
+                await GetView().dgCodetableEntrys.LoadDataAsync();
             }, GetApp().T1CTABH!.TXTYP);
 
         }
 
 
-        protected async Task EV_BtnRefresh()
+        protected async Task EV_btnRefresh()
         {
-            await GetView().DgCodetableEntrys.LoadDataAsync();
+            await GetView().dgCodetableEntrys.LoadDataAsync();
         }
     }
 }

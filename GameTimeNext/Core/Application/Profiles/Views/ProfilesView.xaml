@@ -16,16 +16,19 @@
     d:DesignWidth="800"
     mc:Ignorable="d">
 
+    <!--  Column order follows the setting "Profile detail view position" (ProfilesViewController.ApplyDetailViewPosition)  -->
     <Grid
+        x:Name="grdProfiles"
         HorizontalAlignment="Stretch"
         VerticalAlignment="Stretch"
         Background="Transparent">
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="73*" />
+            <ColumnDefinition x:Name="colProfiles" Width="73*" />
             <ColumnDefinition Width="2" />
             <!--  Grows with the window (bigger cover on large screens), the detail view adapts its header to the height  -->
             <ColumnDefinition
+                x:Name="colProfileDetail"
                 Width="27*"
                 MinWidth="300"
                 MaxWidth="460" />
@@ -36,6 +39,7 @@
         </Grid.RowDefinitions>
 
         <Border
+            x:Name="brdProfiles"
             Grid.Column="0"
             Padding="0"
             Background="Transparent">
@@ -68,6 +72,7 @@
 
                 <!--  Toolbar: narrowing the list (search, filter) on the left, actions (refresh, add) on the right  -->
                 <Border
+                    x:Name="brdProfilesToolbar"
                     Grid.Row="0"
                     Margin="0,0,16,12"
                     Padding="16"
@@ -151,12 +156,18 @@
                             Grid.Column="6"
                             VerticalAlignment="Center"
                             ToolTip="Add profile"
-                            Style="{StaticResource Button.Icon}">
-                            <Image
-                                Width="16"
-                                Height="16"
-                                Source="/UI/Ressources/GTN_ICON_ADD_PROFILE.png"
-                                Stretch="Uniform" />
+                            Style="{StaticResource Button.Primary}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    FontFamily="{StaticResource Font.Icons}"
+                                    FontSize="14"
+                                    Text="&#xE710;" />
+                                <TextBlock
+                                    Margin="8,0,0,0"
+                                    VerticalAlignment="Center"
+                                    Text="Add profile" />
+                            </StackPanel>
                         </Button>
                     </Grid>
                 </Border>
@@ -164,6 +175,7 @@
                 <uixsel:UIXListBox
                     x:Name="ListBoxProfiles"
                     ui:ScrollFade.Length="80"
+                    ui:SmoothScroll.WheelStep="140"
                     ui:TileLayout.AutoSize="True"
                     Grid.Row="1"
                     Margin="-12,-8,0,0"
@@ -238,6 +250,7 @@
             Visibility="Collapsed" />
 
         <Border
+            x:Name="brdProfileDetail"
             Grid.Column="2"
             Padding="0"
             Background="Transparent">

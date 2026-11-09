@@ -86,17 +86,14 @@
                     Visibility="Collapsed" />
 
                 <Grid Grid.Row="4" Grid.Column="2">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="12" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="12" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
 
                     <uixcb:UIXComboBox
                         x:Name="CmbParam1"
-                        Grid.Row="0"
                         Height="36"
                         VerticalContentAlignment="Center"
                         uixprops:UIXAttachedProperty.Path="T1CTABD.PARM1"
@@ -108,7 +105,6 @@
 
                     <TextBox
                         x:Name="TxtParam1"
-                        Grid.Row="2"
                         Height="36"
                         VerticalContentAlignment="Center"
                         uixprops:UIXAttachedProperty.Path="T1CTABD.PARM1"
@@ -117,25 +113,29 @@
 
                     <CheckBox
                         x:Name="CbParam1"
-                        Grid.Row="4"
                         VerticalAlignment="Center"
                         uixprops:UIXAttachedProperty.SkipNotVisible="True"
                         Content="Aktiv"
                         Visibility="Collapsed" />
+
+                    <Button
+                        x:Name="btnParam1"
+                        Grid.Column="1"
+                        Margin="8,0,0,0"
+                        VerticalAlignment="Top"
+                        uixprops:UIXAttachedProperty.SkipEventPipeline="True"
+                        Visibility="Collapsed" />
                 </Grid>
 
                 <Grid Grid.Row="6" Grid.Column="2">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="12" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="12" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
 
                     <uixcb:UIXComboBox
                         x:Name="CmbParam2"
-                        Grid.Row="0"
                         Height="36"
                         VerticalContentAlignment="Center"
                         uixprops:UIXAttachedProperty.Path="T1CTABD.PARM2"
@@ -147,7 +147,6 @@
 
                     <TextBox
                         x:Name="TxtParam2"
-                        Grid.Row="2"
                         Height="36"
                         VerticalContentAlignment="Center"
                         uixprops:UIXAttachedProperty.Path="T1CTABD.PARM2"
@@ -156,10 +155,17 @@
 
                     <CheckBox
                         x:Name="CbParam2"
-                        Grid.Row="4"
                         VerticalAlignment="Center"
                         uixprops:UIXAttachedProperty.SkipNotVisible="True"
                         Content="Aktiv"
+                        Visibility="Collapsed" />
+
+                    <Button
+                        x:Name="btnParam2"
+                        Grid.Column="1"
+                        Margin="8,0,0,0"
+                        VerticalAlignment="Top"
+                        uixprops:UIXAttachedProperty.SkipEventPipeline="True"
                         Visibility="Collapsed" />
                 </Grid>
 
@@ -181,13 +187,6 @@
                 <ColumnDefinition Width="8" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-
-            <Button
-                x:Name="BtnSkip"
-                Grid.Column="1"
-                Width="140"
-                Height="36"
-                Content="Skip" />
 
             <Button
                 x:Name="BtnSave"

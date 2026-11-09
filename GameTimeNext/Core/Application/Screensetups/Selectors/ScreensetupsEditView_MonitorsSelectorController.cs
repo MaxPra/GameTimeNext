@@ -1,3 +1,4 @@
+using GameTimeNext.Core.Application.Screensetups.Controller;
 using GameTimeNext.Core.Application.Screensetups.Views;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements.Selectors;
@@ -9,6 +10,11 @@ namespace GameTimeNext.Core.Application.Screensetups.Selectors
     {
         public ScreensetupsEditView_MonitorsSelectorController(UIXApplication app) : base(app)
         {
+        }
+
+        protected void EV_SelectionChanged()
+        {
+            GetViewController<ScreensetupsEditViewController>().ShowDisplayMode(GetSelectedItem<ScreensetupMonitorDataGridRow>());
         }
     }
 }

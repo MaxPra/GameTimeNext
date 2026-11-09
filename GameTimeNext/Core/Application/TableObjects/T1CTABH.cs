@@ -32,42 +32,48 @@ namespace GameTimeNext.Core.Application.TableObjects
         public string PACT1 { get; set; } = "";
 
         [UIXSignatureField(8)]
-        public bool PAAC2 { get; set; } = false;
+        public string PAAP1 { get; set; } = "";
 
         [UIXSignatureField(9)]
-        public string PADE2 { get; set; } = "";
+        public bool PAAC2 { get; set; } = false;
 
         [UIXSignatureField(10)]
-        public bool PARF2 { get; set; } = false;
+        public string PADE2 { get; set; } = "";
 
         [UIXSignatureField(11)]
-        public string PACO2 { get; set; } = "";
+        public bool PARF2 { get; set; } = false;
 
         [UIXSignatureField(12)]
-        public string PACT2 { get; set; } = "";
+        public string PACO2 { get; set; } = "";
 
         [UIXSignatureField(13)]
-        public bool NRANA { get; set; } = false;
+        public string PACT2 { get; set; } = "";
 
         [UIXSignatureField(14)]
-        public bool EXPRT { get; set; } = false;
+        public string PAAP2 { get; set; } = "";
 
         [UIXSignatureField(15)]
-        public string PTOL1 { get; set; } = "";
+        public bool NRANA { get; set; } = false;
 
         [UIXSignatureField(16)]
-        public string PTOL2 { get; set; } = "";
+        public bool EXPRT { get; set; } = false;
 
         [UIXSignatureField(17)]
-        public DateTime CRAT { get; set; } = DateTime.MinValue;
+        public string PTOL1 { get; set; } = "";
 
         [UIXSignatureField(18)]
-        public string CRUS { get; set; } = "";
+        public string PTOL2 { get; set; } = "";
 
         [UIXSignatureField(19)]
-        public DateTime CHAT { get; set; } = DateTime.MinValue;
+        public DateTime CRAT { get; set; } = DateTime.MinValue;
 
         [UIXSignatureField(20)]
+        public string CRUS { get; set; } = "";
+
+        [UIXSignatureField(21)]
+        public DateTime CHAT { get; set; } = DateTime.MinValue;
+
+        [UIXSignatureField(22)]
         public string CHUS { get; set; } = "";
 
         public override void Save()

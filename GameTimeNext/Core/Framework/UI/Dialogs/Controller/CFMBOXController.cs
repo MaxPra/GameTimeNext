@@ -46,11 +46,51 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
         MarkdownLarge = 3
     }
 
+    /// <summary>
+    /// Answer of an input question (CFMBOX.ShowInput): the chosen button and the entered text.
+    /// </summary>
+    public sealed class CFMBOXInputResult
+    {
+        public CFMBOXResult Result { get; init; } = CFMBOXResult.None;
+
+        /// <summary>
+        /// Entered text; empty if the question was cancelled.
+        /// </summary>
+        public string Text { get; init; } = string.Empty;
+
+        /// <summary>
+        /// True if the question was answered with OK (Cancel, Esc or closing the window = false).
+        /// </summary>
+        public bool IsConfirmed => Result == CFMBOXResult.Ok;
+    }
+
+    /// <summary>
+    /// Closes a message by itself after Duration with Result (e.g. "keep these display settings?" reverting without an answer).
+    /// CountdownText gets the remaining seconds and is shown below the message, updated every second.
+    /// </summary>
+    public sealed record CFMBOXTimeout(TimeSpan Duration, CFMBOXResult Result, Func<int, string> CountdownText)
+    {
+        public int GetRemainingSeconds(DateTime startedAt)
+        {
+            return Math.Max(0, (int)Math.Ceiling((Duration - (DateTime.Now - startedAt)).TotalSeconds));
+        }
+
+        public string AppendCountdown(string message, int remainingSeconds)
+        {
+            return $"{message}\n\n{CountdownText(remainingSeconds)}";
+        }
+    }
+
     internal class CFMBOXController : UIXWindowControllerBase<CFMBOX, CFMBOXView>
     {
         public class WindowReturn : UIXWindowReturn
         {
             public CFMBOXResult Result { get; set; } = CFMBOXResult.None;
+
+            /// <summary>
+            /// Text of the input field of an input question.
+            /// </summary>
+            public string InputText { get; set; } = string.Empty;
         }
 
         private readonly WindowReturn _windowReturn = new WindowReturn();
@@ -61,6 +101,9 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
 
         private bool _isInternalMove;
         private Window? _owner;
+
+        // Input question (ShowInputDialog): the input field is shown and gets the focus
+        private bool _isInput;
 
         // Memo text dialog (e.g. changelog): sized to the text within these bounds
         private const double MemotextMinWidth = 460;
@@ -96,6 +139,40 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
             Show(true);
 
             return _windowReturn.Result;
+        }
+
+        /// <summary>
+        /// Replaces the text of the open message (countdown of a CFMBOXTimeout, run by CFMBOX).
+        /// </summary>
+        internal void UpdateMessage(string message)
+        {
+            ApplyMessage(message);
+        }
+
+        /// <summary>
+        /// Shows the message with an input field and OK / Cancel; Enter in the field confirms, Esc cancels.
+        /// </summary>
+        public CFMBOXInputResult ShowInputDialog(string title, string message, string defaultText, CFMBOXIcon icon, Window? owner)
+        {
+            _owner = owner;
+            _isInput = true;
+            _windowReturn.Result = CFMBOXResult.None;
+            _windowReturn.InputText = string.Empty;
+
+            ApplyContent(title, message, CFMBOXResult.Ok | CFMBOXResult.Cancel, icon, owner, CFMBOXType.Default);
+
+            GetView().txbInput.Text = defaultText ?? string.Empty;
+            GetView().txbInput.Visibility = Visibility.Visible;
+
+            Show(true);
+
+            bool confirmed = _windowReturn.Result == CFMBOXResult.Ok;
+
+            return new CFMBOXInputResult
+            {
+                Result = _windowReturn.Result,
+                Text = confirmed ? _windowReturn.InputText : string.Empty
+            };
         }
 
         protected override void Init()
@@ -200,7 +277,7 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
 
                 GetView().SpText.Visibility = Visibility.Collapsed;
                 GetView().TxbMemotext.Visibility = Visibility.Collapsed;
-                GetView().FdsvMarkdown.Document = UIXMarkdownRenderer.ToFlowDocument(message);
+                GetView().FdsvMarkdown.Document = UIXMarkdownRenderer.ToFlowDocument(message, FnFont.Text());
                 GetView().BdMarkdown.Visibility = Visibility.Visible;
 
                 // Wrapped text has no natural width: fixed reading width, the height follows the content up to a maximum
@@ -300,6 +377,13 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
             // Now with the real size (SizeToContent), centered within the owner on its monitor
             CenterInOwnerArea();
             FocusDefaultButton();
+
+            // An input question starts in the field, the default text selected so typing replaces it
+            if (_isInput)
+            {
+                GetView().txbInput.Focus();
+                GetView().txbInput.SelectAll();
+            }
         }
 
         private void Wnd_LocationChanged(object? sender, EventArgs e)
@@ -359,9 +443,13 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
             CloseWithResult(_button3Result);
         }
 
-        private void CloseWithResult(CFMBOXResult result)
+        internal void CloseWithResult(CFMBOXResult result)
         {
             _windowReturn.Result = result;
+
+            if (_isInput)
+                _windowReturn.InputText = GetView().txbInput.Text;
+
             GetView().Close();
         }
 
