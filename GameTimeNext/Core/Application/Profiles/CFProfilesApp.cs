@@ -11,7 +11,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Profiles
 {
-    public class CFProfilesApp
+    public partial class CFProfilesApp
     {
         private static readonly Uri PlaceholderCoverUri = new Uri("pack://application:,,,/UI/Ressources/GTN_COVER_PLACEHOLDER.png", UriKind.Absolute);
 
@@ -38,7 +38,7 @@ namespace GameTimeNext.Core.Application.Profiles
             }
             catch (Exception ex)
             {
-                FnLog.AddWarning("Profiles", $"Cover \"{coverFileName}\" could not be loaded, the placeholder cover is shown instead", ex);
+                FnLog.AddWarning(nameof(CFProfilesApp), $"Cover \"{coverFileName}\" could not be loaded, the placeholder cover is shown instead", ex);
                 return LoadPlaceholderCover(width, height);
             }
         }
@@ -104,8 +104,7 @@ namespace GameTimeNext.Core.Application.Profiles
 
             System.Windows.Application.Current.Dispatcher.Invoke(() =>
             {
-                ToastMessage tm = new ToastMessage("Attention!", AppConfig.Root.ApplicationName + " needs your attention!");
-                tm.Show();
+                CFToast.Show("Attention!", AppConfig.Root.ApplicationName + " needs your attention!");
 
                 CFMBOX cfmbox = app.GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
                 CFMBOXResult result = cfmbox.Show(app.GetErrorMessage("PLT0001"), CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);

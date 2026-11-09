@@ -1,5 +1,6 @@
 ﻿using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Profiles.Controller;
+using GameTimeNext.Core.Application.Profiles.Selectors;
 using GameTimeNext.Core.Application.Profiles.Views;
 using GameTimeNext.Core.Application.TableObjects;
 using UIX.ViewController.Engine.Runnables;
@@ -51,6 +52,9 @@ namespace GameTimeNext.Core.Application.Profiles
 
             _profilesEditViewController = new ProfilesEditViewController(this);
             _profilesEditView.ViewController = _profilesEditViewController;
+
+            _profilesEditView.lbTags.SelectorAdapter = new ProfilesEditView_TagsSelectorAdapter(this);
+            _profilesEditView.lbTags.SelectorController = new ProfilesEditView_TagsSelectorController(this);
 
             _profilesManualEstTimesEditView = new ProfilesManualEstTimesEditView();
             _profilesManualEstTimesEditViewController = new ProfilesManualEstTimesEditViewController(this);

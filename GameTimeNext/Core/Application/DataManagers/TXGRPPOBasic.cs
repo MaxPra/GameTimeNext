@@ -41,6 +41,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             T1GRPPO obj = CreateNew();
             obj.GRID = objFrom.GRID;
             obj.PFID = objFrom.PFID;
+            obj.TGKY = objFrom.TGKY;
             return obj;
         }
 
@@ -97,6 +98,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             query.AddField(K1GRPPO.Name, K1GRPPO.Fields.GPID);
             query.AddField(K1GRPPO.Name, K1GRPPO.Fields.GRID);
             query.AddField(K1GRPPO.Name, K1GRPPO.Fields.PFID);
+            query.AddField(K1GRPPO.Name, K1GRPPO.Fields.TGKY);
             query.AddField(K1GRPPO.Name, K1GRPPO.Fields.CRAT);
             query.AddField(K1GRPPO.Name, K1GRPPO.Fields.CRUS);
             query.AddField(K1GRPPO.Name, K1GRPPO.Fields.CHAT);
@@ -120,6 +122,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             query.AddField(K1GRPPO.Name, K1GRPPO.Fields.GPID);
             query.AddField(K1GRPPO.Name, K1GRPPO.Fields.GRID);
             query.AddField(K1GRPPO.Name, K1GRPPO.Fields.PFID);
+            query.AddField(K1GRPPO.Name, K1GRPPO.Fields.TGKY);
             query.AddField(K1GRPPO.Name, K1GRPPO.Fields.CRAT);
             query.AddField(K1GRPPO.Name, K1GRPPO.Fields.CRUS);
             query.AddField(K1GRPPO.Name, K1GRPPO.Fields.CHAT);
@@ -146,6 +149,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             obj.GPID = UIXQuery.GetInt64(reader, K1GRPPO.Name, K1GRPPO.Fields.GPID);
             obj.GRID = UIXQuery.GetInt64(reader, K1GRPPO.Name, K1GRPPO.Fields.GRID);
             obj.PFID = UIXQuery.GetInt64(reader, K1GRPPO.Name, K1GRPPO.Fields.PFID);
+            obj.TGKY = UIXQuery.GetString(reader, K1GRPPO.Name, K1GRPPO.Fields.TGKY, def: "");
             obj.CRAT = UIXQuery.GetDateTime(reader, K1GRPPO.Name, K1GRPPO.Fields.CRAT);
             obj.CRUS = UIXQuery.GetString(reader, K1GRPPO.Name, K1GRPPO.Fields.CRUS, def: "");
             obj.CHAT = UIXQuery.GetDateTime(reader, K1GRPPO.Name, K1GRPPO.Fields.CHAT);
@@ -163,9 +167,10 @@ namespace GameTimeNext.Core.Application.DataManagers
             obj.CRUS = FnOpSys.GetCurrentUserName();
             obj.CHUS = FnOpSys.GetCurrentUserName();
             using SQLiteCommand cmd = _connection.CreateCommand();
-            cmd.CommandText = "INSERT INTO T1GRPPO (GRID, PFID, CRAT, CRUS, CHAT, CHUS) VALUES (@GRID, @PFID, @CRAT, @CRUS, @CHAT, @CHUS);";
+            cmd.CommandText = "INSERT INTO T1GRPPO (GRID, PFID, TGKY, CRAT, CRUS, CHAT, CHUS) VALUES (@GRID, @PFID, @TGKY, @CRAT, @CRUS, @CHAT, @CHUS);";
             cmd.Parameters.AddWithValue("@GRID", ToDbValue(obj.GRID));
             cmd.Parameters.AddWithValue("@PFID", ToDbValue(obj.PFID));
+            cmd.Parameters.AddWithValue("@TGKY", ToDbValue(obj.TGKY));
             cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
             cmd.Parameters.AddWithValue("@CRUS", ToDbValue(obj.CRUS));
             cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));
@@ -182,10 +187,11 @@ namespace GameTimeNext.Core.Application.DataManagers
             obj.CHAT = DateTime.Now;
             obj.CHUS = FnOpSys.GetCurrentUserName();
             using SQLiteCommand cmd = _connection.CreateCommand();
-            cmd.CommandText = "UPDATE T1GRPPO SET GRID = @GRID, PFID = @PFID, CRAT = @CRAT, CRUS = @CRUS, CHAT = @CHAT, CHUS = @CHUS WHERE GPID = @GPID;";
+            cmd.CommandText = "UPDATE T1GRPPO SET GRID = @GRID, PFID = @PFID, TGKY = @TGKY, CRAT = @CRAT, CRUS = @CRUS, CHAT = @CHAT, CHUS = @CHUS WHERE GPID = @GPID;";
             cmd.Parameters.AddWithValue("@GPID", ToDbValue(obj.GPID));
             cmd.Parameters.AddWithValue("@GRID", ToDbValue(obj.GRID));
             cmd.Parameters.AddWithValue("@PFID", ToDbValue(obj.PFID));
+            cmd.Parameters.AddWithValue("@TGKY", ToDbValue(obj.TGKY));
             cmd.Parameters.AddWithValue("@CRAT", ToDbValue(obj.CRAT));
             cmd.Parameters.AddWithValue("@CRUS", ToDbValue(obj.CRUS));
             cmd.Parameters.AddWithValue("@CHAT", ToDbValue(obj.CHAT));

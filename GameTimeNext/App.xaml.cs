@@ -6,6 +6,7 @@ using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.Files;
 using GameTimeNext.Core.Framework.GitHub;
 using GameTimeNext.Core.Framework.LauncherIntegration;
+using GameTimeNext.Core.Framework.UI;
 using GameTimeNext.Core.Framework.Utils;
 using System.Diagnostics;
 using System.Windows;
@@ -20,9 +21,27 @@ namespace GameTimeNext
     /// </summary>
     public partial class App : Application
     {
+        private LogProvider _logProvider = null!;
+        private bool isSplashProcess;
+
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+
+            // App font (Manrope) as default of every window, before the first window (splash) is created
+            FnFont.ApplyAsDefault();
+
+            // Mouse wheel moves every ScrollViewer by a spring
+            SmoothScroll.Register();
+
+            // Started as splash process by the application (see SplashHost): only shows the splash, nothing else
+            if (SplashHost.IsSplashProcess(e.Args))
+            {
+                isSplashProcess = true;
+                AppEnvironment.AppVersion.Get();
+                SplashHost.RunAsSplashProcess(this, e.Args);
+                return;
+            }
 
             // Ensure that only one instance is running
             if (!FnSystem.IsDebug() && !FnSystem.TryAcquireSingleInstance())
@@ -40,13 +59,11 @@ namespace GameTimeNext
             ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
             AppEnvironment.AppVersion.Get();
-            Core.Application.General.SplashScreen? splash = null;
+            SplashHost? splash = null;
 
+            // The splash is its own process, so its animation is not stalled by the start below
             if (!startMinimized)
-            {
-                splash = new Core.Application.General.SplashScreen();
-                splash.Show();
-            }
+                splash = SplashHost.Start(FnSystem.IsDebug());
 
             InitializeApp();
 
@@ -61,11 +78,17 @@ namespace GameTimeNext
                 Target = UIXApplicationStartTarget.Window,
                 ShowHidden = startMinimized
             });
+
+            // From here on the module "Diagnostics" can be opened: log entries only go to the text file if the log database fails
+            _logProvider.StartupCompleted = true;
         }
 
         private void InitializeApp()
         {
-            FnLog.Configure(AppConfig.LogFilePath);
+            // Log target of FnLog (engine); first thing, so everything after this is logged
+            AppEnvironment.GetLogDataBaseManager().Initialize();
+            _logProvider = new LogProvider();
+            FnLog.LogProvider = _logProvider;
 
             // FileSystem Migration
             MigTask_100b_008.MigrateFileSystem();
@@ -82,17 +105,17 @@ namespace GameTimeNext
             FnTheme.ApplyWallpaperBackground(AppEnvironment.GetAppConfig().AppSettings.BackgroundSource);
             FnTheme.ApplyGlassTint(AppEnvironment.GetAppConfig().AppSettings.DarkTintedGlass);
 
-            FnLog.AddInfo("MainApp", "*** Initializing Application... ***");
+            FnLog.Add(GTNLogType.AppStart, "MainApp", "*** Initializing Application... ***");
 
-            FnLog.AddInfo("MainApp", "Initiating Databasemanager...");
+            FnLog.Add(GTNLogType.AppStart, "MainApp", "Initiating Databasemanager...");
             AppEnvironment.InitiateDataBaseManager();
 
             // Initialize database
-            FnLog.AddInfo("MainApp", "Initializing database...");
+            FnLog.Add(GTNLogType.AppStart, "MainApp", "Initializing database...");
             AppEnvironment.GetDataBaseManager().Initialize();
 
             // Initialize AppEnvironment
-            FnLog.AddInfo("MainApp", "Initializing application environment...");
+            FnLog.Add(GTNLogType.AppStart, "MainApp", "Initializing application environment...");
             AppEnvironment.Initalize();
 
             // Only now: T1APRDH exists after the metadata migration in Initalize; earlier applications get the fallback properties
@@ -100,9 +123,10 @@ namespace GameTimeNext
 
             // Same for T1ERMSG: error messages are only available from here on
             UIXApplication.ErrorMessageProvider = new ErrorMessageProvider();
+            UIXApplication.NewEntryProvider = new NewEntryProvider();
 
             // Delete old backups
-            FnLog.AddInfo("MainApp", "Deleting old backups...");
+            FnLog.Add(GTNLogType.AppStart, "MainApp", "Deleting old backups...");
             FileHandler.DeleteOldBackupFiles();
 
             // Start argument -optimizecovers: shrink existing profile covers
@@ -110,30 +134,34 @@ namespace GameTimeNext
                 OptimizeProfileCovers();
 
             // Check for new version (GitHub)
-            FnLog.AddInfo("MainApp", "Checking for new version (Github)...");
+            FnLog.Add(GTNLogType.AppStart, "MainApp", "Checking for new version (Github)...");
             CheckForNewVersion();
         }
 
         private void OptimizeProfileCovers()
         {
-            FnLog.AddInfo("MainApp", "Optimizing profile covers...");
+            FnLog.Add(GTNLogType.AppStart, "MainApp", "Optimizing profile covers...");
 
             (int optimizedCount, long savedBytes) = Core.Application.Profiles.CFProfilesEditApp.OptimizeAllProfileCovers();
 
             string message = $"{optimizedCount} profile cover(s) optimized, {savedBytes / 1024.0 / 1024.0:0.0} MB saved.";
 
-            FnLog.AddInfo("MainApp", message);
+            FnLog.Add(GTNLogType.AppStart, "MainApp", message);
             AppEnvironment.InformationList.Add(InformationListItem.FromErrorMessage(Core.Framework.UI.Dialogs.CFMBOXIcon.Info, "PRO0007", optimizedCount, Math.Round(savedBytes / 1024.0 / 1024.0, 1)));
         }
 
         protected override void OnExit(ExitEventArgs e)
         {
-            FnLog.AddInfo(null, "*** Shutdown initiated ***");
+            // The splash process has neither a database nor background processes
+            if (isSplashProcess)
+                return;
+
+            FnLog.AddInfo("MainApp", "*** Shutdown initiated ***");
 
             // A game paused by the Big Picture mode must never stay suspended
             FnLauncher.ResumePausedGame();
 
-            FnLog.AddInfo(null, "Stopping background processes...");
+            FnLog.AddInfo("MainApp", "Stopping background processes...");
             AppEnvironment.StopBackgroundProcesses();
 
             if (AppEnvironment.GetAppConfig().AppSettings.AutoBackup)
@@ -145,16 +173,19 @@ namespace GameTimeNext
                     backupPath = AppConfig.Dev.BackupDirectoryPath;
                 }
 
-                FnLog.AddInfo(null, "Creating backup at: " + backupPath);
+                FnLog.AddInfo("MainApp", "Creating backup at: " + backupPath);
 
                 FnBackup.CreateBackupSync(backupPath, BackupType.APP_CLOSED_BACKUP);
             }
 
-            FnLog.AddInfo(null, "Closing database connection...");
+            FnLog.AddInfo("MainApp", "Closing database connection...");
             if (AppEnvironment.GetDataBaseManager().GetConnection() != null)
                 AppEnvironment.GetDataBaseManager().GetConnection().Close();
 
-            FnLog.AddInfo(null, "*** Shutdown completed ***");
+            FnLog.AddInfo("MainApp", "*** Shutdown completed ***");
+
+            // Last: the log provider may write into the log database up to here
+            AppEnvironment.GetLogDataBaseManager().Close();
         }
 
         private void CheckForNewVersion()
@@ -162,7 +193,7 @@ namespace GameTimeNext
             UpdateCheckResult result = FnGithub.CheckForUpdateAsync(
                 AppEnvironment.AppVersion.Version.ToString(),
                 "MaxPra",
-                "GameTimeNext"
+                AppConfig.Root.InternalApplicationName
             ).GetAwaiter().GetResult();
 
             if (result.UpdateAvailable)

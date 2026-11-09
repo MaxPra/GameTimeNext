@@ -77,7 +77,7 @@ namespace GameTimeNext.Core.Application.General.AppSearch.Selectors
                 {
                     ClassName = type.FullName,
                     TabName = t1menue.MEDE,
-                    Description = t1aprdh.APDES
+                    Description = TFAPRDH.ResolvePlaceholders(t1aprdh.APDES)
                 };
             }
 

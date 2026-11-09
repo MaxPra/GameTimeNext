@@ -51,6 +51,10 @@ namespace GameTimeNext.Core.Application.General.Controller
             bool isDynamicBackground = FnTheme.IsDynamicBackgroundEnabled(AppEnvironment.GetAppConfig().AppSettings.BackgroundSource);
             GetView().UseWallpaperBackground = isDynamicBackground;
             GetView().UseBackdropBlur = !isDynamicBackground;
+
+            GetView().Title = AppConfig.Root.ApplicationName;
+            GetView().txWelcomeTitle.Text = $"Welcome to {AppConfig.Root.ApplicationName}";
+            GetView().txHelpTitle.Text = $"Learn how {AppConfig.Root.ApplicationName} works";
         }
 
         protected override async Task BuildFirstImplAsync()
@@ -68,10 +72,10 @@ namespace GameTimeNext.Core.Application.General.Controller
             // so the views of the tabs would not get loaded and opened
             FnControls.SetVisible(GetView(), true);
 
-            FnLog.AddInfo("MainApp", "Starting favorites...");
+            FnLog.AddInfo(GetApp(), "Starting favorites...");
             AppEnvironment.AppLauncher.StartFavorites(GetApp());
 
-            FnLog.AddInfo("MainApp", "Starting background processes...");
+            FnLog.AddInfo(GetApp(), "Starting background processes...");
             // Start background processes
             AppEnvironment.StartBackgroundProcesses(GetApp());
 
@@ -79,14 +83,6 @@ namespace GameTimeNext.Core.Application.General.Controller
             // before modal dialogs are shown. Background priority (4) is
             // lower than Render (7) → rendering runs first.
             await System.Windows.Application.Current.Dispatcher.InvokeAsync(() => { }, DispatcherPriority.Background);
-
-            if (GetApp().SplashScreen is not null)
-            {
-                GetApp().SplashScreen?.Close();
-
-                if (ReferenceEquals(System.Windows.Application.Current.MainWindow, GetApp().SplashScreen))
-                    System.Windows.Application.Current.MainWindow = null;
-            }
 
             // Set WindowState
             _ = GetView().Dispatcher.BeginInvoke(() =>
@@ -101,6 +97,14 @@ namespace GameTimeNext.Core.Application.General.Controller
 
                 // Only reveal the window once it has its final state (no flicker)
                 GetApp().SetMainWindowCloaked(false);
+
+                // The window was only shown hidden before, so Windows hasn't activated it: bring it to the front now, while
+                // the splash (same process) still has the foreground, otherwise it only shows up in the taskbar. The splash
+                // lives on its own thread (it is not the MainWindow of the application) and is closed afterwards.
+                if (!GetApp().StartMinimized)
+                    FnForeground.BringToFront(GetView());
+
+                GetApp().SplashScreen?.Close();
             }, DispatcherPriority.ApplicationIdle);
 
             System.Windows.Application.Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
@@ -111,7 +115,7 @@ namespace GameTimeNext.Core.Application.General.Controller
             await CheckGTXMigration();
 
 
-            FnLog.AddInfo("MainApp", "*** Application started ***");
+            FnLog.AddInfo(GetApp(), "*** Application started ***");
         }
 
         protected override void BuildImpl()
@@ -197,7 +201,7 @@ namespace GameTimeNext.Core.Application.General.Controller
             GetView().MainTabControl.Visibility = Visibility.Hidden;
             FnControls.SetVisible(GetView().pnlEmptyTabMessage, false);
 
-            FnLog.AddInfo("MainApp", "Big Picture mode opened");
+            FnLog.AddInfo(GetApp(), "Big Picture mode opened");
         }
 
         /// <summary>
@@ -217,7 +221,7 @@ namespace GameTimeNext.Core.Application.General.Controller
             // The mode colored the window with the selected game: back to the profile selected in the profiles view
             FnTheme.ApplyProfileAccentColors(AppEnvironment.CurrentPfid == 0 ? null : new TXPROFI().Read(AppEnvironment.CurrentPfid));
 
-            FnLog.AddInfo("MainApp", "Big Picture mode closed");
+            FnLog.AddInfo(GetApp(), "Big Picture mode closed");
         }
 
         private void EnsureProfilesAppStarted()
@@ -309,14 +313,14 @@ namespace GameTimeNext.Core.Application.General.Controller
 
             if (Directory.Exists(_gtxPath) && gtnFiles.Length == 0)
             {
-                FnLog.AddInfo("MainApp", "GameTimeX installation found. Prompting user for migration.");
+                FnLog.AddInfo(GetApp(), "GameTimeX installation found. Prompting user for migration.");
 
                 CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
                 CFMBOXResult result = cfmbox.Show(GetErrorMessage("GTX0001", AppConfig.Root.ApplicationName), CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
 
                 if (result == CFMBOXResult.Yes)
                 {
-                    FnLog.AddInfo("MainApp", "User accepted migration. Starting migration process.");
+                    FnLog.AddInfo(GetApp(), "User accepted migration. Starting migration process.");
                     GetApp().Loader.Begin(loaderTextStart);
 
                     bool hasError = false;
@@ -331,12 +335,12 @@ namespace GameTimeNext.Core.Application.General.Controller
                         catch (Exception ex)
                         {
                             hasError = true;
-                            FnLog.AddError("MainApp", "Error during GTX migration", ex);
+                            FnLog.AddError(GetApp(), "Error during GTX migration", ex);
                             GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("GLO0013", "migrating from GameTimeX", ex.Message), CFMBOXResult.Ok, CFMBOXIcon.Error);
                         }
                         finally
                         {
-                            FnLog.AddInfo("MainApp", $"GTX migration process completed {(hasError ? "with errors" : "successfully")}.");
+                            FnLog.AddInfo(GetApp(), $"GTX migration process completed {(hasError ? "with errors" : "successfully")}.");
                             GetApp().Loader.Stop();
                         }
                     });
@@ -347,7 +351,7 @@ namespace GameTimeNext.Core.Application.General.Controller
         private void BuildBetaTag()
         {
             if (AppEnvironment.AppVersion.IsBeta)
-                GetView().Subtitle = "BETA";
+                GetView().Subtitle = "beta";
             else
                 GetView().Subtitle = string.Empty;
         }
@@ -394,12 +398,28 @@ namespace GameTimeNext.Core.Application.General.Controller
             ShowHelp(application, tab.Header.ToString()!);
         }
 
+        // Help cards of the welcome screen: the text comes from the application definition of the module
+        protected void EV_btnHelpProfiles() => ShowHelpOf(nameof(ProfilesApp), "Profiles");
+        protected void EV_btnHelpPlaythroughs() => ShowHelpOf("PlaythroughsApp", "Playthroughs");
+        protected void EV_btnHelpDashboard() => ShowHelpOf("DashboardApp", "Dashboard");
+        protected void EV_btnHelpScreensetups() => ShowHelpOf("ScreensetupsApp", "Screensetups");
+        protected void EV_btnHelpBigPicture() => ShowHelpOf(nameof(BigPictureApp), "Big Picture mode");
+        protected void EV_btnHelpSettings() => ShowHelpOf("SettingsApp", "Settings");
+
         private void ShowHelp(UIXApplication application, string title)
         {
-            // Read again instead of the properties loaded at the start of the app, so a changed help text shows up immediately
-            UIXAppProperties properties = UIXApplication.AppPropertiesProvider?.Read(application.AppProperties.ApplicationName) ?? application.AppProperties;
+            ShowHelpOf(application.AppProperties.ApplicationName, title);
+        }
 
-            string helpText = FnString.IsNullEmptyOrWhitespace(properties.ApplicationHelpText)
+        /// <summary>
+        /// Shows the help text of an application definition (key = class name of the application) in the help window.
+        /// </summary>
+        private void ShowHelpOf(string applicationId, string title)
+        {
+            // Read again instead of the properties loaded at the start of the app, so a changed help text shows up immediately
+            UIXAppProperties? properties = UIXApplication.AppPropertiesProvider?.Read(applicationId);
+
+            string helpText = properties is null || FnString.IsNullEmptyOrWhitespace(properties.ApplicationHelpText)
                 ? "No help is available for this application yet."
                 : properties.ApplicationHelpText;
 
@@ -415,6 +435,11 @@ namespace GameTimeNext.Core.Application.General.Controller
             {
                 AppEnvironment.AppLauncher.CloseApplication(tab.Tag.ToString(), tab);
             }
+        }
+
+        protected void EV_ctxtCloseAll()
+        {
+            AppEnvironment.AppLauncher.CloseAll();
         }
 
         protected void EV_ctxtFav(FrameworkElement target)
@@ -481,8 +506,7 @@ namespace GameTimeNext.Core.Application.General.Controller
         {
             System.Windows.Application.Current.Dispatcher.Invoke(() =>
             {
-                ToastMessage tm = new ToastMessage("Remote Monitoring", $"Started on port {port}.");
-                tm.Show();
+                CFToast.Show("Remote Monitoring", $"Started on port {port}.");
             });
         }
 

@@ -27,14 +27,20 @@
 - Added a new **Playthroughs** application: playthroughs can be opened from a profile and created, edited, completed and cancelled there.
 - Playthroughs can now be paused and unpaused.
 - Added a new **External** filter for profiles.
+- Tags are now managed in **Selection Lists** (list *Tags*): add your own tags and hide the delivered ones you don't use. Your existing tags, assignments and filters are migrated automatically.
+- Tags of a game are now shown as cards in the profile editor: add a tag from the list (or create a new one right there) and remove it with the cross on its card.
+- **Disc image** in the profile editor: drag and zoom the cover on the disc to choose what is shown on it. *Automatic* goes back to the position chosen for you.
+- The **Settings** are reorganized into the pages *General*, *Appearance*, *Integrations*, *Backup* and *Monitoring*, and have a search field that finds a setting by its name or description.
 - Full blackout can now be toggled via hotkey while monitoring a console game.
 - Added the option **Dynamic Background** (*Settings > Appearance*): a blurred image is used as background of the main window.
   The background source can be chosen: the current Windows wallpaper or the cover of the selected profile.
-- Added a new **Screensetups** application: save which monitors are switched on, which one is the primary monitor and which audio device is used, and switch between them with one click.
+- Added a new **Screensetups** application: save which monitors are switched on, which one is the primary monitor, the resolution, refresh rate, orientation, placement and scaling of each monitor and which audio device is used, and switch between them with one click.
 - Added the **Big Picture mode** for the TV: your library in full screen with large covers, operated with a game controller (Xbox / XInput), the keyboard or the mouse.
   Open it with the controller icon in the title bar, or start GameTimeNext directly in it with the start argument `--bigpicture`.
   The selected game is shown large with its playtimes and current playthrough; LB / RB switch between your recently played games, the whole library and the search.
   Search your library with the on-screen keyboard (Y), start or stop monitoring and quit games from the game options (X), black out all monitors (View), and switch between a running game and Big Picture with the Xbox button or View + Menu.
+- **Automatic game import** (*Settings > General > Game import*): newly installed games of your launchers (Steam, Epic, Xbox, GOG, Ubisoft Connect, Rockstar) are added as profiles shortly after their installation finished, with the first cover from SteamGridDB (or the placeholder cover) and the executables preselected.
+  When you switch it on, you decide once whether the games installed already are added too. New profiles show the badge **New** until you select them (shrink-wrapped games until you unwrap them). Games that already have a profile, or whose profile you deleted, are never added again.
 
 ## Bug fixes
 

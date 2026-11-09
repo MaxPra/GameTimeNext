@@ -22,6 +22,16 @@ namespace GameTimeNext.Core.Application.ApplicationProperties.Controller
         #region Event-Pipeline-Methods
         protected override void Init()
         {
+            // Set loader texts
+            GetApp().Loader.SetRandomTexts(
+                                            "Loading application properties...",
+                                            "Reading the job descriptions of every app...",
+                                            "Checking which apps may join the menu...",
+                                            "Polishing the help texts...",
+                                            "Looking up names and descriptions...",
+                                            "Introducing all applications to each other..."
+                                            );
+
             _dataWrapper = GetDataWrapper<ApplicationPropertiesDataWrapper>();
         }
 

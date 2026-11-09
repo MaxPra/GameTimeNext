@@ -21,7 +21,7 @@ iM;U_PC;Computer;\user\D_ICON_PC.png;;2026-06-30 20:41:55;;2026-06-30 20:41:55;
 iM;U_MOB;Mobile-Symbol;\user\U_ICON_MOBILE.png;;2026-07-01 08:46:24;;2026-07-01 08:46:24;
 pF;MOB;Mobile1;02;U_MOB;2026-07-01 08:46:38;;2026-07-07 18:31:51;
 iM;U_XBOX;XBOX-Symbol;\user\U_ICON_XBOX.png;;2026-07-01 08:48:07;;2026-07-01 08:48:07;
-pF;XBOX;XBOX;02;U_XBOX;2026-07-01 08:48:23;;2026-07-01 08:48:23;
+pF;XBOX;XBOX;02;U_XBOX;2026-07-01 08:48:23;;2026-11-06 14:26:54;prage
 pL;D;DLC;;;2026-07-07 18:10:34;;2026-07-07 18:10:34;
 pL;NP;New Playthrough;;;2026-07-07 18:10:47;;2026-07-07 18:10:47;
 pL;IN;Initial Playthrough;;;2026-07-07 18:11:03;;2026-07-07 18:11:03;
@@ -37,3 +37,40 @@ lT;RSG;Rockstar Games Launcher;;;2026-10-26 16:36:32;prage;2026-10-26 16:36:32;p
 lT;LINK;Link-File;;;2026-10-26 16:36:40;prage;2026-10-26 16:36:40;prage
 mN;01;Folder;;;2026-10-28 18:49:08;prage;2026-10-28 18:49:08;prage
 mN;02;Application call;;;2026-10-28 18:49:19;prage;2026-10-28 18:49:19;prage
+dP;01;Left;;;2026-11-02 08:04:27;prage;2026-11-02 08:04:27;prage
+dP;02;Right;;;2026-11-02 08:04:35;prage;2026-11-02 08:04:35;prage
+lG;PEND;Pending;;;2026-11-02 17:21:17;prage;2026-11-02 17:21:17;prage
+lG;IMPO;Imported;;;2026-11-02 17:21:24;prage;2026-11-02 17:21:24;prage
+lG;SKIP;Skipped;;;2026-11-02 17:21:30;prage;2026-11-02 17:21:30;prage
+mO;LAND;Landscape;;;2026-11-04 12:00:00;Oliver Fida;2026-11-04 12:00:00;Oliver Fida
+mO;PORT;Portrait;;;2026-11-04 12:00:00;Oliver Fida;2026-11-04 12:00:00;Oliver Fida
+mO;LANDF;Landscape (flipped);;;2026-11-04 12:00:00;Oliver Fida;2026-11-04 12:00:00;Oliver Fida
+mO;PORTF;Portrait (flipped);;;2026-11-04 12:00:00;Oliver Fida;2026-11-04 12:00:00;Oliver Fida
+mP;LEFT;Left of the primary monitor;;;2026-11-04 12:00:00;Oliver Fida;2026-11-04 12:00:00;Oliver Fida
+mP;RIGHT;Right of the primary monitor;;;2026-11-04 12:00:00;Oliver Fida;2026-11-04 12:00:00;Oliver Fida
+mP;ABOVE;Above the primary monitor;;;2026-11-04 12:00:00;Oliver Fida;2026-11-04 12:00:00;Oliver Fida
+mP;BELOW;Below the primary monitor;;;2026-11-04 12:00:00;Oliver Fida;2026-11-04 12:00:00;Oliver Fida
+yN;N;No;;;2026-11-05 12:00:00;prage;2026-11-05 12:00:00;prage
+yN;Y;Yes;;;2026-11-05 12:00:00;prage;2026-11-05 12:00:00;prage
+tG;D_101;Singleplayer;N;;2026-11-05 12:00:00;prage;2026-11-05 12:00:00;prage
+tG;D_102;Multiplayer;N;;2026-11-05 12:00:00;prage;2026-11-05 12:00:00;prage
+tG;D_103;Co-op;N;;2026-11-05 12:00:00;prage;2026-11-05 12:00:00;prage
+tG;D_104;PvP;N;;2026-11-05 12:00:00;prage;2026-11-05 12:00:00;prage
+tG;D_105;Action;N;;2026-11-05 12:00:00;prage;2026-11-05 12:00:00;prage
+tG;D_106;Adventure;N;;2026-11-05 12:00:00;prage;2026-11-05 12:00:00;prage
+tG;D_107;RPG;N;;2026-11-05 12:00:00;prage;2026-11-05 12:00:00;prage
+tG;D_108;Strategy;N;;2026-11-05 12:00:00;prage;2026-11-05 12:00:00;prage
+tG;D_109;Simulation;N;;2026-11-05 12:00:00;prage;2026-11-05 12:00:00;prage
+tG;D_110;Shooter;N;;2026-11-05 12:00:00;prage;2026-11-05 12:00:00;prage
+tG;D_111;Horror;N;;2026-11-05 12:00:00;prage;2026-11-05 12:00:00;prage
+tG;D_112;Survival;N;;2026-11-05 12:00:00;prage;2026-11-05 12:00:00;prage
+tG;D_113;Open World;N;;2026-11-05 12:00:00;prage;2026-11-05 12:00:00;prage
+tG;D_114;Sandbox;N;;2026-11-05 12:00:00;prage;2026-11-05 12:00:00;prage
+tG;D_115;Story Rich;N;;2026-11-05 12:00:00;prage;2026-11-05 12:00:00;prage
+tG;D_116;Exploration;N;;2026-11-05 12:00:00;prage;2026-11-05 12:00:00;prage
+tG;D_117;Crafting;N;;2026-11-05 12:00:00;prage;2026-11-05 12:00:00;prage
+tG;D_118;Building;N;;2026-11-05 12:00:00;prage;2026-11-05 12:00:00;prage
+tG;D_119;First Person;N;;2026-11-05 12:00:00;prage;2026-11-05 12:00:00;prage
+tG;D_120;Third Person;N;;2026-11-05 12:00:00;prage;2026-11-05 12:00:00;prage
+tG;D_121;Isometric;N;;2026-11-05 12:00:00;prage;2026-11-05 12:00:00;prage
+tG;D_122;Top-Down;N;;2026-11-05 12:00:00;prage;2026-11-05 12:00:00;prage

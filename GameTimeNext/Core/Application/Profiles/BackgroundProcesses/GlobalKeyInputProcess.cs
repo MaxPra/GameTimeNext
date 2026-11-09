@@ -98,8 +98,7 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
                     System.Windows.Application.Current.Dispatcher.Invoke(() =>
                     {
                         T1PROFI t1profi = new TXPROFI().Read(AppEnvironment.CurrentPfid);
-                        ToastMessage tm = new ToastMessage(t1profi.GANA, "Monitoring stopped...");
-                        tm.Show();
+                        CFToast.Show(t1profi.GANA, "Monitoring stopped...");
                     });
                 }
 
@@ -129,8 +128,7 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
                     System.Windows.Application.Current.Dispatcher.Invoke(() =>
                     {
                         T1PROFI t1profi = new TXPROFI().Read(AppEnvironment.CurrentPfid);
-                        ToastMessage tm = new ToastMessage(t1profi.GANA, "Monitoring started...");
-                        tm.Show();
+                        CFToast.Show(t1profi.GANA, "Monitoring started...");
                     });
                 }
 
@@ -157,8 +155,7 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
                     System.Windows.Application.Current.Dispatcher.Invoke(() =>
                     {
                         T1PROFI t1profi = new TXPROFI().Read(AppEnvironment.CurrentPfid);
-                        ToastMessage tm = new ToastMessage(t1profi.GANA, $"Current session game time: {CFProfilesApp.FormatGameTimeMinutes(currentSessionGameTime)}");
-                        tm.Show();
+                        CFToast.Show(t1profi.GANA, $"Current session game time: {CFProfilesApp.FormatGameTimeMinutes(currentSessionGameTime)}");
                     });
                 });
             }

@@ -22,19 +22,17 @@ namespace GameTimeNext.Core.Application.DataManagers
         {
             List<T1PROFI> t1profisFiltered = new List<T1PROFI>();
 
-            // Only consider tags that still exist (deleted tags may still be stored in the filter)
-            HashSet<long> existingTagIds = new TXGROUP().ReadAll()
-                .Where(g => g.GTYP == GroupType.Tag)
-                .Select(g => g.GRID)
-                .ToHashSet();
+            // Only consider tags that exist and are not hidden (deleted tags may still be stored in the filter;
+            // a game with hidden tags only counts as untagged)
+            HashSet<string> visibleTagKeys = TFCTABD.GetVisibleTagKeys();
 
-            HashSet<long> excludedTagIds = filter.ExcludedTagIds.Where(existingTagIds.Contains).ToHashSet();
+            HashSet<string> excludedTagKeys = filter.ExcludedTagKeys.Where(visibleTagKeys.Contains).ToHashSet(StringComparer.Ordinal);
             HashSet<string> excludedOptions = filter.ExcludedOptions.ToHashSet();
 
-            Dictionary<long, HashSet<long>> tagIdsByPfid = new TXGRPPO().ReadAll()
-                .Where(g => existingTagIds.Contains(g.GRID))
+            Dictionary<long, HashSet<string>> tagKeysByPfid = new TXGRPPO().ReadAll()
+                .Where(g => visibleTagKeys.Contains(g.TGKY))
                 .GroupBy(g => g.PFID)
-                .ToDictionary(g => g.Key, g => g.Select(x => x.GRID).ToHashSet());
+                .ToDictionary(g => g.Key, g => g.Select(x => x.TGKY).ToHashSet(StringComparer.Ordinal));
 
             HashSet<long> completedPfids = TFPLTHR.GetPfidsWithCompletedPlaythrough();
             HashSet<long> currentPlaythroughPfids = TFPLTHR.GetPfidsWithCurrentPlaythrough();
@@ -50,16 +48,16 @@ namespace GameTimeNext.Core.Application.DataManagers
                     long pfid = UIXQuery.GetInt64(reader, K1PROFI.Name, K1PROFI.Fields.PFID);
                     T1PROFI t1profi = txprofi.Read(pfid);
 
-                    tagIdsByPfid.TryGetValue(pfid, out HashSet<long>? tagIds);
+                    tagKeysByPfid.TryGetValue(pfid, out HashSet<string>? tagKeys);
 
                     string progress = GetProgress(t1profi, completedPfids.Contains(pfid), currentPlaythroughPfids.Contains(pfid), pausedPlaythroughPfids.Contains(pfid));
 
-                    if (IsProfileVisible(t1profi, tagIds, progress, filter, excludedTagIds, excludedOptions))
+                    if (IsProfileVisible(t1profi, tagKeys, progress, filter, excludedTagKeys, excludedOptions))
                         t1profisFiltered.Add(t1profi);
                 }
             }
 
-            bool filterActive = excludedTagIds.Count > 0
+            bool filterActive = excludedTagKeys.Count > 0
                 || filter.ExcludeUntagged
                 || excludedOptions.Count > 0
                 || filter.ShowArchived
@@ -92,15 +90,15 @@ namespace GameTimeNext.Core.Application.DataManagers
             return ProfilesFilterOptions.PROGRESS_CANCELLED;
         }
 
-        private static bool IsProfileVisible(T1PROFI t1profi, HashSet<long>? tagIds, string progress, FilterCache filter, HashSet<long> excludedTagIds, HashSet<string> excludedOptions)
+        private static bool IsProfileVisible(T1PROFI t1profi, HashSet<string>? tagKeys, string progress, FilterCache filter, HashSet<string> excludedTagKeys, HashSet<string> excludedOptions)
         {
             // -- Tags (visible if at least one of its tags is checked)
-            if (tagIds == null || tagIds.Count == 0)
+            if (tagKeys == null || tagKeys.Count == 0)
             {
                 if (filter.ExcludeUntagged)
                     return false;
             }
-            else if (tagIds.All(excludedTagIds.Contains))
+            else if (tagKeys.All(excludedTagKeys.Contains))
                 return false;
 
             // -- Progress

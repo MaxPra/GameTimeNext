@@ -96,9 +96,23 @@ namespace GameTimeNext.Core.Application.TableObjects
         [UIXSignatureField(26)]
         public bool SealNewGames { get; set; }
 
+        /// <summary>Entry of codetable dP: side of the profiles view the detail view is shown on (01 = left, 02 = right).</summary>
         [UIXSignatureField(27)]
-        public bool RemoteMonitoring { get; set; }
+        public string ProfileDetailViewPosition { get; set; }
 
+        /// <summary>Newly installed games of the launchers are added as profiles automatically (LauncherAutoImportProcess).</summary>
+        [UIXSignatureField(28)]
+        public bool AutoImportGames { get; set; }
+
+        /// <summary>
+        /// Launcher types (codetable lT, separated by ";") left out of the automatic import. Only the unchecked ones are
+        /// stored, so a launcher integration added later takes part by default.
+        /// </summary>
+        [UIXSignatureField(29)]
+        public string AutoImportExcludedLaunchers { get; set; }
+
+        [UIXSignatureField(30)]
+        public bool RemoteMonitoring { get; set; }
 
 
         public AppSettings()
@@ -110,6 +124,9 @@ namespace GameTimeNext.Core.Application.TableObjects
             BackgroundSource = string.Empty;
             DarkTintedGlass = false;
             SealNewGames = false;
+            ProfileDetailViewPosition = "02";
+            AutoImportGames = false;
+            AutoImportExcludedLaunchers = string.Empty;
 
             MonitoringKeyActive = false;
             ShowToastNotification = false;

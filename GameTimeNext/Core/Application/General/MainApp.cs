@@ -19,7 +19,7 @@ namespace GameTimeNext.Core.Application.General
         public FavAppsStartOrderView? FavAppsStartOrderView { get; set; } = null;
 
         public bool StartMinimized { get; set; } = false;
-        public SplashScreen? SplashScreen { get; set; } = null;
+        public SplashHost? SplashScreen { get; set; } = null;
 
         public MainApp() : base()
         {

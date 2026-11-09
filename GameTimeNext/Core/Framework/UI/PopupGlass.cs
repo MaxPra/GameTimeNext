@@ -1,11 +1,11 @@
 using System.Windows;
-using System.Windows.Interop;
 
 namespace GameTimeNext.Core.Framework.UI
 {
     /// <summary>
-    /// Glass for popups (context menus, filter popup, ...): the popup window gets an acrylic blur behind it
-    /// (see AcrylicBlur), the popup surface draws the translucent tint on top.
+    /// Glass look for popups (context menus, filter popup, ...): the popup window gets an acrylic blur behind it
+    /// (see AcrylicBlur), the popup surface draws the translucent tint on top. PopupMotion switches the blur on,
+    /// because it decides how the window opens and closes with it.
     ///
     /// Usage: PopupGlass.IsEnabled="True" on the surface element inside a popup with AllowsTransparency
     /// (context menus always have it). Styles switch to the translucent look via the read only PopupGlass.IsActive,
@@ -41,37 +41,7 @@ namespace GameTimeNext.Core.Framework.UI
 
         private static void OnIsEnabledChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is not UIElement element)
-                return;
-
-            PresentationSource.RemoveSourceChangedHandler(element, OnSourceChanged);
-
-            bool active = (bool)e.NewValue && AcrylicBlur.IsSupported;
-            d.SetValue(IsActivePropertyKey, active);
-
-            if (!active)
-                return;
-
-            // Each opening creates a new popup window
-            PresentationSource.AddSourceChangedHandler(element, OnSourceChanged);
-
-            if (PresentationSource.FromVisual(element) is HwndSource current)
-                ApplyBlur(current);
-        }
-
-        private static void OnSourceChanged(object sender, SourceChangedEventArgs e)
-        {
-            if (e.NewSource is HwndSource source)
-                ApplyBlur(source);
-        }
-
-        private static void ApplyBlur(HwndSource source)
-        {
-            // Only popup windows; a surface that ends up directly in a window must not blur the whole window
-            if (source.RootVisual is Window)
-                return;
-
-            AcrylicBlur.TryEnable(source.Handle);
+            d.SetValue(IsActivePropertyKey, (bool)e.NewValue && AcrylicBlur.IsSupported);
         }
     }
 }

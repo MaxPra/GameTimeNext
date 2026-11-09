@@ -16,6 +16,15 @@ namespace GameTimeNext.Core.Application.ErrorMessages.Controller
         #region Event-Pipeline-Methods
         protected override void Init()
         {
+            // Set loader texts
+            GetApp().Loader.SetRandomTexts(
+                                            "Loading error messages...",
+                                            "Collecting everything that can go wrong...",
+                                            "Polishing the apologies...",
+                                            "Making errors sound friendly...",
+                                            "Sorting messages by number...",
+                                            "Reading the hints for tricky situations..."
+                                            );
         }
 
         protected override void TriggeredEvent(FrameworkElement source, string eventName)

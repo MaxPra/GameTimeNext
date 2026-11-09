@@ -1,3 +1,4 @@
+﻿using GameTimeNext.Core.Application.Codetables.Api;
 using GameTimeNext.Core.Application.Codetables.Views;
 using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.TableObjects;
@@ -29,8 +30,6 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
         public class CodetablesEntryEditViewReturn : UIXViewReturn
         {
             public bool HasChanged { get; set; } = false;
-            public string Platform { get; set; } = string.Empty;
-            public bool Skipped { get; set; } = false;
         }
 
         protected override void Init()
@@ -43,8 +42,6 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
         protected override void BuildFirstImpl()
         {
-
-            ApplyRunParameters();
 
             if (GetView().ViewIndicator.Contains("ED"))
                 GetView().TxbDescription.Focus();
@@ -114,31 +111,47 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
         {
             GetViewReturn<CodetablesEntryEditViewReturn>().Canceled = false;
             GetViewReturn<CodetablesEntryEditViewReturn>().HasChanged = GetApp().T1CTABD!.HasChanged();
-            GetViewReturn<CodetablesEntryEditViewReturn>().Platform = GetView().TxbTextNumber.Text;
 
             Exit(true);
         }
 
-        protected void EV_BtnSkip()
+        protected async Task EV_btnParam1()
         {
-            GetViewReturn<CodetablesEntryEditViewReturn>().Canceled = false;
-            GetViewReturn<CodetablesEntryEditViewReturn>().HasChanged = false;
-            GetViewReturn<CodetablesEntryEditViewReturn>().Skipped = true;
-            GetViewReturn<CodetablesEntryEditViewReturn>().Platform = GetView().TxbTextNumber.Text;
-
-            Exit(true);
+            await RunParameterApiAsync(1);
         }
 
-        private void ApplyRunParameters()
+        protected async Task EV_btnParam2()
         {
-            CodetablesEntryEditAppRunParameters runParameters = GetApp().RunParameters;
+            await RunParameterApiAsync(2);
+        }
 
-            // Override Save Button Text
-            if (!FnString.IsNullEmptyOrWhitespace(runParameters.OverrideSaveButtonText))
-                GetView().BtnSave.Content = runParameters.OverrideSaveButtonText;
+        /// <summary>
+        /// Runs the button API of the parameter and writes the returned value into its field.
+        /// </summary>
+        private async Task RunParameterApiAsync(int index)
+        {
+            T1CTABH list = new TXCTABH().Read(GetApp().T1CTABD!.TXTYP)!;
+            string controlType = list.GetValue<string>($"PACO{index}")!;
 
-            // Show Skipbutton
-            FnControls.SetVisible(GetView().BtnSkip, runParameters.ShowSkipButton);
+            if (GetView().FindName($"{ControlType.ByCode[controlType].XamlPrefix}Param{index}") is not FrameworkElement control)
+                return;
+
+            string currentValue = control switch
+            {
+                TextBox textBox => textBox.Text,
+                ComboBox comboBox => comboBox.SelectedValue?.ToString() ?? string.Empty,
+                _ => string.Empty
+            };
+
+            string? value = await CFCodetableApi.RunAsync(GetApp(), Window.GetWindow(GetView()), list, GetApp().T1CTABD!, index, currentValue);
+
+            if (value == null)
+                return;
+
+            if (control is TextBox target)
+                target.Text = value;
+            else if (control is ComboBox targetCombo)
+                targetCombo.SelectedValue = value;
         }
 
         private void BuildManualCodetableParameters()
@@ -209,6 +222,14 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
                 FnControls.SetVisible(label, true);
 
                 control.ToolTip = tooltip;
+
+                // The codetable may name an API that fills the parameter (e.g. choosing an image)
+                if (CFCodetableApi.CreateApi(t1ctabh, i) is CTAPIBase api && GetView().FindName($"btnParam{i}") is Button button)
+                {
+                    button.Content = api.ButtonText;
+                    button.ToolTip = FnString.IsNullEmptyOrWhitespace(api.ButtonToolTip) ? null : api.ButtonToolTip;
+                    FnControls.SetVisible(button, true);
+                }
 
                 paramControls.Add(control.Name, new ParameterControl
                 {

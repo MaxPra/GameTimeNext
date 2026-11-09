@@ -65,15 +65,15 @@ namespace GameTimeNext.Core.Application.Metadata.Selectors
             {
                 if (result.HasChanged)
                 {
-                    await GetSelector().LoadDataAsync();
-
                     GetViewController<MetadataEditViewController>().MarkGenerationRequired();
+
+                    await GetSelector().LoadDataAsync();
                 }
 
             }, t1metap);
         }
 
-        protected void EV_ctxtDelete()
+        protected async Task EV_ctxtDelete()
         {
             if (GetSelectedPosition() is not T1METAP t1metap)
                 return;
@@ -87,6 +87,8 @@ namespace GameTimeNext.Core.Application.Metadata.Selectors
                 new TXMETAP().Delete(t1metap.MENAM, t1metap.PONAM);
 
                 GetViewController<MetadataEditViewController>().MarkGenerationRequired();
+
+                await GetView().DgFields.LoadDataAsync();
             }
         }
     }

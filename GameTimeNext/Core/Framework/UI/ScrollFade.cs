@@ -30,6 +30,10 @@ namespace GameTimeNext.Core.Framework.UI
         private static readonly DependencyProperty AttachedScrollViewerProperty =
             DependencyProperty.RegisterAttached("AttachedScrollViewer", typeof(ScrollViewer), typeof(ScrollFade), new PropertyMetadata(null));
 
+        /// <summary>What the mask was built for: a list scrolling every frame must not build a new one every frame.</summary>
+        private static readonly DependencyProperty MaskStateProperty =
+            DependencyProperty.RegisterAttached("MaskState", typeof(object), typeof(ScrollFade), new PropertyMetadata(null));
+
         private static void OnLengthChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is not FrameworkElement element)
@@ -81,6 +85,13 @@ namespace GameTimeNext.Core.Framework.UI
 
             bool fadeTop = scrollViewer.VerticalOffset > 0.5;
             bool fadeBottom = scrollViewer.VerticalOffset < scrollViewer.ScrollableHeight - 0.5;
+
+            var state = (fadeTop, fadeBottom, height, length);
+
+            if (state.Equals(presenter.GetValue(MaskStateProperty)))
+                return;
+
+            presenter.SetValue(MaskStateProperty, state);
 
             if (length <= 0 || height <= 0 || (!fadeTop && !fadeBottom))
             {

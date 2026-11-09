@@ -52,8 +52,8 @@
         <GradientStop Offset="1" Color="#FF000000" />
     </LinearGradientBrush>
 
-    <!--  Headings in the display cut of Segoe UI where available  -->
-    <FontFamily x:Key="Font.BigPicture.Display">Segoe UI Variable Display, Segoe UI</FontFamily>
+    <!--  Headings in the app font (Manrope), like the rest of the app  -->
+    <FontFamily x:Key="Font.BigPicture.Display">pack://application:,,,/UI/Fonts/#Manrope, Segoe UI</FontFamily>
     <FontFamily x:Key="Font.BigPicture.Icons">Segoe Fluent Icons, Segoe MDL2 Assets</FontFamily>
 
     <!--  ========== Texts ==========  -->
@@ -206,33 +206,21 @@
 
     <!--  ========== Top bar ==========  -->
 
-    <!--  Round glass button of the top bar (search, filter, menu, exit) for mouse users  -->
+    <!--  Glass button of the top bar (search, filter, menu, exit) for mouse users: the template of all buttons, like "+" in the tab bar of the main window  -->
     <Style x:Key="BigPicture.TopBarButton" TargetType="Button">
         <Setter Property="Width" Value="48" />
         <Setter Property="Height" Value="48" />
         <Setter Property="Margin" Value="12,0,0,0" />
+        <Setter Property="Padding" Value="0" />
         <Setter Property="Focusable" Value="False" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="Button">
-                    <Border
-                        x:Name="Surface"
-                        Background="{StaticResource Brush.Card.Background}"
-                        BorderBrush="{StaticResource Brush.Card.Border}"
-                        BorderThickness="1"
-                        CornerRadius="24">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Surface" Property="Background" Value="{StaticResource Brush.Card.BackgroundHover}" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
+        <Setter Property="Background" Value="{StaticResource Brush.Button.Glass}" />
+        <Setter Property="BorderBrush" Value="{StaticResource Brush.Button.GlassRim}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Template" Value="{StaticResource Template.Button}" />
     </Style>
 
     <!--  Small glass label, e.g. an active filter  -->
@@ -243,15 +231,18 @@
         <Setter Property="Margin" Value="16,0,0,0" />
         <Setter Property="Padding" Value="12,5" />
         <Setter Property="VerticalAlignment" Value="Center" />
-        <Setter Property="CornerRadius" Value="14" />
+        <Setter Property="Background" Value="{StaticResource Brush.Tab.TrackGlass}" />
+        <Setter Property="BorderBrush" Value="{StaticResource Brush.Button.GlassRim}" />
+        <Setter Property="CornerRadius" Value="12" />
     </Style>
 
     <!--  ========== Pivots (tab bar of the main window in TV size) ==========  -->
 
+    <!--  Same glass as the tab bar of the main window (ModernTabControlStyle): dark translucent track, diagonal rim, light in the corners (layers in the view)  -->
     <Style x:Key="BigPicture.PivotBar" TargetType="Border">
         <Setter Property="Padding" Value="4" />
-        <Setter Property="Background" Value="{StaticResource Brush.Input.Background}" />
-        <Setter Property="BorderBrush" Value="{StaticResource Brush.Card.Border}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="{StaticResource Brush.Button.GlassRim}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="CornerRadius" Value="12" />
         <Setter Property="VerticalAlignment" Value="Center" />
@@ -273,6 +264,13 @@
                             CornerRadius="9" />
 
                         <Border
+                            x:Name="HoverSurface"
+                            Background="{StaticResource Brush.Item.Hover}"
+                            CornerRadius="9"
+                            IsHitTestVisible="False"
+                            Opacity="0" />
+
+                        <Border
                             x:Name="Underline"
                             Width="28"
                             Height="3"
@@ -292,15 +290,41 @@
                             Text="{Binding Title}" />
                     </Grid>
                     <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Surface" Property="Background" Value="{StaticResource Brush.Item.Hover}" />
-                        </Trigger>
                         <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                            <Setter TargetName="Surface" Property="Background" Value="{StaticResource Brush.Card.BackgroundHover}" />
-                            <Setter TargetName="Surface" Property="BorderBrush" Value="{StaticResource Brush.Card.Border}" />
+                            <Setter TargetName="Surface" Property="Background" Value="{StaticResource Brush.Item.Selected}" />
+                            <Setter TargetName="Surface" Property="BorderBrush" Value="{StaticResource Brush.Button.GlassRim}" />
                             <Setter TargetName="Underline" Property="Opacity" Value="1" />
                             <Setter TargetName="Title" Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
                         </DataTrigger>
+                        <!--  Hover fades like the tabs of the main window; the selected pivot has its surface instead  -->
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource TemplatedParent}}" Value="True" />
+                                <Condition Binding="{Binding IsSelected}" Value="False" />
+                            </MultiDataTrigger.Conditions>
+                            <MultiDataTrigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="HoverSurface"
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="1"
+                                            Duration="0:0:0.2" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </MultiDataTrigger.EnterActions>
+                            <MultiDataTrigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetName="HoverSurface"
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="0"
+                                            Duration="0:0:0.26" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </MultiDataTrigger.ExitActions>
+                        </MultiDataTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>

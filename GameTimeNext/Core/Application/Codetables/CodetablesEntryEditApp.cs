@@ -1,4 +1,4 @@
-using GameTimeNext.Core.Application.Codetables.Controller;
+﻿using GameTimeNext.Core.Application.Codetables.Controller;
 using GameTimeNext.Core.Application.Codetables.Views;
 using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.TableObjects;
@@ -13,8 +13,6 @@ namespace GameTimeNext.Core.Application.Codetables
         public CodetablesEntryEditView? CodetablesEntryEditView { get; set; }
         public CodetablesEntryEditViewController? CodetablesEntryEditViewController { get; set; }
         public T1CTABD? T1CTABD { get; set; }
-
-        public CodetablesEntryEditAppRunParameters RunParameters { get; set; } = new CodetablesEntryEditAppRunParameters();
 
         protected override void InitializeAppInfo()
         {

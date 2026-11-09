@@ -16,6 +16,6 @@ namespace GameTimeNext.Core.Application.General.AppSearch.ViewModels
         public string TabName { get; set; } = string.Empty;
 
         // Description of the menu entry (tree column)
-        public string COMEDE { get; set; } = string.Empty;
+        public UIXDataGridCell COMEDE { get; set; } = "";
     }
 }

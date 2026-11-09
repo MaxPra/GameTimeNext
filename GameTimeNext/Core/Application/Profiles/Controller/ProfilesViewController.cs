@@ -18,6 +18,7 @@ using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.Utils;
 using System.Diagnostics;
 using System.IO;
+using System.Text.Json.Serialization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -49,6 +50,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             GetApp().CallDispatcher.Register(this, nameof(EXEV_SwitchProfile));
             GetApp().CallDispatcher.Register(this, nameof(EXEV_GameLaunched));
             GetApp().CallDispatcher.Register(this, nameof(EXEV_GameClosed));
+            GetApp().CallDispatcher.Register(this, nameof(EXEV_ProfileDetailViewPositionChanged));
+            GetApp().CallDispatcher.Register(this, nameof(EXEV_ProfilesAutoImported));
 
             // Set loader texts
             GetApp().Loader.SetRandomTexts(
@@ -84,6 +87,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected override void BuildFirstImpl()
         {
+            ApplyDetailViewPosition();
         }
 
         protected override async Task BuildFirstImplAsync()
@@ -176,8 +180,24 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             }
 
             if (selectedItem != null)
-                listBoxProfiles.SelectedItem = selectedItem;
+            {
+                IsSelectingProfile = true;
+
+                try
+                {
+                    listBoxProfiles.SelectedItem = selectedItem;
+                }
+                finally
+                {
+                    IsSelectingProfile = false;
+                }
+            }
         }
+
+        /// <summary>
+        /// True while the list selects a profile itself after it was built (not chosen by the user).
+        /// </summary>
+        public bool IsSelectingProfile { get; private set; }
 
         private ProfilesListBoxItem? GetSelectedItem()
         {
@@ -199,6 +219,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             TFPROFI.Unseal(t1profi);
 
             item.COISSEA = false;
+            item.COISNEW = false;
 
             ProfilesDetailSubViewController profileDetailViewController = (ProfilesDetailSubViewController)GetApp().ProfilesDetailView.ViewController;
             profileDetailViewController.UpdateUIUnwrapped();
@@ -209,19 +230,22 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             // Determine the assigned groups
             T1PROFI t1profi = new TXPROFI().Read(pfid);
 
-            List<long> linkedTagIds = TFPROFI.GetAllLinkedTags(t1profi).Select(t => t.GRID).ToList();
+            List<string> linkedTagKeys = TFPROFI.GetAllLinkedTags(t1profi)
+                .Where(t => !TFCTABD.IsTagHidden(t))
+                .Select(t => t.TXNUM)
+                .ToList();
 
             // Reset everything else, so the started game is guaranteed to be visible
             FilterCache filter = new FilterCache();
             filter.ShowArchived = t1profi.ARCH;
 
             // Only show games sharing a tag with the started game (if it has tags)
-            if (linkedTagIds.Count > 0)
+            if (linkedTagKeys.Count > 0)
             {
                 filter.ExcludeUntagged = true;
-                filter.ExcludedTagIds = new TXGROUP().ReadAll()
-                    .Where(g => g.GTYP == GroupType.Tag && !linkedTagIds.Contains(g.GRID))
-                    .Select(g => g.GRID)
+                filter.ExcludedTagKeys = TFCTABD.GetTags(includeHidden: false)
+                    .Where(t => !linkedTagKeys.Contains(t.TXNUM))
+                    .Select(t => t.TXNUM)
                     .ToList();
             }
 
@@ -281,6 +305,49 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             profileDetailViewController.UpdateUIMonitoringStopped();
         }
 
+        protected void EXEV_ProfileDetailViewPositionChanged()
+        {
+            ApplyDetailViewPosition();
+        }
+
+        /// <summary>
+        /// The automatic import added profiles (LauncherAutoImportProcess): shows them, the selection stays.
+        /// Not while a game is monitored: the list must not be rebuilt then; it is rebuilt when monitoring stops
+        /// (EXEV_GameTimeMonitoringStopped), which shows the new profiles too.
+        /// </summary>
+        protected async Task EXEV_ProfilesAutoImported()
+        {
+            if (CFGameTimeMonitoring.IsMonitoring)
+                return;
+
+            await BuildProfilesListBoxAsync(AppEnvironment.CurrentPfid);
+        }
+
+        /// <summary>
+        /// Places the detail view on the side chosen in the settings (codetable dP) by swapping the outer columns.
+        /// </summary>
+        private void ApplyDetailViewPosition()
+        {
+            ProfilesView view = GetView();
+            bool detailLeft = AppEnvironment.GetAppConfig().AppSettings.ProfileDetailViewPosition == "01";
+
+            ColumnDefinition gap = view.grdProfiles.ColumnDefinitions[1];
+            view.grdProfiles.ColumnDefinitions.Clear();
+            view.grdProfiles.ColumnDefinitions.Add(detailLeft ? view.colProfileDetail : view.colProfiles);
+            view.grdProfiles.ColumnDefinitions.Add(gap);
+            view.grdProfiles.ColumnDefinitions.Add(detailLeft ? view.colProfiles : view.colProfileDetail);
+
+            int profilesColumn = detailLeft ? 2 : 0;
+            Grid.SetColumn(view.brdProfiles, profilesColumn);
+            Grid.SetColumn(view.MonitoringOverlay, profilesColumn);
+            Grid.SetColumn(view.LaunchingOverlay, profilesColumn);
+            Grid.SetColumn(view.brdProfileDetail, detailLeft ? 0 : 2);
+
+            // The gap to the detail view moves to its side; the list keeps the tiles aligned with the toolbar
+            view.brdProfilesToolbar.Margin = detailLeft ? new Thickness(16, 0, 0, 12) : new Thickness(0, 0, 16, 12);
+            view.ListBoxProfiles.Margin = detailLeft ? new Thickness(4, -8, 0, 0) : new Thickness(-12, -8, 0, 0);
+        }
+
         protected async Task EXEV_SwitchProfile(long pfid)
         {
             UIXListBox listBoxProfiles = GetView().ListBoxProfiles;
@@ -299,8 +366,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             if (CFBigPictureApp.IsOpen)
                 return;
 
-            ToastMessage tm = new ToastMessage("Switched profile...", (GetSelectedItem()?.ItemObject as T1PROFI)?.GANA ?? string.Empty);
-            tm.Show();
+            CFToast.Show("Switched profile...", (GetSelectedItem()?.ItemObject as T1PROFI)?.GANA ?? string.Empty);
         }
 
         protected async Task EXEV_GameLaunched()
@@ -386,13 +452,21 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         /// </summary>
         public class FilterCache
         {
-            private List<long> _excludedTagIds = new List<long>();
+            private List<string> _excludedTagKeys = new List<string>();
             private List<string> _excludedOptions = new List<string>();
 
             /// <summary>
-            /// GRIDs of unchecked tags
+            /// Keys (codetable tG) of unchecked tags
             /// </summary>
-            public List<long> ExcludedTagIds { get => _excludedTagIds; set => _excludedTagIds = value ?? new List<long>(); }
+            public List<string> ExcludedTagKeys { get => _excludedTagKeys; set => _excludedTagKeys = value ?? new List<string>(); }
+
+            /// <summary>
+            /// Legacy: GRIDs of unchecked tags before the tags became codetable entries. Only read by the migration
+            /// (MigTask_100b_012), which converts them to ExcludedTagKeys and sets this to null (then it isn't written any more).
+            /// </summary>
+            [JsonPropertyName("ExcludedTagIds")]
+            [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+            public List<long>? LegacyExcludedTagIds { get; set; }
 
             /// <summary>
             /// Hides games without any tag

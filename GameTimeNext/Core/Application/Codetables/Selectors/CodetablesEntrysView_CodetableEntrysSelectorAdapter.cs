@@ -3,6 +3,7 @@ using GameTimeNext.Core.Application.Codetables.Views;
 using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
+using UIX.ViewController.Engine.Utils;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.Querying;
@@ -20,7 +21,18 @@ namespace GameTimeNext.Core.Application.Codetables.Selectors
         {
             string txtyp = GetApp().T1CTABH!.TXTYP;
 
-            return await Task.Run(() => BuildRows(txtyp), token);
+            List<CodetableEntryDataGridRow> rows = await Task.Run(() => BuildRows(txtyp), token);
+
+            // A newer load cancels this one: then the state of the view is left to it
+            if (!token.IsCancellationRequested)
+            {
+                GetView().txNoEntriesHint.Text = GetView().ViewIndicator.Contains("ED")
+                    ? "Use \"Add entry\" to create the first one."
+                    : "This codetable has no entries.";
+                FnControls.SetVisible(GetView().pnlNoEntries, rows.Count == 0);
+            }
+
+            return rows;
         }
 
         private List<CodetableEntryDataGridRow> BuildRows(string txtyp)

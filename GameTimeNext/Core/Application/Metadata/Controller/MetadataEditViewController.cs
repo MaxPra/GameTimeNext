@@ -23,10 +23,37 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
         public class MetadataEditViewReturn : UIXViewReturn
         {
+            /// <summary>
+            /// True if anything was saved while the view was open (header, fields, order, generation state).
+            /// </summary>
+            public bool HasChanged { get; set; } = false;
+        }
+
+        /// <summary>
+        /// Result of the closed view, see MetadataEditApp.
+        /// </summary>
+        public MetadataEditViewReturn GetEditReturn()
+        {
+            return GetViewReturn<MetadataEditViewReturn>();
         }
 
         protected override void Init()
         {
+            // Set loader texts
+            GetApp().Loader.SetRandomTexts(
+                                            "Loading table fields...",
+                                            "Laying out the fields...",
+                                            "Checking keys and data types...",
+                                            "Generating classes...",
+                                            "Writing code that writes code...",
+                                            "Ordering the fields neatly...",
+                                            "Migrating the database..."
+                                            );
+
+            // Created once: Init runs again on every Open (e.g. after saving a new table), the result must survive it
+            if (ViewReturn is not MetadataEditViewReturn)
+                ViewReturn = new MetadataEditViewReturn();
+
             AddIdentifier("T1METAH", GetApp().T1METAH!);
             AddSource("T1CTABD", new TXCTABD());
         }
@@ -137,6 +164,9 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
             GetApp().T1METAH!.GENER = generated;
             new TXMETAH().Save(GetApp().T1METAH!);
 
+            // Fields, order and generation change the overview too (generation state column)
+            GetEditReturn().HasChanged = true;
+
             AcceptTableObjectsAsSaved();
         }
 
@@ -144,6 +174,8 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
         {
             if (HasViewErrors())
                 return;
+
+            GetEditReturn().HasChanged = true;
 
             if (GetView().ViewIndicator.Contains("ED"))
                 Exit(true);
@@ -170,7 +202,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
 
                 await Task.Run(() =>
                 {
-                    MigrationFactory.Metadata.CodeGenerator.GenerateFor(GetApp().T1METAH!);
+                    MigrationFactory.Metadata.CodeGenerator.GenerateFor(GetApp(), GetApp().T1METAH!);
                     MigrationFactory.FromCsv.MigrateTables(MigrationFactory.ImportType.MetadataGenerator);
                 });
 

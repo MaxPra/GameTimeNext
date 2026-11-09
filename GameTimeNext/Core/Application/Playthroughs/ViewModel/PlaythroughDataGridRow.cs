@@ -10,15 +10,15 @@ namespace GameTimeNext.Core.Application.Playthroughs.ViewModel
         public bool IsPlaythroughRow { get; set; } = false;
 
         // Profile name on profile rows, playthrough description on playthrough rows
-        public string CONAME { get; set; } = string.Empty;
+        public UIXDataGridCell CONAME { get; set; } = "";
 
         public bool COPTCO { get; set; } = false;
         public bool COPTCA { get; set; } = false;
         public bool COPTPA { get; set; } = false;
 
-        public string COPTTY { get; set; } = string.Empty;
+        public UIXDataGridCell COPTTY { get; set; } = "";
 
-        public string COPTPL { get; set; } = string.Empty;
+        public UIXDataGridCell COPTPL { get; set; } = "";
 
         // Raw minutes, used as sort key for the formatted playtime column
         public double COPTPLMI { get; set; } = 0;

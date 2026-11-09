@@ -2,6 +2,7 @@
 using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.General;
 using GameTimeNext.Core.Application.Profiles.Components;
+using GameTimeNext.Core.Application.SelectionLists;
 using GameTimeNext.Core.Application.Profiles.Types;
 using GameTimeNext.Core.Application.Profiles.Viewmodel;
 using GameTimeNext.Core.Application.Profiles.Views;
@@ -11,6 +12,7 @@ using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.Igdb;
 using GameTimeNext.Core.Framework.LauncherIntegration;
 using GameTimeNext.Core.Framework.LauncherIntegration.Link;
+using GameTimeNext.Core.Framework.UI;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.Utils;
 using System.Globalization;
@@ -22,6 +24,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.Events;
+using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.FrameworkElements.UserControls;
 using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Runnables;
@@ -33,7 +36,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
     public class ProfilesEditViewController : UIXViewControllerBase<ProfilesEditApp, ProfilesEditView>
     {
 
-        private ProfilesEditViewModel? _profilesEditViewModel;
+        // Guard: refilling the tag ComboBox calls its handler with an empty selection
+        private bool _isFillingTagChoices = false;
 
         private string _coverAppDataPath = string.Empty;
         private string _coverAppFolderFileName = string.Empty;
@@ -71,8 +75,18 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected override void Init()
         {
+            // Set loader texts
+            GetApp().Loader.SetRandomTexts(
+                                            "Loading the game profile...",
+                                            "Polishing the cover...",
+                                            "Looking up the game details...",
+                                            "Checking the launcher...",
+                                            "Asking IGDB about the game...",
+                                            "Calculating how long it takes to beat...",
+                                            "Gathering your playthroughs..."
+                                            );
 
-            _profilesEditViewModel = new ProfilesEditViewModel();
+
             ViewReturn = new ProfilesEditViewReturn();
 
             _hasProfileCoverChanged = false;
@@ -89,10 +103,10 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected override void BuildFirstImpl()
         {
+            GetView().btnUsePlaceholderCover.ToolTip = $"Use the {AppConfig.Root.ApplicationName} placeholder cover";
+
             using (SuppressRunEventPipeline())
             {
-                BuildTagGrid(GetApp().T1Profi.PFID);
-
                 // Enabled state of the IGDB estimated time ComboBox
                 //bool isIGDBLinkedCorrectly = !FnString.IsNullEmptyOrWhitespace(AppEnvironment.GetAppConfig().AppSettings.TwitchIGDBClientID) &&
                 //    !FnString.IsNullEmptyOrWhitespace(AppEnvironment.GetAppConfig().AppSettings.TwitchIGDBClientSecret);
@@ -104,6 +118,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected override async Task BuildFirstImplAsync()
         {
+            if (await GetView().lbTags.LoadDataAsync())
+                RefreshTagChoices();
+
             // New profiles start with the placeholder cover, replaced by choosing another one
             if (GetView().ViewIndicator.Contains("CN") && FnString.IsNullEmptyOrWhitespace(GetApp().T1Profi.PPFN))
             {
@@ -338,6 +355,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             GetView().Dispatcher.Invoke(() =>
             {
                 GetApp().T1Profi.PPFN = _coverAppFolderFileName;
+
+                // The chosen section belongs to the previous image
+                SetDiscSection(null);
             });
 
             GetApp().Loader.Begin();
@@ -401,8 +421,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         private void FillDBOTags()
         {
-            // Read selected groups
-            List<ProfilesGroupListBoxItem> selectedGroups = _profilesEditViewModel!.T1GROUPs.Where(t => t.COISSEL).ToList();
+            // Tags shown as cards
+            List<ProfilesGroupListBoxItem> selectedGroups = GetTagItems();
 
             // Delete all existing entries for this profile
             TXGRPPO tblmGrppo = new TXGRPPO();
@@ -410,10 +430,10 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             foreach (ProfilesGroupListBoxItem grp in selectedGroups)
             {
-                T1GROUP t1group = (T1GROUP)grp.ItemObject!;
+                T1CTABD tag = (T1CTABD)grp.ItemObject!;
 
                 T1GRPPO tblGrppo = tblmGrppo.CreateNew();
-                tblGrppo.GRID = t1group!.GRID;
+                tblGrppo.TGKY = tag.TXNUM;
                 tblGrppo.PFID = GetApp().T1Profi.PFID;
                 tblmGrppo.Save(tblGrppo);
             }
@@ -427,6 +447,10 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             cProfileSettings.Sealed = GetView().ViewIndicator.Contains("CN")
                 ? AppEnvironment.GetAppConfig().AppSettings.SealNewGames
                 : new CProfileSettings(GetApp().T1Profi.PRSE).Dezerialize().Sealed;
+
+            // Badge "New" of the automatic import: not edited here either
+            cProfileSettings.IsNew = !GetView().ViewIndicator.Contains("CN")
+                && new CProfileSettings(GetApp().T1Profi.PRSE).Dezerialize().IsNew;
 
             cProfileSettings.HDREnabled = GetView().cbEnableHdrOnStart.IsChecked == true;
             cProfileSettings.LaunchArgs = GetView().txbLaunchArgs.Text.Trim();
@@ -559,21 +583,6 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             }
         }
 
-        private void FillComboboxPlatformsManual()
-        {
-            UIXManualCodetable uIXManualCodetable = new UIXManualCodetable();
-
-            TXCTABD txctabd = new TXCTABD();
-            List<T1CTABD> entrys = txctabd.GetEntries("pF");
-
-            foreach (T1CTABD entry in entrys)
-            {
-                uIXManualCodetable.AddEntry(entry.TXNUM, entry.DESCR);
-            }
-
-            uIXManualCodetable.ApplyTo(GetView().cmbPlatform);
-        }
-
         private void BuildLauncherSection()
         {
             T1PROFI t1profi = GetApp().T1Profi;
@@ -603,67 +612,79 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             }
         }
 
-        private void BuildTagGrid(long pfid)
+        private List<ProfilesGroupListBoxItem> GetTagItems()
         {
-            List<ProfilesGroupListBoxItem> t1groups = new List<ProfilesGroupListBoxItem>();
-
-            UIXQuery query = BuildTagGridQuery(pfid);
-
-            using (var reader = query.Execute())
-            {
-                while (reader.Read())
-                {
-
-                    long grid = UIXQuery.GetInt64(reader, K1GROUP.Name, K1GROUP.Fields.GRID);
-                    long gpid = UIXQuery.GetInt64(reader, K1GRPPO.Name, K1GRPPO.Fields.GPID);
-
-                    T1GROUP t1group = new TXGROUP().Read(grid);
-                    t1groups.Add(new ProfilesGroupListBoxItem
-                    {
-                        ItemObject = t1group,
-                        COGRPID = gpid,
-                        COISSEL = gpid > 0
-                    });
-                }
-            }
-
-            // Filter
-            t1groups = t1groups.Where(s => (s.ItemObject as T1GROUP)?.GTYP == GroupType.Tag).ToList();
-
-            // Fill view model
-            _profilesEditViewModel = new ProfilesEditViewModel();
-            _profilesEditViewModel.T1GROUPs = new System.Collections.ObjectModel.ObservableCollection<ProfilesGroupListBoxItem>(t1groups);
-
-
-            if (t1groups != null && t1groups.Count > 0)
-                _profilesEditViewModel.SelectedTBLGROUP = t1groups.FirstOrDefault(p => p.COISSEL);
-
-            View.DataContext = _profilesEditViewModel;
+            return GetView().lbTags.Items.OfType<ProfilesGroupListBoxItem>().ToList();
         }
 
-        private UIXQuery BuildTagGridQuery(long pfid)
+        /// <summary>
+        /// Offers the tags that are not hidden and not yet on the profile in the "Add a tag" ComboBox and shows
+        /// the hint while the profile has no tags.
+        /// </summary>
+        public void RefreshTagChoices()
         {
-            UIXQuery query = new UIXQuery(K1GROUP.Name, AppEnvironment.GetDataBaseManager().GetConnection());
+            HashSet<string> assigned = GetTagItems().Select(t => ((T1CTABD)t.ItemObject!).TXNUM).ToHashSet(StringComparer.Ordinal);
 
-            // Fields
-            query.AddField(K1GROUP.Name, K1GROUP.Fields.GRID);
+            UIXManualCodetable choices = new UIXManualCodetable();
 
-            if (pfid > 0)
+            foreach (T1CTABD tag in TFCTABD.GetTags(includeHidden: false).Where(t => !assigned.Contains(t.TXNUM)))
+                choices.AddEntry(tag.TXNUM, tag.DESCR);
+
+            GetView().cmbAddTag.NewEntryText = CFSelectionListsApp.GetExtendableList(TFCTABD.TagCodetable) != null ? "New tag..." : string.Empty;
+
+            _isFillingTagChoices = true;
+
+            try
             {
-                query.AddField(K1GRPPO.Name, K1GRPPO.Fields.GPID);
-
-                // Left Join T1GRPPO
-                UIXQueryTable t1grppo = query.AddJoinTable(K1GRPPO.Name, JoinType.LEFT);
-                t1grppo.AddJoinCondition(K1GROUP.Name, K1GROUP.Fields.GRID, QueryCompareType.EQUALS, K1GRPPO.Name, K1GRPPO.Fields.GRID);
-
-                if (pfid > 0)
-                    t1grppo.AddJoinCondition(K1GRPPO.Name, K1GRPPO.Fields.PFID, QueryCompareType.EQUALS, pfid);
+                choices.ApplyTo(GetView().cmbAddTag);
+                GetView().cmbAddTag.SelectedValue = string.Empty;
+            }
+            finally
+            {
+                _isFillingTagChoices = false;
             }
 
-            // Where
-            query.AddWhere(K1GROUP.Name, K1GROUP.Fields.GTYP, QueryCompareType.EQUALS, GroupType.Tag);
+            FnControls.SetVisible(GetView().txTagsEmpty, assigned.Count == 0);
+        }
 
-            return query;
+        private void AddTag(string key)
+        {
+            T1CTABD? tag = TFCTABD.GetTags(includeHidden: true).FirstOrDefault(t => t.TXNUM == key);
+
+            if (tag == null || GetTagItems().Any(t => ((T1CTABD)t.ItemObject!).TXNUM == key))
+                return;
+
+            if (GetView().lbTags.ItemsSource is System.Collections.ObjectModel.ObservableCollection<ProfilesGroupListBoxItem> tags)
+            {
+                tags.Add(new ProfilesGroupListBoxItem { ItemObject = tag, CONAME = tag.DESCR, COISSEL = true });
+
+                // Alphabetical like everywhere else
+                List<ProfilesGroupListBoxItem> sorted = tags.OrderBy(t => t.CONAME, StringComparer.CurrentCultureIgnoreCase).ToList();
+
+                for (int i = 0; i < sorted.Count; i++)
+                    tags.Move(tags.IndexOf(sorted[i]), i);
+            }
+
+            RefreshTagChoices();
+        }
+
+        protected void EV_cmbAddTag()
+        {
+            if (_isFillingTagChoices)
+                return;
+
+            if (GetView().cmbAddTag.SelectedValue is string key && !FnString.IsNullEmptyOrWhitespace(key))
+                AddTag(key);
+        }
+
+        protected void EV_cmbAddTag_NewEntry(UIXNewEntryArgs args)
+        {
+            T1CTABH? list = CFSelectionListsApp.GetExtendableList(TFCTABD.TagCodetable);
+
+            if (list == null)
+                return;
+
+            CFSelectionListsApp.CreateEntry(GetApp(), list, key => AddTag(key));
         }
 
         private void SaveAccentColors()
@@ -879,6 +900,29 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             await Task.Run(() => ApplyCoverImageAsync(placeholderCover));
         }
 
+        protected void EV_btnDiscPrint()
+        {
+            if (GetView().imgCover.Source is not BitmapSource cover)
+                return;
+
+            ProfilesDiscPrintApp app = GetApp().GetApplication<ProfilesDiscPrintApp>(UIXApplicationStartTarget.Window);
+            app.Edit(cover, TFPROFI.GetDiscSection(GetApp().T1Profi), r =>
+            {
+                if (!r.Canceled)
+                    SetDiscSection(r.Section);
+            });
+        }
+
+        /// <summary>
+        /// Sets the section of the cover shown on the disc; null: determined automatically.
+        /// </summary>
+        private void SetDiscSection(DiscSection? section)
+        {
+            GetApp().T1Profi.DPRX = section?.X ?? 0;
+            GetApp().T1Profi.DPRY = section?.Y ?? 0;
+            GetApp().T1Profi.DPRS = section?.Size ?? 0;
+        }
+
         /// <summary>
         /// Saves the image as cover to the temp cover folder and applies it (see ApplyCoverAsync).
         /// </summary>
@@ -908,36 +952,6 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 CFProfilesEditApp.OpenHowLongToBeatForGame(GetView().txbProfileName.Text);
 
             ShowManualEstTimesEditView();
-        }
-
-        protected void EV_btnAddPlatformWizard()
-        {
-            CodetablesEntryEditApp entryeditAppImages = GetApp().GetApplication<CodetablesEntryEditApp>("Create new image with wizard", UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
-            entryeditAppImages.RunParameters.OverrideSaveButtonText = "Next";
-            entryeditAppImages.RunParameters.ShowSkipButton = true;
-
-            entryeditAppImages.CreateNew(r =>
-            {
-                if (r.Canceled)
-                    return;
-
-                CodetablesEntryEditApp entryEditAppPlatforms = GetApp().GetApplication<CodetablesEntryEditApp>("Create new platform with wizard", UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
-                entryEditAppPlatforms.RunParameters.ShowSkipButton = true;
-                entryEditAppPlatforms.CreateNew(r =>
-                {
-                    if (r.Canceled || r.Skipped)
-                        return;
-
-                    using (SuppressRunEventPipeline())
-                    {
-                        FillComboboxPlatformsManual();
-
-                        if (GetView().cmbPlatform.Items.Count > 0)
-                            GetView().cmbPlatform.SelectedValue = r.Platform;
-                    }
-                }, "pF");
-
-            }, "iM");
         }
 
         protected void EV_btnSave()

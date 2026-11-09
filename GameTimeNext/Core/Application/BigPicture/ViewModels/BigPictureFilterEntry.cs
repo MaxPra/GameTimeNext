@@ -21,12 +21,12 @@ namespace GameTimeNext.Core.Application.BigPicture.ViewModels
         private bool _isChecked;
         private bool _isSelected;
 
-        public BigPictureFilterEntry(BigPictureFilterEntryKind kind, string text, bool isChecked = false, string optionKey = "", long tagId = 0)
+        public BigPictureFilterEntry(BigPictureFilterEntryKind kind, string text, bool isChecked = false, string optionKey = "", string tagKey = "")
         {
             Kind = kind;
             Text = text;
             OptionKey = optionKey;
-            TagId = tagId;
+            TagKey = tagKey;
             _isChecked = isChecked;
         }
 
@@ -37,8 +37,8 @@ namespace GameTimeNext.Core.Application.BigPicture.ViewModels
         /// <summary>Key of ProfilesFilterOptions for Kind Option.</summary>
         public string OptionKey { get; }
 
-        /// <summary>GRID of the tag for Kind Tag.</summary>
-        public long TagId { get; }
+        /// <summary>Key of the tag (codetable tG) for Kind Tag.</summary>
+        public string TagKey { get; }
 
         public bool IsHeader => Kind == BigPictureFilterEntryKind.Header;
 

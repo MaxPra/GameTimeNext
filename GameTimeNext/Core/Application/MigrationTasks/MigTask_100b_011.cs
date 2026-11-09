@@ -22,7 +22,7 @@ namespace GameTimeNext.Core.Application.MigrationTasks
             int migratedRows = command.ExecuteNonQuery();
 
             if (migratedRows > 0)
-                FnLog.AddInfo(nameof(MigTask_100b_011), $"Metadata type of {migratedRows.ToString(CultureInfo.InvariantCulture)} table definition(s) changed from mE to TO");
+                FnLog.AddInfo("MainApp", $"Metadata type of {migratedRows.ToString(CultureInfo.InvariantCulture)} table definition(s) changed from mE to TO");
         }
     }
 }

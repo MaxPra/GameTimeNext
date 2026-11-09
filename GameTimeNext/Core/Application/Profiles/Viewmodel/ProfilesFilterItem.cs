@@ -11,9 +11,9 @@ namespace GameTimeNext.Core.Application.Profiles.Viewmodel
         private bool _isVisible = true;
 
         /// <summary>
-        /// GRID for tags, 0 for fixed options
+        /// Key of the tag (codetable tG), empty for fixed options and the special entries
         /// </summary>
-        public long TagId { get; set; }
+        public string TagKey { get; set; } = string.Empty;
 
         /// <summary>
         /// Option key for fixed options (see ProfilesFilterOptions)

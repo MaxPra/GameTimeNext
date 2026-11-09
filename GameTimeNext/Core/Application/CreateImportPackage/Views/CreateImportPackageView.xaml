@@ -44,7 +44,7 @@
                     Grid.Row="0"
                     Grid.Column="0"
                     Width="148"
-                    Height="38"
+                    Height="36"
                     HorizontalAlignment="Left"
                     Style="{StaticResource Button.Primary}">
                     <StackPanel Orientation="Horizontal">
@@ -88,7 +88,7 @@
                     x:Name="btnTestImport"
                     Grid.Column="4"
                     Width="148"
-                    Height="38"
+                    Height="36"
                     HorizontalAlignment="Left">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock

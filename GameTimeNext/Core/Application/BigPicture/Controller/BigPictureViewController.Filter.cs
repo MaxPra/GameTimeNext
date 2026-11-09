@@ -134,7 +134,7 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
         private void ShowFilterEntries(FilterCache filter)
         {
             HashSet<string> excludedOptions = filter.ExcludedOptions.ToHashSet();
-            HashSet<long> excludedTagIds = filter.ExcludedTagIds.ToHashSet();
+            HashSet<string> excludedTagKeys = filter.ExcludedTagKeys.ToHashSet(StringComparer.Ordinal);
 
             List<BigPictureFilterEntry> entries = new List<BigPictureFilterEntry>();
 
@@ -145,11 +145,9 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
             entries.Add(new BigPictureFilterEntry(BigPictureFilterEntryKind.Header, "Tags"));
             entries.Add(new BigPictureFilterEntry(BigPictureFilterEntryKind.Untagged, "Untagged games", !filter.ExcludeUntagged));
 
-            IEnumerable<T1GROUP> tags = new TXGROUP().ReadAll()
-                .Where(g => g.GTYP == GroupType.Tag)
-                .OrderBy(g => g.GRNA, StringComparer.CurrentCultureIgnoreCase);
+            IEnumerable<T1CTABD> tags = TFCTABD.GetTags(includeHidden: false);
 
-            entries.AddRange(tags.Select(t => new BigPictureFilterEntry(BigPictureFilterEntryKind.Tag, t.GRNA, !excludedTagIds.Contains(t.GRID), tagId: t.GRID)));
+            entries.AddRange(tags.Select(t => new BigPictureFilterEntry(BigPictureFilterEntryKind.Tag, t.DESCR, !excludedTagKeys.Contains(t.TXNUM), tagKey: t.TXNUM)));
 
             entries.Add(new BigPictureFilterEntry(BigPictureFilterEntryKind.Header, "More"));
             entries.Add(new BigPictureFilterEntry(BigPictureFilterEntryKind.ShowArchived, "Show archived games", filter.ShowArchived));
@@ -181,9 +179,9 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
                     .Where(e => e.Kind == BigPictureFilterEntryKind.Option && !e.IsChecked)
                     .Select(e => e.OptionKey)
                     .ToList(),
-                ExcludedTagIds = _filterEntries
+                ExcludedTagKeys = _filterEntries
                     .Where(e => e.Kind == BigPictureFilterEntryKind.Tag && !e.IsChecked)
-                    .Select(e => e.TagId)
+                    .Select(e => e.TagKey)
                     .ToList(),
                 ExcludeUntagged = _filterEntries.Any(e => e.Kind == BigPictureFilterEntryKind.Untagged && !e.IsChecked),
                 ShowArchived = _filterEntries.Any(e => e.Kind == BigPictureFilterEntryKind.ShowArchived && e.IsChecked),

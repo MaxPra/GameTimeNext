@@ -78,7 +78,7 @@ namespace GameTimeNext.Core.Framework.UI
                 scrollViewer.SizeChanged += (_, args) =>
                 {
                     if (args.WidthChanged)
-                        RequestUpdate(itemsControl, scrollViewer);
+                        RequestUpdateInLayoutPass(itemsControl, scrollViewer);
                 };
 
                 // Containers exist only after the items have been generated (initial load, filter)
@@ -102,6 +102,27 @@ namespace GameTimeNext.Core.Framework.UI
                 itemsControl.SetValue(IsUpdatePendingProperty, false);
                 UpdateTileSize(itemsControl, scrollViewer);
             });
+        }
+
+        /// <summary>
+        /// For a new width: runs when the current layout is done but before it is rendered, and layout runs again with the new
+        /// tile size. A frame with the new window but the old tile size would show the tiles jumping into their place.
+        /// </summary>
+        private static void RequestUpdateInLayoutPass(ItemsControl itemsControl, ScrollViewer scrollViewer)
+        {
+            if ((bool)itemsControl.GetValue(IsUpdatePendingProperty))
+                return;
+
+            itemsControl.SetValue(IsUpdatePendingProperty, true);
+
+            void OnLayoutUpdated(object? sender, EventArgs e)
+            {
+                itemsControl.LayoutUpdated -= OnLayoutUpdated;
+                itemsControl.SetValue(IsUpdatePendingProperty, false);
+                UpdateTileSize(itemsControl, scrollViewer);
+            }
+
+            itemsControl.LayoutUpdated += OnLayoutUpdated;
         }
 
         private static void UpdateTileSize(ItemsControl itemsControl, ScrollViewer scrollViewer)

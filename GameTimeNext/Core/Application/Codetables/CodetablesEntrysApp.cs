@@ -23,8 +23,8 @@ namespace GameTimeNext.Core.Application.Codetables
             MainView = CodetablesEntrysView;
             CodetablesEntrysEditViewController = new CodetablesEntrysViewController(this);
             CodetablesEntrysView.ViewController = CodetablesEntrysEditViewController;
-            CodetablesEntrysView.DgCodetableEntrys.SelectorAdapter = new CodetablesEntrysView_CodetableEntrysSelectorAdapter(this);
-            CodetablesEntrysView.DgCodetableEntrys.SelectorController = new CodetablesEntrysView_CodetableEntrysSelectorController(this);
+            CodetablesEntrysView.dgCodetableEntrys.SelectorAdapter = new CodetablesEntrysView_CodetableEntrysSelectorAdapter(this);
+            CodetablesEntrysView.dgCodetableEntrys.SelectorController = new CodetablesEntrysView_CodetableEntrysSelectorController(this);
         }
 
         public void Edit(T1CTABH t1ctabh)
