@@ -331,7 +331,6 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                         code.AddLine("#region Methods PROTECTED");
 
                         // Map
-                        code.AddLine();
                         code.BeginBlock($"protected static {classNameT1} Map(SQLiteDataReader reader)");
                         code.AddLine($"{classNameT1} obj = new {classNameT1}();");
                         foreach (KeyValuePair<T1METAP, UIXSqliteDataType> field in fields)

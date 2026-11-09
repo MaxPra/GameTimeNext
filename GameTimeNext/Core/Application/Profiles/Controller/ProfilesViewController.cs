@@ -348,17 +348,17 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             view.ListBoxProfiles.Margin = detailLeft ? new Thickness(4, -8, 0, 0) : new Thickness(-12, -8, 0, 0);
         }
 
-        protected async Task EXEV_SwitchProfile()
+        protected async Task EXEV_SwitchProfile(long pfid)
         {
             UIXListBox listBoxProfiles = GetView().ListBoxProfiles;
 
             if (listBoxProfiles.ItemsSource == null)
                 return;
 
-            ProfilesListBoxItem? FindCurrent() => listBoxProfiles.Items.OfType<ProfilesListBoxItem>().FirstOrDefault(p => (p.ItemObject as T1PROFI)?.PFID == AppEnvironment.CurrentPfid);
+            ProfilesListBoxItem? FindCurrent() => listBoxProfiles.Items.OfType<ProfilesListBoxItem>().FirstOrDefault(p => (p.ItemObject as T1PROFI)?.PFID == pfid);
 
             if (FindCurrent() == null)
-                await AdjustFiltersToStartedGameProfile(AppEnvironment.CurrentPfid);
+                await AdjustFiltersToStartedGameProfile(pfid);
 
             listBoxProfiles.SelectedItem = FindCurrent() ?? throw new InvalidOperationException("The started profile is not in the list.");
 

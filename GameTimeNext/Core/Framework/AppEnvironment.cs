@@ -1,4 +1,5 @@
 ﻿using GameTimeNext.Core.Application.DataManagers;
+using GameTimeNext.Core.Application.General.BackgroundProcesses;
 using GameTimeNext.Core.Application.MigrationTasks;
 using GameTimeNext.Core.Application.Profiles.BackgroundProcesses;
 using GameTimeNext.Core.Application.Settings;
@@ -136,9 +137,15 @@ namespace GameTimeNext.Core.Framework
             launcherAutoImportProcess.CallDispatcher = app.CallDispatcher;
             launcherAutoImportProcess.Start(20000);
 
+            // RemoteMonitoringProcess
+            RemoteMonitoringProcess remoteMonitoringProcess = app.GetBackgroundProcess<RemoteMonitoringProcess>();
+            remoteMonitoringProcess.CallDispatcher = app.CallDispatcher;
+            remoteMonitoringProcess.Start(5000);
+
             StartedBackgroundProcesses.Add(typeof(GlobalKeyInputProcess).FullName!, globalKeyInputProcess);
             StartedBackgroundProcesses.Add(typeof(GameRunningProcess).FullName!, gameRunningProcess);
             StartedBackgroundProcesses.Add(typeof(LauncherAutoImportProcess).FullName!, launcherAutoImportProcess);
+            StartedBackgroundProcesses.Add(typeof(RemoteMonitoringProcess).FullName!, remoteMonitoringProcess);
         }
 
         public static void StopBackgroundProcesses()

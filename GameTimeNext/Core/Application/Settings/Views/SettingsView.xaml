@@ -978,6 +978,43 @@
                             </StackPanel>
                         </GroupBox>
 
+                        <GroupBox
+                            Header="Remote Monitoring"
+                            Style="{StaticResource GroupBox.Card}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="8" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <Grid Grid.Row="0" HorizontalAlignment="Left">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="170" />
+                                        <ColumnDefinition Width="16" />
+                                        <ColumnDefinition Width="54" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        VerticalAlignment="Center"
+                                        Foreground="{DynamicResource Brush.TextSecondary}"
+                                        Text="Remote Monitoring active" />
+
+                                    <CheckBox
+                                        x:Name="cbRemoteMonitoringActive"
+                                        Grid.Column="2"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center" />
+                                </Grid>
+
+                                <TextBlock
+                                    x:Name="txtRemoteMonitoringPort"
+                                    Grid.Row="2"
+                                    Foreground="{DynamicResource Brush.Success}" />
+                            </Grid>
+                        </GroupBox>
+
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>

@@ -64,7 +64,7 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
                                 AppEnvironment.CurrentPfid = t1profi.PFID;
 
                                 // ProfilesViewController
-                                CallDispatcher!.Trigger("EXEV_SwitchProfile");
+                                CallDispatcher!.Trigger("EXEV_SwitchProfile", t1profi.PFID);
                                 CallDispatcher.Trigger("EXEV_GameLaunched");
 
                                 // BigPictureViewController, only registered while the Big Picture mode is open

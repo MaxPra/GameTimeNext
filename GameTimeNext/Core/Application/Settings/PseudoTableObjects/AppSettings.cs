@@ -111,6 +111,9 @@ namespace GameTimeNext.Core.Application.TableObjects
         [UIXSignatureField(29)]
         public string AutoImportExcludedLaunchers { get; set; }
 
+        [UIXSignatureField(30)]
+        public bool RemoteMonitoring { get; set; }
+
 
         public AppSettings()
         {
@@ -133,6 +136,7 @@ namespace GameTimeNext.Core.Application.TableObjects
             MonitoringKey = KeyInput.virtualKeyMap[KeyInput.VirtualKey.VK_NONE];
             EnableSessionCleanup = false;
             SessionCleanupSeconds = 30.0;
+            RemoteMonitoring = false;
             SteamGridDbKey = string.Empty;
             EnableTwitchIGDB = false;
             TwitchIGDBClientID = string.Empty;

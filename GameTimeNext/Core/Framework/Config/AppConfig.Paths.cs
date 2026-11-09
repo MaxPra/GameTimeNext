@@ -124,6 +124,9 @@ namespace GameTimeNext.Core.Framework.Config
             {
                 get => Path.Combine(ImportPackageTestDirectoryPath, Root.DatabaseFileName);
             }
+
+            [JsonIgnore]
+            public static string RemoteMonitoringBinDirectoryPath = @"..\..\..\..\..\RemoteMonitoring\bin\Release\net10.0\publish";
         }
 
         public static class Storage

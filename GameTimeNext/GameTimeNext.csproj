@@ -54,6 +54,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\UIX.ViewController.Engine\UIX.ViewController.Engine.csproj" />
 		<ProjectReference Include="..\..\UIXMonitorTweaks\UIXMonitorTweaks.csproj" />
+		<ProjectReference Include="..\GameTimeNext.Shared\GameTimeNext.Shared.csproj" />
 	</ItemGroup>
 
 </Project>

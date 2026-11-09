@@ -60,7 +60,7 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
 
             // ProfilesViewController: the session is stored for the selected profile
             AppEnvironment.CurrentPfid = t1profi.PFID;
-            GetApp().CallDispatcher.Trigger("EXEV_SwitchProfile");
+            GetApp().CallDispatcher.Trigger("EXEV_SwitchProfile", t1profi.PFID);
 
             ToggleMonitoringBlackout(t1profi);
 

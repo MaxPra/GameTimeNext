@@ -7,6 +7,7 @@ using GameTimeNext.Core.Application.GTXMigration;
 using GameTimeNext.Core.Application.Profiles;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Config;
+using GameTimeNext.Core.Framework.UI;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.Utils;
 using System.IO;
@@ -40,6 +41,7 @@ namespace GameTimeNext.Core.Application.General.Controller
 
             GetApp().CallDispatcher.Register(this, nameof(EXEV_SwitchToApplication));
             GetApp().CallDispatcher.Register(this, nameof(EXEV_ExitBigPicture));
+            GetApp().CallDispatcher.Register(this, nameof(EXEV_RemoteMonitoringStarted));
         }
 
         protected override void BuildFirstImpl()
@@ -498,6 +500,14 @@ namespace GameTimeNext.Core.Application.General.Controller
                 return;
 
             GetView().MainTabControl.SelectedItem = GetView().MainTabControl.Items.Cast<TabItem>().FirstOrDefault(t => t.Tag?.ToString() == applicationFullName);
+        }
+
+        protected void EXEV_RemoteMonitoringStarted(int port)
+        {
+            System.Windows.Application.Current.Dispatcher.Invoke(() =>
+            {
+                CFToast.Show("Remote Monitoring", $"Started on port {port}.");
+            });
         }
 
         private void ReorderTabsByFavApps()
