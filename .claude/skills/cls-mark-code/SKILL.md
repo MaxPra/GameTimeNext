@@ -1,5 +1,5 @@
 ---
-name: mark-code
+name: cls-mark-code
 description: Mark code locations with a MARKEDBYCLAUDE comment so they show up in the Visual Studio Task List. Use whenever the user asks to mark, flag, tag or annotate places in the code (e.g. "mark all usages of X", "flag where we call the legacy API").
 ---
 
