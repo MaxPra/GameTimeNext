@@ -29,13 +29,13 @@ namespace RemoteMonitoring.Base
             }
             catch (ApiRequestFailedException ex)
             {
-                FnLog.AddError(this, string.Empty, ex);
+                FnLog.AddError(this, "API request failed...", ex);
                 return TryResult<TRes>.Failed(ex);
             }
             catch (Exception ex)
             {
                 ApiRequestFailedException apiEx = new ApiRequestFailedException(requestMessage.Request, ex);
-                FnLog.AddError(this, string.Empty, apiEx);
+                FnLog.AddError(this, "API request failed...", apiEx);
                 return TryResult<TRes>.Failed(apiEx);
             }
         }

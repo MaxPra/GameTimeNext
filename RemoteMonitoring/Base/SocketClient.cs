@@ -152,10 +152,19 @@ namespace RemoteMonitoring.Base
                 return;
 
             State = ConnectionState.Reconnecting;
-            FnLog.AddInfo(this, "Reconnecting...");
 
             CloseConnection();
-            _ = StartAsync();
+
+            // Not in the caller's context: a reconnect requested by the LogForwarder would pass its "don't forward" flag
+            // to the new connection and its ping loop
+            using (ExecutionContext.SuppressFlow())
+            {
+                _ = Task.Run(() =>
+                {
+                    FnLog.AddInfo(this, "Reconnecting...");
+                    return StartAsync();
+                });
+            }
         }
 
         private void CloseConnection()
@@ -177,7 +186,7 @@ namespace RemoteMonitoring.Base
                     await Task.Delay(_pingIntervalMs, token);
 
                     string? response = await SendAsync(new PingRequestMessage());
-                    if (response is null || !response.Equals("Pong"))
+                    if (!IsPong(response))
                     {
                         FnLog.AddError(this, "Ping failed!");
                         ReconnectRequested?.Invoke(this, EventArgs.Empty);
@@ -188,6 +197,24 @@ namespace RemoteMonitoring.Base
             catch (OperationCanceledException)
             {
                 // Connection closed (reconnect or disconnect)
+            }
+        }
+
+        /// <summary>
+        /// True if the response is the JSON string "Pong". Anything else (no response, no valid JSON) counts as a failed ping.
+        /// </summary>
+        private static bool IsPong(string? response)
+        {
+            if (response is null)
+                return false;
+
+            try
+            {
+                return JsonSerializer.Deserialize<string>(response) == "Pong";
+            }
+            catch (JsonException)
+            {
+                return false;
             }
         }
 

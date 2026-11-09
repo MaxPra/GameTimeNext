@@ -1,56 +1,88 @@
-﻿using System.Globalization;
+﻿using GameTimeNext.Shared.Base;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using System.Threading.Channels;
 
 namespace RemoteMonitoring
 {
+    /// <summary>
+    /// Writes log entries to the console and queues them for the LogForwarder, which sends them to arcora.
+    /// </summary>
+    // Hidden in stack traces: the stack of an entry starts at the code that logs, not in here
+    [StackTraceHidden]
     public static class FnLog
     {
-        public static void AddError(object source, string message, Exception? ex = null)
-        {
-            if (ex is not null)
-                message = message += Environment.NewLine + ex.Message;
+        private static readonly Channel<LogRequestMessage> _forwardQueue = Channel.CreateBounded<LogRequestMessage>(
+            new BoundedChannelOptions(500) { FullMode = BoundedChannelFullMode.DropOldest });
 
-            WriteLog(source, "Error", message);
+        // True in the flow of the LogForwarder: its own entries (e.g. a failed send) are not forwarded again
+        private static readonly AsyncLocal<bool> _isForwarder = new();
+
+        internal static ChannelReader<LogRequestMessage> ForwardQueue => _forwardQueue.Reader;
+
+        internal static void MarkAsForwarder() => _isForwarder.Value = true;
+
+        public static void AddError(object? source, string message, Exception? ex = null,
+            [CallerMemberName] string callerMember = "", [CallerFilePath] string callerFile = "", [CallerLineNumber] int callerLine = 0)
+            => Write(LogRequestMessage.GetError(source, message, ex, callerMember, callerFile, callerLine), ex);
+
+        public static void AddWarning(object? source, string message, Exception? ex = null,
+            [CallerMemberName] string callerMember = "", [CallerFilePath] string callerFile = "", [CallerLineNumber] int callerLine = 0)
+            => Write(LogRequestMessage.GetWarning(source, message, ex, callerMember, callerFile, callerLine), ex);
+
+        public static void AddInfo(object? source, string message, Exception? ex = null,
+            [CallerMemberName] string callerMember = "", [CallerFilePath] string callerFile = "", [CallerLineNumber] int callerLine = 0)
+            => Write(LogRequestMessage.GetInfo(source, message, ex, callerMember, callerFile, callerLine), ex);
+
+        /// <summary>
+        /// Queues an entry of ASP.NET's own logging (ILogger) for arcora only: its console logger shows it already.
+        /// It has no caller, the place is in the stack trace.
+        /// </summary>
+        internal static void ForwardOnly(LogType logType, string source, string message, Exception? ex)
+        {
+            LogRequestMessage entry = logType switch
+            {
+                LogType.Error => LogRequestMessage.GetError(source, message, ex, string.Empty, string.Empty, 0),
+                LogType.Warning => LogRequestMessage.GetWarning(source, message, ex, string.Empty, string.Empty, 0),
+                _ => LogRequestMessage.GetInfo(source, message, ex, string.Empty, string.Empty, 0)
+            };
+
+            if (!_isForwarder.Value)
+                _forwardQueue.Writer.TryWrite(entry);
         }
 
-        public static void AddWarning(object source, string message, Exception? ex = null)
+        private static void Write(LogRequestMessage entry, Exception? ex)
         {
-            if (ex is not null)
-                message = message += Environment.NewLine + ex.Message;
+            WriteToConsole(entry, ex);
 
-            WriteLog(source, "Warning", message);
+            if (!_isForwarder.Value)
+                _forwardQueue.Writer.TryWrite(entry);
         }
 
-        public static void AddInfo(object source, string message)
-        {
-            WriteLog(source, "Info", message);
-        }
-
-        private static void WriteLog(object source, string type, string message)
+        private static void WriteToConsole(LogRequestMessage entry, Exception? ex)
         {
             ConsoleColor origin = Console.ForegroundColor;
 
-            switch (type.ToLower(CultureInfo.CurrentCulture))
+            Console.ForegroundColor = entry.LogType switch
             {
-                case "error":
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    break;
-                case "warning":
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    break;
-                default:
-                    Console.ForegroundColor = ConsoleColor.White;
-                    break;
-            }
-            Console.Write(type);
+                LogType.Error => ConsoleColor.Red,
+                LogType.Warning => ConsoleColor.Yellow,
+                _ => ConsoleColor.White
+            };
+
+            Console.Write(entry.LogType.ToString());
             Console.Write(" [");
-            Console.Write(source.GetType().Name);
+            Console.Write(entry.Source);
             Console.Write("] ");
 
-            if (!type.ToLower(CultureInfo.CurrentCulture).Equals("error")) Console.ForegroundColor = origin;
+            if (entry.LogType != LogType.Error) Console.ForegroundColor = origin;
+
+            string message = entry.Message;
+            if (ex is not null)
+                message += Environment.NewLine + ex.Message;
 
             Console.WriteLine(message);
-            // OFDOI: Send Log
-            
+
             Console.ForegroundColor = origin;
         }
     }

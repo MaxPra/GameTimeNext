@@ -13,6 +13,8 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
 {
     public class RemoteMonitoringSocketServer : UIXBackgroundProcess
     {
+        private static readonly AvailableRequests[] _UNLOGGED_REQUESTS = [AvailableRequests.Ping, AvailableRequests.Log];
+
         private TcpListener? _listener;
 
         public int Port { get; set; }
@@ -117,19 +119,17 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
                 using JsonDocument document = JsonDocument.Parse(requestMessage);
                 AvailableRequests request = document.RootElement.GetProperty(nameof(RequestMessageBase.Request)).Deserialize<AvailableRequests>();
 
-                if (request.Equals(AvailableRequests.Ping))
-                {
-                    writer.WriteLine("Pong");
-                    return;
-                }
-
-                FnLog.AddInfo(this, $"Received: {request.ToString()}");
+                if (!_UNLOGGED_REQUESTS.Contains(request))
+                    FnLog.AddInfo(this, $"Received: {request.ToString()}");
 
                 switch (request)
                 {
                     // System
+                    case AvailableRequests.Ping:
+                        await SendResponse(writer, "Pong");
+                        return;
                     case AvailableRequests.Log:
-                        // OFDOI: Log
+                        WriteForwardedLog(JsonSerializer.Deserialize<LogRequestMessage>(requestMessage)!);
                         await SendResponse(writer, true);
                         return;
 
@@ -153,6 +153,29 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
                 FnLog.AddError(this, $"Handling the request failed: {requestMessage}", ex);
                 await SendResponse(writer, null);
             }
+        }
+
+        /// <summary>
+        /// Writes an entry of the remote monitoring as it was logged there (time, source, caller), not as an entry of this
+        /// process, so it goes to the log provider directly instead of through FnLog.Add*.
+        /// </summary>
+        private static void WriteForwardedLog(LogRequestMessage logMsg)
+        {
+            FnLog.LogProvider?.Write(new UIXLogEntry
+            {
+                Timestamp = logMsg.Timestamp,
+                LogType = logMsg.LogType switch
+                {
+                    LogType.Warning => UIXLogType.Warning,
+                    LogType.Error => UIXLogType.Error,
+                    _ => UIXLogType.Info
+                },
+                Source = $"RemoteMonitoring.{logMsg.Source}",
+                Message = logMsg.Message,
+                Exception = logMsg.Exception is null ? null : new ForwardedException(logMsg.Exception),
+                Caller = logMsg.Caller,
+                StackTrace = logMsg.StackTrace
+            });
         }
 
         private async Task SendResponse(StreamWriter writer, object? response)

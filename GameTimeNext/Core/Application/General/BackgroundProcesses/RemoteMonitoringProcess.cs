@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
@@ -13,9 +14,13 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
     public class RemoteMonitoringProcess : UIXBackgroundProcess
     {
         private static bool _DEBUG_STARTBLAZOR = false;
+        private const int _MAX_BLAZOR_ERROR_OUTPUT = 32000;
 
         private Process? _blazorProcess;
         private RemoteMonitoringSocketServer? _socketServerProcess;
+
+        // Error output of the Blazor process (e.g. an unhandled exception at startup), logged when it exits
+        private readonly StringBuilder _blazorErrorOutput = new();
 
         private int _socketPort = 5050;
         
@@ -85,7 +90,10 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
             // CleanUp, when blazorProcess has exited
             if (_blazorProcess is not null && _blazorProcess.HasExited)
             {
-                FnLog.AddInfo(this, $"Blazor process exited with code {_blazorProcess.ExitCode}.");
+                // Lets the error output be read to its end
+                _blazorProcess.WaitForExit(2000);
+                LogBlazorExit(_blazorProcess.ExitCode);
+
                 _blazorProcess.Dispose();
                 _blazorProcess = null;
             }
@@ -135,14 +143,23 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
                     FileName = exePath,
                     UseShellExecute = false,
                     CreateNoWindow = true,
+                    RedirectStandardError = true,
+                    StandardErrorEncoding = Encoding.UTF8,
                     WorkingDirectory = Path.GetDirectoryName(exePath) ?? baseDir
                 };
                 psi.Environment["ASPNETCORE_URLS"] = $"http://0.0.0.0:{port}";
                 psi.Environment["GTN_SOCKET_PORT"] = $"{_socketPort}";
 
+                lock (_blazorErrorOutput)
+                    _blazorErrorOutput.Clear();
+
                 _blazorProcess = Process.Start(psi);
                 if (_blazorProcess is not null)
+                {
                     FnChildProcesses.Attach(_blazorProcess);
+                    _blazorProcess.ErrorDataReceived += BlazorErrorDataReceived;
+                    _blazorProcess.BeginErrorReadLine();
+                }
 
                 FnLog.AddInfo(this, $"Started blazorProcess on port {port}.");
                 CallDispatcher!.Trigger("EXEV_RemoteMonitoringStarted", port); // MainWindowController
@@ -152,6 +169,42 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
                 FnLog.AddError(this, "Failed to start blazorProcess.", ex);
                 _blazorProcess = null;
             }
+        }
+
+        private void BlazorErrorDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            if (e.Data is null)
+                return;
+
+            lock (_blazorErrorOutput)
+            {
+                // The beginning holds the exception, a process that keeps writing must not fill the memory
+                if (_blazorErrorOutput.Length < _MAX_BLAZOR_ERROR_OUTPUT)
+                    _blazorErrorOutput.AppendLine(e.Data);
+            }
+        }
+
+        /// <summary>
+        /// Logs the end of the Blazor process; a crash as error with its error output (e.g. the unhandled exception), which is
+        /// otherwise lost because the process has no window.
+        /// </summary>
+        private void LogBlazorExit(int exitCode)
+        {
+            string errorOutput;
+            lock (_blazorErrorOutput)
+            {
+                errorOutput = _blazorErrorOutput.ToString().TrimEnd();
+                _blazorErrorOutput.Clear();
+            }
+
+            if (exitCode == 0 && errorOutput.Length == 0)
+            {
+                FnLog.AddInfo(this, $"Blazor process exited with code {exitCode}.");
+                return;
+            }
+
+            FnLog.AddError(this, $"Blazor process exited with code {exitCode} (0x{exitCode:X8}).",
+                errorOutput.Length == 0 ? null : new ForwardedException(errorOutput));
         }
 
         private int GetFreePort(int? desiredPort = null, IPAddress? desiredEndpoint = null)

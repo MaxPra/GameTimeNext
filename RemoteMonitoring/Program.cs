@@ -6,6 +6,9 @@ using RemoteMonitoring.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Warnings and errors of ASP.NET / Blazor also go to arcora
+builder.Logging.AddProvider(new FnLogLoggerProvider());
+
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
@@ -17,6 +20,9 @@ builder.Services.AddSingleton<SocketClient>();
 // API Services
 builder.Services.AddSingleton<SystemApiService>();
 builder.Services.AddSingleton<ProfilesApiService>();
+
+// Background Services
+builder.Services.AddHostedService<LogForwarder>();
 
 var app = builder.Build();
 

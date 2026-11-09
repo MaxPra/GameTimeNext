@@ -10,9 +10,9 @@ namespace RemoteMonitoring.ApiServices
         }
 
         #region Methods PUBLIC
-        public async Task<bool> SendLog(string message)
+        public async Task<bool> SendLog(LogRequestMessage requestMessage)
         {
-            TryResult<bool> result = await TryRequestAsync<bool>(new LogRequestMessage(message));
+            TryResult<bool> result = await TryRequestAsync<bool>(requestMessage);
             return result.Success ? result.Value : false;
         }
         #endregion
