@@ -6,6 +6,7 @@ using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.Files;
 using GameTimeNext.Core.Framework.GitHub;
 using GameTimeNext.Core.Framework.LauncherIntegration;
+using GameTimeNext.Core.Framework.UI;
 using GameTimeNext.Core.Framework.Utils;
 using System.Diagnostics;
 using System.Windows;
@@ -21,10 +22,26 @@ namespace GameTimeNext
     public partial class App : Application
     {
         private LogProvider _logProvider = null!;
+        private bool isSplashProcess;
 
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+
+            // App font (Manrope) as default of every window, before the first window (splash) is created
+            FnFont.ApplyAsDefault();
+
+            // Mouse wheel moves every ScrollViewer by a spring
+            SmoothScroll.Register();
+
+            // Started as splash process by the application (see SplashHost): only shows the splash, nothing else
+            if (SplashHost.IsSplashProcess(e.Args))
+            {
+                isSplashProcess = true;
+                AppEnvironment.AppVersion.Get();
+                SplashHost.RunAsSplashProcess(this, e.Args);
+                return;
+            }
 
             // Ensure that only one instance is running
             if (!FnSystem.IsDebug() && !FnSystem.TryAcquireSingleInstance())
@@ -42,13 +59,11 @@ namespace GameTimeNext
             ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
             AppEnvironment.AppVersion.Get();
-            Core.Application.General.SplashScreen? splash = null;
+            SplashHost? splash = null;
 
+            // The splash is its own process, so its animation is not stalled by the start below
             if (!startMinimized)
-            {
-                splash = new Core.Application.General.SplashScreen();
-                splash.Show();
-            }
+                splash = SplashHost.Start(FnSystem.IsDebug());
 
             InitializeApp();
 
@@ -108,6 +123,7 @@ namespace GameTimeNext
 
             // Same for T1ERMSG: error messages are only available from here on
             UIXApplication.ErrorMessageProvider = new ErrorMessageProvider();
+            UIXApplication.NewEntryProvider = new NewEntryProvider();
 
             // Delete old backups
             FnLog.Add(GTNLogType.AppStart, "MainApp", "Deleting old backups...");
@@ -136,6 +152,10 @@ namespace GameTimeNext
 
         protected override void OnExit(ExitEventArgs e)
         {
+            // The splash process has neither a database nor background processes
+            if (isSplashProcess)
+                return;
+
             FnLog.AddInfo("MainApp", "*** Shutdown initiated ***");
 
             // A game paused by the Big Picture mode must never stay suspended
@@ -173,7 +193,7 @@ namespace GameTimeNext
             UpdateCheckResult result = FnGithub.CheckForUpdateAsync(
                 AppEnvironment.AppVersion.Version.ToString(),
                 "MaxPra",
-                "GameTimeNext"
+                AppConfig.Root.InternalApplicationName
             ).GetAwaiter().GetResult();
 
             if (result.UpdateAvailable)

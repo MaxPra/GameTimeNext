@@ -1,0 +1,149 @@
+﻿<ui:GTNWindowView
+    x:Class="GameTimeNext.Core.Application.SelectionLists.Views.SelectionListEntryEditView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI.Base"
+    xmlns:uixcb="clr-namespace:UIX.ViewController.Engine.FrameworkElements.ComboBoxes;assembly=UIX.ViewController.Engine"
+    xmlns:uixprops="clr-namespace:UIX.ViewController.Engine.AttachedProperties;assembly=UIX.ViewController.Engine"
+    Title="Entry"
+    Width="560"
+    Height="480"
+    ResizeMode="NoResize"
+    ShowMaximizeButton="False"
+    ShowMinimizeButton="False"
+    WindowStartupLocation="CenterOwner"
+    mc:Ignorable="d">
+
+    <Grid Style="{StaticResource View.Root}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="16" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Border
+            Grid.Row="0"
+            Padding="16"
+            Style="{StaticResource Card}">
+            <StackPanel>
+                <!--  Name  -->
+                <TextBlock Style="{StaticResource Text.Label}" Text="Name" />
+                <TextBox
+                    x:Name="txbName"
+                    Margin="0,8,0,0"
+                    uixprops:UIXAttachedProperty.Path="T1CTABD.DESCR" />
+
+                <!--  First parameter: shown by the controller when the list has one  -->
+                <StackPanel x:Name="pnlParam1" Margin="0,16,0,0" Visibility="Collapsed">
+                    <TextBlock x:Name="lblParam1" Style="{StaticResource Text.Label}" />
+                    <Grid Margin="0,8,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <!--  Only one of the fields is shown, depending on the control type of the parameter  -->
+                        <StackPanel Grid.Column="0">
+                            <uixcb:UIXComboBox
+                                x:Name="cmbParam1"
+                                uixprops:UIXAttachedProperty.Path="T1CTABD.PARM1"
+                                uixprops:UIXAttachedProperty.SkipNotVisible="True"
+                                SelectedIndex="0"
+                                SelectedValue=""
+                                SelectedValuePath="Tag"
+                                Visibility="Collapsed" />
+                            <TextBox
+                                x:Name="txbParam1"
+                                uixprops:UIXAttachedProperty.Path="T1CTABD.PARM1"
+                                uixprops:UIXAttachedProperty.SkipNotVisible="True"
+                                Visibility="Collapsed" />
+                        </StackPanel>
+
+                        <!--  Runs the button API of the parameter (CTAPI_<Name>), shown by the controller  -->
+                        <Button
+                            x:Name="btnParam1"
+                            Grid.Column="1"
+                            Margin="8,0,0,0"
+                            VerticalAlignment="Top"
+                            uixprops:UIXAttachedProperty.SkipEventPipeline="True"
+                            Visibility="Collapsed" />
+                    </Grid>
+                    <TextBlock
+                        x:Name="txHintParam1"
+                        Margin="0,4,0,0"
+                        Style="{StaticResource Text.Hint}"
+                        TextWrapping="Wrap"
+                        Visibility="Collapsed" />
+                </StackPanel>
+
+                <!--  Second parameter  -->
+                <StackPanel x:Name="pnlParam2" Margin="0,16,0,0" Visibility="Collapsed">
+                    <TextBlock x:Name="lblParam2" Style="{StaticResource Text.Label}" />
+                    <Grid Margin="0,8,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <!--  Only one of the fields is shown, depending on the control type of the parameter  -->
+                        <StackPanel Grid.Column="0">
+                            <uixcb:UIXComboBox
+                                x:Name="cmbParam2"
+                                uixprops:UIXAttachedProperty.Path="T1CTABD.PARM2"
+                                uixprops:UIXAttachedProperty.SkipNotVisible="True"
+                                SelectedIndex="0"
+                                SelectedValue=""
+                                SelectedValuePath="Tag"
+                                Visibility="Collapsed" />
+                            <TextBox
+                                x:Name="txbParam2"
+                                uixprops:UIXAttachedProperty.Path="T1CTABD.PARM2"
+                                uixprops:UIXAttachedProperty.SkipNotVisible="True"
+                                Visibility="Collapsed" />
+                        </StackPanel>
+
+                        <!--  Runs the button API of the parameter (CTAPI_<Name>), shown by the controller  -->
+                        <Button
+                            x:Name="btnParam2"
+                            Grid.Column="1"
+                            Margin="8,0,0,0"
+                            VerticalAlignment="Top"
+                            uixprops:UIXAttachedProperty.SkipEventPipeline="True"
+                            Visibility="Collapsed" />
+                    </Grid>
+                    <TextBlock
+                        x:Name="txHintParam2"
+                        Margin="0,4,0,0"
+                        Style="{StaticResource Text.Hint}"
+                        TextWrapping="Wrap"
+                        Visibility="Collapsed" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="8" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Button
+                x:Name="btnCancel"
+                Grid.Column="1"
+                MinWidth="120"
+                Content="Cancel" />
+
+            <Button
+                x:Name="btnSave"
+                Grid.Column="3"
+                MinWidth="120"
+                Content="Save"
+                IsDefault="True"
+                Style="{StaticResource Button.Primary}" />
+        </Grid>
+    </Grid>
+</ui:GTNWindowView>

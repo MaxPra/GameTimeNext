@@ -1,4 +1,5 @@
 ﻿using GameTimeNext.Core.Application.DataManagers;
+using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Profiles.Types;
 using GameTimeNext.Core.Application.Profiles.Viewmodel;
 using GameTimeNext.Core.Application.Profiles.Views;
@@ -143,12 +144,10 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         /// </summary>
         private void BuildViewModel(FilterCache filter)
         {
-            HashSet<long> excludedTagIds = filter.ExcludedTagIds.ToHashSet();
+            HashSet<string> excludedTagKeys = filter.ExcludedTagKeys.ToHashSet(StringComparer.Ordinal);
             HashSet<string> excludedOptions = filter.ExcludedOptions.ToHashSet();
 
-            List<T1GROUP> tags = new TXGROUP().ReadAll()
-                .Where(g => g.GTYP == GroupType.Tag)
-                .ToList();
+            List<T1CTABD> tags = TFCTABD.GetTags(includeHidden: false);
 
             _profilesFilterViewModel = new ProfilesFilterViewModel();
 
@@ -166,9 +165,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             tagItems.AddRange(tags.Select(t => new ProfilesFilterItem
             {
-                TagId = t.GRID,
-                Name = t.GRNA,
-                IsChecked = !excludedTagIds.Contains(t.GRID)
+                TagKey = t.TXNUM,
+                Name = t.DESCR,
+                IsChecked = !excludedTagKeys.Contains(t.TXNUM)
             }));
 
             _profilesFilterViewModel.Tags = new ObservableCollection<ProfilesFilterItem>(tagItems);
@@ -202,11 +201,11 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
             FilterCache filter = new FilterCache();
 
-            filter.ExcludeUntagged = _profilesFilterViewModel.Tags.Any(t => t.TagId == 0 && !t.IsChecked);
+            filter.ExcludeUntagged = _profilesFilterViewModel.Tags.Any(t => t.IsSpecial && !t.IsChecked);
 
-            filter.ExcludedTagIds = _profilesFilterViewModel.Tags
-                .Where(t => t.TagId != 0 && !t.IsChecked)
-                .Select(t => t.TagId)
+            filter.ExcludedTagKeys = _profilesFilterViewModel.Tags
+                .Where(t => !t.IsSpecial && !t.IsChecked)
+                .Select(t => t.TagKey)
                 .ToList();
 
             filter.ExcludedOptions = _profilesFilterViewModel.Progress

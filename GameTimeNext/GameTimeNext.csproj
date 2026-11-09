@@ -1,6 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
+		<Title>arcora</Title>
+		<AssemblyName>arcora</AssemblyName>
 		<Authors>CryLoud Studios</Authors>
 		<Copyright>© $(Authors)</Copyright>
 		<TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
@@ -37,6 +39,10 @@
 		<!-- Images, embedded in the assembly and referenced as pack URIs (/UI/Ressources/...); not copied to the output -->
 		<None Remove="UI\Ressources\**" />
 		<Resource Include="UI\Ressources\**" />
+
+		<!-- Fonts (Manrope), embedded in the assembly and referenced as resource Font.Text; nothing to install -->
+		<None Remove="UI\Fonts\**" />
+		<Resource Include="UI\Fonts\**" />
 	</ItemGroup>
 
 	<ItemGroup>

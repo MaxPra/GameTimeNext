@@ -29,7 +29,9 @@ namespace GameTimeNext.Core.Framework
 
             try
             {
-                AppEnvironment.GetLogDataBaseManager().InsertT1sylog(entry);
+                // Not open (closed on exit): the entry goes to the text file, no failure to report
+                if (!AppEnvironment.GetLogDataBaseManager().InsertT1sylog(entry) && !writtenToFile)
+                    WriteToFile(entry);
             }
             catch (Exception ex)
             {

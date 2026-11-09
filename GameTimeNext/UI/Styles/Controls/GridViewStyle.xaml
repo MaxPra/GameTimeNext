@@ -126,7 +126,7 @@
                 <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
             </Style>
 
-            <Style BasedOn="{StaticResource {x:Type CheckBox}}" TargetType="{x:Type CheckBox}">
+            <Style BasedOn="{StaticResource CheckBox.Cell}" TargetType="{x:Type CheckBox}">
                 <Setter Property="HorizontalAlignment" Value="Center" />
                 <Setter Property="VerticalAlignment" Value="Center" />
                 <Setter Property="MinWidth" Value="24" />
@@ -140,7 +140,7 @@
 
     <Style
         x:Key="DataGrid.CheckBox.Display"
-        BasedOn="{StaticResource {x:Type CheckBox}}"
+        BasedOn="{StaticResource CheckBox.Cell}"
         TargetType="{x:Type CheckBox}">
         <Setter Property="HorizontalAlignment" Value="Center" />
         <Setter Property="VerticalAlignment" Value="Center" />
@@ -155,7 +155,7 @@
 
     <Style
         x:Key="DataGrid.CheckBox.Edit"
-        BasedOn="{StaticResource {x:Type CheckBox}}"
+        BasedOn="{StaticResource CheckBox.Cell}"
         TargetType="{x:Type CheckBox}">
         <Setter Property="HorizontalAlignment" Value="Center" />
         <Setter Property="VerticalAlignment" Value="Center" />

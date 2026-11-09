@@ -39,12 +39,22 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
         protected override void BuildFirstImpl()
         {
             // Show the add button only in debug / development mode
-            FnControls.SetVisible(GetView().BtnAddCodetable, FnSystem.IsDebug() && !FnSystem.RunWithUserPermissions());
+            FnControls.SetVisible(GetView().btnAddCodetable, FnSystem.IsDebug() && !FnSystem.RunWithUserPermissions());
+
+            if (FnSystem.IsDebug())
+            {
+                GetView().cmbPermission.SelectedValue = string.Empty;
+            }
+            else
+            {
+                GetView().cmbPermission.SelectedValue = "U";
+            }
+
         }
 
         protected override async Task BuildFirstImplAsync()
         {
-            await GetView().DgCodetables.LoadDataAsync();
+            await GetView().dgCodetables.LoadDataAsync();
         }
         protected override void BuildImpl()
         {
@@ -81,7 +91,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
         }
         #endregion
 
-        protected async Task EV_BtnAddCodetable()
+        protected void EV_btnAddCodetable()
         {
             CodetablesEditApp codetablesEditApp = GetApp().GetApplication<CodetablesEditApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
             codetablesEditApp.CreateNew(async (result) =>
@@ -89,13 +99,13 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
                 if (!result.HasChanged)
                     return;
 
-                await GetView().DgCodetables.LoadDataAsync();
+                await GetView().dgCodetables.LoadDataAsync();
             });
         }
 
-        protected async Task EV_BtnRefresh()
+        protected async Task EV_btnRefresh()
         {
-            await GetView().DgCodetables.LoadDataAsync();
+            await GetView().dgCodetables.LoadDataAsync();
         }
     }
 }

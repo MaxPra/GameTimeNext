@@ -64,6 +64,23 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
         public bool IsConfirmed => Result == CFMBOXResult.Ok;
     }
 
+    /// <summary>
+    /// Closes a message by itself after Duration with Result (e.g. "keep these display settings?" reverting without an answer).
+    /// CountdownText gets the remaining seconds and is shown below the message, updated every second.
+    /// </summary>
+    public sealed record CFMBOXTimeout(TimeSpan Duration, CFMBOXResult Result, Func<int, string> CountdownText)
+    {
+        public int GetRemainingSeconds(DateTime startedAt)
+        {
+            return Math.Max(0, (int)Math.Ceiling((Duration - (DateTime.Now - startedAt)).TotalSeconds));
+        }
+
+        public string AppendCountdown(string message, int remainingSeconds)
+        {
+            return $"{message}\n\n{CountdownText(remainingSeconds)}";
+        }
+    }
+
     internal class CFMBOXController : UIXWindowControllerBase<CFMBOX, CFMBOXView>
     {
         public class WindowReturn : UIXWindowReturn
@@ -122,6 +139,14 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
             Show(true);
 
             return _windowReturn.Result;
+        }
+
+        /// <summary>
+        /// Replaces the text of the open message (countdown of a CFMBOXTimeout, run by CFMBOX).
+        /// </summary>
+        internal void UpdateMessage(string message)
+        {
+            ApplyMessage(message);
         }
 
         /// <summary>
@@ -252,7 +277,7 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
 
                 GetView().SpText.Visibility = Visibility.Collapsed;
                 GetView().TxbMemotext.Visibility = Visibility.Collapsed;
-                GetView().FdsvMarkdown.Document = UIXMarkdownRenderer.ToFlowDocument(message);
+                GetView().FdsvMarkdown.Document = UIXMarkdownRenderer.ToFlowDocument(message, FnFont.Text());
                 GetView().BdMarkdown.Visibility = Visibility.Visible;
 
                 // Wrapped text has no natural width: fixed reading width, the height follows the content up to a maximum
@@ -418,7 +443,7 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
             CloseWithResult(_button3Result);
         }
 
-        private void CloseWithResult(CFMBOXResult result)
+        internal void CloseWithResult(CFMBOXResult result)
         {
             _windowReturn.Result = result;
 

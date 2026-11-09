@@ -31,6 +31,7 @@ namespace GameTimeNext.Core.Application.Dashboard.Selectors
             {
                 ItemObject = prof,
                 COCOVIM = CFProfilesApp.LoadProfileCover(prof.PPFN),
+                CODISEC = TFPROFI.GetDiscSection(prof),
                 COISPLA = FnSystem.IsExeFoundInPath(prof.EXGF),
                 COCPLTI = FnTime.FormatMinutesAsHoursAndMinutes(TFPROFI.GetGameTimeInMinutes(prof.PFID, timeSpanStart, timeSpanEnd))
             }).ToList();

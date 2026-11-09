@@ -1,4 +1,7 @@
-<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI">
 
     <!--  Global default ToolTip: plain popup surface, no accents  -->
     <Style TargetType="{x:Type ToolTip}">
@@ -12,7 +15,7 @@
         <Setter Property="Padding" Value="10,7" />
         <Setter Property="MaxWidth" Value="420" />
         <!--  Explicit, otherwise the tooltip inherits the font of its owner (e.g. an icon font on an icon button)  -->
-        <Setter Property="FontFamily" Value="Segoe UI" />
+        <Setter Property="FontFamily" Value="{StaticResource Font.Text}" />
         <Setter Property="FontSize" Value="12" />
         <Setter Property="FontWeight" Value="Normal" />
         <Setter Property="Template">
@@ -25,6 +28,7 @@
                         Background="{TemplateBinding Background}"
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}"
+                        ui:PopupMotion.IsEnabled="True"
                         CornerRadius="{StaticResource Control.CornerRadius}"
                         Effect="{StaticResource Effect.Popup}">
                         <ContentPresenter RecognizesAccessKey="True">

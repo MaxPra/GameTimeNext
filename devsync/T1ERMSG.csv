@@ -37,6 +37,11 @@ SCS0002;The primary monitor must be enabled.;;2026-10-26 18:00:00;prage;2026-10-
 SCS0003;No monitor could be identified, because none of them is switched on.;;2026-10-26 18:00:00;prage;2026-10-26 18:00:00;prage
 SCS0004;None of the monitors enabled in this screensetup is connected.;;2026-10-26 18:00:00;prage;2026-10-26 18:00:00;prage
 SCS0005;The monitors have been switched, but the audio device &1 could not be set as default.;;2026-10-26 18:00:00;prage;2026-10-26 18:00:00;prage
+SCS0006;The monitors have been switched, but not every display mode could be set:\n&1;Check the resolution and refresh rate of the monitors in the screensetup. Modes can only be chosen while a monitor is on.;2026-11-03 12:00:00;Oliver Fida;2026-11-03 12:00:00;Oliver Fida
+SCS0007;Keep these display settings?;Without an answer the previous display settings are restored automatically, like in the Windows display settings.;2026-11-04 20:00:00;Oliver Fida;2026-11-04 20:00:00;Oliver Fida
+SCS0008;The previous display settings are restored in &1 seconds.;;2026-11-04 20:00:00;Oliver Fida;2026-11-04 20:00:00;Oliver Fida
+SCS0009;The display settings were not confirmed.\nThe previous display settings have been restored.;;2026-11-04 20:00:00;Oliver Fida;2026-11-04 20:00:00;Oliver Fida
+SCS0010;The display settings were not confirmed, but the previous ones could not be restored completely:\n&1;Set the monitors in the Windows display settings.;2026-11-04 20:00:00;Oliver Fida;2026-11-04 20:00:00;Oliver Fida
 SET0001;&1 will now restart and import the backup.\nYour current settings will be saved.\nDo you want to proceed?;;2026-10-26 18:00:00;prage;2026-10-26 18:00:00;prage
 GLO0019;No applications were found in StartableApps.json.;;2026-10-26 19:00:00;prage;2026-10-26 19:00:00;prage
 GLO0020;The dev folder was created from the production app folder.;;2026-10-26 19:00:00;prage;2026-10-26 19:00:00;prage
@@ -50,3 +55,8 @@ IMP0001;"ImportPackage imported successfully.
 Please check the temporarty database!";Used for ImportPackage testing.;2026-10-26 16:52:27;Oliver Fida;2026-10-26 16:52:27;Oliver Fida
 DGN0001;"Do you really want to delete the entire app log?
 Confirm with your favorite app (hint: it's the one asking).";;2026-10-30 22:43:26;prage;2026-10-30 22:43:26;prage
+PRO0009;Installed games without a profile found: &1\nShould &2 add them all now?;Asked once when a launcher is switched on for the automatic game import. Yes: they are added a few at a time in the background. No: only games installed from now on are added, the others can still be added with the launcher import of a new profile.;2026-11-02 18:00:00;prage;2026-11-02 18:00:00;prage
+PRO0010;New game added;Title of the toast after the automatic game import added one game (its name is the text).;2026-11-02 18:00:00;prage;2026-11-02 18:00:00;prage
+PRO0011;&1 new games added;Title of the toast after the automatic game import added several games (their names are the text).;2026-11-02 18:00:00;prage;2026-11-02 18:00:00;prage
+CTA0002;The action of &1 could not be completed.\n&2;Shown when the button of a codetable parameter fails.;2026-11-05 12:00:00;prage;2026-11-05 12:00:00;prage
+CTA0003;The action &1 of &2 does not exist.;The API class CTAPI_<Name> named in the codetable was not found.;2026-11-05 12:00:00;prage;2026-11-05 12:00:00;prage

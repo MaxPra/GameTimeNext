@@ -95,7 +95,8 @@
     <SolidColorBrush x:Key="Brush.Window.BorderTranslucent" Color="#1FFFFFFF" />
 
     <Style x:Key="GTNWindowStyle" TargetType="{x:Type baseViews:GTNWindow}">
-        <Setter Property="WindowStyle" Value="None" />
+        <!--  The caption style makes DWM animate opening and closing (see GTNWindow); the WindowChrome removes the caption itself  -->
+        <Setter Property="WindowStyle" Value="SingleBorderWindow" />
         <Setter Property="ResizeMode" Value="CanResize" />
         <Setter Property="Background" Value="{DynamicResource GradientBrush.ProfileDetailView.Background}" />
 
@@ -117,16 +118,12 @@
                     <AdornerDecorator>
                         <Border
                             x:Name="RootBorder"
+                            Margin="{TemplateBinding MaximizedInset}"
                             Background="{TemplateBinding Background}"
                             BorderBrush="{DynamicResource Brush.Border}"
                             BorderThickness="1"
                             CornerRadius="10"
-                            RenderTransformOrigin="0.5,0.5"
                             SnapsToDevicePixels="True">
-
-                            <Border.RenderTransform>
-                                <ScaleTransform x:Name="ScaleTf" ScaleX="1" ScaleY="1" />
-                            </Border.RenderTransform>
 
                             <Border
                                 x:Name="ClipBorder"
@@ -193,12 +190,7 @@
                                             x:Name="PART_TitleBar"
                                             Height="36"
                                             HorizontalAlignment="Stretch"
-                                            shell:WindowChrome.IsHitTestVisibleInChrome="True"
-                                            Opacity="0"
-                                            RenderTransformOrigin="0.5,0.5">
-                                            <Grid.RenderTransform>
-                                                <TranslateTransform x:Name="TitleBarTranslateTransform" Y="-6" />
-                                            </Grid.RenderTransform>
+                                            shell:WindowChrome.IsHitTestVisibleInChrome="True">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*" />
                                                 <ColumnDefinition Width="Auto" />
@@ -213,9 +205,21 @@
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="Auto" />
                                                     <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="Auto" />
                                                 </Grid.ColumnDefinitions>
 
+                                                <!--  App icon (ShowAppIcon), the vector: an .ico would show its 16 px frame blurred on scaled monitors  -->
+                                                <Image
+                                                    x:Name="imgAppIcon"
+                                                    Width="16"
+                                                    Height="16"
+                                                    Margin="0,0,8,0"
+                                                    VerticalAlignment="Center"
+                                                    Source="{StaticResource App.Mark}"
+                                                    Visibility="Collapsed" />
+
                                                 <TextBlock
+                                                    Grid.Column="1"
                                                     VerticalAlignment="Center"
                                                     FontWeight="SemiBold"
                                                     Foreground="{DynamicResource Brush.TextPrimary}"
@@ -223,7 +227,7 @@
 
                                                 <Border
                                                     x:Name="PART_SubtitleHost"
-                                                    Grid.Column="1"
+                                                    Grid.Column="2"
                                                     Margin="8,0,0,0"
                                                     Padding="0"
                                                     Background="Transparent"
@@ -291,7 +295,6 @@
                                                     x:Name="BtnHelp"
                                                     Margin="0,0,8,0"
                                                     Style="{StaticResource TitleBarButtonStyle}"
-                                                    ToolTip="Help for GameTimeNext"
                                                     Visibility="Collapsed">
                                                     <TextBlock
                                                         FontFamily="{StaticResource Font.Icons}"
@@ -409,25 +412,6 @@
                     </AdornerDecorator>
 
                     <ControlTemplate.Triggers>
-                        <EventTrigger RoutedEvent="FrameworkElement.Loaded">
-                            <BeginStoryboard>
-                                <Storyboard>
-                                    <DoubleAnimation
-                                        Storyboard.TargetName="PART_TitleBar"
-                                        Storyboard.TargetProperty="Opacity"
-                                        From="0"
-                                        To="1"
-                                        Duration="0:0:0.24" />
-                                    <DoubleAnimation
-                                        Storyboard.TargetName="TitleBarTranslateTransform"
-                                        Storyboard.TargetProperty="Y"
-                                        From="-6"
-                                        To="0"
-                                        Duration="0:0:0.24" />
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </EventTrigger>
-
                         <Trigger Property="ShowMinimizeButton" Value="False">
                             <Setter TargetName="PART_MinButton" Property="Visibility" Value="Collapsed" />
                         </Trigger>
@@ -450,6 +434,10 @@
 
                         <Trigger Property="ShowBigPictureButton" Value="True">
                             <Setter TargetName="btnBigPicture" Property="Visibility" Value="Visible" />
+                        </Trigger>
+
+                        <Trigger Property="ShowAppIcon" Value="True">
+                            <Setter TargetName="imgAppIcon" Property="Visibility" Value="Visible" />
                         </Trigger>
 
                         <Trigger Property="Subtitle" Value="">

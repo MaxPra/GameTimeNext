@@ -156,12 +156,18 @@
                             Grid.Column="6"
                             VerticalAlignment="Center"
                             ToolTip="Add profile"
-                            Style="{StaticResource Button.Icon}">
-                            <Image
-                                Width="16"
-                                Height="16"
-                                Source="/UI/Ressources/GTN_ICON_ADD_PROFILE.png"
-                                Stretch="Uniform" />
+                            Style="{StaticResource Button.Primary}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    FontFamily="{StaticResource Font.Icons}"
+                                    FontSize="14"
+                                    Text="&#xE710;" />
+                                <TextBlock
+                                    Margin="8,0,0,0"
+                                    VerticalAlignment="Center"
+                                    Text="Add profile" />
+                            </StackPanel>
                         </Button>
                     </Grid>
                 </Border>
@@ -169,6 +175,7 @@
                 <uixsel:UIXListBox
                     x:Name="ListBoxProfiles"
                     ui:ScrollFade.Length="80"
+                    ui:SmoothScroll.WheelStep="140"
                     ui:TileLayout.AutoSize="True"
                     Grid.Row="1"
                     Margin="-12,-8,0,0"

@@ -8,7 +8,6 @@
     xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI.Base"
     xmlns:uiFramework="clr-namespace:GameTimeNext.Core.Framework.UI"
     xmlns:uixsel="clr-namespace:UIX.ViewController.Engine.FrameworkElements.Selectors;assembly=UIX.ViewController.Engine"
-    Title="GameTimeNXT"
     Width="1350"
     Height="1000"
     MinWidth="1350"
@@ -20,10 +19,11 @@
     d:DesignWidth="1200"
     ApplicationSearchPlaceholder="Search Application"
     ShowApplicationSearch="False"
+    ShowAppIcon="True"
     ShowBigPictureButton="True"
     ShowHelpButton="True"
     Style="{StaticResource GTNWindowStyle}"
-    Subtitle="BETA"
+    Subtitle="beta"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
 
@@ -153,16 +153,21 @@
             </Border>
         </Popup>
 
-        <!--  Welcome card while no application is open: what the user can do next  -->
-        <Border
+        <!--  Welcome screen while no application is open: welcome card on the left, help cards on the right  -->
+        <StackPanel
             x:Name="pnlEmptyTabMessage"
             Grid.Row="2"
-            Width="560"
-            Padding="36,32"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
-            Style="{StaticResource Card}"
+            Orientation="Horizontal"
             Visibility="Collapsed">
+
+        <!--  Welcome card: what the user can do next  -->
+        <Border
+            Width="560"
+            Padding="36,32"
+            VerticalAlignment="Center"
+            Style="{StaticResource Card}">
             <Border.Resources>
                 <!--  Key cap, e.g. "Ctrl", "M" or the help glyph of the title bar  -->
                 <Style x:Key="EmptyState.Key" TargetType="Border">
@@ -217,12 +222,12 @@
                 </Border>
 
                 <TextBlock
+                    x:Name="txWelcomeTitle"
                     Margin="0,16,0,0"
                     HorizontalAlignment="Center"
                     FontSize="24"
                     FontWeight="SemiBold"
-                    Foreground="{DynamicResource Brush.TextPrimary}"
-                    Text="Welcome to GameTimeNext" />
+                    Foreground="{DynamicResource Brush.TextPrimary}" />
 
                 <TextBlock
                     Margin="0,6,0,0"
@@ -284,7 +289,7 @@
                             Text="&#xE897;" />
                     </Border>
                     <StackPanel Grid.Row="2" Grid.Column="2">
-                        <TextBlock Style="{StaticResource EmptyState.Title}" Text="Learn how GameTimeNext works" />
+                        <TextBlock x:Name="txHelpTitle" Style="{StaticResource EmptyState.Title}" />
                         <TextBlock Style="{StaticResource EmptyState.Hint}" Text="Click the question mark at the top right of the title bar." />
                     </StackPanel>
 
@@ -307,6 +312,98 @@
                 </Grid>
             </StackPanel>
         </Border>
+
+        <!--
+            Help cards: a click opens the help text of the application (application definition, field help text),
+            the same text as "Help" in the context menu of its tab
+        -->
+        <StackPanel Width="320" Margin="16,0,0,0" VerticalAlignment="Center">
+            <StackPanel.Resources>
+                <Style x:Key="EmptyState.CardTitle" TargetType="TextBlock">
+                    <Setter Property="FontSize" Value="14" />
+                    <Setter Property="FontWeight" Value="SemiBold" />
+                    <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+                </Style>
+                <Style x:Key="EmptyState.CardText" TargetType="TextBlock">
+                    <Setter Property="FontSize" Value="12" />
+                    <Setter Property="TextWrapping" Value="Wrap" />
+                    <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}" />
+                </Style>
+                <Style x:Key="EmptyState.CardIcon" TargetType="TextBlock">
+                    <Setter Property="Width" Value="32" />
+                    <Setter Property="VerticalAlignment" Value="Top" />
+                    <Setter Property="FontFamily" Value="{StaticResource Font.Icons}" />
+                    <Setter Property="FontSize" Value="20" />
+                    <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
+                </Style>
+            </StackPanel.Resources>
+
+            <TextBlock
+                Margin="4,0,0,8"
+                Style="{StaticResource Text.Label}"
+                Text="Learn what you can do" />
+
+            <Button x:Name="btnHelpProfiles" Style="{StaticResource Card.Button}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource EmptyState.CardIcon}" Text="&#xE7FC;" />
+                    <StackPanel Width="236">
+                        <TextBlock Style="{StaticResource EmptyState.CardTitle}" Text="Add your games" />
+                        <TextBlock Style="{StaticResource EmptyState.CardText}" Text="Profiles: your library, one profile per game, with Steam import." />
+                    </StackPanel>
+                </StackPanel>
+            </Button>
+
+            <Button x:Name="btnHelpPlaythroughs" Style="{StaticResource Card.Button}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource EmptyState.CardIcon}" Text="&#xE768;" />
+                    <StackPanel Width="236">
+                        <TextBlock Style="{StaticResource EmptyState.CardTitle}" Text="Track your playthroughs" />
+                        <TextBlock Style="{StaticResource EmptyState.CardText}" Text="Playthroughs: every run of a game with its own playtime and progress." />
+                    </StackPanel>
+                </StackPanel>
+            </Button>
+
+            <Button x:Name="btnHelpDashboard" Style="{StaticResource Card.Button}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource EmptyState.CardIcon}" Text="&#xE9F9;" />
+                    <StackPanel Width="236">
+                        <TextBlock Style="{StaticResource EmptyState.CardTitle}" Text="See your playtime" />
+                        <TextBlock Style="{StaticResource EmptyState.CardText}" Text="Dashboard: statistics and an overview of what you played." />
+                    </StackPanel>
+                </StackPanel>
+            </Button>
+
+            <Button x:Name="btnHelpScreensetups" Style="{StaticResource Card.Button}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource EmptyState.CardIcon}" Text="&#xE7F4;" />
+                    <StackPanel Width="236">
+                        <TextBlock Style="{StaticResource EmptyState.CardTitle}" Text="Set up your displays" />
+                        <TextBlock Style="{StaticResource EmptyState.CardText}" Text="Screensetups: switch monitors, resolution and audio device for a game." />
+                    </StackPanel>
+                </StackPanel>
+            </Button>
+
+            <Button x:Name="btnHelpBigPicture" Style="{StaticResource Card.Button}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource EmptyState.CardIcon}" Text="&#xE740;" />
+                    <StackPanel Width="236">
+                        <TextBlock Style="{StaticResource EmptyState.CardTitle}" Text="Play from the couch" />
+                        <TextBlock Style="{StaticResource EmptyState.CardText}" Text="Big Picture mode: your library full screen, for TV and game controller." />
+                    </StackPanel>
+                </StackPanel>
+            </Button>
+
+            <Button x:Name="btnHelpSettings" Style="{StaticResource Card.Button}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource EmptyState.CardIcon}" Text="&#xE713;" />
+                    <StackPanel Width="236">
+                        <TextBlock Style="{StaticResource EmptyState.CardTitle}" Text="Make it yours" />
+                        <TextBlock Style="{StaticResource EmptyState.CardText}" Text="Settings: appearance, hotkeys, API keys and backups." />
+                    </StackPanel>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+        </StackPanel>
 
         <!--  Big Picture mode (BigPictureApp): full screen layer over the tabs, shown while the mode is active  -->
         <ContentPresenter

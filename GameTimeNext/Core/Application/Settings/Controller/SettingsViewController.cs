@@ -1,12 +1,16 @@
 ﻿using System.Globalization;
 using GameTimeNext.Core.Application.General;
 using GameTimeNext.Core.Application.DataManagers;
+using GameTimeNext.Core.Application.Profiles;
 using GameTimeNext.Core.Application.Profiles.BackgroundProcesses;
+using GameTimeNext.Core.Application.Settings.Viewmodels;
 using GameTimeNext.Core.Application.Settings.Views;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.Files;
+using GameTimeNext.Core.Framework.LauncherIntegration;
+using GameTimeNext.Core.Framework.UI;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.UserInput;
 using GameTimeNext.Core.Framework.Utils;
@@ -15,6 +19,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
+using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
@@ -26,6 +31,9 @@ namespace GameTimeNext.Core.Application.Settings.Controller
         private AppSettings? _appSettings = null;
 
         private bool _hasIGDBChanged = false;
+
+        // Launchers taking part in the automatic game import as saved; a launcher added to them asks once for its installed games
+        private List<string> _autoImportLauncherTypes = new List<string>();
 
         public SettingsViewController(UIXApplication app) : base(app)
         {
@@ -46,6 +54,13 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             _appSettings = AppEnvironment.GetAppConfig().AppSettings;
             _appSettings.ResetChangeTracking();
             _appSettings.AcceptChanges();
+
+            _autoImportLauncherTypes = CFProfilesApp.GetAutoImportLauncherTypes(_appSettings);
+        }
+
+        protected override async Task BuildFirstImplAsync()
+        {
+            await GetView().lbAutoImportLaunchers.LoadDataAsync();
         }
 
         protected override void BuildFirstImpl()
@@ -62,6 +77,8 @@ namespace GameTimeNext.Core.Application.Settings.Controller
 
             FillComboboxBackgroundSource();
             FillComboboxProfileDetailViewPosition();
+
+            GetView().txBetaNotice.Text = $"{AppConfig.Root.ApplicationName} is currently in beta.";
         }
 
         protected override void BuildImpl()
@@ -101,6 +118,8 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             FnControls.SetEnabled(GetView().btnOpenIgdbClientId, GetView().cbEnableIGDBIntegration.IsChecked == true);
             FnControls.SetEnabled(GetView().txbIgdbClientSecret, GetView().cbEnableIGDBIntegration.IsChecked == true);
             FnControls.SetEnabled(GetView().btnOpenIgdbClientSecret, GetView().cbEnableIGDBIntegration.IsChecked == true);
+
+            FnControls.SetEnabled(GetView().lbAutoImportLaunchers, GetView().cbAutoImportGames.IsChecked == true);
         }
 
         protected override void CheckImpl()
@@ -113,6 +132,11 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             if (!FnControls.ContainsOnlyNumericValue(GetView().txbSessionCleanupSeconds))
             {
                 AddViewError(GetView().txbSessionCleanupSeconds, GetErrorMessage("GLO0009"));
+            }
+
+            if (GetView().cbAutoImportGames.IsChecked == true && !GetAutoImportLauncherItems().Any(i => i.COISSEL))
+            {
+                AddViewError(GetView().lbAutoImportLaunchers, GetErrorMessage("GLO0003", "A launcher"));
             }
         }
 
@@ -133,17 +157,77 @@ namespace GameTimeNext.Core.Application.Settings.Controller
         {
             FillDBOGeneral();
             FillDBOMonitoring();
-            FillDBOTags();
             FillDBOAbout();
 
 
+        }
+
+        protected override async Task FillDBOImplAsync()
+        {
+            await FillDBOAutoImportAsync();
+        }
+
+        /// <summary>
+        /// Settings of the automatic game import. A launcher that takes part now but didn't before asks once what
+        /// happens with its installed games without a profile (add them all, or only games installed from now on).
+        /// The answer is registered (TFLNGAM) before the settings change, so LauncherAutoImportProcess never sees
+        /// the launcher without it.
+        /// </summary>
+        private async Task FillDBOAutoImportAsync()
+        {
+            bool autoImportGames = GetView().cbAutoImportGames.IsChecked == true;
+            string excludedLaunchers = CFProfilesApp.JoinLauncherTypes(GetAutoImportLauncherItems().Where(i => !i.COISSEL).Select(i => i.LauncherType));
+
+            List<string> addedLauncherTypes = CFProfilesApp.GetAutoImportLauncherTypes(autoImportGames, excludedLaunchers)
+                .Except(_autoImportLauncherTypes)
+                .ToList();
+
+            if (addedLauncherTypes.Count > 0)
+                await RegisterInstalledGamesAsync(addedLauncherTypes);
+
+            _appSettings!.AutoImportGames = autoImportGames;
+            _appSettings!.AutoImportExcludedLaunchers = excludedLaunchers;
+        }
+
+        private async Task RegisterInstalledGamesAsync(List<string> launcherTypes)
+        {
+            List<LauncherGame> installedGames;
+
+            GetApp().Loader.Begin("Looking for your installed games...");
+
+            try
+            {
+                installedGames = await Task.Run(() => FnLauncher.GetInstalledGames(launcherTypes));
+            }
+            finally
+            {
+                GetApp().Loader.Stop();
+            }
+
+            int unregisteredCount = TFLNGAM.GetUnregisteredGames(installedGames).Count;
+            string status = "SKIP";
+
+            if (unregisteredCount > 0)
+            {
+                CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window);
+                CFMBOXResult result = cfmbox.Show(GetErrorMessage("PRO0009", unregisteredCount, AppConfig.Root.ApplicationName), CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
+
+                if (result == CFMBOXResult.Yes)
+                    status = "PEND";
+            }
+
+            TFLNGAM.RegisterGames(installedGames, status);
+        }
+
+        private List<SettingsAutoImportLauncherListItem> GetAutoImportLauncherItems()
+        {
+            return GetView().lbAutoImportLaunchers.Items.OfType<SettingsAutoImportLauncherListItem>().ToList();
         }
 
         protected override void FillViewImpl()
         {
             FillTabGeneral();
             FillTabMonitoring();
-            FillTabTags();
             FillTabAbout();
         }
 
@@ -153,6 +237,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             GetView().cbShowTextOnBlackout.IsChecked = _appSettings.EnableFullBlackoutText;
             GetView().cbAutoStartMinimized.IsChecked = _appSettings.AutoStartMinimized;
             GetView().cbSealNewGames.IsChecked = _appSettings.SealNewGames;
+            GetView().cbAutoImportGames.IsChecked = _appSettings.AutoImportGames;
             GetView().cbAllowProfileSpecificStyleChanges.IsChecked = _appSettings!.AllowProfileSpecificStyleChanges;
             GetView().cbDarkTintedGlass.IsChecked = _appSettings.DarkTintedGlass;
             GetView().cmbBackgroundSource.SelectedValue = _appSettings.BackgroundSource;
@@ -260,15 +345,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             _appSettings!.SessionCleanupSeconds = FnConvert.ToDouble(GetView().txbSessionCleanupSeconds.Text);
         }
 
-        private void FillDBOTags()
-        {
-        }
-
         private void FillDBOAbout()
-        {
-        }
-
-        private void FillTabTags()
         {
         }
 
@@ -283,6 +360,8 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             _appSettings!.AcceptChanges();
 
             FnSystem.SetAutoStart(_appSettings!.AutoStartMinimized && !FnSystem.IsDebug(), true);
+
+            _autoImportLauncherTypes = CFProfilesApp.GetAutoImportLauncherTypes(_appSettings);
         }
 
         protected void EV_btnCaptureMonitoringKey()
@@ -427,6 +506,27 @@ namespace GameTimeNext.Core.Application.Settings.Controller
                 // Restart GameTimeNext
                 AppEnvironment.RestartGTNApplication();
             }
+        }
+
+        /// <summary>
+        /// Search field: shows only the pages, cards and settings that match.
+        /// </summary>
+        protected void EV_txbSearch()
+        {
+            bool anyShown = SettingsSearch.Apply(GetView().tbcSettings, GetView().txbSearch.Text);
+
+            FnControls.SetVisible(GetView().tbcSettings, anyShown);
+            FnControls.SetVisible(GetView().txSearchEmpty, !anyShown);
+        }
+
+        /// <summary>
+        /// Refresh: shows the saved settings again, unsaved changes are dropped (the settings object only changes on save).
+        /// </summary>
+        protected async Task EV_btnRefresh()
+        {
+            FillViewImpl();
+            await GetView().lbAutoImportLaunchers.LoadDataAsync();
+            BuildImpl();
         }
 
         protected void EV_btnSave()

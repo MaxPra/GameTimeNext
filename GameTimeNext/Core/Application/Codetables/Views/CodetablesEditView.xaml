@@ -9,7 +9,7 @@
     xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI.Base"
     xmlns:uixprops="clr-namespace:UIX.ViewController.Engine.AttachedProperties;assembly=UIX.ViewController.Engine"
     Title="Codetable"
-    Width="900"
+    Width="1100"
     Height="500"
     ResizeMode="NoResize"
     ShowMaximizeButton="False"
@@ -38,8 +38,8 @@
                     </Grid.RowDefinitions>
 
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="130" />
                         <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="12" />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
 
@@ -144,6 +144,8 @@
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="16" />
                         <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
                     <TextBlock
@@ -183,6 +185,12 @@
                         VerticalAlignment="Center"
                         Style="{StaticResource Text.Label}"
                         Text="Codetable" />
+                    <TextBlock
+                        Grid.Row="0"
+                        Grid.Column="12"
+                        VerticalAlignment="Center"
+                        Style="{StaticResource Text.Label}"
+                        Text="Button API (CTAPI_&lt;Name&gt;)" />
 
                     <CheckBox
                         x:Name="ChbParam1Active"
@@ -234,6 +242,14 @@
                         SelectedIndex="0"
                         SelectedValue=""
                         SelectedValuePath="Tag" />
+                    <TextBox
+                        x:Name="txbParam1ButtonApi"
+                        Grid.Row="2"
+                        Grid.Column="12"
+                        Height="36"
+                        VerticalContentAlignment="Center"
+                        uixprops:UIXAttachedProperty.Path="T1CTABH.PAAP1"
+                        ToolTip="Name of the API class without the prefix, e.g. ImageImport for CTAPI_ImageImport. The parameter then gets a button that runs it." />
                     <CheckBox
                         x:Name="ChbParam2Active"
                         Grid.Row="4"
@@ -284,6 +300,14 @@
                         SelectedIndex="0"
                         SelectedValue=""
                         SelectedValuePath="Tag" />
+                    <TextBox
+                        x:Name="txbParam2ButtonApi"
+                        Grid.Row="4"
+                        Grid.Column="12"
+                        Height="36"
+                        VerticalContentAlignment="Center"
+                        uixprops:UIXAttachedProperty.Path="T1CTABH.PAAP2"
+                        ToolTip="Name of the API class without the prefix, e.g. ImageImport for CTAPI_ImageImport. The parameter then gets a button that runs it." />
                 </Grid>
             </TabItem>
         </uixsel:UIXTabControl>

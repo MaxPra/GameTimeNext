@@ -81,6 +81,11 @@ namespace GameTimeNext.Core.Application.Diagnostics
             DiagnosticsLogDetailView.ViewController.DataWrapper = LogDataWrapper;
         }
 
+        public override void OnFocus()
+        {
+            DiagnosticsView!.ViewController.Open(true);
+        }
+
         public override void SetWindowProperties(UIXApplicationStartOptions options)
         {
             options.Dialog = true;

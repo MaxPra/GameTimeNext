@@ -19,16 +19,21 @@ namespace GameTimeNext.Core.Application.General
             }
         }
 
-        public SplashScreen()
+        // Passed by the application: the splash process has no debugger attached, so it can't detect development itself
+        private readonly bool isDevelopment;
+
+        public SplashScreen(bool isDevelopment)
         {
+            this.isDevelopment = isDevelopment;
             DataContext = this;
             InitializeComponent();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            FnControls.SetVisible(DevBadge, FnSystem.IsDebug());
-            FnControls.SetVisible(txtDevelopmentPathActive, FnSystem.IsDebug());
+            FnControls.SetVisible(brdBeta, AppEnvironment.AppVersion.IsBeta);
+            FnControls.SetVisible(brdDevBadge, isDevelopment);
+            FnControls.SetVisible(txtDevelopmentPathActive, isDevelopment);
         }
     }
 }

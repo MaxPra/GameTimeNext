@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using GameTimeNext.Core.Framework.Config;
+using System.Collections;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Windows;
@@ -8,7 +9,6 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using UIX.ViewController.Engine.FrameworkElements.Windows;
 using UIX.ViewController.Engine.Utils;
@@ -17,14 +17,17 @@ namespace GameTimeNext.Core.Framework.UI.Base
 {
     public class GTNWindow : UIXWindowBase
     {
-        private bool _allowClose;
         private bool _suppressSearchTextSync;
         private WindowState _windowStateBeforeFullScreen = WindowState.Maximized;
         private ResizeMode _resizeModeBeforeFullScreen = ResizeMode.CanResize;
         private Rect _boundsBeforeFullScreen = Rect.Empty;
 
         private const int WM_GETMINMAXINFO = 0x0024;
+        private const int WM_WINDOWPOSCHANGED = 0x0047;
+        private const int WM_STYLECHANGING = 0x007C;
         private const int WM_DISPLAYCHANGE = 0x007E;
+        private const int GWL_STYLE = -16;
+        private const int WS_SYSMENU = 0x00080000;
         private const int MONITOR_DEFAULTTOPRIMARY = 0x00000001;
         private const int MONITOR_DEFAULTTONEAREST = 0x00000002;
 
@@ -176,6 +179,20 @@ namespace GameTimeNext.Core.Framework.UI.Base
             set => SetValue(ShowBigPictureButtonProperty, value);
         }
 
+        /// <summary>Shows the app icon in the title bar, in front of the title.</summary>
+        public static readonly DependencyProperty ShowAppIconProperty =
+            DependencyProperty.Register(
+                nameof(ShowAppIcon),
+                typeof(bool),
+                typeof(GTNWindow),
+                new PropertyMetadata(false));
+
+        public bool ShowAppIcon
+        {
+            get => (bool)GetValue(ShowAppIconProperty);
+            set => SetValue(ShowAppIconProperty, value);
+        }
+
         /// <summary>
         /// Borderless full screen over the whole monitor (also over the taskbar), without title bar. The window state
         /// before is restored when it is switched off again.
@@ -269,13 +286,29 @@ namespace GameTimeNext.Core.Framework.UI.Base
 
         public bool IsNativeFrameActive => (bool)GetValue(IsNativeFrameActiveProperty);
 
+        private static readonly DependencyPropertyKey MaximizedInsetPropertyKey =
+            DependencyProperty.RegisterReadOnly(
+                nameof(MaximizedInset),
+                typeof(Thickness),
+                typeof(GTNWindow),
+                new PropertyMetadata(new Thickness()));
+
+        /// <summary>
+        /// The part of the maximized window that lies outside the work area; zero when not maximized.
+        /// </summary>
+        public static readonly DependencyProperty MaximizedInsetProperty = MaximizedInsetPropertyKey.DependencyProperty;
+
+        public Thickness MaximizedInset => (Thickness)GetValue(MaximizedInsetProperty);
+
+        /// <summary>
+        /// The caption style is what makes DWM animate the window when it opens and closes (fade and scale of the whole
+        /// window with backdrop and shadow, drawn by the compositor, so a busy UI thread can't make it stutter). The
+        /// WindowChrome of the style removes the native caption itself.
+        /// </summary>
         public GTNWindow()
         {
-            WindowStyle = WindowStyle.None;
+            WindowStyle = WindowStyle.SingleBorderWindow;
             ResizeMode = ResizeMode.CanResize;
-
-            Loaded += OnLoaded;
-            Closing += OnClosing;
         }
 
         protected override void OnSourceInitialized(EventArgs e)
@@ -285,6 +318,9 @@ namespace GameTimeNext.Core.Framework.UI.Base
             _hwnd = new WindowInteropHelper(this).Handle;
             _hwndSource = HwndSource.FromHwnd(_hwnd);
             _hwndSource?.AddHook(WndProc);
+
+            // Runs through WM_STYLECHANGING, which removes the system menu style
+            SetWindowLong(_hwnd, GWL_STYLE, GetWindowLong(_hwnd, GWL_STYLE));
 
             UpdateFrame();
         }
@@ -316,6 +352,8 @@ namespace GameTimeNext.Core.Framework.UI.Base
             _resizeModeBeforeFullScreen = ResizeMode;
             _boundsBeforeFullScreen = RestoreBounds;
 
+            // Windows only treats a window without caption as full screen (hides the taskbar for it)
+            WindowStyle = WindowStyle.None;
             ResizeMode = ResizeMode.NoResize;
             WindowState = WindowState.Normal;
 
@@ -354,6 +392,7 @@ namespace GameTimeNext.Core.Framework.UI.Base
             if (_hwnd != IntPtr.Zero)
                 SetCornerPreference(_hwnd, DWMWCP_ROUND);
 
+            WindowStyle = WindowStyle.SingleBorderWindow;
             ResizeMode = _resizeModeBeforeFullScreen;
 
             // Back to the normal bounds first, so restoring a maximized window later returns to them
@@ -433,6 +472,10 @@ namespace GameTimeNext.Core.Framework.UI.Base
             {
                 int darkMode = 1;
                 DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, ref darkMode, sizeof(int));
+
+                // The caption fill would show in the system accent color before the first frame is rendered
+                int captionColor = DWMWA_COLOR_NONE;
+                DwmSetWindowAttribute(hwnd, DWMWA_CAPTION_COLOR, ref captionColor, sizeof(int));
 
                 int cornerPreference = DWMWCP_ROUND;
                 return DwmSetWindowAttribute(hwnd, DWMWA_WINDOW_CORNER_PREFERENCE, ref cornerPreference, sizeof(int)) == 0;
@@ -525,6 +568,9 @@ namespace GameTimeNext.Core.Framework.UI.Base
                 _maxButton.Visibility = ShowMaximizeButton ? Visibility.Visible : Visibility.Collapsed;
             }
 
+            if (GetTemplateChild("BtnHelp") is Button helpButton)
+                helpButton.ToolTip = $"Help for {AppConfig.Root.ApplicationName}";
+
             if (_applicationSearchBox != null)
             {
                 _applicationSearchBox.ApplyTemplate();
@@ -578,36 +624,6 @@ namespace GameTimeNext.Core.Framework.UI.Base
                 Top += (oldHeight - ActualHeight) / 2d;
         }
 
-        protected override void OnStateChanged(EventArgs e)
-        {
-            base.OnStateChanged(e);
-            AnimateStateChange();
-        }
-
-        private void AnimateStateChange()
-        {
-            if (GetTemplateChild("RootBorder") is FrameworkElement root &&
-                root.RenderTransform is ScaleTransform scale)
-            {
-                var from = 0.985;
-                var to = 1.0;
-
-                if (WindowState == WindowState.Minimized)
-                    from = 0.97;
-
-                var anim = new DoubleAnimation
-                {
-                    From = from,
-                    To = to,
-                    Duration = TimeSpan.FromMilliseconds(120),
-                    EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
-                };
-
-                scale.BeginAnimation(ScaleTransform.ScaleXProperty, anim);
-                scale.BeginAnimation(ScaleTransform.ScaleYProperty, anim);
-            }
-        }
-
         private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (e.OriginalSource is DependencyObject source)
@@ -633,43 +649,32 @@ namespace GameTimeNext.Core.Framework.UI.Base
             }
         }
 
-        private void OnLoaded(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// DWM only plays its close animation when the window is hidden, destroying it makes it vanish at once. The animation
+        /// keeps running on the last rendered frame after the window is destroyed, so nothing has to wait for it.
+        /// </summary>
+        protected override void OnClosing(CancelEventArgs e)
         {
-            Opacity = 0;
+            base.OnClosing(e);
 
-            var fadeIn = new DoubleAnimation
-            {
-                From = 0,
-                To = 1,
-                Duration = TimeSpan.FromMilliseconds(160),
-                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
-            };
-
-            BeginAnimation(OpacityProperty, fadeIn);
+            if (!e.Cancel)
+                HideWithCloseAnimation();
         }
 
-        private void OnClosing(object? sender, CancelEventArgs e)
+        private void HideWithCloseAnimation()
         {
-            if (_allowClose)
+            if (_hwnd == IntPtr.Zero)
                 return;
 
-            e.Cancel = true;
-
-            var fadeOut = new DoubleAnimation
+            // Hiding the active window makes Windows activate the next one, often a window of another program. The owner of
+            // a dialog can't take over yet, WPF enables it only when the dialog is destroyed.
+            if (IsActive && Owner is { IsVisible: true } owner && owner.WindowState != WindowState.Minimized)
             {
-                From = Opacity,
-                To = 0,
-                Duration = TimeSpan.FromMilliseconds(140),
-                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseIn }
-            };
+                EnableWindow(new WindowInteropHelper(owner).Handle, true);
+                owner.Activate();
+            }
 
-            fadeOut.Completed += (_, __) =>
-            {
-                _allowClose = true;
-                Close();
-            };
-
-            BeginAnimation(OpacityProperty, fadeOut);
+            ShowWindow(_hwnd, SW_HIDE);
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
@@ -889,6 +894,24 @@ namespace GameTimeNext.Core.Framework.UI.Base
                 handled = false;
             }
 
+            if (msg == WM_WINDOWPOSCHANGED)
+                UpdateMaximizedInset(hwnd);
+
+            if (msg == WM_ERASEBKGND && IsNativeFrameActive)
+            {
+                FillWithBackground(hwnd, wParam);
+                handled = true;
+                return new IntPtr(1);
+            }
+
+            // With a system menu, DWM draws the native caption buttons on the glass, where they show through the title bar
+            if (msg == WM_STYLECHANGING && unchecked((int)wParam.ToInt64()) == GWL_STYLE)
+            {
+                var style = Marshal.PtrToStructure<STYLESTRUCT>(lParam);
+                style.styleNew &= ~WS_SYSMENU;
+                Marshal.StructureToPtr(style, lParam, false);
+            }
+
             // Monitors switched on / off or resolution changed: Windows moves the window off a switched off monitor,
             // but keeps its old size; full screen covers the monitor it is on now (after Windows has moved it)
             if (msg == WM_DISPLAYCHANGE && IsFullScreen)
@@ -899,6 +922,20 @@ namespace GameTimeNext.Core.Framework.UI.Base
                 }, DispatcherPriority.Background);
 
             return IntPtr.Zero;
+        }
+
+        /// <summary>
+        /// A window that grows has no rendered frame for the new size until WPF has laid it out and rendered it (about 100 ms
+        /// when it is maximized), and WPF doesn't erase the background: DWM shows the whole window in the system accent color
+        /// until then. Filled with the background of the app instead. Not with the acrylic backdrop: it shows through there.
+        /// </summary>
+        private static void FillWithBackground(IntPtr hwnd, IntPtr hdc)
+        {
+            if (_eraseBrush == IntPtr.Zero)
+                _eraseBrush = CreateSolidBrush(EraseColor);
+
+            if (GetClientRect(hwnd, out RECT client))
+                FillRect(hdc, ref client, _eraseBrush);
         }
 
         private static void AdjustMaximizedSize(IntPtr hwnd, IntPtr lParam)
@@ -924,6 +961,38 @@ namespace GameTimeNext.Core.Framework.UI.Base
             mmi.ptMaxSize.y = Math.Abs(rcWork.bottom - rcWork.top);
 
             Marshal.StructureToPtr(mmi, lParam, true);
+        }
+
+        /// <summary>
+        /// Windows lets a maximized window with caption overhang the work area by its frame (it can't be changed: neither
+        /// WM_GETMINMAXINFO nor WM_WINDOWPOSCHANGING is respected), so the template insets its content by that part.
+        /// </summary>
+        private void UpdateMaximizedInset(IntPtr hwnd)
+        {
+            var inset = new Thickness();
+            var mi = new MONITORINFO { cbSize = Marshal.SizeOf<MONITORINFO>() };
+
+            if (IsZoomed(hwnd) && GetWindowRect(hwnd, out RECT window) && GetMonitorInfo(MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST), ref mi))
+            {
+                DpiScale dpi = VisualTreeHelper.GetDpi(this);
+                RECT work = mi.rcWork;
+
+                inset = new Thickness(
+                    Math.Max(work.left - window.left, 0) / dpi.DpiScaleX,
+                    Math.Max(work.top - window.top, 0) / dpi.DpiScaleY,
+                    Math.Max(window.right - work.right, 0) / dpi.DpiScaleX,
+                    Math.Max(window.bottom - work.bottom, 0) / dpi.DpiScaleY);
+            }
+
+            if (MaximizedInset != inset)
+                SetValue(MaximizedInsetPropertyKey, inset);
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct STYLESTRUCT
+        {
+            public int styleOld;
+            public int styleNew;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -969,6 +1038,43 @@ namespace GameTimeNext.Core.Framework.UI.Base
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         private static extern bool GetMonitorInfo(IntPtr hMonitor, ref MONITORINFO lpmi);
+
+        private const int SW_HIDE = 0;
+        private const int WM_ERASEBKGND = 0x0014;
+
+        /// <summary>COLORREF (0x00BBGGRR) of Color.Background.</summary>
+        private const int EraseColor = 0x00141010;
+
+        // One brush for all windows, for the whole run of the app
+        private static IntPtr _eraseBrush;
+
+        [DllImport("gdi32.dll")]
+        private static extern IntPtr CreateSolidBrush(int color);
+
+        [DllImport("user32.dll")]
+        private static extern int FillRect(IntPtr hdc, ref RECT rect, IntPtr brush);
+
+        [DllImport("user32.dll")]
+        private static extern bool GetClientRect(IntPtr hwnd, out RECT rect);
+
+
+        [DllImport("user32.dll")]
+        private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+
+        [DllImport("user32.dll")]
+        private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+
+        [DllImport("user32.dll")]
+        private static extern bool IsZoomed(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        private static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+
+        [DllImport("user32.dll")]
+        private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+        [DllImport("user32.dll")]
+        private static extern bool EnableWindow(IntPtr hWnd, bool bEnable);
 
         // --- Backdrop blur (DWM) ---
 

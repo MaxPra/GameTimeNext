@@ -1,14 +1,19 @@
-﻿TXTYP;DESCR;PERMI;PAAC1;PADE1;PARF1;PACO1;PACT1;PAAC2;PADE2;PARF2;PACO2;PACT2;NRANA;EXPRT;PTOL1;PTOL2;CRAT;CRUS;CHAT;CHUS
-cO;Control-Types;D;0;;0;;;0;;0;;;0;1;;;0001-01-01 00:00:00;;0001-01-01 00:00:00;
-cP;Codetable-Permission;D;0;;0;;;0;;0;;;0;1;;;0001-01-01 00:00:00;;0001-01-01 00:00:00;
-cT;Controller-Type;U;0;Unicode-Icon;0;02;;0;;0;;;0;1;;;0001-01-01 00:00:00;;0001-01-01 00:00:00;
-eT;Export-Types;D;0;;0;;;0;;0;;;0;1;;;0001-01-01 00:00:00;;0001-01-01 00:00:00;
-mT;Metdatatypes;D;0;;0;;;0;;0;;;0;1;;;2026-06-19 15:42:29;;2026-06-19 15:42:54;
-iM;Images / Symbols;U;1;Path;1;02;;0;;0;;;1;1;Enter the path to the image here (e.g. `\user\myicon.png`). Place your icon in: %APPDATA%\CryLoudStudios\GameTimeNext\data\imagesAndSymbols\user;;2026-06-30 18:30:40;;2026-10-26 14:12:13;
-pT;Platform-Type;D;0;;0;;;0;;0;;;0;1;;;2026-06-30 19:24:00;;2026-06-30 19:24:00;
-pF;Platform;U;1;Platform-Type;1;01;pT;1;Symbol;1;01;iM;0;0;;;2026-06-30 19:36:45;;2026-06-30 19:36:45;
-pL;Playthroughtype;D;0;;0;;;0;;0;;;0;1;;;2026-07-07 18:10:05;;2026-07-07 18:10:05;
-bG;Background Source;D;0;;0;;;0;;0;;;0;1;;;2026-10-19 12:09:35;;2026-10-19 12:09:35;
-lT;Launchertype;D;1;Icon;0;01;iM;0;;0;;;0;1;;;2026-10-26 16:34:42;prage;2026-10-26 16:36:57;prage
-mN;Menu Entry Types;D;0;;0;;;0;;0;;;0;1;;;2026-10-28 18:48:51;prage;2026-10-28 18:48:51;prage
-dP;Profile Detailview Position;D;0;;0;;;0;;0;;;0;1;;;2026-11-02 08:04:10;prage;2026-11-02 08:04:10;prage
+﻿TXTYP;DESCR;PERMI;PAAC1;PADE1;PARF1;PACO1;PACT1;PAAP1;PAAC2;PADE2;PARF2;PACO2;PACT2;PAAP2;NRANA;EXPRT;PTOL1;PTOL2;CRAT;CRUS;CHAT;CHUS
+cO;Control-Types;D;0;;0;;;;0;;0;;;;0;1;;;0001-01-01 00:00:00;;0001-01-01 00:00:00;
+cP;Codetable-Permission;D;0;;0;;;;0;;0;;;;0;1;;;0001-01-01 00:00:00;;0001-01-01 00:00:00;
+cT;Controller-Type;U;0;Unicode-Icon;0;02;;;0;;0;;;;0;1;;;0001-01-01 00:00:00;;0001-01-01 00:00:00;
+eT;Export-Types;D;0;;0;;;;0;;0;;;;0;1;;;0001-01-01 00:00:00;;0001-01-01 00:00:00;
+mT;Metdatatypes;D;0;;0;;;;0;;0;;;;0;1;;;2026-06-19 15:42:29;;2026-06-19 15:42:54;
+iM;Images / Symbols;U;1;Path;1;02;;ImageImport;0;;0;;;;1;1;Click `Choose image...` to pick an image. It is copied into the symbol folder for you. You can also enter a path by hand (e.g. `\user\myicon.png`).;;2026-06-30 18:30:40;;2026-10-26 14:12:13;
+pT;Platform-Type;D;0;;0;;;;0;;0;;;;0;1;;;2026-06-30 19:24:00;;2026-06-30 19:24:00;
+pF;Platforms;U;1;Platform-Type;1;01;pT;;1;Symbol;1;01;iM;;0;0;;;2026-06-30 19:36:45;;2026-11-06 14:26:11;prage
+pL;Playthroughtype;D;0;;0;;;;0;;0;;;;0;1;;;2026-07-07 18:10:05;;2026-07-07 18:10:05;
+bG;Background Source;D;0;;0;;;;0;;0;;;;0;1;;;2026-10-19 12:09:35;;2026-10-19 12:09:35;
+lT;Launchertype;D;1;Icon;0;01;iM;;0;;0;;;;0;1;;;2026-10-26 16:34:42;prage;2026-10-26 16:36:57;prage
+mN;Menu Entry Types;D;0;;0;;;;0;;0;;;;0;1;;;2026-10-28 18:48:51;prage;2026-10-28 18:48:51;prage
+dP;Profile Detailview Position;D;0;;0;;;;0;;0;;;;0;1;;;2026-11-02 08:04:10;prage;2026-11-02 08:04:10;prage
+lG;Launcher Game Status;D;0;;0;;;;0;;0;;;;0;1;;;2026-11-02 17:21:08;prage;2026-11-02 17:21:08;prage
+mO;Monitor Orientation;D;0;;0;;;;0;;0;;;;0;1;;;2026-11-04 12:00:00;Oliver Fida;2026-11-04 12:00:00;Oliver Fida
+mP;Monitor Placement;D;0;;0;;;;0;;0;;;;0;1;;;2026-11-04 12:00:00;Oliver Fida;2026-11-04 12:00:00;Oliver Fida
+tG;Tags;U;1;Hidden;1;01;yN;;0;;0;;;;1;1;Hidden tags are no longer offered in filters or for new games. Games that already have the tag keep it.;;2026-11-05 12:00:00;prage;2026-11-05 12:00:00;prage
+yN;Yes / No;D;0;;0;;;;0;;0;;;;0;1;;;2026-11-05 12:00:00;prage;2026-11-05 12:00:00;prage

@@ -1,3 +1,4 @@
+using GameTimeNext.Core.Application.Codetables.Api;
 using GameTimeNext.Core.Application.Codetables.Views;
 using GameTimeNext.Core.Application.DataManagers;
 using System.Text.RegularExpressions;
@@ -78,6 +79,8 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
             if (GetView().TxbDescription.Text.Length > 200)
                 AddViewError(GetView().TxbDescription, GetErrorMessage("GLO0004", "Description", "200"));
+
+            CheckButtonApis();
         }
 
         private void CheckTextType()
@@ -168,6 +171,30 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
                 // Type
                 ComboBox comboBoxCodetable = (ComboBox)GetView().FindName($"CmbParam{i}Codetable");
                 FnControls.SetEnabled(comboBoxCodetable, isActive);
+
+                // Button API
+                TextBox textBoxButtonApi = (TextBox)GetView().FindName($"txbParam{i}ButtonApi");
+                FnControls.SetEnabled(textBoxButtonApi, isActive);
+            }
+        }
+
+        /// <summary>
+        /// The button API of an active parameter must name an existing class CTAPI_&lt;Name&gt;.
+        /// </summary>
+        private void CheckButtonApis()
+        {
+            for (int i = 1; i <= 2; i++)
+            {
+                CheckBox checkBox = (CheckBox)GetView().FindName($"ChbParam{i}Active");
+                TextBox textBoxButtonApi = (TextBox)GetView().FindName($"txbParam{i}ButtonApi");
+
+                string apiName = textBoxButtonApi.Text.Trim();
+
+                if (checkBox.IsChecked != true || FnString.IsNullEmptyOrWhitespace(apiName))
+                    continue;
+
+                if (!CTAPIFactory.Exists(apiName))
+                    AddViewError(textBoxButtonApi, GetErrorMessage("CTA0003", apiName, $"parameter {i}"));
             }
         }
 

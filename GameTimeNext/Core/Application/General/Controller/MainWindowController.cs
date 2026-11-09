@@ -49,6 +49,10 @@ namespace GameTimeNext.Core.Application.General.Controller
             bool isDynamicBackground = FnTheme.IsDynamicBackgroundEnabled(AppEnvironment.GetAppConfig().AppSettings.BackgroundSource);
             GetView().UseWallpaperBackground = isDynamicBackground;
             GetView().UseBackdropBlur = !isDynamicBackground;
+
+            GetView().Title = AppConfig.Root.ApplicationName;
+            GetView().txWelcomeTitle.Text = $"Welcome to {AppConfig.Root.ApplicationName}";
+            GetView().txHelpTitle.Text = $"Learn how {AppConfig.Root.ApplicationName} works";
         }
 
         protected override async Task BuildFirstImplAsync()
@@ -78,14 +82,6 @@ namespace GameTimeNext.Core.Application.General.Controller
             // lower than Render (7) → rendering runs first.
             await System.Windows.Application.Current.Dispatcher.InvokeAsync(() => { }, DispatcherPriority.Background);
 
-            if (GetApp().SplashScreen is not null)
-            {
-                GetApp().SplashScreen?.Close();
-
-                if (ReferenceEquals(System.Windows.Application.Current.MainWindow, GetApp().SplashScreen))
-                    System.Windows.Application.Current.MainWindow = null;
-            }
-
             // Set WindowState
             _ = GetView().Dispatcher.BeginInvoke(() =>
             {
@@ -99,6 +95,14 @@ namespace GameTimeNext.Core.Application.General.Controller
 
                 // Only reveal the window once it has its final state (no flicker)
                 GetApp().SetMainWindowCloaked(false);
+
+                // The window was only shown hidden before, so Windows hasn't activated it: bring it to the front now, while
+                // the splash (same process) still has the foreground, otherwise it only shows up in the taskbar. The splash
+                // lives on its own thread (it is not the MainWindow of the application) and is closed afterwards.
+                if (!GetApp().StartMinimized)
+                    FnForeground.BringToFront(GetView());
+
+                GetApp().SplashScreen?.Close();
             }, DispatcherPriority.ApplicationIdle);
 
             System.Windows.Application.Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
@@ -345,7 +349,7 @@ namespace GameTimeNext.Core.Application.General.Controller
         private void BuildBetaTag()
         {
             if (AppEnvironment.AppVersion.IsBeta)
-                GetView().Subtitle = "BETA";
+                GetView().Subtitle = "beta";
             else
                 GetView().Subtitle = string.Empty;
         }
@@ -392,12 +396,28 @@ namespace GameTimeNext.Core.Application.General.Controller
             ShowHelp(application, tab.Header.ToString()!);
         }
 
+        // Help cards of the welcome screen: the text comes from the application definition of the module
+        protected void EV_btnHelpProfiles() => ShowHelpOf(nameof(ProfilesApp), "Profiles");
+        protected void EV_btnHelpPlaythroughs() => ShowHelpOf("PlaythroughsApp", "Playthroughs");
+        protected void EV_btnHelpDashboard() => ShowHelpOf("DashboardApp", "Dashboard");
+        protected void EV_btnHelpScreensetups() => ShowHelpOf("ScreensetupsApp", "Screensetups");
+        protected void EV_btnHelpBigPicture() => ShowHelpOf(nameof(BigPictureApp), "Big Picture mode");
+        protected void EV_btnHelpSettings() => ShowHelpOf("SettingsApp", "Settings");
+
         private void ShowHelp(UIXApplication application, string title)
         {
-            // Read again instead of the properties loaded at the start of the app, so a changed help text shows up immediately
-            UIXAppProperties properties = UIXApplication.AppPropertiesProvider?.Read(application.AppProperties.ApplicationName) ?? application.AppProperties;
+            ShowHelpOf(application.AppProperties.ApplicationName, title);
+        }
 
-            string helpText = FnString.IsNullEmptyOrWhitespace(properties.ApplicationHelpText)
+        /// <summary>
+        /// Shows the help text of an application definition (key = class name of the application) in the help window.
+        /// </summary>
+        private void ShowHelpOf(string applicationId, string title)
+        {
+            // Read again instead of the properties loaded at the start of the app, so a changed help text shows up immediately
+            UIXAppProperties? properties = UIXApplication.AppPropertiesProvider?.Read(applicationId);
+
+            string helpText = properties is null || FnString.IsNullEmptyOrWhitespace(properties.ApplicationHelpText)
                 ? "No help is available for this application yet."
                 : properties.ApplicationHelpText;
 
@@ -413,6 +433,11 @@ namespace GameTimeNext.Core.Application.General.Controller
             {
                 AppEnvironment.AppLauncher.CloseApplication(tab.Tag.ToString(), tab);
             }
+        }
+
+        protected void EV_ctxtCloseAll()
+        {
+            AppEnvironment.AppLauncher.CloseAll();
         }
 
         protected void EV_ctxtFav(FrameworkElement target)

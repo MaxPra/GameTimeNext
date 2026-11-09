@@ -1,37 +1,37 @@
 {
   "profiles": {
-    "GameTimeNext": {
+    "arcora": {
       "commandName": "Project"
     },
-    "GameTimeNext (UserMode)": {
+    "arcora (UserMode)": {
       "commandName": "Project",
       "commandLineArgs": "--force-user-perms"
     },
-    "GameTimeNext (CLS)": {
+    "arcora (CLS)": {
       "commandName": "Project",
       "commandLineArgs": "-m CLS"
     },
-    "GameTimeNext (UT)": {
+    "arcora (UT)": {
       "commandName": "Project",
       "commandLineArgs": "-m UT"
     },
-    "GameTimeNext (DEMO)": {
+    "arcora (DEMO)": {
       "commandName": "Project",
       "commandLineArgs": "-m DEMO"
     },
-    "GameTimeNext (GTXTEST)": {
+    "arcora (GTXTEST)": {
       "commandName": "Project",
       "commandLineArgs": "-m GTXTEST"
     },
-    "GameTimeNext (Optimize covers)": {
+    "arcora (Optimize covers)": {
       "commandName": "Project",
       "commandLineArgs": "-optimizecovers"
     },
-    "GameTimeNext (Show changelog vNEXT)": {
+    "arcora (Show changelog vNEXT)": {
       "commandName": "Project",
       "commandLineArgs": "-showchangelog"
     },
-    "GameTimeNext (Big Picture)": {
+    "arcora (Big Picture)": {
       "commandName": "Project",
       "commandLineArgs": "--bigpicture"
     }

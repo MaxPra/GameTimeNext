@@ -64,6 +64,7 @@ namespace GameTimeNext.Core.Application.General
             ("Brush.AccentPressed", ColorAccentPressed),
             ("Brush.Accent.Subtle", ColorAccent),
             ("Brush.Accent.Muted", ColorAccent),
+            ("Brush.Accent.Glass", ColorAccent),
             ("Brush.Accent.Outline", ColorAccentHover),
             ("Brush.LoaderAccent", ColorAccent),
             ("Brush.LoaderAccentHover", ColorAccentHover),

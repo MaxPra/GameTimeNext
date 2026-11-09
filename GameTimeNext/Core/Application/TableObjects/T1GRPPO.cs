@@ -17,15 +17,18 @@ namespace GameTimeNext.Core.Application.TableObjects
         public long PFID { get; set; } = 0;
 
         [UIXSignatureField(3)]
-        public DateTime CRAT { get; set; } = DateTime.MinValue;
+        public string TGKY { get; set; } = "";
 
         [UIXSignatureField(4)]
-        public string CRUS { get; set; } = "";
+        public DateTime CRAT { get; set; } = DateTime.MinValue;
 
         [UIXSignatureField(5)]
-        public DateTime CHAT { get; set; } = DateTime.MinValue;
+        public string CRUS { get; set; } = "";
 
         [UIXSignatureField(6)]
+        public DateTime CHAT { get; set; } = DateTime.MinValue;
+
+        [UIXSignatureField(7)]
         public string CHUS { get; set; } = "";
 
         public override void Save()
