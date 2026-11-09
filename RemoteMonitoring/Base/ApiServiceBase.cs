@@ -4,10 +4,8 @@ using System.Text.Json;
 
 namespace RemoteMonitoring.Base
 {
-    public abstract class ApiServiceBase<TDto> where TDto : DtoBase
+    public abstract class ApiServiceBase
     {
-        // OFDO: Add Auto-Retry
-
         private SocketClient _socket;
 
         public ApiServiceBase(SocketClient socket)
@@ -32,13 +30,13 @@ namespace RemoteMonitoring.Base
             catch (ApiRequestFailedException ex)
             {
                 FnLog.AddError(this, string.Empty, ex);
-                return TryResult<TRes>.Failed();
+                return TryResult<TRes>.Failed(ex);
             }
             catch (Exception ex)
             {
                 ApiRequestFailedException apiEx = new ApiRequestFailedException(requestMessage.Request, ex);
                 FnLog.AddError(this, string.Empty, apiEx);
-                return TryResult<TRes>.Failed(ex);
+                return TryResult<TRes>.Failed(apiEx);
             }
         }
 

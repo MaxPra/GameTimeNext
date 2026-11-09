@@ -21,12 +21,36 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
         
         public override void Logic()
         {
-            if (!AppEnvironment.GetAppConfig().AppSettings.RemoteMonitoring) return;
+            if (!AppEnvironment.GetAppConfig().AppSettings.RemoteMonitoring)
+            {
+                StopRemoteMonitoring();
+                return;
+            }
 
             HandleSocket();
 
             if (!FnSystem.IsDebug() || _DEBUG_STARTBLAZOR)
                 HandleBlazor();
+        }
+
+        protected override void OnStop()
+        {
+            StopRemoteMonitoring();
+        }
+
+        public override void InitializeApplicationOutput()
+        {
+
+        }
+
+        protected override void InitializeInfos()
+        {
+            ProcessName = "RemoteMonitoringProcess";
+        }
+
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(RemoteMonitoringProcess));
         }
 
         private void HandleSocket()
@@ -53,12 +77,12 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
             _socketServerProcess.Port = _socketPort;
             _socketServerProcess.Start(1000, runAsync: true);
             AppEnvironment.StartedBackgroundProcesses.Add(typeof(RemoteMonitoringSocketServer).FullName!, _socketServerProcess);
-            FnLog.AddInfo(this, $"Started socketServerProcess on port {_socketPort}.");
+            FnLog.AddInfo(this, $"Started Socket-Server process on port {_socketPort}.");
         }
 
         private void HandleBlazor()
         {
-            // CleanUp, when balzorProcess has exited
+            // CleanUp, when blazorProcess has exited
             if (_blazorProcess is not null && _blazorProcess.HasExited)
             {
                 FnLog.AddInfo(this, $"Blazor process exited with code {_blazorProcess.ExitCode}.");
@@ -71,9 +95,9 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
                 return;
 
             // Start blazorProcess
-            FnLog.AddInfo(this, "Starting blazorProcess...");
+            FnLog.AddInfo(this, "Starting Blazor process...");
 
-            int port = 50505;
+            int port = 5131;
             if (!FnSystem.IsDebug())
             {
                 try
@@ -117,6 +141,9 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
                 psi.Environment["GTN_SOCKET_PORT"] = $"{_socketPort}";
 
                 _blazorProcess = Process.Start(psi);
+                if (_blazorProcess is not null)
+                    FnChildProcesses.Attach(_blazorProcess);
+
                 FnLog.AddInfo(this, $"Started blazorProcess on port {port}.");
                 CallDispatcher!.Trigger("EXEV_RemoteMonitoringStarted", port); // MainWindowController
             }
@@ -164,7 +191,7 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
             return port;
         }
 
-        protected override void OnStop()
+        private void StopRemoteMonitoring()
         {
             if (_blazorProcess is not null)
             {
@@ -172,36 +199,28 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
                 {
                     _blazorProcess.Kill(true);
                     _blazorProcess.WaitForExit(5000);
-                    _blazorProcess.Dispose();
-                    _blazorProcess = null;
 
-                    FnLog.AddInfo(this, $"Stopped blazorProcess.");
+                    FnLog.AddInfo(this, $"Stopped Blazor process.");
                 }
                 catch (Exception ex)
                 {
-                    FnLog.AddError(this, $"Stopping blazorProcess failed.", ex);
+                    FnLog.AddError(this, $"Stopping Blazor process failed.", ex);
+                }
+                finally
+                {
+                    _blazorProcess.Dispose();
+                    _blazorProcess = null;
                 }
             }
 
             if (_socketServerProcess is not null)
             {
                 _socketServerProcess.Stop();
+                AppEnvironment.StartedBackgroundProcesses.Remove(typeof(RemoteMonitoringSocketServer).FullName!);
+                _socketServerProcess = null;
+
+                FnLog.AddInfo(this, $"Stopped Socket-Server process.");
             }
-        }
-
-        public override void InitializeApplicationOutput()
-        {
-
-        }
-
-        protected override void InitializeInfos()
-        {
-            ProcessName = "RemoteMonitoringProcess";
-        }
-
-        protected override void InitializeAppInfo()
-        {
-            ReadFromAppProperties(nameof(RemoteMonitoringProcess));
         }
     }
 }

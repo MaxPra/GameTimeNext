@@ -49,6 +49,7 @@ namespace RemoteMonitoring
             if (!type.ToLower(CultureInfo.CurrentCulture).Equals("error")) Console.ForegroundColor = origin;
 
             Console.WriteLine(message);
+            // OFDOI: Send Log
             
             Console.ForegroundColor = origin;
         }

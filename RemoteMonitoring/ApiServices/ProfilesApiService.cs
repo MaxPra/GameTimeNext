@@ -4,7 +4,7 @@ using RemoteMonitoring.Base;
 
 namespace RemoteMonitoring.ApiServices
 {
-    public class ProfilesApiService : ApiServiceBase<ProfileDto>
+    public class ProfilesApiService : ApiServiceBase
     {
         public ProfilesApiService(SocketClient socket) : base(socket)
         {
@@ -14,7 +14,7 @@ namespace RemoteMonitoring.ApiServices
         public async Task<List<ProfileDto>> GetAllProfiles()
         {
             TryResult<List<ProfileDto>> result = await TryRequestAsync<List<ProfileDto>>(new AllProfilesRequestMessage());
-            return result .Value ?? [];
+            return result.Value ?? [];
         }
 
         public async Task<ProfileDto?> GetProfile(long pfid)

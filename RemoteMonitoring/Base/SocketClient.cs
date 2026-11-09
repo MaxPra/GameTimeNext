@@ -17,6 +17,7 @@ namespace RemoteMonitoring.Base
         private TcpClient? _client;
         private StreamReader? _reader;
         private StreamWriter? _writer;
+        private SemaphoreSlim _sendLock = new SemaphoreSlim(1, 1);
         private ConnectionState _state = ConnectionState.NeverConnected;
         public ConnectionState State
         {
@@ -55,26 +56,43 @@ namespace RemoteMonitoring.Base
                 return;
             }
 
-            _pingTask = PingLoopAsync();
+            _pingTask = PingLoopAsync(_cts.Token);
         }
 
         public async Task<string?> SendAsync(RequestMessageBase requestMessage)
         {
             if (_cts is null || _client is null || _reader is null || _writer is null) throw new WrongOrderException();
 
-            string requestJson = JsonSerializer.Serialize(requestMessage);
+            await _sendLock.WaitAsync();
+            try
+            {
+                if (State != ConnectionState.Connected || _reader is null || _writer is null)
+                    return null;
 
-            Task writeTask = _writer.WriteLineAsync(requestJson);
-            bool writeSuccess = await ExecuteTaskWithTimeoutAsync(writeTask);
-            if (!writeSuccess)
-                return null;
+                string requestJson = JsonSerializer.Serialize(requestMessage, requestMessage.GetType());
 
-            Task<string?> readTask = _reader.ReadLineAsync();
-            bool readSuccess = await ExecuteTaskWithTimeoutAsync(readTask);
-            if (!readSuccess)
-                return null;
+                Task writeTask = _writer.WriteLineAsync(requestJson);
+                bool writeSuccess = await ExecuteTaskWithTimeoutAsync(writeTask);
+                if (!writeSuccess)
+                {
+                    ReconnectRequested?.Invoke(this, EventArgs.Empty);
+                    return null;
+                }
 
-            return await readTask;
+                Task<string?> readTask = _reader.ReadLineAsync();
+                bool readSuccess = await ExecuteTaskWithTimeoutAsync(readTask);
+                if (!readSuccess)
+                {
+                    ReconnectRequested?.Invoke(this, EventArgs.Empty);
+                    return null;
+                }
+
+                return await readTask;
+            }
+            finally
+            {
+                _sendLock.Release();
+            }
         }
 
         public void Reset()
@@ -115,11 +133,7 @@ namespace RemoteMonitoring.Base
 
                 ReconnectRequested -= HandleReconnectRequested;
 
-                _cts?.Cancel();
-
-                _writer?.Dispose();
-                _reader?.Dispose();
-                _client?.Dispose();
+                CloseConnection();
 
                 State = ConnectionState.Disconnected;
 
@@ -134,25 +148,46 @@ namespace RemoteMonitoring.Base
 
         private void HandleReconnectRequested(object? sender, EventArgs e)
         {
+            if (State == ConnectionState.Reconnecting)
+                return;
+
             State = ConnectionState.Reconnecting;
             FnLog.AddInfo(this, "Reconnecting...");
+
+            CloseConnection();
             _ = StartAsync();
         }
 
-        private async Task PingLoopAsync()
+        private void CloseConnection()
+        {
+            _cts?.Cancel();
+            _writer?.Dispose();
+            _reader?.Dispose();
+            _client?.Dispose();
+        }
+
+        private async Task PingLoopAsync(CancellationToken token)
         {
             FnLog.AddInfo(this, "Starting ping loop...");
-            while (!_cts!.IsCancellationRequested)
-            {
-                await Task.Delay(_pingIntervalMs, _cts!.Token);
 
-                string? response = await SendAsync(new PingRequestMessage());
-                if (response is null || !response.Equals("Pong"))
+            try
+            {
+                while (!token.IsCancellationRequested)
                 {
-                    FnLog.AddError(this, "Ping failed!");
-                    ReconnectRequested?.Invoke(this, new EventArgs());
-                    break;
+                    await Task.Delay(_pingIntervalMs, token);
+
+                    string? response = await SendAsync(new PingRequestMessage());
+                    if (response is null || !response.Equals("Pong"))
+                    {
+                        FnLog.AddError(this, "Ping failed!");
+                        ReconnectRequested?.Invoke(this, EventArgs.Empty);
+                        break;
+                    }
                 }
+            }
+            catch (OperationCanceledException)
+            {
+                // Connection closed (reconnect or disconnect)
             }
         }
 

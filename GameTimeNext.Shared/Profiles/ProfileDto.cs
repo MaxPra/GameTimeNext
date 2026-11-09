@@ -4,8 +4,8 @@ namespace GameTimeNext.Shared.Profiles
 {
     public class ProfileDto : DtoBase
     {
-        public required int Id { get; set; }
-        public required string Title { get; set; }
+        public required long PFID { get; set; }
+        public required string GANA { get; set; }
         public required string AccentColorHex { get; set; }
     }
 }

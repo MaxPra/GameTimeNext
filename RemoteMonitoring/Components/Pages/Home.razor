@@ -13,14 +13,31 @@
         @foreach (ProfileDto profile in Profiles)
         {
             <div @onclick="() => SelectProfile(profile)">
-                <Profile Title="@profile.Title" AccentColor="@profile.AccentColorHex" IsHighlighted="IsSelected(profile)" />
+                <Profile Title="@profile.GANA" AccentColor="@profile.AccentColorHex" IsHighlighted="IsSelected(profile)" />
             </div>
+        }
+    </div>
+
+    <div class="fixed left-0 top-20 p-5 bg-black/25">
+        @if (SelectedProfile is not null)
+        {
+            <p>@SelectedProfile.PFID</p>
+            <h1 class="text-xl font-bold">@SelectedProfile.GANA</h1>
+        }
+    </div>
+
+    <div class="fixed right-0 bottom-20 p-5 bg-black/25">
+        @if (SelectedProfileFresh is not null)
+        {
+            <p>@SelectedProfileFresh.PFID</p>
+            <h1 class="text-xl font-bold">@SelectedProfileFresh.GANA</h1>
         }
     </div>
 </div>
 
 @code {
     private ProfileDto? SelectedProfile;
+    private ProfileDto? SelectedProfileFresh;
     private List<ProfileDto> Profiles { get; } = new();
 
     protected override async Task OnInitializedAsync()
@@ -35,13 +52,14 @@
         Profiles.AddRange(profiles);
     }
 
-    private void SelectProfile(ProfileDto profile)
+    private async Task SelectProfile(ProfileDto profile)
     {
         SelectedProfile = profile;
+        SelectedProfileFresh = await ProfilesApiService.GetProfile(profile.PFID);
     }
 
     private bool IsSelected(ProfileDto profile)
     {
-        return SelectedProfile?.Id == profile.Id;
+        return SelectedProfile?.PFID == profile.PFID;
     }
 }

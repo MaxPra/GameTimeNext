@@ -15,6 +15,7 @@ builder.Services.AddSingleton<CircuitHandler>(sp => sp.GetRequiredService<AppCir
 builder.Services.AddSingleton<SocketClient>();
 
 // API Services
+builder.Services.AddSingleton<SystemApiService>();
 builder.Services.AddSingleton<ProfilesApiService>();
 
 var app = builder.Build();
