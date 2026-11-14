@@ -122,7 +122,7 @@ namespace GameTimeNext.Core.Application.DataManagers
 
         /// <summary>
         /// True if the game is still shrink-wrapped: it has to be unwrapped before it can be launched.
-        /// Only while the setting SealNewGames is on; turning it off shows all games unwrapped.
+        /// Only while the setting SealNewGames is on; turning it off unwraps all games (UnsealAll).
         /// </summary>
         public static bool IsSealed(T1PROFI t1profi)
         {
@@ -135,18 +135,55 @@ namespace GameTimeNext.Core.Application.DataManagers
         /// </summary>
         public static void Unseal(T1PROFI t1profi)
         {
+            // Unwrapping is looking at the new game
+            if (RemoveSealedFlag(t1profi, clearNewMark: true))
+                new TXPROFI().Save(t1profi);
+        }
+
+        /// <summary>
+        /// Removes the shrink wrap from the profile object without saving it (also when the setting SealNewGames is
+        /// off). clearNewMark also removes the badge "New". Returns true if the profile was sealed.
+        /// </summary>
+        public static bool RemoveSealedFlag(T1PROFI t1profi, bool clearNewMark)
+        {
             CProfileSettings cProfileSettings = new CProfileSettings(t1profi.PRSE).Dezerialize();
 
             if (!cProfileSettings.Sealed)
-                return;
+                return false;
 
             cProfileSettings.Sealed = false;
 
-            // Unwrapping is looking at the new game
-            cProfileSettings.IsNew = false;
+            if (clearNewMark)
+                cProfileSettings.IsNew = false;
+
             t1profi.PRSE = cProfileSettings.Serialize();
 
-            new TXPROFI().Save(t1profi);
+            return true;
+        }
+
+        /// <summary>
+        /// All profiles that are still shrink-wrapped, regardless of the setting SealNewGames.
+        /// </summary>
+        public static List<T1PROFI> GetSealedProfiles()
+        {
+            return new TXPROFI().ReadAll()
+                .Where(p => new CProfileSettings(p.PRSE).Dezerialize().Sealed)
+                .ToList();
+        }
+
+        /// <summary>
+        /// Unwraps all sealed profiles and saves them (setting SealNewGames switched off, otherwise they would be
+        /// sealed again when it is switched on). The badge "New" stays: the games were not looked at yet.
+        /// </summary>
+        public static void UnsealAll()
+        {
+            TXPROFI txprofi = new TXPROFI();
+
+            foreach (T1PROFI t1profi in GetSealedProfiles())
+            {
+                if (RemoveSealedFlag(t1profi, clearNewMark: false))
+                    txprofi.Save(t1profi);
+            }
         }
 
         /// <summary>

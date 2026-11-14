@@ -52,6 +52,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             GetApp().CallDispatcher.Register(this, nameof(EXEV_GameClosed));
             GetApp().CallDispatcher.Register(this, nameof(EXEV_ProfileDetailViewPositionChanged));
             GetApp().CallDispatcher.Register(this, nameof(EXEV_ProfilesAutoImported));
+            GetApp().CallDispatcher.Register(this, nameof(EXEV_ProfilesUnsealed));
 
             // Set loader texts
             GetApp().Loader.SetRandomTexts(
@@ -308,6 +309,29 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         protected void EXEV_ProfileDetailViewPositionChanged()
         {
             ApplyDetailViewPosition();
+        }
+
+        /// <summary>
+        /// The setting "Add new games shrink-wrapped" was switched off and all sealed games were unwrapped and saved
+        /// (TFPROFI.UnsealAll): the shown tiles play the unwrap animation. The list is not rebuilt (that would end the
+        /// animation, and it must not be rebuilt while a game is monitored); the profile objects of the tiles drop the
+        /// flag too, so saving one of them later doesn't seal it again.
+        /// </summary>
+        protected void EXEV_ProfilesUnsealed()
+        {
+            foreach (ProfilesListBoxItem item in GetView().ListBoxProfiles.Items.OfType<ProfilesListBoxItem>())
+            {
+                if (item.ItemObject is T1PROFI t1profi)
+                    TFPROFI.RemoveSealedFlag(t1profi, clearNewMark: false);
+
+                item.COISSEA = false;
+            }
+
+            if (GetSelectedItem() == null)
+                return;
+
+            ProfilesDetailSubViewController profileDetailViewController = (ProfilesDetailSubViewController)GetApp().ProfilesDetailView.ViewController;
+            profileDetailViewController.UpdateUIUnwrapped();
         }
 
         /// <summary>
