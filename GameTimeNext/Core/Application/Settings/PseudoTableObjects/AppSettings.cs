@@ -111,6 +111,12 @@ namespace GameTimeNext.Core.Application.TableObjects
         [UIXSignatureField(29)]
         public string AutoImportExcludedLaunchers { get; set; }
 
+        /// <summary>
+        /// A running game is suspended while the Big Picture mode is in front. Off: never paused, the setting of the
+        /// profile (CProfileSettings.PauseInBigPicture) is hidden and ignored.
+        /// </summary>
+        [UIXSignatureField(30)]
+        public bool PauseGameInBigPicture { get; set; }
 
         public AppSettings()
         {
@@ -124,6 +130,7 @@ namespace GameTimeNext.Core.Application.TableObjects
             ProfileDetailViewPosition = "02";
             AutoImportGames = false;
             AutoImportExcludedLaunchers = string.Empty;
+            PauseGameInBigPicture = true;
 
             MonitoringKeyActive = false;
             ShowToastNotification = false;

@@ -307,6 +307,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             GetView().cbEnableHdrOnStart.IsChecked = cProfileSettings.HDREnabled == true;
             GetView().cbPauseInBigPicture.IsChecked = cProfileSettings.PauseInBigPicture;
 
+            // Pausing switched off in the settings: the profile's value is kept, but has no effect
+            FnControls.SetVisible(GetView().cbPauseInBigPicture, FnLauncher.IsPauseInBigPictureAllowed());
+
             using (SuppressRunEventPipeline())
             {
                 GetView().cbOverrideGlobalBlackout.IsChecked = cProfileSettings.OverrideGlobalBlackout == true;
