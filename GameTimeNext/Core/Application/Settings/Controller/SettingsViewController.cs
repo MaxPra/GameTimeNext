@@ -237,6 +237,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             GetView().cbShowTextOnBlackout.IsChecked = _appSettings.EnableFullBlackoutText;
             GetView().cbAutoStartMinimized.IsChecked = _appSettings.AutoStartMinimized;
             GetView().cbSealNewGames.IsChecked = _appSettings.SealNewGames;
+            GetView().cbPauseGameInBigPicture.IsChecked = _appSettings.PauseGameInBigPicture;
             GetView().cbAutoImportGames.IsChecked = _appSettings.AutoImportGames;
             GetView().cbAllowProfileSpecificStyleChanges.IsChecked = _appSettings!.AllowProfileSpecificStyleChanges;
             GetView().cbDarkTintedGlass.IsChecked = _appSettings.DarkTintedGlass;
@@ -316,6 +317,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             _appSettings!.EnableFullBlackoutText = GetView().cbShowTextOnBlackout.IsChecked == true;
             _appSettings!.AutoStartMinimized = GetView().cbAutoStartMinimized.IsChecked == true;
             _appSettings!.SealNewGames = GetView().cbSealNewGames.IsChecked == true;
+            _appSettings!.PauseGameInBigPicture = GetView().cbPauseGameInBigPicture.IsChecked == true;
             _appSettings!.AllowProfileSpecificStyleChanges = GetView().cbAllowProfileSpecificStyleChanges.IsChecked == true;
             _appSettings!.BackgroundSource = GetSelectedBackgroundSource();
             _appSettings!.DarkTintedGlass = GetView().cbDarkTintedGlass.IsChecked == true;
@@ -360,6 +362,10 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             _appSettings!.AcceptChanges();
 
             FnSystem.SetAutoStart(_appSettings!.AutoStartMinimized && !FnSystem.IsDebug(), true);
+
+            // Pausing switched off: a game paused by the Big Picture mode right now must not stay suspended
+            if (!_appSettings.PauseGameInBigPicture)
+                FnLauncher.ResumePausedGame();
 
             _autoImportLauncherTypes = CFProfilesApp.GetAutoImportLauncherTypes(_appSettings);
         }
