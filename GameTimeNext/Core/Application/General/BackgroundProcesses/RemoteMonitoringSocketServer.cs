@@ -32,7 +32,7 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
         private void InitBatchApps()
         {
             _profilesBatchApp = GetApplication<ProfilesBatchApp>();
-            _profilesBatchApp.Start(HostApplication);
+            _profilesBatchApp.Start(this);
         }
 
         public override async Task LogicAsync()

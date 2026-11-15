@@ -13,7 +13,7 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
 {
     public class RemoteMonitoringProcess : UIXBackgroundProcess
     {
-        private static bool _DEBUG_STARTBLAZOR = false;
+        private static bool _DEBUG_STARTBLAZOR = true;
         private const int _MAX_BLAZOR_ERROR_OUTPUT = 32000;
 
         private Process? _blazorProcess;
@@ -23,12 +23,29 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
         private readonly StringBuilder _blazorErrorOutput = new();
 
         private int _socketPort = 5050;
+
+        // Written by the process thread, read by others (module "Diagnostics")
+        private readonly object _blazorStatusLock = new();
+        private BlazorProcessStatus _blazorStatus = BlazorProcessStatus.NotStarted;
+
+        /// <summary>
+        /// Current state of the Blazor process (thread safe snapshot).
+        /// </summary>
+        public BlazorProcessStatus BlazorStatus
+        {
+            get { lock (_blazorStatusLock) return _blazorStatus; }
+            private set { lock (_blazorStatusLock) _blazorStatus = value; }
+        }
         
         public override void Logic()
         {
             if (!AppEnvironment.GetAppConfig().AppSettings.RemoteMonitoring)
             {
                 StopRemoteMonitoring();
+
+                if (BlazorStatus.State == BlazorProcessState.StartedSeparately)
+                    BlazorStatus = BlazorProcessStatus.NotStarted;
+
                 return;
             }
 
@@ -36,6 +53,8 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
 
             if (!FnSystem.IsDebug() || _DEBUG_STARTBLAZOR)
                 HandleBlazor();
+            else
+                BlazorStatus = new BlazorProcessStatus(BlazorProcessState.StartedSeparately);
         }
 
         protected override void OnStop()
@@ -78,7 +97,6 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
 
             // Run socket server
             _socketServerProcess = GetBackgroundProcess<RemoteMonitoringSocketServer>();
-            _socketServerProcess.CallDispatcher = CallDispatcher;
             _socketServerProcess.Port = _socketPort;
             _socketServerProcess.Start(1000, runAsync: true);
             AppEnvironment.StartedBackgroundProcesses.Add(typeof(RemoteMonitoringSocketServer).FullName!, _socketServerProcess);
@@ -93,6 +111,7 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
                 // Lets the error output be read to its end
                 _blazorProcess.WaitForExit(2000);
                 LogBlazorExit(_blazorProcess.ExitCode);
+                BlazorStatus = BlazorStatus with { State = BlazorProcessState.Exited, EndedAt = DateTime.Now, ExitCode = _blazorProcess.ExitCode };
 
                 _blazorProcess.Dispose();
                 _blazorProcess = null;
@@ -159,6 +178,17 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
                     FnChildProcesses.Attach(_blazorProcess);
                     _blazorProcess.ErrorDataReceived += BlazorErrorDataReceived;
                     _blazorProcess.BeginErrorReadLine();
+                }
+
+                if (_blazorProcess is not null)
+                {
+                    BlazorProcessStatus previous = BlazorStatus;
+                    BlazorStatus = new BlazorProcessStatus(
+                        BlazorProcessState.Running,
+                        _blazorProcess.Id,
+                        port,
+                        DateTime.Now,
+                        RestartCount: previous.State == BlazorProcessState.Exited ? previous.RestartCount + 1 : previous.RestartCount);
                 }
 
                 FnLog.AddInfo(this, $"Started blazorProcess on port {port}.");
@@ -254,6 +284,7 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
                     _blazorProcess.WaitForExit(5000);
 
                     FnLog.AddInfo(this, $"Stopped Blazor process.");
+                    BlazorStatus = BlazorStatus with { State = BlazorProcessState.Stopped, EndedAt = DateTime.Now, ExitCode = null };
                 }
                 catch (Exception ex)
                 {

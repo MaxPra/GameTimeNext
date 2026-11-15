@@ -14,7 +14,7 @@ namespace GameTimeNext.Core.Application.Profiles.Batch
         public void Start(UIXApplication hostApplication)
         {
             HostApplication = hostApplication;
-            // CallDispatcher = hostApplication.CallDispatcher; // OFDOI: CallDispatcher
+            CallDispatcher = hostApplication.CallDispatcher;
         }
 
         public override void InitializeApplicationOutput()

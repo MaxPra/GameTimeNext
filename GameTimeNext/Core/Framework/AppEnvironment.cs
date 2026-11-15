@@ -136,7 +136,6 @@ namespace GameTimeNext.Core.Framework
 
             // RemoteMonitoringProcess
             RemoteMonitoringProcess remoteMonitoringProcess = app.GetBackgroundProcess<RemoteMonitoringProcess>();
-            remoteMonitoringProcess.CallDispatcher = app.CallDispatcher;
             remoteMonitoringProcess.Start(5000);
 
             StartedBackgroundProcesses.Add(typeof(GlobalKeyInputProcess).FullName!, globalKeyInputProcess);
