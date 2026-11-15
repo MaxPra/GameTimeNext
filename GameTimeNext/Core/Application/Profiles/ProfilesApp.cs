@@ -21,9 +21,7 @@ namespace GameTimeNext.Core.Application.Profiles
 
         public ProfilesApp() : base()
         {
-
         }
-
         public ProfilesView ProfilesView { get; set; }
         public ProfilesFilterView ProfilesFilterView { get; set; }
         public ProfilesDetailView ProfilesDetailView { get; set; }
