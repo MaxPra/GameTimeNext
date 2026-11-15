@@ -290,11 +290,21 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
         }
 
         /// <summary>
-        /// True if pausing is switched on for the profile (CProfileSettings.PauseInBigPicture, on by default).
+        /// True if pausing games in the Big Picture mode is switched on in the settings (AppSettings.PauseGameInBigPicture,
+        /// on by default). Off: no game is paused and the setting of the profile is hidden.
+        /// </summary>
+        public static bool IsPauseInBigPictureAllowed()
+        {
+            return AppEnvironment.GetAppConfig().AppSettings.PauseGameInBigPicture;
+        }
+
+        /// <summary>
+        /// True if the game is paused in the Big Picture mode: allowed in the settings and switched on for the profile
+        /// (CProfileSettings.PauseInBigPicture, on by default).
         /// </summary>
         public static bool IsPauseInBigPictureEnabled(T1PROFI t1profi)
         {
-            return new CProfileSettings(t1profi.PRSE).Dezerialize().PauseInBigPicture;
+            return IsPauseInBigPictureAllowed() && new CProfileSettings(t1profi.PRSE).Dezerialize().PauseInBigPicture;
         }
 
         /// <summary>

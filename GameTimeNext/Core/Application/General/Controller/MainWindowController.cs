@@ -201,6 +201,10 @@ namespace GameTimeNext.Core.Application.General.Controller
             GetView().MainTabControl.Visibility = Visibility.Hidden;
             FnControls.SetVisible(GetView().pnlEmptyTabMessage, false);
 
+            // No display timeout while the mode is open: monitors turning off and on change the displays under a
+            // running (or paused) game, which can crash its renderer
+            FnPowerRequest.KeepDisplayOn("Big Picture mode is open");
+
             FnLog.AddInfo(GetApp(), "Big Picture mode opened");
         }
 
@@ -214,6 +218,8 @@ namespace GameTimeNext.Core.Application.General.Controller
 
             _bigPictureApp.Close();
             GetView().IsFullScreen = false;
+
+            FnPowerRequest.Release();
 
             GetView().MainTabControl.Visibility = Visibility.Visible;
             FnControls.SetVisible(GetView().pnlEmptyTabMessage, GetView().MainTabControl.Items.Count == 0);

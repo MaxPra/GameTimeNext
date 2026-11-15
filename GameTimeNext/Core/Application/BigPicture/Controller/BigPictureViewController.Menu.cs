@@ -111,10 +111,13 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
             if (FnLauncher.GetLauncher(t1profi) is { SupportsOpenInLauncher: true } && FnLauncher.IsLinked(t1profi))
                 options.Add(new BigPictureMenuOption(OptionGameLauncher, "Show in " + FnLauncher.GetLauncherName(t1profi.LNTY), "\uE8A7"));
 
-            // Setting of the profile (also in its launch settings)
-            options.Add(FnLauncher.IsPauseInBigPictureEnabled(t1profi)
-                ? new BigPictureMenuOption(OptionGamePause, "Pause in Big Picture: On", "\uE769")
-                : new BigPictureMenuOption(OptionGamePause, "Pause in Big Picture: Off", "\uE768"));
+            // Setting of the profile (also in its launch settings); not offered while pausing is off in the settings
+            if (FnLauncher.IsPauseInBigPictureAllowed())
+            {
+                options.Add(FnLauncher.IsPauseInBigPictureEnabled(t1profi)
+                    ? new BigPictureMenuOption(OptionGamePause, "Pause in Big Picture: On", "\uE769")
+                    : new BigPictureMenuOption(OptionGamePause, "Pause in Big Picture: Off", "\uE768"));
+            }
 
             _menuGame = t1profi;
 

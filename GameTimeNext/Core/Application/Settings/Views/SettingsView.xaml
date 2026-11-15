@@ -158,6 +158,30 @@
                         </GroupBox>
 
                         <GroupBox
+                            Header="Big Picture mode"
+                            Style="{StaticResource GroupBox.Card}">
+                            <StackPanel>
+                                <Grid Style="{StaticResource Settings.Row}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Margin="0,0,24,0" VerticalAlignment="Center">
+                                        <TextBlock Style="{StaticResource Text.BodyStrong}" Text="Pause games while the Big Picture mode is in front" />
+                                        <TextBlock
+                                            Margin="0,2,0,0"
+                                            Style="{StaticResource Text.Hint}"
+                                            Text="A running game is paused when you switch to the Big Picture mode, so it doesn't react to the controller meanwhile. Each game can switch it off in its launch settings. Off: games are never paused."
+                                            TextWrapping="Wrap" />
+                                    </StackPanel>
+
+                                    <CheckBox x:Name="cbPauseGameInBigPicture" Grid.Column="1" VerticalAlignment="Center" />
+                                </Grid>
+                            </StackPanel>
+                        </GroupBox>
+
+                        <GroupBox
                             Header="Breaks"
                             Style="{StaticResource GroupBox.Card}">
                             <StackPanel>

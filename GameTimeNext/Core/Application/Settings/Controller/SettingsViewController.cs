@@ -35,6 +35,9 @@ namespace GameTimeNext.Core.Application.Settings.Controller
         // Launchers taking part in the automatic game import as saved; a launcher added to them asks once for its installed games
         private List<string> _autoImportLauncherTypes = new List<string>();
 
+        // "Add new games shrink-wrapped" was switched off while games are still sealed: they are unwrapped on save
+        private bool _unsealAllOnSave = false;
+
         public SettingsViewController(UIXApplication app) : base(app)
         {
         }
@@ -157,6 +160,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
 
         protected override void FillDBOImpl()
         {
+            FillDBOSealNewGames();
             FillDBOGeneral();
             FillDBOMonitoring();
             FillDBOAbout();
@@ -189,6 +193,44 @@ namespace GameTimeNext.Core.Application.Settings.Controller
 
             _appSettings!.AutoImportGames = autoImportGames;
             _appSettings!.AutoImportExcludedLaunchers = excludedLaunchers;
+        }
+
+        /// <summary>
+        /// Switching off "Add new games shrink-wrapped" unwraps the games that are still sealed (on save), because
+        /// without the setting they can't be unwrapped any more. The user is told how many games that are.
+        /// </summary>
+        private void FillDBOSealNewGames()
+        {
+            _unsealAllOnSave = false;
+
+            if (!_appSettings!.SealNewGames || GetView().cbSealNewGames.IsChecked == true)
+                return;
+
+            int sealedCount = TFPROFI.GetSealedProfiles().Count;
+
+            if (sealedCount == 0)
+                return;
+
+            _unsealAllOnSave = true;
+
+            CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window);
+            cfmbox.Show(GetErrorMessage("SET0003", sealedCount), CFMBOXResult.Ok, CFMBOXIcon.Info);
+        }
+
+        /// <summary>
+        /// Unwraps all sealed games and lets an open profiles view unwrap their tiles.
+        /// </summary>
+        private void UnsealAllProfiles()
+        {
+            TFPROFI.UnsealAll();
+
+            // The current profile is saved elsewhere too (e.g. playtime), it must not bring the shrink wrap back
+            T1PROFI? currentProfile = AppEnvironment.GetCurrentProfile();
+            if (currentProfile != null)
+                TFPROFI.RemoveSealedFlag(currentProfile, clearNewMark: false);
+
+            if (GetApp().CallDispatcher.IsRegistered("EXEV_ProfilesUnsealed"))
+                GetApp().CallDispatcher.Trigger("EXEV_ProfilesUnsealed");
         }
 
         private async Task RegisterInstalledGamesAsync(List<string> launcherTypes)
@@ -239,6 +281,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             GetView().cbShowTextOnBlackout.IsChecked = _appSettings.EnableFullBlackoutText;
             GetView().cbAutoStartMinimized.IsChecked = _appSettings.AutoStartMinimized;
             GetView().cbSealNewGames.IsChecked = _appSettings.SealNewGames;
+            GetView().cbPauseGameInBigPicture.IsChecked = _appSettings.PauseGameInBigPicture;
             GetView().cbAutoImportGames.IsChecked = _appSettings.AutoImportGames;
             GetView().cbAllowProfileSpecificStyleChanges.IsChecked = _appSettings!.AllowProfileSpecificStyleChanges;
             GetView().cbDarkTintedGlass.IsChecked = _appSettings.DarkTintedGlass;
@@ -319,6 +362,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             _appSettings!.EnableFullBlackoutText = GetView().cbShowTextOnBlackout.IsChecked == true;
             _appSettings!.AutoStartMinimized = GetView().cbAutoStartMinimized.IsChecked == true;
             _appSettings!.SealNewGames = GetView().cbSealNewGames.IsChecked == true;
+            _appSettings!.PauseGameInBigPicture = GetView().cbPauseGameInBigPicture.IsChecked == true;
             _appSettings!.AllowProfileSpecificStyleChanges = GetView().cbAllowProfileSpecificStyleChanges.IsChecked == true;
             _appSettings!.BackgroundSource = GetSelectedBackgroundSource();
             _appSettings!.DarkTintedGlass = GetView().cbDarkTintedGlass.IsChecked == true;
@@ -365,7 +409,17 @@ namespace GameTimeNext.Core.Application.Settings.Controller
 
             FnSystem.SetAutoStart(_appSettings!.AutoStartMinimized && !FnSystem.IsDebug(), true);
 
+            // Pausing switched off: a game paused by the Big Picture mode right now must not stay suspended
+            if (!_appSettings.PauseGameInBigPicture)
+                FnLauncher.ResumePausedGame();
+
             _autoImportLauncherTypes = CFProfilesApp.GetAutoImportLauncherTypes(_appSettings);
+
+            if (_unsealAllOnSave)
+            {
+                _unsealAllOnSave = false;
+                UnsealAllProfiles();
+            }
         }
 
         protected void EXEV_RemoteMonitoringPortChanged(int port)
