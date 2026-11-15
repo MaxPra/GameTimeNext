@@ -10,7 +10,10 @@ namespace RemoteMonitoring.Base
         #region Properties
         private const int _requestTimeoutMs = 10000;
         private const int _retryTimeoutMs = 1000;
+        private const int _slowRetryTimeoutMs = 5000;
+        private const int _retriesBeforeDisconnected = 10;
         private CancellationTokenSource? _cts;
+        private CancellationToken _stoppingToken;
 
         private const string _address = "127.0.0.1";
         private int _port = int.TryParse(Environment.GetEnvironmentVariable("GTN_SOCKET_PORT"), out var value) ? value : 5050;
@@ -37,26 +40,18 @@ namespace RemoteMonitoring.Base
         #endregion
 
         #region Methods PUBLIC
-        public async Task StartAsync()
+        /// <summary>
+        /// Connects to arcora once for the whole web app (called by SocketConnectionService at startup). Never gives up:
+        /// a failed or lost connection is retried until stoppingToken is cancelled.
+        /// </summary>
+        public Task StartAsync(CancellationToken stoppingToken)
         {
-            _cts = new CancellationTokenSource();
-            _client = new TcpClient();
+            _stoppingToken = stoppingToken;
 
             ReconnectRequested -= HandleReconnectRequested;
             ReconnectRequested += HandleReconnectRequested;
 
-            try
-            {
-                await ExecuteTaskWithRetryAsync(ConnectAsync);
-            }
-            catch (Exception ex)
-            {
-                FnLog.AddError(this, "Error while connecting...", ex);
-                State = ConnectionState.Disconnected;
-                return;
-            }
-
-            _pingTask = PingLoopAsync(_cts.Token);
+            return ConnectWithRetryAsync();
         }
 
         public async Task<string?> SendAsync(RequestMessageBase requestMessage)
@@ -95,37 +90,7 @@ namespace RemoteMonitoring.Base
             }
         }
 
-        public void Reset()
-        {
-            State = ConnectionState.NeverConnected;
-        }
-
-        public void Dispose()
-        {
-            _ = DisconnectAsync();
-        }
-        #endregion
-
-        #region Methods PRIVATE
-        private async Task ConnectAsync()
-        {
-            if (_cts is null || _client is null) throw new WrongOrderException();
-
-            if (!State.Equals(ConnectionState.Reconnecting)) FnLog.AddInfo(this, "Connecting...");
-
-            await _client.ConnectAsync(_address, _port, _cts.Token);
-            NetworkStream stream = _client.GetStream();
-            _reader = new StreamReader(stream, Encoding.UTF8);
-            _writer = new StreamWriter(stream, Encoding.UTF8)
-            {
-                AutoFlush = true
-            };
-
-            State = ConnectionState.Connected;
-            FnLog.AddInfo(this, "Connected.");
-        }
-
-        private async Task DisconnectAsync()
+        public async Task DisconnectAsync()
         {
             try
             {
@@ -145,6 +110,71 @@ namespace RemoteMonitoring.Base
                 FnLog.AddWarning(this, "Error while disconnecting...", ex);
             }
         }
+        #endregion
+
+        #region Methods PRIVATE
+        /// <summary>
+        /// Tries to connect until it succeeds or the app stops: every second at first, after that every few seconds
+        /// with the state Disconnected.
+        /// </summary>
+        private async Task ConnectWithRetryAsync()
+        {
+            if (State != ConnectionState.Reconnecting) FnLog.AddInfo(this, "Connecting...");
+
+            int failedAttempts = 0;
+
+            while (!_stoppingToken.IsCancellationRequested)
+            {
+                try
+                {
+                    await ConnectAsync();
+                    _pingTask = PingLoopAsync(_cts!.Token);
+                    return;
+                }
+                catch (OperationCanceledException) when (_stoppingToken.IsCancellationRequested)
+                {
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    CloseConnection();
+
+                    failedAttempts++;
+                    if (failedAttempts == _retriesBeforeDisconnected)
+                    {
+                        FnLog.AddError(this, $"No connection after {failedAttempts} attempts, retrying every {_slowRetryTimeoutMs / 1000} s...", ex);
+                        State = ConnectionState.Disconnected;
+                    }
+                }
+
+                try
+                {
+                    await Task.Delay(failedAttempts < _retriesBeforeDisconnected ? _retryTimeoutMs : _slowRetryTimeoutMs, _stoppingToken);
+                }
+                catch (OperationCanceledException)
+                {
+                    return;
+                }
+            }
+        }
+
+        private async Task ConnectAsync()
+        {
+            // A new client per attempt: a socket whose connect failed can't be used again
+            _cts = CancellationTokenSource.CreateLinkedTokenSource(_stoppingToken);
+            _client = new TcpClient();
+
+            await _client.ConnectAsync(_address, _port, _cts.Token);
+            NetworkStream stream = _client.GetStream();
+            _reader = new StreamReader(stream, Encoding.UTF8);
+            _writer = new StreamWriter(stream, Encoding.UTF8)
+            {
+                AutoFlush = true
+            };
+
+            State = ConnectionState.Connected;
+            FnLog.AddInfo(this, "Connected.");
+        }
 
         private void HandleReconnectRequested(object? sender, EventArgs e)
         {
@@ -162,7 +192,7 @@ namespace RemoteMonitoring.Base
                 _ = Task.Run(() =>
                 {
                     FnLog.AddInfo(this, "Reconnecting...");
-                    return StartAsync();
+                    return ConnectWithRetryAsync();
                 });
             }
         }
@@ -232,39 +262,6 @@ namespace RemoteMonitoring.Base
                 return false;
 
             return true;
-        }
-
-        private async Task ExecuteTaskWithRetryAsync(Func<Task> desiredTask, int retryCount = 10)
-        {
-            if (_cts is null) throw new WrongOrderException();
-
-            int currentRetry = 0;
-
-            while (!_cts.IsCancellationRequested)
-            {
-                try
-                {
-                    await desiredTask();
-
-                    // Success
-                    return;
-                }
-                catch (Exception)
-                {
-                    if (currentRetry == retryCount)
-                    {
-                        // Max retries reached
-                        throw;
-                    }
-
-                    // Retry
-                    currentRetry++;
-                    await Task.Delay(_retryTimeoutMs);
-                    continue;
-                }
-            }
-
-            throw new Exception("Something unexpected happened inside retry logic.");
         }
         #endregion
 

@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Components.Server.Circuits;
 using RemoteMonitoring;
 using RemoteMonitoring.ApiServices;
 using RemoteMonitoring.Base;
@@ -13,15 +12,14 @@ builder.Logging.AddProvider(new FnLogLoggerProvider());
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddSingleton<AppCircuitHandler>();
-builder.Services.AddSingleton<CircuitHandler>(sp => sp.GetRequiredService<AppCircuitHandler>());
 builder.Services.AddSingleton<SocketClient>();
 
 // API Services
 builder.Services.AddSingleton<SystemApiService>();
 builder.Services.AddSingleton<ProfilesApiService>();
 
-// Background Services
+// Background Services (stopped in reverse order: the log forwarder before the connection)
+builder.Services.AddHostedService<SocketConnectionService>();
 builder.Services.AddHostedService<LogForwarder>();
 
 var app = builder.Build();

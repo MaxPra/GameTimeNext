@@ -1,7 +1,4 @@
-﻿@inject AppCircuitHandler Circuit
-@inject SocketClient Socket
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -24,11 +21,3 @@
 
 </html>
 
-@code {
-    protected override async Task OnInitializedAsync()
-    {
-        Socket.Reset();
-        // OFDOI: _ = Socket.StartAsync(Circuit.Cts.Token); // Pass canellationToken, so that everything gets aborted, when the browser window closes.
-        _ = Socket.StartAsync();
-    }
-}
