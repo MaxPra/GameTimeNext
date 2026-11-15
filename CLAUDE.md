@@ -158,6 +158,7 @@ SteamGridDB and IGDB (with its Twitch authentication) are called through `HttpCl
 - Rules agreed with a developer (coding rules, conventions, workflow rules) are always added to this file, in English and in the matching section, so every developer's AI assistant works the same way. Private assistant memory is not enough.
 - Commits and branches are done by the developers themselves: do not commit, create branches or offer to do so unless explicitly asked.
 - Change only what was asked: when one aspect of a UI element is to be changed, keep its other existing parts instead of removing or replacing them; if something really conflicts, adapt the new part around it or mention the conflict and offer the extra change.
+- When the developer confirms one item of a proposed list or plan ("do it like you said" after a discussion of one point), implement only that item; the other items wait until they are confirmed too.
 - "Style X like Y" means the visual look of Y (surface, glass, colors, borders), not Y's layout: keep X's own layout and content and put it on Y's surface (e.g. the identify overlay keeps the library's content on the toast glass panel).
 
 ## Project skills
