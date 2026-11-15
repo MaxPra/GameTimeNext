@@ -67,14 +67,14 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
             if (installedGames.Count == 0)
                 return;
 
-            Dictionary<(string, string), string> statuses = InvokeOnUI(TFLNGAM.GetRegisteredStatuses);
+            Dictionary<(string, string), string> statuses = CallDispatcher.Invoke(TFLNGAM.GetRegisteredStatuses);
 
             // Nothing new installed and nothing waiting: done
             if (installedGames.All(g => statuses.TryGetValue((g.LauncherType, g.GameId), out string? status)
                                         && (status != "PEND" || _failedImports.Contains((g.LauncherType, g.GameId)))))
                 return;
 
-            List<(T1LNGAM t1lngam, LauncherGame game)> pendingGames = InvokeOnUI(() =>
+            List<(T1LNGAM t1lngam, LauncherGame game)> pendingGames = CallDispatcher.Invoke(() =>
             {
                 TFLNGAM.RegisterGames(installedGames, "PEND");
                 return TFLNGAM.GetPendingGames(installedGames);
@@ -94,7 +94,7 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
                 {
                     T1PROFI t1profi = CFProfilesApp.CreateProfileFromLauncherGameAsync(this, game, Cts.Token).GetAwaiter().GetResult();
 
-                    InvokeOnUI(() =>
+                    CallDispatcher.Invoke(() =>
                     {
                         TFPROFI.SaveNewProfile(t1profi);
                         TFLNGAM.SetImported(t1lngam, t1profi.PFID);
@@ -113,7 +113,7 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
             }
 
             if (importedProfiles.Count > 0)
-                InvokeOnUI(() => PublishImportedProfiles(importedProfiles));
+                CallDispatcher.Invoke(() => PublishImportedProfiles(importedProfiles));
         }
 
         /// <summary>
@@ -137,14 +137,6 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
             CFProfilesApp.ShowAutoImportToast(this, importedProfiles.Select(p => p.GANA).ToList());
 
             return true;
-        }
-
-        /// <summary>
-        /// Runs database work and UI updates on the UI thread, like the other background processes.
-        /// </summary>
-        private static T InvokeOnUI<T>(Func<T> func)
-        {
-            return System.Windows.Application.Current.Dispatcher.Invoke(func);
         }
     }
 }

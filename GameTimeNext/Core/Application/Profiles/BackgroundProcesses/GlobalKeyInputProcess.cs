@@ -87,7 +87,7 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
 
                     bool isExternalGame = TFPROFI.IsExternalGame(AppEnvironment.CurrentPfid);
 
-                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                    CallDispatcher.Invoke(() =>
                     {
                         CFBlackout.ToggleSecondaryBlackout(System.Windows.Application.Current.MainWindow, false, isExternalGame);
                     });
@@ -95,7 +95,7 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
 
                 if (AppEnvironment.GetAppConfig().AppSettings.ShowToastNotification)
                 {
-                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                    CallDispatcher.Invoke(() =>
                     {
                         T1PROFI t1profi = new TXPROFI().Read(AppEnvironment.CurrentPfid);
                         CFToast.Show(t1profi.GANA, "Monitoring stopped...");
@@ -117,7 +117,7 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
 
                     bool isExternalGame = TFPROFI.IsExternalGame(AppEnvironment.CurrentPfid);
 
-                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                    CallDispatcher.Invoke(() =>
                     {
                         CFBlackout.ToggleSecondaryBlackout(System.Windows.Application.Current.MainWindow, false, isExternalGame);
                     });
@@ -125,7 +125,7 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
 
                 if (AppEnvironment.GetAppConfig().AppSettings.ShowToastNotification)
                 {
-                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                    CallDispatcher.Invoke(() =>
                     {
                         T1PROFI t1profi = new TXPROFI().Read(AppEnvironment.CurrentPfid);
                         CFToast.Show(t1profi.GANA, "Monitoring started...");
@@ -145,14 +145,14 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
             // Combination Ctrl + Shift + T
             if (keyPressTracker.IsCombinationPressedOnce(VirtualKey.VK_CONTROL, VirtualKey.VK_SHIFT, VirtualKey.VK_T))
             {
-                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                CallDispatcher.Invoke(() =>
                 {
                     double currentSessionGameTime = CFGameTimeMonitoring.GetCurrentGameTimeMinutes();
 
                     if (currentSessionGameTime == 0.0)
                         return;
 
-                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                    CallDispatcher.Invoke(() =>
                     {
                         T1PROFI t1profi = new TXPROFI().Read(AppEnvironment.CurrentPfid);
                         CFToast.Show(t1profi.GANA, $"Current session game time: {CFProfilesApp.FormatGameTimeMinutes(currentSessionGameTime)}");
@@ -168,7 +168,7 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
 
             if (keyPressTracker.IsCombinationPressedOnce(VirtualKey.VK_CONTROL, VirtualKey.VK_B))
             {
-                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                CallDispatcher.Invoke(() =>
                 {
                     CFBlackout.ToggleBlackout(System.Windows.Application.Current.MainWindow);
                 });
