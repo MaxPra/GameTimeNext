@@ -428,7 +428,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
 
             globalKeyInputProcess.AfterKeyPressed = (k) =>
             {
-                GetView().Dispatcher.Invoke(() =>
+                GetApp().CallDispatcher.Invoke(() =>
                 {
                     GetView().txbMonitoringKey.Text = KeyInput.virtualKeyMap[k];
                 });
@@ -522,7 +522,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
                 }
                 catch (Exception e)
                 {
-                    GetView().Dispatcher.Invoke(() =>
+                    GetApp().CallDispatcher.Invoke(() =>
                     {
                         GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("GLO0012", "creating the backup"), CFMBOXResult.Ok, CFMBOXIcon.Error);
                     });

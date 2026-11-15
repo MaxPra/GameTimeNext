@@ -355,7 +355,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             _coverAppFolderFileName = CFProfilesEditApp.GetGUIDCoverName("jpg");
 
-            GetView().Dispatcher.Invoke(() =>
+            GetApp().CallDispatcher.Invoke(() =>
             {
                 GetApp().T1Profi.PPFN = _coverAppFolderFileName;
 
@@ -386,7 +386,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             if (accentColors.Count == 3)
             {
 
-                GetView().Dispatcher.Invoke(() =>
+                GetApp().CallDispatcher.Invoke(() =>
                 {
                     // Fill accent colors
                     Color color1 = Color.FromArgb(255, accentColors[0].R, accentColors[0].G, accentColors[0].B);
@@ -407,7 +407,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             // Remember path for copying later
             _coverAppDataPath = path;
 
-            GetView().Dispatcher.Invoke(FillViewCoverPreview);
+            GetApp().CallDispatcher.Invoke(FillViewCoverPreview);
         }
 
         private void FillDBOManualEstTimes()
@@ -529,7 +529,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
                 if (gameId == null)
                 {
-                    GetView().Dispatcher.Invoke(() =>
+                    GetApp().CallDispatcher.Invoke(() =>
                     {
                         GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("PRO0002"), CFMBOXResult.Ok, CFMBOXIcon.Warning);
                     });
@@ -543,7 +543,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
                 if (timeToBeat == null)
                 {
-                    GetView().Dispatcher.Invoke(() =>
+                    GetApp().CallDispatcher.Invoke(() =>
                     {
                         GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("GLO0016", "the time to beat"), CFMBOXResult.Ok, CFMBOXIcon.Warning);
                     });
@@ -555,7 +555,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
                 if (timeToBeat.Hastily == null || timeToBeat.Normally == null || timeToBeat.Completely == null)
                 {
-                    GetView().Dispatcher.Invoke(() =>
+                    GetApp().CallDispatcher.Invoke(() =>
                     {
                         GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("GLO0016", "the time to beat"), CFMBOXResult.Ok, CFMBOXIcon.Warning);
                     });
@@ -944,7 +944,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             using (SuppressRunEventPipeline())
                 await FillViewCoverChanged(path);
 
-            GetView().Dispatcher.Invoke(() =>
+            GetApp().CallDispatcher.Invoke(() =>
             { RunEventPipelineSync(View, string.Empty); });
         }
 

@@ -102,7 +102,7 @@ namespace GameTimeNext.Core.Application.Profiles
 
 
 
-            System.Windows.Application.Current.Dispatcher.Invoke(() =>
+            app.CallDispatcher.Invoke(() =>
             {
                 CFToast.Show("Attention!", AppConfig.Root.ApplicationName + " needs your attention!");
 

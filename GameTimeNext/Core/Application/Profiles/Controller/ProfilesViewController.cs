@@ -276,7 +276,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             if (AppEnvironment.GetAppConfig().AppSettings.ShowMonitoringIndicator)
             {
-                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                GetApp().CallDispatcher.Invoke(() =>
                 {
                     CFMonitoringIndicator.ToggleIndicator(System.Windows.Application.Current.MainWindow);
                 });
@@ -294,7 +294,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             if (AppEnvironment.GetAppConfig().AppSettings.ShowMonitoringIndicator)
             {
-                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                GetApp().CallDispatcher.Invoke(() =>
                 {
                     CFMonitoringIndicator.ToggleIndicator(System.Windows.Application.Current.MainWindow);
                 });

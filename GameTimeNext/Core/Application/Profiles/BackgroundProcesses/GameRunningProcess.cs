@@ -91,7 +91,7 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
                                     // Stop blacking out secondary monitors if enabled in settings and allowed by the profile
                                     if (CFBlackout.AllowedToToggleBlackout(t1profi))
                                     {
-                                        System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                                        CallDispatcher.Invoke(() =>
                                         {
                                             CFBlackout.ToggleSecondaryBlackout(System.Windows.Application.Current.MainWindow);
                                         });
@@ -223,7 +223,7 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
                 {
                     _lastBreakReminderBlock = currentBlock;
 
-                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                    CallDispatcher.Invoke(() =>
                     {
                         CFToast.Show(
                             "Break reminder",
