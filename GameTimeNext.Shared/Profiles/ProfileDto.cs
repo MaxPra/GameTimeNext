@@ -6,6 +6,7 @@ namespace GameTimeNext.Shared.Profiles
     {
         public required long PFID { get; set; }
         public required string GANA { get; set; }
+        public required string PPFN { get; set; }
         public required string AccentColorHex { get; set; }
     }
 }

@@ -3,6 +3,8 @@ using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Application.TimeMonitoring;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Shared.Profiles;
+using GameTimeNext.Shared.Profiles.Monitoring;
+using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Runnables;
 
 namespace GameTimeNext.Core.Application.Profiles.Batch
@@ -30,9 +32,33 @@ namespace GameTimeNext.Core.Application.Profiles.Batch
             ReadFromAppProperties(nameof(ProfilesBatchApp));
         }
 
-        public List<ProfileDto> GetAllProfiles()
+        #region Methods PUBLIC
+        public List<ProfileDto> GetProfiles()
         {
-            return _txprofi.ReadAll().Select(t => _txprofi.ToDto(t)).ToList();
+            List<ProfileDto> filteredT1profis = new List<ProfileDto>();
+
+            UIXQuery query = new UIXQuery(K1PROFI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
+
+            query.AddField(K1PROFI.Name, K1PROFI.Fields.PFID);
+
+            query.AddWhere(K1PROFI.Name, K1PROFI.Fields.ARCH, QueryCompareType.NOT_EQUALS, true);
+
+            query.AddOrderBy(K1PROFI.Name, K1PROFI.Fields.LAPL, OrderDirection.DESC);
+            query.AddOrderBy(K1PROFI.Name, K1PROFI.Fields.PFID, OrderDirection.ASC);
+
+            using (var reader = query.Execute())
+            {
+                while (reader.Read())
+                {
+                    long pfid = UIXQuery.GetInt64(reader, K1PROFI.Name, K1PROFI.Fields.PFID);
+                    T1PROFI? t1profi = _txprofi.Read(pfid);
+                    if (t1profi is null || !TFPROFI.IsExternalGame(t1profi)) continue;
+
+                    filteredT1profis.Add(_txprofi.ToDto(t1profi));
+                }
+            }
+
+            return filteredT1profis;
         }
 
         public ProfileDto? GetProfile(long pfid)
@@ -43,68 +69,90 @@ namespace GameTimeNext.Core.Application.Profiles.Batch
 
             return _txprofi.ToDto(t1profi);
         }
-    }
 
-    // OFDOI: Remove old BatchApp
-    [Obsolete]
-    public class PrrofilesBatchApp : UIXApplication
-    {
-
-        public void StartMonitoringBatch(long pfid)
+        public StartMonitoringResponseMessage StartMonitoring(long pfid, bool createPlaythrough)
         {
-            if (!AppEnvironment.IsApplicationRunning(typeof(ProfilesApp).FullName!) || !AppEnvironment.IsApplicationInitialized(typeof(ProfilesApp).FullName!))
-                return;
+            return CallDispatcher.Invoke(() => ExecuteStartMonitoring(pfid, createPlaythrough));
+        }
 
-            if (!SwitchToProfilesAppBatch())
-                return;
+        public StopMonitoringResponseMessage StopMonitoring()
+        {
+            return CallDispatcher.Invoke(() => ExecuteStopMonitoring());
+        }
 
-            SwitchProfileBatch(pfid);
+        public MonitoringStateResponseMessage GetMonitoringState()
+        {
+            var state = CFGameTimeMonitoring.GetMonitoringState();
 
-            // Neuen Playthrough erstellen, wenn noch keiner existiert
-            if (TFPLTHR.GetCurrentPlaythrough(pfid) is null)
+            if (!state.IsMonitoring)
+                return new MonitoringStateResponseMessage(false, null, null);
+
+            T1PROFI t1profi = _txprofi.Read(state.PFID)!;
+            return new MonitoringStateResponseMessage(true, _txprofi.ToDto(t1profi), state.StartedAt);
+        }
+        #endregion
+
+        #region Methods PRIVATE
+        private StartMonitoringResponseMessage ExecuteStartMonitoring(long pfid, bool createPlaythrough)
+        {
+            if (!IsProfilesViewReady())
+                return new StartMonitoringResponseMessage(pfid, MonitoringResponse.ProfilesAppNotReady);
+
+            if (CFGameTimeMonitoring.IsMonitoring)
+                return new StartMonitoringResponseMessage(pfid, MonitoringResponse.MonitoringAlreadyRunning);
+
+            T1PROFI? t1profi = _txprofi.Read(pfid);
+            if (t1profi is null)
+                return new StartMonitoringResponseMessage(pfid, MonitoringResponse.ProfileNotFound);
+
+            if (!TFPLTHR.HasCurrentPlaythrough(pfid))
             {
+                if (!createPlaythrough)
+                    return new StartMonitoringResponseMessage(pfid, MonitoringResponse.NoActivePlaythrough);
+
                 long nextNumber = TFPLTHR.GetCurrentPlaythroughCount(pfid, PlaythroughType.NEW_PLAYTHROUGH) + 1;
                 TFPLTHR.CreateNewPlaythrough(pfid, "Playthrough #" + nextNumber, PlaythroughType.NEW_PLAYTHROUGH);
             }
 
-            CFGameTimeMonitoring.StartMonitoring(AppEnvironment.CurrentPfid);
-            CallDispatcher!.Trigger("EXEV_GameTimeMonitoringStarted");
+            CallDispatcher.Trigger("EXEV_SwitchToApplication", typeof(ProfilesApp).FullName!);
+
+            if (!AppEnvironment.CurrentPfid.Equals(pfid))
+            {
+                AppEnvironment.CurrentPfid = pfid;
+                CallDispatcher.Trigger("EXEV_SwitchProfile", pfid);
+            }
+
+            CFGameTimeMonitoring.StartMonitoring(pfid);
+            CallDispatcher.Trigger("EXEV_GameTimeMonitoringStarted");
+
+            return new StartMonitoringResponseMessage(pfid, MonitoringResponse.MonitoringStarted);
         }
 
-        public void StopMonitoringBatch()
+        private StopMonitoringResponseMessage ExecuteStopMonitoring()
         {
+            if (!IsProfilesViewReady())
+                return new StopMonitoringResponseMessage(MonitoringResponse.ProfilesAppNotReady);
+
+            if (!CFGameTimeMonitoring.IsMonitoring)
+                return new StopMonitoringResponseMessage(MonitoringResponse.MonitoringNotRunningYet);
+
             CFGameTimeMonitoring.StopMonitoring();
-            CallDispatcher!.Trigger("EXEV_GameTimeMonitoringStopped");
+            CallDispatcher.Trigger("EXEV_GameTimeMonitoringStopped");
+
+            return new StopMonitoringResponseMessage(MonitoringResponse.MonitoringStopped);
         }
 
-        public bool SwitchToProfilesAppBatch()
+        private bool IsProfilesViewReady()
         {
-            if (!AppEnvironment.IsApplicationRunning(typeof(ProfilesApp).FullName!) || !AppEnvironment.IsApplicationInitialized(typeof(ProfilesApp).FullName!))
-                return false;
+            string profilesApp = typeof(ProfilesApp).FullName!;
 
-            CallDispatcher!.Trigger("EXEV_SwitchToApplication", typeof(ProfilesApp).FullName!);
-            return true;
+            return AppEnvironment.IsApplicationRunning(profilesApp)
+                && AppEnvironment.IsApplicationInitialized(profilesApp)
+                && CallDispatcher.IsRegistered("EXEV_SwitchToApplication")
+                && CallDispatcher.IsRegistered("EXEV_SwitchProfile")
+                && CallDispatcher.IsRegistered("EXEV_GameTimeMonitoringStarted")
+                && CallDispatcher.IsRegistered("EXEV_GameTimeMonitoringStopped");
         }
-
-        public void SwitchProfileBatch(long pfid)
-        {
-            AppEnvironment.CurrentPfid = pfid;
-            CallDispatcher!.Trigger("EXEV_SwitchProfile", pfid);
-        }
-
-        public override void SetWindowProperties(UIXApplicationStartOptions options)
-        {
-
-        }
-
-        protected override void InitializeAppInfo()
-        {
-            ReadFromAppProperties(nameof(ProfilesBatchApp));
-        }
-
-        public override void InitializeApplicationOutput()
-        {
-
-        }
+        #endregion
     }
 }

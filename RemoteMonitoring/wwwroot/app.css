@@ -194,9 +194,6 @@
   .inset-0 {
     inset: 0;
   }
-  .top-20 {
-    top: calc(var(--spacing) * 20);
-  }
   .right-0 {
     right: 0;
   }

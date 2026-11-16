@@ -1,5 +1,10 @@
-﻿using GameTimeNext.Core.Application.TableObjects;
+﻿using GameTimeNext.Core.Application.General;
+using GameTimeNext.Core.Application.TableObjects;
+using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Shared.Profiles;
+using System.Globalization;
+using System.IO;
+using System.Windows.Media;
 
 namespace GameTimeNext.Core.Application.DataManagers
 {
@@ -8,11 +13,14 @@ namespace GameTimeNext.Core.Application.DataManagers
         #region Dto Conversion
         public ProfileDto ToDto(T1PROFI obj)
         {
+            Color accent = FnTheme.GetProfileAccentColor(obj);
+
             return new ProfileDto
             {
                 PFID = obj.PFID,
                 GANA = obj.GANA,
-                AccentColorHex = "FF00FF"
+                PPFN = Path.Combine(AppConfig.Storage.ProfileCoversDirectoryPath, obj.PPFN),
+                AccentColorHex = string.Create(CultureInfo.InvariantCulture, $"{accent.R:X2}{accent.G:X2}{accent.B:X2}")
             };
         }
 

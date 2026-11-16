@@ -1,6 +1,8 @@
 ﻿using GameTimeNext.Core.Application.Profiles.Batch;
 using GameTimeNext.Shared;
 using GameTimeNext.Shared.Base;
+using GameTimeNext.Shared.Profiles;
+using GameTimeNext.Shared.Profiles.Monitoring;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -134,12 +136,26 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
                         return;
 
                     // Profiles
-                    case AvailableRequests.AllProfiles:
-                        await SendResponse(writer, _profilesBatchApp.GetAllProfiles());
+                    case AvailableRequests.Profiles:
+                        await SendResponse(writer, _profilesBatchApp.GetProfiles());
                         return;
                     case AvailableRequests.Profile:
-                        ProfileRequestMessage reqMsg = JsonSerializer.Deserialize<ProfileRequestMessage>(requestMessage)!;
-                        await SendResponse(writer, _profilesBatchApp.GetProfile(reqMsg.PFID));
+                        {
+                            ProfileRequestMessage reqMsg = JsonSerializer.Deserialize<ProfileRequestMessage>(requestMessage)!;
+                            await SendResponse(writer, _profilesBatchApp.GetProfile(reqMsg.PFID));
+                            return;
+                        }
+                    case AvailableRequests.StartMonitoring:
+                        {
+                            StartMonitoringRequestMessage reqMsg = JsonSerializer.Deserialize<StartMonitoringRequestMessage>(requestMessage)!;
+                            await SendResponse(writer, _profilesBatchApp.StartMonitoring(reqMsg.PFID, reqMsg.CreatePlaythrough));
+                            return;
+                        }
+                    case AvailableRequests.StopMonitoring:
+                        await SendResponse(writer, _profilesBatchApp.StopMonitoring());
+                        return;
+                    case AvailableRequests.MonitoringState:
+                        await SendResponse(writer, _profilesBatchApp.GetMonitoringState());
                         return;
 
                     default:

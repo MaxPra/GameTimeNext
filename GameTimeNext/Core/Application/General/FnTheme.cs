@@ -99,26 +99,52 @@ namespace GameTimeNext.Core.Application.General
         /// </summary>
         public static void ApplyProfileAccentColors(T1PROFI? t1profi)
         {
-            Dictionary<string, string>? profileColors = null;
+            Dictionary<string, string>? profileColors = GetProfileColors(t1profi);
 
-            if (t1profi != null
-                && t1profi.ACAC
-                && !FnString.IsNullEmptyOrWhitespace(t1profi.ACCO)
-                && AppEnvironment.GetAppConfig().AppSettings.AllowProfileSpecificStyleChanges)
-            {
-                profileColors = new CAccentColors(t1profi.ACCO).Dezerialize()?.AccentColors;
-            }
-
-            if (profileColors != null
-                && profileColors.ContainsKey("accent")
-                && profileColors.ContainsKey("hover")
-                && profileColors.ContainsKey("pressed"))
+            if (profileColors != null)
             {
                 ApplyThemeColors(profileColors);
                 return;
             }
 
             ApplyDefaultTheme();
+        }
+
+        /// <summary>
+        /// Accent color arcora shows for the profile, without applying it: the profile's own accent if it uses its own
+        /// accent colors and profile specific styles are allowed in the settings, otherwise the default accent
+        /// (also for null). Not read from the application resources, they hold the colors of the selected profile.
+        /// </summary>
+        public static Color GetProfileAccentColor(T1PROFI? t1profi)
+        {
+            Dictionary<string, string>? profileColors = GetProfileColors(t1profi);
+
+            return profileColors != null
+                ? ToColor(profileColors["accent"])
+                : GetDefaultAccentColors()[ColorAccent];
+        }
+
+        /// <summary>
+        /// Own accent colors of the profile (keys accent, hover, pressed), or null if it has none, they are incomplete
+        /// or profile specific styles are not allowed in the settings.
+        /// </summary>
+        private static Dictionary<string, string>? GetProfileColors(T1PROFI? t1profi)
+        {
+            if (t1profi == null
+                || !t1profi.ACAC
+                || FnString.IsNullEmptyOrWhitespace(t1profi.ACCO)
+                || !AppEnvironment.GetAppConfig().AppSettings.AllowProfileSpecificStyleChanges)
+                return null;
+
+            Dictionary<string, string>? profileColors = new CAccentColors(t1profi.ACCO).Dezerialize()?.AccentColors;
+
+            if (profileColors == null
+                || !profileColors.ContainsKey("accent")
+                || !profileColors.ContainsKey("hover")
+                || !profileColors.ContainsKey("pressed"))
+                return null;
+
+            return profileColors;
         }
 
         private static void ApplyAccentColors(Color accent, Color hover, Color pressed)

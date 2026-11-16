@@ -270,12 +270,4 @@ namespace RemoteMonitoring.Base
             public WrongOrderException() : base("Wrong order, idiot!") { }
         }
     }
-
-    public enum ConnectionState
-    {
-        NeverConnected = 0,
-        Connected = 1,
-        Reconnecting = 2,
-        Disconnected = 9,
-    }
 }

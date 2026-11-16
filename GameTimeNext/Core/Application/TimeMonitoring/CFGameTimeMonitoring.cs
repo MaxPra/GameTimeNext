@@ -97,5 +97,10 @@ namespace GameTimeNext.Core.Application.TimeMonitoring
 
             return (double)currentTimeSpan.TotalSeconds / 60;
         }
+
+        public static (bool IsMonitoring, long PFID, DateTime StartedAt) GetMonitoringState()
+        {
+            return (IsMonitoring, _monitoringPFID, _startTime);
+        }
     }
 }

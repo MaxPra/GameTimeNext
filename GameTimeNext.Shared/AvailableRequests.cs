@@ -7,7 +7,10 @@
         Log = 1,
 
         // Profiles
-        AllProfiles = 101,
+        Profiles = 101,
         Profile = 102,
+        StartMonitoring = 103,
+        StopMonitoring = 104,
+        MonitoringState = 105,
     }
 }

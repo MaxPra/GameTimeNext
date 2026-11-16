@@ -1,4 +1,6 @@
-﻿namespace GameTimeNext.Shared.Base
+﻿using GameTimeNext.Shared.Base;
+
+namespace GameTimeNext.Shared.Profiles
 {
     public class ProfileRequestMessage : RequestMessageBase
     {

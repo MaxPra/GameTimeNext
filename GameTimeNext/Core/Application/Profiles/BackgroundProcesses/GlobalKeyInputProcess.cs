@@ -82,7 +82,7 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
             if (CFGameTimeMonitoring.IsMonitoring)
             {
 
-                if (CFBlackout.AllowedToToggleBlackout(new TXPROFI().Read(AppEnvironment.CurrentPfid)))
+                if (CFBlackout.AllowedToToggleBlackout(new TXPROFI().Read(AppEnvironment.CurrentPfid)!))
                 {
 
                     bool isExternalGame = TFPROFI.IsExternalGame(AppEnvironment.CurrentPfid);
@@ -90,15 +90,6 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
                     CallDispatcher.Invoke(() =>
                     {
                         CFBlackout.ToggleSecondaryBlackout(System.Windows.Application.Current.MainWindow, false, isExternalGame);
-                    });
-                }
-
-                if (AppEnvironment.GetAppConfig().AppSettings.ShowToastNotification)
-                {
-                    CallDispatcher.Invoke(() =>
-                    {
-                        T1PROFI t1profi = new TXPROFI().Read(AppEnvironment.CurrentPfid);
-                        CFToast.Show(t1profi.GANA, "Monitoring stopped...");
                     });
                 }
 
@@ -112,7 +103,7 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
                 if (!CFProfilesApp.AskForNewPlaythroughCreationIfNotActive(AppEnvironment.CurrentPfid, this))
                     return;
 
-                if (CFBlackout.AllowedToToggleBlackout(new TXPROFI().Read(AppEnvironment.CurrentPfid)))
+                if (CFBlackout.AllowedToToggleBlackout(new TXPROFI().Read(AppEnvironment.CurrentPfid)!))
                 {
 
                     bool isExternalGame = TFPROFI.IsExternalGame(AppEnvironment.CurrentPfid);
@@ -120,15 +111,6 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
                     CallDispatcher.Invoke(() =>
                     {
                         CFBlackout.ToggleSecondaryBlackout(System.Windows.Application.Current.MainWindow, false, isExternalGame);
-                    });
-                }
-
-                if (AppEnvironment.GetAppConfig().AppSettings.ShowToastNotification)
-                {
-                    CallDispatcher.Invoke(() =>
-                    {
-                        T1PROFI t1profi = new TXPROFI().Read(AppEnvironment.CurrentPfid);
-                        CFToast.Show(t1profi.GANA, "Monitoring started...");
                     });
                 }
 

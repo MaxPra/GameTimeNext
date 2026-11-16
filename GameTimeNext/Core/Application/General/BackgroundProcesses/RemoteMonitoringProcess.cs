@@ -13,7 +13,7 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
 {
     public class RemoteMonitoringProcess : UIXBackgroundProcess
     {
-        private static bool _DEBUG_STARTBLAZOR = true;
+        private static bool _DEBUG_STARTBLAZOR = false;
         private const int _MAX_BLAZOR_ERROR_OUTPUT = 32000;
 
         private Process? _blazorProcess;

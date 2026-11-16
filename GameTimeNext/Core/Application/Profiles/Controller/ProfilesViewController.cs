@@ -1,35 +1,23 @@
 ﻿using GameTimeNext.Core.Application.BigPicture;
 using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.General;
-using GameTimeNext.Core.Application.Playthroughs;
 using GameTimeNext.Core.Application.Profiles.BackgroundProcesses;
 using GameTimeNext.Core.Application.Profiles.DataWrapper;
 using GameTimeNext.Core.Application.Profiles.Selectors;
-using GameTimeNext.Core.Application.Profiles.Types;
 using GameTimeNext.Core.Application.Profiles.Viewmodel;
 using GameTimeNext.Core.Application.Profiles.Views;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Application.TimeMonitoring;
 using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.Config;
-using GameTimeNext.Core.Framework.LauncherIntegration;
 using GameTimeNext.Core.Framework.UI;
-using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.Utils;
-using System.Diagnostics;
-using System.IO;
 using System.Text.Json.Serialization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Threading;
 using UIX.ViewController.Engine.Controller;
-using UIX.ViewController.Engine.FrameworkElements;
 using UIX.ViewController.Engine.FrameworkElements.Selectors;
-using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Runnables;
-using UIX.ViewController.Engine.Utils;
-using static UIX.ViewController.Engine.FrameworkElements.UIXContextMenuFactory;
 
 namespace GameTimeNext.Core.Application.Profiles.Controller
 {
@@ -274,12 +262,15 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         {
             GetView().MonitoringOverlay.Visibility = Visibility.Visible;
 
+            if (AppEnvironment.GetAppConfig().AppSettings.ShowToastNotification)
+            {
+                T1PROFI t1profi = new TXPROFI().Read(AppEnvironment.CurrentPfid)!;
+                CFToast.Show(t1profi.GANA, "Monitoring started...");
+            }
+
             if (AppEnvironment.GetAppConfig().AppSettings.ShowMonitoringIndicator)
             {
-                GetApp().CallDispatcher.Invoke(() =>
-                {
-                    CFMonitoringIndicator.ToggleIndicator(System.Windows.Application.Current.MainWindow);
-                });
+                CFMonitoringIndicator.ToggleIndicator(System.Windows.Application.Current.MainWindow);
             }
 
             ProfilesDetailSubViewController profileDetailViewController = (ProfilesDetailSubViewController)GetApp().ProfilesDetailView.ViewController;
@@ -294,10 +285,13 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             if (AppEnvironment.GetAppConfig().AppSettings.ShowMonitoringIndicator)
             {
-                GetApp().CallDispatcher.Invoke(() =>
-                {
-                    CFMonitoringIndicator.ToggleIndicator(System.Windows.Application.Current.MainWindow);
-                });
+                CFMonitoringIndicator.ToggleIndicator(System.Windows.Application.Current.MainWindow);
+            }
+
+            if (AppEnvironment.GetAppConfig().AppSettings.ShowToastNotification)
+            {
+                T1PROFI t1profi = new TXPROFI().Read(AppEnvironment.CurrentPfid)!;
+                CFToast.Show(t1profi.GANA, "Monitoring stopped...");
             }
 
             await BuildProfilesListBoxAsync(AppEnvironment.CurrentPfid);
