@@ -108,6 +108,19 @@
         box-shadow: inset 1px 1px 0 rgb(255 255 255 / 0.24), inset -1px -1px 0 rgb(255 255 255 / 0.1);
     }
 
+    /*
+        Panel of a modal (ConfirmDialog, connection lost to arcora or to the web app): popup surface like arcora's
+        dialogs, slides in. The container places it as bottom sheet on the phone, centered from tablet width.
+    */
+    .arc-sheet {
+        @apply flex w-full max-w-md animate-sheet-in flex-col gap-3 rounded-[10px] border border-white/10 border-t-white/20 bg-arc-popup p-5 motion-reduce:animate-none;
+    }
+
+    /* Busy indicator in the accent color (no display set, so hidden / block utilities can switch it) */
+    .arc-spinner {
+        @apply size-5 shrink-0 animate-spin rounded-full border-2 border-white/15 border-t-accent motion-reduce:animate-none;
+    }
+
     /* Game cover like arcora's library: 2:3, small radius, fine light edge and a soft shadow; image or placeholder inside */
     .arc-cover {
         /* Shadow as utility: it is combined with the ring, a plain box-shadow would replace the ring */

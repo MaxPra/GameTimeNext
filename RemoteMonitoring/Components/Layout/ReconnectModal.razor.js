@@ -8,6 +8,10 @@ retryButton.addEventListener("click", retry);
 const resumeButton = document.getElementById("components-resume-button");
 resumeButton.addEventListener("click", resume);
 
+// A reload asks the web app for a new page (or the pairing page, if the phone was unpaired meanwhile)
+const reloadButton = document.getElementById("components-reload-button");
+reloadButton.addEventListener("click", () => location.reload());
+
 function handleReconnectStateChanged(event) {
     if (event.detail.state === "show") {
         reconnectModal.showModal();
