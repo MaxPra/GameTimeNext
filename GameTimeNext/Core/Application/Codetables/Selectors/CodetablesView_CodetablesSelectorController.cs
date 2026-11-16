@@ -73,9 +73,7 @@ namespace GameTimeNext.Core.Application.Codetables.Selectors
 
             CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window);
 
-            CFMBOXResult result = cfmbox.Show(GetErrorMessage("GLO0002", "this codetable"), CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
-
-            if (result == CFMBOXResult.Yes)
+            if (cfmbox.ConfirmDelete(GetErrorMessage("GLO0002", $"The codetable {t1ctabh.TXTYP}")))
             {
                 TFCTABH.DeleteCodetableAndEntries(t1ctabh);
 

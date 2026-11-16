@@ -80,9 +80,7 @@ namespace GameTimeNext.Core.Application.Metadata.Selectors
 
             CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window);
 
-            CFMBOXResult result = cfmbox.Show(GetErrorMessage("GLO0001", "this metadata position"), CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
-
-            if (result == CFMBOXResult.Yes)
+            if (cfmbox.ConfirmDelete(GetErrorMessage("GLO0001", $"The metadata position {t1metap.PONAM}")))
             {
                 new TXMETAP().Delete(t1metap.MENAM, t1metap.PONAM);
 

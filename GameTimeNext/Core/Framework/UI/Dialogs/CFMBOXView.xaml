@@ -136,12 +136,23 @@
                 Glass buttons of the app (implicit Button style, height Control.Height); the controller gives the default
                 button Button.Primary. Size and spacing are set on the buttons, so they stay with the style switch.
             -->
+            <Grid>
+            <!--  Destructive confirmation (CFMBOX.ConfirmDestructive): the action button has to be held  -->
+            <TextBlock
+                x:Name="tbHoldHint"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Style="{StaticResource Text.Caption}"
+                Text="Hold to confirm"
+                Visibility="Collapsed" />
+
+            <!--  Button 1 is the main action (Yes / OK / Delete): on the right like in the views (Cancel left of Save)  -->
             <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
                 <Button
-                    x:Name="BtnButton1"
+                    x:Name="BtnButton3"
                     MinWidth="88"
                     Margin="8,0,0,0"
-                    Content="OK"
+                    Content="Cancel"
                     Visibility="Collapsed" />
 
                 <Button
@@ -152,12 +163,13 @@
                     Visibility="Collapsed" />
 
                 <Button
-                    x:Name="BtnButton3"
+                    x:Name="BtnButton1"
                     MinWidth="88"
                     Margin="8,0,0,0"
-                    Content="Cancel"
+                    Content="OK"
                     Visibility="Collapsed" />
             </StackPanel>
+            </Grid>
         </Border>
     </Grid>
 </ui:GTNWindow>

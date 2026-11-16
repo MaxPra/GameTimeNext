@@ -140,11 +140,10 @@ namespace GameTimeNext.Core.Application.Profiles.Selectors
         protected async Task EV_ctxtDelete()
         {
             CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window);
-            CFMBOXResult result = cfmbox.Show(GetErrorMessage("GLO0002", "this profile"), CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
+            T1PROFI selectedT1profi = GetSelectedProfile();
 
-            if (result == CFMBOXResult.Yes)
+            if (cfmbox.ConfirmDelete(GetErrorMessage("GLO0002", $"\"{selectedT1profi.GANA}\"")))
             {
-                T1PROFI selectedT1profi = GetSelectedProfile();
 
                 string coverPath = Path.Combine(AppConfig.Storage.ProfileCoversDirectoryPath ?? string.Empty, selectedT1profi.PPFN);
                 File.Delete(coverPath);

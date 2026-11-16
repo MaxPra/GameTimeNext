@@ -105,6 +105,7 @@
 
         (implicit)        neutral button
         Button.Primary    accent fill, the main action of a view (Button.Secondary is the old name, kept for compatibility)
+        Button.Danger     destructive action (red fill), has to be held before it clicks (UIXHoldToConfirm)
         Button.Ghost      no fill until hovered, for icon buttons and secondary actions
         Button.Icon       square neutral button for a single icon (no padding, otherwise the icon gets clipped)
     -->
@@ -147,6 +148,15 @@
 
     <!--  Check of the save confirmation, on the circle in the text color  -->
     <SolidColorBrush x:Key="Brush.Button.SavedCheck" Color="#FF14141A" />
+
+    <!--  Hold to confirm (UIXHoldToConfirm): darker layer that runs over the held button  -->
+    <SolidColorBrush x:Key="Brush.Button.HoldFill" Color="#59000000" />
+
+    <!--  Fill of Button.Danger: translucent like the accent glass of Button.Primary, in the danger color  -->
+    <SolidColorBrush
+        x:Key="Brush.Danger.Glass"
+        Opacity="0.8"
+        Color="{DynamicResource Color.Danger}" />
 
     <ControlTemplate x:Key="Template.Button" TargetType="{x:Type ButtonBase}">
         <ControlTemplate.Resources>
@@ -209,6 +219,24 @@
                 IsHitTestVisible="False"
                 Opacity="0" />
 
+
+            <!--
+                Hold to confirm (UIXHoldToConfirm, e.g. Button.Danger): a darker layer runs over the fill from left to right
+                while the button is held (hard edge at Progress). Only shown while the engine reports IsActive.
+            -->
+            <Border
+                x:Name="HoldFill"
+                Background="{DynamicResource Brush.Button.HoldFill}"
+                CornerRadius="{StaticResource Control.CornerRadius}"
+                IsHitTestVisible="False"
+                Visibility="Collapsed">
+                <Border.OpacityMask>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                        <GradientStop Offset="{Binding Path=(uixprops:UIXHoldToConfirm.Progress), RelativeSource={RelativeSource TemplatedParent}}" Color="Black" />
+                        <GradientStop Offset="{Binding Path=(uixprops:UIXHoldToConfirm.Progress), RelativeSource={RelativeSource TemplatedParent}}" Color="Transparent" />
+                    </LinearGradientBrush>
+                </Border.OpacityMask>
+            </Border>
 
             <ContentPresenter
                 x:Name="Content"
@@ -396,6 +424,10 @@
                 <Setter TargetName="Glass" Property="Visibility" Value="Collapsed" />
             </Trigger>
 
+            <Trigger Property="uixprops:UIXHoldToConfirm.IsActive" Value="True">
+                <Setter TargetName="HoldFill" Property="Visibility" Value="Visible" />
+            </Trigger>
+
             <!--  Pressed: sinks in quickly, springs back softly on release  -->
             <Trigger Property="IsPressed" Value="True">
                 <Trigger.EnterActions>
@@ -519,6 +551,19 @@
             </LinearGradientBrush>
         </Style.Resources>
         <Setter Property="Background" Value="{DynamicResource Brush.Accent.Glass}" />
+    </Style>
+
+    <!--
+        Destructive action (Delete, ...): filled like Button.Primary, in the danger color, and it has to be held for
+        two seconds before it clicks (UIXHoldToConfirm; a darker layer runs over it). Set Duration to 0 on the
+        button for a destructive button without hold.
+    -->
+    <Style
+        x:Key="Button.Danger"
+        BasedOn="{StaticResource Button.Primary}"
+        TargetType="Button">
+        <Setter Property="Background" Value="{StaticResource Brush.Danger.Glass}" />
+        <Setter Property="uixprops:UIXHoldToConfirm.Duration" Value="0:0:2" />
     </Style>
 
     <!--  Former name of Button.Primary, still used by existing views  -->

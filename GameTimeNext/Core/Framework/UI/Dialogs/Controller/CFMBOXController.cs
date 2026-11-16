@@ -4,6 +4,7 @@ using Button = System.Windows.Controls.Button;
 using Control = System.Windows.Controls.Control;
 using System.Windows.Input;
 using System.Windows.Media;
+using UIX.ViewController.Engine.AttachedProperties;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.Events;
 using UIX.ViewController.Engine.FrameworkElements.Markdown;
@@ -31,7 +32,10 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
         Question = 2,
         Warning = 3,
         Error = 4,
-        Success = 5
+        Success = 5,
+
+        /// <summary>Trash can in the danger color, for confirmations of a deletion (CFMBOX.ConfirmDelete).</summary>
+        Delete = 6
     }
 
     public enum CFMBOXType
@@ -105,6 +109,12 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
         // Input question (ShowInputDialog): the input field is shown and gets the focus
         private bool _isInput;
 
+        // Destructive confirmation (ShowDestructiveDialog): the action button has to be held, Cancel is the default
+        private bool _isDestructive;
+
+        // Text of the action button of a destructive confirmation (the Yes button)
+        private string? _actionText;
+
         // Memo text dialog (e.g. changelog): sized to the text within these bounds
         private const double MemotextMinWidth = 460;
         private const double MemotextMinHeight = 220;
@@ -173,6 +183,29 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
                 Result = _windowReturn.Result,
                 Text = confirmed ? _windowReturn.InputText : string.Empty
             };
+        }
+
+        /// <summary>
+        /// Shows the message with the action button (actionText, Button.Danger: held before it confirms) and Cancel,
+        /// which is the default (Enter, Esc). True if the action was confirmed.
+        /// </summary>
+        public bool ShowDestructiveDialog(string title, string message, string actionText, CFMBOXIcon icon, Window? owner)
+        {
+            _owner = owner;
+            _isDestructive = true;
+            _windowReturn.Result = CFMBOXResult.None;
+
+            _actionText = actionText;
+
+            ApplyContent(title, message, CFMBOXResult.Yes | CFMBOXResult.Cancel, icon, owner, CFMBOXType.Default);
+
+            // Yes is the action: the red hold button
+            GetView().BtnButton1.SetResourceReference(FrameworkElement.StyleProperty, "Button.Danger");
+            GetView().tbHoldHint.Visibility = Visibility.Visible;
+
+            Show(true);
+
+            return _windowReturn.Result == CFMBOXResult.Yes;
         }
 
         protected override void Init()
@@ -368,6 +401,7 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
                 CFMBOXIcon.Warning => "Warning",
                 CFMBOXIcon.Error => "Error",
                 CFMBOXIcon.Success => "Success",
+                CFMBOXIcon.Delete => "Delete",
                 _ => string.Empty,
             };
         }
@@ -410,6 +444,10 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
 
             if (e.Key == Key.Enter)
             {
+                // A focused hold button takes Enter itself (it confirms only when held)
+                if (Keyboard.FocusedElement is DependencyObject focused && UIXHoldToConfirm.GetDuration(focused) > TimeSpan.Zero)
+                    return;
+
                 CFMBOXResult defaultResult = GetDefaultResult();
                 if (defaultResult != CFMBOXResult.None)
                 {
@@ -515,7 +553,8 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
                 : defaultResult == _button3Result ? GetView().BtnButton3
                 : null;
 
-            if (defaultButton == null)
+            // Destructive confirmation: Cancel is only the default for Enter, the action button brings its own look
+            if (defaultButton == null || _isDestructive)
                 return;
 
             // Accent glass like the confirming button of every other view
@@ -593,6 +632,11 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
                     GetView().TbIconGlyph.Foreground = TryFindBrush("Brush.Success", Color.FromRgb(46, 224, 137));
                     break;
 
+                case CFMBOXIcon.Delete:
+                    GetView().TbIconGlyph.Text = "";
+                    GetView().TbIconGlyph.Foreground = TryFindBrush("Brush.Danger", Color.FromRgb(255, 76, 102));
+                    break;
+
                 default:
                     GetView().TbIconGlyph.Text = string.Empty;
                     break;
@@ -628,6 +672,10 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
 
         private CFMBOXResult GetDefaultResult()
         {
+            // Never the destructive action: Enter must not delete
+            if (_isDestructive && ContainsResult(CFMBOXResult.Cancel))
+                return CFMBOXResult.Cancel;
+
             if (_button1Result != CFMBOXResult.None)
                 return _button1Result;
 
@@ -664,12 +712,12 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
             return (value & flag) == flag;
         }
 
-        private static string GetButtonText(CFMBOXResult result)
+        private string GetButtonText(CFMBOXResult result)
         {
             return result switch
             {
                 CFMBOXResult.Ok => "OK",
-                CFMBOXResult.Yes => "Yes",
+                CFMBOXResult.Yes => _actionText ?? "Yes",
                 CFMBOXResult.No => "No",
                 CFMBOXResult.Cancel => "Cancel",
                 _ => "OK"

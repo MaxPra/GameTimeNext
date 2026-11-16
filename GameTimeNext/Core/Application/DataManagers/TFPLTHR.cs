@@ -207,6 +207,11 @@ namespace GameTimeNext.Core.Application.DataManagers
         public static void UpdatePlaythroughStatus(UIXApplication app, ref T1PLTHR t1plthr, PlaythroughStatus status, T1PLTHR? currentT1plthr = null)
         {
             string question = string.Empty;
+
+            // Completing or canceling can't be undone: stated like a deletion, the button has to be held
+            string irreversibleMessage = string.Empty;
+            string irreversibleAction = string.Empty;
+
             switch (status)
             {
                 case PlaythroughStatus.Open:
@@ -217,10 +222,12 @@ namespace GameTimeNext.Core.Application.DataManagers
                         question += "\n\n" + app.GetErrorMessage("PLT0004");
                     break;
                 case PlaythroughStatus.Completed:
-                    question = app.GetErrorMessage("PLT0003", "complete");
+                    irreversibleMessage = app.GetErrorMessage("PLT0003", "completed");
+                    irreversibleAction = "Complete";
                     break;
                 case PlaythroughStatus.Canceled:
-                    question = app.GetErrorMessage("PLT0003", "cancel") + "\n\n" + app.GetErrorMessage("PLT0005");
+                    irreversibleMessage = app.GetErrorMessage("PLT0003", "canceled") + "\n" + app.GetErrorMessage("PLT0005");
+                    irreversibleAction = "Cancel Playthrough";
                     break;
                 case PlaythroughStatus.Paused:
                     question = app.GetErrorMessage("PLT0002", "pause");
@@ -232,6 +239,10 @@ namespace GameTimeNext.Core.Application.DataManagers
                 CFMBOXResult result = app.GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(question, CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
                 if (result == CFMBOXResult.No) return;
             }
+
+            if (!FnString.IsNullEmptyOrWhitespace(irreversibleMessage) &&
+                !app.GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).ConfirmDestructive(irreversibleMessage, irreversibleAction))
+                return;
 
             switch (status)
             {

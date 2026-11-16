@@ -185,9 +185,9 @@ namespace GameTimeNext.Core.Application.Playthroughs.Selectors
 
             CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window);
 
-            CFMBOXResult result = cfmbox.Show(GetErrorMessage("GLO0002", "this playthrough"), CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Warning);
+            string playthrough = FnString.IsNullEmptyOrWhitespace(t1plthr.PTDE) ? "This playthrough" : $"The playthrough \"{t1plthr.PTDE}\"";
 
-            if (result == CFMBOXResult.Yes)
+            if (cfmbox.ConfirmDelete(GetErrorMessage("GLO0002", playthrough)))
             {
                 TFPLTHR.DeletePlaythroughAndSessions(t1plthr.PTID);
 

@@ -80,9 +80,7 @@ namespace GameTimeNext.Core.Application.ApplicationProperties.Selectors
 
             CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window);
 
-            CFMBOXResult result = cfmbox.Show(GetErrorMessage("GLO0001", $"the application properties definition {t1aprdh.APDID}"), CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
-
-            if (result == CFMBOXResult.Yes)
+            if (cfmbox.ConfirmDelete(GetErrorMessage("GLO0001", $"The application properties definition {t1aprdh.APDID}")))
             {
                 new TXAPRDH().Delete(t1aprdh.APDID);
 
