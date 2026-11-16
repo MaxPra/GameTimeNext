@@ -24,6 +24,9 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
 
         private int _socketPort = 5050;
 
+        // Set from the UI thread ("Reset pairing"), handled in the next cycle of the process thread
+        private volatile bool _webAppRestartRequested;
+
         // Written by the process thread, read by others (module "Diagnostics")
         private readonly object _blazorStatusLock = new();
         private BlazorProcessStatus _blazorStatus = BlazorProcessStatus.NotStarted;
@@ -50,6 +53,13 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
             }
 
             HandleSocket();
+
+            if (_webAppRestartRequested)
+            {
+                _webAppRestartRequested = false;
+                FnLog.AddInfo(this, "Restarting the web app (pairing reset).");
+                StopBlazor();
+            }
 
             if (!FnSystem.IsDebug() || _DEBUG_STARTBLAZOR)
                 HandleBlazor();
@@ -286,7 +296,22 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
             return port;
         }
 
+        /// <summary>
+        /// Restarts the web app within the next cycle (5 s): ends every open page on the phones, they load again and
+        /// have to be paired again after "Reset pairing". Does nothing to a web app started separately (debug).
+        /// </summary>
+        public void RequestWebAppRestart()
+        {
+            _webAppRestartRequested = true;
+        }
+
         private void StopRemoteMonitoring()
+        {
+            StopBlazor();
+            StopSocketServer();
+        }
+
+        private void StopBlazor()
         {
             if (_blazorProcess is not null)
             {
@@ -308,7 +333,10 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
                     _blazorProcess = null;
                 }
             }
+        }
 
+        private void StopSocketServer()
+        {
             if (_socketServerProcess is not null)
             {
                 _socketServerProcess.Stop();

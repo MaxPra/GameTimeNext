@@ -1,0 +1,150 @@
+using GameTimeNext.Core.Application.General.BackgroundProcesses;
+using GameTimeNext.Core.Framework;
+using QRCoder;
+using System.Globalization;
+using System.IO;
+using System.Net;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
+using System.Security.Cryptography;
+using System.Windows.Media.Imaging;
+using UIX.ViewController.Engine.Utils;
+
+namespace GameTimeNext.Core.Application.General
+{
+    /// <summary>
+    /// Pairing and address of the remote monitoring: the QR code in the settings opens the web app on the phone and
+    /// pairs it in one step (/pair?code=...).
+    /// </summary>
+    public static class CFRemoteMonitoring
+    {
+        // Port of the web app when arcora didn't start it itself (debug: started from Visual Studio, launchSettings.json)
+        private const int DefaultWebAppPort = 5131;
+
+        private static readonly object SyncRoot = new object();
+
+        /// <summary>
+        /// The pairing code, created and stored on first use. Read by the web app over the socket.
+        /// </summary>
+        public static string GetPairingCode()
+        {
+            lock (SyncRoot)
+            {
+                EnsurePairingCode();
+                return AppEnvironment.GetAppConfig().RemoteMonitoringPairingCode;
+            }
+        }
+
+        /// <summary>
+        /// Replaces the pairing code: every paired phone has to scan the QR code again (e.g. after a lost phone). The
+        /// web app is restarted, so pages already open on a phone end too instead of running on.
+        /// </summary>
+        public static void ResetPairingCode()
+        {
+            lock (SyncRoot)
+            {
+                AppEnvironment.GetAppConfig().RemoteMonitoringPairingCode = CreateCode();
+                AppEnvironment.SaveAppConfig();
+            }
+
+            AppEnvironment.StartedBackgroundProcesses.Values.OfType<RemoteMonitoringProcess>().FirstOrDefault()?.RequestWebAppRestart();
+        }
+
+        /// <summary>
+        /// Port the web app listens on: the one arcora started it with, otherwise the default port.
+        /// </summary>
+        public static int GetWebAppPort()
+        {
+            RemoteMonitoringProcess? process = AppEnvironment.StartedBackgroundProcesses.Values.OfType<RemoteMonitoringProcess>().FirstOrDefault();
+            return process?.BlazorStatus.Port ?? DefaultWebAppPort;
+        }
+
+        /// <summary>
+        /// IPv4 addresses of the PC in the home network: active adapters with a default gateway and an address of a
+        /// private range. Virtual adapters are not excluded on purpose (a Hyper-V external switch is the real LAN);
+        /// VPNs (100.x), host-only switches (no gateway) and link-local addresses (169.254.x) drop out.
+        /// </summary>
+        public static List<string> GetLanAddresses()
+        {
+            List<string> addresses = new List<string>();
+
+            foreach (NetworkInterface adapter in NetworkInterface.GetAllNetworkInterfaces())
+            {
+                if (adapter.OperationalStatus != OperationalStatus.Up || adapter.NetworkInterfaceType == NetworkInterfaceType.Loopback)
+                    continue;
+
+                IPInterfaceProperties properties = adapter.GetIPProperties();
+
+                bool hasGateway = properties.GatewayAddresses.Any(gateway =>
+                    gateway.Address.AddressFamily == AddressFamily.InterNetwork && !gateway.Address.Equals(IPAddress.Any));
+
+                if (!hasGateway)
+                    continue;
+
+                foreach (UnicastIPAddressInformation unicast in properties.UnicastAddresses)
+                {
+                    if (unicast.Address.AddressFamily == AddressFamily.InterNetwork && IsPrivate(unicast.Address))
+                        addresses.Add(unicast.Address.ToString());
+                }
+            }
+
+            return addresses.Distinct().ToList();
+        }
+
+        /// <summary>
+        /// Link the QR code opens: web app on the address and pairing in one step.
+        /// </summary>
+        public static string BuildPairingUrl(string address, int port)
+        {
+            return string.Create(CultureInfo.InvariantCulture, $"http://{address}:{port}/pair?code={Uri.EscapeDataString(GetPairingCode())}");
+        }
+
+        /// <summary>
+        /// QR code of the text as a frozen image (usable in any thread).
+        /// </summary>
+        public static BitmapImage CreateQrCode(string text)
+        {
+            using QRCodeGenerator generator = new QRCodeGenerator();
+            using QRCodeData data = generator.CreateQrCode(text, QRCodeGenerator.ECCLevel.M);
+            byte[] png = new PngByteQRCode(data).GetGraphic(8, darkColorRgba: [0, 0, 0, 255], lightColorRgba: [255, 255, 255, 255]);
+
+            BitmapImage image = new BitmapImage();
+            using (MemoryStream stream = new MemoryStream(png))
+            {
+                image.BeginInit();
+                image.CacheOption = BitmapCacheOption.OnLoad;
+                image.StreamSource = stream;
+                image.EndInit();
+            }
+
+            image.Freeze();
+            return image;
+        }
+
+        private static void EnsurePairingCode()
+        {
+            if (!FnString.IsNullEmptyOrWhitespace(AppEnvironment.GetAppConfig().RemoteMonitoringPairingCode))
+                return;
+
+            AppEnvironment.GetAppConfig().RemoteMonitoringPairingCode = CreateCode();
+            AppEnvironment.SaveAppConfig();
+        }
+
+        /// <summary>
+        /// 128 random bits, URL safe (base64url without padding).
+        /// </summary>
+        private static string CreateCode()
+        {
+            return Convert.ToBase64String(RandomNumberGenerator.GetBytes(16)).TrimEnd('=').Replace('+', '-').Replace('/', '_');
+        }
+
+        private static bool IsPrivate(IPAddress address)
+        {
+            byte[] bytes = address.GetAddressBytes();
+
+            return bytes[0] == 10
+                || (bytes[0] == 172 && bytes[1] >= 16 && bytes[1] <= 31)
+                || (bytes[0] == 192 && bytes[1] == 168);
+        }
+    }
+}

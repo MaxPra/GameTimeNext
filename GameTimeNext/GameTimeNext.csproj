@@ -49,6 +49,8 @@
 		<!-- Native e_sqlite3 library required by System.Data.SQLite 2.x -->
 		<PackageReference Include="SourceGear.sqlite3" Version="3.53.4" />
 		<PackageReference Include="System.Data.SQLite" Version="2.0.2" />
+		<!-- QR code of the remote monitoring address in the settings (MIT license) -->
+		<PackageReference Include="QRCoder" Version="1.6.0" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -5,6 +5,7 @@
         // System
         Ping = 0,
         Log = 1,
+        PairingCode = 2,
 
         // Profiles
         Profiles = 101,

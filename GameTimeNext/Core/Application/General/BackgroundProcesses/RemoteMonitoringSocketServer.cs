@@ -15,7 +15,7 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
 {
     public class RemoteMonitoringSocketServer : UIXBackgroundProcess
     {
-        private static readonly AvailableRequests[] _UNLOGGED_REQUESTS = [AvailableRequests.Ping, AvailableRequests.Log];
+        private static readonly AvailableRequests[] _UNLOGGED_REQUESTS = [AvailableRequests.Ping, AvailableRequests.Log, AvailableRequests.PairingCode];
 
         private TcpListener? _listener;
 
@@ -133,6 +133,9 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
                     case AvailableRequests.Log:
                         WriteForwardedLog(JsonSerializer.Deserialize<LogRequestMessage>(requestMessage)!);
                         await SendResponse(writer, true);
+                        return;
+                    case AvailableRequests.PairingCode:
+                        await SendResponse(writer, CFRemoteMonitoring.GetPairingCode());
                         return;
 
                     // Profiles

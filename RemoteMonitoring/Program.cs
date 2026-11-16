@@ -21,6 +21,9 @@ builder.Services.AddSingleton<ProfilesApiService>();
 builder.Services.AddHostedService<SocketConnectionService>();
 builder.Services.AddHostedService<LogForwarder>();
 
+// Only paired phones (QR code in arcora's settings) may use the web app
+builder.Services.AddSingleton<PairingService>();
+
 // Injected by pages and running in the background: one instance for both
 builder.Services.AddSingleton<MonitoringStateService>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<MonitoringStateService>());
@@ -34,6 +37,9 @@ if (!app.Environment.IsDevelopment())
 }
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseAntiforgery();
+
+// Before every endpoint (pages, Blazor connection, covers): requests of unpaired devices end here
+app.UsePairing();
 
 app.MapStaticAssets();
 app.MapCovers();

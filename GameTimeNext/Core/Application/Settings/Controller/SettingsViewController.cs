@@ -364,6 +364,47 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             GetView().cbEnableSessionTimeQuery.IsChecked = _appSettings!.EnableSessionTimeQuery;
             GetView().cbEnableSessionCleanup.IsChecked = _appSettings!.EnableSessionCleanup;
             GetView().txbSessionCleanupSeconds.Text = _appSettings!.SessionCleanupSeconds.ToString(CultureInfo.CurrentCulture);
+
+            FillRemoteMonitoringPairing();
+        }
+
+        /// <summary>
+        /// QR code and address of the remote monitoring (only while it is on): the code links to /pair with the pairing
+        /// code on the first home network address, the text lists all addresses without the code.
+        /// </summary>
+        private void FillRemoteMonitoringPairing(int? port = null)
+        {
+            SettingsView view = GetView();
+            FnControls.SetVisible(view.grdRemoteMonitoringPairing, _appSettings!.RemoteMonitoring);
+
+            if (!_appSettings.RemoteMonitoring)
+                return;
+
+            int webAppPort = port ?? CFRemoteMonitoring.GetWebAppPort();
+            List<string> addresses = CFRemoteMonitoring.GetLanAddresses();
+
+            if (addresses.Count == 0)
+            {
+                view.imgRemoteMonitoringQr.Source = null;
+                view.txtRemoteMonitoringAddress.Text = "No home network connection found. Connect the PC to your router (LAN or Wi-Fi) and open the settings again.";
+                return;
+            }
+
+            view.imgRemoteMonitoringQr.Source = CFRemoteMonitoring.CreateQrCode(CFRemoteMonitoring.BuildPairingUrl(addresses[0], webAppPort));
+            view.txtRemoteMonitoringAddress.Text = string.Join(Environment.NewLine,
+                addresses.Select(address => string.Create(CultureInfo.InvariantCulture, $"http://{address}:{webAppPort}")));
+        }
+
+        protected void EV_btnResetPairing()
+        {
+            CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window);
+            if (cfmbox.Show(GetErrorMessage("SET0006"), CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question) != CFMBOXResult.Yes)
+                return;
+
+            CFRemoteMonitoring.ResetPairingCode();
+            FnLog.AddInfo(GetApp(), "Pairing of the remote monitoring reset: every phone has to scan the new QR code.");
+
+            FillRemoteMonitoringPairing();
         }
 
         private void FillDBOGeneral()
@@ -438,6 +479,9 @@ namespace GameTimeNext.Core.Application.Settings.Controller
                 _allowRemoteMonitoringOnSave = false;
                 AllowRemoteMonitoringInFirewall();
             }
+
+            // Switched on or off: show or hide the QR code
+            FillRemoteMonitoringPairing();
         }
 
         private void AllowRemoteMonitoringInFirewall()
@@ -467,6 +511,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
         protected void EXEV_RemoteMonitoringPortChanged(int port)
         {
             GetView().txtRemoteMonitoringPort.Text = $"Web-App accessible via port {port}.";
+            FillRemoteMonitoringPairing(port);
         }
 
         protected void EV_btnCaptureMonitoringKey()

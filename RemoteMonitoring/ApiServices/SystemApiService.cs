@@ -15,6 +15,15 @@ namespace RemoteMonitoring.ApiServices
             TryResult<bool> result = await TryRequestAsync<bool>(requestMessage);
             return result.Success ? result.Value : false;
         }
+
+        /// <summary>
+        /// Current pairing code of arcora, null if it did not answer.
+        /// </summary>
+        public async Task<string?> GetPairingCode()
+        {
+            TryResult<string> result = await TryRequestAsync<string>(new PairingCodeRequestMessage());
+            return result.Value;
+        }
         #endregion
     }
 }
