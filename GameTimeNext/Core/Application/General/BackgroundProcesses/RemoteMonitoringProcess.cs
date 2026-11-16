@@ -4,6 +4,7 @@ using GameTimeNext.Core.Framework.Utils;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 using UIX.ViewController.Engine.Runnables;
@@ -142,7 +143,7 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
             {
                 try
                 {
-                    port = GetFreePort(desiredPort: port, IPAddress.Any);
+                    port = GetFreeWebAppPort(desiredPort: port);
                 }
                 catch (Exception ex)
                 {
@@ -257,6 +258,25 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
 
             FnLog.AddError(this, $"Blazor process exited with code {exitCode} (0x{exitCode:X8}).",
                 errorOutput.Length == 0 ? null : new ForwardedException(errorOutput));
+        }
+
+        /// <summary>
+        /// Port for the web app, which listens on all addresses: the desired one or the next one no listener uses.
+        /// Checked against the active listeners instead of a test listener: a listener of arcora on all addresses
+        /// makes Windows ask to allow arcora itself in the firewall (only the web app needs the rule).
+        /// </summary>
+        private int GetFreeWebAppPort(int desiredPort)
+        {
+            HashSet<int> usedPorts = IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpListeners().Select(endpoint => endpoint.Port).ToHashSet();
+
+            for (int port = desiredPort; port < desiredPort + 100 && port <= IPEndPoint.MaxPort; port++)
+            {
+                if (!usedPorts.Contains(port))
+                    return port;
+            }
+
+            // All taken: a random port, tested on loopback only (no firewall prompt)
+            return GetFreePort();
         }
 
         private int GetFreePort(int? desiredPort = null, IPAddress? desiredEndpoint = null)
