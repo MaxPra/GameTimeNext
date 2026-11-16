@@ -376,9 +376,14 @@ namespace GameTimeNext.Core.Application.Settings.Controller
         {
             SettingsView view = GetView();
             FnControls.SetVisible(view.grdRemoteMonitoringPairing, _appSettings!.RemoteMonitoring);
+            FnControls.SetVisible(view.txtRemoteMonitoringPort, _appSettings.RemoteMonitoring);
 
             if (!_appSettings.RemoteMonitoring)
+            {
+                // Switched off: the port of the stopped web app is no longer valid (set again by its next start)
+                view.txtRemoteMonitoringPort.Text = string.Empty;
                 return;
+            }
 
             int webAppPort = port ?? CFRemoteMonitoring.GetWebAppPort();
             List<string> addresses = CFRemoteMonitoring.GetLanAddresses();
