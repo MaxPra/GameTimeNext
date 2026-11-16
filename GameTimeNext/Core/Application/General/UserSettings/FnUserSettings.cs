@@ -27,6 +27,24 @@ namespace GameTimeNext.Core.Application.General.UserSettings
             AppEnvironment.SaveAppConfig();
         }
 
+        /// <summary>
+        /// Adds a favorite in front of the others (start order 1), unless it is already a favorite.
+        /// </summary>
+        public static void InsertFavoriteApplicationAtStart(List<FavoriteApplication> favoriteApplications, FavoriteApplication favApplication)
+        {
+            if (ContainsApplication(favoriteApplications, favApplication.FullName))
+                return;
+
+            List<FavoriteApplication> ordered = favoriteApplications.OrderBy(f => f.Order).ToList();
+            ordered.Insert(0, favApplication);
+            ReorderFavoriteApplications(ordered);
+
+            favoriteApplications.Clear();
+            favoriteApplications.AddRange(ordered);
+
+            AppEnvironment.SaveAppConfig();
+        }
+
         public static FavoriteApplication GetFavoriteApplication(List<FavoriteApplication> favApplications, string fullName)
         {
             foreach (var application in favApplications)

@@ -132,29 +132,29 @@
             BorderThickness="0,1,0,0"
             CornerRadius="0,0,9,9">
 
+            <!--
+                Glass buttons of the app (implicit Button style, height Control.Height); the controller gives the default
+                button Button.Primary. Size and spacing are set on the buttons, so they stay with the style switch.
+            -->
             <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-                <StackPanel.Resources>
-                    <Style BasedOn="{StaticResource {x:Type Button}}" TargetType="Button">
-                        <Setter Property="MinWidth" Value="88" />
-                        <Setter Property="MinHeight" Value="32" />
-                        <Setter Property="Height" Value="32" />
-                        <Setter Property="Padding" Value="16,0" />
-                        <Setter Property="Margin" Value="8,0,0,0" />
-                    </Style>
-                </StackPanel.Resources>
-
                 <Button
                     x:Name="BtnButton1"
+                    MinWidth="88"
+                    Margin="8,0,0,0"
                     Content="OK"
                     Visibility="Collapsed" />
 
                 <Button
                     x:Name="BtnButton2"
+                    MinWidth="88"
+                    Margin="8,0,0,0"
                     Content="No"
                     Visibility="Collapsed" />
 
                 <Button
                     x:Name="BtnButton3"
+                    MinWidth="88"
+                    Margin="8,0,0,0"
                     Content="Cancel"
                     Visibility="Collapsed" />
             </StackPanel>

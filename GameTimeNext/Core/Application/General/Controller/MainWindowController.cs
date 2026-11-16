@@ -4,6 +4,7 @@ using GameTimeNext.Core.Application.General.AppSearch;
 using GameTimeNext.Core.Application.General.UserSettings;
 using GameTimeNext.Core.Application.General.Views;
 using GameTimeNext.Core.Application.GTXMigration;
+using GameTimeNext.Core.Application.Home;
 using GameTimeNext.Core.Application.Profiles;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Config;
@@ -51,8 +52,6 @@ namespace GameTimeNext.Core.Application.General.Controller
             GetView().UseBackdropBlur = !isDynamicBackground;
 
             GetView().Title = AppConfig.Root.ApplicationName;
-            GetView().txWelcomeTitle.Text = $"Welcome to {AppConfig.Root.ApplicationName}";
-            GetView().txHelpTitle.Text = $"Learn how {AppConfig.Root.ApplicationName} works";
         }
 
         protected override async Task BuildFirstImplAsync()
@@ -72,6 +71,10 @@ namespace GameTimeNext.Core.Application.General.Controller
 
             FnLog.AddInfo(GetApp(), "Starting favorites...");
             AppEnvironment.AppLauncher.StartFavorites(GetApp());
+
+            // First start after the installation: the welcome page is opened after the favorites and shown in front
+            if (AppEnvironment.IsFirstStart)
+                AppEnvironment.AppLauncher.LaunchApplication(typeof(HomeApp), GetApp());
 
             FnLog.AddInfo(GetApp(), "Starting background processes...");
             // Start background processes
@@ -118,7 +121,6 @@ namespace GameTimeNext.Core.Application.General.Controller
 
         protected override void BuildImpl()
         {
-            FnControls.SetVisible(GetView().pnlEmptyTabMessage, GetView().MainTabControl.Items.Count == 0);
         }
 
         public override bool HandleGlobalShortcut(KeyEventArgs e)
@@ -197,7 +199,6 @@ namespace GameTimeNext.Core.Application.General.Controller
             // WPF renders covered elements too: the tabs below (e.g. animations of the profiles view) would keep costing
             // frames of the mode. Hidden keeps their layout and state.
             GetView().MainTabControl.Visibility = Visibility.Hidden;
-            FnControls.SetVisible(GetView().pnlEmptyTabMessage, false);
 
             // No display timeout while the mode is open: monitors turning off and on change the displays under a
             // running (or paused) game, which can crash its renderer
@@ -220,7 +221,6 @@ namespace GameTimeNext.Core.Application.General.Controller
             FnPowerRequest.Release();
 
             GetView().MainTabControl.Visibility = Visibility.Visible;
-            FnControls.SetVisible(GetView().pnlEmptyTabMessage, GetView().MainTabControl.Items.Count == 0);
 
             // The mode colored the window with the selected game: back to the profile selected in the profiles view
             FnTheme.ApplyProfileAccentColors(AppEnvironment.CurrentPfid == 0 ? null : new TXPROFI().Read(AppEnvironment.CurrentPfid));
@@ -253,10 +253,7 @@ namespace GameTimeNext.Core.Application.General.Controller
                 case UIXEventNames.Selector.SelectionChanged:
 
                     if (source is TabControl)
-                    {
-                        FnControls.SetVisible(GetView().pnlEmptyTabMessage, GetView().MainTabControl.Items.Count == 0);
                         Event_TabChanged((TabControl)source);
-                    }
                     break;
             }
         }
@@ -402,33 +399,9 @@ namespace GameTimeNext.Core.Application.General.Controller
             ShowHelp(application, tab.Header.ToString()!);
         }
 
-        // Help cards of the welcome screen: the text comes from the application definition of the module
-        protected void EV_btnHelpProfiles() => ShowHelpOf(nameof(ProfilesApp), "Profiles");
-        protected void EV_btnHelpPlaythroughs() => ShowHelpOf("PlaythroughsApp", "Playthroughs");
-        protected void EV_btnHelpDashboard() => ShowHelpOf("DashboardApp", "Dashboard");
-        protected void EV_btnHelpScreensetups() => ShowHelpOf("ScreensetupsApp", "Screensetups");
-        protected void EV_btnHelpBigPicture() => ShowHelpOf(nameof(BigPictureApp), "Big Picture mode");
-        protected void EV_btnHelpSettings() => ShowHelpOf("SettingsApp", "Settings");
-
         private void ShowHelp(UIXApplication application, string title)
         {
-            ShowHelpOf(application.AppProperties.ApplicationName, title);
-        }
-
-        /// <summary>
-        /// Shows the help text of an application definition (key = class name of the application) in the help window.
-        /// </summary>
-        private void ShowHelpOf(string applicationId, string title)
-        {
-            // Read again instead of the properties loaded at the start of the app, so a changed help text shows up immediately
-            UIXAppProperties? properties = UIXApplication.AppPropertiesProvider?.Read(applicationId);
-
-            string helpText = properties is null || FnString.IsNullEmptyOrWhitespace(properties.ApplicationHelpText)
-                ? "No help is available for this application yet."
-                : properties.ApplicationHelpText;
-
-            GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window)
-                .Show($"Help - {title}", helpText, CFMBOXResult.Ok, CFMBOXIcon.Info, CFMBOXType.MarkdownLarge);
+            CFMainApp.ShowApplicationHelp(GetApp(), application.AppProperties.ApplicationName, title);
         }
 
         protected void EV_ctxtClose(FrameworkElement target)

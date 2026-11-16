@@ -506,11 +506,9 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
         {
             CFMBOXResult defaultResult = GetDefaultResult();
 
+            // Back to the implicit glass button style
             foreach (Button button in new[] { GetView().BtnButton1, GetView().BtnButton2, GetView().BtnButton3 })
-            {
-                button.ClearValue(Control.BackgroundProperty);
-                button.ClearValue(Control.BorderBrushProperty);
-            }
+                button.ClearValue(FrameworkElement.StyleProperty);
 
             Button? defaultButton = defaultResult == _button1Result ? GetView().BtnButton1
                 : defaultResult == _button2Result ? GetView().BtnButton2
@@ -520,8 +518,8 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
             if (defaultButton == null)
                 return;
 
-            defaultButton.SetResourceReference(Control.BackgroundProperty, "Brush.Accent");
-            defaultButton.SetResourceReference(Control.BorderBrushProperty, "Brush.AccentHover");
+            // Accent glass like the confirming button of every other view
+            defaultButton.SetResourceReference(FrameworkElement.StyleProperty, "Button.Primary");
         }
 
         private void SetNextButton(CFMBOXResult result)

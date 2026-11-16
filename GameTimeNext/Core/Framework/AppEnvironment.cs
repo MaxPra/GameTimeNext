@@ -39,6 +39,12 @@ namespace GameTimeNext.Core.Framework
         public static Dictionary<string, UIXBackgroundProcess> StartedBackgroundProcesses { get => _startedBackgroundProcesses; set => _startedBackgroundProcesses = value; }
         public static List<InformationListItem> InformationList { get; set; } = new List<InformationListItem>();
 
+        /// <summary>
+        /// True when the app was started without a config file (first start after the installation): the home
+        /// application is opened then.
+        /// </summary>
+        public static bool IsFirstStart { get; private set; } = false;
+
         public static long CurrentPfid { get; set; } = 0;
         public static AppVersion AppVersion { get; set; } = new AppVersion();
 
@@ -304,10 +310,12 @@ namespace GameTimeNext.Core.Framework
             if (appConfigText == null || appConfigText.Length == 0)
             {
                 _appConfig = new AppConfig();
+                IsFirstStart = true;
                 return;
             }
 
             _appConfig = JsonSerializer.Deserialize<AppConfig>(appConfigText);
+            IsFirstStart = false;
         }
 
         private static void InitializeCleanup()
