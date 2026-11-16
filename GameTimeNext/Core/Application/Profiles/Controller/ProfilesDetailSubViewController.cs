@@ -519,9 +519,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         private void QuitGame(T1PROFI t1profi)
         {
             CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window);
-            CFMBOXResult result = cfmbox.Show(GetErrorMessage("PRO0008", t1profi.GANA), CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
-
-            if (result != CFMBOXResult.Yes)
+            if (!cfmbox.ConfirmDestructive(GetErrorMessage("PRO0008", t1profi.GANA), "Quit Game"))
                 return;
 
             UpdateUIGameQuitting(t1profi);

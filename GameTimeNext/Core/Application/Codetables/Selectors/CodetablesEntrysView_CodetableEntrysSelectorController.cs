@@ -109,9 +109,7 @@ namespace GameTimeNext.Core.Application.Codetables.Selectors
 
             CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window);
 
-            CFMBOXResult result = cfmbox.Show(GetErrorMessage("GLO0001", "this entry"), CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
-
-            if (result == CFMBOXResult.Yes)
+            if (cfmbox.ConfirmDelete(GetErrorMessage("GLO0001", $"The entry {t1ctabd.TXNUM}")))
             {
                 new TXCTABD().Delete(t1ctabd.TXTYP, t1ctabd.TXNUM);
 

@@ -146,6 +146,26 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
         }
 
         /// <summary>
+        /// Confirmation of a deletion, like on macOS / iOS: the message states what happens ("X will be deleted."
+        /// as first line, the consequence below it), the button says "Delete". True if the user held Delete.
+        /// </summary>
+        public bool ConfirmDelete(string message)
+        {
+            return ConfirmDestructive(message, "Delete", CFMBOXIcon.Delete);
+        }
+
+        /// <summary>
+        /// Confirmation of an action that loses data or progress (delete, quit a game, cancel a playthrough): the button
+        /// names the action (actionText, red, Button.Danger: it has to be held before it confirms), Cancel is the default
+        /// (Enter, Esc). True if confirmed. Always the dialog window, also in the Big Picture mode (the hold needs its button).
+        /// </summary>
+        public bool ConfirmDestructive(string message, string actionText, CFMBOXIcon icon = CFMBOXIcon.Warning)
+        {
+            CreateFreshDialog();
+            return _cfmboxController!.ShowDestructiveDialog(actionText, message, actionText, icon, this.WndParent ?? System.Windows.Application.Current?.MainWindow);
+        }
+
+        /// <summary>
         /// Standard question for UnsavedChangesImpl of a controller: Yes saves (then closes), No discards the changes,
         /// Cancel (or closing the message box) keeps the view open.
         /// </summary>
@@ -176,6 +196,7 @@ namespace GameTimeNext.Core.Framework.UI.Dialogs
                 CFMBOXIcon.Warning => "Warning",
                 CFMBOXIcon.Error => "Error",
                 CFMBOXIcon.Success => "Success",
+                CFMBOXIcon.Delete => "Delete",
                 _ => string.Empty,
             };
         }

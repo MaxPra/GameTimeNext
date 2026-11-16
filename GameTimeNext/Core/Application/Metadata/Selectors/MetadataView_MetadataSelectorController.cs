@@ -77,12 +77,7 @@ namespace GameTimeNext.Core.Application.Metadata.Selectors
 
             CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window);
 
-            CFMBOXResult result = cfmbox.Show(
-                GetErrorMessage("MET0001", t1metah.MENAM),
-                CFMBOXResult.Yes | CFMBOXResult.No,
-                CFMBOXIcon.Question);
-
-            if (result != CFMBOXResult.Yes)
+            if (!cfmbox.ConfirmDelete(GetErrorMessage("MET0001", t1metah.MENAM)))
                 return;
 
             TFMETAH.DeleteMetadataAndLinkedData(t1metah, deleteTable: true);

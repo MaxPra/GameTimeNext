@@ -92,9 +92,7 @@ namespace GameTimeNext.Core.Application.SelectionLists.Selectors
 
             CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window);
 
-            CFMBOXResult result = cfmbox.Show(GetErrorMessage("GLO0001", $"\"{entry.DESCR}\""), CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
-
-            if (result == CFMBOXResult.Yes)
+            if (cfmbox.ConfirmDelete(GetErrorMessage("GLO0001", $"\"{entry.DESCR}\"")))
             {
                 new TXCTABD().Delete(entry.TXTYP, entry.TXNUM);
 

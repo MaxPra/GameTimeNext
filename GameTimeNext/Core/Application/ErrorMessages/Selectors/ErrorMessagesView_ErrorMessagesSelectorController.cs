@@ -104,9 +104,7 @@ namespace GameTimeNext.Core.Application.ErrorMessages.Selectors
 
             CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window);
 
-            CFMBOXResult result = cfmbox.Show(GetErrorMessage("GLO0001", $"the error message {t1ermsg.ERMNR}"), CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
-
-            if (result == CFMBOXResult.Yes)
+            if (cfmbox.ConfirmDelete(GetErrorMessage("GLO0001", $"The error message {t1ermsg.ERMNR}")))
             {
                 new TXERMSG().Delete(t1ermsg.ERMNR);
 

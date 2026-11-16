@@ -184,9 +184,7 @@ namespace GameTimeNext.Core.Application.Diagnostics.Controller
         {
             CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window);
 
-            CFMBOXInputResult result = cfmbox.ShowInput(GetErrorMessage("DGN0001"), "", CFMBOXIcon.Warning);
-
-            if (!AppConfig.Root.ApplicationName.Equals(result.Text)) return;
+            if (!cfmbox.ConfirmDelete(GetErrorMessage("DGN0001"))) return;
 
             AppEnvironment.GetLogDataBaseManager().ClearT1sylog();
 

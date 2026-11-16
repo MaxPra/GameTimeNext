@@ -650,9 +650,8 @@ namespace GameTimeNext.Core.Application.Settings.Controller
                 return;
             }
 
-            CFMBOXResult result = GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(GetErrorMessage("SET0001", AppConfig.Root.ApplicationName), CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Info);
-
-            if (result == CFMBOXResult.Yes)
+            // The import replaces the whole data folder (FnBackup.ImportBackup): can't be undone, the button has to be held
+            if (GetApp().GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).ConfirmDestructive(GetErrorMessage("SET0001", AppConfig.Root.ApplicationName), "Import Backup"))
             {
                 AppEnvironment.GetAppConfig().AppSettings.BackupType = BackupType.IMPORT_BACKUP;
                 AppEnvironment.GetAppConfig().AppSettings.BackupImportPath = GetView().txbBackupImportPath.Text;

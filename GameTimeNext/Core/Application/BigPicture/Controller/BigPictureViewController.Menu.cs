@@ -447,6 +447,7 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
                 CFMBOXIcon.Warning => "\uE7BA",
                 CFMBOXIcon.Error => "\uEA39",
                 CFMBOXIcon.Success => "\uE73E",
+                CFMBOXIcon.Delete => "\uE74D",
                 _ => string.Empty
             };
         }

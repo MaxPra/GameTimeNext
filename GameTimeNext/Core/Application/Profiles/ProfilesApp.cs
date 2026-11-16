@@ -20,6 +20,8 @@ namespace GameTimeNext.Core.Application.Profiles
 
         public ProfilesApp() : base()
         {
+            // Always open (ApplicationLauncher.AlwaysStartedApplications): the running game detection depends on it
+            IsClosable = false;
         }
         public ProfilesView ProfilesView { get; set; }
         public ProfilesFilterView ProfilesFilterView { get; set; }

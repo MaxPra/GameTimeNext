@@ -105,10 +105,10 @@ namespace GameTimeNext.Core.Application.Menus.Selectors
             // A folder takes everything below it along
             bool hasChildren = TFMENUE.GetChildren(t1menue.MEID).Count > 0;
             string message = hasChildren
-                ? GetErrorMessage("GLO0002", $"the folder \"{t1menue.MEDE}\"")
+                ? GetErrorMessage("GLO0002", $"The folder \"{t1menue.MEDE}\"")
                 : GetErrorMessage("GLO0001", $"\"{t1menue.MEDE}\"");
 
-            if (cfmbox.Show(message, CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question) != CFMBOXResult.Yes)
+            if (!cfmbox.ConfirmDelete(message))
                 return;
 
             TFMENUE.DeleteWithChildren(t1menue.MEID);

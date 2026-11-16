@@ -1,6 +1,6 @@
 ﻿ERMNR;ERMSG;ERHIN;CRAT;CRUS;CHAT;CHUS
-GLO0001;Are you sure you want to delete &1?;;2026-10-26 14:56:58;prage;2026-10-26 14:56:58;prage
-GLO0002;Are you sure you want to delete &1?\nAll associated data will also be deleted.;;2026-10-26 14:57:11;prage;2026-10-26 14:57:11;prage
+GLO0001;&1 will be deleted.\nThis can't be undone.;;2026-10-26 14:56:58;prage;2026-11-16 12:00:00;prage
+GLO0002;&1 will be deleted.\nEverything that belongs to it will be deleted too. This can't be undone.;;2026-10-26 14:57:11;prage;2026-11-16 12:00:00;prage
 GLO0003;&1 is required.;;2026-10-26 18:00:00;prage;2026-10-26 18:00:00;prage
 GLO0004;&1 cannot exceed &2 characters.;;2026-10-26 18:00:00;prage;2026-10-26 18:00:00;prage
 GLO0005;&1 must be exactly &2 characters long.;;2026-10-26 18:00:00;prage;2026-10-26 18:00:00;prage
@@ -19,13 +19,13 @@ GLO0017;&1 could not be found.;z.b. Steam could not be found.;2026-10-26 18:00:0
 GLO0018;&1 will now be restarted to activate the new version.;;2026-10-26 18:00:00;prage;2026-10-26 18:00:00;prage
 CTA0001;Textnumbers starting with D_ are reserved for developer entries.;;2026-10-26 18:00:00;prage;2026-10-26 18:00:00;prage
 GTX0001;A GameTimeX installation was found.\nDo you want to migrate your profiles to &1?;;2026-10-26 18:00:00;prage;2026-10-26 18:00:00;prage
-MET0001;Are you sure you want to delete the metadata of &1?\nThe generated table and all its data will also be deleted.;;2026-10-26 18:00:00;prage;2026-10-26 18:00:00;prage
+MET0001;The metadata of &1 will be deleted.\nThe generated table and all its data will be deleted too. This can't be undone.;;2026-10-26 18:00:00;prage;2026-11-16 12:00:00;prage
 MET0002;The classes were generated successfully.;;2026-10-26 18:00:00;prage;2026-10-26 18:00:00;prage
 PLT0001;No active playthrough is set for this profile.\nDo you want to create a new playthrough?;;2026-10-26 18:00:00;prage;2026-10-26 18:00:00;prage
 PLT0002;Do you really want to &1 this playthrough?;;2026-10-26 18:00:00;prage;2026-10-26 18:00:00;prage
-PLT0003;Do you really want to &1 this playthrough?\nThis action cannot be undone.;;2026-10-26 18:00:00;prage;2026-10-26 18:00:00;prage
+PLT0003;This playthrough will be &1.\nThis can't be undone.;;2026-10-26 18:00:00;prage;2026-11-16 12:00:00;prage
 PLT0004;Information: Your current playthrough will be paused.;;2026-10-26 18:00:00;prage;2026-10-26 18:00:00;prage
-PLT0005;Information: The game time of this playthrough will be added to your overall game time.;;2026-10-26 18:00:00;prage;2026-10-26 18:00:00;prage
+PLT0005;Its game time will be added to your overall game time.;;2026-10-26 18:00:00;prage;2026-11-16 12:00:00;prage
 PRO0001;Accent colors are disabled, but a color was selected.;;2026-10-26 18:00:00;prage;2026-10-26 18:00:00;prage
 PRO0002;The game could not be found on IGDB.;;2026-10-26 18:00:00;prage;2026-10-26 18:00:00;prage
 PRO0003;The SteamGridDB search needs a profile name or a profile linked to a Steam game.;;2026-10-26 18:00:00;prage;2026-10-26 18:00:00;prage
@@ -42,7 +42,7 @@ SCS0007;Keep these display settings?;Without an answer the previous display sett
 SCS0008;The previous display settings are restored in &1 seconds.;;2026-11-04 20:00:00;Oliver Fida;2026-11-04 20:00:00;Oliver Fida
 SCS0009;The display settings were not confirmed.\nThe previous display settings have been restored.;;2026-11-04 20:00:00;Oliver Fida;2026-11-04 20:00:00;Oliver Fida
 SCS0010;The display settings were not confirmed, but the previous ones could not be restored completely:\n&1;Set the monitors in the Windows display settings.;2026-11-04 20:00:00;Oliver Fida;2026-11-04 20:00:00;Oliver Fida
-SET0001;&1 will now restart and import the backup.\nYour current settings will be saved.\nDo you want to proceed?;;2026-10-26 18:00:00;prage;2026-10-26 18:00:00;prage
+SET0001;&1 will restart and import the backup.\nAll current data (profiles, playthroughs, settings) will be replaced by the backup. This can't be undone.;;2026-10-26 18:00:00;prage;2026-11-16 12:00:00;prage
 GLO0019;No applications were found in StartableApps.json.;;2026-10-26 19:00:00;prage;2026-10-26 19:00:00;prage
 GLO0020;The dev folder was created from the production app folder.;;2026-10-26 19:00:00;prage;2026-10-26 19:00:00;prage
 GLO0021;Version &1 is available.\n\nDo you want to open GitHub to download it now?;;2026-10-26 19:00:00;prage;2026-10-26 19:00:00;prage
@@ -53,8 +53,7 @@ PRO0008;"Quit &1?
 Unsaved progress will be lost.";;2026-10-26 17:44:32;prage;2026-10-26 17:44:32;prage
 IMP0001;"ImportPackage imported successfully.
 Please check the temporarty database!";Used for ImportPackage testing.;2026-10-26 16:52:27;Oliver Fida;2026-10-26 16:52:27;Oliver Fida
-DGN0001;"Do you really want to delete the entire app log?
-Confirm with your favorite app (hint: it's the one asking).";;2026-10-30 22:43:26;prage;2026-10-30 22:43:26;prage
+DGN0001;The entire app log will be deleted.\nThis can't be undone.;;2026-10-30 22:43:26;prage;2026-11-16 12:00:00;prage
 PRO0009;Installed games without a profile found: &1\nShould &2 add them all now?;Asked once when a launcher is switched on for the automatic game import. Yes: they are added a few at a time in the background. No: only games installed from now on are added, the others can still be added with the launcher import of a new profile.;2026-11-02 18:00:00;prage;2026-11-02 18:00:00;prage
 PRO0010;New game added;Title of the toast after the automatic game import added one game (its name is the text).;2026-11-02 18:00:00;prage;2026-11-02 18:00:00;prage
 PRO0011;&1 new games added;Title of the toast after the automatic game import added several games (their names are the text).;2026-11-02 18:00:00;prage;2026-11-02 18:00:00;prage

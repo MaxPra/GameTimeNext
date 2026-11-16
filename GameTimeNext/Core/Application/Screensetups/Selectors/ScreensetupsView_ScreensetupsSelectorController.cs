@@ -95,9 +95,7 @@ namespace GameTimeNext.Core.Application.Screensetups.Selectors
 
             CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window);
 
-            CFMBOXResult result = cfmbox.Show(GetErrorMessage("GLO0001", "this screensetup"), CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
-
-            if (result == CFMBOXResult.Yes)
+            if (cfmbox.ConfirmDelete(GetErrorMessage("GLO0001", $"The screensetup \"{t1scrsh.SSNA}\"")))
             {
                 TFSCRSH.DeleteScreensetupAndMonitors(t1scrsh);
 

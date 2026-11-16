@@ -1,4 +1,5 @@
 ﻿using GameTimeNext.Core.Application.General.UserSettings;
+using GameTimeNext.Core.Application.Profiles;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -13,6 +14,13 @@ namespace GameTimeNext.Core.Framework
 {
     public class ApplicationLauncher
     {
+
+        /// <summary>
+        /// Applications that are always open: they are always favorites (started at their place in the start order,
+        /// which can be changed like the order of the others), can't be removed from the favorites and can't be closed
+        /// (the application itself sets <see cref="UIXApplication.IsClosable"/> to false).
+        /// </summary>
+        private static readonly Type[] AlwaysStartedApplications = { typeof(ProfilesApp) };
 
         public TabControl TabControl { get; set; }
 
@@ -30,6 +38,14 @@ namespace GameTimeNext.Core.Framework
 
             if (tab != null)
                 TabControl.SelectedItem = tab;
+        }
+
+        /// <summary>
+        /// Opens an application in a tab named after its application definition (see <see cref="GetApplicationTitle"/>).
+        /// </summary>
+        public TabItem LaunchApplication(Type type, UIXApplication host)
+        {
+            return LaunchApplication(type.FullName!, host, GetApplicationTitle(type));
         }
 
         public TabItem LaunchApplication(string className, UIXApplication host, string header)
@@ -120,11 +136,19 @@ namespace GameTimeNext.Core.Framework
             return this.TabControl.Items.OfType<TabItem>().FirstOrDefault(t => t.Tag?.ToString() == typeFullName);
         }
 
+        /// <summary>
+        /// True for an application that is always open (see <see cref="AlwaysStartedApplications"/>).
+        /// </summary>
+        public static bool IsAlwaysStarted(string? typeFullName)
+        {
+            return AlwaysStartedApplications.Any(t => t.FullName == typeFullName);
+        }
+
         public void StartFavorites(UIXApplication host)
         {
+            AppEnvironment.GetAppConfig().UserSettings.FavApps ??= new List<FavoriteApplication>();
 
-            if (AppEnvironment.GetAppConfig().UserSettings.FavApps == null || AppEnvironment.GetAppConfig().UserSettings.FavApps.Count == 0)
-                return;
+            EnsureAlwaysStartedFavorites();
 
             List<FavoriteApplication> favAppsOrdered = AppEnvironment.GetAppConfig().UserSettings.FavApps.OrderBy(a => a.Order).ToList();
 
@@ -146,6 +170,39 @@ namespace GameTimeNext.Core.Framework
 
         }
 
+        /// <summary>
+        /// Makes every always started application a favorite (in front of the others) if it isn't one yet, so it is
+        /// started with the favorites and its place in the start order can be changed.
+        /// </summary>
+        private static void EnsureAlwaysStartedFavorites()
+        {
+            List<FavoriteApplication> favApps = AppEnvironment.GetAppConfig().UserSettings.FavApps;
+
+            foreach (Type type in Enumerable.Reverse(AlwaysStartedApplications))
+            {
+                if (FnUserSettings.ContainsApplication(favApps, type.FullName!))
+                    continue;
+
+                FnUserSettings.InsertFavoriteApplicationAtStart(favApps, new FavoriteApplication
+                {
+                    FullName = type.FullName!,
+                    AppName = GetApplicationTitle(type),
+                    PrimaryStart = false
+                });
+            }
+        }
+
+        /// <summary>
+        /// Name of an application for its tab: the description of its application definition (T1APRDH), or the class
+        /// name without one.
+        /// </summary>
+        private static string GetApplicationTitle(Type type)
+        {
+            string? description = UIXApplication.AppPropertiesProvider?.Read(type.Name)?.ApplicationDescription;
+
+            return FnString.IsNullEmptyOrWhitespace(description) ? type.Name : description!;
+        }
+
         public void CloseApplication(string typeName, TabItem tab)
         {
 
@@ -153,7 +210,7 @@ namespace GameTimeNext.Core.Framework
 
             UIXApplication app = AppEnvironment.StartedApplications[typeName];
 
-            if (!app.CanClose())
+            if (!app.IsClosable || !app.CanClose())
                 return;
 
             // Windows opened from the tab belong to its view and are closed with it; unsaved changes in them or in
@@ -219,7 +276,9 @@ namespace GameTimeNext.Core.Framework
                 contextBuilder.AddItem("ctxtFav", "Add to favorites", icon: UIXContextMenuFactory.CreateMdlIcon("\uE734"), itemStyle: contextMenuItemStyle);
             else
             {
-                contextBuilder.AddItem("ctxtDeleteFav", "Remove from favorites", icon: UIXContextMenuFactory.CreateMdlIcon("\uE734"), itemStyle: contextMenuItemStyle);
+                // An always started application stays a favorite
+                if (!IsAlwaysStarted(tabItem.Tag.ToString()))
+                    contextBuilder.AddItem("ctxtDeleteFav", "Remove from favorites", icon: UIXContextMenuFactory.CreateMdlIcon("\uE734"), itemStyle: contextMenuItemStyle);
 
                 if (!favApp.PrimaryStart && !FnUserSettings.IsPrimaryStartSet())
                     contextBuilder.AddItem("ctxtSetAsPrimaryStart", "Set as primary start", icon: UIXContextMenuFactory.CreateMdlIcon("\uE840"), itemStyle: contextMenuItemStyle);

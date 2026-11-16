@@ -519,7 +519,7 @@ You start and stop the recording yourself, so only real playtime counts.
 - **Button**: *Profiles* → select the game → **Start monitoring**
 
 > [!TIP]
-> {ApplicationName} helps you: when a game starts, it selects the game in *Profiles*. When the game closes, the recording stops by itself. This only works while **Profiles** is open.
+> {ApplicationName} helps you: when a game starts, it selects the game in *Profiles*. When the game closes, the recording stops by itself. That's why **Profiles** is always open.
 
 > [!IMPORTANT]
 > Keep {ApplicationName} running: **minimize** the window instead of closing it.
@@ -541,6 +541,7 @@ You start and stop the recording yourself, so only real playtime counts.
 
 | App | For |
 |---|---|
+| **Home** | The welcome page with the first steps |
 | **Profiles** | Your games and the recording |
 | **Dashboard** | Your statistics |
 | **Playthroughs** | Your runs through a game |
@@ -557,7 +558,7 @@ You start and stop the recording yourself, so only real playtime counts.
 Right-click a tab to:
 
 - show the **Help** of this app
-- **Close** it
+- **Close** it (except **Profiles**, which is always open)
 - make it a **favorite**: it then opens every time {ApplicationName} starts
 - make it the **primary start**: the favorite that is in front after the start
 
@@ -751,3 +752,16 @@ A platform needs a symbol, so create the symbol first:
 3. Open the list **Platform**, click **Add**, enter the name, choose the type and your new symbol.
 
 Your platform is now available in the profile of a game.";1;2026-11-05 12:00:00;prage;2026-11-05 12:00:00;prage
+HomeApp;Home;"# Home
+
+The welcome page of {ApplicationName}. It opens on the very first start, and you can open it again at any time with **Ctrl + M** → **Home**.
+
+## What you find here
+
+- **First steps**: how to open an application and where to find help
+- **Learn what you can do**: click a card to read the help of that application
+
+> [!TIP]
+> Close this tab whenever you like. **Profiles** always stays open, because {ApplicationName} needs it to detect your running games.
+";1;2026-11-16 12:00:00;prage;2026-11-16 12:00:00;prage
+RemoteMonitoringApp;Remote Monitoring;ToDo;0;2026-11-16 19:16:47;prage;2026-11-16 19:16:47;prage
