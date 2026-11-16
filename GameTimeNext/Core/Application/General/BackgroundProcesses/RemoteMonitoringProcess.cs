@@ -101,6 +101,9 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
             _socketServerProcess.Start(1000, runAsync: true);
             AppEnvironment.StartedBackgroundProcesses.Add(typeof(RemoteMonitoringSocketServer).FullName!, _socketServerProcess);
             FnLog.AddInfo(this, $"Started Socket-Server process on port {_socketPort}.");
+
+            if (FnPowerRequest.KeepSystemAwake("Remote monitoring is on"))
+                FnLog.AddInfo(this, "The PC is kept awake while the remote monitoring is on.");
         }
 
         private void HandleBlazor()
@@ -304,6 +307,9 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
                 _socketServerProcess = null;
 
                 FnLog.AddInfo(this, $"Stopped Socket-Server process.");
+
+                FnPowerRequest.ReleaseSystemAwake();
+                FnLog.AddInfo(this, "The PC follows the sleep settings again.");
             }
         }
     }

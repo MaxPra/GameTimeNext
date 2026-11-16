@@ -1008,6 +1008,7 @@
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
                                     <RowDefinition Height="8" />
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
@@ -1033,8 +1034,15 @@
                                 </Grid>
 
                                 <TextBlock
+                                    Grid.Row="1"
+                                    Margin="0,4,0,0"
+                                    Style="{StaticResource Text.Hint}"
+                                    Text="Keeps the PC awake while it is on, so your phone can reach it also between two sessions. The monitors still turn off."
+                                    TextWrapping="Wrap" />
+
+                                <TextBlock
                                     x:Name="txtRemoteMonitoringPort"
-                                    Grid.Row="2"
+                                    Grid.Row="3"
                                     Foreground="{DynamicResource Brush.Success}" />
                             </Grid>
                         </GroupBox>
