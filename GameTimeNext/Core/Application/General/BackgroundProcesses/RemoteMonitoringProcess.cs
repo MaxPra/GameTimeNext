@@ -151,8 +151,6 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
                     return;
                 }
             }
-            CallDispatcher!.Trigger("EXEV_RemoteMonitoringPortChanged", port); // SettingsViewController
-
             string? exePath = FindWebAppExecutable();
             if (exePath is null)
             {
@@ -200,6 +198,8 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
 
                 FnLog.AddInfo(this, $"Started blazorProcess on port {port}.");
                 CallDispatcher!.Trigger("EXEV_RemoteMonitoringStarted", port); // MainWindowController
+
+                CallDispatcher!.Trigger("EXEV_RemoteMonitoringPortChanged", port); // SettingsViewController
             }
             catch (Exception ex)
             {

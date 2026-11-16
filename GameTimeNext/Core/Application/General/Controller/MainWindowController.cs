@@ -42,6 +42,7 @@ namespace GameTimeNext.Core.Application.General.Controller
             GetApp().CallDispatcher.Register(this, nameof(EXEV_SwitchToApplication));
             GetApp().CallDispatcher.Register(this, nameof(EXEV_ExitBigPicture));
             GetApp().CallDispatcher.Register(this, nameof(EXEV_RemoteMonitoringStarted));
+            GetApp().CallDispatcher.Register(this, nameof(EXEV_RemoteMonitoringSwitched));
         }
 
         protected override void BuildFirstImpl()
@@ -51,6 +52,9 @@ namespace GameTimeNext.Core.Application.General.Controller
             bool isDynamicBackground = FnTheme.IsDynamicBackgroundEnabled(AppEnvironment.GetAppConfig().AppSettings.BackgroundSource);
             GetView().UseWallpaperBackground = isDynamicBackground;
             GetView().UseBackdropBlur = !isDynamicBackground;
+
+            // QR code of the remote monitoring in the title bar, while it is on (switched by the settings)
+            GetView().ShowRemoteMonitoringButton = AppEnvironment.GetAppConfig().AppSettings.RemoteMonitoring;
 
             GetView().Title = AppConfig.Root.ApplicationName;
             GetView().txWelcomeTitle.Text = $"Welcome to {AppConfig.Root.ApplicationName}";
@@ -178,6 +182,36 @@ namespace GameTimeNext.Core.Application.General.Controller
         protected void EV_btnBigPicture()
         {
             EnterBigPicture();
+        }
+
+        /// <summary>
+        /// Remote monitoring button of the title bar (template part of the window style): opens the QR code for pairing a
+        /// phone below it, a second click closes it.
+        /// </summary>
+        protected void EV_btnRemoteMonitoring()
+        {
+            RemoteMonitoringPairingView view = GetApp().RemoteMonitoringPairingView!;
+
+            // The popup closes itself on a click outside, without CloseView
+            if (view.IsShown && view.Popup!.IsOpen)
+            {
+                view.CloseView();
+                return;
+            }
+
+            view.Popup!.PlacementTarget = GetView().Template.FindName("btnRemoteMonitoring", GetView()) as UIElement;
+            view.ShowView(true);
+        }
+
+        /// <summary>
+        /// The remote monitoring was switched on or off in the settings: shows or hides its title bar button.
+        /// </summary>
+        protected void EXEV_RemoteMonitoringSwitched(bool isOn)
+        {
+            GetView().ShowRemoteMonitoringButton = isOn;
+
+            if (!isOn && GetApp().RemoteMonitoringPairingView is { IsShown: true } view)
+                view.CloseView();
         }
 
         /// <summary>

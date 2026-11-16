@@ -369,8 +369,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
         }
 
         /// <summary>
-        /// QR code and address of the remote monitoring (only while it is on): the code links to /pair with the pairing
-        /// code on the first home network address, the text lists all addresses without the code.
+        /// QR code and address of the remote monitoring (only while it is on), see CFRemoteMonitoring.GetPairing.
         /// </summary>
         private void FillRemoteMonitoringPairing(int? port = null)
         {
@@ -385,19 +384,15 @@ namespace GameTimeNext.Core.Application.Settings.Controller
                 return;
             }
 
-            int webAppPort = port ?? CFRemoteMonitoring.GetWebAppPort();
-            List<string> addresses = CFRemoteMonitoring.GetLanAddresses();
+            // Port just reported by the web app's start, otherwise the current one (null while it isn't running)
+            int? webAppPort = port ?? CFRemoteMonitoring.GetWebAppPort();
+            view.txtRemoteMonitoringPort.Text = webAppPort is null ? string.Empty : $"Web-App accessible via port {webAppPort}.";
 
-            if (addresses.Count == 0)
-            {
-                view.imgRemoteMonitoringQr.Source = null;
-                view.txtRemoteMonitoringAddress.Text = "No home network connection found. Connect the PC to your router (LAN or Wi-Fi) and open the settings again.";
-                return;
-            }
-
-            view.imgRemoteMonitoringQr.Source = CFRemoteMonitoring.CreateQrCode(CFRemoteMonitoring.BuildPairingUrl(addresses[0], webAppPort));
-            view.txtRemoteMonitoringAddress.Text = string.Join(Environment.NewLine,
-                addresses.Select(address => string.Create(CultureInfo.InvariantCulture, $"http://{address}:{webAppPort}")));
+            CFRemoteMonitoring.RemoteMonitoringPairing pairing = CFRemoteMonitoring.GetPairing(webAppPort);
+            FnControls.SetVisible(view.brdRemoteMonitoringQr, pairing.QrCode is not null);
+            view.imgRemoteMonitoringQr.Source = pairing.QrCode;
+            view.txtRemoteMonitoringAddress.Text = pairing.Text;
+            view.txtRemoteMonitoringPairingCode.Text = pairing.PairingCode;
         }
 
         protected void EV_btnResetPairing()
@@ -492,8 +487,9 @@ namespace GameTimeNext.Core.Application.Settings.Controller
                 UnsealAllProfiles();
             }
 
-            // Switched on or off: show or hide the QR code
+            // Switched on or off: show or hide the QR code, here and in the title bar of the main window
             FillRemoteMonitoringPairing();
+            GetApp().CallDispatcher.Trigger("EXEV_RemoteMonitoringSwitched", _appSettings.RemoteMonitoring); // MainWindowController
         }
 
         private void AllowRemoteMonitoringInFirewall()
@@ -522,7 +518,6 @@ namespace GameTimeNext.Core.Application.Settings.Controller
 
         protected void EXEV_RemoteMonitoringPortChanged(int port)
         {
-            GetView().txtRemoteMonitoringPort.Text = $"Web-App accessible via port {port}.";
             FillRemoteMonitoringPairing(port);
         }
 

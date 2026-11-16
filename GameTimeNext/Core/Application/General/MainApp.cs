@@ -17,6 +17,7 @@ namespace GameTimeNext.Core.Application.General
         MainWindow? _mainWindow;
 
         public FavAppsStartOrderView? FavAppsStartOrderView { get; set; } = null;
+        public RemoteMonitoringPairingView? RemoteMonitoringPairingView { get; set; } = null;
 
         public bool StartMinimized { get; set; } = false;
         public SplashHost? SplashScreen { get; set; } = null;
@@ -48,6 +49,12 @@ namespace GameTimeNext.Core.Application.General
             FavAppsStartOrderView.dgFavApps.SelectorController = new FavAppsStartOrderView_FavAppsSelectorController(this);
             FavAppsStartOrderView.ContentPresenter = _mainWindow.cpFavAppsStartOrder;
             FavAppsStartOrderView.Popup = _mainWindow.popFavAppsStartOrder;
+
+            // -- QR code of the remote monitoring (popup of the title bar)
+            RemoteMonitoringPairingView = new RemoteMonitoringPairingView();
+            RemoteMonitoringPairingView.ViewController = new RemoteMonitoringPairingViewController(this);
+            RemoteMonitoringPairingView.ContentPresenter = _mainWindow.cpRemoteMonitoringPairing;
+            RemoteMonitoringPairingView.Popup = _mainWindow.popRemoteMonitoringPairing;
         }
 
         public void Start(UIXApplication hostApplication, ContentPresenter presenter)

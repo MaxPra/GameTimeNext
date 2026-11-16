@@ -153,6 +153,21 @@
             </Border>
         </Popup>
 
+        <!--
+            QR code of the remote monitoring (RemoteMonitoringPairingView), opened by the button in the title bar
+            (template part btnRemoteMonitoring, set as PlacementTarget by the controller)
+        -->
+        <Popup
+            x:Name="popRemoteMonitoringPairing"
+            AllowsTransparency="True"
+            Placement="Bottom"
+            StaysOpen="False"
+            VerticalOffset="4">
+            <Border Style="{StaticResource ModernPopupCardStyle}">
+                <ContentPresenter x:Name="cpRemoteMonitoringPairing" />
+            </Border>
+        </Popup>
+
         <!--  Welcome screen while no application is open: welcome card on the left, help cards on the right  -->
         <StackPanel
             x:Name="pnlEmptyTabMessage"

@@ -1,5 +1,6 @@
 using GameTimeNext.Core.Application.General.BackgroundProcesses;
 using GameTimeNext.Core.Framework;
+using GameTimeNext.Core.Framework.Utils;
 using QRCoder;
 using System.Globalization;
 using System.IO;
@@ -51,12 +52,42 @@ namespace GameTimeNext.Core.Application.General
         }
 
         /// <summary>
-        /// Port the web app listens on: the one arcora started it with, otherwise the default port.
+        /// Port the web app listens on: the one arcora started it with, the default port when the developer started it
+        /// (debug), null while it isn't running (not started yet or being restarted).
         /// </summary>
-        public static int GetWebAppPort()
+        public static int? GetWebAppPort()
         {
+            // Debug always uses the default port (RemoteMonitoringProcess doesn't search a free one there), also before
+            // its first cycle has set the state
+            if (FnSystem.IsDebug())
+                return DefaultWebAppPort;
+
             RemoteMonitoringProcess? process = AppEnvironment.StartedBackgroundProcesses.Values.OfType<RemoteMonitoringProcess>().FirstOrDefault();
-            return process?.BlazorStatus.Port ?? DefaultWebAppPort;
+            return process?.BlazorStatus.State == BlazorProcessState.Running ? process.BlazorStatus.Port : null;
+        }
+
+        /// <summary>
+        /// QR code and addresses for pairing a phone (settings, popup of the title bar): the QR code links to /pair with
+        /// the pairing code on the first home network address, the text lists all addresses without the code. Without a
+        /// running web app or a home network there is no QR code, the text says why. Port: the one just reported by
+        /// RemoteMonitoringProcess, otherwise the current one.
+        /// </summary>
+        public static RemoteMonitoringPairing GetPairing(int? port = null)
+        {
+            string pairingCode = GetPairingCode();
+
+            int? webAppPort = port ?? GetWebAppPort();
+            if (webAppPort is null)
+                return new RemoteMonitoringPairing(null, "The remote monitoring is starting. Open this again in a moment.", pairingCode);
+
+            List<string> addresses = GetLanAddresses();
+            if (addresses.Count == 0)
+                return new RemoteMonitoringPairing(null, "No home network connection found. Connect the PC to your router (LAN or Wi-Fi) and try again.", pairingCode);
+
+            return new RemoteMonitoringPairing(
+                CreateQrCode(BuildPairingUrl(addresses[0], webAppPort.Value)),
+                string.Join(Environment.NewLine, addresses.Select(address => string.Create(CultureInfo.InvariantCulture, $"http://{address}:{webAppPort}"))),
+                pairingCode);
         }
 
         /// <summary>
@@ -137,6 +168,12 @@ namespace GameTimeNext.Core.Application.General
         {
             return Convert.ToBase64String(RandomNumberGenerator.GetBytes(16)).TrimEnd('=').Replace('+', '-').Replace('/', '_');
         }
+
+        /// <summary>
+        /// Pairing for display: QR code (null if there is none), the addresses or the reason why there is no QR code, and
+        /// the pairing code (also contained in the QR code).
+        /// </summary>
+        public sealed record RemoteMonitoringPairing(BitmapImage? QrCode, string Text, string PairingCode);
 
         private static bool IsPrivate(IPAddress address)
         {

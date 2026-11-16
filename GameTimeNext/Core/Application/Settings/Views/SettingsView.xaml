@@ -1058,6 +1058,7 @@
                                     </Grid.ColumnDefinitions>
 
                                     <Border
+                                        x:Name="brdRemoteMonitoringQr"
                                         Grid.Column="0"
                                         Width="168"
                                         Height="168"
@@ -1082,6 +1083,15 @@
                                             x:Name="txtRemoteMonitoringAddress"
                                             Margin="0,12,0,0"
                                             Style="{StaticResource Text.Body}"
+                                            TextWrapping="Wrap" />
+                                        <TextBlock
+                                            Margin="0,12,0,0"
+                                            Style="{StaticResource Text.Label}"
+                                            Text="Pairing code" />
+                                        <TextBlock
+                                            x:Name="txtRemoteMonitoringPairingCode"
+                                            FontFamily="Cascadia Mono, Consolas"
+                                            Style="{StaticResource Text.BodyStrong}"
                                             TextWrapping="Wrap" />
                                         <Button
                                             x:Name="btnResetPairing"
