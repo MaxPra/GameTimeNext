@@ -289,9 +289,15 @@
     private static string FormatMinutes(double minutes)
     {
         TimeSpan time = TimeSpan.FromMinutes(minutes);
+
+        // Short sessions in seconds, otherwise every session under a minute would read "1 min"
+        int seconds = (int)Math.Round(time.TotalSeconds);
+        if (seconds < 60)
+            return $"{seconds} s";
+
         return time.TotalHours >= 1
             ? $"{(int)time.TotalHours}:{time.Minutes:00} h"
-            : $"{Math.Max(1, (int)Math.Round(time.TotalMinutes))} min";
+            : $"{(int)Math.Round(time.TotalMinutes)} min";
     }
 
     /// <summary>
