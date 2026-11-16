@@ -1,0 +1,42 @@
+@* Question in the look of arcora (bottom sheet on the phone, centered from tablet width); shown while the parent renders it *@
+<div class="fixed inset-0 z-50 flex items-end justify-center bg-black/55 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:items-center" @onclick="Cancel">
+    <div class="flex w-full max-w-md animate-sheet-in flex-col gap-3 rounded-[10px] border border-white/10 border-t-white/20 bg-arc-popup p-5 motion-reduce:animate-none"
+         role="dialog" aria-modal="true" aria-labelledby="arc-dialog-title" @onclick:stopPropagation="true">
+        <h2 id="arc-dialog-title" class="text-base font-semibold text-white">@Title</h2>
+        <p>@Message</p>
+        <div class="mt-1 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+            <button type="button" class="arc-btn" disabled="@IsBusy" @onclick="Cancel">@CancelText</button>
+            <button type="button" class="arc-btn bg-accent/80" disabled="@IsBusy" @onclick="Confirm">@ConfirmText</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public string Title { get; set; } = string.Empty;
+
+    [Parameter, EditorRequired]
+    public string Message { get; set; } = string.Empty;
+
+    [Parameter]
+    public string ConfirmText { get; set; } = "OK";
+
+    [Parameter]
+    public string CancelText { get; set; } = "Cancel";
+
+    /// <summary>
+    /// Disables both buttons while the parent handles the answer.
+    /// </summary>
+    [Parameter]
+    public bool IsBusy { get; set; }
+
+    [Parameter]
+    public EventCallback OnConfirm { get; set; }
+
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+    private Task Confirm() => OnConfirm.InvokeAsync();
+
+    private Task Cancel() => IsBusy ? Task.CompletedTask : OnCancel.InvokeAsync();
+}

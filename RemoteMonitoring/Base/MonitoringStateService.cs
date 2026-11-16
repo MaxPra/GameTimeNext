@@ -24,6 +24,15 @@ namespace RemoteMonitoring.Base
         {
             _socket = socket;
             _profilesApiService = profilesApiService;
+
+            // Ask at once after a reconnect instead of waiting for the next tick (redirect, timer)
+            _socket.ConnectionStateChanged += OnConnectionStateChanged;
+        }
+
+        private void OnConnectionStateChanged(object? sender, ConnectionState state)
+        {
+            if (state == ConnectionState.Connected)
+                _ = RefreshAsync();
         }
 
         protected override async Task ExecuteAsync(CancellationToken ct)

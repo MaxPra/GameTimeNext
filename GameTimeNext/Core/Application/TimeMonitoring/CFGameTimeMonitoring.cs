@@ -49,6 +49,13 @@ namespace GameTimeNext.Core.Application.TimeMonitoring
             return ((double)_monitoredTime / 60);
         }
 
+        public static bool IsSessionStored(double minutes)
+        {
+            var settings = AppEnvironment.GetAppConfig().AppSettings;
+
+            return !(settings.EnableSessionCleanup && minutes < settings.SessionCleanupSeconds / 60);
+        }
+
         public static void UpdateTableObject()
         {
             // -- Fill session data
@@ -59,7 +66,7 @@ namespace GameTimeNext.Core.Application.TimeMonitoring
             t1sessi.PLFR = _startTime;
             t1sessi.PLTO = _endTime;
             t1sessi.PLTI = GetMonitoredTimeInMinutes();
-            if (AppEnvironment.GetAppConfig().AppSettings.EnableSessionCleanup && t1sessi.PLTI < (AppEnvironment.GetAppConfig().AppSettings.SessionCleanupSeconds / 60)) return;
+            if (!IsSessionStored(t1sessi.PLTI)) return;
 
             // Determine the current playthrough
             long ptid = TFPLTHR.GetCurrentPlaythroughPtid(t1sessi.PFID);

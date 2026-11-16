@@ -61,13 +61,13 @@ namespace GameTimeNext.Core.Application.Profiles.Batch
             return filteredT1profis;
         }
 
-        public ProfileDto? GetProfile(long pfid)
+        public ProfileDetailDto? GetProfile(long pfid)
         {
             T1PROFI? t1profi = _txprofi.Read(pfid);
             if (t1profi is null)
                 return null;
 
-            return _txprofi.ToDto(t1profi);
+            return _txprofi.ToDetailDto(t1profi);
         }
 
         public StartMonitoringResponseMessage StartMonitoring(long pfid, bool createPlaythrough)
@@ -139,7 +139,8 @@ namespace GameTimeNext.Core.Application.Profiles.Batch
             CFGameTimeMonitoring.StopMonitoring();
             CallDispatcher.Trigger("EXEV_GameTimeMonitoringStopped");
 
-            return new StopMonitoringResponseMessage(MonitoringResponse.MonitoringStopped);
+            double minutes = CFGameTimeMonitoring.GetMonitoredTimeInMinutes();
+            return new StopMonitoringResponseMessage(MonitoringResponse.MonitoringStopped, minutes, CFGameTimeMonitoring.IsSessionStored(minutes));
         }
 
         private bool IsProfilesViewReady()

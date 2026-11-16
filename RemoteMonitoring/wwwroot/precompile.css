@@ -1,11 +1,116 @@
 ﻿@import "tailwindcss";
 
-@layer base {
-    html {
-        @apply bg-slate-950 text-slate-100;
+/*
+    arcora look of the remote monitoring, mobile first. Values from arcora's Colors.xaml, CardStyles.xaml,
+    ControlTokens.xaml and ButtonStyle.xaml. A page sets --color-accent on an element to use a profile's accent.
+*/
+
+@font-face { font-family: "Manrope"; src: url("fonts/Manrope-Regular.ttf") format("truetype"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Manrope"; src: url("fonts/Manrope-SemiBold.ttf") format("truetype"); font-weight: 600; font-display: swap; }
+@font-face { font-family: "Manrope"; src: url("fonts/Manrope-Bold.ttf") format("truetype"); font-weight: 700; font-display: swap; }
+
+@theme {
+    --font-sans: "Manrope", "Segoe UI", system-ui, sans-serif;
+
+    /* Colors.xaml */
+    --color-arc-bg: #101014;
+    --color-arc-surface: #0a0a0e;
+    --color-arc-popup: #17171d;
+    --color-arc-text: #d5d5d8;
+    --color-arc-muted: #94949b;
+    --color-arc-disabled: #6f6f7f;
+    --color-arc-danger: #e5484d;
+    --color-arc-success: #3fb67a;
+    --color-accent: #3498e5;
+
+    /* Card.CornerRadius / Control.CornerRadius */
+    --radius-arc: 6px;
+
+    --animate-live: live 1.8s ease-out infinite;
+    --animate-sheet-in: sheet-in 180ms ease-out;
+
+    @keyframes live {
+        0% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--color-accent) 60%, transparent); }
+        100% { box-shadow: 0 0 0 8px transparent; }
     }
 
-    body {
-        @apply bg-slate-950 text-slate-100;
+    @keyframes sheet-in {
+        from { transform: translateY(12px); opacity: 0; }
+        to { transform: none; opacity: 1; }
+    }
+}
+
+@layer base {
+    html, body {
+        @apply bg-arc-bg text-arc-text font-sans antialiased;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    /* No zoom (also for browsers that ignore user-scalable=no): scrolling only, no pinch and no double tap zoom */
+    html {
+        touch-action: pan-x pan-y;
+    }
+}
+
+@layer components {
+    /* Window glow like arcora's main window (GradientBrush.Window.AccentGlow*) */
+    .arc-glow {
+        background-image:
+            radial-gradient(120% 60% at 15% -10%, color-mix(in oklab, var(--color-accent) 22%, transparent), transparent 60%),
+            radial-gradient(90% 50% at 100% 0%, color-mix(in oklab, var(--color-accent) 10%, transparent), transparent 55%);
+    }
+
+    /* Card glass (Brush.Card.Background / Brush.Card.Border): translucent light, edge brighter at the top */
+    .arc-card {
+        @apply flex min-w-0 flex-col gap-3 rounded-arc border border-white/[0.07] border-t-white/[0.12] p-4;
+        background-image: linear-gradient(180deg, rgb(255 255 255 / 0.06), rgb(255 255 255 / 0.035));
+    }
+
+    /* Section of a page like arcora's detail view: heading above, the card below */
+    .arc-section-title {
+        @apply text-[15px] font-semibold text-white;
+    }
+
+    /* Label / value rows inside a card, divided by fine lines (arcora's "Activity" list) */
+    .arc-rows {
+        @apply flex flex-col px-4 py-1;
+    }
+
+    .arc-row {
+        @apply flex min-w-0 items-center justify-between gap-3 border-b border-white/[0.07] py-2.5 text-sm last:border-b-0;
+    }
+
+    .arc-row > :first-child {
+        @apply text-arc-muted;
+    }
+
+    .arc-row > :last-child {
+        @apply min-w-0 truncate text-right font-semibold text-white tabular-nums;
+    }
+
+    /*
+        Glass button (Template.Button): translucent fill, diagonal rim catching the light in the upper left and lower
+        right corner, accent outline on hover. Fill colors come from utilities (bg-accent/80, bg-arc-danger/75).
+    */
+    .arc-btn {
+        @apply relative inline-flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-arc bg-white/[0.04] px-5 text-[15px] font-semibold text-white no-underline ring-1 ring-white/12 transition select-none;
+        @apply hover:bg-white/[0.07] hover:ring-accent/75 active:scale-[0.98];
+        @apply focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent;
+        @apply disabled:cursor-default disabled:opacity-45 disabled:ring-white/12 disabled:active:scale-100;
+    }
+
+    .arc-btn::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        pointer-events: none;
+        box-shadow: inset 1px 1px 0 rgb(255 255 255 / 0.24), inset -1px -1px 0 rgb(255 255 255 / 0.1);
+    }
+
+    /* Game cover like arcora's library: 2:3, small radius, fine light edge and a soft shadow; image or placeholder inside */
+    .arc-cover {
+        /* Shadow as utility: it is combined with the ring, a plain box-shadow would replace the ring */
+        @apply relative aspect-2/3 overflow-hidden rounded-arc bg-arc-surface ring-1 ring-white/10 shadow-[0_6px_18px_rgb(0_0_0/0.45)];
     }
 }

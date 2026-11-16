@@ -1,0 +1,56 @@
+@using GameTimeNext.Shared.Profiles.Monitoring
+@rendermode InteractiveServer
+@implements IDisposable
+@inject MonitoringStateService MonitoringState
+@inject NavigationManager Navigation
+
+@*
+    While a game is monitored, every page shows the detail of that game (like arcora, where no other profile can be
+    selected then). Replaces the history entry, so the back gesture doesn't bounce between list and detail.
+*@
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        MonitoringState.Changed += OnMonitoringChanged;
+        Navigation.LocationChanged += OnLocationChanged;
+
+        // The service may not have asked arcora yet (app just started)
+        if (MonitoringState.Current is null)
+            await MonitoringState.RefreshAsync();
+
+        RedirectIfMonitoring();
+    }
+
+    private void OnMonitoringChanged(object? sender, MonitoringStateResponseMessage? state)
+    {
+        _ = InvokeAsync(RedirectIfMonitoring);
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        _ = InvokeAsync(RedirectIfMonitoring);
+    }
+
+    private void RedirectIfMonitoring()
+    {
+        MonitoringStateResponseMessage? state = MonitoringState.Current;
+        if (state is null || !state.IsMonitoring || state.Profile is null)
+            return;
+
+        string target = $"profile/{state.Profile.PFID}";
+        string current = Navigation.ToBaseRelativePath(Navigation.Uri).Split('?', '#')[0].TrimEnd('/');
+
+        if (!string.Equals(current, target, StringComparison.OrdinalIgnoreCase))
+            Navigation.NavigateTo(target, replace: true);
+    }
+
+    public void Dispose()
+    {
+        MonitoringState.Changed -= OnMonitoringChanged;
+        Navigation.LocationChanged -= OnLocationChanged;
+    }
+}

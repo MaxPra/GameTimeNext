@@ -1,13 +1,12 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="page">
-    <div class="flex w-full flex-col">
-        <ConnectionBanner />
+<div class="arc-glow min-h-dvh pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
+    <ConnectionBanner />
+    <MonitoringRedirect />
 
-        <main>
-            @Body
-        </main>
-    </div>
+    <main class="mx-auto flex max-w-5xl flex-col gap-4 pt-5 pb-8 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))]">
+        @Body
+    </main>
 </div>
 
 <div id="blazor-error-ui" data-nosnippet>
