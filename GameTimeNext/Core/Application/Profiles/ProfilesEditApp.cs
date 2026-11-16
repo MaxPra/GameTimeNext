@@ -63,7 +63,7 @@ namespace GameTimeNext.Core.Application.Profiles
 
         public void CreateNew(Action<ProfilesEditViewController.ProfilesEditViewReturn> callback)
         {
-            _t1Profi = new TXPROFI().CreateNew();
+            _t1Profi = GetDataManager<TXPROFI>().CreateNew();
 
             _profilesEditView!.ViewIndicator.Add("CN");
             _profilesEditViewController!.SetResultCallback(callback);
@@ -73,7 +73,8 @@ namespace GameTimeNext.Core.Application.Profiles
 
         public void Edit(T1PROFI t1profi, Action<ProfilesEditViewController.ProfilesEditViewReturn> callback)
         {
-            _t1Profi = t1profi;
+            // The current state, not the one of the list (it may have been changed elsewhere since it was loaded)
+            _t1Profi = GetDataManager<TXPROFI>().Read(t1profi.PFID) ?? t1profi;
 
             _profilesEditView!.ViewIndicator.Add("ED");
             _profilesEditViewController!.SetResultCallback(callback);

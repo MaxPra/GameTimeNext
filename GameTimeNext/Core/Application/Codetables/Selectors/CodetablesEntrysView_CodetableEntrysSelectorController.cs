@@ -109,12 +109,18 @@ namespace GameTimeNext.Core.Application.Codetables.Selectors
 
             CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window);
 
-            if (cfmbox.ConfirmDelete(GetErrorMessage("GLO0001", $"The entry {t1ctabd.TXNUM}")))
+            // Not while it is open elsewhere, e.g. in "Selection Lists" (record lock); checked before asking
+            bool deleted = FnRecordLock.Run(GetApp(), () =>
             {
-                new TXCTABD().Delete(t1ctabd.TXTYP, t1ctabd.TXNUM);
+                if (!cfmbox.ConfirmDelete(GetErrorMessage("GLO0001", $"The entry {t1ctabd.TXNUM}")))
+                    return false;
 
+                GetApp().GetDataManager<TXCTABD>().Delete(t1ctabd.TXTYP, t1ctabd.TXNUM);
+                return true;
+            }, t1ctabd);
+
+            if (deleted)
                 await GetSelector().LoadDataAsync();
-            }
         }
     }
 }

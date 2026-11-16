@@ -30,7 +30,7 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
 
         protected override void BuildFirstImpl()
         {
-            T1PROFI? t1profi = new TXPROFI().Read(GetApp().T1plthr.PFID);
+            T1PROFI? t1profi = GetApp().GetDataManager<TXPROFI>().Read(GetApp().T1plthr.PFID);
 
             GetView().txGameName.Text = t1profi?.GANA ?? string.Empty;
             GetView().txPlaythrough.Text = GetApp().T1plthr.PTDE;

@@ -7,6 +7,7 @@ namespace GameTimeNext.Core.Application.TableObjects
     {
         public override bool IsDevSynced => false;
 
+        [UIXKeyField]
         [UIXSignatureField(0)]
         public long SEID { get; set; } = 0;
 
@@ -39,7 +40,7 @@ namespace GameTimeNext.Core.Application.TableObjects
 
         public override void Save()
         {
-            new TXSESSI().Save(this);
+            UIXDataManagerBase.Create<TXSESSI>(App).Save(this);
         }
     }
 }

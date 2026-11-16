@@ -248,7 +248,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         private void FillCurrentPlaythroughName()
         {
-            T1PLTHR t1plthr = TFPLTHR.GetCurrentPlaythrough(_dataWrapper!.Get().PFID);
+            T1PLTHR t1plthr = TFPLTHR.GetCurrentPlaythrough(GetApp(), _dataWrapper!.Get().PFID);
 
             if (t1plthr == null)
                 return;
@@ -417,7 +417,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         private void BuildCurrentPlaythroughPanel()
         {
             // Visibility of the playthrough box
-            T1PLTHR t1plthr = TFPLTHR.GetCurrentPlaythrough(_dataWrapper!.Get().PFID);
+            T1PLTHR t1plthr = TFPLTHR.GetCurrentPlaythrough(GetApp(), _dataWrapper!.Get().PFID);
 
             if (t1plthr != null && TFPLTHR.HasCurrentPlaythrough(_dataWrapper!.Get().PFID) && t1plthr.PTTY != PlaythroughType.INITIAL_PLAYTHROUGH)
             {
@@ -534,6 +534,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected void EV_btnStartMonitoring()
         {
+            // The profile is being edited elsewhere: it can't be monitored (the monitoring locks it)
+            if (!CFGameTimeMonitoring.IsMonitoring && !CFGameTimeMonitoring.CheckNotLocked(GetApp(), AppEnvironment.CurrentPfid))
+                return;
 
             if (!CFProfilesApp.AskForNewPlaythroughCreationIfNotActive(_dataWrapper!.Get().PFID, GetApp()))
                 return;
@@ -545,7 +548,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             }
             else
             {
-                CFGameTimeMonitoring.StartMonitoring(AppEnvironment.CurrentPfid);
+                if (!CFGameTimeMonitoring.StartMonitoring(GetApp(), AppEnvironment.CurrentPfid))
+                    return;
+
                 GetApp().CallDispatcher.Trigger("EXEV_GameTimeMonitoringStarted");
             }
         }

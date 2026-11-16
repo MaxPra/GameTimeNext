@@ -7,6 +7,7 @@ namespace GameTimeNext.Core.Application.TableObjects
     {
         public override bool IsDevSynced => true;
 
+        [UIXKeyField]
         [UIXSignatureField(0)]
         public string ERMNR { get; set; } = "";
 
@@ -30,7 +31,7 @@ namespace GameTimeNext.Core.Application.TableObjects
 
         public override void Save()
         {
-            new TXERMSG().Save(this);
+            UIXDataManagerBase.Create<TXERMSG>(App).Save(this);
         }
     }
 }

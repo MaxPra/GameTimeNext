@@ -16,7 +16,8 @@ namespace GameTimeNext.Core.Application.Playthroughs
 
         public void Edit(Action<PlaythroughEditViewController.PlaythroughEditViewReturn> callback, T1PLTHR t1plthr)
         {
-            T1plthr = t1plthr;
+            // The current state, not the one of the list (it may have been changed elsewhere since it was loaded)
+            T1plthr = GetDataManager<TXPLTHR>().Read(t1plthr.PTID) ?? t1plthr;
 
             _playthroughEditView!.ViewIndicator.Add("ED");
             _playthroughEditViewController!.SetResultCallback(callback);
@@ -30,7 +31,7 @@ namespace GameTimeNext.Core.Application.Playthroughs
         public void CreateNew(Action<PlaythroughEditViewController.PlaythroughEditViewReturn> callback, T1PROFI t1profi)
         {
             T1profi = t1profi;
-            T1plthr = new TXPLTHR().CreateNew();
+            T1plthr = GetDataManager<TXPLTHR>().CreateNew();
             T1plthr.PFID = T1profi.PFID;
             T1plthr.AcceptChanges();
 

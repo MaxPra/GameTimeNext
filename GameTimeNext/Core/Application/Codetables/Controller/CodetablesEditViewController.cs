@@ -31,8 +31,8 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
 
             AddIdentifier("T1CTABH", GetApp().T1CTABH!);
-            AddSource("T1CTABD", new TXCTABD());
-            AddSource("T1CTABH", new TXCTABH());
+            AddSource("T1CTABD", GetApp().GetDataManager<TXCTABD>());
+            AddSource("T1CTABH", GetApp().GetDataManager<TXCTABH>());
 
             Console.WriteLine(GetApp().T1CTABH!.PTOL1);
         }
@@ -102,7 +102,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
                 AddViewError(control, GetErrorMessage("GLO0007", controlName));
             }
 
-            TXCTABH txctabh = new TXCTABH();
+            TXCTABH txctabh = GetApp().GetDataManager<TXCTABH>();
             if (GetView().ViewIndicator.Contains("CN") && txctabh.Exists(value))
             {
                 AddViewError(control, GetErrorMessage("GLO0008", controlName, value));

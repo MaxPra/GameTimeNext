@@ -10,7 +10,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.DataManagers
 {
-    public class TXSCRSHBasic
+    public class TXSCRSHBasic : UIXDataManagerBase
     {
         private readonly SQLiteConnection? _connectionOverride;
 
@@ -33,7 +33,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         {
             T1SCRSH obj = new T1SCRSH();
             obj.State = UIXTableObjectState.New;
-            return obj;
+            return Adopt(obj);
         }
 
         public virtual T1SCRSH Copy(T1SCRSH objFrom)
@@ -58,6 +58,8 @@ namespace GameTimeNext.Core.Application.DataManagers
                 throw new ArgumentNullException(nameof(obj));
             }
 
+            EnsureNotLocked(obj);
+
             if (Exists(obj))
             {
                 Update(obj);
@@ -73,6 +75,8 @@ namespace GameTimeNext.Core.Application.DataManagers
 
         public virtual void Delete(long ssid)
         {
+            EnsureNotLocked(K1SCRSH.Name, ssid);
+
             using SQLiteCommand cmd = _connection.CreateCommand();
             cmd.CommandText = "DELETE FROM T1SCRSH WHERE SSID = @SSID;";
             cmd.Parameters.AddWithValue("@SSID", ToDbValue(ssid));
@@ -113,7 +117,7 @@ namespace GameTimeNext.Core.Application.DataManagers
                 return null;
             }
 
-            T1SCRSH obj = Map(reader);
+            T1SCRSH obj = Adopt(Map(reader));
             obj.AcceptChanges();
             return obj;
         }
@@ -136,7 +140,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             using var reader = query.Execute();
             while (reader.Read())
             {
-                T1SCRSH obj = Map(reader);
+                T1SCRSH obj = Adopt(Map(reader));
                 obj.AcceptChanges();
                 list.Add(obj);
             }

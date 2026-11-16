@@ -4,6 +4,7 @@ using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Profiles;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework.UI.Dialogs;
+using GameTimeNext.Core.Framework.Utils;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -65,7 +66,7 @@ namespace GameTimeNext.Core.Application.ApplicationProperties.Selectors
                 return;
 
             // The ID is the primary key, so the copy starts without one and the user has to enter a new ID
-            T1APRDH t1aprdh = new TXAPRDH().CreateNew();
+            T1APRDH t1aprdh = GetApp().GetDataManager<TXAPRDH>().CreateNew();
             t1aprdh.APDES = t1aprdhSource.APDES;
             t1aprdh.APHPT = t1aprdhSource.APHPT;
             t1aprdh.APMCP = t1aprdhSource.APMCP;
@@ -80,12 +81,18 @@ namespace GameTimeNext.Core.Application.ApplicationProperties.Selectors
 
             CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window);
 
-            if (cfmbox.ConfirmDelete(GetErrorMessage("GLO0001", $"The application properties definition {t1aprdh.APDID}")))
+            // Not while it is open elsewhere (record lock); checked before asking
+            bool deleted = FnRecordLock.Run(GetApp(), () =>
             {
-                new TXAPRDH().Delete(t1aprdh.APDID);
+                if (!cfmbox.ConfirmDelete(GetErrorMessage("GLO0001", $"The application properties definition {t1aprdh.APDID}")))
+                    return false;
 
+                GetApp().GetDataManager<TXAPRDH>().Delete(t1aprdh.APDID);
+                return true;
+            }, t1aprdh);
+
+            if (deleted)
                 await GetViewController<ApplicationPropertiesViewController>().BuildListAsync(string.Empty);
-            }
         }
     }
 }

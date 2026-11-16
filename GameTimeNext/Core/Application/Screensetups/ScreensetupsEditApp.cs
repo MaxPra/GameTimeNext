@@ -35,7 +35,7 @@ namespace GameTimeNext.Core.Application.Screensetups
 
         public void CreateNew(Action<ScreensetupsEditViewController.ScreensetupsEditViewReturn> callback)
         {
-            T1SCRSH = new TXSCRSH().CreateNew();
+            T1SCRSH = GetDataManager<TXSCRSH>().CreateNew();
             ScreensetupsEditView!.ViewIndicator.Clear();
             ScreensetupsEditView!.ViewIndicator.Add("CN");
             ScreensetupsEditView!.Title = "Create New Screensetup";
@@ -46,7 +46,7 @@ namespace GameTimeNext.Core.Application.Screensetups
 
         public void Copy(Action<ScreensetupsEditViewController.ScreensetupsEditViewReturn> callback, T1SCRSH t1scrshSource)
         {
-            T1SCRSH = new TXSCRSH().Copy(t1scrshSource);
+            T1SCRSH = GetDataManager<TXSCRSH>().Copy(t1scrshSource);
             CopySourceSSID = t1scrshSource.SSID;
 
             ScreensetupsEditView!.ViewIndicator.Clear();

@@ -5,6 +5,7 @@ using GameTimeNext.Core.Application.Menus.Views;
 using GameTimeNext.Core.Application.Profiles;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework.UI.Dialogs;
+using GameTimeNext.Core.Framework.Utils;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -85,13 +86,13 @@ namespace GameTimeNext.Core.Application.Menus.Selectors
 
         protected async Task EV_ctxtMoveUp()
         {
-            if (GetSelectedEntry() is T1MENUE t1menue && TFMENUE.Move(t1menue, -1))
+            if (GetSelectedEntry() is T1MENUE t1menue && TFMENUE.Move(GetApp(), t1menue, -1))
                 await GetViewController<MenusViewController>().BuildTreeAsync(t1menue.MEID);
         }
 
         protected async Task EV_ctxtMoveDown()
         {
-            if (GetSelectedEntry() is T1MENUE t1menue && TFMENUE.Move(t1menue, 1))
+            if (GetSelectedEntry() is T1MENUE t1menue && TFMENUE.Move(GetApp(), t1menue, 1))
                 await GetViewController<MenusViewController>().BuildTreeAsync(t1menue.MEID);
         }
 
@@ -103,17 +104,23 @@ namespace GameTimeNext.Core.Application.Menus.Selectors
             CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window);
 
             // A folder takes everything below it along
-            bool hasChildren = TFMENUE.GetChildren(t1menue.MEID).Count > 0;
+            bool hasChildren = TFMENUE.GetChildren(GetApp(), t1menue.MEID).Count > 0;
             string message = hasChildren
                 ? GetErrorMessage("GLO0002", $"The folder \"{t1menue.MEDE}\"")
                 : GetErrorMessage("GLO0001", $"\"{t1menue.MEDE}\"");
 
-            if (!cfmbox.ConfirmDelete(message))
-                return;
+            // Not while it is open elsewhere (record lock); checked before asking
+            bool deleted = FnRecordLock.Run(GetApp(), () =>
+            {
+                if (!cfmbox.ConfirmDelete(message))
+                    return false;
 
-            TFMENUE.DeleteWithChildren(t1menue.MEID);
+                TFMENUE.DeleteWithChildren(GetApp(), t1menue.MEID);
+                return true;
+            }, t1menue);
 
-            await GetViewController<MenusViewController>().BuildTreeAsync(t1menue.MEPA);
+            if (deleted)
+                await GetViewController<MenusViewController>().BuildTreeAsync(t1menue.MEPA);
         }
     }
 }

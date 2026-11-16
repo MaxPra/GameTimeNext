@@ -3,6 +3,7 @@ using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Utils;
 using UIX.ViewController.Engine.Querying;
+using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 using static GameTimeNext.Core.Application.Profiles.Controller.ProfilesViewController;
 
@@ -18,7 +19,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         /// Tags and fixed options are OR-combined within their group and AND-combined between groups.
         /// FilterActive tells whether the filter hides anything (the name search doesn't count).
         /// </summary>
-        public static (List<T1PROFI> Profiles, bool FilterActive) GetFilteredProfiles(FilterCache filter, string nameSearch)
+        public static (List<T1PROFI> Profiles, bool FilterActive) GetFilteredProfiles(UIXApplication app, FilterCache filter, string nameSearch)
         {
             List<T1PROFI> t1profisFiltered = new List<T1PROFI>();
 
@@ -44,7 +45,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             {
                 while (reader.Read())
                 {
-                    TXPROFI txprofi = new TXPROFI();
+                    TXPROFI txprofi = app.GetDataManager<TXPROFI>();
                     long pfid = UIXQuery.GetInt64(reader, K1PROFI.Name, K1PROFI.Fields.PFID);
                     T1PROFI t1profi = txprofi.Read(pfid);
 

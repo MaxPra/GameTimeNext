@@ -9,6 +9,7 @@ using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.Utils;
 using System.Windows;
 using System.Windows.Threading;
+using UIX.ViewController.Engine.DataBaseObjects;
 using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.BigPicture.Controller
@@ -136,7 +137,18 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
         {
             bool enabled = !FnLauncher.IsPauseInBigPictureEnabled(t1profi);
 
-            FnLauncher.SetPauseInBigPicture(t1profi, enabled);
+            try
+            {
+                FnLauncher.SetPauseInBigPicture(GetApp(), t1profi, enabled);
+            }
+            catch (UIXRecordLockedException ex)
+            {
+                // The profile is open for editing in another module (record lock)
+                FnRecordLock.ShowLocked(GetApp(), ex.Lock);
+                OpenGameMenu(t1profi, OptionGamePause);
+                return;
+            }
+
             FnLog.AddInfo(GetApp(), $"Pause in Big Picture {(enabled ? "switched on" : "switched off")} for {t1profi.GANA}");
 
             if (t1profi.PFID == _runningPfid && Window.GetWindow(View) is Window window)

@@ -25,7 +25,7 @@ namespace GameTimeNext.Core.Application.Screensetups.Selectors
             // A new screensetup starts with the current Windows state
             bool isCreateNew = GetView().ViewIndicator.Contains("CN");
 
-            List<T1SCRSP> t1scrsps = await Task.Run(() => TFSCRSP.GetMonitorsOfScreensetup(ssid), token);
+            List<T1SCRSP> t1scrsps = await Task.Run(() => TFSCRSP.GetMonitorsOfScreensetup(GetApp(), ssid), token);
 
             return BuildRows(t1scrsps, isCreateNew);
         }

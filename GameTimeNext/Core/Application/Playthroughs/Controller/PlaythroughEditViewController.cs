@@ -29,7 +29,7 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
         {
             ViewReturn = new PlaythroughEditViewReturn();
 
-            AddSource("T1CTABD", new TXCTABD());
+            AddSource("T1CTABD", GetApp().GetDataManager<TXCTABD>());
             AddIdentifier("T1PLTHR", GetApp().T1plthr);
         }
 
@@ -46,7 +46,7 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
 
             UIXManualCodetable mCt = new UIXManualCodetable();
 
-            List<T1CTABD> t1ctabds = new TXCTABD().GetEntries("pL");
+            List<T1CTABD> t1ctabds = GetApp().GetDataManager<TXCTABD>().GetEntries("pL");
 
             foreach (T1CTABD t1ctabd in t1ctabds)
             {

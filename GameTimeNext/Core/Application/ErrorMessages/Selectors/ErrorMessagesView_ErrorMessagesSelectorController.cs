@@ -4,6 +4,7 @@ using GameTimeNext.Core.Application.ErrorMessages.Views;
 using GameTimeNext.Core.Application.Profiles;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework.UI.Dialogs;
+using GameTimeNext.Core.Framework.Utils;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -104,12 +105,18 @@ namespace GameTimeNext.Core.Application.ErrorMessages.Selectors
 
             CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window);
 
-            if (cfmbox.ConfirmDelete(GetErrorMessage("GLO0001", $"The error message {t1ermsg.ERMNR}")))
+            // Not while it is open elsewhere (record lock); checked before asking
+            bool deleted = FnRecordLock.Run(GetApp(), () =>
             {
-                new TXERMSG().Delete(t1ermsg.ERMNR);
+                if (!cfmbox.ConfirmDelete(GetErrorMessage("GLO0001", $"The error message {t1ermsg.ERMNR}")))
+                    return false;
 
+                GetApp().GetDataManager<TXERMSG>().Delete(t1ermsg.ERMNR);
+                return true;
+            }, t1ermsg);
+
+            if (deleted)
                 await GetSelector().LoadDataAsync();
-            }
         }
     }
 }

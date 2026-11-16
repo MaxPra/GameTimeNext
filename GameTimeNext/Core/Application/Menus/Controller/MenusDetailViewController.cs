@@ -31,7 +31,7 @@ namespace GameTimeNext.Core.Application.Menus.Controller
         {
             _dataWrapper = GetDataWrapper<MenusDataWrapper>();
 
-            AddSource("T1CTABD", new TXCTABD());
+            AddSource("T1CTABD", GetApp().GetDataManager<TXCTABD>());
 
             if (_dataWrapper.HasData)
                 AddIdentifier("T1MENUE", _dataWrapper.Get());

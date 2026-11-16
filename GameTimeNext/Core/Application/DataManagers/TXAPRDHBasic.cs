@@ -10,7 +10,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.DataManagers
 {
-    public class TXAPRDHBasic
+    public class TXAPRDHBasic : UIXDataManagerBase
     {
         private readonly SQLiteConnection? _connectionOverride;
 
@@ -33,7 +33,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         {
             T1APRDH obj = new T1APRDH();
             obj.State = UIXTableObjectState.New;
-            return obj;
+            return Adopt(obj);
         }
 
         public virtual T1APRDH Copy(T1APRDH objFrom)
@@ -57,6 +57,8 @@ namespace GameTimeNext.Core.Application.DataManagers
                 throw new ArgumentNullException(nameof(obj));
             }
 
+            EnsureNotLocked(obj);
+
             if (Exists(obj))
             {
                 Update(obj);
@@ -72,6 +74,8 @@ namespace GameTimeNext.Core.Application.DataManagers
 
         public virtual void Delete(string apdid)
         {
+            EnsureNotLocked(K1APRDH.Name, apdid);
+
             using SQLiteCommand cmd = _connection.CreateCommand();
             cmd.CommandText = "DELETE FROM T1APRDH WHERE APDID = @APDID;";
             cmd.Parameters.AddWithValue("@APDID", ToDbValue(apdid));
@@ -111,7 +115,7 @@ namespace GameTimeNext.Core.Application.DataManagers
                 return null;
             }
 
-            T1APRDH obj = Map(reader);
+            T1APRDH obj = Adopt(Map(reader));
             obj.AcceptChanges();
             return obj;
         }
@@ -133,7 +137,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             using var reader = query.Execute();
             while (reader.Read())
             {
-                T1APRDH obj = Map(reader);
+                T1APRDH obj = Adopt(Map(reader));
                 obj.AcceptChanges();
                 list.Add(obj);
             }

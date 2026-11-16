@@ -29,7 +29,7 @@ namespace GameTimeNext.Core.Application.Menus.Selectors
         /// </summary>
         private List<MenusTreeGridRow> BuildRows(string filter)
         {
-            List<T1MENUE> entries = TFMENUE.GetAllMenuEntries();
+            List<T1MENUE> entries = TFMENUE.GetAllMenuEntries(GetApp());
             Dictionary<long, T1MENUE> entriesById = entries.ToDictionary(e => e.MEID);
             ILookup<long, T1MENUE> childrenByParent = entries.ToLookup(e => entriesById.ContainsKey(e.MEPA) ? e.MEPA : 0);
 

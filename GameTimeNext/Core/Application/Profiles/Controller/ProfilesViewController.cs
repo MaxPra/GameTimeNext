@@ -166,7 +166,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             if (!_dataWrapper!.HasData)
             {
-                _dataWrapper!.Set(new TXPROFI().CreateNew());
+                _dataWrapper!.Set(GetApp().GetDataManager<TXPROFI>().CreateNew());
                 GetApp().ProfilesDetailView.Visibility = Visibility.Hidden;
                 AppEnvironment.CurrentPfid = 0;
                 FnTheme.ApplyProfileBackground(null);
@@ -217,7 +217,9 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             if (item?.ItemObject is not T1PROFI t1profi)
                 return;
 
-            TFPROFI.Unseal(t1profi);
+            // Being edited or monitored (record lock): the user is told, the game stays sealed
+            if (!TFPROFI.Unseal(GetApp(), t1profi))
+                return;
 
             item.COISSEA = false;
             item.COISNEW = false;
@@ -229,7 +231,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
         private async Task AdjustFiltersToStartedGameProfile(long pfid)
         {
             // Determine the assigned groups
-            T1PROFI t1profi = new TXPROFI().Read(pfid);
+            T1PROFI t1profi = GetApp().GetDataManager<TXPROFI>().Read(pfid);
 
             List<string> linkedTagKeys = TFPROFI.GetAllLinkedTags(t1profi)
                 .Where(t => !TFCTABD.IsTagHidden(t))
@@ -458,7 +460,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                     await BuildProfilesListBoxAsync(r.PFID);
                     GameRunningProcess grp = ((GameRunningProcess)AppEnvironment.StartedBackgroundProcesses[typeof(GameRunningProcess).FullName]);
 
-                    T1PROFI t1profi = new TXPROFI().Read(r.PFID);
+                    T1PROFI t1profi = GetApp().GetDataManager<TXPROFI>().Read(r.PFID);
                     grp.AddT1profi(t1profi);
                     grp.AddExecutables(t1profi.PFID, FnExecutables.GetAllActiveExecutablesFromDBObj(t1profi));
                 }

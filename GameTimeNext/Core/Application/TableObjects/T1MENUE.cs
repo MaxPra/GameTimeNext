@@ -7,6 +7,7 @@ namespace GameTimeNext.Core.Application.TableObjects
     {
         public override bool IsDevSynced => true;
 
+        [UIXKeyField]
         [UIXSignatureField(0)]
         public long MEID { get; set; } = 0;
 
@@ -42,7 +43,7 @@ namespace GameTimeNext.Core.Application.TableObjects
 
         public override void Save()
         {
-            new TXMENUE().Save(this);
+            UIXDataManagerBase.Create<TXMENUE>(App).Save(this);
         }
     }
 }

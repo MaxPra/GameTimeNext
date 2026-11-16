@@ -37,7 +37,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
             ViewReturn = new CodetablesEntryEditViewReturn();
 
             AddIdentifier("T1CTABD", GetApp().T1CTABD!);
-            AddSource("T1CTABD", new TXCTABD());
+            AddSource("T1CTABD", GetApp().GetDataManager<TXCTABD>());
         }
 
         protected override void BuildFirstImpl()
@@ -130,7 +130,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
         /// </summary>
         private async Task RunParameterApiAsync(int index)
         {
-            T1CTABH list = new TXCTABH().Read(GetApp().T1CTABD!.TXTYP)!;
+            T1CTABH list = GetApp().GetDataManager<TXCTABH>().Read(GetApp().T1CTABD!.TXTYP)!;
             string controlType = list.GetValue<string>($"PACO{index}")!;
 
             if (GetView().FindName($"{ControlType.ByCode[controlType].XamlPrefix}Param{index}") is not FrameworkElement control)
@@ -156,9 +156,9 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
 
         private void BuildManualCodetableParameters()
         {
-            TXCTABD txctabd = new TXCTABD();
+            TXCTABD txctabd = GetApp().GetDataManager<TXCTABD>();
 
-            T1CTABH t1ctabh = new TXCTABH().Read(GetApp().T1CTABD!.TXTYP)!;
+            T1CTABH t1ctabh = GetApp().GetDataManager<TXCTABH>().Read(GetApp().T1CTABD!.TXTYP)!;
 
             for (int i = 1; i <= MAX_PARAM_COUNT; i++)
             {
@@ -198,7 +198,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
             Dictionary<string, ParameterControl> paramControls = new Dictionary<string, ParameterControl>();
 
             // Read codetable header
-            T1CTABH t1ctabh = new TXCTABH().Read(GetApp().T1CTABD!.TXTYP)!;
+            T1CTABH t1ctabh = GetApp().GetDataManager<TXCTABH>().Read(GetApp().T1CTABD!.TXTYP)!;
 
             for (int i = 1; i <= MAX_PARAM_COUNT; i++)
             {
@@ -246,7 +246,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
         {
             TextBox control = GetView().TxbTextNumber;
             string value = control.Text;
-            T1CTABH t1ctabh = new TXCTABH().Read(GetApp().T1CTABD!.TXTYP)!;
+            T1CTABH t1ctabh = GetApp().GetDataManager<TXCTABH>().Read(GetApp().T1CTABD!.TXTYP)!;
 
             if (FnString.IsNullEmptyOrWhitespace(value))
             {
@@ -281,7 +281,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
                 }
             }
 
-            TXCTABD txctabd = new TXCTABD();
+            TXCTABD txctabd = GetApp().GetDataManager<TXCTABD>();
             if (GetView().ViewIndicator.Contains("CN") && txctabd.Exists(t1ctabh.TXTYP, value))
             {
                 AddViewError(control, GetErrorMessage("GLO0008", "Textnumber", value));
@@ -297,7 +297,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
                 return;
 
             // Read codetable header
-            T1CTABH t1ctabh = new TXCTABH().Read(GetApp().T1CTABD!.TXTYP)!;
+            T1CTABH t1ctabh = GetApp().GetDataManager<TXCTABH>().Read(GetApp().T1CTABD!.TXTYP)!;
 
             for (int i = 1; i <= _parmControls.Count; i++)
             {

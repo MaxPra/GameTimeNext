@@ -135,7 +135,7 @@ namespace GameTimeNext.Core.Application.ApplicationProperties.Controller
 
         protected void EV_btnAddApplicationProperties()
         {
-            OpenInDetail(new TXAPRDH().CreateNew());
+            OpenInDetail(GetApp().GetDataManager<TXAPRDH>().CreateNew());
         }
 
         protected async Task EV_btnRefresh()

@@ -73,7 +73,7 @@ namespace GameTimeNext.Core.Application.ApplicationProperties.Controller
                 AddViewError(GetView().txbId, GetErrorMessage("GLO0003", "App name"));
             else if (id.Length > 300)
                 AddViewError(GetView().txbId, GetErrorMessage("GLO0004", "App name", "300"));
-            else if (_dataWrapper.Get().State == UIXTableObjectState.New && new TXAPRDH().Read(id) != null)
+            else if (_dataWrapper.Get().State == UIXTableObjectState.New && GetApp().GetDataManager<TXAPRDH>().Read(id) != null)
                 AddViewError(GetView().txbId, GetErrorMessage("GLO0008", "App name", id));
 
             if (FnString.IsNullEmptyOrWhitespace(GetView().txbDescription.Text))

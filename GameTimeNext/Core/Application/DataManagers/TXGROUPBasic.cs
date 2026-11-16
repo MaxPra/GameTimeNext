@@ -10,7 +10,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.DataManagers
 {
-    public class TXGROUPBasic
+    public class TXGROUPBasic : UIXDataManagerBase
     {
         private readonly SQLiteConnection? _connectionOverride;
 
@@ -33,7 +33,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         {
             T1GROUP obj = new T1GROUP();
             obj.State = UIXTableObjectState.New;
-            return obj;
+            return Adopt(obj);
         }
 
         public virtual T1GROUP Copy(T1GROUP objFrom)
@@ -56,6 +56,8 @@ namespace GameTimeNext.Core.Application.DataManagers
                 throw new ArgumentNullException(nameof(obj));
             }
 
+            EnsureNotLocked(obj);
+
             if (Exists(obj))
             {
                 Update(obj);
@@ -71,6 +73,8 @@ namespace GameTimeNext.Core.Application.DataManagers
 
         public virtual void Delete(long grid)
         {
+            EnsureNotLocked(K1GROUP.Name, grid);
+
             using SQLiteCommand cmd = _connection.CreateCommand();
             cmd.CommandText = "DELETE FROM T1GROUP WHERE GRID = @GRID;";
             cmd.Parameters.AddWithValue("@GRID", ToDbValue(grid));
@@ -109,7 +113,7 @@ namespace GameTimeNext.Core.Application.DataManagers
                 return null;
             }
 
-            T1GROUP obj = Map(reader);
+            T1GROUP obj = Adopt(Map(reader));
             obj.AcceptChanges();
             return obj;
         }
@@ -130,7 +134,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             using var reader = query.Execute();
             while (reader.Read())
             {
-                T1GROUP obj = Map(reader);
+                T1GROUP obj = Adopt(Map(reader));
                 obj.AcceptChanges();
                 list.Add(obj);
             }

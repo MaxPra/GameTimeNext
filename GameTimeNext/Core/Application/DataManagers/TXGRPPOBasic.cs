@@ -10,7 +10,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.DataManagers
 {
-    public class TXGRPPOBasic
+    public class TXGRPPOBasic : UIXDataManagerBase
     {
         private readonly SQLiteConnection? _connectionOverride;
 
@@ -33,7 +33,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         {
             T1GRPPO obj = new T1GRPPO();
             obj.State = UIXTableObjectState.New;
-            return obj;
+            return Adopt(obj);
         }
 
         public virtual T1GRPPO Copy(T1GRPPO objFrom)
@@ -57,6 +57,8 @@ namespace GameTimeNext.Core.Application.DataManagers
                 throw new ArgumentNullException(nameof(obj));
             }
 
+            EnsureNotLocked(obj);
+
             if (Exists(obj))
             {
                 Update(obj);
@@ -72,6 +74,8 @@ namespace GameTimeNext.Core.Application.DataManagers
 
         public virtual void Delete(long gpid)
         {
+            EnsureNotLocked(K1GRPPO.Name, gpid);
+
             using SQLiteCommand cmd = _connection.CreateCommand();
             cmd.CommandText = "DELETE FROM T1GRPPO WHERE GPID = @GPID;";
             cmd.Parameters.AddWithValue("@GPID", ToDbValue(gpid));
@@ -111,7 +115,7 @@ namespace GameTimeNext.Core.Application.DataManagers
                 return null;
             }
 
-            T1GRPPO obj = Map(reader);
+            T1GRPPO obj = Adopt(Map(reader));
             obj.AcceptChanges();
             return obj;
         }
@@ -133,7 +137,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             using var reader = query.Execute();
             while (reader.Read())
             {
-                T1GRPPO obj = Map(reader);
+                T1GRPPO obj = Adopt(Map(reader));
                 obj.AcceptChanges();
                 list.Add(obj);
             }

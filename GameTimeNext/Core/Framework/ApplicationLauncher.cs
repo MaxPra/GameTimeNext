@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
+using UIX.ViewController.Engine.DataBaseObjects;
 using UIX.ViewController.Engine.FrameworkElements;
 using UIX.ViewController.Engine.FrameworkElements.Windows;
 using UIX.ViewController.Engine.Runnables;
@@ -247,6 +248,10 @@ namespace GameTimeNext.Core.Framework
 
         private static void RemoveTab(string typeName, TabItem tab)
         {
+            // Records the application still holds (e.g. an entry open in the edit area of a combined edit) are free again
+            if (AppEnvironment.StartedApplications.TryGetValue(typeName, out UIXApplication? app))
+                UIXRecordLocks.ReleaseAll(app);
+
             AppEnvironment.StartedApplications.Remove(typeName);
 
             TabControl tabControl = ItemsControl.ItemsControlFromItemContainer(tab) as TabControl;

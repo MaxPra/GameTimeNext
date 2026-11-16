@@ -99,7 +99,7 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
 
         private (List<LibraryEntry> Library, bool FilterActive) ReadLibrary(FilterCache filter)
         {
-            (List<T1PROFI> profiles, bool filterActive) = TFPROFI.GetFilteredProfiles(filter, string.Empty);
+            (List<T1PROFI> profiles, bool filterActive) = TFPROFI.GetFilteredProfiles(GetApp(), filter, string.Empty);
 
             return (profiles.Select(p => new LibraryEntry(p, LoadCover(p))).ToList(), filterActive);
         }
@@ -464,7 +464,7 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
         /// </summary>
         private void FillPlaythrough(T1PROFI t1profi)
         {
-            T1PLTHR? t1plthr = TFPLTHR.HasCurrentPlaythrough(t1profi.PFID) ? TFPLTHR.GetCurrentPlaythrough(t1profi.PFID) : null;
+            T1PLTHR? t1plthr = TFPLTHR.HasCurrentPlaythrough(t1profi.PFID) ? TFPLTHR.GetCurrentPlaythrough(GetApp(), t1profi.PFID) : null;
             bool hasPlaythrough = t1plthr != null && t1plthr.PTTY != PlaythroughType.INITIAL_PLAYTHROUGH;
 
             FnControls.SetVisible(GetView().pnlPlaythrough, hasPlaythrough);

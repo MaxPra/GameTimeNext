@@ -7,6 +7,7 @@ namespace GameTimeNext.Core.Application.TableObjects
     {
         public override bool IsDevSynced => true;
 
+        [UIXKeyField]
         [UIXSignatureField(0)]
         public string APDID { get; set; } = "";
 
@@ -33,7 +34,7 @@ namespace GameTimeNext.Core.Application.TableObjects
 
         public override void Save()
         {
-            new TXAPRDH().Save(this);
+            UIXDataManagerBase.Create<TXAPRDH>(App).Save(this);
         }
     }
 }

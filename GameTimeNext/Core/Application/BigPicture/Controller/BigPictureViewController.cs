@@ -265,7 +265,7 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
             _detailsTimer.Stop();
 
             // The blackout showed the game selected here: back to the profile selected in the profiles view
-            AppEnvironment.SetCurrentProfile(AppEnvironment.CurrentPfid == 0 ? null : new TXPROFI().Read(AppEnvironment.CurrentPfid));
+            AppEnvironment.SetCurrentProfile(AppEnvironment.CurrentPfid == 0 ? null : GetApp().GetDataManager<TXPROFI>().Read(AppEnvironment.CurrentPfid));
 
             GetApp().CallDispatcher.Unregister(nameof(EXEV_BigPictureGameLaunched));
             GetApp().CallDispatcher.Unregister(nameof(EXEV_BigPictureGameClosed));
@@ -502,7 +502,7 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
             // The user left the game on purpose: a launched game is not brought to the front anymore
             _launchFrontVersion++;
 
-            T1PROFI? t1profi = _runningPfid == 0 ? null : new TXPROFI().Read(_runningPfid);
+            T1PROFI? t1profi = _runningPfid == 0 ? null : GetApp().GetDataManager<TXPROFI>().Read(_runningPfid);
 
             if (t1profi != null && !FnLauncher.MinimizeGame(t1profi))
                 FnLog.AddInfo(GetApp(), $"No window of {t1profi.GANA} found to minimize for the Big Picture mode");

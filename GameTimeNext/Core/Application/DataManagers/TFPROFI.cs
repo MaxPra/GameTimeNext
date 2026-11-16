@@ -3,8 +3,11 @@ using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Config;
 using GameTimeNext.Core.Framework.UI;
+using GameTimeNext.Core.Framework.Utils;
 using System.IO;
+using UIX.ViewController.Engine.DataBaseObjects;
 using UIX.ViewController.Engine.Querying;
+using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.DataManagers
@@ -14,13 +17,13 @@ namespace GameTimeNext.Core.Application.DataManagers
         /// <summary>
         /// Deletes the given profile including its linked data
         /// </summary>
-        public static void DeleteT1PROFIAndLinkedData(T1PROFI t1profi)
+        public static void DeleteT1PROFIAndLinkedData(UIXApplication app, T1PROFI t1profi)
         {
-            TXPROFI txprofi = new TXPROFI();
+            TXPROFI txprofi = app.GetDataManager<TXPROFI>();
 
-            DeleteAllLinkedT1GRPPOs(t1profi);
-            DeleteAllLinkedT1SESSIs(t1profi);
-            DeleteAllLinkedT1PLTHRs(t1profi);
+            DeleteAllLinkedT1GRPPOs(app, t1profi);
+            DeleteAllLinkedT1SESSIs(app, t1profi);
+            DeleteAllLinkedT1PLTHRs(app, t1profi);
 
             DeleteCoverImage(t1profi);
 
@@ -85,7 +88,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             return tagKeys;
         }
 
-        public static List<T1SESSI> GetAllSessions(T1PROFI t1profi)
+        public static List<T1SESSI> GetAllSessions(UIXApplication app, T1PROFI t1profi)
         {
             List<T1SESSI> t1sessis = new List<T1SESSI>();
 
@@ -100,7 +103,7 @@ namespace GameTimeNext.Core.Application.DataManagers
                 while (reader.Read())
                 {
                     long seid = UIXQuery.GetInt64(reader, K1SESSI.Name, K1SESSI.Fields.SEID);
-                    t1sessis.Add(new TXSESSI().Read(seid));
+                    t1sessis.Add(app.GetDataManager<TXSESSI>().Read(seid));
                 }
             }
 
@@ -131,13 +134,41 @@ namespace GameTimeNext.Core.Application.DataManagers
         }
 
         /// <summary>
-        /// Unwraps the game and saves the profile
+        /// Unwraps the game and saves the profile (read again under the record lock, the given object gets the new
+        /// settings too). False if it is being edited elsewhere or its game is monitored (the user is told).
         /// </summary>
-        public static void Unseal(T1PROFI t1profi)
+        public static bool Unseal(UIXApplication app, T1PROFI t1profi)
         {
-            // Unwrapping is looking at the new game
-            if (RemoveSealedFlag(t1profi, clearNewMark: true))
-                new TXPROFI().Save(t1profi);
+            return FnRecordLock.Run(app, () =>
+            {
+                TXPROFI txprofi = app.GetDataManager<TXPROFI>();
+                T1PROFI current = txprofi.Read(t1profi.PFID) ?? t1profi;
+
+                // Unwrapping is looking at the new game
+                if (RemoveSealedFlag(current, clearNewMark: true))
+                    txprofi.Save(current);
+
+                t1profi.PRSE = current.PRSE;
+            }, t1profi);
+        }
+
+        /// <summary>
+        /// The profile and the records that belong to it (playthroughs, group positions), e.g. to lock them all
+        /// (monitoring, deleting). Empty if the profile doesn't exist.
+        /// </summary>
+        public static List<UIXTableObjectBase> GetProfileWithLinkedRecords(UIXApplication app, long pfid)
+        {
+            List<UIXTableObjectBase> records = new List<UIXTableObjectBase>();
+            T1PROFI? t1profi = app.GetDataManager<TXPROFI>().Read(pfid);
+
+            if (t1profi == null)
+                return records;
+
+            records.Add(t1profi);
+            records.AddRange(GetAllPlaythroughs(app, t1profi));
+            records.AddRange(app.GetDataManager<TXGRPPO>().ReadAll().Where(g => g.PFID == pfid));
+
+            return records;
         }
 
         /// <summary>
@@ -164,9 +195,9 @@ namespace GameTimeNext.Core.Application.DataManagers
         /// <summary>
         /// All profiles that are still shrink-wrapped, regardless of the setting SealNewGames.
         /// </summary>
-        public static List<T1PROFI> GetSealedProfiles()
+        public static List<T1PROFI> GetSealedProfiles(UIXApplication app)
         {
-            return new TXPROFI().ReadAll()
+            return app.GetDataManager<TXPROFI>().ReadAll()
                 .Where(p => new CProfileSettings(p.PRSE).Dezerialize().Sealed)
                 .ToList();
         }
@@ -175,14 +206,28 @@ namespace GameTimeNext.Core.Application.DataManagers
         /// Unwraps all sealed profiles and saves them (setting SealNewGames switched off, otherwise they would be
         /// sealed again when it is switched on). The badge "New" stays: the games were not looked at yet.
         /// </summary>
-        public static void UnsealAll()
+        public static void UnsealAll(UIXApplication app)
         {
-            TXPROFI txprofi = new TXPROFI();
+            TXPROFI txprofi = app.GetDataManager<TXPROFI>();
 
-            foreach (T1PROFI t1profi in GetSealedProfiles())
+            foreach (T1PROFI t1profi in GetSealedProfiles(app))
             {
-                if (RemoveSealedFlag(t1profi, clearNewMark: false))
-                    txprofi.Save(t1profi);
+                // Being edited or monitored (record lock): stays sealed, which doesn't matter while the setting is off
+                if (!t1profi.Lock())
+                {
+                    FnLog.AddInfo(app, $"{t1profi.GANA} wasn't unwrapped: it is locked by {t1profi.GetLockHolder()?.Holder.AppProperties.ApplicationName}.");
+                    continue;
+                }
+
+                try
+                {
+                    if (RemoveSealedFlag(t1profi, clearNewMark: false))
+                        txprofi.Save(t1profi);
+                }
+                finally
+                {
+                    t1profi.Unlock();
+                }
             }
         }
 
@@ -208,20 +253,36 @@ namespace GameTimeNext.Core.Application.DataManagers
         }
 
         /// <summary>
-        /// Removes the badge "New" when the profile is selected and saves it. A sealed game keeps it: it is removed
-        /// when the game is unwrapped. Returns true if the badge was removed.
+        /// Removes the badge "New" when the profile is selected and saves it (read again under the record lock, the given
+        /// object gets the new settings too). A sealed game keeps it: it is removed when the game is unwrapped; a profile
+        /// that is being edited or monitored keeps it until it is selected again. Returns true if the badge was removed.
         /// </summary>
-        public static bool ClearNewMarkOnSelection(T1PROFI t1profi)
+        public static bool ClearNewMarkOnSelection(UIXApplication app, T1PROFI t1profi)
         {
-            CProfileSettings cProfileSettings = new CProfileSettings(t1profi.PRSE).Dezerialize();
-
-            if (!cProfileSettings.IsNew || IsSealed(t1profi))
+            if (!IsMarkedNew(t1profi) || IsSealed(t1profi))
                 return false;
 
-            cProfileSettings.IsNew = false;
-            t1profi.PRSE = cProfileSettings.Serialize();
+            // Only a selection: no message when it is locked
+            if (!t1profi.Lock())
+                return false;
 
-            new TXPROFI().Save(t1profi);
+            try
+            {
+                TXPROFI txprofi = app.GetDataManager<TXPROFI>();
+                T1PROFI current = txprofi.Read(t1profi.PFID) ?? t1profi;
+
+                CProfileSettings cProfileSettings = new CProfileSettings(current.PRSE).Dezerialize();
+                cProfileSettings.IsNew = false;
+                current.PRSE = cProfileSettings.Serialize();
+
+                txprofi.Save(current);
+
+                t1profi.PRSE = current.PRSE;
+            }
+            finally
+            {
+                t1profi.Unlock();
+            }
 
             return true;
         }
@@ -230,14 +291,14 @@ namespace GameTimeNext.Core.Application.DataManagers
         /// Saves a profile created without the edit view (automatic import) together with its initial playthrough,
         /// as saving a new profile in the edit view does.
         /// </summary>
-        public static void SaveNewProfile(T1PROFI t1profi)
+        public static void SaveNewProfile(UIXApplication app, T1PROFI t1profi)
         {
-            new TXPROFI().Save(t1profi);
+            app.GetDataManager<TXPROFI>().Save(t1profi);
 
-            TFPLTHR.CreateNewPlaythrough(t1profi.PFID);
+            TFPLTHR.CreateNewPlaythrough(app, t1profi.PFID);
         }
 
-        public static List<T1PLTHR> GetAllPlaythroughs(T1PROFI t1profi)
+        public static List<T1PLTHR> GetAllPlaythroughs(UIXApplication app, T1PROFI t1profi)
         {
             List<T1PLTHR> t1plthrs = new List<T1PLTHR>();
 
@@ -252,7 +313,7 @@ namespace GameTimeNext.Core.Application.DataManagers
                 while (reader.Read())
                 {
                     long ptid = UIXQuery.GetInt64(reader, K1PLTHR.Name, K1PLTHR.Fields.PTID);
-                    t1plthrs.Add(new TXPLTHR().Read(ptid));
+                    t1plthrs.Add(app.GetDataManager<TXPLTHR>().Read(ptid));
                 }
             }
 
@@ -337,10 +398,10 @@ namespace GameTimeNext.Core.Application.DataManagers
             return t1ctabd.TXNUM == "02";
         }
 
-        private static void DeleteAllLinkedT1GRPPOs(T1PROFI t1profi)
+        private static void DeleteAllLinkedT1GRPPOs(UIXApplication app, T1PROFI t1profi)
         {
             // Delete linked data
-            TXGRPPO txgrppo = new TXGRPPO();
+            TXGRPPO txgrppo = app.GetDataManager<TXGRPPO>();
             List<T1GRPPO> t1grppos = txgrppo.ReadAll();
 
             t1grppos = t1grppos.Where(g => g.PFID == t1profi.PFID).ToList();
@@ -351,24 +412,24 @@ namespace GameTimeNext.Core.Application.DataManagers
             }
         }
 
-        private static void DeleteAllLinkedT1SESSIs(T1PROFI t1profi)
+        private static void DeleteAllLinkedT1SESSIs(UIXApplication app, T1PROFI t1profi)
         {
             // Delete linked data
-            List<T1SESSI> t1sessis = GetAllSessions(t1profi);
+            List<T1SESSI> t1sessis = GetAllSessions(app, t1profi);
 
             foreach (T1SESSI t1sessi in t1sessis)
             {
-                new TXSESSI().Delete(t1sessi.SEID);
+                app.GetDataManager<TXSESSI>().Delete(t1sessi.SEID);
             }
         }
 
-        private static void DeleteAllLinkedT1PLTHRs(T1PROFI t1profi)
+        private static void DeleteAllLinkedT1PLTHRs(UIXApplication app, T1PROFI t1profi)
         {
-            List<T1PLTHR> t1plthrs = GetAllPlaythroughs(t1profi);
+            List<T1PLTHR> t1plthrs = GetAllPlaythroughs(app, t1profi);
 
             foreach (T1PLTHR t1plthr in t1plthrs)
             {
-                new TXPLTHR().Delete(t1plthr.PTID);
+                app.GetDataManager<TXPLTHR>().Delete(t1plthr.PTID);
             }
         }
 

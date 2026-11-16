@@ -55,7 +55,7 @@ namespace GameTimeNext.Core.Application.Profiles.Selectors
             AppEnvironment.SetCurrentProfile(t1profi);
 
             // Badge "New" of the automatic import: gone once the user selected the game (not the selection of the list build)
-            if (item.COISNEW && !GetViewController<ProfilesViewController>().IsSelectingProfile && TFPROFI.ClearNewMarkOnSelection(t1profi))
+            if (item.COISNEW && !GetViewController<ProfilesViewController>().IsSelectingProfile && TFPROFI.ClearNewMarkOnSelection(GetApp(), t1profi))
                 item.COISNEW = false;
         }
 
@@ -128,7 +128,7 @@ namespace GameTimeNext.Core.Application.Profiles.Selectors
                 {
                     GameRunningProcess grp = GetGameRunningProcess();
 
-                    T1PROFI t1profi = new TXPROFI().Read(r.PFID);
+                    T1PROFI t1profi = GetApp().GetDataManager<TXPROFI>().Read(r.PFID);
                     grp.AddT1profi(t1profi);
                     grp.AddExecutables(t1profi.PFID, FnExecutables.GetAllActiveExecutablesFromDBObj(t1profi));
 
@@ -141,15 +141,25 @@ namespace GameTimeNext.Core.Application.Profiles.Selectors
         {
             CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window);
             T1PROFI selectedT1profi = GetSelectedProfile();
+            bool deleted = false;
 
-            if (cfmbox.ConfirmDelete(GetErrorMessage("GLO0002", $"\"{selectedT1profi.GANA}\"")))
+            // The profile and everything that is deleted with it must not be open elsewhere or monitored (record lock);
+            // checked before asking, so nothing is half deleted
+            FnRecordLock.Run(GetApp(), () =>
             {
+                if (!cfmbox.ConfirmDelete(GetErrorMessage("GLO0002", $"\"{selectedT1profi.GANA}\"")))
+                    return;
 
                 string coverPath = Path.Combine(AppConfig.Storage.ProfileCoversDirectoryPath ?? string.Empty, selectedT1profi.PPFN);
                 File.Delete(coverPath);
 
-                TFPROFI.DeleteT1PROFIAndLinkedData(selectedT1profi);
+                TFPROFI.DeleteT1PROFIAndLinkedData(GetApp(), selectedT1profi);
 
+                deleted = true;
+            }, TFPROFI.GetProfileWithLinkedRecords(GetApp(), selectedT1profi.PFID).ToArray());
+
+            if (deleted)
+            {
                 GameRunningProcess grp = GetGameRunningProcess();
                 grp.RemoveT1profi(selectedT1profi);
                 grp.RemoveExecutables(selectedT1profi.PFID);
@@ -182,7 +192,7 @@ namespace GameTimeNext.Core.Application.Profiles.Selectors
         protected async Task EV_ctxtCompleteProfile()
         {
             T1PROFI t1profi = GetSelectedProfile();
-            T1PLTHR t1plthr = TFPLTHR.GetCurrentPlaythrough(t1profi.PFID);
+            T1PLTHR t1plthr = TFPLTHR.GetCurrentPlaythrough(GetApp(), t1profi.PFID);
 
             TFPLTHR.UpdatePlaythroughStatus(GetApp(), ref t1plthr, TFPLTHR.PlaythroughStatus.Completed);
 
@@ -193,20 +203,24 @@ namespace GameTimeNext.Core.Application.Profiles.Selectors
         {
             T1PROFI t1profi = GetSelectedProfile();
 
-            PlaythroughEditApp app = GetApp().GetApplication<PlaythroughEditApp>();
-            app.CreateNew(async r =>
+            // A new playthrough becomes the current one: not while the game is monitored or the profile is being edited
+            FnRecordLock.Run(GetApp(), () =>
             {
-                if (r.HasChanged)
+                PlaythroughEditApp app = GetApp().GetApplication<PlaythroughEditApp>();
+                app.CreateNew(async r =>
                 {
-                    await RebuildListAsync(t1profi.PFID);
-                }
+                    if (r.HasChanged)
+                    {
+                        await RebuildListAsync(t1profi.PFID);
+                    }
+                }, t1profi);
             }, t1profi);
         }
 
         protected async Task EV_ctxtCancelPlaythrough()
         {
             T1PROFI t1profi = GetSelectedProfile();
-            T1PLTHR t1plthr = TFPLTHR.GetCurrentPlaythrough(t1profi.PFID);
+            T1PLTHR t1plthr = TFPLTHR.GetCurrentPlaythrough(GetApp(), t1profi.PFID);
 
             TFPLTHR.UpdatePlaythroughStatus(GetApp(), ref t1plthr, TFPLTHR.PlaythroughStatus.Canceled);
 
@@ -215,24 +229,27 @@ namespace GameTimeNext.Core.Application.Profiles.Selectors
 
         protected async Task EV_ctxtArchiveProfile()
         {
-            T1PROFI t1profi = GetSelectedProfile();
-
-            t1profi.ARCH = true;
-
-            new TXPROFI().Save(t1profi);
-
-            await RebuildListAsync(0);
+            if (SetArchived(GetSelectedProfile(), true))
+                await RebuildListAsync(0);
         }
 
         protected async Task EV_ctxtUnarchiveProfile()
         {
-            T1PROFI t1profi = GetSelectedProfile();
+            if (SetArchived(GetSelectedProfile(), false))
+                await RebuildListAsync(0);
+        }
 
-            t1profi.ARCH = false;
+        // Read again under the record lock, so changes made elsewhere since the list was loaded aren't overwritten
+        private bool SetArchived(T1PROFI t1profi, bool archived)
+        {
+            return FnRecordLock.Run(GetApp(), () =>
+            {
+                TXPROFI txprofi = GetApp().GetDataManager<TXPROFI>();
+                T1PROFI current = txprofi.Read(t1profi.PFID) ?? t1profi;
 
-            new TXPROFI().Save(t1profi);
-
-            await RebuildListAsync(0);
+                current.ARCH = archived;
+                txprofi.Save(current);
+            }, t1profi);
         }
 
         protected void EV_ctxtShowPlaythroughs()

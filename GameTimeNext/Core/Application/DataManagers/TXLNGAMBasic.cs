@@ -10,7 +10,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.DataManagers
 {
-    public class TXLNGAMBasic
+    public class TXLNGAMBasic : UIXDataManagerBase
     {
         private readonly SQLiteConnection? _connectionOverride;
 
@@ -33,7 +33,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         {
             T1LNGAM obj = new T1LNGAM();
             obj.State = UIXTableObjectState.New;
-            return obj;
+            return Adopt(obj);
         }
 
         public virtual T1LNGAM Copy(T1LNGAM objFrom)
@@ -59,6 +59,8 @@ namespace GameTimeNext.Core.Application.DataManagers
                 throw new ArgumentNullException(nameof(obj));
             }
 
+            EnsureNotLocked(obj);
+
             if (Exists(obj))
             {
                 Update(obj);
@@ -74,6 +76,8 @@ namespace GameTimeNext.Core.Application.DataManagers
 
         public virtual void Delete(long lgid)
         {
+            EnsureNotLocked(K1LNGAM.Name, lgid);
+
             using SQLiteCommand cmd = _connection.CreateCommand();
             cmd.CommandText = "DELETE FROM T1LNGAM WHERE LGID = @LGID;";
             cmd.Parameters.AddWithValue("@LGID", ToDbValue(lgid));
@@ -115,7 +119,7 @@ namespace GameTimeNext.Core.Application.DataManagers
                 return null;
             }
 
-            T1LNGAM obj = Map(reader);
+            T1LNGAM obj = Adopt(Map(reader));
             obj.AcceptChanges();
             return obj;
         }
@@ -139,7 +143,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             using var reader = query.Execute();
             while (reader.Read())
             {
-                T1LNGAM obj = Map(reader);
+                T1LNGAM obj = Adopt(Map(reader));
                 obj.AcceptChanges();
                 list.Add(obj);
             }

@@ -21,9 +21,9 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
         // Screensetup menu: option key -> screensetup
         private readonly Dictionary<string, T1SCRSH> _screensetupOptions = new Dictionary<string, T1SCRSH>();
 
-        private static bool HasScreensetups()
+        private bool HasScreensetups()
         {
-            return new TXSCRSH().ReadAll().Count > 0;
+            return GetApp().GetDataManager<TXSCRSH>().ReadAll().Count > 0;
         }
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
         {
             long activeSsid = AppEnvironment.GetAppConfig().UserSettings.SelectedScreensetup;
 
-            List<T1SCRSH> t1scrshs = new TXSCRSH().ReadAll()
+            List<T1SCRSH> t1scrshs = GetApp().GetDataManager<TXSCRSH>().ReadAll()
                 .OrderBy(s => s.SSNA, StringComparer.CurrentCultureIgnoreCase)
                 .ToList();
 
