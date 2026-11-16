@@ -1,4 +1,4 @@
-using GameTimeNext.Core.Application.TimeMonitoring;
+using GameTimeNext.Core.Application.Profiles.BackgroundProcesses;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using UIX.ViewController.Engine.DataBaseObjects;
 using UIX.ViewController.Engine.Runnables;
@@ -14,7 +14,8 @@ namespace GameTimeNext.Core.Framework
     {
         public void ShowRecordLocked(UIXApplication app, UIXRecordLockInfo recordLock)
         {
-            string message = ReferenceEquals(recordLock.Holder, CFGameTimeMonitoring.GetLockOwner())
+            // The monitoring holds the records of the monitored game (CFGameTimeMonitoring.GetLockOwner)
+            string message = recordLock.Holder is GameRunningProcess
                 ? app.GetErrorMessage("GLO0024")
                 : app.GetErrorMessage("GLO0023", GetModuleName(recordLock.Holder));
 

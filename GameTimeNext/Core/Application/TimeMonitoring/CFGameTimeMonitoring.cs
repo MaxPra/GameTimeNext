@@ -36,7 +36,7 @@ namespace GameTimeNext.Core.Application.TimeMonitoring
         /// </summary>
         public static bool HoldsLock(UIXTableObjectBase record)
         {
-            return ReferenceEquals(record.GetLockHolder()?.Holder, GetLockOwner());
+            return record.GetLockHolder()?.Holder is GameRunningProcess;
         }
 
         /// <summary>
@@ -104,18 +104,23 @@ namespace GameTimeNext.Core.Application.TimeMonitoring
 
         /// <summary>
         /// Stores the session of the stopped monitoring and the play dates of the profile, then releases the records.
+        /// Stored for the monitored profile, which holds the locks: the current profile may have changed meanwhile (another
+        /// game started, the blackout of the Big Picture mode selects the shown game).
         /// </summary>
         public static void UpdateTableObject()
         {
             try
             {
+                if (_monitoringPFID == 0)
+                    return;
+
                 UIXApplication owner = GetLockOwner();
 
                 // -- Fill session data
                 TXSESSI txsessi = owner.GetDataManager<TXSESSI>();
                 T1SESSI t1sessi = txsessi.CreateNew();
 
-                t1sessi.PFID = AppEnvironment.CurrentPfid;
+                t1sessi.PFID = _monitoringPFID;
                 t1sessi.PLFR = _startTime;
                 t1sessi.PLTO = _endTime;
                 t1sessi.PLTI = GetMonitoredTimeInMinutes();
@@ -130,7 +135,7 @@ namespace GameTimeNext.Core.Application.TimeMonitoring
 
                 // -- Fill profile data
                 TXPROFI txprofi = owner.GetDataManager<TXPROFI>();
-                T1PROFI t1profi = txprofi.Read(AppEnvironment.CurrentPfid);
+                T1PROFI t1profi = txprofi.Read(_monitoringPFID);
 
                 if (t1profi.FIPL == DateTime.MinValue)
                     t1profi.FIPL = _startTime;

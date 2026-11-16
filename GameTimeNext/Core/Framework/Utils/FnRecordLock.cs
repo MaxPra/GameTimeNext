@@ -10,7 +10,8 @@ namespace GameTimeNext.Core.Framework.Utils
     public static class FnRecordLock
     {
         /// <summary>
-        /// Locks the records for their application (T1....App, set by the data manager that read them), runs the action and
+        /// Locks the records for their application (T1....App, set by the data manager that read them; the calling application
+        /// for records without one), runs the action and
         /// releases the locks it set. If another application holds one of them (open for editing, game being monitored),
         /// nothing runs, the user is told where it is open and false is returned; also when the action itself hits a lock
         /// (UIXRecordLockedException, e.g. a linked record).
@@ -36,6 +37,9 @@ namespace GameTimeNext.Core.Framework.Utils
             {
                 foreach (UIXTableObjectBase record in records)
                 {
+                    // Read without a data manager of an application (e.g. new TX...): changed by the calling application
+                    record.App ??= app;
+
                     // Already held by its own application (e.g. still locked by a caller): not released here
                     bool alreadyHeld = record.App != null && ReferenceEquals(record.GetLockHolder()?.Holder, record.App);
 
