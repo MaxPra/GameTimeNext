@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using GameTimeNext.Core.Application.General;
+using GameTimeNext.Core.Application.General.BackgroundProcesses;
 using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Profiles;
 using GameTimeNext.Core.Application.Profiles.BackgroundProcesses;
@@ -37,6 +38,15 @@ namespace GameTimeNext.Core.Application.Settings.Controller
 
         // "Add new games shrink-wrapped" was switched off while games are still sealed: they are unwrapped on save
         private bool _unsealAllOnSave = false;
+
+        // The remote monitoring was switched on: its web app is allowed in the Windows firewall on save
+        private bool _allowRemoteMonitoringOnSave = false;
+
+        // Firewall rules are system wide, but every Windows user has their own installation (per-user install) and the
+        // development build its own web app: one rule each, otherwise switching it on replaces the rule of the other one
+        private static string RemoteMonitoringFirewallRule => FnSystem.IsDebug()
+            ? $"{AppConfig.Root.ApplicationName} Remote Monitoring (Dev)"
+            : $"{AppConfig.Root.ApplicationName} Remote Monitoring ({Environment.UserName})";
 
         public SettingsViewController(UIXApplication app) : base(app)
         {
@@ -386,7 +396,9 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             _appSettings!.ShowMonitoringIndicator = GetView().cbShowMonitoringIndicator.IsChecked == true;
             _appSettings!.BlackoutSideMonitors = GetView().cbBlackoutSideMonitors.IsChecked == true;
             _appSettings!.MonitoringKeyActive = GetView().cbMonitoringKeyActive.IsChecked == true;
-            _appSettings!.RemoteMonitoring = GetView().cbRemoteMonitoringActive.IsChecked == true;
+            bool remoteMonitoring = GetView().cbRemoteMonitoringActive.IsChecked == true;
+            _allowRemoteMonitoringOnSave = remoteMonitoring && !_appSettings!.RemoteMonitoring;
+            _appSettings!.RemoteMonitoring = remoteMonitoring;
             _appSettings!.MonitoringKey = GetView().txbMonitoringKey.Text;
             _appSettings!.EnableSessionTimeQuery = GetView().cbEnableSessionTimeQuery.IsChecked == true;
             _appSettings!.EnableSessionCleanup = GetView().cbEnableSessionCleanup.IsChecked == true;
@@ -419,6 +431,36 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             {
                 _unsealAllOnSave = false;
                 UnsealAllProfiles();
+            }
+
+            if (_allowRemoteMonitoringOnSave)
+            {
+                _allowRemoteMonitoringOnSave = false;
+                AllowRemoteMonitoringInFirewall();
+            }
+        }
+
+        private void AllowRemoteMonitoringInFirewall()
+        {
+            string? webAppPath = RemoteMonitoringProcess.FindWebAppExecutable();
+            if (webAppPath is null)
+            {
+                FnLog.AddWarning(GetApp(), "No firewall rule for the remote monitoring: its web app was not found.");
+                return;
+            }
+
+            if (FnFirewall.IsProgramAllowed(RemoteMonitoringFirewallRule, webAppPath))
+                return;
+
+            CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window);
+            cfmbox.Show(GetErrorMessage("SET0004", AppConfig.Root.ApplicationName), CFMBOXResult.Ok, CFMBOXIcon.Info);
+
+            FirewallRuleResult result = FnFirewall.AllowProgramInbound(RemoteMonitoringFirewallRule, webAppPath, "private");
+
+            if (result is FirewallRuleResult.Cancelled or FirewallRuleResult.Failed)
+            {
+                CFMBOX failed = GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window);
+                failed.Show(GetErrorMessage("SET0005", AppConfig.Root.ApplicationName), CFMBOXResult.Ok, CFMBOXIcon.Warning);
             }
         }
 

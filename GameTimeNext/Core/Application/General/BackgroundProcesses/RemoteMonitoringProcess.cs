@@ -142,21 +142,14 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
             }
             CallDispatcher!.Trigger("EXEV_RemoteMonitoringPortChanged", port); // SettingsViewController
 
-            string baseDir = Path.Combine(AppConfig.Root.ApplicationDirectoryPath, "RemoteMonitoring");
-            FnDirectory.EnsureDirectoryExists(baseDir);
-            string? exePath = Directory.GetFiles(baseDir, "*RemoteMonitoring*.exe", SearchOption.AllDirectories).FirstOrDefault();
-            if (exePath is null && FnSystem.IsDebug())
-            {
-                baseDir = Path.Combine(baseDir, AppConfig.Dev.RemoteMonitoringBinDirectoryPath);
-                exePath = Directory.GetFiles(baseDir, "*RemoteMonitoring*.exe", SearchOption.AllDirectories).FirstOrDefault();
-            }
-
+            string? exePath = FindWebAppExecutable();
             if (exePath is null)
             {
-                FnLog.AddError(this, "No executable found in application folder.");
-                FnLog.AddInfo(this, baseDir);
+                FnLog.AddError(this, "No executable of the web app found in the application folder.");
                 return;
             }
+
+            string baseDir = Path.GetDirectoryName(exePath)!;
 
             try
             {
@@ -202,6 +195,22 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
                 FnLog.AddError(this, "Failed to start blazorProcess.", ex);
                 _blazorProcess = null;
             }
+        }
+
+        public static string? FindWebAppExecutable()
+        {
+            string baseDir = Path.Combine(AppConfig.Root.ApplicationDirectoryPath, "RemoteMonitoring");
+            FnDirectory.EnsureDirectoryExists(baseDir);
+            string? exePath = Directory.GetFiles(baseDir, "*RemoteMonitoring*.exe", SearchOption.AllDirectories).FirstOrDefault();
+
+            if (exePath is null && FnSystem.IsDebug())
+            {
+                string devDir = Path.GetFullPath(Path.Combine(baseDir, AppConfig.Dev.RemoteMonitoringBinDirectoryPath));
+                if (Directory.Exists(devDir))
+                    exePath = Directory.GetFiles(devDir, "*RemoteMonitoring*.exe", SearchOption.AllDirectories).FirstOrDefault();
+            }
+
+            return exePath is null ? null : Path.GetFullPath(exePath);
         }
 
         private void BlazorErrorDataReceived(object sender, DataReceivedEventArgs e)
