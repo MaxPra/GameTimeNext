@@ -444,7 +444,11 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             _appSettings!.MonitoringKeyActive = GetView().cbMonitoringKeyActive.IsChecked == true;
             bool remoteMonitoring = GetView().cbRemoteMonitoringActive.IsChecked == true;
             _allowRemoteMonitoringOnSave = remoteMonitoring && !_appSettings!.RemoteMonitoring;
-            _appSettings!.RemoteMonitoring = remoteMonitoring;
+
+            // Switching on waits for the firewall rule in SaveDBO: RemoteMonitoringProcess starts the web app as soon as
+            // the setting is on, and a web app listening before the rule exists gets the Windows firewall prompt
+            if (!_allowRemoteMonitoringOnSave)
+                _appSettings!.RemoteMonitoring = remoteMonitoring;
             _appSettings!.MonitoringKey = GetView().txbMonitoringKey.Text;
             _appSettings!.EnableSessionTimeQuery = GetView().cbEnableSessionTimeQuery.IsChecked == true;
             _appSettings!.EnableSessionCleanup = GetView().cbEnableSessionCleanup.IsChecked == true;
@@ -462,6 +466,15 @@ namespace GameTimeNext.Core.Application.Settings.Controller
 
         protected override void SaveDBOImpl()
         {
+            // Rule first, then the setting: the web app only starts once it is allowed in the firewall. "Cancel" on the
+            // Windows prompt would even add a block rule for it, which beats the allow rule.
+            if (_allowRemoteMonitoringOnSave)
+            {
+                _allowRemoteMonitoringOnSave = false;
+                AllowRemoteMonitoringInFirewall();
+                _appSettings!.RemoteMonitoring = true;
+            }
+
             AppEnvironment.SaveAppConfig();
             _appSettings!.AcceptChanges();
 
@@ -477,12 +490,6 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             {
                 _unsealAllOnSave = false;
                 UnsealAllProfiles();
-            }
-
-            if (_allowRemoteMonitoringOnSave)
-            {
-                _allowRemoteMonitoringOnSave = false;
-                AllowRemoteMonitoringInFirewall();
             }
 
             // Switched on or off: show or hide the QR code
