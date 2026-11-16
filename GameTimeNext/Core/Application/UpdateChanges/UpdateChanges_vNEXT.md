@@ -43,6 +43,12 @@
   While Big Picture is open, the monitors don't turn off by themselves.
 - **Automatic game import** (*Settings > General > Game import*): newly installed games of your launchers (Steam, Epic, Xbox, GOG, Ubisoft Connect, Rockstar) are added as profiles shortly after their installation finished, with the first cover from SteamGridDB (or the placeholder cover) and the executables preselected.
   When you switch it on, you decide once whether the games installed already are added too. New profiles show the badge **New** until you select them (shrink-wrapped games until you unwrap them). Games that already have a profile, or whose profile you deleted, are never added again.
+- Added **Remote Monitoring** (*Settings > Monitoring*): track the playtime of your console games from your phone when you can't operate the PC.
+  Open the web app on your phone in your home network, pick a game and start or stop the monitoring; the session is saved like any other.
+  Pair your phone by scanning the QR code in the settings; only paired phones can use it. **Reset pairing** unpairs all phones (e.g. after losing one).
+  Your external games are listed (archived ones are left out). If a game has no active playthrough, the phone asks whether to create one. While a game is monitored, the phone always shows it until you stop the monitoring.
+  When you switch it on, Windows asks once to allow the web app in the firewall. It is allowed in private networks only, so your home network must be set to *Private* in the Windows network settings.
+  While Remote Monitoring is on, the PC doesn't go to sleep, so your phone can always reach it. The monitors still turn off.
 
 ## Bug fixes
 
