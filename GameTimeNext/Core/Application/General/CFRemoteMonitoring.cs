@@ -1,5 +1,6 @@
 using GameTimeNext.Core.Application.General.BackgroundProcesses;
 using GameTimeNext.Core.Framework;
+using GameTimeNext.Core.Framework.UI;
 using GameTimeNext.Core.Framework.Utils;
 using QRCoder;
 using System.Globalization;
@@ -23,6 +24,9 @@ namespace GameTimeNext.Core.Application.General
         private const int DefaultWebAppPort = 5131;
 
         private static readonly object SyncRoot = new object();
+
+        // The blackout running now was started by a monitoring from the phone (not by Ctrl+B or the monitoring key)
+        private static bool _isRemoteBlackout = false;
 
         /// <summary>
         /// The pairing code, created and stored on first use. Read by the web app over the socket.
@@ -120,6 +124,36 @@ namespace GameTimeNext.Core.Application.General
             }
 
             return addresses.Distinct().ToList();
+        }
+
+        /// <summary>
+        /// Blacks out all screens for a monitoring started from the phone (setting RemoteMonitoringBlackout), like the
+        /// monitoring key does for a console game: plain black, cursor hidden. A blackout already running (e.g. Ctrl+B)
+        /// is left as it is and not ended by the stop. UI thread.
+        /// </summary>
+        public static void BeginRemoteBlackout()
+        {
+            if (!AppEnvironment.GetAppConfig().AppSettings.RemoteMonitoringBlackout || CFBlackout.IsActive())
+                return;
+
+            CFBlackout.Enable(System.Windows.Application.Current.MainWindow, consoleMode: true);
+            _isRemoteBlackout = true;
+        }
+
+        /// <summary>
+        /// Ends the blackout of BeginRemoteBlackout. Called on every stop of a monitoring (phone, monitoring key, Big
+        /// Picture, ...), so it never stays on; does nothing if the blackout came from somewhere else. UI thread.
+        /// </summary>
+        public static void EndRemoteBlackout()
+        {
+            if (!_isRemoteBlackout)
+                return;
+
+            _isRemoteBlackout = false;
+
+            // The monitoring key may have ended it already (it toggles the blackout before it stops)
+            if (CFBlackout.IsActive())
+                CFBlackout.Disable(System.Windows.Application.Current.Dispatcher);
         }
 
         /// <summary>

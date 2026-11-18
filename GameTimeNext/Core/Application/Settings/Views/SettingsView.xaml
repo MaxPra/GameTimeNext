@@ -1009,47 +1009,59 @@
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
                                     <RowDefinition Height="8" />
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
-                                <Grid Grid.Row="0" HorizontalAlignment="Left">
+                                <!--  Same layout as the other settings rows: title and hint on the left, the switch on the right  -->
+                                <Grid Grid.Row="0" Style="{StaticResource Settings.Row}">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="170" />
-                                        <ColumnDefinition Width="16" />
-                                        <ColumnDefinition Width="54" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
 
-                                    <TextBlock
-                                        Grid.Column="0"
-                                        VerticalAlignment="Center"
-                                        Foreground="{DynamicResource Brush.TextSecondary}"
-                                        Text="Remote Monitoring active" />
+                                    <StackPanel Margin="0,0,24,0" VerticalAlignment="Center">
+                                        <TextBlock Style="{StaticResource Text.BodyStrong}" Text="Remote Monitoring active" />
+                                        <TextBlock
+                                            Margin="0,2,0,0"
+                                            Style="{StaticResource Text.Hint}"
+                                            Text="Keeps the PC awake while it is on, so your phone can reach it also between two sessions. The monitors still turn off."
+                                            TextWrapping="Wrap" />
+                                    </StackPanel>
 
-                                    <CheckBox
-                                        x:Name="cbRemoteMonitoringActive"
-                                        Grid.Column="2"
-                                        HorizontalAlignment="Left"
-                                        VerticalAlignment="Center" />
+                                    <CheckBox x:Name="cbRemoteMonitoringActive" Grid.Column="1" VerticalAlignment="Center" />
+                                </Grid>
+
+                                <!--  Blackout of all screens while a monitoring started from the phone runs  -->
+                                <Grid Grid.Row="2" Style="{StaticResource Settings.Row}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Margin="0,0,24,0" VerticalAlignment="Center">
+                                        <TextBlock Style="{StaticResource Text.BodyStrong}" Text="Black out all screens" />
+                                        <TextBlock
+                                            Margin="0,2,0,0"
+                                            Style="{StaticResource Text.Hint}"
+                                            Text="While a monitoring started from your phone runs. Stopping it lights the screens up again."
+                                            TextWrapping="Wrap" />
+                                    </StackPanel>
+
+                                    <CheckBox x:Name="cbRemoteMonitoringBlackout" Grid.Column="1" VerticalAlignment="Center" />
                                 </Grid>
 
                                 <TextBlock
-                                    Grid.Row="1"
-                                    Margin="0,4,0,0"
-                                    Style="{StaticResource Text.Hint}"
-                                    Text="Keeps the PC awake while it is on, so your phone can reach it also between two sessions. The monitors still turn off."
-                                    TextWrapping="Wrap" />
-
-                                <TextBlock
                                     x:Name="txtRemoteMonitoringPort"
-                                    Grid.Row="3"
+                                    Grid.Row="4"
                                     Foreground="{DynamicResource Brush.Success}" />
 
                                 <!--  Pairing: the QR code opens the web app on the phone and pairs it in one step  -->
                                 <Grid
                                     x:Name="grdRemoteMonitoringPairing"
-                                    Grid.Row="4"
+                                    Grid.Row="5"
                                     Margin="0,16,0,0">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />

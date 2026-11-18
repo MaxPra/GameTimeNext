@@ -279,6 +279,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
         protected async Task EXEV_GameTimeMonitoringStopped()
         {
+            CFRemoteMonitoring.EndRemoteBlackout();
+
             CFGameTimeMonitoring.UpdateTableObject();
 
             GetView().MonitoringOverlay.Visibility = Visibility.Hidden;

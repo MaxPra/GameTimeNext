@@ -110,6 +110,8 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             if (!GetView().cbBlackoutSideMonitors.IsEnabled)
                 GetView().cbBlackoutSideMonitors.IsChecked = false;
 
+            FnControls.SetEnabled(GetView().cbRemoteMonitoringBlackout, GetView().cbRemoteMonitoringActive.IsChecked == true);
+
             FnControls.SetEnabled(GetView().btnImportBackup, !FnString.IsNullEmptyOrWhitespace(GetView().txbBackupImportPath.Text));
             FnControls.SetEnabled(GetView().btnCreateBackup, !FnString.IsNullEmptyOrWhitespace(GetView().txbBackupExportPath.Text));
 
@@ -357,6 +359,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
         {
             GetView().cbMonitoringKeyActive.IsChecked = _appSettings!.MonitoringKeyActive;
             GetView().cbRemoteMonitoringActive.IsChecked = _appSettings!.RemoteMonitoring;
+            GetView().cbRemoteMonitoringBlackout.IsChecked = _appSettings!.RemoteMonitoringBlackout;
             GetView().cbShowToastNotification.IsChecked = _appSettings!.ShowToastNotification;
             GetView().cbShowMonitoringIndicator.IsChecked = _appSettings!.ShowMonitoringIndicator;
             GetView().cbBlackoutSideMonitors.IsChecked = _appSettings!.BlackoutSideMonitors;
@@ -444,6 +447,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             // the setting is on, and a web app listening before the rule exists gets the Windows firewall prompt
             if (!_allowRemoteMonitoringOnSave)
                 _appSettings!.RemoteMonitoring = remoteMonitoring;
+            _appSettings!.RemoteMonitoringBlackout = GetView().cbRemoteMonitoringBlackout.IsChecked == true;
             _appSettings!.MonitoringKey = GetView().txbMonitoringKey.Text;
             _appSettings!.EnableSessionTimeQuery = GetView().cbEnableSessionTimeQuery.IsChecked == true;
             _appSettings!.EnableSessionCleanup = GetView().cbEnableSessionCleanup.IsChecked == true;

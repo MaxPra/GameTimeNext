@@ -121,6 +121,9 @@ namespace GameTimeNext.Core.Application.TableObjects
         [UIXSignatureField(31)]
         public bool RemoteMonitoring { get; set; }
 
+        [UIXSignatureField(32)]
+        public bool RemoteMonitoringBlackout { get; set; }
+
         public AppSettings()
         {
             AutomaticGameProfileSwitching = false;
@@ -144,6 +147,7 @@ namespace GameTimeNext.Core.Application.TableObjects
             EnableSessionCleanup = false;
             SessionCleanupSeconds = 30.0;
             RemoteMonitoring = false;
+            RemoteMonitoringBlackout = true;
             SteamGridDbKey = string.Empty;
             EnableTwitchIGDB = false;
             TwitchIGDBClientID = string.Empty;

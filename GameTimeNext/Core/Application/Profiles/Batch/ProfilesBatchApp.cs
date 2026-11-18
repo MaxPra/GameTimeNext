@@ -1,4 +1,5 @@
 ﻿using GameTimeNext.Core.Application.DataManagers;
+using GameTimeNext.Core.Application.General;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Application.TimeMonitoring;
 using GameTimeNext.Core.Framework;
@@ -124,6 +125,8 @@ namespace GameTimeNext.Core.Application.Profiles.Batch
 
             CFGameTimeMonitoring.StartMonitoring(pfid);
             CallDispatcher.Trigger("EXEV_GameTimeMonitoringStarted");
+
+            CallDispatcher.Invoke(CFRemoteMonitoring.BeginRemoteBlackout);
 
             return new StartMonitoringResponseMessage(pfid, MonitoringResponse.MonitoringStarted);
         }

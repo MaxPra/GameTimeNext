@@ -49,6 +49,7 @@
   Your external games are listed (archived ones are left out). If a game has no active playthrough, the phone asks whether to create one. While a game is monitored, the phone always shows it until you stop the monitoring.
   When you switch it on, Windows asks once to allow the web app in the firewall. It is allowed in private networks only, so your home network must be set to *Private* in the Windows network settings.
   While Remote Monitoring is on, the PC doesn't go to sleep, so your phone can always reach it. The monitors still turn off.
+  A monitoring started from your phone blacks out all screens of the PC; stopping it lights them up again. Switch this off with *Black out all screens* in the settings.
 
 ## Bug fixes
 
