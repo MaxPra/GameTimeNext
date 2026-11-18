@@ -24,7 +24,7 @@ namespace GameTimeNext.Core.Application.Profiles.Selectors
             return await Task.Run(() =>
             {
                 Dictionary<string, long> linkedGpidsByTagKey = pfid > 0
-                    ? new TXGRPPO().ReadAll()
+                    ? GetApp().GetDataManager<TXGRPPO>().ReadAll()
                         .Where(g => g.PFID == pfid && !FnString.IsNullEmptyOrWhitespace(g.TGKY))
                         .GroupBy(g => g.TGKY, StringComparer.Ordinal)
                         .ToDictionary(g => g.Key, g => g.First().GPID, StringComparer.Ordinal)

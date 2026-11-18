@@ -223,7 +223,7 @@ namespace GameTimeNext.Core.Application.General.Controller
             GetView().MainTabControl.Visibility = Visibility.Visible;
 
             // The mode colored the window with the selected game: back to the profile selected in the profiles view
-            FnTheme.ApplyProfileAccentColors(AppEnvironment.CurrentPfid == 0 ? null : new TXPROFI().Read(AppEnvironment.CurrentPfid));
+            FnTheme.ApplyProfileAccentColors(AppEnvironment.CurrentPfid == 0 ? null : GetApp().GetDataManager<TXPROFI>().Read(AppEnvironment.CurrentPfid));
 
             FnLog.AddInfo(GetApp(), "Big Picture mode closed");
         }
@@ -330,7 +330,7 @@ namespace GameTimeNext.Core.Application.General.Controller
                     {
                         try
                         {
-                            GTXMigrationService gtxMigHelper = new GTXMigrationService("C:\\GameTimeX", GetApp().Loader);
+                            GTXMigrationService gtxMigHelper = new GTXMigrationService(GetApp(), "C:\\GameTimeX", GetApp().Loader);
                             gtxMigHelper.MigrateToGTNXT();
                         }
                         catch (Exception ex)

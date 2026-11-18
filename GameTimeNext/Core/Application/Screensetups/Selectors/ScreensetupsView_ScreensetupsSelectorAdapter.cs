@@ -39,12 +39,12 @@ namespace GameTimeNext.Core.Application.Screensetups.Selectors
                 {
                     long ssid = UIXQuery.GetInt64(reader, K1SCRSH.Name, K1SCRSH.Fields.SSID);
 
-                    T1SCRSH? t1scrsh = new TXSCRSH().Read(ssid);
+                    T1SCRSH? t1scrsh = GetApp().GetDataManager<TXSCRSH>().Read(ssid);
 
                     if (t1scrsh == null)
                         continue;
 
-                    List<T1SCRSP> t1scrsps = TFSCRSP.GetMonitorsOfScreensetup(ssid);
+                    List<T1SCRSP> t1scrsps = TFSCRSP.GetMonitorsOfScreensetup(GetApp(), ssid);
 
                     ScreensetupDataGridRow row = GetSelector().CreateNewRow<ScreensetupDataGridRow>();
                     row.COSSNA = t1scrsh.SSNA;

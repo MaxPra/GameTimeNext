@@ -39,7 +39,7 @@ namespace GameTimeNext.Core.Application.ErrorMessages.Selectors
                 {
                     string readErmnr = UIXQuery.GetString(reader, K1ERMSG.Name, K1ERMSG.Fields.ERMNR, string.Empty);
 
-                    T1ERMSG? t1ermsg = new TXERMSG().Read(readErmnr);
+                    T1ERMSG? t1ermsg = GetApp().GetDataManager<TXERMSG>().Read(readErmnr);
 
                     if (t1ermsg == null)
                         continue;

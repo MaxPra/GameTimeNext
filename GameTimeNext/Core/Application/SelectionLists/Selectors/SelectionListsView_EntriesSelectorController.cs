@@ -4,6 +4,7 @@ using GameTimeNext.Core.Application.SelectionLists.Controller;
 using GameTimeNext.Core.Application.SelectionLists.Views;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework.UI.Dialogs;
+using GameTimeNext.Core.Framework.Utils;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -92,12 +93,18 @@ namespace GameTimeNext.Core.Application.SelectionLists.Selectors
 
             CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window);
 
-            if (cfmbox.ConfirmDelete(GetErrorMessage("GLO0001", $"\"{entry.DESCR}\"")))
+            // Not while it is open elsewhere, e.g. in "Codetables" (record lock); checked before asking
+            bool deleted = FnRecordLock.Run(GetApp(), () =>
             {
-                new TXCTABD().Delete(entry.TXTYP, entry.TXNUM);
+                if (!cfmbox.ConfirmDelete(GetErrorMessage("GLO0001", $"\"{entry.DESCR}\"")))
+                    return false;
 
+                GetApp().GetDataManager<TXCTABD>().Delete(entry.TXTYP, entry.TXNUM);
+                return true;
+            }, entry);
+
+            if (deleted)
                 await GetViewController<SelectionListsViewController>().ShowSelectedListAsync(true);
-            }
         }
     }
 }

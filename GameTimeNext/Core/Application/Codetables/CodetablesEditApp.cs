@@ -29,7 +29,7 @@ namespace GameTimeNext.Core.Application.Codetables
 
         public void CreateNew(Action<CodetablesEditViewController.CodetablesEditViewReturn> callback)
         {
-            T1CTABH = new TXCTABH().CreateNew();
+            T1CTABH = GetDataManager<TXCTABH>().CreateNew();
             CodetablesEditView!.ViewIndicator.Add("CN");
             CodetablesEditView!.Title = "Create New Codetable";
             CodetablesEditViewController!.SetResultCallback(callback);

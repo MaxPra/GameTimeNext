@@ -63,7 +63,7 @@ namespace GameTimeNext.Core.Application.SelectionLists.Selectors
             query.AddWhere(K1CTABD.Name, K1CTABD.Fields.TXTYP, QueryCompareType.EQUALS, list.TXTYP);
             query.AddOrderBy(K1CTABD.Name, K1CTABD.Fields.DESCR, OrderDirection.ASC);
 
-            TXCTABD txctabd = new TXCTABD();
+            TXCTABD txctabd = GetApp().GetDataManager<TXCTABD>();
 
             using (var reader = query.Execute())
             {

@@ -34,7 +34,7 @@ namespace GameTimeNext.Core.Application.Screensetups
         /// </summary>
         public static async Task<string?> ApplyScreensetupAsync(UIXApplication app, T1SCRSH t1scrsh)
         {
-            List<UIXMonitorTarget> targets = CreateTargets(t1scrsh);
+            List<UIXMonitorTarget> targets = CreateTargets(app, t1scrsh);
 
             if (!targets.Any(t => t.Enabled))
                 return app.GetErrorMessage("SCS0004");
@@ -109,12 +109,12 @@ namespace GameTimeNext.Core.Application.Screensetups
         /// <summary>
         /// Desired state of the connected monitors of a screensetup; monitors that are not connected right now cannot be switched.
         /// </summary>
-        private static List<UIXMonitorTarget> CreateTargets(T1SCRSH t1scrsh)
+        private static List<UIXMonitorTarget> CreateTargets(UIXApplication app, T1SCRSH t1scrsh)
         {
             HashSet<string> connectedMonitorIds = UIXMonitorManager.GetMonitors().Select(m => m.Id).ToHashSet();
 
             // A display mode of 0 lets Windows choose
-            return TFSCRSP.GetMonitorsOfScreensetup(t1scrsh.SSID)
+            return TFSCRSP.GetMonitorsOfScreensetup(app, t1scrsh.SSID)
                 .Where(p => connectedMonitorIds.Contains(p.MOID))
                 .Select(p => new UIXMonitorTarget(p.MOID, p.MOEN, p.MOEN && p.MOPR)
                 {

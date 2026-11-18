@@ -1,6 +1,7 @@
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
 using UIX.ViewController.Engine.Querying;
+using UIX.ViewController.Engine.Runnables;
 
 namespace GameTimeNext.Core.Application.DataManagers
 {
@@ -9,7 +10,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         /// <summary>
         /// All menu entries, ordered by parent and sort order.
         /// </summary>
-        public static List<T1MENUE> GetAllMenuEntries()
+        public static List<T1MENUE> GetAllMenuEntries(UIXApplication app)
         {
             UIXQuery query = new UIXQuery(K1MENUE.Name, AppEnvironment.GetDataBaseManager().GetConnection());
             query.AddField(K1MENUE.Name, K1MENUE.Fields.MEID);
@@ -17,13 +18,13 @@ namespace GameTimeNext.Core.Application.DataManagers
             query.AddOrderBy(K1MENUE.Name, K1MENUE.Fields.MEOR, OrderDirection.ASC);
             query.AddOrderBy(K1MENUE.Name, K1MENUE.Fields.MEID, OrderDirection.ASC);
 
-            return ReadEntries(query);
+            return ReadEntries(app, query);
         }
 
         /// <summary>
         /// Direct children of a menu entry (0 = root), ordered by sort order.
         /// </summary>
-        public static List<T1MENUE> GetChildren(long mepa)
+        public static List<T1MENUE> GetChildren(UIXApplication app, long mepa)
         {
             UIXQuery query = new UIXQuery(K1MENUE.Name, AppEnvironment.GetDataBaseManager().GetConnection());
             query.AddField(K1MENUE.Name, K1MENUE.Fields.MEID);
@@ -31,15 +32,15 @@ namespace GameTimeNext.Core.Application.DataManagers
             query.AddOrderBy(K1MENUE.Name, K1MENUE.Fields.MEOR, OrderDirection.ASC);
             query.AddOrderBy(K1MENUE.Name, K1MENUE.Fields.MEID, OrderDirection.ASC);
 
-            return ReadEntries(query);
+            return ReadEntries(app, query);
         }
 
         /// <summary>
         /// Sort order for a new entry: behind the last child of the parent.
         /// </summary>
-        public static long GetNextSortOrder(long mepa)
+        public static long GetNextSortOrder(UIXApplication app, long mepa)
         {
-            List<T1MENUE> children = GetChildren(mepa);
+            List<T1MENUE> children = GetChildren(app, mepa);
 
             return children.Count == 0 ? 10 : children.Max(c => c.MEOR) + 10;
         }
@@ -47,21 +48,21 @@ namespace GameTimeNext.Core.Application.DataManagers
         /// <summary>
         /// Deletes the menu entry and, for folders, everything below it.
         /// </summary>
-        public static void DeleteWithChildren(long meid)
+        public static void DeleteWithChildren(UIXApplication app, long meid)
         {
-            foreach (T1MENUE child in GetChildren(meid))
-                DeleteWithChildren(child.MEID);
+            foreach (T1MENUE child in GetChildren(app, meid))
+                DeleteWithChildren(app, child.MEID);
 
-            new TXMENUE().Delete(meid);
+            app.GetDataManager<TXMENUE>().Delete(meid);
         }
 
         /// <summary>
         /// Swaps the sort order of the entry with its previous (direction -1) or next (direction 1) sibling.
         /// Returns false if there is no sibling in that direction.
         /// </summary>
-        public static bool Move(T1MENUE t1menue, int direction)
+        public static bool Move(UIXApplication app, T1MENUE t1menue, int direction)
         {
-            List<T1MENUE> siblings = GetChildren(t1menue.MEPA);
+            List<T1MENUE> siblings = GetChildren(app, t1menue.MEPA);
             int index = siblings.FindIndex(s => s.MEID == t1menue.MEID);
             int otherIndex = index + direction;
 
@@ -71,7 +72,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             // Renumber all siblings so equal or missing sort orders can't block the swap
             (siblings[index], siblings[otherIndex]) = (siblings[otherIndex], siblings[index]);
 
-            TXMENUE txmenue = new TXMENUE();
+            TXMENUE txmenue = app.GetDataManager<TXMENUE>();
 
             for (int i = 0; i < siblings.Count; i++)
             {
@@ -87,11 +88,11 @@ namespace GameTimeNext.Core.Application.DataManagers
             return true;
         }
 
-        private static List<T1MENUE> ReadEntries(UIXQuery query)
+        private static List<T1MENUE> ReadEntries(UIXApplication app, UIXQuery query)
         {
             List<T1MENUE> t1menues = new List<T1MENUE>();
 
-            TXMENUE txmenue = new TXMENUE();
+            TXMENUE txmenue = app.GetDataManager<TXMENUE>();
 
             using (var reader = query.Execute())
             {

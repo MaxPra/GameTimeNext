@@ -116,10 +116,10 @@ namespace GameTimeNext.Core.Application.Menus.Controller
         /// </summary>
         public void CreateNewEntry(string mety, long mepa)
         {
-            T1MENUE t1menue = new TXMENUE().CreateNew();
+            T1MENUE t1menue = GetApp().GetDataManager<TXMENUE>().CreateNew();
             t1menue.METY = mety;
             t1menue.MEPA = mepa;
-            t1menue.MEOR = TFMENUE.GetNextSortOrder(mepa);
+            t1menue.MEOR = TFMENUE.GetNextSortOrder(GetApp(), mepa);
 
             GetView().dgMenus.SelectedItem = null;
 

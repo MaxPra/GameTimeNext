@@ -10,7 +10,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.DataManagers
 {
-    public class TXMENUEBasic
+    public class TXMENUEBasic : UIXDataManagerBase
     {
         private readonly SQLiteConnection? _connectionOverride;
 
@@ -33,7 +33,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         {
             T1MENUE obj = new T1MENUE();
             obj.State = UIXTableObjectState.New;
-            return obj;
+            return Adopt(obj);
         }
 
         public virtual T1MENUE Copy(T1MENUE objFrom)
@@ -60,6 +60,8 @@ namespace GameTimeNext.Core.Application.DataManagers
                 throw new ArgumentNullException(nameof(obj));
             }
 
+            EnsureNotLocked(obj);
+
             if (Exists(obj))
             {
                 Update(obj);
@@ -75,6 +77,8 @@ namespace GameTimeNext.Core.Application.DataManagers
 
         public virtual void Delete(long meid)
         {
+            EnsureNotLocked(K1MENUE.Name, meid);
+
             using SQLiteCommand cmd = _connection.CreateCommand();
             cmd.CommandText = "DELETE FROM T1MENUE WHERE MEID = @MEID;";
             cmd.Parameters.AddWithValue("@MEID", ToDbValue(meid));
@@ -117,7 +121,7 @@ namespace GameTimeNext.Core.Application.DataManagers
                 return null;
             }
 
-            T1MENUE obj = Map(reader);
+            T1MENUE obj = Adopt(Map(reader));
             obj.AcceptChanges();
             return obj;
         }
@@ -142,7 +146,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             using var reader = query.Execute();
             while (reader.Read())
             {
-                T1MENUE obj = Map(reader);
+                T1MENUE obj = Adopt(Map(reader));
                 obj.AcceptChanges();
                 list.Add(obj);
             }

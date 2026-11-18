@@ -7,6 +7,7 @@ namespace GameTimeNext.Core.Application.TableObjects
     {
         public override bool IsDevSynced => true;
 
+        [UIXKeyField]
         [UIXSignatureField(0)]
         public string TXTYP { get; set; } = "";
 
@@ -78,7 +79,7 @@ namespace GameTimeNext.Core.Application.TableObjects
 
         public override void Save()
         {
-            new TXCTABH().Save(this);
+            UIXDataManagerBase.Create<TXCTABH>(App).Save(this);
         }
     }
 }

@@ -30,7 +30,7 @@ namespace GameTimeNext.Core.Application.CreateImportPackage.Controller
                                             "Testing the package before shipping..."
                                             );
 
-            AddSource("T1CTABD", new TXCTABD());
+            AddSource("T1CTABD", GetApp().GetDataManager<TXCTABD>());
         }
 
         protected override void BuildFirstImpl()

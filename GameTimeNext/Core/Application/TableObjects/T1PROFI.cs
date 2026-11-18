@@ -7,6 +7,7 @@ namespace GameTimeNext.Core.Application.TableObjects
     {
         public override bool IsDevSynced => false;
 
+        [UIXKeyField]
         [UIXSignatureField(0)]
         public long PFID { get; set; } = 0;
 
@@ -96,7 +97,7 @@ namespace GameTimeNext.Core.Application.TableObjects
 
         public override void Save()
         {
-            new TXPROFI().Save(this);
+            UIXDataManagerBase.Create<TXPROFI>(App).Save(this);
         }
     }
 }

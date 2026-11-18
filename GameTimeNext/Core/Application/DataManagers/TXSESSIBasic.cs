@@ -10,7 +10,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.DataManagers
 {
-    public class TXSESSIBasic
+    public class TXSESSIBasic : UIXDataManagerBase
     {
         private readonly SQLiteConnection? _connectionOverride;
 
@@ -33,7 +33,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         {
             T1SESSI obj = new T1SESSI();
             obj.State = UIXTableObjectState.New;
-            return obj;
+            return Adopt(obj);
         }
 
         public virtual T1SESSI Copy(T1SESSI objFrom)
@@ -59,6 +59,8 @@ namespace GameTimeNext.Core.Application.DataManagers
                 throw new ArgumentNullException(nameof(obj));
             }
 
+            EnsureNotLocked(obj);
+
             if (Exists(obj))
             {
                 Update(obj);
@@ -74,6 +76,8 @@ namespace GameTimeNext.Core.Application.DataManagers
 
         public virtual void Delete(long seid)
         {
+            EnsureNotLocked(K1SESSI.Name, seid);
+
             using SQLiteCommand cmd = _connection.CreateCommand();
             cmd.CommandText = "DELETE FROM T1SESSI WHERE SEID = @SEID;";
             cmd.Parameters.AddWithValue("@SEID", ToDbValue(seid));
@@ -115,7 +119,7 @@ namespace GameTimeNext.Core.Application.DataManagers
                 return null;
             }
 
-            T1SESSI obj = Map(reader);
+            T1SESSI obj = Adopt(Map(reader));
             obj.AcceptChanges();
             return obj;
         }
@@ -139,7 +143,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             using var reader = query.Execute();
             while (reader.Read())
             {
-                T1SESSI obj = Map(reader);
+                T1SESSI obj = Adopt(Map(reader));
                 obj.AcceptChanges();
                 list.Add(obj);
             }

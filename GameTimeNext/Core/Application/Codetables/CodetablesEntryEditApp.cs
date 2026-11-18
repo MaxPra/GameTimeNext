@@ -30,7 +30,7 @@ namespace GameTimeNext.Core.Application.Codetables
 
         public void CreateNew(Action<CodetablesEntryEditViewController.CodetablesEntryEditViewReturn> callback, string txtyp)
         {
-            T1CTABD = new TXCTABD().CreateNew();
+            T1CTABD = GetDataManager<TXCTABD>().CreateNew();
             T1CTABD.TXTYP = txtyp;
 
             CodetablesEntryEditView!.ViewIndicator.Clear();

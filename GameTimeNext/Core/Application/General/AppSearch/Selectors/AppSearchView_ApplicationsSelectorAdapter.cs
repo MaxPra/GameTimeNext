@@ -42,7 +42,7 @@ namespace GameTimeNext.Core.Application.General.AppSearch.Selectors
             {
                 (List<T1MENUE> entries, Dictionary<long, MenuCall> menuCalls) = await Task.Run(() =>
                 {
-                    List<T1MENUE> entries = TFMENUE.GetAllMenuEntries();
+                    List<T1MENUE> entries = TFMENUE.GetAllMenuEntries(GetApp());
                     return (entries, GetMenuCalls(entries));
                 }, token);
 

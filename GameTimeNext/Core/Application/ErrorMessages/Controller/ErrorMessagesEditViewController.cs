@@ -59,7 +59,7 @@ namespace GameTimeNext.Core.Application.ErrorMessages.Controller
                 AddViewError(GetView().txbNumber, GetErrorMessage("GLO0003", "Number"));
             else if (number.Length > 7)
                 AddViewError(GetView().txbNumber, GetErrorMessage("GLO0004", "Number", "7"));
-            else if (GetApp().T1ERMSG!.State == UIXTableObjectState.New && new TXERMSG().Read(number) != null)
+            else if (GetApp().T1ERMSG!.State == UIXTableObjectState.New && GetApp().GetDataManager<TXERMSG>().Read(number) != null)
                 AddViewError(GetView().txbNumber, GetErrorMessage("GLO0008", "Error message", number));
 
             if (FnString.IsNullEmptyOrWhitespace(GetView().txbMessage.Text))

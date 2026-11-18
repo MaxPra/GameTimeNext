@@ -78,7 +78,7 @@ namespace GameTimeNext.Core.Application.Profiles
         /// </summary>
         public static async Task<T1PROFI> CreateProfileFromLauncherGameAsync(UIXApplication app, LauncherGame game, CancellationToken cancellationToken)
         {
-            T1PROFI t1profi = new TXPROFI().CreateNew();
+            T1PROFI t1profi = app.GetDataManager<TXPROFI>().CreateNew();
 
             t1profi.GANA = game.Name;
             t1profi.PLAFO = "PC";

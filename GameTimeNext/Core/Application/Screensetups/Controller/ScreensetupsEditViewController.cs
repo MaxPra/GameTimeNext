@@ -132,7 +132,7 @@ namespace GameTimeNext.Core.Application.Screensetups.Controller
                 return;
 
             // Replace all monitors of this screensetup
-            TXSCRSP txscrsp = new TXSCRSP();
+            TXSCRSP txscrsp = GetApp().GetDataManager<TXSCRSP>();
             txscrsp.DeleteAllWhereSSID(ssid);
 
             foreach (ScreensetupMonitorDataGridRow monitorRow in GetMonitorRows())
@@ -235,11 +235,11 @@ namespace GameTimeNext.Core.Application.Screensetups.Controller
             return scalePercent.ToString(CultureInfo.InvariantCulture);
         }
 
-        private static void FillCodetable(UIXComboBox comboBox, string txtyp)
+        private void FillCodetable(UIXComboBox comboBox, string txtyp)
         {
             UIXManualCodetable codetable = new UIXManualCodetable();
 
-            foreach (T1CTABD entry in new TXCTABD().GetEntries(txtyp))
+            foreach (T1CTABD entry in GetApp().GetDataManager<TXCTABD>().GetEntries(txtyp))
                 codetable.AddEntry(entry.TXNUM, entry.DESCR);
 
             codetable.ApplyTo(comboBox);

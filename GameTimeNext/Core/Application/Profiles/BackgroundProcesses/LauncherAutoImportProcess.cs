@@ -76,8 +76,8 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
 
             List<(T1LNGAM t1lngam, LauncherGame game)> pendingGames = CallDispatcher.Invoke(() =>
             {
-                TFLNGAM.RegisterGames(installedGames, "PEND");
-                return TFLNGAM.GetPendingGames(installedGames);
+                TFLNGAM.RegisterGames(this, installedGames, "PEND");
+                return TFLNGAM.GetPendingGames(this, installedGames);
             });
 
             // Not retried in this session; the rest follows with the next cycles
@@ -96,8 +96,8 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
 
                     CallDispatcher.Invoke(() =>
                     {
-                        TFPROFI.SaveNewProfile(t1profi);
-                        TFLNGAM.SetImported(t1lngam, t1profi.PFID);
+                        TFPROFI.SaveNewProfile(this, t1profi);
+                        TFLNGAM.SetImported(this, t1lngam, t1profi.PFID);
                         return true;
                     });
 

@@ -2,6 +2,7 @@ using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.LauncherIntegration;
 using UIX.ViewController.Engine.Querying;
+using UIX.ViewController.Engine.Runnables;
 
 namespace GameTimeNext.Core.Application.DataManagers
 {
@@ -55,11 +56,11 @@ namespace GameTimeNext.Core.Application.DataManagers
         /// Registers every game that isn't registered yet: a game that already has a profile (linked, or an unlinked
         /// profile with the same name) as imported with that profile, all others with the given status.
         /// </summary>
-        public static void RegisterGames(List<LauncherGame> games, string status)
+        public static void RegisterGames(UIXApplication app, List<LauncherGame> games, string status)
         {
             Dictionary<(string, string), T1LNGAM> registered = ReadAllByKey();
             ProfileLookup profiles = new ProfileLookup(new TXPROFI().ReadAll());
-            TXLNGAM txlngam = new TXLNGAM();
+            TXLNGAM txlngam = app.GetDataManager<TXLNGAM>();
 
             foreach (LauncherGame game in DistinctByKey(games))
             {
@@ -82,11 +83,11 @@ namespace GameTimeNext.Core.Application.DataManagers
         /// <summary>
         /// Returns the games still to import (PEND) among the given installed games, oldest registration first.
         /// </summary>
-        public static List<(T1LNGAM t1lngam, LauncherGame game)> GetPendingGames(List<LauncherGame> games)
+        public static List<(T1LNGAM t1lngam, LauncherGame game)> GetPendingGames(UIXApplication app, List<LauncherGame> games)
         {
             Dictionary<(string, string), LauncherGame> installed = DistinctByKey(games).ToDictionary(GetKey);
 
-            return new TXLNGAM().ReadAll()
+            return app.GetDataManager<TXLNGAM>().ReadAll()
                 .Where(t => t.LGST == "PEND" && installed.ContainsKey((t.LNTY, t.LNID)))
                 .Select(t => (t, installed[(t.LNTY, t.LNID)]))
                 .ToList();
@@ -95,12 +96,12 @@ namespace GameTimeNext.Core.Application.DataManagers
         /// <summary>
         /// Marks the game as imported with the given profile.
         /// </summary>
-        public static void SetImported(T1LNGAM t1lngam, long pfid)
+        public static void SetImported(UIXApplication app, T1LNGAM t1lngam, long pfid)
         {
             t1lngam.LGST = "IMPO";
             t1lngam.PFID = pfid;
 
-            new TXLNGAM().Save(t1lngam);
+            app.GetDataManager<TXLNGAM>().Save(t1lngam);
         }
 
         private static Dictionary<(string, string), T1LNGAM> ReadAllByKey()

@@ -91,7 +91,7 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
 
         private void QuitRunningGame()
         {
-            T1PROFI? t1profi = new TXPROFI().Read(_runningPfid);
+            T1PROFI? t1profi = GetApp().GetDataManager<TXPROFI>().Read(_runningPfid);
 
             if (t1profi == null)
                 return;
@@ -121,7 +121,7 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
         {
             int version = ++_launchFrontVersion;
 
-            T1PROFI? t1profi = new TXPROFI().Read(pfid);
+            T1PROFI? t1profi = GetApp().GetDataManager<TXPROFI>().Read(pfid);
 
             if (t1profi == null)
                 return;

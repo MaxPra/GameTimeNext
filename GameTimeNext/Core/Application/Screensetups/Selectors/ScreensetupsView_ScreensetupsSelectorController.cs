@@ -5,6 +5,7 @@ using GameTimeNext.Core.Application.Screensetups.Views;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.UI.Dialogs;
+using GameTimeNext.Core.Framework.Utils;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -95,10 +96,18 @@ namespace GameTimeNext.Core.Application.Screensetups.Selectors
 
             CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window);
 
-            if (cfmbox.ConfirmDelete(GetErrorMessage("GLO0001", $"The screensetup \"{t1scrsh.SSNA}\"")))
+            // Not while it is open elsewhere (record lock); checked before asking
+            bool deleted = FnRecordLock.Run(GetApp(), () =>
             {
-                TFSCRSH.DeleteScreensetupAndMonitors(t1scrsh);
+                if (!cfmbox.ConfirmDelete(GetErrorMessage("GLO0001", $"The screensetup \"{t1scrsh.SSNA}\"")))
+                    return false;
 
+                TFSCRSH.DeleteScreensetupAndMonitors(GetApp(), t1scrsh);
+                return true;
+            }, t1scrsh);
+
+            if (deleted)
+            {
                 if (AppEnvironment.GetAppConfig().UserSettings.SelectedScreensetup == t1scrsh.SSID)
                 {
                     AppEnvironment.GetAppConfig().UserSettings.SelectedScreensetup = 0;

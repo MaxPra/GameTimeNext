@@ -37,7 +37,7 @@ namespace GameTimeNext.Core.Application.SelectionLists
         {
             List = list;
 
-            T1CTABD = new TXCTABD().CreateNew();
+            T1CTABD = GetDataManager<TXCTABD>().CreateNew();
             T1CTABD.TXTYP = list.TXTYP;
             T1CTABD.TXNUM = CFSelectionListsApp.GenerateKey(list.TXTYP);
 

@@ -34,7 +34,7 @@ namespace GameTimeNext.Core.Application.SelectionLists.Selectors
             query.AddWhere(K1CTABH.Name, K1CTABH.Fields.PERMI, QueryCompareType.EQUALS, "U");
             query.AddOrderBy(K1CTABH.Name, K1CTABH.Fields.DESCR, OrderDirection.ASC);
 
-            TXCTABH txctabh = new TXCTABH();
+            TXCTABH txctabh = GetApp().GetDataManager<TXCTABH>();
 
             using (var reader = query.Execute())
             {

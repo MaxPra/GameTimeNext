@@ -10,7 +10,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.DataManagers
 {
-    public class TXERMSGBasic
+    public class TXERMSGBasic : UIXDataManagerBase
     {
         private readonly SQLiteConnection? _connectionOverride;
 
@@ -33,7 +33,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         {
             T1ERMSG obj = new T1ERMSG();
             obj.State = UIXTableObjectState.New;
-            return obj;
+            return Adopt(obj);
         }
 
         public virtual T1ERMSG Copy(T1ERMSG objFrom)
@@ -56,6 +56,8 @@ namespace GameTimeNext.Core.Application.DataManagers
                 throw new ArgumentNullException(nameof(obj));
             }
 
+            EnsureNotLocked(obj);
+
             if (Exists(obj))
             {
                 Update(obj);
@@ -71,6 +73,8 @@ namespace GameTimeNext.Core.Application.DataManagers
 
         public virtual void Delete(string ermnr)
         {
+            EnsureNotLocked(K1ERMSG.Name, ermnr);
+
             using SQLiteCommand cmd = _connection.CreateCommand();
             cmd.CommandText = "DELETE FROM T1ERMSG WHERE ERMNR = @ERMNR;";
             cmd.Parameters.AddWithValue("@ERMNR", ToDbValue(ermnr));
@@ -109,7 +113,7 @@ namespace GameTimeNext.Core.Application.DataManagers
                 return null;
             }
 
-            T1ERMSG obj = Map(reader);
+            T1ERMSG obj = Adopt(Map(reader));
             obj.AcceptChanges();
             return obj;
         }
@@ -130,7 +134,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             using var reader = query.Execute();
             while (reader.Read())
             {
-                T1ERMSG obj = Map(reader);
+                T1ERMSG obj = Adopt(Map(reader));
                 obj.AcceptChanges();
                 list.Add(obj);
             }

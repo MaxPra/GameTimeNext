@@ -97,7 +97,7 @@ namespace GameTimeNext.Core.Application.Profiles
         {
             bool resultNewPlaythrough = false;
 
-            if (TFPLTHR.GetCurrentPlaythrough(pfid) != null)
+            if (TFPLTHR.GetCurrentPlaythroughPtid(pfid) != 0)
                 return true;
 
 
@@ -112,7 +112,7 @@ namespace GameTimeNext.Core.Application.Profiles
                 if (result == CFMBOXResult.Yes)
                 {
                     long nextNumber = TFPLTHR.GetCurrentPlaythroughCount(pfid, PlaythroughType.NEW_PLAYTHROUGH) + 1;
-                    TFPLTHR.CreateNewPlaythrough(pfid, "Playthrough #" + nextNumber, PlaythroughType.NEW_PLAYTHROUGH);
+                    TFPLTHR.CreateNewPlaythrough(app, pfid,"Playthrough #" + nextNumber, PlaythroughType.NEW_PLAYTHROUGH);
 
                     resultNewPlaythrough = true;
                 }

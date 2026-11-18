@@ -38,7 +38,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             SQLiteDataReader reader = query.Execute();
             while (reader.Read())
             {
-                T1CTABD obj = Map(reader);
+                T1CTABD obj = Adopt(Map(reader));
                 obj.AcceptChanges();
 
                 list.Add(obj);
