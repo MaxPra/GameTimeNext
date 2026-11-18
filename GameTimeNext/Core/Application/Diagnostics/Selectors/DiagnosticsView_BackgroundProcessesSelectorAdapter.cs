@@ -1,5 +1,6 @@
-using GameTimeNext.Core.Application.Diagnostics.Controller;
+﻿using GameTimeNext.Core.Application.Diagnostics.Controller;
 using GameTimeNext.Core.Application.Diagnostics.Views;
+using GameTimeNext.Core.Application.General.BackgroundProcesses;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.Utils;
 using System.Globalization;
@@ -22,7 +23,23 @@ namespace GameTimeNext.Core.Application.Diagnostics.Selectors
             // (the statistics of the processes are thread safe)
             List<UIXBackgroundProcess> processes = AppEnvironment.StartedBackgroundProcesses.Values.OrderBy(p => p.GetType().Name).ToList();
 
-            return await Task.Run(() => processes.Select(BuildRow).ToList(), token);
+            return await Task.Run(() => BuildRows(processes), token);
+        }
+
+        private List<BackgroundProcessesDataGridRow> BuildRows(List<UIXBackgroundProcess> processes)
+        {
+            List<BackgroundProcessesDataGridRow> rows = new();
+
+            foreach (UIXBackgroundProcess process in processes)
+            {
+                rows.Add(BuildRow(process));
+
+                // The web app is an own Windows process, not a background process: shown below the process that runs it
+                if (process is RemoteMonitoringProcess remoteMonitoringProcess)
+                    rows.Add(BuildBlazorRow(remoteMonitoringProcess.BlazorStatus));
+            }
+
+            return rows;
         }
 
         private BackgroundProcessesDataGridRow BuildRow(UIXBackgroundProcess process)
@@ -54,6 +71,55 @@ namespace GameTimeNext.Core.Application.Diagnostics.Selectors
             row.RowObject = process;
 
             return row;
+        }
+
+        /// <summary>
+        /// Row of the Blazor process of the remote monitoring. Only start and run time; the cycle columns don't apply.
+        /// </summary>
+        private BackgroundProcessesDataGridRow BuildBlazorRow(BlazorProcessStatus status)
+        {
+            bool isRunning = status.State == BlazorProcessState.Running;
+            DateTime? endOfRun = isRunning ? DateTime.Now : status.EndedAt;
+
+            BackgroundProcessesDataGridRow row = GetSelector().CreateNewRow<BackgroundProcessesDataGridRow>();
+            row.COPROC = "RemoteMonitoringWebApp";
+            row.CODESC = BuildBlazorDescription(status);
+
+            row.COSTAT = status.State switch
+            {
+                BlazorProcessState.Running => "Running",
+                BlazorProcessState.StartedSeparately => "Started separately (debug)",
+                BlazorProcessState.Exited => string.Format(CultureInfo.CurrentCulture, "Exited (code {0} / 0x{0:X8})", status.ExitCode),
+                BlazorProcessState.Stopped => "Stopped",
+                _ => "Not started"
+            };
+
+            if (isRunning)
+                row.COSTAT.Foreground = FnColor.Success();
+            else if (status.State is BlazorProcessState.Exited or BlazorProcessState.Stopped)
+                row.COSTAT.Foreground = FnColor.Danger();
+
+            row.COSTRT = CFDiagnosticsApp.FormatTimestamp(status.StartedAt);
+            row.CORUNF = status.StartedAt != null && endOfRun != null ? CFDiagnosticsApp.FormatUptime(endOfRun.Value - status.StartedAt.Value) : string.Empty;
+            row.RowObject = status;
+
+            return row;
+        }
+
+        private static string BuildBlazorDescription(BlazorProcessStatus status)
+        {
+            List<string> parts = ["Blazor web app of the remote monitoring"];
+
+            if (status.Port != null)
+                parts.Add(string.Format(CultureInfo.CurrentCulture, "port {0}", status.Port));
+
+            if (status.ProcessId != null)
+                parts.Add(string.Format(CultureInfo.CurrentCulture, "PID {0}", status.ProcessId));
+
+            if (status.RestartCount > 0)
+                parts.Add(string.Format(CultureInfo.CurrentCulture, "{0} restarts", status.RestartCount));
+
+            return string.Join(" · ", parts);
         }
     }
 }

@@ -276,6 +276,23 @@
                                                     The icon font is set on the TextBlocks, not on the buttons, so tooltips keep the normal font.
                                                 -->
 
+                                                <!--
+                                                    Remote monitoring (ShowRemoteMonitoringButton): like the help button dispatched to the controller
+                                                    (EV_btnRemoteMonitoring), which opens the QR code popup below it
+                                                -->
+                                                <Button
+                                                    x:Name="btnRemoteMonitoring"
+                                                    Margin="0,0,8,0"
+                                                    Style="{StaticResource TitleBarButtonStyle}"
+                                                    ToolTip="Remote Monitoring (connect your phone)"
+                                                    Visibility="Collapsed">
+                                                    <TextBlock
+                                                        FontFamily="{StaticResource Font.Icons}"
+                                                        FontSize="14"
+                                                        Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                                        Text="&#xE8EA;" />
+                                                </Button>
+
                                                 <!--  Big Picture (ShowBigPictureButton): like the help button dispatched to the controller (EV_btnBigPicture)  -->
                                                 <Button
                                                     x:Name="btnBigPicture"
@@ -434,6 +451,10 @@
 
                         <Trigger Property="ShowBigPictureButton" Value="True">
                             <Setter TargetName="btnBigPicture" Property="Visibility" Value="Visible" />
+                        </Trigger>
+
+                        <Trigger Property="ShowRemoteMonitoringButton" Value="True">
+                            <Setter TargetName="btnRemoteMonitoring" Property="Visibility" Value="Visible" />
                         </Trigger>
 
                         <Trigger Property="ShowAppIcon" Value="True">

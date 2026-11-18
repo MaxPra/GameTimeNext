@@ -1,0 +1,19 @@
+﻿@* Game tile like arcora's library: the cover, its name below *@
+<a class="group flex min-w-0 flex-col gap-2 rounded-arc focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+   href="@($"profile/{Id}")" style="--color-accent: #@AccentColor">
+    <div class="arc-cover transition group-hover:ring-accent/75 group-active:scale-[0.98]">
+        <img class="absolute inset-0 size-full object-cover" src="@($"cover/{Id}")" alt="" loading="lazy" draggable="false" />
+    </div>
+    <div class="truncate text-[13px] font-semibold text-white">@Title</div>
+</a>
+
+@code {
+    [Parameter]
+    public long Id { get; set; }
+
+    [Parameter]
+    public string Title { get; set; } = "Profile...";
+
+    [Parameter]
+    public string AccentColor { get; set; } = "3498E5";
+}

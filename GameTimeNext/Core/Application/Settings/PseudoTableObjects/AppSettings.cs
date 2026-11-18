@@ -118,6 +118,12 @@ namespace GameTimeNext.Core.Application.TableObjects
         [UIXSignatureField(30)]
         public bool PauseGameInBigPicture { get; set; }
 
+        [UIXSignatureField(31)]
+        public bool RemoteMonitoring { get; set; }
+
+        [UIXSignatureField(32)]
+        public bool RemoteMonitoringBlackout { get; set; }
+
         public AppSettings()
         {
             AutomaticGameProfileSwitching = false;
@@ -140,6 +146,8 @@ namespace GameTimeNext.Core.Application.TableObjects
             MonitoringKey = KeyInput.virtualKeyMap[KeyInput.VirtualKey.VK_NONE];
             EnableSessionCleanup = false;
             SessionCleanupSeconds = 30.0;
+            RemoteMonitoring = false;
+            RemoteMonitoringBlackout = true;
             SteamGridDbKey = string.Empty;
             EnableTwitchIGDB = false;
             TwitchIGDBClientID = string.Empty;

@@ -15,6 +15,8 @@ namespace GameTimeNext.Core.Framework.Config
         public UserSettings UserSettings { get; set; } = new UserSettings();
 
         public string AppVersion { get; set; } = string.Empty;
+
+        public string RemoteMonitoringPairingCode { get; set; } = string.Empty;
         #endregion
 
         public AppConfig()

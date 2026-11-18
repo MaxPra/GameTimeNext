@@ -1002,6 +1002,120 @@
                             </StackPanel>
                         </GroupBox>
 
+                        <GroupBox
+                            Header="Remote Monitoring"
+                            Style="{StaticResource GroupBox.Card}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="8" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <!--  Same layout as the other settings rows: title and hint on the left, the switch on the right  -->
+                                <Grid Grid.Row="0" Style="{StaticResource Settings.Row}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Margin="0,0,24,0" VerticalAlignment="Center">
+                                        <TextBlock Style="{StaticResource Text.BodyStrong}" Text="Remote Monitoring active" />
+                                        <TextBlock
+                                            Margin="0,2,0,0"
+                                            Style="{StaticResource Text.Hint}"
+                                            Text="Keeps the PC awake while it is on, so your phone can reach it also between two sessions. The monitors still turn off."
+                                            TextWrapping="Wrap" />
+                                    </StackPanel>
+
+                                    <CheckBox x:Name="cbRemoteMonitoringActive" Grid.Column="1" VerticalAlignment="Center" />
+                                </Grid>
+
+                                <!--  Blackout of all screens while a monitoring started from the phone runs  -->
+                                <Grid Grid.Row="2" Style="{StaticResource Settings.Row}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Margin="0,0,24,0" VerticalAlignment="Center">
+                                        <TextBlock Style="{StaticResource Text.BodyStrong}" Text="Black out all screens" />
+                                        <TextBlock
+                                            Margin="0,2,0,0"
+                                            Style="{StaticResource Text.Hint}"
+                                            Text="While a monitoring started from your phone runs. Stopping it lights the screens up again."
+                                            TextWrapping="Wrap" />
+                                    </StackPanel>
+
+                                    <CheckBox x:Name="cbRemoteMonitoringBlackout" Grid.Column="1" VerticalAlignment="Center" />
+                                </Grid>
+
+                                <TextBlock
+                                    x:Name="txtRemoteMonitoringPort"
+                                    Grid.Row="4"
+                                    Foreground="{DynamicResource Brush.Success}" />
+
+                                <!--  Pairing: the QR code opens the web app on the phone and pairs it in one step  -->
+                                <Grid
+                                    x:Name="grdRemoteMonitoringPairing"
+                                    Grid.Row="5"
+                                    Margin="0,16,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="16" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Border
+                                        x:Name="brdRemoteMonitoringQr"
+                                        Grid.Column="0"
+                                        Width="168"
+                                        Height="168"
+                                        Padding="8"
+                                        VerticalAlignment="Top"
+                                        Background="White"
+                                        CornerRadius="{StaticResource Control.CornerRadius}">
+                                        <Image
+                                            x:Name="imgRemoteMonitoringQr"
+                                            RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                            Stretch="Uniform" />
+                                    </Border>
+
+                                    <StackPanel Grid.Column="2" VerticalAlignment="Top">
+                                        <TextBlock Style="{StaticResource Text.BodyStrong}" Text="Connect your phone" />
+                                        <TextBlock
+                                            Margin="0,4,0,0"
+                                            Style="{StaticResource Text.Hint}"
+                                            Text="Scan the QR code with your phone's camera. It opens the remote monitoring and pairs your phone, other devices in your network can't use it."
+                                            TextWrapping="Wrap" />
+                                        <TextBlock
+                                            x:Name="txtRemoteMonitoringAddress"
+                                            Margin="0,12,0,0"
+                                            Style="{StaticResource Text.Body}"
+                                            TextWrapping="Wrap" />
+                                        <TextBlock
+                                            Margin="0,12,0,0"
+                                            Style="{StaticResource Text.Label}"
+                                            Text="Pairing code" />
+                                        <TextBlock
+                                            x:Name="txtRemoteMonitoringPairingCode"
+                                            FontFamily="Cascadia Mono, Consolas"
+                                            Style="{StaticResource Text.BodyStrong}"
+                                            TextWrapping="Wrap" />
+                                        <Button
+                                            x:Name="btnResetPairing"
+                                            Margin="0,16,0,0"
+                                            HorizontalAlignment="Left"
+                                            Content="Reset pairing"
+                                            ToolTip="Creates a new QR code: every paired phone has to scan it again" />
+                                    </StackPanel>
+                                </Grid>
+                            </Grid>
+                        </GroupBox>
+
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>

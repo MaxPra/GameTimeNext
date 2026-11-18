@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GameTimeNext.Shared\GameTimeNext.Shared.csproj" />
+  </ItemGroup>
+
+  <!-- Tooling of the Tailwind build, not part of the web app -->
+  <ItemGroup>
+    <Content Update="package.json;package-lock.json;dotnet-tools.json" CopyToPublishDirectory="Never" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,47 @@
+﻿@page "/"
+@using GameTimeNext.Shared.Profiles
+@rendermode InteractiveServer
+@inherits ArcoraPageBase
+@inject ProfilesApiService ProfilesApiService
+
+<PageTitle>arcora</PageTitle>
+
+<header class="flex min-h-10 items-center">
+    <ArcoraWordmark />
+</header>
+
+@if (_profiles is null)
+{
+    <p class="px-4 py-10 text-center text-arc-muted">@(IsConnected ? "Loading games..." : "Waiting for arcora...")</p>
+}
+else if (_profiles.Count == 0)
+{
+    <div class="arc-card items-center py-10 text-center">
+        <p class="text-base font-semibold text-white">No games to track</p>
+        <p class="text-[13px] text-arc-muted">Games of an external platform (console, mobile, ...) show up here. Set the platform of a profile in arcora.</p>
+    </div>
+}
+else
+{
+    <div class="grid grid-cols-2 gap-x-4 gap-y-5 sm:grid-cols-3 lg:grid-cols-5">
+        @foreach (ProfileDto profile in _profiles)
+        {
+            <Profile Id="@profile.PFID" Title="@profile.GANA" AccentColor="@profile.AccentColorHex" />
+        }
+    </div>
+}
+
+@code {
+    // Null until arcora answered once; the last answer stays while the connection is lost
+    private List<ProfileDto>? _profiles;
+
+    protected override async Task LoadAsync()
+    {
+        if (!IsConnected)
+            return;
+
+        List<ProfileDto>? profiles = await ProfilesApiService.GetProfiles();
+        if (profiles is not null)
+            _profiles = profiles;
+    }
+}

@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using GameTimeNext.Core.Application.General;
+using GameTimeNext.Core.Application.General.BackgroundProcesses;
 using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Profiles;
 using GameTimeNext.Core.Application.Profiles.BackgroundProcesses;
@@ -38,6 +39,15 @@ namespace GameTimeNext.Core.Application.Settings.Controller
         // "Add new games shrink-wrapped" was switched off while games are still sealed: they are unwrapped on save
         private bool _unsealAllOnSave = false;
 
+        // The remote monitoring was switched on: its web app is allowed in the Windows firewall on save
+        private bool _allowRemoteMonitoringOnSave = false;
+
+        // Firewall rules are system wide, but every Windows user has their own installation (per-user install) and the
+        // development build its own web app: one rule each, otherwise switching it on replaces the rule of the other one
+        private static string RemoteMonitoringFirewallRule => FnSystem.IsDebug()
+            ? $"{AppConfig.Root.ApplicationName} Remote Monitoring (Dev)"
+            : $"{AppConfig.Root.ApplicationName} Remote Monitoring ({Environment.UserName})";
+
         public SettingsViewController(UIXApplication app) : base(app)
         {
         }
@@ -59,6 +69,8 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             _appSettings.AcceptChanges();
 
             _autoImportLauncherTypes = CFProfilesApp.GetAutoImportLauncherTypes(_appSettings);
+
+            GetApp().CallDispatcher.Register(this, nameof(EXEV_RemoteMonitoringPortChanged));
         }
 
         protected override async Task BuildFirstImplAsync()
@@ -97,6 +109,8 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             FnControls.SetEnabled(GetView().cbBlackoutSideMonitors, GetView().cbMonitoringKeyActive.IsChecked == true);
             if (!GetView().cbBlackoutSideMonitors.IsEnabled)
                 GetView().cbBlackoutSideMonitors.IsChecked = false;
+
+            FnControls.SetEnabled(GetView().cbRemoteMonitoringBlackout, GetView().cbRemoteMonitoringActive.IsChecked == true);
 
             FnControls.SetEnabled(GetView().btnImportBackup, !FnString.IsNullEmptyOrWhitespace(GetView().txbBackupImportPath.Text));
             FnControls.SetEnabled(GetView().btnCreateBackup, !FnString.IsNullEmptyOrWhitespace(GetView().txbBackupExportPath.Text));
@@ -344,6 +358,8 @@ namespace GameTimeNext.Core.Application.Settings.Controller
         private void FillTabMonitoring()
         {
             GetView().cbMonitoringKeyActive.IsChecked = _appSettings!.MonitoringKeyActive;
+            GetView().cbRemoteMonitoringActive.IsChecked = _appSettings!.RemoteMonitoring;
+            GetView().cbRemoteMonitoringBlackout.IsChecked = _appSettings!.RemoteMonitoringBlackout;
             GetView().cbShowToastNotification.IsChecked = _appSettings!.ShowToastNotification;
             GetView().cbShowMonitoringIndicator.IsChecked = _appSettings!.ShowMonitoringIndicator;
             GetView().cbBlackoutSideMonitors.IsChecked = _appSettings!.BlackoutSideMonitors;
@@ -351,6 +367,47 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             GetView().cbEnableSessionTimeQuery.IsChecked = _appSettings!.EnableSessionTimeQuery;
             GetView().cbEnableSessionCleanup.IsChecked = _appSettings!.EnableSessionCleanup;
             GetView().txbSessionCleanupSeconds.Text = _appSettings!.SessionCleanupSeconds.ToString(CultureInfo.CurrentCulture);
+
+            FillRemoteMonitoringPairing();
+        }
+
+        /// <summary>
+        /// QR code and address of the remote monitoring (only while it is on), see CFRemoteMonitoring.GetPairing.
+        /// </summary>
+        private void FillRemoteMonitoringPairing(int? port = null)
+        {
+            SettingsView view = GetView();
+            FnControls.SetVisible(view.grdRemoteMonitoringPairing, _appSettings!.RemoteMonitoring);
+            FnControls.SetVisible(view.txtRemoteMonitoringPort, _appSettings.RemoteMonitoring);
+
+            if (!_appSettings.RemoteMonitoring)
+            {
+                // Switched off: the port of the stopped web app is no longer valid (set again by its next start)
+                view.txtRemoteMonitoringPort.Text = string.Empty;
+                return;
+            }
+
+            // Port just reported by the web app's start, otherwise the current one (null while it isn't running)
+            int? webAppPort = port ?? CFRemoteMonitoring.GetWebAppPort();
+            view.txtRemoteMonitoringPort.Text = webAppPort is null ? string.Empty : $"Web-App accessible via port {webAppPort}.";
+
+            CFRemoteMonitoring.RemoteMonitoringPairing pairing = CFRemoteMonitoring.GetPairing(webAppPort);
+            FnControls.SetVisible(view.brdRemoteMonitoringQr, pairing.QrCode is not null);
+            view.imgRemoteMonitoringQr.Source = pairing.QrCode;
+            view.txtRemoteMonitoringAddress.Text = pairing.Text;
+            view.txtRemoteMonitoringPairingCode.Text = pairing.PairingCode;
+        }
+
+        protected void EV_btnResetPairing()
+        {
+            CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window);
+            if (cfmbox.Show(GetErrorMessage("SET0006"), CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question) != CFMBOXResult.Yes)
+                return;
+
+            CFRemoteMonitoring.ResetPairingCode();
+            FnLog.AddInfo(GetApp(), "Pairing of the remote monitoring reset: every phone has to scan the new QR code.");
+
+            FillRemoteMonitoringPairing();
         }
 
         private void FillDBOGeneral()
@@ -383,6 +440,14 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             _appSettings!.ShowMonitoringIndicator = GetView().cbShowMonitoringIndicator.IsChecked == true;
             _appSettings!.BlackoutSideMonitors = GetView().cbBlackoutSideMonitors.IsChecked == true;
             _appSettings!.MonitoringKeyActive = GetView().cbMonitoringKeyActive.IsChecked == true;
+            bool remoteMonitoring = GetView().cbRemoteMonitoringActive.IsChecked == true;
+            _allowRemoteMonitoringOnSave = remoteMonitoring && !_appSettings!.RemoteMonitoring;
+
+            // Switching on waits for the firewall rule in SaveDBO: RemoteMonitoringProcess starts the web app as soon as
+            // the setting is on, and a web app listening before the rule exists gets the Windows firewall prompt
+            if (!_allowRemoteMonitoringOnSave)
+                _appSettings!.RemoteMonitoring = remoteMonitoring;
+            _appSettings!.RemoteMonitoringBlackout = GetView().cbRemoteMonitoringBlackout.IsChecked == true;
             _appSettings!.MonitoringKey = GetView().txbMonitoringKey.Text;
             _appSettings!.EnableSessionTimeQuery = GetView().cbEnableSessionTimeQuery.IsChecked == true;
             _appSettings!.EnableSessionCleanup = GetView().cbEnableSessionCleanup.IsChecked == true;
@@ -400,6 +465,15 @@ namespace GameTimeNext.Core.Application.Settings.Controller
 
         protected override void SaveDBOImpl()
         {
+            // Rule first, then the setting: the web app only starts once it is allowed in the firewall. "Cancel" on the
+            // Windows prompt would even add a block rule for it, which beats the allow rule.
+            if (_allowRemoteMonitoringOnSave)
+            {
+                _allowRemoteMonitoringOnSave = false;
+                AllowRemoteMonitoringInFirewall();
+                _appSettings!.RemoteMonitoring = true;
+            }
+
             AppEnvironment.SaveAppConfig();
             _appSettings!.AcceptChanges();
 
@@ -416,6 +490,39 @@ namespace GameTimeNext.Core.Application.Settings.Controller
                 _unsealAllOnSave = false;
                 UnsealAllProfiles();
             }
+
+            // Switched on or off: show or hide the QR code, here and in the title bar of the main window
+            FillRemoteMonitoringPairing();
+            GetApp().CallDispatcher.Trigger("EXEV_RemoteMonitoringSwitched", _appSettings.RemoteMonitoring); // MainWindowController
+        }
+
+        private void AllowRemoteMonitoringInFirewall()
+        {
+            string? webAppPath = RemoteMonitoringProcess.FindWebAppExecutable();
+            if (webAppPath is null)
+            {
+                FnLog.AddWarning(GetApp(), "No firewall rule for the remote monitoring: its web app was not found.");
+                return;
+            }
+
+            if (FnFirewall.IsProgramAllowed(RemoteMonitoringFirewallRule, webAppPath))
+                return;
+
+            CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window);
+            cfmbox.Show(GetErrorMessage("SET0004", AppConfig.Root.ApplicationName), CFMBOXResult.Ok, CFMBOXIcon.Info);
+
+            FirewallRuleResult result = FnFirewall.AllowProgramInbound(RemoteMonitoringFirewallRule, webAppPath, "private");
+
+            if (result is FirewallRuleResult.Cancelled or FirewallRuleResult.Failed)
+            {
+                CFMBOX failed = GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window);
+                failed.Show(GetErrorMessage("SET0005", AppConfig.Root.ApplicationName), CFMBOXResult.Ok, CFMBOXIcon.Warning);
+            }
+        }
+
+        protected void EXEV_RemoteMonitoringPortChanged(int port)
+        {
+            FillRemoteMonitoringPairing(port);
         }
 
         protected void EV_btnCaptureMonitoringKey()

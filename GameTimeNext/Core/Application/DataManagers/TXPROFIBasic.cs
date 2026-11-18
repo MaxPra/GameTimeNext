@@ -209,7 +209,6 @@ namespace GameTimeNext.Core.Application.DataManagers
         #endregion
 
         #region Methods PROTECTED
-
         protected static T1PROFI Map(SQLiteDataReader reader)
         {
             T1PROFI obj = new T1PROFI();

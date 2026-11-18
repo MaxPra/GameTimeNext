@@ -1,0 +1,28 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    @* No zoom: an app on the phone, not a document (pinch zoom also blocked by touch-action in precompile.css) *@
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <base href="/" />
+    <ResourcePreloader />
+    <link rel="stylesheet" href="@Assets["app.css"]" />
+    <meta name="theme-color" content="#101014" />
+    <link rel="stylesheet" href="@Assets["RemoteMonitoring.styles.css"]" />
+    <ImportMap />
+    @* arcora icon: copies of Branding/icon_small.svg, GTN_APP_ICON.ico and Branding/logo_1024.png *@
+    <link rel="icon" type="image/svg+xml" href="@Assets["branding/icon.svg"]" />
+    <link rel="icon" type="image/x-icon" href="@Assets["favicon.ico"]" sizes="any" />
+    <link rel="apple-touch-icon" href="@Assets["branding/apple-touch-icon.png"]" />
+    <HeadOutlet />
+</head>
+
+<body>
+    <Routes />
+    <ReconnectModal />
+    <script src="@Assets["_framework/blazor.web.js"]"></script>
+</body>
+
+</html>
+

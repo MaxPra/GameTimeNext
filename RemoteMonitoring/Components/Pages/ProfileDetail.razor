@@ -1,0 +1,325 @@
+@page "/profile/{Pfid:long}"
+@using GameTimeNext.Shared.Profiles
+@using GameTimeNext.Shared.Profiles.Monitoring
+@using System.Globalization
+@rendermode InteractiveServer
+@inherits ArcoraPageBase
+@inject ProfilesApiService ProfilesApiService
+@inject MonitoringStateService MonitoringState
+
+<PageTitle>arcora · @(_profile?.GANA ?? "Game")</PageTitle>
+
+@* isolate: own stacking context, so the key art (-z-10) lies above the opaque body background but below the content *@
+<div class="isolate flex flex-col gap-4" style="--color-accent: #@(_profile?.AccentColorHex ?? "3498E5")">
+    <header class="flex min-h-10 items-center gap-3">
+        @if (!IsAnyMonitoring)
+        {
+            <a class="arc-btn size-10 min-h-10 p-0" href="" aria-label="Back to the games">
+                <svg class="size-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
+            </a>
+        }
+        <ArcoraWordmark />
+    </header>
+
+    @if (_profile is null && !_notFound)
+    {
+        <p class="px-4 py-10 text-center text-arc-muted">@(IsConnected ? "Loading..." : "Waiting for arcora...")</p>
+    }
+    else if (_profile is null)
+    {
+        <div class="arc-card items-center py-10 text-center">
+            <p class="text-base font-semibold text-white">Game not found</p>
+            <p class="text-[13px] text-arc-muted">It may have been deleted or archived in arcora.</p>
+            <a class="arc-btn" href="">Back to the games</a>
+        </div>
+    }
+    else
+    {
+        @* Key art like the Big Picture mode: the cover large and blurred behind the page, fading into the background *@
+        <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
+            <img class="absolute inset-x-0 top-0 h-[75dvh] w-full scale-110 object-cover object-top opacity-40 blur-md"
+                 src="@($"cover/{_profile.PFID}")" alt="" draggable="false" />
+            <div class="absolute inset-0 bg-linear-to-b from-arc-bg/20 via-arc-bg/75 via-45% to-arc-bg to-75%"></div>
+        </div>
+
+        <section class="flex items-end gap-4">
+            <div class="arc-cover w-28 flex-none">
+                <img class="absolute inset-0 size-full object-cover" src="@($"cover/{_profile.PFID}")" alt="" draggable="false" />
+            </div>
+            <div class="flex min-w-0 flex-col gap-1.5">
+                @if (IsMonitoringThis)
+                {
+                    <span class="inline-flex items-center gap-1.5 self-start rounded-full bg-accent/20 px-2.5 py-1 text-xs font-semibold text-white">
+                        <span class="size-2 animate-live rounded-full bg-accent motion-reduce:animate-none"></span>
+                        Monitoring
+                    </span>
+                }
+                <h1 class="text-[28px] leading-tight font-semibold text-balance text-white">@_profile.GANA</h1>
+            </div>
+        </section>
+
+        <section class="flex flex-col gap-2">
+            <h2 class="arc-section-title">Monitoring</h2>
+            @if (IsMonitoringThis && MonitoringState.Current?.StartedAt is DateTime startedAt)
+            {
+                <div class="arc-card">
+                    <MonitoringTimer StartedAt="startedAt" />
+                    <span class="text-[13px] text-arc-muted">Since @startedAt.ToString("t", CultureInfo.CurrentCulture). Stop when you are done playing.</span>
+                    <button type="button" class="arc-btn w-full bg-arc-danger/75" disabled="@(_isBusy || !IsConnected)" @onclick="StopMonitoring">
+                        <svg class="size-[18px]" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2" /></svg>
+                        Stop monitoring
+                    </button>
+                </div>
+            }
+            else
+            {
+                <div class="arc-card">
+                    <p class="text-[13px] text-arc-muted">Start when the game is running on your console. arcora records the time until you stop.</p>
+                    <button type="button" class="arc-btn w-full bg-accent/80" disabled="@(_isBusy || IsAnyMonitoring || !IsConnected)" @onclick="StartMonitoring">
+                        <svg class="size-[18px]" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.52.85l10.4-6.5a1 1 0 0 0 0-1.7L9.52 4.65A1 1 0 0 0 8 5.5z" /></svg>
+                        Start monitoring
+                    </button>
+                </div>
+            }
+
+            @if (_message is not null)
+            {
+                <div class="rounded-arc border-l-3 bg-white/[0.06] px-3.5 py-3 text-sm @(_messageIsError ? "border-arc-danger" : "border-arc-success")" role="status">@_message</div>
+            }
+        </section>
+
+        <section class="flex flex-col gap-2">
+            <h2 class="arc-section-title">Activity</h2>
+            <dl class="arc-card arc-rows gap-0">
+                <div class="arc-row"><dt>Today</dt><dd>@FormatPlaytime(_profile.TodayMinutes)</dd></div>
+                <div class="arc-row"><dt>Total</dt><dd>@FormatPlaytime(_profile.TotalMinutes)</dd></div>
+                <div class="arc-row"><dt>Last played</dt><dd>@FormatDate(_profile.LastPlayed)</dd></div>
+            </dl>
+        </section>
+
+        <section class="flex flex-col gap-2">
+            <h2 class="arc-section-title">Playthrough</h2>
+            <dl class="arc-card arc-rows gap-0">
+                @if (_profile.CurrentPlaythrough is not null)
+                {
+                    <div class="arc-row"><dt>Current</dt><dd>@_profile.CurrentPlaythrough</dd></div>
+                    <div class="arc-row"><dt>Play time</dt><dd>@FormatPlaytime(_profile.CurrentPlaythroughMinutes ?? 0)</dd></div>
+                }
+                else
+                {
+                    <div class="arc-row"><dt>Current</dt><dd>-</dd></div>
+                }
+            </dl>
+            @if (_profile.CurrentPlaythrough is null)
+            {
+                <p class="px-1 text-[13px] text-arc-muted">No active playthrough. You'll be asked to create one when you start monitoring.</p>
+            }
+        </section>
+    }
+
+    @* Inside the element that sets --color-accent, so the dialog's primary button uses the profile's color *@
+    @if (_askForPlaythrough && _profile is not null)
+    {
+        <ConfirmDialog Title="No active playthrough"
+                       Message="@($"{_profile.GANA} has no active playthrough. Create a new one and start monitoring?")"
+                       ConfirmText="Create & start"
+                       IsBusy="_isBusy"
+                       OnConfirm="ConfirmNewPlaythrough"
+                       OnCancel="CancelNewPlaythrough" />
+    }
+</div>
+
+@code {
+    [Parameter]
+    public long Pfid { get; set; }
+
+    // The last answer stays while the connection is lost; _notFound only when arcora answered without the game
+    private ProfileDetailDto? _profile;
+    private long? _loadedPfid;
+    private bool _notFound;
+    private bool _isBusy;
+    private bool _askForPlaythrough;
+    private string? _message;
+    private bool _messageIsError;
+
+    private bool IsAnyMonitoring => MonitoringState.Current?.IsMonitoring == true;
+    private bool IsMonitoringThis => IsAnyMonitoring && MonitoringState.Current?.Profile?.PFID == Pfid;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        MonitoringState.Changed += OnMonitoringChanged;
+    }
+
+    protected override async Task LoadAsync()
+    {
+        // Another game (e.g. redirected to the monitored one): start empty
+        if (_loadedPfid != Pfid)
+        {
+            _loadedPfid = Pfid;
+            _profile = null;
+            _notFound = false;
+            _askForPlaythrough = false;
+            _message = null;
+        }
+
+        if (!IsConnected)
+            return;
+
+        ProfileDetailDto? profile = await ProfilesApiService.GetProfile(Pfid);
+
+        if (profile is not null)
+        {
+            _profile = profile;
+            _notFound = false;
+        }
+        else if (IsConnected && _profile is null)
+        {
+            // arcora answered, but without this game (deleted or archived)
+            _notFound = true;
+        }
+    }
+
+    private void OnMonitoringChanged(object? sender, MonitoringStateResponseMessage? state)
+    {
+        _ = InvokeAsync(StateHasChanged);
+    }
+
+    private Task StartMonitoring() => SendStartAsync(createPlaythrough: false);
+
+    private Task ConfirmNewPlaythrough() => SendStartAsync(createPlaythrough: true);
+
+    private void CancelNewPlaythrough() => _askForPlaythrough = false;
+
+    private async Task SendStartAsync(bool createPlaythrough)
+    {
+        if (_profile is null || _isBusy)
+            return;
+
+        _isBusy = true;
+        _message = null;
+        try
+        {
+            StartMonitoringResponseMessage? response = await ProfilesApiService.StartMonitoring(_profile.PFID, createPlaythrough);
+
+            // Nothing was started yet: ask first, the confirmation sends the start again
+            if (response?.Status == MonitoringResponse.NoActivePlaythrough && !createPlaythrough)
+            {
+                _askForPlaythrough = true;
+                return;
+            }
+
+            _askForPlaythrough = false;
+
+            if (response is null)
+                ShowError("arcora did not answer. Check the connection and try again.");
+            else if (response.Status != MonitoringResponse.MonitoringStarted)
+                ShowError(GetErrorText(response.Status));
+
+            // The page switches to the timer at once instead of waiting for the next refresh
+            await MonitoringState.RefreshAsync();
+        }
+        finally
+        {
+            _isBusy = false;
+        }
+    }
+
+    private async Task StopMonitoring()
+    {
+        if (_isBusy)
+            return;
+
+        _isBusy = true;
+        _message = null;
+        try
+        {
+            StopMonitoringResponseMessage? response = await ProfilesApiService.StopMonitoring();
+
+            if (response is null)
+                ShowError("arcora did not answer. The monitoring is still running, try again.");
+            else if (response.Status == MonitoringResponse.MonitoringStopped)
+            {
+                ShowResult(response);
+
+                // Play times and playthrough now include the stored session
+                _profile = await ProfilesApiService.GetProfile(Pfid) ?? _profile;
+            }
+            else
+                ShowError(GetErrorText(response.Status));
+
+            await MonitoringState.RefreshAsync();
+        }
+        finally
+        {
+            _isBusy = false;
+        }
+    }
+
+    private void ShowResult(StopMonitoringResponseMessage response)
+    {
+        _messageIsError = false;
+
+        if (response.MonitoredMinutes is not double minutes)
+            _message = "Monitoring stopped.";
+        else if (response.SessionSaved == false)
+            _message = $"Monitoring stopped after {FormatMinutes(minutes)}. The session was too short and was not saved.";
+        else if (response.SessionSaved == true)
+            _message = $"Session saved: {FormatMinutes(minutes)}";
+        else
+            _message = $"Monitoring stopped after {FormatMinutes(minutes)}.";
+    }
+
+    private void ShowError(string text)
+    {
+        _messageIsError = true;
+        _message = text;
+    }
+
+    private static string GetErrorText(MonitoringResponse status) => status switch
+    {
+        MonitoringResponse.ProfilesAppNotReady => "The profiles view of arcora is not open on the PC.",
+        MonitoringResponse.MonitoringAlreadyRunning => "Another game is already being monitored.",
+        MonitoringResponse.MonitoringNotRunningYet => "No game is being monitored.",
+        MonitoringResponse.ProfileNotFound => "This game no longer exists in arcora.",
+        MonitoringResponse.NoActivePlaythrough => "This game has no active playthrough.",
+        MonitoringResponse.ProfileLocked => "This game is being edited on the PC. Close it there and try again.",
+        _ => "That didn't work. Try again."
+    };
+
+    private static string FormatMinutes(double minutes)
+    {
+        TimeSpan time = TimeSpan.FromMinutes(minutes);
+
+        // Short sessions in seconds, otherwise every session under a minute would read "1 min"
+        int seconds = (int)Math.Round(time.TotalSeconds);
+        if (seconds < 60)
+            return $"{seconds} s";
+
+        return time.TotalHours >= 1
+            ? $"{(int)time.TotalHours}:{time.Minutes:00} h"
+            : $"{(int)Math.Round(time.TotalMinutes)} min";
+    }
+
+    /// <summary>
+    /// Play time like arcora's activity list: "00h 00m".
+    /// </summary>
+    private static string FormatPlaytime(double minutes)
+    {
+        int total = Math.Max(0, (int)Math.Round(minutes));
+        return $"{total / 60:00}h {total % 60:00}m";
+    }
+
+    /// <summary>
+    /// Date like arcora (CFProfilesApp.FormatFirstLastDate): "dd.MM.yyyy HH:mm", "n.A." if never.
+    /// </summary>
+    private static string FormatDate(DateTime? date)
+    {
+        return date?.ToString("dd.MM.yyyy HH:mm", CultureInfo.CurrentCulture) ?? "n.A.";
+    }
+
+    protected override void OnDispose()
+    {
+        MonitoringState.Changed -= OnMonitoringChanged;
+    }
+}

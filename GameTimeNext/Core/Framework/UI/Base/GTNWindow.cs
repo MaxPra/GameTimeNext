@@ -179,6 +179,23 @@ namespace GameTimeNext.Core.Framework.UI.Base
             set => SetValue(ShowBigPictureButtonProperty, value);
         }
 
+        /// <summary>
+        /// Shows the remote monitoring button in the title bar (template part btnRemoteMonitoring, left of the Big Picture
+        /// button). Like the help button, its click is dispatched to the window controller (EV_btnRemoteMonitoring).
+        /// </summary>
+        public static readonly DependencyProperty ShowRemoteMonitoringButtonProperty =
+            DependencyProperty.Register(
+                nameof(ShowRemoteMonitoringButton),
+                typeof(bool),
+                typeof(GTNWindow),
+                new PropertyMetadata(false));
+
+        public bool ShowRemoteMonitoringButton
+        {
+            get => (bool)GetValue(ShowRemoteMonitoringButtonProperty);
+            set => SetValue(ShowRemoteMonitoringButtonProperty, value);
+        }
+
         /// <summary>Shows the app icon in the title bar, in front of the title.</summary>
         public static readonly DependencyProperty ShowAppIconProperty =
             DependencyProperty.Register(

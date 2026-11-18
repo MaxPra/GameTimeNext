@@ -1,0 +1,56 @@
+@inject SocketClient Socket
+@rendermode InteractiveServer
+@implements IDisposable
+
+@*
+    Shown while the web app has no connection to arcora (socket): same look as the ReconnectModal, which covers the
+    connection between the page and the web app. Nothing on the pages works without arcora, so it blocks them; the
+    socket retries by itself, so there is no button.
+*@
+@if (_state != ConnectionState.Connected)
+{
+    <div class="fixed inset-0 z-[60] flex items-end justify-center bg-black/55 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:items-center">
+        <div class="arc-sheet" role="alertdialog" aria-modal="true" aria-labelledby="arc-connection-title" aria-describedby="arc-connection-message">
+            <div class="flex items-center gap-3">
+                <span class="arc-spinner" aria-hidden="true"></span>
+                <h2 id="arc-connection-title" class="text-base font-semibold text-white">@Title</h2>
+            </div>
+            <p id="arc-connection-message">@Message</p>
+        </div>
+    </div>
+}
+
+@code {
+    private ConnectionState _state = ConnectionState.NeverConnected;
+
+    private string Title => _state switch
+    {
+        ConnectionState.Disconnected => "No connection",
+        ConnectionState.Reconnecting => "Reconnecting…",
+        _ => "Connecting…"
+    };
+
+    private string Message => _state switch
+    {
+        ConnectionState.Disconnected => $"{AppInfo.Name} doesn't answer. Check that it is running on the PC. Still trying…",
+        ConnectionState.Reconnecting => $"The connection to {AppInfo.Name} on your PC was lost. One moment, please.",
+        _ => $"Connecting to {AppInfo.Name} on your PC."
+    };
+
+    protected override void OnInitialized()
+    {
+        _state = Socket.State;
+        Socket.ConnectionStateChanged += OnConnectionStateChanged;
+    }
+
+    private void OnConnectionStateChanged(object? sender, ConnectionState state)
+    {
+        _state = state;
+        _ = InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        Socket.ConnectionStateChanged -= OnConnectionStateChanged;
+    }
+}

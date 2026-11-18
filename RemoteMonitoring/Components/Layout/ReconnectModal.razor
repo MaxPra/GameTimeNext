@@ -1,0 +1,46 @@
+﻿<script type="module" src="@Assets["Components/Layout/ReconnectModal.razor.js"]"></script>
+
+@*
+    Shown by Blazor while the page has lost its connection to the web app (phone locked for a while, web app restarted
+    by arcora, e.g. after "Reset pairing"). Blazor sets one state class on the dialog (components-reconnect-show,
+    -retrying, -failed, -paused, -resume-failed); the group-[...] variants show the texts and buttons of that state.
+    Look of ConfirmDialog: bottom sheet on the phone, centered from tablet width.
+*@
+<dialog id="components-reconnect-modal" data-nosnippet
+        class="group fixed inset-0 m-0 hidden h-full max-h-none w-full max-w-none items-end justify-center bg-transparent p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] text-arc-text open:flex sm:items-center backdrop:bg-black/55"
+        aria-labelledby="arc-reconnect-title">
+    <div class="arc-sheet">
+        <div class="flex items-center gap-3">
+            @* Spinner while Blazor is still trying *@
+            <span class="arc-spinner hidden group-[.components-reconnect-show]:block group-[.components-reconnect-retrying]:block" aria-hidden="true"></span>
+
+            <h2 id="arc-reconnect-title" class="text-base font-semibold text-white">
+                <span class="hidden group-[.components-reconnect-show]:inline group-[.components-reconnect-retrying]:inline">Reconnecting…</span>
+                <span class="hidden group-[.components-reconnect-failed]:inline">No connection</span>
+                <span class="hidden group-[.components-reconnect-paused]:inline group-[.components-reconnect-resume-failed]:inline">Session paused</span>
+            </h2>
+        </div>
+
+        <p class="hidden group-[.components-reconnect-show]:block">
+            The connection to @AppInfo.Name on your PC was interrupted. One moment, please.
+        </p>
+        <p class="hidden group-[.components-reconnect-retrying]:block">
+            @AppInfo.Name doesn't answer yet. Trying again in <span id="components-seconds-to-next-attempt" class="font-semibold text-white tabular-nums"></span> s.
+        </p>
+        <p class="hidden group-[.components-reconnect-failed]:block">
+            @AppInfo.Name can't be reached. Check that the PC is on and your phone is in the same network.
+        </p>
+        <p class="hidden group-[.components-reconnect-paused]:block">
+            @AppInfo.Name has paused this page.
+        </p>
+        <p class="hidden group-[.components-reconnect-resume-failed]:block">
+            This page couldn't be resumed. Reload it to continue.
+        </p>
+
+        <div class="mt-1 hidden flex-col-reverse gap-2 group-[.components-reconnect-failed]:flex group-[.components-reconnect-paused]:flex group-[.components-reconnect-resume-failed]:flex sm:flex-row sm:justify-end">
+            <button id="components-reload-button" type="button" class="arc-btn">Reload page</button>
+            <button id="components-reconnect-button" type="button" class="arc-btn hidden bg-accent/80 group-[.components-reconnect-failed]:inline-flex">Try again</button>
+            <button id="components-resume-button" type="button" class="arc-btn hidden bg-accent/80 group-[.components-reconnect-paused]:inline-flex group-[.components-reconnect-resume-failed]:inline-flex">Resume</button>
+        </div>
+    </div>
+</dialog>

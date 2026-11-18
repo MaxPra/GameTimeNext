@@ -28,6 +28,7 @@ ALLOWED_SOURCES = {
 
     "arcora": {
         "GameTimeNext/Core/Framework/Config/AppConfig.Paths.cs": 1,
+        "RemoteMonitoring/Base/AppInfo.cs": 1,
     },
 
     "GameTimeNXT": {

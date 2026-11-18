@@ -93,15 +93,6 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
                     });
                 }
 
-                if (AppEnvironment.GetAppConfig().AppSettings.ShowToastNotification)
-                {
-                    CallDispatcher.Invoke(() =>
-                    {
-                        T1PROFI t1profi = GetDataManager<TXPROFI>().Read(AppEnvironment.CurrentPfid);
-                        CFToast.Show(t1profi.GANA, "Monitoring stopped...");
-                    });
-                }
-
                 CFGameTimeMonitoring.StopMonitoring();
                 CallDispatcher!.Trigger("EXEV_GameTimeMonitoringStopped");
             }
@@ -128,15 +119,6 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
                     CallDispatcher.Invoke(() =>
                     {
                         CFBlackout.ToggleSecondaryBlackout(System.Windows.Application.Current.MainWindow, false, isExternalGame);
-                    });
-                }
-
-                if (AppEnvironment.GetAppConfig().AppSettings.ShowToastNotification)
-                {
-                    CallDispatcher.Invoke(() =>
-                    {
-                        T1PROFI t1profi = GetDataManager<TXPROFI>().Read(AppEnvironment.CurrentPfid);
-                        CFToast.Show(t1profi.GANA, "Monitoring started...");
                     });
                 }
 

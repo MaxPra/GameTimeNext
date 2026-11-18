@@ -45,13 +45,22 @@ namespace GameTimeNext.Core.Application.TimeMonitoring
         /// </summary>
         public static bool CheckNotLocked(UIXApplication app, long pfid)
         {
-            UIXTableObjectBase? locked = TFPROFI.GetProfileWithLinkedRecords(GetLockOwner(), pfid).FirstOrDefault(r => r.IsLocked());
-
-            if (locked?.GetLockHolder() is not UIXRecordLockInfo lockedBy)
+            if (GetLockHolder(pfid) is not UIXRecordLockInfo lockedBy)
                 return true;
 
             FnRecordLock.ShowLocked(app, lockedBy);
             return false;
+        }
+
+        /// <summary>
+        /// Holder of the first lock on the profile or its linked records, null if nobody edits them. Shows nothing, for
+        /// callers that must not ask at the PC (remote monitoring).
+        /// </summary>
+        public static UIXRecordLockInfo? GetLockHolder(long pfid)
+        {
+            UIXTableObjectBase? locked = TFPROFI.GetProfileWithLinkedRecords(GetLockOwner(), pfid).FirstOrDefault(r => r.IsLocked());
+
+            return locked?.GetLockHolder();
         }
 
         /// <summary>
@@ -63,15 +72,27 @@ namespace GameTimeNext.Core.Application.TimeMonitoring
         /// <param name="pfid">Profile ID</param>
         public static bool StartMonitoring(UIXApplication app, long pfid)
         {
+            if (StartMonitoring(pfid, out UIXRecordLockInfo? lockedBy))
+                return true;
+
+            FnRecordLock.ShowLocked(app, lockedBy);
+            return false;
+        }
+
+        /// <summary>
+        /// Like StartMonitoring(app, pfid), but shows nothing: if a record is being edited, returns false and its lock holder
+        /// (remote monitoring, which never asks at the PC).
+        /// </summary>
+        public static bool StartMonitoring(long pfid, out UIXRecordLockInfo? lockedBy)
+        {
+            lockedBy = null;
+
             // Nothing to monitor; the callers continue as before
             if (pfid == 0)
                 return true;
 
-            if (!LockRecords(pfid, out UIXRecordLockInfo? lockedBy))
-            {
-                FnRecordLock.ShowLocked(app, lockedBy);
+            if (!LockRecords(pfid, out lockedBy))
                 return false;
-            }
 
             IsMonitoring = true;
             _monitoringPFID = pfid;
@@ -102,6 +123,13 @@ namespace GameTimeNext.Core.Application.TimeMonitoring
             return ((double)_monitoredTime / 60);
         }
 
+        public static bool IsSessionStored(double minutes)
+        {
+            var settings = AppEnvironment.GetAppConfig().AppSettings;
+
+            return !(settings.EnableSessionCleanup && minutes < settings.SessionCleanupSeconds / 60);
+        }
+
         /// <summary>
         /// Stores the session of the stopped monitoring and the play dates of the profile, then releases the records.
         /// Stored for the monitored profile, which holds the locks: the current profile may have changed meanwhile (another
@@ -124,7 +152,7 @@ namespace GameTimeNext.Core.Application.TimeMonitoring
                 t1sessi.PLFR = _startTime;
                 t1sessi.PLTO = _endTime;
                 t1sessi.PLTI = GetMonitoredTimeInMinutes();
-                if (AppEnvironment.GetAppConfig().AppSettings.EnableSessionCleanup && t1sessi.PLTI < (AppEnvironment.GetAppConfig().AppSettings.SessionCleanupSeconds / 60)) return;
+                if (!IsSessionStored(t1sessi.PLTI)) return;
 
                 // Determine the current playthrough
                 long ptid = TFPLTHR.GetCurrentPlaythroughPtid(t1sessi.PFID);
@@ -166,6 +194,11 @@ namespace GameTimeNext.Core.Application.TimeMonitoring
             TimeSpan currentTimeSpan = DateTime.Now - _startTime;
 
             return (double)currentTimeSpan.TotalSeconds / 60;
+        }
+
+        public static (bool IsMonitoring, long PFID, DateTime StartedAt) GetMonitoringState()
+        {
+            return (IsMonitoring, _monitoringPFID, _startTime);
         }
 
         private static bool LockRecords(long pfid, out UIXRecordLockInfo? lockedBy)

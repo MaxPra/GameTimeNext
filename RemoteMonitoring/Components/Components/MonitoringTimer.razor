@@ -1,0 +1,44 @@
+@implements IDisposable
+
+@* Running time of the monitoring, counted on the server (same PC as arcora, so no clock difference to the phone) *@
+<span class="text-[44px] leading-tight font-bold tracking-wide text-white tabular-nums" aria-live="off">@Format(DateTime.Now - StartedAt)</span>
+
+@code {
+    [Parameter, EditorRequired]
+    public DateTime StartedAt { get; set; }
+
+    private readonly CancellationTokenSource _cts = new();
+
+    protected override void OnInitialized()
+    {
+        _ = TickAsync(_cts.Token);
+    }
+
+    private async Task TickAsync(CancellationToken token)
+    {
+        using PeriodicTimer timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
+        try
+        {
+            while (await timer.WaitForNextTickAsync(token))
+                await InvokeAsync(StateHasChanged);
+        }
+        catch (OperationCanceledException)
+        {
+            // Component removed
+        }
+    }
+
+    private static string Format(TimeSpan elapsed)
+    {
+        if (elapsed < TimeSpan.Zero)
+            elapsed = TimeSpan.Zero;
+
+        return $"{(int)elapsed.TotalHours}:{elapsed.Minutes:00}:{elapsed.Seconds:00}";
+    }
+
+    public void Dispose()
+    {
+        _cts.Cancel();
+        _cts.Dispose();
+    }
+}
