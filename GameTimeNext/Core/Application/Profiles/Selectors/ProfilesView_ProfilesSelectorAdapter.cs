@@ -38,7 +38,7 @@ namespace GameTimeNext.Core.Application.Profiles.Selectors
 
             (List<ProfilesListBoxItem> profileItems, bool filterActive) = await Task.Run(() =>
             {
-                (List<T1PROFI> t1profis, bool isFiltered) = TFPROFI.GetFilteredProfiles(GetApp().FilterCache, nameSearch);
+                (List<T1PROFI> t1profis, bool isFiltered) = TFPROFI.GetFilteredProfiles(GetApp(), GetApp().FilterCache, nameSearch);
 
                 return (BuildProfileListBoxItems(t1profis), isFiltered);
             }, token);
@@ -88,7 +88,7 @@ namespace GameTimeNext.Core.Application.Profiles.Selectors
         private List<ProfilesListBoxItem> BuildProfileListBoxItems(List<T1PROFI> t1profiles)
         {
             List<ProfilesListBoxItem> result = new List<ProfilesListBoxItem>(t1profiles.Count);
-            TXCTABD txctabd = new TXCTABD();
+            TXCTABD txctabd = GetApp().GetDataManager<TXCTABD>();
 
             for (int i = 0; i < t1profiles.Count; i++)
             {

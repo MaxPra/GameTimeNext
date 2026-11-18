@@ -11,5 +11,8 @@
 
         MonitoringStarted,
         MonitoringStopped,
+
+        // The profile or one of its playthroughs is open for editing on the PC (record lock)
+        ProfileLocked,
     }
 }

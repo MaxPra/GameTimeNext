@@ -10,7 +10,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.DataManagers
 {
-    public class TXCTABHBasic
+    public class TXCTABHBasic : UIXDataManagerBase
     {
         private readonly SQLiteConnection? _connectionOverride;
 
@@ -33,7 +33,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         {
             T1CTABH obj = new T1CTABH();
             obj.State = UIXTableObjectState.New;
-            return obj;
+            return Adopt(obj);
         }
 
         public virtual T1CTABH Copy(T1CTABH objFrom)
@@ -72,6 +72,8 @@ namespace GameTimeNext.Core.Application.DataManagers
                 throw new ArgumentNullException(nameof(obj));
             }
 
+            EnsureNotLocked(obj);
+
             if (Exists(obj))
             {
                 Update(obj);
@@ -87,6 +89,8 @@ namespace GameTimeNext.Core.Application.DataManagers
 
         public virtual void Delete(string txtyp)
         {
+            EnsureNotLocked(K1CTABH.Name, txtyp);
+
             using SQLiteCommand cmd = _connection.CreateCommand();
             cmd.CommandText = "DELETE FROM T1CTABH WHERE TXTYP = @TXTYP;";
             cmd.Parameters.AddWithValue("@TXTYP", ToDbValue(txtyp));
@@ -141,7 +145,7 @@ namespace GameTimeNext.Core.Application.DataManagers
                 return null;
             }
 
-            T1CTABH obj = Map(reader);
+            T1CTABH obj = Adopt(Map(reader));
             obj.AcceptChanges();
             return obj;
         }
@@ -178,7 +182,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             using var reader = query.Execute();
             while (reader.Read())
             {
-                T1CTABH obj = Map(reader);
+                T1CTABH obj = Adopt(Map(reader));
                 obj.AcceptChanges();
                 list.Add(obj);
             }

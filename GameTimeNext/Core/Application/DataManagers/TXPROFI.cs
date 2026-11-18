@@ -29,7 +29,8 @@ namespace GameTimeNext.Core.Application.DataManagers
 
         public ProfileDetailDto ToDetailDto(T1PROFI obj)
         {
-            T1PLTHR? currentPlaythrough = TFPLTHR.HasCurrentPlaythrough(obj.PFID) ? TFPLTHR.GetCurrentPlaythrough(obj.PFID) : null;
+            // Only read for the DTO, never saved, so no data manager of an application (record lock)
+            T1PLTHR? currentPlaythrough = TFPLTHR.HasCurrentPlaythrough(obj.PFID) ? new TXPLTHR().Read(TFPLTHR.GetCurrentPlaythroughPtid(obj.PFID)) : null;
 
             return new ProfileDetailDto
             {

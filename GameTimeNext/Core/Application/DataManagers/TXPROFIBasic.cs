@@ -10,7 +10,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.DataManagers
 {
-    public class TXPROFIBasic
+    public class TXPROFIBasic : UIXDataManagerBase
     {
         private readonly SQLiteConnection? _connectionOverride;
 
@@ -33,7 +33,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         {
             T1PROFI obj = new T1PROFI();
             obj.State = UIXTableObjectState.New;
-            return obj;
+            return Adopt(obj);
         }
 
         public virtual T1PROFI Copy(T1PROFI objFrom)
@@ -78,6 +78,8 @@ namespace GameTimeNext.Core.Application.DataManagers
                 throw new ArgumentNullException(nameof(obj));
             }
 
+            EnsureNotLocked(obj);
+
             if (Exists(obj))
             {
                 Update(obj);
@@ -93,6 +95,8 @@ namespace GameTimeNext.Core.Application.DataManagers
 
         public virtual void Delete(long pfid)
         {
+            EnsureNotLocked(K1PROFI.Name, pfid);
+
             using SQLiteCommand cmd = _connection.CreateCommand();
             cmd.CommandText = "DELETE FROM T1PROFI WHERE PFID = @PFID;";
             cmd.Parameters.AddWithValue("@PFID", ToDbValue(pfid));
@@ -153,7 +157,7 @@ namespace GameTimeNext.Core.Application.DataManagers
                 return null;
             }
 
-            T1PROFI obj = Map(reader);
+            T1PROFI obj = Adopt(Map(reader));
             obj.AcceptChanges();
             return obj;
         }
@@ -196,7 +200,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             using var reader = query.Execute();
             while (reader.Read())
             {
-                T1PROFI obj = Map(reader);
+                T1PROFI obj = Adopt(Map(reader));
                 obj.AcceptChanges();
                 list.Add(obj);
             }

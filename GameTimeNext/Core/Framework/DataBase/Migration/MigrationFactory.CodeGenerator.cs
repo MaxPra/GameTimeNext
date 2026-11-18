@@ -105,14 +105,17 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                     {
                         ColumnSchema cSchema = tSchema.Columns.Where(c => c.PONAM.Equals(field.Key.PONAM)).Single();
 
+                        // Primary key fields identify the record for the record lock
+                        if (field.Key.PRIMK)
+                            code.AddLine("[UIXKeyField]");
                         code.AddLine($"[UIXSignatureField({i})]");
                         code.AddLine($"public {field.Value.CsType} {field.Key.PONAM} {{ get; set; }} = {cSchema.GetDefaultValue(forCsharp: true)};");
                         code.AddLine();
                     }
 
-                    // Methods
+                    // Methods: saved for the application the object belongs to (record lock)
                     code.BeginBlock("public override void Save()");
-                    code.AddLine($"new TX{suffix}().Save(this);");
+                    code.AddLine($"UIXDataManagerBase.Create<TX{suffix}>(App).Save(this);");
                     code.EndBlock();
 
                     // Namespace & Class
@@ -185,7 +188,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
 
                     // Namespace & Class
                     code.BeginBlock($"namespace {nsDataManagers}");
-                    code.BeginBlock($"public class {className}");
+                    code.BeginBlock($"public class {className} : UIXDataManagerBase");
 
                     // Properties
                     code.AddLine("private readonly SQLiteConnection? _connectionOverride;");
@@ -212,7 +215,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                         code.BeginBlock($"public virtual {classNameT1} CreateNew()");
                         code.AddLine($"{classNameT1} obj = new {classNameT1}();");
                         code.AddLine("obj.State = UIXTableObjectState.New;");
-                        code.AddLine("return obj;");
+                        code.AddLine("return Adopt(obj);");
                         code.EndBlock();
 
                         // Copy
@@ -240,6 +243,8 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                         code.AddLine("throw new ArgumentNullException(nameof(obj));");
                         code.EndBlock();
                         code.AddLine();
+                        code.AddLine("EnsureNotLocked(obj);");
+                        code.AddLine();
                         code.BeginBlock("if (Exists(obj))");
                         code.AddLine("Update(obj);");
                         code.EndBlock();
@@ -254,6 +259,8 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                         // Delete
                         code.AddLine();
                         code.BeginBlock($"public virtual void Delete({Helpers.GetMethodParams(primkFields)})");
+                        code.AddLine($"EnsureNotLocked({classNameK1}.Name, {Helpers.GetMethodArguments(primkFields)});");
+                        code.AddLine();
                         code.AddLine("using SQLiteCommand cmd = _connection.CreateCommand();");
                         code.AddLine($"cmd.CommandText = \"DELETE FROM {classNameT1} WHERE {Helpers.GetSqlWheres(primkFields)};\";");
                         Helpers.AddSqlParameters(code, primkFields);
@@ -294,7 +301,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                         code.AddLine("return null;");
                         code.EndBlock();
                         code.AddLine();
-                        code.AddLine($"{classNameT1} obj = Map(reader);");
+                        code.AddLine($"{classNameT1} obj = Adopt(Map(reader));");
                         code.AddLine("obj.AcceptChanges();");
                         code.AddLine("return obj;");
                         code.EndBlock();
@@ -315,7 +322,7 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                         code.AddLine($"List<{classNameT1}> list = new List<{classNameT1}>();");
                         code.AddLine("using var reader = query.Execute();");
                         code.BeginBlock("while (reader.Read())");
-                        code.AddLine($"{classNameT1} obj = Map(reader);");
+                        code.AddLine($"{classNameT1} obj = Adopt(Map(reader));");
                         code.AddLine("obj.AcceptChanges();");
                         code.AddLine("list.Add(obj);");
                         code.EndBlock();
@@ -457,6 +464,14 @@ namespace GameTimeNext.Core.Framework.DataBase.Migration
                         }
 
                         return String.Join(", ", paramStrings);
+                    }
+
+                    /// <summary>
+                    /// The parameter names of GetMethodParams, as arguments of a call.
+                    /// </summary>
+                    public static string GetMethodArguments(Dictionary<T1METAP, UIXSqliteDataType> parameters)
+                    {
+                        return String.Join(", ", parameters.Select(p => p.Key.PONAM.ToLowerInvariant()));
                     }
 
                     public static string GetSqlWheres(Dictionary<T1METAP, UIXSqliteDataType> fields)

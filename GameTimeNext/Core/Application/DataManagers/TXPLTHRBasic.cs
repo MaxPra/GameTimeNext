@@ -10,7 +10,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.DataManagers
 {
-    public class TXPLTHRBasic
+    public class TXPLTHRBasic : UIXDataManagerBase
     {
         private readonly SQLiteConnection? _connectionOverride;
 
@@ -33,7 +33,7 @@ namespace GameTimeNext.Core.Application.DataManagers
         {
             T1PLTHR obj = new T1PLTHR();
             obj.State = UIXTableObjectState.New;
-            return obj;
+            return Adopt(obj);
         }
 
         public virtual T1PLTHR Copy(T1PLTHR objFrom)
@@ -62,6 +62,8 @@ namespace GameTimeNext.Core.Application.DataManagers
                 throw new ArgumentNullException(nameof(obj));
             }
 
+            EnsureNotLocked(obj);
+
             if (Exists(obj))
             {
                 Update(obj);
@@ -77,6 +79,8 @@ namespace GameTimeNext.Core.Application.DataManagers
 
         public virtual void Delete(long ptid)
         {
+            EnsureNotLocked(K1PLTHR.Name, ptid);
+
             using SQLiteCommand cmd = _connection.CreateCommand();
             cmd.CommandText = "DELETE FROM T1PLTHR WHERE PTID = @PTID;";
             cmd.Parameters.AddWithValue("@PTID", ToDbValue(ptid));
@@ -121,7 +125,7 @@ namespace GameTimeNext.Core.Application.DataManagers
                 return null;
             }
 
-            T1PLTHR obj = Map(reader);
+            T1PLTHR obj = Adopt(Map(reader));
             obj.AcceptChanges();
             return obj;
         }
@@ -148,7 +152,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             using var reader = query.Execute();
             while (reader.Read())
             {
-                T1PLTHR obj = Map(reader);
+                T1PLTHR obj = Adopt(Map(reader));
                 obj.AcceptChanges();
                 list.Add(obj);
             }

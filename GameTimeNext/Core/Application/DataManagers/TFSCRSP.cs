@@ -1,3 +1,4 @@
+using UIX.ViewController.Engine.Runnables;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
 using UIX.ViewController.Engine.Querying;
@@ -6,7 +7,7 @@ namespace GameTimeNext.Core.Application.DataManagers
 {
     public class TFSCRSP
     {
-        public static List<T1SCRSP> GetMonitorsOfScreensetup(long ssid)
+        public static List<T1SCRSP> GetMonitorsOfScreensetup(UIXApplication app, long ssid)
         {
             List<T1SCRSP> t1scrsps = new List<T1SCRSP>();
 
@@ -18,7 +19,7 @@ namespace GameTimeNext.Core.Application.DataManagers
             query.AddWhere(K1SCRSP.Name, K1SCRSP.Fields.SSID, QueryCompareType.EQUALS, ssid);
             query.AddOrderBy(K1SCRSP.Name, K1SCRSP.Fields.SPID, OrderDirection.ASC);
 
-            TXSCRSP txscrsp = new TXSCRSP();
+            TXSCRSP txscrsp = app.GetDataManager<TXSCRSP>();
 
             using (var reader = query.Execute())
             {

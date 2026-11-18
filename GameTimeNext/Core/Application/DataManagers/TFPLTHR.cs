@@ -2,6 +2,8 @@
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Core.Framework.UI.Dialogs;
+using GameTimeNext.Core.Framework.Utils;
+using UIX.ViewController.Engine.DataBaseObjects;
 using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
@@ -87,14 +89,15 @@ namespace GameTimeNext.Core.Application.DataManagers
             return pfids;
         }
 
-        public static T1PLTHR GetCurrentPlaythrough(long pfid)
+        public static T1PLTHR GetCurrentPlaythrough(UIXApplication app, long pfid)
         {
-            return new TXPLTHR().Read(GetCurrentPlaythroughPtid(pfid));
+            return app.GetDataManager<TXPLTHR>().Read(GetCurrentPlaythroughPtid(pfid));
         }
 
         public static bool HasCurrentPlaythrough(long pfid)
         {
-            T1PLTHR currT1plthr = GetCurrentPlaythrough(pfid);
+            // Only read for the answer, never saved
+            T1PLTHR currT1plthr = new TXPLTHR().Read(GetCurrentPlaythroughPtid(pfid));
 
             return currT1plthr != null && currT1plthr.PTCO == false && currT1plthr.PTCA == false && currT1plthr.PTPA == false;
         }
@@ -138,9 +141,9 @@ namespace GameTimeNext.Core.Application.DataManagers
         /// </summary>
         /// <param name="pfid"></param>
         /// <param name="description"></param>
-        public static long CreateNewPlaythrough(long pfid, string description = "Playthrough #1 (Initial)", string type = PlaythroughType.INITIAL_PLAYTHROUGH)
+        public static long CreateNewPlaythrough(UIXApplication app, long pfid, string description = "Playthrough #1 (Initial)", string type = PlaythroughType.INITIAL_PLAYTHROUGH)
         {
-            TXPLTHR txplthr = new TXPLTHR();
+            TXPLTHR txplthr = app.GetDataManager<TXPLTHR>();
             T1PLTHR t1plthr = txplthr.CreateNew();
 
             t1plthr.PFID = pfid;
@@ -153,7 +156,7 @@ namespace GameTimeNext.Core.Application.DataManagers
 
         }
 
-        public static List<T1SESSI> GetSessions(long ptid)
+        public static List<T1SESSI> GetSessions(UIXApplication app, long ptid)
         {
             List<T1SESSI> sessions = new List<T1SESSI>();
             UIXQuery query = new UIXQuery(K1SESSI.Name, AppEnvironment.GetDataBaseManager().GetConnection());
@@ -167,7 +170,7 @@ namespace GameTimeNext.Core.Application.DataManagers
                 {
                     long ssid = UIXQuery.GetInt64(reader, K1SESSI.Name, K1SESSI.Fields.SEID);
 
-                    TXSESSI txsessi = new TXSESSI();
+                    TXSESSI txsessi = app.GetDataManager<TXSESSI>();
                     T1SESSI t1sessi = txsessi.Read(ssid);
 
                     sessions.Add(t1sessi);
@@ -189,12 +192,12 @@ namespace GameTimeNext.Core.Application.DataManagers
             return 0;
         }
 
-        public static void DeletePlaythroughAndSessions(long ptid)
+        public static void DeletePlaythroughAndSessions(UIXApplication app, long ptid)
         {
-            TXPLTHR txplthr = new TXPLTHR();
-            TXSESSI txsessi = new TXSESSI();
+            TXPLTHR txplthr = app.GetDataManager<TXPLTHR>();
+            TXSESSI txsessi = app.GetDataManager<TXSESSI>();
 
-            List<T1SESSI> sessions = GetSessions(ptid);
+            List<T1SESSI> sessions = GetSessions(app, ptid);
 
             foreach (T1SESSI session in sessions)
             {
@@ -204,7 +207,41 @@ namespace GameTimeNext.Core.Application.DataManagers
             txplthr.Delete(ptid);
         }
 
+        /// <summary>
+        /// Changes the status of the playthrough (and pauses the current one when another is opened again), after asking.
+        /// The playthroughs are locked meanwhile (record lock) and read again, so changes made elsewhere since the list
+        /// was loaded (e.g. a rating) aren't overwritten; t1plthr is the stored playthrough afterwards. If one of them is
+        /// being edited or its game is monitored, nothing is asked or changed and the user is told why.
+        /// </summary>
         public static void UpdatePlaythroughStatus(UIXApplication app, ref T1PLTHR t1plthr, PlaythroughStatus status, T1PLTHR? currentT1plthr = null)
+        {
+            T1PLTHR target = t1plthr;
+            bool rate = false;
+
+            List<UIXTableObjectBase> records = new List<UIXTableObjectBase> { target };
+            if (currentT1plthr is not null)
+                records.Add(currentT1plthr);
+
+            FnRecordLock.Run(app, () =>
+            {
+                TXPLTHR txplthr = app.GetDataManager<TXPLTHR>();
+                T1PLTHR? current = currentT1plthr is not null ? txplthr.Read(currentT1plthr.PTID) ?? currentT1plthr : null;
+
+                target = txplthr.Read(target.PTID) ?? target;
+
+                if (ChangeStatus(app, txplthr, target, status, current))
+                    rate = status == PlaythroughStatus.Completed || status == PlaythroughStatus.Canceled;
+            }, records.ToArray());
+
+            t1plthr = target;
+
+            // Optional rating after a playthrough has ended, can simply be skipped (its view locks the playthrough itself)
+            if (rate)
+                app.GetApplication<PlaythroughRatingApp>().Rate(null, t1plthr);
+        }
+
+        // Asks and changes the status; false if the user said no
+        private static bool ChangeStatus(UIXApplication app, TXPLTHR txplthr, T1PLTHR t1plthr, PlaythroughStatus status, T1PLTHR? currentT1plthr)
         {
             string question = string.Empty;
 
@@ -237,12 +274,12 @@ namespace GameTimeNext.Core.Application.DataManagers
             if (!FnString.IsNullEmptyOrWhitespace(question))
             {
                 CFMBOXResult result = app.GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).Show(question, CFMBOXResult.Yes | CFMBOXResult.No, CFMBOXIcon.Question);
-                if (result == CFMBOXResult.No) return;
+                if (result == CFMBOXResult.No) return false;
             }
 
             if (!FnString.IsNullEmptyOrWhitespace(irreversibleMessage) &&
                 !app.GetApplication<CFMBOX>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window).ConfirmDestructive(irreversibleMessage, irreversibleAction))
-                return;
+                return false;
 
             switch (status)
             {
@@ -257,7 +294,7 @@ namespace GameTimeNext.Core.Application.DataManagers
                         currentT1plthr.PTCO = false;
                         currentT1plthr.PTCA = false;
                         currentT1plthr.PTPA = true;
-                        new TXPLTHR().Save(currentT1plthr);
+                        txplthr.Save(currentT1plthr);
                     }
                     break;
                 case PlaythroughStatus.Completed:
@@ -277,11 +314,9 @@ namespace GameTimeNext.Core.Application.DataManagers
                     break;
             }
 
-            new TXPLTHR().Save(t1plthr);
+            txplthr.Save(t1plthr);
 
-            // Optional rating after a playthrough has ended, can simply be skipped
-            if (status == PlaythroughStatus.Completed || status == PlaythroughStatus.Canceled)
-                app.GetApplication<PlaythroughRatingApp>().Rate(null, t1plthr);
+            return true;
         }
 
         /// <summary>

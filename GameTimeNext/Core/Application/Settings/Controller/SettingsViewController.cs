@@ -218,7 +218,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             if (!_appSettings!.SealNewGames || GetView().cbSealNewGames.IsChecked == true)
                 return;
 
-            int sealedCount = TFPROFI.GetSealedProfiles().Count;
+            int sealedCount = TFPROFI.GetSealedProfiles(GetApp()).Count;
 
             if (sealedCount == 0)
                 return;
@@ -234,7 +234,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
         /// </summary>
         private void UnsealAllProfiles()
         {
-            TFPROFI.UnsealAll();
+            TFPROFI.UnsealAll(GetApp());
 
             // The current profile is saved elsewhere too (e.g. playtime), it must not bring the shrink wrap back
             T1PROFI? currentProfile = AppEnvironment.GetCurrentProfile();
@@ -272,7 +272,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
                     status = "PEND";
             }
 
-            TFLNGAM.RegisterGames(installedGames, status);
+            TFLNGAM.RegisterGames(GetApp(), installedGames, status);
         }
 
         private List<SettingsAutoImportLauncherListItem> GetAutoImportLauncherItems()
@@ -324,7 +324,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             // The additional entry "(None)" (set in the view) disables the dynamic background
             UIXManualCodetable uIXManualCodetable = new UIXManualCodetable();
 
-            TXCTABD txctabd = new TXCTABD();
+            TXCTABD txctabd = GetApp().GetDataManager<TXCTABD>();
             List<T1CTABD> entrys = txctabd.GetEntries(BackgroundSource.CODETABLE);
 
             foreach (T1CTABD entry in entrys)
@@ -339,7 +339,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
         {
             UIXManualCodetable uIXManualCodetable = new UIXManualCodetable();
 
-            TXCTABD txctabd = new TXCTABD();
+            TXCTABD txctabd = GetApp().GetDataManager<TXCTABD>();
             List<T1CTABD> entrys = txctabd.GetEntries("dP");
 
             foreach (T1CTABD entry in entrys)

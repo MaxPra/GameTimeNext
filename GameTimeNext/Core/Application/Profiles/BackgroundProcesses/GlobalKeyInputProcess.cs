@@ -82,7 +82,7 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
             if (CFGameTimeMonitoring.IsMonitoring)
             {
 
-                if (CFBlackout.AllowedToToggleBlackout(new TXPROFI().Read(AppEnvironment.CurrentPfid)!))
+                if (CFBlackout.AllowedToToggleBlackout(GetDataManager<TXPROFI>().Read(AppEnvironment.CurrentPfid)))
                 {
 
                     bool isExternalGame = TFPROFI.IsExternalGame(AppEnvironment.CurrentPfid);
@@ -98,12 +98,20 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
             }
             else
             {
+                // The profile is being edited elsewhere: it can't be monitored (the monitoring locks it)
+                if (!CFGameTimeMonitoring.CheckNotLocked(this, AppEnvironment.CurrentPfid))
+                    return;
+
                 // If no active playthrough was found, ask and
                 // abort if none should be created
                 if (!CFProfilesApp.AskForNewPlaythroughCreationIfNotActive(AppEnvironment.CurrentPfid, this))
                     return;
 
-                if (CFBlackout.AllowedToToggleBlackout(new TXPROFI().Read(AppEnvironment.CurrentPfid)!))
+                // Locks the profile; before the blackout and the toast, so nothing happens if it was opened for editing meanwhile
+                if (!CFGameTimeMonitoring.StartMonitoring(this, AppEnvironment.CurrentPfid))
+                    return;
+
+                if (CFBlackout.AllowedToToggleBlackout(GetDataManager<TXPROFI>().Read(AppEnvironment.CurrentPfid)))
                 {
 
                     bool isExternalGame = TFPROFI.IsExternalGame(AppEnvironment.CurrentPfid);
@@ -114,7 +122,6 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
                     });
                 }
 
-                CFGameTimeMonitoring.StartMonitoring(AppEnvironment.CurrentPfid);
                 CallDispatcher!.Trigger("EXEV_GameTimeMonitoringStarted");
             }
         }
@@ -136,7 +143,7 @@ namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
 
                     CallDispatcher.Invoke(() =>
                     {
-                        T1PROFI t1profi = new TXPROFI().Read(AppEnvironment.CurrentPfid);
+                        T1PROFI t1profi = GetDataManager<TXPROFI>().Read(AppEnvironment.CurrentPfid);
                         CFToast.Show(t1profi.GANA, $"Current session game time: {CFProfilesApp.FormatGameTimeMinutes(currentSessionGameTime)}");
                     });
                 });

@@ -53,7 +53,7 @@ namespace GameTimeNext.Core.Application.Playthroughs.Selectors
                 {
                     long ptid = UIXQuery.GetInt64(reader, K1PLTHR.Name, K1PLTHR.Fields.PTID);
 
-                    T1PLTHR t1plthr = new TXPLTHR().Read(ptid);
+                    T1PLTHR t1plthr = GetApp().GetDataManager<TXPLTHR>().Read(ptid);
 
                     long pfid = BuildRowsProfiles(rows, t1plthr.PFID, filter);
 
@@ -74,7 +74,7 @@ namespace GameTimeNext.Core.Application.Playthroughs.Selectors
             if (rows.Exists(r => r.StructureKey == structureKey))
                 return pfid;
 
-            T1PROFI t1profi = new TXPROFI().Read(pfid);
+            T1PROFI t1profi = GetApp().GetDataManager<TXPROFI>().Read(pfid);
 
             PlaythroughDataGridRow row = GetSelector().CreateNewRow<PlaythroughDataGridRow>();
             row.StructureKey = structureKey;

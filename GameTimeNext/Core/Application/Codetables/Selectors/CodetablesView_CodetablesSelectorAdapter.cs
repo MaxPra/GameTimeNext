@@ -47,7 +47,7 @@ namespace GameTimeNext.Core.Application.Codetables.Selectors
             {
                 while (reader.Read())
                 {
-                    TXCTABH txctabd = new TXCTABH();
+                    TXCTABH txctabd = GetApp().GetDataManager<TXCTABH>();
 
                     string readTxtyp = UIXQuery.GetString(reader, K1CTABH.Name, K1CTABH.Fields.TXTYP, string.Empty);
 

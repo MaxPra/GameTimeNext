@@ -34,7 +34,7 @@ namespace GameTimeNext.Core.Application.SelectionLists.Controller
             ViewReturn = new SelectionListEntryEditViewReturn();
 
             AddIdentifier("T1CTABD", GetApp().T1CTABD!);
-            AddSource("T1CTABD", new TXCTABD());
+            AddSource("T1CTABD", GetApp().GetDataManager<TXCTABD>());
         }
 
         protected override void BuildFirstImpl()
@@ -233,7 +233,7 @@ namespace GameTimeNext.Core.Application.SelectionLists.Controller
             return CFSelectionListsApp.GetExtendableList(list.GetValue<string>($"PACT{index}") ?? string.Empty);
         }
 
-        private static void FillParameterCombo(UIXComboBox combo, T1CTABH list, int index, bool isRequired)
+        private void FillParameterCombo(UIXComboBox combo, T1CTABH list, int index, bool isRequired)
         {
             string sourceList = list.GetValue<string>($"PACT{index}") ?? string.Empty;
 
@@ -242,7 +242,7 @@ namespace GameTimeNext.Core.Application.SelectionLists.Controller
 
             UIXManualCodetable manualCodetable = new UIXManualCodetable();
 
-            foreach (T1CTABD entry in new TXCTABD().GetEntries(sourceList))
+            foreach (T1CTABD entry in GetApp().GetDataManager<TXCTABD>().GetEntries(sourceList))
                 manualCodetable.AddEntry(entry.TXNUM, entry.DESCR);
 
             // A required parameter offers no "(None)"
@@ -265,7 +265,7 @@ namespace GameTimeNext.Core.Application.SelectionLists.Controller
             // Two entries with the same name can't be told apart in a dropdown
             T1CTABD current = GetApp().T1CTABD!;
 
-            bool isDuplicate = new TXCTABD().GetEntries(current.TXTYP)
+            bool isDuplicate = GetApp().GetDataManager<TXCTABD>().GetEntries(current.TXTYP)
                 .Any(e => e.TXNUM != current.TXNUM && string.Equals(e.DESCR.Trim(), name, StringComparison.CurrentCultureIgnoreCase));
 
             if (isDuplicate)

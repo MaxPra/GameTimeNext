@@ -38,7 +38,7 @@ namespace GameTimeNext.Core.Application.ApplicationProperties.Selectors
                 {
                     string readApdid = UIXQuery.GetString(reader, K1APRDH.Name, K1APRDH.Fields.APDID, string.Empty);
 
-                    T1APRDH? t1aprdh = new TXAPRDH().Read(readApdid);
+                    T1APRDH? t1aprdh = GetApp().GetDataManager<TXAPRDH>().Read(readApdid);
 
                     if (t1aprdh == null)
                         continue;

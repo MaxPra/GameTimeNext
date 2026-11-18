@@ -47,6 +47,8 @@ GLO0019;No applications were found in StartableApps.json.;;2026-10-26 19:00:00;p
 GLO0020;The dev folder was created from the production app folder.;;2026-10-26 19:00:00;prage;2026-10-26 19:00:00;prage
 GLO0021;Version &1 is available.\n\nDo you want to open GitHub to download it now?;;2026-10-26 19:00:00;prage;2026-10-26 19:00:00;prage
 GLO0022;Do you want to save your changes?\nOtherwise they will be lost.;Asked when a view with unsaved changes is closed (Yes = save, No = discard, Cancel = stay open).;2026-10-29 20:00:00;prage;2026-10-29 20:00:00;prage
+GLO0023;This entry is currently being edited in &1.\nClose it there first.;Shown when a record is locked by another module (record lock), e.g. when an edit view isn't opened or the monitoring can't start.;2026-11-16 12:00:00;prage;2026-11-16 12:00:00;prage
+GLO0024;This game is being monitored right now.\nIt can be changed again once the monitoring has stopped.;Shown when a record of the monitored game is locked by the monitoring (record lock).;2026-11-16 12:00:00;prage;2026-11-16 12:00:00;prage
 SET0002;The automatic backup could not be created, because the backup path does not exist:\n&1;;2026-10-26 19:00:00;prage;2026-10-26 19:00:00;prage
 PRO0007;&1 profile cover(s) optimized, &2 MB saved.;;2026-10-26 19:00:00;prage;2026-10-26 19:00:00;prage
 PRO0008;"Quit &1?

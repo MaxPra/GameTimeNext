@@ -16,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using UIX.ViewController.Engine.FrameworkElements.Loader;
 using UIX.ViewController.Engine.Migration.Types;
+using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.GTXMigration
@@ -30,12 +31,14 @@ namespace GameTimeNext.Core.Application.GTXMigration
         private string _startUpParmsFilePath = string.Empty;
         private string _imagesFolderPath = string.Empty;
         private UIXLoader? _loader = null;
+        private readonly UIXApplication _app;
         private string _loaderStartText = string.Empty;
 
         private SQLiteConnection _connectionOld = new SQLiteConnection();
 
-        public GTXMigrationService(string rootFolder, UIXLoader loader)
+        public GTXMigrationService(UIXApplication app, string rootFolder, UIXLoader loader)
         {
+            _app = app;
             _rootFolder = rootFolder;
 
             _databaseFilePath = System.IO.Path.Join(rootFolder, "GameTimeXDB.db");
@@ -305,18 +308,18 @@ namespace GameTimeNext.Core.Application.GTXMigration
         private void MigratePlaythroughs()
         {
             // Read all profiles
-            List<T1PROFI> t1profis = new TXPROFI().ReadAll();
+            List<T1PROFI> t1profis = _app.GetDataManager<TXPROFI>().ReadAll();
 
             foreach (T1PROFI t1profi in t1profis)
             {
-                long ptid = TFPLTHR.CreateNewPlaythrough(t1profi.PFID);
+                long ptid = TFPLTHR.CreateNewPlaythrough(_app, t1profi.PFID);
 
-                List<T1SESSI> t1sessis = TFPROFI.GetAllSessions(t1profi);
+                List<T1SESSI> t1sessis = TFPROFI.GetAllSessions(_app, t1profi);
 
                 foreach (T1SESSI t1sessi in t1sessis)
                 {
                     t1sessi.PTID = ptid;
-                    new TXSESSI().Save(t1sessi);
+                    _app.GetDataManager<TXSESSI>().Save(t1sessi);
                 }
 
             }

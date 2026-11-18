@@ -98,7 +98,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             GetApp().ManualEstTimesCache.estTimeCompletionist = GetApp().T1Profi.ETCO / 60;
 
             AddIdentifier("T1PROFI", GetApp().T1Profi);
-            AddSource("T1CTABD", new TXCTABD());
+            AddSource("T1CTABD", GetApp().GetDataManager<TXCTABD>());
         }
 
         protected override void BuildFirstImpl()
@@ -272,7 +272,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
 
             if (GetView().ViewIndicator.Contains("CN"))
             {
-                TFPLTHR.CreateNewPlaythrough(GetApp().T1Profi.PFID);
+                TFPLTHR.CreateNewPlaythrough(GetApp(), GetApp().T1Profi.PFID);
             }
         }
 
@@ -428,7 +428,7 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
             List<ProfilesGroupListBoxItem> selectedGroups = GetTagItems();
 
             // Delete all existing entries for this profile
-            TXGRPPO tblmGrppo = new TXGRPPO();
+            TXGRPPO tblmGrppo = GetApp().GetDataManager<TXGRPPO>();
             tblmGrppo.DeleteAllWherePFID(GetApp().T1Profi.PFID);
 
             foreach (ProfilesGroupListBoxItem grp in selectedGroups)

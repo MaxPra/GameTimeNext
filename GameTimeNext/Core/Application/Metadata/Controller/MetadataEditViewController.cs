@@ -55,7 +55,7 @@ namespace GameTimeNext.Core.Application.Metadata.Controller
                 ViewReturn = new MetadataEditViewReturn();
 
             AddIdentifier("T1METAH", GetApp().T1METAH!);
-            AddSource("T1CTABD", new TXCTABD());
+            AddSource("T1CTABD", GetApp().GetDataManager<TXCTABD>());
         }
 
         protected override void BuildFirstImpl()

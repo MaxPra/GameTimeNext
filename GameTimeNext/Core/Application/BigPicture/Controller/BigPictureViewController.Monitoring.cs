@@ -36,7 +36,7 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
         {
             if (CFGameTimeMonitoring.IsMonitoring)
             {
-                T1PROFI? monitored = new TXPROFI().Read(AppEnvironment.CurrentPfid);
+                T1PROFI? monitored = GetApp().GetDataManager<TXPROFI>().Read(AppEnvironment.CurrentPfid);
 
                 ToggleMonitoringBlackout(monitored);
 
@@ -54,9 +54,23 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
                 return;
             }
 
+            // The profile is being edited elsewhere: it can't be monitored (the monitoring locks it)
+            if (!CFGameTimeMonitoring.CheckNotLocked(GetApp(), t1profi.PFID))
+            {
+                EnsureFocus();
+                return;
+            }
+
             // Shown as a question of the mode (CFMBOX.Presenter)
             if (!CFProfilesApp.AskForNewPlaythroughCreationIfNotActive(t1profi.PFID, GetApp()))
                 return;
+
+            // Locks the profile; before the blackout, so nothing is blacked out if it was opened for editing meanwhile
+            if (!CFGameTimeMonitoring.StartMonitoring(GetApp(), t1profi.PFID))
+            {
+                EnsureFocus();
+                return;
+            }
 
             // ProfilesViewController: the session is stored for the selected profile
             AppEnvironment.CurrentPfid = t1profi.PFID;
@@ -64,7 +78,6 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
 
             ToggleMonitoringBlackout(t1profi);
 
-            CFGameTimeMonitoring.StartMonitoring(t1profi.PFID);
             GetApp().CallDispatcher.Trigger("EXEV_GameTimeMonitoringStarted");
 
             FnLog.AddInfo(GetApp(), $"Monitoring of {t1profi.GANA} started from the Big Picture mode");
@@ -179,7 +192,7 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
         /// </summary>
         private void SwitchToRunningGame()
         {
-            T1PROFI? t1profi = _runningPfid == 0 ? null : new TXPROFI().Read(_runningPfid);
+            T1PROFI? t1profi = _runningPfid == 0 ? null : GetApp().GetDataManager<TXPROFI>().Read(_runningPfid);
 
             if (t1profi == null)
                 return;

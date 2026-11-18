@@ -29,7 +29,7 @@ namespace GameTimeNext.Core.Application.Codetables.Controller
                                             "Opening the big book of codes..."
                                             );
 
-            AddSource("T1CTABD", new TXCTABD());
+            AddSource("T1CTABD", GetApp().GetDataManager<TXCTABD>());
         }
 
         protected override void TriggeredEvent(FrameworkElement source, string eventName)

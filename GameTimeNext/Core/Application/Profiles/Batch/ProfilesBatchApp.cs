@@ -106,13 +106,18 @@ namespace GameTimeNext.Core.Application.Profiles.Batch
             if (t1profi is null)
                 return new StartMonitoringResponseMessage(pfid, MonitoringResponse.ProfileNotFound);
 
+            // The profile is being edited on the PC: it can't be monitored (the monitoring locks it); checked before a
+            // playthrough is created
+            if (CFGameTimeMonitoring.GetLockHolder(pfid) is not null)
+                return new StartMonitoringResponseMessage(pfid, MonitoringResponse.ProfileLocked);
+
             if (!TFPLTHR.HasCurrentPlaythrough(pfid))
             {
                 if (!createPlaythrough)
                     return new StartMonitoringResponseMessage(pfid, MonitoringResponse.NoActivePlaythrough);
 
                 long nextNumber = TFPLTHR.GetCurrentPlaythroughCount(pfid, PlaythroughType.NEW_PLAYTHROUGH) + 1;
-                TFPLTHR.CreateNewPlaythrough(pfid, "Playthrough #" + nextNumber, PlaythroughType.NEW_PLAYTHROUGH);
+                TFPLTHR.CreateNewPlaythrough(this, pfid, "Playthrough #" + nextNumber, PlaythroughType.NEW_PLAYTHROUGH);
             }
 
             CallDispatcher.Trigger("EXEV_SwitchToApplication", typeof(ProfilesApp).FullName!);
@@ -123,7 +128,10 @@ namespace GameTimeNext.Core.Application.Profiles.Batch
                 CallDispatcher.Trigger("EXEV_SwitchProfile", pfid);
             }
 
-            CFGameTimeMonitoring.StartMonitoring(pfid);
+            // Locks the profile; it may have been opened for editing since the check above
+            if (!CFGameTimeMonitoring.StartMonitoring(pfid, out _))
+                return new StartMonitoringResponseMessage(pfid, MonitoringResponse.ProfileLocked);
+
             CallDispatcher.Trigger("EXEV_GameTimeMonitoringStarted");
 
             CallDispatcher.Invoke(CFRemoteMonitoring.BeginRemoteBlackout);

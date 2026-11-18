@@ -36,7 +36,7 @@ namespace GameTimeNext.Core.Application.Playthroughs.Controller
 
             ViewReturn = new PlaythroughsViewReturn();
 
-            AddSource("T1CTABD", new TXCTABD());
+            AddSource("T1CTABD", GetApp().GetDataManager<TXCTABD>());
         }
 
         protected override void TriggeredEvent(FrameworkElement source, string eventName)

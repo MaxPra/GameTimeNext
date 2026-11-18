@@ -1,6 +1,7 @@
 ﻿using GameTimeNext.Core.Application.DataManagers;
 using GameTimeNext.Core.Application.Profiles.Components;
 using GameTimeNext.Core.Application.TableObjects;
+using GameTimeNext.Core.Application.TimeMonitoring;
 using GameTimeNext.Core.Framework.UI;
 using GameTimeNext.Core.Framework.UI.Dialogs;
 using GameTimeNext.Core.Framework.Utils;
@@ -310,12 +311,20 @@ namespace GameTimeNext.Core.Framework.LauncherIntegration
         /// <summary>
         /// Switches pausing in the Big Picture mode on or off for the profile and saves it. The current row is read again,
         /// so other fields that changed meanwhile (e.g. by the monitoring) aren't overwritten; the given object gets the
-        /// new settings too.
+        /// new settings too. While the game is monitored, the monitoring holds the profile (record lock); the switch belongs
+        /// to the running game, so it is saved for the monitoring. Throws UIXRecordLockedException if the profile is being
+        /// edited elsewhere.
         /// </summary>
-        public static void SetPauseInBigPicture(T1PROFI t1profi, bool enabled)
+        public static void SetPauseInBigPicture(UIXApplication app, T1PROFI t1profi, bool enabled)
         {
-            TXPROFI txprofi = new TXPROFI();
+            TXPROFI txprofi = app.GetDataManager<TXPROFI>();
             T1PROFI? current = txprofi.Read(t1profi.PFID);
+
+            if (current != null && CFGameTimeMonitoring.HoldsLock(current))
+            {
+                txprofi = CFGameTimeMonitoring.GetLockOwner().GetDataManager<TXPROFI>();
+                current = txprofi.Read(t1profi.PFID);
+            }
 
             if (current == null)
                 return;

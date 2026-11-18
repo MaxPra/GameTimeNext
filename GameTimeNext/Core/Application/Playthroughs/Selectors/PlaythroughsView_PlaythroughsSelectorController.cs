@@ -5,6 +5,7 @@ using GameTimeNext.Core.Application.Playthroughs.Views;
 using GameTimeNext.Core.Application.Profiles;
 using GameTimeNext.Core.Application.TableObjects;
 using GameTimeNext.Core.Framework.UI.Dialogs;
+using GameTimeNext.Core.Framework.Utils;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -116,16 +117,20 @@ namespace GameTimeNext.Core.Application.Playthroughs.Selectors
             if (GetSelectedRowObject() is not T1PROFI t1profi)
                 return;
 
-            PlaythroughEditApp editApp = GetApp().GetApplication<PlaythroughEditApp>();
-            editApp.CreateNew(async (r) =>
+            // A new playthrough becomes the current one: not while the game is monitored or the profile is being edited
+            FnRecordLock.Run(GetApp(), () =>
             {
-                if (!r.HasChanged)
-                    return;
+                PlaythroughEditApp editApp = GetApp().GetApplication<PlaythroughEditApp>();
+                editApp.CreateNew(async (r) =>
+                {
+                    if (!r.HasChanged)
+                        return;
 
-                await GetSelector().LoadDataAsync();
+                    await GetSelector().LoadDataAsync();
 
-                SetHasChanged();
+                    SetHasChanged();
 
+                }, t1profi);
             }, t1profi);
         }
 
@@ -170,7 +175,7 @@ namespace GameTimeNext.Core.Application.Playthroughs.Selectors
             if (GetSelectedRowObject() is not T1PLTHR t1plthr)
                 return;
 
-            T1PLTHR currentPlaythrough = TFPLTHR.GetCurrentPlaythrough(t1plthr.PFID);
+            T1PLTHR currentPlaythrough = TFPLTHR.GetCurrentPlaythrough(GetApp(), t1plthr.PFID);
             TFPLTHR.UpdatePlaythroughStatus(GetApp(), ref t1plthr, TFPLTHR.PlaythroughStatus.Open, currentT1plthr: currentPlaythrough);
 
             await GetSelector().LoadDataAsync();
@@ -186,11 +191,20 @@ namespace GameTimeNext.Core.Application.Playthroughs.Selectors
             CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window);
 
             string playthrough = FnString.IsNullEmptyOrWhitespace(t1plthr.PTDE) ? "This playthrough" : $"The playthrough \"{t1plthr.PTDE}\"";
+            bool deleted = false;
 
-            if (cfmbox.ConfirmDelete(GetErrorMessage("GLO0002", playthrough)))
+            // Not while it is open elsewhere or its game is monitored (record lock); checked before asking
+            FnRecordLock.Run(GetApp(), () =>
             {
-                TFPLTHR.DeletePlaythroughAndSessions(t1plthr.PTID);
+                if (!cfmbox.ConfirmDelete(GetErrorMessage("GLO0002", playthrough)))
+                    return;
 
+                TFPLTHR.DeletePlaythroughAndSessions(GetApp(), t1plthr.PTID);
+                deleted = true;
+            }, t1plthr);
+
+            if (deleted)
+            {
                 SetHasChanged();
 
                 await GetSelector().LoadDataAsync();

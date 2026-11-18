@@ -7,6 +7,7 @@ namespace GameTimeNext.Core.Application.TableObjects
     {
         public override bool IsDevSynced => false;
 
+        [UIXKeyField]
         [UIXSignatureField(0)]
         public long SPID { get; set; } = 0;
 
@@ -57,7 +58,7 @@ namespace GameTimeNext.Core.Application.TableObjects
 
         public override void Save()
         {
-            new TXSCRSP().Save(this);
+            UIXDataManagerBase.Create<TXSCRSP>(App).Save(this);
         }
     }
 }
