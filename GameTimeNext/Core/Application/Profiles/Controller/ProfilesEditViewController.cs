@@ -330,6 +330,13 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 CAccentColorsInit cAccentColorsInit = new CAccentColorsInit(GetApp().T1Profi.ACIN);
                 cAccentColorsInit = cAccentColorsInit.Dezerialize();
 
+                // Profiles of older versions saved without accent colors have no ACIN: offer the colors of the cover
+                if (cAccentColorsInit.AccentColors is null || cAccentColorsInit.AccentColors.Count < 3)
+                {
+                    cAccentColorsInit.AccentColors = CFProfilesApp.GetCoverAccentColors(GetApp(), GetApp().T1Profi)
+                        .ToDictionary(color => color, _ => false);
+                }
+
                 CAccentColors cAccentColors = new CAccentColors(GetApp().T1Profi.ACCO);
                 cAccentColors = cAccentColors.Dezerialize();
 

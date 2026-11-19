@@ -209,29 +209,38 @@ namespace GameTimeNext.Core.Application.Profiles
         }
 
         /// <summary>
-        /// Sets the accent colors determined from the cover (ACIN, offered in the edit view). A SteamGridDB cover also
-        /// uses its first color as profile accent (as the GameTimeX migration does); the placeholder cover doesn't.
+        /// Returns three different, opaque accent colors of the profile's cover ("#AARRGGBB"), filled up with fallback
+        /// colors if the cover gives fewer or can't be read: the edit view expects exactly three entries in ACIN.
         /// </summary>
-        private static void SetAutoImportAccentColors(UIXApplication app, T1PROFI t1profi, bool useAccent)
+        public static List<string> GetCoverAccentColors(UIXApplication app, T1PROFI t1profi)
         {
             List<Color> colors = new List<Color>();
 
             try
             {
-                colors = FnImage.GetTopAccentColors(Path.Join(AppConfig.Storage.ProfileCoversDirectoryPath, t1profi.PPFN), 3);
+                if (!FnString.IsNullEmptyOrWhitespace(t1profi.PPFN))
+                    colors = FnImage.GetTopAccentColors(Path.Join(AppConfig.Storage.ProfileCoversDirectoryPath, t1profi.PPFN), 3);
             }
             catch (Exception ex)
             {
                 FnLog.AddWarning(app, $"The accent colors of {t1profi.GANA} could not be determined, default colors are used", ex);
             }
 
-            // Three different, opaque colors: the edit view expects exactly three entries
-            List<string> accentColors = colors
+            return colors
                 .Concat(FallbackAccentColors)
                 .Select(c => Color.FromArgb(255, c.R, c.G, c.B).ToString(CultureInfo.InvariantCulture))
                 .Distinct(StringComparer.Ordinal)
                 .Take(3)
                 .ToList();
+        }
+
+        /// <summary>
+        /// Sets the accent colors determined from the cover (ACIN, offered in the edit view). A SteamGridDB cover also
+        /// uses its first color as profile accent (as the GameTimeX migration does); the placeholder cover doesn't.
+        /// </summary>
+        private static void SetAutoImportAccentColors(UIXApplication app, T1PROFI t1profi, bool useAccent)
+        {
+            List<string> accentColors = GetCoverAccentColors(app, t1profi);
 
             Dictionary<string, bool> accentColorsInit = new Dictionary<string, bool>();
 
