@@ -92,8 +92,6 @@ namespace GameTimeNext.Core.Application.Settings.Controller
 
             FillComboboxBackgroundSource();
             FillComboboxProfileDetailViewPosition();
-
-            GetView().txBetaNotice.Text = $"{AppConfig.Root.ApplicationName} is currently in beta.";
         }
 
         protected override void BuildImpl()

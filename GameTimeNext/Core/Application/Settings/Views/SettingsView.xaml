@@ -1134,24 +1134,10 @@
                         <GroupBox
                             Header="Application"
                             Style="{StaticResource GroupBox.Card}">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="12" />
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
-
-                                <TextBlock
-                                    x:Name="txVersion"
-                                    Grid.Row="0"
-                                    Style="{StaticResource Text.BodyStrong}"
-                                    Text="Beta 0.1.0" />
-
-                                <TextBlock
-                                    x:Name="txBetaNotice"
-                                    Grid.Row="2"
-                                    Foreground="{DynamicResource Brush.TextSecondary}" />
-                            </Grid>
+                            <TextBlock
+                                x:Name="txVersion"
+                                Style="{StaticResource Text.BodyStrong}"
+                                Text="Beta 0.1.0" />
                         </GroupBox>
 
                         <GroupBox
