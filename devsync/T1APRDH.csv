@@ -723,7 +723,56 @@ In the Big Picture mode the main menu has an entry **Screen setup**. It switches
 | *Not every display mode could be set.* | Check resolution and refresh rate of the monitors. Modes can only be chosen while a monitor is on. |
 | *The audio device could not be set.* | Check that the device is connected and not on a monitor that is switched off. |
 | *No monitor could be identified.* | **Identify** only works for monitors that are switched on. |";1;2026-10-28 19:20:07;prage;2026-11-05 12:00:00;prage
-DiagnosticsApp;Diagnostics;;1;2026-10-30 12:00:00;prage;2026-10-30 12:00:00;prage
+DiagnosticsApp;Diagnostics;"# Diagnostics
+
+Shows what {ApplicationName} is doing in the background and what it has logged. Open it when something doesn't work as expected, e.g. a game isn't detected, covers can't be loaded or your phone can't reach the PC.
+
+The view has two tabs: **Status** and **Log**. The **refresh button** at the top of a tab loads it again.
+
+## Status
+
+### Background processes
+
+The processes that run while {ApplicationName} is open, for example the **running game detection**, the **global hotkeys** and the **Remote Monitoring**.
+
+| Column | Meaning |
+|---|---|
+| **Status** | **Running** (green) or **Stopped** (red). |
+| **Started at** / **Running for** | When the process started and how long it has been running. |
+| **Interval** / **Cycles** | How often the process does its work and how often it has done it. |
+| **Last** / **Average** / **Max** | How long one cycle took, without the wait between two cycles. |
+
+> [!TIP]
+> If your phone can't reach the PC, look at the row **RemoteMonitoringWebApp**: it should be **Running**. *Exited* means the web app stopped and is started again.
+
+### APIs
+
+The online services {ApplicationName} uses: **SteamGridDB** for covers and **IGDB** for estimated playtimes. Every time the tab is loaded, each configured service is checked with a small test request.
+
+| Status | Meaning |
+|---|---|
+| **OK** (green) | The service answers. |
+| **Error** (red) | The service can't be reached or rejects the access data. **Last error** tells you why. |
+| **Not configured** | No access data is entered. Enter it in **Settings → Integrations**. |
+
+**Requests**, **Errors** and **Average** count the requests since {ApplicationName} was started.
+
+## Log
+
+All messages {ApplicationName} has written: information, warnings and errors, the newest first.
+
+- **Filter** by date (**From** / **To**, whole days), by **Type**, or by text in **Source** and **Message**.
+- **Select an entry** to see its details next to the list, including the place in the program where it was written. **Copy entry** copies everything, e.g. to send it along with a bug report.
+- **Clear log** deletes all entries after asking. The new log starts with a note who cleared it.
+
+> [!NOTE]
+> Errors are shown in red, warnings in orange. A single warning is usually harmless; look at the log when something really doesn't work.
+
+## Reporting a problem
+
+1. Reproduce the problem.
+2. Open **Diagnostics → Log** and select the error that belongs to it.
+3. Copy it with **Copy entry** and add it to your bug report.";1;2026-10-30 12:00:00;prage;2026-10-30 12:00:00;prage
 SelectionListsApp;Selection Lists;"# Selection Lists
 
 Selection Lists are the **choices** you can pick from in {ApplicationName}, e.g. the **platform** of a game. Here you can add your own choices, change them and delete them.
