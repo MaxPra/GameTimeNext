@@ -15,11 +15,17 @@
 #expr GetVersionComponents(AppExePath, VerMajor, VerMinor, VerRev, VerBuild)
 #define AppVersionSemantic Str(VerMajor) + "." + Str(VerMinor) + "." + Str(VerRev)
 
-;ProductVersion is the InformationalVersion, e.g. "0.4.0-beta+2026-06-21": the suffix is the part between "-" and "+"
+;ProductVersion is the InformationalVersion, e.g. "0.4.0-beta+2026-06-21" or "1.0.0+2026-11-19" (no tag): the suffix is the
+;part between "-" and "+". The build metadata after "+" is cut off first, because the date contains "-" as well.
 #define ProductVersion GetStringFileInfo(AppExePath, "ProductVersion")
-#define AppVersionSuffix Copy(ProductVersion, Pos("-", ProductVersion) + 1)
-#if Pos("+", AppVersionSuffix) > 0
-  #define AppVersionSuffix Copy(AppVersionSuffix, 1, Pos("+", AppVersionSuffix) - 1)
+#define ProductVersionCore ProductVersion
+#if Pos("+", ProductVersionCore) > 0
+  #define ProductVersionCore Copy(ProductVersionCore, 1, Pos("+", ProductVersionCore) - 1)
+#endif
+#if Pos("-", ProductVersionCore) > 0
+  #define AppVersionSuffix Copy(ProductVersionCore, Pos("-", ProductVersionCore) + 1)
+#else
+  #define AppVersionSuffix ""
 #endif
 
 #if AppVersionSuffix != ""

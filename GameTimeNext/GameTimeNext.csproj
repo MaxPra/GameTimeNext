@@ -28,7 +28,9 @@
 		<VersionPrefix>$(AssemblyVersion)</VersionPrefix>
 		<VersionSuffix>$(VersionTag)</VersionSuffix>
 
-		<InformationalVersion>$(VersionSemantic)-$(VersionTag)+$(BuildDate)</InformationalVersion>
+		<!-- "1.0.0+2026-11-19" for a release, "1.0.0-beta+2026-11-19" with a tag -->
+		<InformationalVersion>$(VersionSemantic)+$(BuildDate)</InformationalVersion>
+		<InformationalVersion Condition="'$(VersionTag)' != ''">$(VersionSemantic)-$(VersionTag)+$(BuildDate)</InformationalVersion>
 	</PropertyGroup>
 
 	<ItemGroup>
