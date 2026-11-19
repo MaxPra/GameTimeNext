@@ -157,7 +157,8 @@ namespace GameTimeNext.Core.Application.Profiles.Controller
                 && (GetView().tglAccent1.IsChecked == true || GetView().tglAccent2.IsChecked == true || GetView().tglAccent3.IsChecked == true))
                 AddViewError(GetView().cbUseProfileAccentColors, GetErrorMessage("PRO0001"));
 
-            if (FnString.IsNullEmptyOrWhitespace(GetView().cmbPlatform.SelectedValue.ToString()!))
+            // No selection (e.g. profiles migrated from versions without a platform) is reported, not dereferenced
+            if (FnString.IsNullEmptyOrWhitespace(GetView().cmbPlatform.SelectedValue?.ToString()))
                 AddViewError(GetView().cmbPlatform, GetErrorMessage("GLO0003", "Platform"));
         }
 
