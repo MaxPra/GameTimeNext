@@ -764,4 +764,55 @@ The welcome page of {ApplicationName}. It opens on the very first start, and you
 > [!TIP]
 > Close this tab whenever you like. **Profiles** always stays open, because {ApplicationName} needs it to detect your running games.
 ";1;2026-11-16 12:00:00;prage;2026-11-16 12:00:00;prage
-RemoteMonitoringApp;Remote Monitoring;ToDo;0;2026-11-16 19:16:47;prage;2026-11-16 19:16:47;prage
+RemoteMonitoringApp;Remote Monitoring;"# Remote Monitoring
+
+Track the playtime of games {ApplicationName} can't see, e.g. on a **console in another room**: your phone opens a small web app in your home network, you pick the game and start or stop the monitoring there. The session is saved like any other.
+
+## Set it up
+
+1. Open **Settings → Monitoring** and switch on **Remote Monitoring active**.
+2. Windows asks once to allow the web app in the **firewall**. Confirm it.
+3. Scan the **QR code** below the switch with your phone's camera. It opens the web app and pairs your phone in one step.
+4. Add the page to your phone's home screen to open it quickly next time.
+
+> [!IMPORTANT]
+> The web app is only allowed in **private networks**. Set your home network to *Private* in the Windows network settings, otherwise your phone can't reach the PC.
+
+> [!TIP]
+> While Remote Monitoring is on, the **phone icon** in the title bar shows the QR code again, e.g. to pair another phone.
+
+## Which games are listed
+
+Your phone lists the games with an **external platform** (console, mobile, ...). Archived games are left out. Set the platform of a game in **Profiles** with **Edit**.
+
+## Track a game
+
+1. Open the game on your phone and tap **Start monitoring** when the game is running.
+2. Play. The phone shows the running time and keeps showing this game until you stop.
+3. Tap **Stop monitoring** when you are done. The session is saved to the current playthrough.
+
+- **No active playthrough:** the phone asks whether to create a new one.
+- **Black screens:** while a monitoring started from the phone runs, all screens of the PC are black. Stopping it, from the phone or at the PC, lights them up again.
+- The monitoring hotkey and the monitoring in **Profiles** stop it as well.
+
+## Settings
+
+| Setting | What it does |
+|---|---|
+| **Remote Monitoring active** | Starts the web app. The PC doesn't go to sleep while it is on, so your phone can always reach it. The monitors still turn off. |
+| **Black out all screens** | Turns all screens black while a monitoring started from the phone runs. |
+| **Reset pairing** | Unpairs all phones, e.g. after you lost one. Scan the new QR code to pair again. |
+
+## Security
+
+Only **paired phones** can use the web app. Other devices in your network only see a page that asks them to scan the QR code. The web app can't be reached from the internet.
+
+## Troubleshooting
+
+| Problem | Solution |
+|---|---|
+| The page doesn't open | PC and phone must be in the same network, and the network must be *Private* in Windows. |
+| *Waiting for {ApplicationName}...* | {ApplicationName} isn't running on the PC or Remote Monitoring is off. |
+| *No games to track* | No game has an external platform yet. |
+| *This game is being edited on the PC* | Close the game's profile or playthrough at the PC and try again. |
+| *Another game is already being monitored* | Stop the running monitoring first. |";0;2026-11-16 19:16:47;prage;2026-11-16 19:16:47;prage
