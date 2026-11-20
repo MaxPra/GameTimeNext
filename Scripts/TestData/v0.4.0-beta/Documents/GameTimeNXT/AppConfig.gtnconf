@@ -1,0 +1,34 @@
+{
+  "FilterCache": {
+    "SelectedTags": null,
+    "SelectedStates": null
+  },
+  "AppSettings": {
+    "AutomaticGameProfileSwitching": false,
+    "ActivateBlackoutKeyCombination": false,
+    "AllowProfileSpecificStyleChanges": false,
+    "MonitoringKeyActive": false,
+    "ShowToastNotification": false,
+    "ShowMonitoringIndicator": false,
+    "BlackoutSideMonitors": false,
+    "EnableSessionTimeQuery": false,
+    "MonitoringKey": "(no key)",
+    "SteamGridDbKey": "",
+    "TwitchIGDBClientID": "",
+    "TwitchIGDBClientSecret": "",
+    "BackupType": "",
+    "BackupExportPath": "",
+    "BackupImportPath": "",
+    "AutoBackup": false,
+    "AutoDelete": false,
+    "BreakReminder": false,
+    "BreakReminderHrs": 0,
+    "State": null,
+    "IsDevSynced": false
+  },
+  "UserSettings": {
+    "FavApps": [],
+    "SelectedDashboardMode": 2
+  },
+  "AppVersion": "0.4.0-beta\u002B2026-06-21"
+}
