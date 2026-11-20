@@ -383,7 +383,7 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
                 return;
             }
 
-            // Another window of GameTimeNext above the mode (e.g. the help): the controller works like the keyboard there
+            // Another window of arcora above the mode (e.g. the help): the controller works like the keyboard there
             if (System.Windows.Application.Current.Windows.OfType<Window>().Any(w => w.IsActive))
             {
                 Key? key = button switch

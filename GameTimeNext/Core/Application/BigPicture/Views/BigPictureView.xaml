@@ -19,7 +19,7 @@
     <Grid Background="{StaticResource Brush.BigPicture.Background}" ClipToBounds="True">
 
         <!--
-            Window background of GameTimeNext with its accent glow, the blurred cover of the selected game on top.
+            Window background of arcora with its accent glow, the blurred cover of the selected game on top.
             The cover is blurred once in advance (CFBigPictureApp.CreateBackdrop): a BlurEffect here is rendered again in
             every frame in which anything in front of it moves.
         -->

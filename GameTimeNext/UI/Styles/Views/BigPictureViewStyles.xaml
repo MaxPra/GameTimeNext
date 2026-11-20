@@ -5,7 +5,7 @@
 
     <!--
         Big Picture mode (BigPictureView): designed for 1080 px height and scaled to the screen (ViewScale), so all
-        sizes here are TV sizes, read from the couch. Look of GameTimeNext: glass cards with a lit edge (CardStyles),
+        sizes here are TV sizes, read from the couch. Look of arcora: glass cards with a lit edge (CardStyles),
         the tab bar of the main window for the pivots, the accent for selection.
     -->
 

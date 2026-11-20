@@ -138,7 +138,7 @@
                                     <TextBlock Style="{StaticResource Home.Hint}" Text="Or click + next to the tabs. Your games are in Profiles." />
                                 </StackPanel>
 
-                                <!--  Help on GameTimeNext: same glyph as the help button of the title bar (BtnHelp)  -->
+                                <!--  Help on arcora: same glyph as the help button of the title bar (BtnHelp)  -->
                                 <Border
                                     Grid.Row="2"
                                     Grid.Column="0"

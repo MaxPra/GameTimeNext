@@ -661,7 +661,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
                 // Save current settings
                 SaveDBO();
 
-                // Restart GameTimeNext
+                // Restart arcora
                 AppEnvironment.RestartGTNApplication();
             }
         }

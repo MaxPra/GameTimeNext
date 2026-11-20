@@ -197,7 +197,7 @@ begin
     end;
 
     if MsgBox(
-      'A previous ' + ScopeDescription + ' installation of GameTimeNext was found.' + #13#10 +
+      'A previous ' + ScopeDescription + ' installation of arcora (formerly GameTimeNext) was found.' + #13#10 +
       'It must be removed before continuing installation.' +
       ScopeWarning + #13#10#13#10 +
       'Uninstall it now?',

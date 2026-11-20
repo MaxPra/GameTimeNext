@@ -1,30 +1,30 @@
 <div align="center">
 
-# 🎮 GameTimeNext
+# 🎮 arcora
 
 ### Your all-in-one companion for gaming — track, launch, and organize your playtime
 
-*Successor to [GameTimeX](https://github.com/MaxPra/GameTimeX)*
+*Formerly GameTimeNext · Successor to [GameTimeX](https://github.com/MaxPra/GameTimeX)*
 
 <br>
 
-<img width="100%" alt="GameTimeNext Banner" src="https://github.com/user-attachments/assets/9de07a22-b098-499a-8755-e5c1e5ce13f0" />
+<img width="100%" alt="arcora Banner" src="https://github.com/user-attachments/assets/9de07a22-b098-499a-8755-e5c1e5ce13f0" />
 
 <br>
 <br>
 
-![Status](https://img.shields.io/badge/status-beta-orange?style=for-the-badge)
-![Version](https://img.shields.io/badge/version-0.4.0-blue?style=for-the-badge)
+![Status](https://img.shields.io/badge/status-stable-brightgreen?style=for-the-badge)
+![Version](https://img.shields.io/badge/version-1.0.0-blue?style=for-the-badge)
 ![Platform](https://img.shields.io/badge/platform-Windows-informational?style=for-the-badge)
 ![.NET](https://img.shields.io/badge/.NET-WPF-purple?style=for-the-badge)
 
 <br>
 
-> 🚧 **We are currently putting the finishing touches on GameTimeNext — Version 1.0.0 is planned for November 19, 2026.**
+> 🎉 **arcora 1.0.0 is here** — a fresh look, a Big Picture mode for the TV, playtime tracking from your phone and much more. See [what's new](#-whats-new-in-v100).
 
 <br>
 
-### ⬇️ [Download Installer (v0.4.0 Beta)](https://github.com/MaxPra/GameTimeNext/releases/download/GameTimeNext_v0.4.0beta/GameTimeNext_v0.4.0-beta_Installer.exe)
+### ⬇️ [Download Installer (v1.0.0)](https://github.com/MaxPra/GameTimeNext/releases/download/v1.0.0/arcora_v1.0.0_Installer.exe)
 
 <br>
 
@@ -33,7 +33,7 @@
 [Features](#-features) •
 [Setup](#%EF%B8%8F-setup) •
 [Usage](#-usage) •
-[Roadmap](#%EF%B8%8F-roadmap--v100) •
+[What's New](#-whats-new-in-v100) •
 [Migration](#-migration) •
 [Feedback](#-feedback)
 
@@ -45,16 +45,19 @@
 
 ## 📌 Overview
 
-**GameTimeNext** is more than a playtime tracker — it's built to be the central hub for your gaming library. Launch your games directly from the app, track playtime with precision, and keep every playthrough organized in one clean interface.
+**arcora** is more than a playtime tracker — it's built to be the central hub for your gaming library. Launch your games directly from the app, track playtime with precision, and keep every playthrough organized in one clean interface.
 
 | | Feature | Description |
 |:---:|---|---|
-| 🚀 | **Launcher** | Start and manage your games directly from GameTimeNext |
+| 🚀 | **Launcher** | Start and manage your games directly from arcora |
 | ⏱️ | **Tracking** | Manual, precise playtime tracking |
 | 🤖 | **Automation** | Automatic game detection & profile switching |
 | 🔁 | **Playthroughs** | Structured playthrough management |
-| ⚙️ | **Parametrization** | Fully customizable via code tables |
-| 🖥️ | **Screen Care** | OLED-friendly screen blackout |
+| 📺 | **Big Picture** | Full screen library for the TV, operated with a game controller |
+| 📱 | **Remote Monitoring** | Track the playtime of your console games from your phone |
+| 🖥️ | **Screensetups** | Switch monitors and audio device with one click |
+| ⚙️ | **Parametrization** | Fully customizable via selection lists |
+| 🌑 | **Screen Care** | OLED-friendly screen blackout |
 
 <br>
 
@@ -62,15 +65,17 @@
 
 ## 🧩 Applications
 
-GameTimeNext is organized into dedicated modules, each accessible from within the app:
+arcora is organized into dedicated modules, each accessible from within the app:
 
 | Module | Purpose |
 |---|---|
 | **Dashboard** | Central overview and statistics |
 | **Profiles** | Create and manage game profiles |
-| **Playthroughs** | Manage individual playthroughs per profile |
-| **Codetables** | Extend and customize dropdown values (e.g. platforms) |
-| **Settings** | Configure API keys, monitors, and app behavior |
+| **Playthroughs** | Create, edit, pause, complete and cancel playthroughs |
+| **Big Picture** | Full screen library for the TV, operated with a game controller, the keyboard or the mouse |
+| **Screensetups** | Saved monitor and audio setups, e.g. *desk with two monitors* or *TV only* |
+| **Selection Lists** | Extend and customize dropdown values (e.g. platforms, tags) |
+| **Settings** | Configure API keys, monitors, and app behavior — sorted into pages and searchable |
 
 <br>
 
@@ -100,6 +105,14 @@ GameTimeNext is organized into dedicated modules, each accessible from within th
 ### 📊 Analytics
 - Statistics dashboard
 
+### 📺 Big Picture Mode
+- Your library in full screen for the TV, operated with a game controller, the keyboard or the mouse
+- Recently played games, the whole library and the search; start games and the monitoring
+- <kbd>Xbox</kbd> button or <kbd>View</kbd> + <kbd>Menu</kbd> switches between the game and Big Picture — the game is paused meanwhile
+
+### 📥 Automatic Game Import
+- Games installed with **Steam, Epic, Xbox, GOG, Ubisoft Connect or Rockstar** are added as profiles by themselves, with a cover
+
 </td>
 <td width="50%" valign="top">
 
@@ -110,7 +123,7 @@ GameTimeNext is organized into dedicated modules, each accessible from within th
 - Estimated completion progress bar based on HowLongToBeat or Twitch data
 
 ### ⚙️ Parametrization
-- **Codetables** module to extend selectable values (e.g. platforms) used throughout the app
+- **Selection Lists** module to extend selectable values (e.g. platforms, tags) used throughout the app
 - Fully adaptable dropdowns and categories without code changes
 
 ### 🖥️ Screen Blackout (OLED Care)
@@ -121,6 +134,10 @@ GameTimeNext is organized into dedicated modules, each accessible from within th
 - **HowLongToBeat** — manual lookup and linking of expected completion time
 - **Twitch** — automatic retrieval of game completion data
 - Displays an estimated completion percentage on the selected profile
+
+### 📱 Remote Monitoring
+- Pick a game on your phone and start or stop the monitoring — ideal for consoles in another room
+- All screens of the PC go black meanwhile
 
 </td>
 </tr>
@@ -141,7 +158,15 @@ To enable cover artwork:
 3. Save
 
 > [!NOTE]
-> Without an API key, artwork features are disabled in the current beta. Local images remain available via the cropping tool.
+> Without an API key, artwork features are disabled. Local images remain available via the cropping tool.
+
+### Remote Monitoring
+
+1. Open **Settings → Monitoring** and switch on **Remote Monitoring**
+2. Scan the **QR code** with your phone
+
+> [!NOTE]
+> Your home network must be set to *Private* in Windows.
 
 <br>
 
@@ -160,18 +185,23 @@ To enable cover artwork:
 
 ---
 
-## 🗺️ Roadmap — v1.0.0
+## 🆕 What's New in v1.0.0
 
-| Status | Area | Planned Features |
-|:---:|---|---|
-| ✅ | **Playthroughs** | Full playthrough management application — rename, complete, and organize playthroughs directly (playthroughs already existed in earlier versions; full management UI arrives in v1.0.0) |
-| ✅ | **Remote Monitoring** | Manage GameTimeMonitoring remotely via phone — starts a local server, accessible via a website within your home network |
-| ✅ | **UI/UX** | New UI refinements for a cleaner, more modern look |
-| ✅ | **Platforms** | Epic Games integration, additional launcher support |
-| ✅ | **Usability** | Built-in help system |
-| ✅ | **Personalization** | Local game rating system |
+| Area | What's new |
+|---|---|
+| **Name** | GameTimeNext is now **arcora** — new icon, splash screen and animations |
+| **Big Picture** | Full screen mode for the TV, operated with a game controller |
+| **Remote Monitoring** | Track the playtime of your console games from your phone |
+| **Screensetups** | Switch monitors and audio device with one click |
+| **Game Import** | Automatic import from Steam, Epic, Xbox, GOG, Ubisoft Connect and Rockstar |
+| **Playthroughs** | New application to create, edit, pause, complete and cancel playthroughs |
+| **Tags** | Own tags in **Selection Lists**, shown as cards in the profile |
+| **Usability** | Built-in help system, settings sorted into pages and searchable |
+| **Personalization** | Local game rating system, dynamic background, disc image |
+| **Installation** | Installed per user without administrator rights; a previous installation is removed and its data taken over automatically |
 
-<sub>✅ Done &nbsp;•&nbsp; 🚧 Work in progress</sub>
+> [!IMPORTANT]
+> **Choose a platform for every profile.** The platform is now a required field. No platforms to choose from? Open **Selection Lists** and add entries to **Platforms**.
 
 <br>
 
@@ -182,15 +212,6 @@ To enable cover artwork:
 - Automatic detection of existing GameTimeX installation
 - Guided migration process
 - Automatic data import
-
-<br>
-
----
-
-## 🧪 Beta Notice
-
-> [!WARNING]
-> This release is in beta. Features may change and minor issues are possible. Feedback is always welcome!
 
 <br>
 

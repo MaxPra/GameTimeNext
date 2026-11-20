@@ -122,7 +122,7 @@ begin
     ScopeWarning := '';
 
   if MsgBox(
-    'A previous MSI version of GameTimeNext was found.' + #13#10 +
+    'A previous MSI version of arcora (formerly GameTimeNext) was found.' + #13#10 +
     'It must be removed before continuing installation.' +
     ScopeWarning + #13#10#13#10 +
     'Uninstall it now?',
