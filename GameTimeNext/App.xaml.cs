@@ -194,7 +194,7 @@ namespace GameTimeNext
             UpdateCheckResult result = FnGithub.CheckForUpdateAsync(
                 AppEnvironment.AppVersion.Version.ToString(),
                 "MaxPra",
-                AppConfig.Root.InternalApplicationName
+                AppConfig.Root.GitHubRepositoryName
             ).GetAwaiter().GetResult();
 
             if (result.UpdateAvailable)

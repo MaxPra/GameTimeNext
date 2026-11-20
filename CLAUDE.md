@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 arcora is a Windows-only WPF desktop app (.NET `net10.0-windows`, x64) for tracking game playtime, launching games, and managing profiles/playthroughs. Data is stored locally in SQLite. It succeeds GameTimeX (`../GameTimeX`) and includes a migration path from it (`Core/Application/GTXMigration`).
 
-The product name is arcora (`AppConfig.Root.ApplicationName`). Its former name GameTimeNext stays as the internal name (`AppConfig.Root.InternalApplicationName`): solution, project and folder names (`GameTimeNext.slnx`, `GameTimeNext/`, `GameTimeNext.Shared/`), namespaces, and the abbreviation GTN in class / style names (`GTNWindow`, `GTN_APP_ICON.ico`, ...). Write arcora wherever the app itself is meant.
+The product name is arcora (`AppConfig.Root.ApplicationName`). Its former name GameTimeNext stays as the internal name (`AppConfig.Root.InternalApplicationName`): solution, project and folder names (`GameTimeNext.slnx`, `GameTimeNext/`, `GameTimeNext.Shared/`), namespaces, and the abbreviation GTN in class / style names (`GTNWindow`, `GTN_APP_ICON.ico`, ...). Write arcora wherever the app itself is meant. Each use of the old name has its own constant, so they can be renamed one by one: `InternalApplicationName` only for namespaces (also those of the code generator), `AppConfig.Dev.SolutionName` for the solution file and the app project folder (found by the dev paths: devsync, import packages, code generator), `AppConfig.Root.GitHubRepositoryName` for the update check; the csproj files pin `RootNamespace` to the old namespaces.
 
 ## Build & checks
 

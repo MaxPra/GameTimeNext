@@ -22,7 +22,8 @@ SOLUTION_DIR = Path(__file__).resolve().parent.parent
 # --------------------------------------------------------------
 ALLOWED_SOURCES = {
     "GameTimeNext": {
-        "GameTimeNext/Core/Framework/Config/AppConfig.Paths.cs": 1,
+        # InternalApplicationName, GitHubRepositoryName, Dev.SolutionName
+        "GameTimeNext/Core/Framework/Config/AppConfig.Paths.cs": 3,
         "GameTimeNext/Core/Framework/Config/AppConfigOld.cs": 1000,
     },
 

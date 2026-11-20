@@ -11,7 +11,12 @@ namespace GameTimeNext.Core.Framework.Config
         {
             public static string PublisherName = "CryloudStudios";
             public static string ApplicationName = "arcora";
+
+            /// <summary>Former name of the app, still the root of the namespaces (also of the generated classes).</summary>
             public static string InternalApplicationName = "GameTimeNext";
+
+            /// <summary>Name of the GitHub repository whose releases the update check reads.</summary>
+            public static string GitHubRepositoryName = "GameTimeNext";
             public static string DatabaseFileName = ApplicationName + "Db.db";
             public static string LogDatabaseFileName = "LogDb.db";
             public static string AppConfigFileName = "appConfig.gtnconf";
@@ -38,6 +43,9 @@ namespace GameTimeNext.Core.Framework.Config
 
         public static class Dev
         {
+            /// <summary>Name of the solution file (without .slnx) and of the folder of the app project in it.</summary>
+            public static string SolutionName = "GameTimeNext";
+
             [JsonIgnore]
             public static string DevDirectoryPath
             {
@@ -78,7 +86,7 @@ namespace GameTimeNext.Core.Framework.Config
                     DirectoryInfo? current = new DirectoryInfo(startingDirectoryPath);
                     while (current is not null)
                     {
-                        string slnxFilePath = Path.Combine(current.FullName, $"{Root.InternalApplicationName}.slnx");
+                        string slnxFilePath = Path.Combine(current.FullName, $"{SolutionName}.slnx");
                         if (File.Exists(slnxFilePath))
                             return current.FullName;
 
@@ -110,7 +118,7 @@ namespace GameTimeNext.Core.Framework.Config
             [JsonIgnore]
             public static string ImportPackagesDirectoryPath
             {
-                get => ReturnEnsureDirectoryExists(Path.Combine(SolutionDirectoryPath, Root.InternalApplicationName, "ImportPackages"));
+                get => ReturnEnsureDirectoryExists(Path.Combine(SolutionDirectoryPath, SolutionName, "ImportPackages"));
             }
 
             [JsonIgnore]
