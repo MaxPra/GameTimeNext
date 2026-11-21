@@ -98,8 +98,16 @@ Filename: "{app}\{#AppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(
 
 [Code]
 #include "Includes\arcora_RemoveOldInstalls.iss"
+#include "Includes\arcora_CleanAppDirectory.iss"
 
 function InitializeSetup(): Boolean;
 begin
   Result := RemoveOldInstalls();
+end;
+
+procedure CurStepChanged(CurStep: TSetupStep);
+begin
+  // Right before the files are copied (the running app is already closed)
+  if CurStep = ssInstall then
+    CleanAppDirectory();
 end;
