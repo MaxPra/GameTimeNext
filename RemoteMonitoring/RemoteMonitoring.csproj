@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GameTimeNext.Shared\GameTimeNext.Shared.csproj" />
+    <ProjectReference Include="..\Arcora.Shared\Arcora.Shared.csproj" />
   </ItemGroup>
 
   <!-- Tooling of the Tailwind build, not part of the web app -->

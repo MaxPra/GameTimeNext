@@ -1,4 +1,4 @@
-﻿using GameTimeNext.Shared.Base;
+﻿using Arcora.Shared.Base;
 using RemoteMonitoring.Base;
 
 namespace RemoteMonitoring.ApiServices

@@ -21,7 +21,7 @@ git diff --name-only --diff-filter=U
 - No `MERGE_HEAD` → no merge in progress: tell the user and stop.
 - Usual chain in this repo: `master` → `research/WebApp-01` → `research/WebApp-01-1`.
   `master` is the main line; the research branches add remote monitoring
-  (`RemoteMonitoring/`, `GameTimeNext.Shared/`, `RemoteMonitoring*` processes, settings,
+  (`RemoteMonitoring/`, `Arcora.Shared/`, `RemoteMonitoring*` processes, settings,
   `EXEV_RemoteMonitoring*` / `EXEV_remoteMonitoring*` handlers, DTO conversion in `TX*` classes).
 
 ## 2. Understand each conflict before touching it
@@ -69,11 +69,11 @@ sides. Don't refactor or "clean up" anything that isn't needed for the merge.
 
 ```bash
 git grep -n -E '^(<<<<<<<|=======$|>>>>>>>)' -- . ':!*.md'   # no markers left
-dotnet build GameTimeNext.slnx                               # or the project, see below
+dotnet build Arcora.slnx                               # or the project, see below
 python Scripts/cleancode.py
 ```
 
-If a running GTN / RemoteMonitoring locks `bin/`, build into the scratchpad with
+If a running arcora / RemoteMonitoring locks `bin/`, build into the scratchpad with
 `-o <scratchpad>/build` instead. The build must have 0 errors; new warnings in merged
 files are mentioned.
 

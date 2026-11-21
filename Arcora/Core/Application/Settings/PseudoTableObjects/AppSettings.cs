@@ -1,0 +1,178 @@
+﻿using Arcora.Core.Framework;
+using Arcora.Core.Framework.UserInput;
+using System.Text.Json;
+using UIX.ViewController.Engine.DataBaseObjects;
+
+namespace Arcora.Core.Application.TableObjects
+{
+    public class AppSettings : UIXTableObjectBase
+    {
+        private static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions
+        {
+            WriteIndented = true
+        };
+
+        [UIXSignatureField(0)]
+        public bool AutomaticGameProfileSwitching { get; set; }
+
+        [UIXSignatureField(1)]
+        public bool ActivateBlackoutKeyCombination { get; set; }
+
+        [UIXSignatureField(2)]
+        public bool AllowProfileSpecificStyleChanges { get; set; }
+
+        [UIXSignatureField(3)]
+        public bool MonitoringKeyActive { get; set; }
+
+        [UIXSignatureField(4)]
+        public bool ShowToastNotification { get; set; }
+
+        [UIXSignatureField(5)]
+        public bool ShowMonitoringIndicator { get; set; }
+
+        [UIXSignatureField(6)]
+        public bool BlackoutSideMonitors { get; set; }
+
+        [UIXSignatureField(7)]
+        public bool EnableSessionTimeQuery { get; set; }
+
+        [UIXSignatureField(8)]
+        public string MonitoringKey { get; set; }
+
+        [UIXSignatureField(9)]
+        public string SteamGridDbKey { get; set; }
+
+        [UIXSignatureField(10)]
+        public string TwitchIGDBClientID { get; set; }
+
+        [UIXSignatureField(11)]
+        public string TwitchIGDBClientSecret { get; set; }
+
+        [UIXSignatureField(12)]
+        public string BackupType { get; set; }
+
+        [UIXSignatureField(13)]
+        public string BackupExportPath { get; set; }
+
+        [UIXSignatureField(14)]
+        public string BackupImportPath { get; set; }
+
+        [UIXSignatureField(15)]
+        public bool AutoBackup { get; set; }
+
+        [UIXSignatureField(16)]
+        public bool AutoDelete { get; set; }
+
+        [UIXSignatureField(17)]
+        public bool BreakReminder { get; set; }
+
+        [UIXSignatureField(18)]
+        public double BreakReminderHrs { get; set; }
+
+        [UIXSignatureField(19)]
+        public bool AutoStartMinimized { get; set; }
+
+        [UIXSignatureField(20)]
+        public bool EnableSessionCleanup { get; set; }
+
+        [UIXSignatureField(21)]
+        public double SessionCleanupSeconds { get; set; }
+
+        [UIXSignatureField(22)]
+        public bool EnableFullBlackoutText { get; set; }
+
+        [UIXSignatureField(23)]
+        public bool EnableTwitchIGDB { get; set; }
+
+        /// <summary>Entry of codetable bG for the blurred main window background; empty disables it.</summary>
+        [UIXSignatureField(24)]
+        public string BackgroundSource { get; set; }
+
+        /// <summary>Darker tint over the window background and the glass surfaces, closer to a classic dark mode.</summary>
+        [UIXSignatureField(25)]
+        public bool DarkTintedGlass { get; set; }
+
+        /// <summary>New profiles are added shrink-wrapped and have to be unwrapped before they can be launched.</summary>
+        [UIXSignatureField(26)]
+        public bool SealNewGames { get; set; }
+
+        /// <summary>Entry of codetable dP: side of the profiles view the detail view is shown on (01 = left, 02 = right).</summary>
+        [UIXSignatureField(27)]
+        public string ProfileDetailViewPosition { get; set; }
+
+        /// <summary>Newly installed games of the launchers are added as profiles automatically (LauncherAutoImportProcess).</summary>
+        [UIXSignatureField(28)]
+        public bool AutoImportGames { get; set; }
+
+        /// <summary>
+        /// Launcher types (codetable lT, separated by ";") left out of the automatic import. Only the unchecked ones are
+        /// stored, so a launcher integration added later takes part by default.
+        /// </summary>
+        [UIXSignatureField(29)]
+        public string AutoImportExcludedLaunchers { get; set; }
+
+        /// <summary>
+        /// A running game is suspended while the Big Picture mode is in front. Off: never paused, the setting of the
+        /// profile (CProfileSettings.PauseInBigPicture) is hidden and ignored.
+        /// </summary>
+        [UIXSignatureField(30)]
+        public bool PauseGameInBigPicture { get; set; }
+
+        [UIXSignatureField(31)]
+        public bool RemoteMonitoring { get; set; }
+
+        [UIXSignatureField(32)]
+        public bool RemoteMonitoringBlackout { get; set; }
+
+        public AppSettings()
+        {
+            AutomaticGameProfileSwitching = false;
+            ActivateBlackoutKeyCombination = false;
+            EnableFullBlackoutText = true;
+            AllowProfileSpecificStyleChanges = false;
+            BackgroundSource = string.Empty;
+            DarkTintedGlass = false;
+            SealNewGames = false;
+            ProfileDetailViewPosition = "02";
+            AutoImportGames = false;
+            AutoImportExcludedLaunchers = string.Empty;
+            PauseGameInBigPicture = true;
+
+            MonitoringKeyActive = false;
+            ShowToastNotification = false;
+            ShowMonitoringIndicator = false;
+            BlackoutSideMonitors = false;
+            EnableSessionTimeQuery = false;
+            MonitoringKey = KeyInput.virtualKeyMap[KeyInput.VirtualKey.VK_NONE];
+            EnableSessionCleanup = false;
+            SessionCleanupSeconds = 30.0;
+            RemoteMonitoring = false;
+            RemoteMonitoringBlackout = true;
+            SteamGridDbKey = string.Empty;
+            EnableTwitchIGDB = false;
+            TwitchIGDBClientID = string.Empty;
+            TwitchIGDBClientSecret = string.Empty;
+
+            BackupType = string.Empty;
+            BackupExportPath = string.Empty;
+            BackupImportPath = string.Empty;
+            AutoBackup = false;
+            AutoDelete = false;
+
+            BreakReminder = false;
+            BreakReminderHrs = 0.0;
+
+            AutoStartMinimized = false;
+
+            AcceptChanges();
+        }
+
+        public override void Save()
+        {
+            AppEnvironment.GetAppConfig().AppSettings = this;
+            AppEnvironment.SaveAppConfig();
+
+            AcceptChanges();
+        }
+    }
+}

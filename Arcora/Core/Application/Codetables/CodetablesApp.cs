@@ -1,0 +1,77 @@
+﻿using Arcora.Core.Application.Codetables.Controller;
+using Arcora.Core.Application.Codetables.Selectors;
+using Arcora.Core.Application.Codetables.Views;
+using System.Windows.Controls;
+using UIX.ViewController.Engine.Runnables;
+using UIX.ViewController.Engine.Utils;
+
+namespace Arcora.Core.Application.Codetables
+{
+    [UIXAppIcon(UIXMdlIcons.BulletList)]
+    public class CodetablesApp : UIXApplication, IUIXApplicationStarter
+    {
+
+        public CodetablesView? CodetablesView { get; set; }
+
+        public void Start(UIXApplication hostApplication, ContentPresenter presenter)
+        {
+            Start(hostApplication, new UIXApplicationStartOptions
+            {
+                Target = UIXApplicationStartTarget.ContentPresenter,
+                Presenter = presenter
+            });
+        }
+
+        public void Start(UIXApplication hostApplication, UIXApplicationStartOptions options)
+        {
+            HostApplication = hostApplication;
+            Loader = hostApplication.Loader;
+            CallDispatcher = hostApplication.CallDispatcher;
+
+            CodetablesView.ViewIndicator.Clear();
+            CodetablesView.ViewIndicator.Add("ED");
+            CodetablesView.ViewController.Show(options);
+        }
+
+        public void StartWindowed()
+        {
+            CodetablesView.ViewIndicator.Clear();
+            CodetablesView.ViewIndicator.Add("ED");
+
+            // Fixed width: the view sizes itself (Width Auto) and the sub window is not resizable
+            CodetablesView.ViewController.Show(
+                new UIXApplicationStartOptions
+                {
+                    Target = UIXApplicationStartTarget.Window,
+                    WindowWidth = 1100
+                });
+        }
+
+
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(CodetablesApp));
+        }
+
+        public override void InitializeApplicationOutput()
+        {
+            CodetablesView = new CodetablesView();
+            MainView = CodetablesView;
+            CodetablesView.ViewController = new CodetablesViewController(this);
+
+            // -- Selectors
+            CodetablesView.dgCodetables.SelectorAdapter = new CodetablesView_CodetablesSelectorAdapter(this);
+            CodetablesView.dgCodetables.SelectorController = new CodetablesView_CodetablesSelectorController(this);
+        }
+
+        public override bool CanClose()
+        {
+            return base.CanClose();
+        }
+
+        public override void SetWindowProperties(UIXApplicationStartOptions options)
+        {
+            options.Dialog = true;
+        }
+    }
+}

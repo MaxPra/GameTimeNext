@@ -1,0 +1,42 @@
+﻿using Arcora.Core.Framework.ViewModelsBase;
+using System.Collections.ObjectModel;
+using System.Windows.Media.Imaging;
+
+namespace Arcora.Core.Application.Profiles.Viewmodel
+{
+    public class SteamGridDBImage : ArcoraViewModelBase
+    {
+        private BitmapImage? _bitmapImage;
+        private string? _path;
+
+        public BitmapImage BitmapImage
+        {
+            get => _bitmapImage!;
+            set => SetProperty(ref _bitmapImage, value);
+        }
+
+        /// <summary>
+        /// Path of the downloaded thumbnail (only used for the selection grid)
+        /// </summary>
+        public string Path
+        {
+            get => _path!;
+            set => SetProperty(ref _path, value);
+        }
+
+        /// <summary>
+        /// Full resolution image, only downloaded when the cover gets applied
+        /// </summary>
+        public string FullImageUrl { get; set; }
+
+        public string FullImagePath { get; set; }
+
+        public SteamGridDBImage()
+        {
+            BitmapImage = new BitmapImage();
+            Path = string.Empty;
+            FullImageUrl = string.Empty;
+            FullImagePath = string.Empty;
+        }
+    }
+}

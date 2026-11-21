@@ -1,0 +1,338 @@
+﻿using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.General.BackgroundProcesses;
+using Arcora.Core.Application.MigrationTasks;
+using Arcora.Core.Application.Profiles.BackgroundProcesses;
+using Arcora.Core.Application.Settings;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework.Config;
+using Arcora.Core.Framework.DataBase;
+using Arcora.Core.Framework.DataBase.Migration;
+using Arcora.Core.Framework.Files;
+using Arcora.Core.Framework.UI.Dialogs;
+using Arcora.Core.Framework.Utils;
+using Arcora.Core.Framework.Versioning;
+using System.Diagnostics;
+using System.IO;
+using System.Text;
+using System.Text.Json;
+using System.Windows.Controls;
+using UIX.ViewController.Engine.Runnables;
+using UIX.ViewController.Engine.Utils;
+
+namespace Arcora.Core.Framework
+{
+    internal class AppEnvironment
+    {
+        private static AppConfig _appConfig = new AppConfig();
+        private static DataBaseManager _databaseManager = new DataBaseManager();
+        private static LogDataBaseManager _logDatabaseManager = new LogDataBaseManager();
+        private static T1PROFI? _t1Profi = new T1PROFI();
+        private static ContentControl _loader = new ContentControl();
+        private static Dictionary<string, UIXApplication> _startedApplications = new Dictionary<string, UIXApplication>();
+        private static Dictionary<string, UIXBackgroundProcess> _startedBackgroundProcesses = new Dictionary<string, UIXBackgroundProcess>();
+
+        // [------------------------------------------------]
+        // [------------------ PUBLIC ----------------------]
+        // [------------------------------------------------]
+
+        public static Dictionary<string, string?> StartArguments { get; set; } = new Dictionary<string, string?>();
+        public static Dictionary<string, UIXApplication> StartedApplications { get => _startedApplications; set => _startedApplications = value; }
+        public static Dictionary<string, UIXBackgroundProcess> StartedBackgroundProcesses { get => _startedBackgroundProcesses; set => _startedBackgroundProcesses = value; }
+        public static List<InformationListItem> InformationList { get; set; } = new List<InformationListItem>();
+
+        /// <summary>
+        /// True when the app was started without a config file (first start after the installation): the home
+        /// application is opened then.
+        /// </summary>
+        public static bool IsFirstStart { get; private set; } = false;
+
+        public static long CurrentPfid { get; set; } = 0;
+        public static AppVersion AppVersion { get; set; } = new AppVersion();
+
+        public static ApplicationLauncher AppLauncher { get; set; } = new ApplicationLauncher(null);
+
+        public static AppConfig GetAppConfig()
+        {
+            return _appConfig;
+        }
+
+        public static DataBaseManager GetDataBaseManager()
+        {
+            return _databaseManager;
+        }
+
+        public static LogDataBaseManager GetLogDataBaseManager()
+        {
+            return _logDatabaseManager;
+        }
+
+        public static T1PROFI? GetCurrentProfile()
+        {
+            return _t1Profi;
+        }
+
+        public static void SetCurrentProfile(T1PROFI? t1Profi)
+        {
+            _t1Profi = t1Profi;
+        }
+
+        public static bool IsApplicationRunning(string fullName)
+        {
+            return _startedApplications.ContainsKey(fullName);
+        }
+
+        public static UIXApplication? GetRunningApplication(string fullName)
+        {
+            if (IsApplicationRunning(fullName))
+                return _startedApplications[fullName];
+            return null;
+        }
+
+        public static bool IsApplicationInitialized(string fullName)
+        {
+            if (IsApplicationRunning(fullName))
+                return _startedApplications[fullName].IsInitialized;
+            return false;
+        }
+
+        public static void SaveAppConfig()
+        {
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true
+            };
+
+            string appConfigText = JsonSerializer.Serialize(GetAppConfig(), options);
+
+            File.WriteAllText(AppConfig.Storage.AppConfigFilePath, appConfigText);
+        }
+
+        public static void Initalize()
+        {
+            MigrationFactory.Metadata.MigrateTables();
+
+            CheckShowChangeLog();
+
+            MigrationFactory.ImportPackage.ImportPackages();
+            MigrationFactory.FromCsv.MigrateTables(MigrationFactory.ImportType.DevSync);
+
+            MigrationManager.Migrate();
+            GetDataBaseManager().EnsureT1groupSeeded();
+
+            if (GetAppConfig().AppSettings.EnableSessionCleanup)
+                InitializeCleanup();
+        }
+
+
+
+        public static void StartBackgroundProcesses(UIXApplication app)
+        {
+            // GlobalKeyInputProcess
+            GlobalKeyInputProcess globalKeyInputProcess = app.GetBackgroundProcess<GlobalKeyInputProcess>();
+            globalKeyInputProcess.Start(20);
+
+            // GameRunningProcess
+            GameRunningProcess gameRunningProcess = app.GetBackgroundProcess<GameRunningProcess>();
+            gameRunningProcess.Initialize(new TXPROFI().ReadAll());
+            gameRunningProcess.Start(500);
+
+            // LauncherAutoImportProcess
+            LauncherAutoImportProcess launcherAutoImportProcess = app.GetBackgroundProcess<LauncherAutoImportProcess>();
+            launcherAutoImportProcess.Start(20000);
+
+            // RemoteMonitoringProcess
+            RemoteMonitoringProcess remoteMonitoringProcess = app.GetBackgroundProcess<RemoteMonitoringProcess>();
+            remoteMonitoringProcess.Start(5000);
+
+            StartedBackgroundProcesses.Add(typeof(GlobalKeyInputProcess).FullName!, globalKeyInputProcess);
+            StartedBackgroundProcesses.Add(typeof(GameRunningProcess).FullName!, gameRunningProcess);
+            StartedBackgroundProcesses.Add(typeof(LauncherAutoImportProcess).FullName!, launcherAutoImportProcess);
+            StartedBackgroundProcesses.Add(typeof(RemoteMonitoringProcess).FullName!, remoteMonitoringProcess);
+        }
+
+        public static void StopBackgroundProcesses()
+        {
+            foreach (UIXBackgroundProcess process in StartedBackgroundProcesses.Values)
+            {
+                if (process.IsRunning())
+                    process.Stop();
+            }
+        }
+
+        public static void RestartArcoraApplication()
+        {
+            if (!FnSystem.IsDebug())
+            {
+                var exePath = Environment.ProcessPath!;
+                string startArguments = FnSystem.GetStartArgumentsString();
+
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = "cmd.exe",
+                    Arguments = $"/C timeout /t 3 > nul && start \"\" \"{exePath}\" {startArguments}",
+                    CreateNoWindow = true,
+                    UseShellExecute = false
+                });
+            }
+
+            System.Windows.Application.Current.Shutdown();
+        }
+
+        public static void ShutdownArcoraApplication()
+        {
+            System.Windows.Application.Current.Shutdown();
+        }
+
+        public static void InitiateDataBaseManager()
+        {
+            _databaseManager = new DataBaseManager();
+        }
+
+        // [------------------------------------------------]
+        // [------------------ PRIVATE ---------------------]
+        // [------------------------------------------------]
+        public static void HandleBackup()
+        {
+            // Restore backup here
+            if (GetAppConfig().AppSettings.BackupType == BackupType.IMPORT_BACKUP)
+            {
+                try
+                {
+                    FnBackup.ImportBackup(GetAppConfig().AppSettings.BackupImportPath);
+                }
+                catch (Exception)
+                {
+                    InformationList.Add(InformationListItem.FromErrorMessage(CFMBOXIcon.Error, "GLO0013", "importing the backup", GetAppConfig().AppSettings.BackupImportPath));
+                }
+
+                // Reload AppConfig here because it was overwritten by the backup import
+                LoadAppConfig();
+            }
+            else
+            {
+                if (!GetAppConfig().AppSettings.AutoBackup)
+                    return;
+
+                string backupPath = GetAppConfig().AppSettings.BackupExportPath;
+
+                if (FnSystem.IsDebug())
+                {
+                    backupPath = AppConfig.Dev.BackupDirectoryPath;
+                }
+
+                if (!Directory.Exists(backupPath))
+                {
+                    InformationList.Add(InformationListItem.FromErrorMessage(CFMBOXIcon.Error, "SET0002", backupPath));
+                    return;
+                }
+
+                try
+                {
+                    FnBackup.CreateBackupSync(backupPath);
+                }
+                catch (Exception e)
+                {
+                    InformationList.Add(InformationListItem.FromErrorMessage(CFMBOXIcon.Error, "GLO0012", "creating the automatic backup"));
+                }
+            }
+        }
+
+        private static void CheckShowChangeLog()
+        {
+            // Start argument -showchangelog: always show the unreleased changes (vNEXT), to check the changelog dialog
+            if (AppEnvironment.StartArguments.ContainsKey("showchangelog"))
+            {
+                AddChangeLogInformation("UpdateChanges_vNEXT");
+                return;
+            }
+
+            string versionOldRaw = AppEnvironment.GetAppConfig().AppVersion;
+
+            AppVersion versionOld = new AppVersion();
+            versionOld.Get(versionOldRaw);
+
+            AppVersion currentVersion = AppEnvironment.AppVersion;
+
+
+
+            if (currentVersion.IsBiggerThan(versionOld))
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.Append("UpdateChanges_v" + currentVersion.VersionText);
+
+                if (currentVersion.IsBeta)
+                    sb.Append("beta");
+
+                AddChangeLogInformation(sb.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Queues the changelog (Core/Application/UpdateChanges, file name without extension) to be shown after start:
+        /// a Markdown file (.md) rendered as formatted text, otherwise the plain text file (.txt, older versions) as memo text.
+        /// </summary>
+        private static void AddChangeLogInformation(string baseFileName)
+        {
+            string directory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Core", "Application", "UpdateChanges");
+            string markdownPath = Path.Combine(directory, baseFileName + ".md");
+            bool isMarkdown = File.Exists(markdownPath);
+
+            string fileName = baseFileName + (isMarkdown ? ".md" : ".txt");
+            string text = string.Empty;
+
+            try
+            {
+                text = File.ReadAllText(Path.Combine(directory, fileName));
+            }
+            catch (Exception)
+            {
+                return;
+            }
+
+            if (FnString.IsNullEmptyOrWhitespace(text))
+                return;
+
+            // Markdown brings its own heading (version), so the title only names the dialog
+            string title = isMarkdown ? "What's new" : fileName;
+
+            InformationListItem infoListItem = new InformationListItem(CFMBOXIcon.Info, title, text);
+            infoListItem.MBoxType = isMarkdown ? CFMBOXType.Markdown : CFMBOXType.Memotext;
+            infoListItem.Buttons = CFMBOXResult.Ok;
+
+            InformationList.Add(infoListItem);
+        }
+
+        public static void LoadAppConfig()
+        {
+            // The config file had another extension before; an update or an imported backup still brings it
+            if (!File.Exists(AppConfig.Storage.AppConfigFilePath) && File.Exists(AppConfig.Storage.FormerAppConfigFilePath))
+                File.Move(AppConfig.Storage.FormerAppConfigFilePath, AppConfig.Storage.AppConfigFilePath);
+
+            if (!File.Exists(AppConfig.Storage.AppConfigFilePath))
+            {
+                FnDirectory.EnsureDirectoryExists(AppConfig.Storage.StorageDirectoryPath);
+                FileStream fs = File.Create(AppConfig.Storage.AppConfigFilePath);
+                fs.Close();
+            }
+
+            string appConfigText = File.ReadAllText(AppConfig.Storage.AppConfigFilePath);
+
+            if (appConfigText == null || appConfigText.Length == 0)
+            {
+                _appConfig = new AppConfig();
+                IsFirstStart = true;
+                return;
+            }
+
+            _appConfig = JsonSerializer.Deserialize<AppConfig>(appConfigText);
+            IsFirstStart = false;
+        }
+
+        private static void InitializeCleanup()
+        {
+            int invalidSessions = TFSESSI.GetInvalidSessionsCount();
+            if (invalidSessions > 0)
+                TFSESSI.CleanupInvalidSessions();
+        }
+    }
+}

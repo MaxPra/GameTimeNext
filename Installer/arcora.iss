@@ -3,11 +3,11 @@
 #define AppPublisher "CryloudStudios"
 
 #define BuildDirectory "out"
-#define BinDirectory "..\GameTimeNext\bin\Release\net10.0-windows10.0.26100.0"
+#define BinDirectory "..\Arcora\bin\Release\net10.0-windows10.0.26100.0"
 #define AppExePath BinDirectory + "\" + AppExeName
 #define BinDirectoryRemoteMonitoring "..\RemoteMonitoring\bin\Release\net10.0\publish"
 
-;Version is taken from the built exe (maintained only in GameTimeNext.csproj)
+;Version is taken from the built exe (maintained only in Arcora.csproj)
 #define VerMajor
 #define VerMinor
 #define VerRev
@@ -54,7 +54,7 @@ PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=commandline
 OutputDir={#BuildDirectory}
 OutputBaseFilename={#AppName}_v{#AppVersion}_Installer
-SetupIconFile=..\GameTimeNext\UI\Ressources\GTN_APP_ICON.ico
+SetupIconFile=..\Arcora\UI\Ressources\ARCORA_APP_ICON.ico
 Compression=lzma2/max
 SolidCompression=yes
 LZMANumBlockThreads=8
@@ -75,7 +75,7 @@ Source: "{#BinDirectory}\*.deps.json"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BinDirectory}\runtimes\win-x64\*.dll"; DestDir: "{app}\runtimes\win-x64"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 ;App Specific
-Source: "..\GameTimeNext\ImportPackages\*.zip"; DestDir: "{localappdata}\{#AppPublisher}\{#AppName}\temp\import"; Flags: ignoreversion
+Source: "..\Arcora\ImportPackages\*.zip"; DestDir: "{localappdata}\{#AppPublisher}\{#AppName}\temp\import"; Flags: ignoreversion
 Source: "{#BinDirectory}\Core\*.*"; DestDir: "{app}\Core"; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "*\UpdateChanges_vNEXT.md"
 
 ;Remote Monitoring
@@ -98,8 +98,16 @@ Filename: "{app}\{#AppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(
 
 [Code]
 #include "Includes\arcora_RemoveOldInstalls.iss"
+#include "Includes\arcora_CleanAppDirectory.iss"
 
 function InitializeSetup(): Boolean;
 begin
   Result := RemoveOldInstalls();
+end;
+
+procedure CurStepChanged(CurStep: TSetupStep);
+begin
+  // Right before the files are copied (the running app is already closed)
+  if CurStep = ssInstall then
+    CleanAppDirectory();
 end;

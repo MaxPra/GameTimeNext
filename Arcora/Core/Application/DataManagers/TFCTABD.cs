@@ -1,0 +1,15 @@
+﻿using Arcora.Core.Application.TableObjects;
+
+namespace Arcora.Core.Application.DataManagers
+{
+    public partial class TFCTABD
+    {
+        public static string GetDescription(string txtyp, string txnum)
+        {
+            TXCTABD txctabd = new TXCTABD();
+            T1CTABD? t1ctabd = txctabd.Read(txtyp, txnum);
+
+            return t1ctabd?.DESCR ?? string.Empty;
+        }
+    }
+}

@@ -22,27 +22,30 @@ SOLUTION_DIR = Path(__file__).resolve().parent.parent
 # --------------------------------------------------------------
 ALLOWED_SOURCES = {
     "GameTimeNext": {
-        "GameTimeNext/Core/Framework/Config/AppConfig.Paths.cs": 1,
-        "GameTimeNext/Core/Framework/Config/AppConfigOld.cs": 1000,
+        # GitHubRepositoryName
+        "Arcora/Core/Framework/Config/AppConfig.Paths.cs": 1,
+        # Former namespace prefix of the favorites in the config
+        "Arcora/Core/Application/MigrationTasks/MigTask_110b_013.cs": 2,
+        "Arcora/Core/Framework/Config/AppConfigOld.cs": 1000,
     },
 
     "arcora": {
-        "GameTimeNext/Core/Framework/Config/AppConfig.Paths.cs": 1,
+        "Arcora/Core/Framework/Config/AppConfig.Paths.cs": 1,
         "RemoteMonitoring/Base/AppInfo.cs": 1,
     },
 
     "GameTimeNXT": {
-        "GameTimeNext/Core/Framework/Config/AppConfigOld.cs": 1000,
+        "Arcora/Core/Framework/Config/AppConfigOld.cs": 1000,
     },
 
     "MaxPra": {
-        "GameTimeNext/Core/Framework/Config/AppConfig.Paths.cs": 1,
-        "GameTimeNext/App.xaml.cs": 1,
+        "Arcora/Core/Framework/Config/AppConfig.Paths.cs": 1,
+        "Arcora/App.xaml.cs": 1,
     },
 
     "CryloudStudios": {
-        "GameTimeNext/Core/Framework/Config/AppConfig.Paths.cs": 1,
-        "GameTimeNext/App.xaml.cs": 1,
+        "Arcora/Core/Framework/Config/AppConfig.Paths.cs": 1,
+        "Arcora/App.xaml.cs": 1,
     },
 }
 
@@ -75,12 +78,12 @@ ALLOWED_CODE_SEARCHES = {
     # Path.DirectorySeparatorChar directly, everywhere else
     # should go through the centralized helper.
     # "DirectorySeparatorChar": {
-    #     "GameTimeNext/Core/Framework/Config/AppPaths.cs": 5,
+    #     "Arcora/Core/Framework/Config/AppPaths.cs": 5,
     # },
     "DirectorySeparatorChar": {
-        "GameTimeNext/Core/Framework/Config/AppConfigOld.cs": 1000,
-        "GameTimeNext/Core/Framework/LauncherIntegration/Steam/SteamLocator.cs": 1,
-        "GameTimeNext/Core/Framework/Utils/FnSystem.cs": 1,
+        "Arcora/Core/Framework/Config/AppConfigOld.cs": 1000,
+        "Arcora/Core/Framework/LauncherIntegration/Steam/SteamLocator.cs": 1,
+        "Arcora/Core/Framework/Utils/FnSystem.cs": 1,
     },
 }
 

@@ -1,0 +1,111 @@
+using Arcora.Core.Application.Codetables.Views;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Framework.Utils;
+using System.Windows;
+using System.Windows.Controls.Primitives;
+using UIX.ViewController.Engine.Controller;
+using UIX.ViewController.Engine.FrameworkElements.Selectors;
+using UIX.ViewController.Engine.Runnables;
+using UIX.ViewController.Engine.Utils;
+
+namespace Arcora.Core.Application.Codetables.Controller
+{
+    public class CodetablesViewController : UIXViewControllerBase<CodetablesApp, CodetablesView>
+    {
+        public CodetablesViewController(UIXApplication app) : base(app)
+        {
+        }
+
+        #region Event-Pipeline-Methods
+        protected override void Init()
+        {
+            // Set loader texts
+            GetApp().Loader.SetRandomTexts(
+                                            "Loading codetables...",
+                                            "Decoding the codes...",
+                                            "Sorting keys and values...",
+                                            "Checking every entry of the dictionary...",
+                                            "Translating codes into words...",
+                                            "Opening the big book of codes..."
+                                            );
+
+            AddSource("T1CTABD", GetApp().GetDataManager<TXCTABD>());
+        }
+
+        protected override void TriggeredEvent(FrameworkElement source, string eventName)
+        {
+        }
+
+        protected override void BuildFirstImpl()
+        {
+            // Show the add button only in debug / development mode
+            FnControls.SetVisible(GetView().btnAddCodetable, FnSystem.IsDebug() && !FnSystem.RunWithUserPermissions());
+
+            if (FnSystem.IsDebug())
+            {
+                GetView().cmbPermission.SelectedValue = string.Empty;
+            }
+            else
+            {
+                GetView().cmbPermission.SelectedValue = "U";
+            }
+
+        }
+
+        protected override async Task BuildFirstImplAsync()
+        {
+            await GetView().dgCodetables.LoadDataAsync();
+        }
+        protected override void BuildImpl()
+        {
+        }
+
+        protected override async Task BuildImplAsync()
+        {
+
+        }
+
+        protected override void CheckImpl()
+        {
+        }
+
+        protected override void FillViewImpl()
+        {
+
+        }
+
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
+        {
+        }
+
+        protected override void FillDBOImpl()
+        {
+        }
+
+        protected override void SaveDBOImpl()
+        {
+        }
+
+        protected override void DataWrapperSelectionChangedImpl(Selector source)
+        {
+        }
+        #endregion
+
+        protected void EV_btnAddCodetable()
+        {
+            CodetablesEditApp codetablesEditApp = GetApp().GetApplication<CodetablesEditApp>(UIX.ViewController.Engine.Runnables.UIXApplicationStartTarget.Window);
+            codetablesEditApp.CreateNew(async (result) =>
+            {
+                if (!result.HasChanged)
+                    return;
+
+                await GetView().dgCodetables.LoadDataAsync();
+            });
+        }
+
+        protected async Task EV_btnRefresh()
+        {
+            await GetView().dgCodetables.LoadDataAsync();
+        }
+    }
+}

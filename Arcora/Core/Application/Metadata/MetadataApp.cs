@@ -1,0 +1,56 @@
+using Arcora.Core.Application.Metadata.Controller;
+using Arcora.Core.Application.Metadata.Selectors;
+using Arcora.Core.Application.Metadata.Views;
+using System.Windows.Controls;
+using UIX.ViewController.Engine.Runnables;
+using UIX.ViewController.Engine.Utils;
+
+namespace Arcora.Core.Application.Metadata
+{
+    [UIXAppIcon(UIXMdlIcons.DataBase)]
+    public class MetadataApp : UIXApplication, IUIXApplicationStarter
+    {
+        public MetadataView? MetadataView { get; set; }
+
+        public void Start(UIXApplication hostApplication, ContentPresenter presenter)
+        {
+            Start(hostApplication, new UIXApplicationStartOptions
+            {
+                Target = UIXApplicationStartTarget.ContentPresenter,
+                Presenter = presenter
+            });
+        }
+
+        public void Start(UIXApplication hostApplication, UIXApplicationStartOptions options)
+        {
+            HostApplication = hostApplication;
+            Loader = hostApplication.Loader;
+            CallDispatcher = hostApplication.CallDispatcher;
+
+            MetadataView!.ViewController.Show(options);
+        }
+
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(MetadataApp));
+        }
+
+        public override void InitializeApplicationOutput()
+        {
+            MetadataView = new MetadataView();
+            MainView = MetadataView;
+            MetadataView.ViewController = new MetadataViewController(this);
+            MetadataView.DgMetadata.SelectorAdapter = new MetadataView_MetadataSelectorAdapter(this);
+            MetadataView.DgMetadata.SelectorController = new MetadataView_MetadataSelectorController(this);
+        }
+
+        public override bool CanClose()
+        {
+            return true;
+        }
+
+        public override void SetWindowProperties(UIXApplicationStartOptions options)
+        {
+        }
+    }
+}

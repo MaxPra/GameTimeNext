@@ -1,0 +1,55 @@
+﻿using Arcora.Core.Application.DataManagers;
+using UIX.ViewController.Engine.DataBaseObjects;
+
+namespace Arcora.Core.Application.TableObjects
+{
+    public class T1PLTHR : UIXTableObjectBase
+    {
+        public override bool IsDevSynced => false;
+
+        [UIXKeyField]
+        [UIXSignatureField(0)]
+        public long PTID { get; set; } = 0;
+
+        [UIXSignatureField(1)]
+        public long PFID { get; set; } = 0;
+
+        [UIXSignatureField(2)]
+        public string PTTY { get; set; } = "";
+
+        [UIXSignatureField(3)]
+        public string PTDE { get; set; } = "";
+
+        [UIXSignatureField(4)]
+        public bool PTCO { get; set; } = false;
+
+        [UIXSignatureField(5)]
+        public bool PTCA { get; set; } = false;
+
+        [UIXSignatureField(6)]
+        public bool PTPA { get; set; } = false;
+
+        [UIXSignatureField(7)]
+        public int PTRA { get; set; } = 0;
+
+        [UIXSignatureField(8)]
+        public string PTRC { get; set; } = "";
+
+        [UIXSignatureField(9)]
+        public DateTime CRAT { get; set; } = DateTime.MinValue;
+
+        [UIXSignatureField(10)]
+        public string CRUS { get; set; } = "";
+
+        [UIXSignatureField(11)]
+        public DateTime CHAT { get; set; } = DateTime.MinValue;
+
+        [UIXSignatureField(12)]
+        public string CHUS { get; set; } = "";
+
+        public override void Save()
+        {
+            UIXDataManagerBase.Create<TXPLTHR>(App).Save(this);
+        }
+    }
+}

@@ -1,0 +1,282 @@
+﻿<uix:UIXUserControlBase
+    x:Class="Arcora.Core.Application.Home.Views.HomeView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:uix="clr-namespace:UIX.ViewController.Engine.FrameworkElements.UserControls;assembly=UIX.ViewController.Engine"
+    HorizontalAlignment="Stretch"
+    VerticalAlignment="Stretch"
+    HorizontalContentAlignment="Stretch"
+    VerticalContentAlignment="Stretch"
+    d:DesignHeight="900"
+    d:DesignWidth="1150"
+    mc:Ignorable="d">
+
+    <Grid Style="{StaticResource View.Root}">
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+
+            <!--  At least as high as the visible area, so the content stays centered while it fits  -->
+            <Grid MinHeight="{Binding ViewportHeight, RelativeSource={RelativeSource AncestorType=ScrollViewer}}">
+                <!--  Welcome page: welcome card on the left, help cards on the right  -->
+                <StackPanel
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal">
+
+                    <!--  Welcome card: what the user can do next  -->
+                    <Border
+                        Width="560"
+                        Padding="36,32"
+                        VerticalAlignment="Center"
+                        Style="{StaticResource Card}">
+                        <Border.Resources>
+                            <!--  Key cap, e.g. "Ctrl", "M" or the help glyph of the title bar  -->
+                            <Style x:Key="Home.Key" TargetType="Border">
+                                <Setter Property="MinWidth" Value="34" />
+                                <Setter Property="Height" Value="30" />
+                                <Setter Property="Padding" Value="9,0" />
+                                <Setter Property="Background" Value="{StaticResource Brush.Input.Background}" />
+                                <Setter Property="BorderBrush" Value="{StaticResource Brush.TextBox.Border}" />
+                                <Setter Property="BorderThickness" Value="1,1,1,2" />
+                                <Setter Property="CornerRadius" Value="{StaticResource Control.CornerRadius}" />
+                            </Style>
+                            <Style x:Key="Home.KeyText" TargetType="TextBlock">
+                                <Setter Property="HorizontalAlignment" Value="Center" />
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                                <Setter Property="FontSize" Value="13" />
+                                <Setter Property="FontWeight" Value="SemiBold" />
+                                <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+                            </Style>
+                            <Style x:Key="Home.Plus" TargetType="TextBlock">
+                                <Setter Property="Margin" Value="6,0" />
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                                <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}" />
+                            </Style>
+                            <Style x:Key="Home.Title" TargetType="TextBlock">
+                                <Setter Property="FontSize" Value="15" />
+                                <Setter Property="FontWeight" Value="SemiBold" />
+                                <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+                            </Style>
+                            <Style x:Key="Home.Hint" TargetType="TextBlock">
+                                <Setter Property="Margin" Value="0,2,0,0" />
+                                <Setter Property="FontSize" Value="13" />
+                                <Setter Property="TextWrapping" Value="Wrap" />
+                                <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}" />
+                            </Style>
+                        </Border.Resources>
+
+                        <StackPanel>
+                            <!--  Header  -->
+                            <Border
+                                Width="64"
+                                Height="64"
+                                HorizontalAlignment="Center"
+                                Background="{StaticResource Brush.Item.Selected}"
+                                CornerRadius="32">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontFamily="{StaticResource Font.Icons}"
+                                    FontSize="30"
+                                    Foreground="{DynamicResource Brush.Accent}"
+                                    Text="&#xE7FC;" />
+                            </Border>
+
+                            <TextBlock
+                                x:Name="txWelcomeTitle"
+                                Margin="0,16,0,0"
+                                HorizontalAlignment="Center"
+                                FontSize="24"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource Brush.TextPrimary}" />
+
+                            <TextBlock
+                                Margin="0,6,0,0"
+                                HorizontalAlignment="Center"
+                                FontSize="14"
+                                Foreground="{DynamicResource Brush.TextSecondary}"
+                                Text="Here is how to get going:" />
+
+                            <Border
+                                Height="1"
+                                Margin="0,24"
+                                Background="{StaticResource Brush.Card.Border}" />
+
+                            <!--  What the user can do: keys on the left, explanation on the right  -->
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="130" />
+                                    <ColumnDefinition Width="20" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="24" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="24" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <!--  Open an application  -->
+                                <StackPanel
+                                    Grid.Row="0"
+                                    Grid.Column="0"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
+                                    Orientation="Horizontal">
+                                    <Border Style="{StaticResource Home.Key}">
+                                        <TextBlock Style="{StaticResource Home.KeyText}" Text="Ctrl" />
+                                    </Border>
+                                    <TextBlock Style="{StaticResource Home.Plus}" Text="+" />
+                                    <Border Style="{StaticResource Home.Key}">
+                                        <TextBlock Style="{StaticResource Home.KeyText}" Text="M" />
+                                    </Border>
+                                </StackPanel>
+                                <StackPanel Grid.Row="0" Grid.Column="2">
+                                    <TextBlock Style="{StaticResource Home.Title}" Text="Open an application" />
+                                    <TextBlock Style="{StaticResource Home.Hint}" Text="Or click + next to the tabs. Your games are in Profiles." />
+                                </StackPanel>
+
+                                <!--  Help on arcora: same glyph as the help button of the title bar (BtnHelp)  -->
+                                <Border
+                                    Grid.Row="2"
+                                    Grid.Column="0"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
+                                    Style="{StaticResource Home.Key}">
+                                    <TextBlock
+                                        FontFamily="{StaticResource Font.Icons}"
+                                        Style="{StaticResource Home.KeyText}"
+                                        Text="&#xE897;" />
+                                </Border>
+                                <StackPanel Grid.Row="2" Grid.Column="2">
+                                    <TextBlock x:Name="txHelpTitle" Style="{StaticResource Home.Title}" />
+                                    <TextBlock Style="{StaticResource Home.Hint}" Text="Click the question mark at the top right of the title bar." />
+                                </StackPanel>
+
+                                <!--  Help on an application  -->
+                                <Border
+                                    Grid.Row="4"
+                                    Grid.Column="0"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
+                                    Style="{StaticResource Home.Key}">
+                                    <TextBlock
+                                        FontFamily="{StaticResource Font.Icons}"
+                                        Style="{StaticResource Home.KeyText}"
+                                        Text="&#xE962;" />
+                                </Border>
+                                <StackPanel Grid.Row="4" Grid.Column="2">
+                                    <TextBlock Style="{StaticResource Home.Title}" Text="Get help on an application" />
+                                    <TextBlock Style="{StaticResource Home.Hint}" Text="Right-click its tab and choose Help." />
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <!--
+                        Help cards: a click opens the help text of the application (application definition, field help text),
+                        the same text as "Help" in the context menu of its tab
+                    -->
+                    <StackPanel Width="320" Margin="16,0,0,0" VerticalAlignment="Center">
+                        <StackPanel.Resources>
+                            <Style x:Key="Home.CardTitle" TargetType="TextBlock">
+                                <Setter Property="FontSize" Value="14" />
+                                <Setter Property="FontWeight" Value="SemiBold" />
+                                <Setter Property="Foreground" Value="{DynamicResource Brush.TextPrimary}" />
+                            </Style>
+                            <Style x:Key="Home.CardText" TargetType="TextBlock">
+                                <Setter Property="FontSize" Value="12" />
+                                <Setter Property="TextWrapping" Value="Wrap" />
+                                <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}" />
+                            </Style>
+                            <Style x:Key="Home.CardIcon" TargetType="TextBlock">
+                                <Setter Property="Width" Value="32" />
+                                <Setter Property="VerticalAlignment" Value="Top" />
+                                <Setter Property="FontFamily" Value="{StaticResource Font.Icons}" />
+                                <Setter Property="FontSize" Value="20" />
+                                <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
+                            </Style>
+                        </StackPanel.Resources>
+
+                        <TextBlock
+                            Margin="4,0,0,8"
+                            Style="{StaticResource Text.Label}"
+                            Text="Learn what you can do" />
+
+                        <Button x:Name="btnHelpProfiles" Style="{StaticResource Card.Button}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource Home.CardIcon}" Text="&#xE7FC;" />
+                                <StackPanel Width="236">
+                                    <TextBlock Style="{StaticResource Home.CardTitle}" Text="Add your games" />
+                                    <TextBlock Style="{StaticResource Home.CardText}" Text="Profiles: your library, one profile per game, with Steam import." />
+                                </StackPanel>
+                            </StackPanel>
+                        </Button>
+
+                        <Button x:Name="btnHelpPlaythroughs" Style="{StaticResource Card.Button}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource Home.CardIcon}" Text="&#xE768;" />
+                                <StackPanel Width="236">
+                                    <TextBlock Style="{StaticResource Home.CardTitle}" Text="Track your playthroughs" />
+                                    <TextBlock Style="{StaticResource Home.CardText}" Text="Playthroughs: every run of a game with its own playtime and progress." />
+                                </StackPanel>
+                            </StackPanel>
+                        </Button>
+
+                        <Button x:Name="btnHelpDashboard" Style="{StaticResource Card.Button}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource Home.CardIcon}" Text="&#xE9F9;" />
+                                <StackPanel Width="236">
+                                    <TextBlock Style="{StaticResource Home.CardTitle}" Text="See your playtime" />
+                                    <TextBlock Style="{StaticResource Home.CardText}" Text="Dashboard: statistics and an overview of what you played." />
+                                </StackPanel>
+                            </StackPanel>
+                        </Button>
+
+                        <Button x:Name="btnHelpRemoteMonitoring" Style="{StaticResource Card.Button}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource Home.CardIcon}" Text="&#xE8EA;" />
+                                <StackPanel Width="236">
+                                    <TextBlock Style="{StaticResource Home.CardTitle}" Text="Follow your playtime remotely" />
+                                    <TextBlock Style="{StaticResource Home.CardText}" Text="Remote Monitoring: keep an eye on the recording from another device." />
+                                </StackPanel>
+                            </StackPanel>
+                        </Button>
+
+                        <Button x:Name="btnHelpScreensetups" Style="{StaticResource Card.Button}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource Home.CardIcon}" Text="&#xE7F4;" />
+                                <StackPanel Width="236">
+                                    <TextBlock Style="{StaticResource Home.CardTitle}" Text="Set up your displays" />
+                                    <TextBlock Style="{StaticResource Home.CardText}" Text="Screensetups: switch monitors, resolution and audio device for a game." />
+                                </StackPanel>
+                            </StackPanel>
+                        </Button>
+
+                        <Button x:Name="btnHelpBigPicture" Style="{StaticResource Card.Button}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource Home.CardIcon}" Text="&#xE740;" />
+                                <StackPanel Width="236">
+                                    <TextBlock Style="{StaticResource Home.CardTitle}" Text="Play from the couch" />
+                                    <TextBlock Style="{StaticResource Home.CardText}" Text="Big Picture mode: your library full screen, for TV and game controller." />
+                                </StackPanel>
+                            </StackPanel>
+                        </Button>
+
+                        <Button x:Name="btnHelpSettings" Style="{StaticResource Card.Button}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource Home.CardIcon}" Text="&#xE713;" />
+                                <StackPanel Width="236">
+                                    <TextBlock Style="{StaticResource Home.CardTitle}" Text="Make it yours" />
+                                    <TextBlock Style="{StaticResource Home.CardText}" Text="Settings: appearance, hotkeys, API keys and backups." />
+                                </StackPanel>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
+    </Grid>
+</uix:UIXUserControlBase>

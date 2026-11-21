@@ -1,0 +1,222 @@
+﻿using Arcora.Core.Application.General;
+using Arcora.Core.Application.MigrationTasks;
+using Arcora.Core.Application.Settings;
+using Arcora.Core.Framework;
+using Arcora.Core.Framework.Config;
+using Arcora.Core.Framework.Files;
+using Arcora.Core.Framework.GitHub;
+using Arcora.Core.Framework.LauncherIntegration;
+using Arcora.Core.Framework.UI;
+using Arcora.Core.Framework.Utils;
+using System.Diagnostics;
+using System.Windows;
+using System.Windows.Threading;
+using UIX.ViewController.Engine.Runnables;
+using UIX.ViewController.Engine.Utils;
+
+namespace Arcora
+{
+    /// <summary>
+    /// Interaction logic for App.xaml
+    /// </summary>
+    public partial class App : Application
+    {
+        private LogProvider _logProvider = null!;
+        private bool isSplashProcess;
+
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+
+            // App font (Manrope) as default of every window, before the first window (splash) is created
+            FnFont.ApplyAsDefault();
+
+            // Mouse wheel moves every ScrollViewer by a spring
+            SmoothScroll.Register();
+
+            // Started as splash process by the application (see SplashHost): only shows the splash, nothing else
+            if (SplashHost.IsSplashProcess(e.Args))
+            {
+                isSplashProcess = true;
+                AppEnvironment.AppVersion.Get();
+                SplashHost.RunAsSplashProcess(this, e.Args);
+                return;
+            }
+
+            // Ensure that only one instance is running
+            if (!FnSystem.IsDebug() && !FnSystem.TryAcquireSingleInstance())
+            {
+                Shutdown();
+                return;
+            }
+
+            // A crash must not leave a game suspended by the Big Picture mode (OnExit doesn't run then)
+            AppDomain.CurrentDomain.UnhandledException += (_, _) => FnLauncher.ResumePausedGame();
+
+            FnSystem.ParseStartArguments(e.Args);
+            bool startMinimized = AppEnvironment.StartArguments.ContainsKey("minimized");
+
+            ShutdownMode = ShutdownMode.OnExplicitShutdown;
+
+            AppEnvironment.AppVersion.Get();
+            SplashHost? splash = null;
+
+            // The splash is its own process, so its animation is not stalled by the start below
+            if (!startMinimized)
+                splash = SplashHost.Start(FnSystem.IsDebug());
+
+            InitializeApp();
+
+            Dispatcher.CurrentDispatcher.Invoke(() => { }, DispatcherPriority.Background);
+
+            // Only open the window afterwards
+            MainApp mainApp = new MainApp();
+            mainApp.SplashScreen = splash;
+            mainApp.StartMinimized = startMinimized;
+            mainApp.Start(mainApp, new UIXApplicationStartOptions
+            {
+                Target = UIXApplicationStartTarget.Window,
+                ShowHidden = startMinimized
+            });
+
+            // From here on the module "Diagnostics" can be opened: log entries only go to the text file if the log database fails
+            _logProvider.StartupCompleted = true;
+        }
+
+        private void InitializeApp()
+        {
+            // Log target of FnLog (engine); first thing, so everything after this is logged
+            AppEnvironment.GetLogDataBaseManager().Initialize();
+            _logProvider = new LogProvider();
+            FnLog.LogProvider = _logProvider;
+
+            // FileSystem Migration
+            MigTask_100b_008.MigrateFileSystem();
+
+            // Create folders
+            FileHandler.CreateDevAppFolder();
+
+            AppEnvironment.LoadAppConfig();
+
+            // Apply or create backup
+            AppEnvironment.HandleBackup();
+
+            // Blurred background image (desktop wallpaper or profile cover) as base of the window background (setting)
+            FnTheme.ApplyWallpaperBackground(AppEnvironment.GetAppConfig().AppSettings.BackgroundSource);
+            FnTheme.ApplyGlassTint(AppEnvironment.GetAppConfig().AppSettings.DarkTintedGlass);
+
+            FnLog.Add(ArcoraLogType.AppStart, "MainApp", "*** Initializing Application... ***");
+
+            FnLog.Add(ArcoraLogType.AppStart, "MainApp", "Initiating Databasemanager...");
+            AppEnvironment.InitiateDataBaseManager();
+
+            // Initialize database
+            FnLog.Add(ArcoraLogType.AppStart, "MainApp", "Initializing database...");
+            AppEnvironment.GetDataBaseManager().Initialize();
+
+            // Initialize AppEnvironment
+            FnLog.Add(ArcoraLogType.AppStart, "MainApp", "Initializing application environment...");
+            AppEnvironment.Initalize();
+
+            // Only now: T1APRDH exists after the metadata migration in Initalize; earlier applications get the fallback properties
+            UIXApplication.AppPropertiesProvider = new AppPropertiesProvider();
+
+            // Same for T1ERMSG: error messages are only available from here on
+            UIXApplication.ErrorMessageProvider = new ErrorMessageProvider();
+            UIXApplication.NewEntryProvider = new NewEntryProvider();
+            UIXApplication.RecordLockMessageProvider = new RecordLockMessageProvider();
+
+            // Delete old backups
+            FnLog.Add(ArcoraLogType.AppStart, "MainApp", "Deleting old backups...");
+            FileHandler.DeleteOldBackupFiles();
+
+            // Start argument -optimizecovers: shrink existing profile covers
+            if (AppEnvironment.StartArguments.ContainsKey("optimizecovers"))
+                OptimizeProfileCovers();
+
+            // Check for new version (GitHub)
+            FnLog.Add(ArcoraLogType.AppStart, "MainApp", "Checking for new version (Github)...");
+            CheckForNewVersion();
+        }
+
+        private void OptimizeProfileCovers()
+        {
+            FnLog.Add(ArcoraLogType.AppStart, "MainApp", "Optimizing profile covers...");
+
+            (int optimizedCount, long savedBytes) = Core.Application.Profiles.CFProfilesEditApp.OptimizeAllProfileCovers();
+
+            string message = $"{optimizedCount} profile cover(s) optimized, {savedBytes / 1024.0 / 1024.0:0.0} MB saved.";
+
+            FnLog.Add(ArcoraLogType.AppStart, "MainApp", message);
+            AppEnvironment.InformationList.Add(InformationListItem.FromErrorMessage(Core.Framework.UI.Dialogs.CFMBOXIcon.Info, "PRO0007", optimizedCount, Math.Round(savedBytes / 1024.0 / 1024.0, 1)));
+        }
+
+        protected override void OnExit(ExitEventArgs e)
+        {
+            // The splash process has neither a database nor background processes
+            if (isSplashProcess)
+                return;
+
+            FnLog.AddInfo("MainApp", "*** Shutdown initiated ***");
+
+            // A game paused by the Big Picture mode must never stay suspended
+            FnLauncher.ResumePausedGame();
+
+            FnLog.AddInfo("MainApp", "Stopping background processes...");
+            AppEnvironment.StopBackgroundProcesses();
+
+            if (AppEnvironment.GetAppConfig().AppSettings.AutoBackup)
+            {
+                string backupPath = AppEnvironment.GetAppConfig().AppSettings.BackupExportPath;
+
+                if (FnSystem.IsDebug())
+                {
+                    backupPath = AppConfig.Dev.BackupDirectoryPath;
+                }
+
+                FnLog.AddInfo("MainApp", "Creating backup at: " + backupPath);
+
+                FnBackup.CreateBackupSync(backupPath, BackupType.APP_CLOSED_BACKUP);
+            }
+
+            FnLog.AddInfo("MainApp", "Closing database connection...");
+            if (AppEnvironment.GetDataBaseManager().GetConnection() != null)
+                AppEnvironment.GetDataBaseManager().GetConnection().Close();
+
+            FnLog.AddInfo("MainApp", "*** Shutdown completed ***");
+
+            // Last: the log provider may write into the log database up to here
+            AppEnvironment.GetLogDataBaseManager().Close();
+        }
+
+        private void CheckForNewVersion()
+        {
+            UpdateCheckResult result = FnGithub.CheckForUpdateAsync(
+                AppEnvironment.AppVersion.Version.ToString(),
+                "MaxPra",
+                AppConfig.Root.GitHubRepositoryName
+            ).GetAwaiter().GetResult();
+
+            if (result.UpdateAvailable)
+            {
+
+                InformationListItem infoItem = InformationListItem.FromErrorMessage(Core.Framework.UI.Dialogs.CFMBOXIcon.Question, "GLO0021", result.LatestVersion);
+                infoItem.Buttons = Core.Framework.UI.Dialogs.CFMBOXResult.Yes | Core.Framework.UI.Dialogs.CFMBOXResult.No;
+                infoItem.YesAction = () =>
+                {
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = result.ReleaseUrl,
+                        UseShellExecute = true
+                    });
+
+                    AppEnvironment.ShutdownArcoraApplication();
+
+                };
+
+                AppEnvironment.InformationList.Add(infoItem);
+            }
+        }
+    }
+
+}

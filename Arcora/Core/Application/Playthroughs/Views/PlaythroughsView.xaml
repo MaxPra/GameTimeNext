@@ -1,0 +1,281 @@
+﻿<ui:ArcoraWindowView
+    x:Class="Arcora.Core.Application.Playthroughs.Views.PlaythroughsView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="clr-namespace:Arcora.Core.Framework.UI.Base"
+    xmlns:uixcb="clr-namespace:UIX.ViewController.Engine.FrameworkElements.ComboBoxes;assembly=UIX.ViewController.Engine"
+    xmlns:uixprops="clr-namespace:UIX.ViewController.Engine.AttachedProperties;assembly=UIX.ViewController.Engine"
+    xmlns:uixsel="clr-namespace:UIX.ViewController.Engine.FrameworkElements.Selectors;assembly=UIX.ViewController.Engine"
+    Width="1300"
+    Height="700"
+    HorizontalAlignment="Stretch"
+    VerticalAlignment="Stretch"
+    HorizontalContentAlignment="Stretch"
+    VerticalContentAlignment="Stretch"
+    d:DesignHeight="700"
+    d:DesignWidth="1300"
+    ShowMaximizeButton="False"
+    ShowMinimizeButton="False"
+    mc:Ignorable="d">
+
+    <Grid Style="{StaticResource View.Root}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="16" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Border
+            Grid.Row="0"
+            Padding="16"
+            Style="{StaticResource Card}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="12" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="32" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="32" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="32" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Grid
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    HorizontalAlignment="Left">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="130" />
+                        <ColumnDefinition Width="12" />
+                        <ColumnDefinition Width="280" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock
+                        Grid.Column="0"
+                        Foreground="{DynamicResource Brush.TextSecondary}"
+                        Text="Profile Name" />
+
+                    <TextBox
+                        x:Name="TxbProfileName"
+                        Grid.Column="2"
+                        Style="{StaticResource TextBox.Default}" />
+                </Grid>
+
+                <Grid
+                    Grid.Row="2"
+                    Grid.Column="0"
+                    HorizontalAlignment="Left">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="130" />
+                        <ColumnDefinition Width="12" />
+                        <ColumnDefinition Width="280" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock
+                        Grid.Column="0"
+                        Foreground="{DynamicResource Brush.TextSecondary}"
+                        Text="Description" />
+
+                    <TextBox
+                        x:Name="TxbDescription"
+                        Grid.Column="2"
+                        Style="{StaticResource TextBox.Default}" />
+                </Grid>
+
+                <Grid
+                    Grid.Row="0"
+                    Grid.Column="2"
+                    HorizontalAlignment="Left">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="130" />
+                        <ColumnDefinition Width="12" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock
+                        Grid.Column="0"
+                        Foreground="{DynamicResource Brush.TextSecondary}"
+                        Text="Completed" />
+
+                    <CheckBox
+                        x:Name="ChbCompleted"
+                        Grid.Column="2"
+                        VerticalAlignment="Center" />
+                </Grid>
+
+                <Grid
+                    Grid.Row="2"
+                    Grid.Column="2"
+                    HorizontalAlignment="Left">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="130" />
+                        <ColumnDefinition Width="12" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock
+                        Grid.Column="0"
+                        Foreground="{DynamicResource Brush.TextSecondary}"
+                        Text="Canceled" />
+
+                    <CheckBox
+                        x:Name="ChbCanceled"
+                        Grid.Column="2"
+                        VerticalAlignment="Center" />
+                </Grid>
+
+                <Grid
+                    Grid.Row="2"
+                    Grid.Column="4"
+                    HorizontalAlignment="Left">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="130" />
+                        <ColumnDefinition Width="12" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock
+                        Grid.Column="0"
+                        Foreground="{DynamicResource Brush.TextSecondary}"
+                        Text="Paused" />
+
+                    <CheckBox
+                        x:Name="ChbPaused"
+                        Grid.Column="2"
+                        VerticalAlignment="Center" />
+                </Grid>
+
+                <Grid
+                    Grid.Row="0"
+                    Grid.Column="4"
+                    HorizontalAlignment="Left">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="130" />
+                        <ColumnDefinition Width="12" />
+                        <ColumnDefinition Width="280" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock
+                        Grid.Column="0"
+                        Foreground="{DynamicResource Brush.TextSecondary}"
+                        Text="Type" />
+
+                    <uixcb:UIXComboBox
+                        x:Name="CmbPlaythroughType"
+                        Grid.Column="2"
+                        Height="36"
+                        VerticalAlignment="Center"
+                        uixprops:UIXAttachedProperty.Source="From=T1CTABD;Where=TXTYP:pL;Text=DESCR;Value=TXNUM"
+                        AdditionalEntry="(All)"
+                        SelectedIndex="0"
+                        SelectedValue=""
+                        SelectedValuePath="Tag" />
+                </Grid>
+
+                <Button
+                    x:Name="BtnRefresh"
+                    Grid.Column="8"
+                    Margin="8,0,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    IsDefault="True"
+                    Style="{StaticResource Button.Icon}"
+                    ToolTip="Refresh playthroughs">
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontFamily="{StaticResource Font.Icons}"
+                        FontSize="14"
+                        Text="&#xE72C;" />
+                </Button>
+            </Grid>
+        </Border>
+
+        <uixsel:UIXTreeGrid
+            x:Name="DgPlaythroughs"
+            Grid.Row="2"
+            AutoGenerateColumns="False"
+            CanUserAddRows="False"
+            CanUserDeleteRows="False"
+            CanUserResizeRows="False"
+            HeadersVisibility="Column"
+            IsReadOnly="True"
+            SelectionMode="Single"
+            SelectionUnit="FullRow">
+            <uixsel:UIXTreeGrid.Resources>
+                <BooleanToVisibilityConverter x:Key="BoolToVisibility" />
+            </uixsel:UIXTreeGrid.Resources>
+
+            <uixsel:UIXTreeGrid.Columns>
+                <!--  Tree column: profile name on profile rows, description on playthrough rows  -->
+                <uixsel:UIXTreeGridTextColumn
+                    Width="560"
+                    Binding="{Binding CONAME}"
+                    Header="Profile / Playthrough">
+                    <uixsel:UIXTreeGridTextColumn.ElementStyle>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="VerticalAlignment" Value="Center" />
+                            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsPlaythroughRow}" Value="False">
+                                    <Setter Property="FontWeight" Value="SemiBold" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </uixsel:UIXTreeGridTextColumn.ElementStyle>
+                </uixsel:UIXTreeGridTextColumn>
+
+                <!--  Check boxes only on playthrough rows  -->
+                <DataGridTemplateColumn Width="120" Header="Completed">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox
+                                IsChecked="{Binding COPTCO, Mode=OneWay}"
+                                Style="{StaticResource DataGrid.CheckBox.Display}"
+                                Visibility="{Binding IsPlaythroughRow, Converter={StaticResource BoolToVisibility}}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Width="120" Header="Paused">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox
+                                IsChecked="{Binding COPTPA, Mode=OneWay}"
+                                Style="{StaticResource DataGrid.CheckBox.Display}"
+                                Visibility="{Binding IsPlaythroughRow, Converter={StaticResource BoolToVisibility}}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Width="120" Header="Canceled">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox
+                                IsChecked="{Binding COPTCA, Mode=OneWay}"
+                                Style="{StaticResource DataGrid.CheckBox.Display}"
+                                Visibility="{Binding IsPlaythroughRow, Converter={StaticResource BoolToVisibility}}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn
+                    Width="220"
+                    Binding="{Binding COPTTY}"
+                    Header="Type" />
+                <DataGridTextColumn
+                    Width="140"
+                    Binding="{Binding COPTPL}"
+                    Header="Playtime"
+                    SortMemberPath="COPTPLMI" />
+            </uixsel:UIXTreeGrid.Columns>
+        </uixsel:UIXTreeGrid>
+    </Grid>
+</ui:ArcoraWindowView>

@@ -28,7 +28,9 @@
       "Bash(wc *)",
       "Bash(grep *)",
       "Bash(which *)",
-      "Bash(diff *)"
+      "Bash(diff *)",
+
+      "Bash(python Scripts/cleancode.py)"
     ],
     "deny": [
       "PowerShell",

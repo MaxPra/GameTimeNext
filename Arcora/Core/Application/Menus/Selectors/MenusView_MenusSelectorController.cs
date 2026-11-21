@@ -1,0 +1,126 @@
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.Menus.Controller;
+using Arcora.Core.Application.Menus.ViewModel;
+using Arcora.Core.Application.Menus.Views;
+using Arcora.Core.Application.Profiles;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework.UI.Dialogs;
+using Arcora.Core.Framework.Utils;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using UIX.ViewController.Engine.Controller;
+using UIX.ViewController.Engine.FrameworkElements;
+using UIX.ViewController.Engine.FrameworkElements.Selectors;
+using UIX.ViewController.Engine.Runnables;
+using UIX.ViewController.Engine.Utils;
+using static UIX.ViewController.Engine.FrameworkElements.UIXContextMenuFactory;
+
+namespace Arcora.Core.Application.Menus.Selectors
+{
+    public class MenusView_MenusSelectorController : UIXSelectorControllerBase<MenusApp, MenusView, UIXTreeGrid>
+    {
+        public MenusView_MenusSelectorController(UIXApplication app) : base(app)
+        {
+        }
+
+        private T1MENUE? GetSelectedEntry()
+        {
+            return GetSelectedItem<MenusTreeGridRow>()?.RowObject as T1MENUE;
+        }
+
+        private static void BuildContextMenu(DataGridRow dgRow, T1MENUE t1menue)
+        {
+            ContextMenuBuilder contextBuilder = UIXContextMenuFactory.Create("MenusContextMenu");
+            contextBuilder.SetStyle(ProfilesContextMenuBuilder.contextMenuStyle);
+
+            // First entry = double click
+            contextBuilder.AddItem("ctxtEdit", "Edit", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Edit), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
+
+            if (t1menue.METY == "01")
+            {
+                contextBuilder.AddItem("ctxtNewFolder", "New folder", icon: UIXContextMenuFactory.CreateMdlIcon(""), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
+                contextBuilder.AddItem("ctxtNewApplication", "New application call", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Add), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
+            }
+
+            contextBuilder.AddItem("ctxtMoveUp", "Move up", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Up), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
+            contextBuilder.AddItem("ctxtMoveDown", "Move down", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Down), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
+            contextBuilder.AddItem("ctxtDelete", "Delete", icon: UIXContextMenuFactory.CreateMdlIcon(UIXMdlIcons.Delete), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
+
+            dgRow.ContextMenu = contextBuilder.Build();
+        }
+
+        protected void EV_CtxtOpening(FrameworkElement target)
+        {
+            if (target is not DataGridRow row)
+                return;
+
+            if (row.DataContext is not MenusTreeGridRow menuRow || menuRow.RowObject is not T1MENUE t1menue)
+                return;
+
+            GetSelector().SelectedItem = menuRow;
+
+            BuildContextMenu(row, t1menue);
+
+            row.ContextMenu!.PlacementTarget = row;
+            row.ContextMenu.Placement = PlacementMode.MousePoint;
+            row.ContextMenu.IsOpen = true;
+        }
+
+        protected void EV_ctxtEdit()
+        {
+            GetApp().MenusDetailView!.txbDescription.Focus();
+        }
+
+        protected void EV_ctxtNewFolder()
+        {
+            if (GetSelectedEntry() is T1MENUE parent)
+                GetViewController<MenusViewController>().CreateNewEntry("01", parent.MEID);
+        }
+
+        protected void EV_ctxtNewApplication()
+        {
+            if (GetSelectedEntry() is T1MENUE parent)
+                GetViewController<MenusViewController>().CreateNewEntry("02", parent.MEID);
+        }
+
+        protected async Task EV_ctxtMoveUp()
+        {
+            if (GetSelectedEntry() is T1MENUE t1menue && TFMENUE.Move(GetApp(), t1menue, -1))
+                await GetViewController<MenusViewController>().BuildTreeAsync(t1menue.MEID);
+        }
+
+        protected async Task EV_ctxtMoveDown()
+        {
+            if (GetSelectedEntry() is T1MENUE t1menue && TFMENUE.Move(GetApp(), t1menue, 1))
+                await GetViewController<MenusViewController>().BuildTreeAsync(t1menue.MEID);
+        }
+
+        protected async Task EV_ctxtDelete()
+        {
+            if (GetSelectedEntry() is not T1MENUE t1menue)
+                return;
+
+            CFMBOX cfmbox = GetApp().GetApplication<CFMBOX>(UIXApplicationStartTarget.Window);
+
+            // A folder takes everything below it along
+            bool hasChildren = TFMENUE.GetChildren(GetApp(), t1menue.MEID).Count > 0;
+            string message = hasChildren
+                ? GetErrorMessage("GLO0002", $"The folder \"{t1menue.MEDE}\"")
+                : GetErrorMessage("GLO0001", $"\"{t1menue.MEDE}\"");
+
+            // Not while it is open elsewhere (record lock); checked before asking
+            bool deleted = FnRecordLock.Run(GetApp(), () =>
+            {
+                if (!cfmbox.ConfirmDelete(message))
+                    return false;
+
+                TFMENUE.DeleteWithChildren(GetApp(), t1menue.MEID);
+                return true;
+            }, t1menue);
+
+            if (deleted)
+                await GetViewController<MenusViewController>().BuildTreeAsync(t1menue.MEPA);
+        }
+    }
+}

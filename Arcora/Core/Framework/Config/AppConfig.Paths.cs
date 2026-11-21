@@ -1,0 +1,378 @@
+﻿using Arcora.Core.Framework.Utils;
+using System.IO;
+using System.Text.Json.Serialization;
+using UIX.ViewController.Engine.Utils;
+
+namespace Arcora.Core.Framework.Config
+{
+    internal partial class AppConfig
+    {
+        public static class Root
+        {
+            public static string PublisherName = "CryloudStudios";
+            public static string ApplicationName = "arcora";
+
+            /// <summary>Root of the namespaces (also of the generated classes).</summary>
+            public static string InternalApplicationName = "Arcora";
+
+            /// <summary>Name of the GitHub repository whose releases the update check reads.</summary>
+            public static string GitHubRepositoryName = "GameTimeNext";
+            public static string DatabaseFileName = ApplicationName + "Db.db";
+            public static string LogDatabaseFileName = "LogDb.db";
+            public static string AppConfigFileName = "appConfig.arcconf";
+
+            /// <summary>Former name of the config file; renamed to <see cref="AppConfigFileName"/> when the config is loaded.</summary>
+            public static string FormerAppConfigFileName = "appConfig.gtnconf";
+
+            public static string BackupFileExtension = ".arcbkp";
+
+            /// <summary>Former extension of the backups; backups with it can still be imported and are cleaned up too.</summary>
+            public static string FormerBackupFileExtension = ".gtnbkp";
+            public static string AppLogFileName = $"ApplicationLog_{DateTime.Now:yyyy-MM-dd}.log";
+
+            [JsonIgnore]
+            public static string ApplicationDirectoryPath
+            {
+                get => AppContext.BaseDirectory;
+            }
+
+            [JsonIgnore]
+            public static string StorageDirectoryPath
+            {
+                get => ReturnEnsureDirectoryExists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), PublisherName));
+            }
+
+            [JsonIgnore]
+            public static string LocalStorageDirectoryPath
+            {
+                get => ReturnEnsureDirectoryExists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), PublisherName, ApplicationName));
+            }
+        }
+
+        public static class Dev
+        {
+            /// <summary>Name of the solution file (without .slnx) and of the folder of the app project in it.</summary>
+            public static string SolutionName = "Arcora";
+
+            [JsonIgnore]
+            public static string DevDirectoryPath
+            {
+                get => ReturnEnsureDirectoryExists(Path.Combine(Root.LocalStorageDirectoryPath, "dev"));
+            }
+
+            [JsonIgnore]
+            public static string GenClassDirectoryPath
+            {
+                get => ReturnEnsureDirectoryExists(Path.Combine(DevDirectoryPath, "genClass"));
+            }
+
+            [JsonIgnore]
+            public static string GenClassTableObjectsDirectoryPath
+            {
+                get => ReturnEnsureDirectoryExists(Path.Combine(GenClassDirectoryPath, "TableObjects"));
+            }
+
+            [JsonIgnore]
+            public static string GenClassDataManagersDirectoryPath
+            {
+                get => ReturnEnsureDirectoryExists(Path.Combine(GenClassDirectoryPath, "DataManagers"));
+            }
+
+            [JsonIgnore]
+            public static string BackupDirectoryPath
+            {
+                get => ReturnEnsureDirectoryExists(Path.Combine(DevDirectoryPath, "backup"));
+            }
+
+            [JsonIgnore]
+            public static string SolutionDirectoryPath
+            {
+                get
+                {
+                    string startingDirectoryPath = Root.ApplicationDirectoryPath;
+
+                    DirectoryInfo? current = new DirectoryInfo(startingDirectoryPath);
+                    while (current is not null)
+                    {
+                        string slnxFilePath = Path.Combine(current.FullName, $"{SolutionName}.slnx");
+                        if (File.Exists(slnxFilePath))
+                            return current.FullName;
+
+                        current = current.Parent;
+                    }
+
+                    return startingDirectoryPath;
+                }
+            }
+
+            [JsonIgnore]
+            public static string DevSyncDirectoryPath
+            {
+                get => Path.Combine(SolutionDirectoryPath, "devsync");
+            }
+
+            [JsonIgnore]
+            public static string DevSyncDefaultImagesSymbolsDirectoryPath
+            {
+                get => GetImagesAndSymbolsDirectoryPath(DevSyncDirectoryPath);
+            }
+
+            public static string GetImagesAndSymbolsDirectoryPath(string parentDirectoryPath)
+            {
+                string temp = ReturnEnsureDirectoryExists(Path.Combine(parentDirectoryPath, "imagesAndSymbols"), requireParentExists: true);
+                return ReturnEnsureDirectoryExists(Path.Combine(temp, "default"), requireParentExists: true);
+            }
+
+            [JsonIgnore]
+            public static string ImportPackagesDirectoryPath
+            {
+                get => ReturnEnsureDirectoryExists(Path.Combine(SolutionDirectoryPath, SolutionName, "ImportPackages"));
+            }
+
+            [JsonIgnore]
+            public static string ImportPackageTestDirectoryPath
+            {
+                get => ReturnEnsureDirectoryExists(Path.Combine(DevDirectoryPath, "importPackageTest"));
+            }
+
+            [JsonIgnore]
+            public static string ImportPackageTestFilePath
+            {
+                get => Path.Combine(ImportPackageTestDirectoryPath, Root.DatabaseFileName);
+            }
+
+            [JsonIgnore]
+            public static string RemoteMonitoringBinDirectoryPath = @"..\..\..\..\..\RemoteMonitoring\bin\Release\net10.0\publish";
+        }
+
+        public static class Storage
+        {
+            [JsonIgnore]
+            private static string _normalStorageDirectoryName
+            {
+                get
+                {
+                    string temp = Root.ApplicationName;
+
+                    // Modes
+                    if (AppEnvironment.StartArguments is not null && AppEnvironment.StartArguments.ContainsKey("m") && !FnString.IsNullEmptyOrWhitespace(AppEnvironment.StartArguments["m"]))
+                        temp += "_m" + AppEnvironment.StartArguments["m"];
+
+                    return temp;
+                }
+            }
+
+            [JsonIgnore]
+            private static string _storageDirectoryName
+            {
+                get
+                {
+                    string temp = _normalStorageDirectoryName;
+
+                    if (FnSystem.IsDebug())
+                        temp += "_dev";
+
+                    return temp;
+                }
+            }
+
+            [JsonIgnore]
+            public static string NormalStorageDirectoryPath
+            {
+                get => Path.Combine(Root.StorageDirectoryPath, _normalStorageDirectoryName);
+            }
+
+            [JsonIgnore]
+            public static string StorageDirectoryPath
+            {
+                get => Path.Combine(Root.StorageDirectoryPath, _storageDirectoryName);
+            }
+
+            [JsonIgnore]
+            private static string _dataDirectoryPath
+            {
+                get => ReturnEnsureDirectoryExists(Path.Combine(StorageDirectoryPath, "data"), requireParentExists: true);
+            }
+
+            [JsonIgnore]
+            public static string ProfileCoversDirectoryPath
+            {
+                get => ReturnEnsureDirectoryExists(Path.Combine(_dataDirectoryPath, "profileCovers"), requireParentExists: true);
+            }
+
+            [JsonIgnore]
+            public static string ImagesSymbolsDirectoryPath
+            {
+                get => ReturnEnsureDirectoryExists(Path.Combine(_dataDirectoryPath, "imagesAndSymbols"), requireParentExists: true);
+            }
+
+            [JsonIgnore]
+            public static string DefaultImagesSymbolsDirectoryPath
+            {
+                get => ReturnEnsureDirectoryExists(Path.Combine(ImagesSymbolsDirectoryPath, "default"), requireParentExists: true);
+            }
+
+            [JsonIgnore]
+            public static string UserImagesSymbolsDirectoryPath
+            {
+                get => ReturnEnsureDirectoryExists(Path.Combine(ImagesSymbolsDirectoryPath, "user"), requireParentExists: true);
+            }
+
+            [JsonIgnore]
+            public static string AppConfigFilePath
+            {
+                get => Path.Combine(StorageDirectoryPath, Root.AppConfigFileName);
+            }
+
+            [JsonIgnore]
+            public static string FormerAppConfigFilePath
+            {
+                get => Path.Combine(StorageDirectoryPath, Root.FormerAppConfigFileName);
+            }
+
+            [JsonIgnore]
+            public static string NormalDatabaseFilePath
+            {
+                get => Path.Combine(NormalStorageDirectoryPath, Root.DatabaseFileName);
+            }
+
+            [JsonIgnore]
+            public static string DatabaseFilePath
+            {
+                get => Path.Combine(StorageDirectoryPath, Root.DatabaseFileName);
+            }
+        }
+
+        public static class Temp
+        {
+            [JsonIgnore]
+            public static string SteamGridDBCoversDirectoryPath
+            {
+                get => ReturnEnsureDirectoryExists(Path.Combine(_tempDirectoryPath, "steamGridDbCovers"));
+            }
+
+            [JsonIgnore]
+            public static string ProfileCoversDirectoryPath
+            {
+                get => ReturnEnsureDirectoryExists(Path.Combine(_tempDirectoryPath, "tempCovers"));
+            }
+
+            [JsonIgnore]
+            public static string ImportDirectoryPath
+            {
+                get => ReturnEnsureDirectoryExists(Path.Combine(_tempDirectoryPath, "import"));
+            }
+
+            [JsonIgnore]
+            public static string BackupDirectoryPath
+            {
+                get => ReturnEnsureDirectoryExists(Path.Combine(_tempDirectoryPath, "backup"));
+            }
+
+            /// <summary>Sections of the covers printed on the discs (DiscPrint), so each cover is analyzed only once.</summary>
+            [JsonIgnore]
+            public static string DiscPrintCacheFilePath
+            {
+                get => Path.Combine(_tempDirectoryPath, "discPrintCache.json");
+            }
+        }
+
+        /// <summary>
+        /// Paths of Windows itself (read only, never created by the app).
+        /// </summary>
+        public static class Windows
+        {
+            /// <summary>
+            /// Copy of the current desktop wallpaper kept by Windows. Also exists for slideshow / Spotlight,
+            /// where the wallpaper setting doesn't point to a single file.
+            /// </summary>
+            [JsonIgnore]
+            public static string TranscodedWallpaperFilePath
+            {
+                get => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Microsoft", "Windows", "Themes", "TranscodedWallpaper");
+            }
+        }
+
+        [JsonIgnore]
+        public static string LogsDirectoryPath
+        {
+            get
+            {
+                string temp = Root.LocalStorageDirectoryPath;
+
+                if (FnSystem.IsDebug())
+                    temp = Dev.DevDirectoryPath;
+
+                return ReturnEnsureDirectoryExists(Path.Combine(temp, "logs"));
+            }
+        }
+
+        [JsonIgnore]
+        private static string _tempDirectoryPath
+        {
+            get => ReturnEnsureDirectoryExists(Path.Combine(Root.LocalStorageDirectoryPath, "temp"));
+        }
+
+        [JsonIgnore]
+        public static string LogFilePath
+        {
+            get => ReturnEnsureFileExists(Path.Combine(LogsDirectoryPath, Root.AppLogFileName));
+        }
+
+        [JsonIgnore]
+        public static string LogDatabaseFilePath
+        {
+            get => Path.Combine(LogsDirectoryPath, Root.LogDatabaseFileName);
+        }
+
+        private static void EnsurePathsExist()
+        {
+            string temp = string.Empty;
+
+            // Root
+            temp = Root.ApplicationDirectoryPath;
+            temp = Root.StorageDirectoryPath;
+            temp = Root.LocalStorageDirectoryPath;
+
+            // Dev
+            if (FnSystem.IsDebug())
+            {
+                temp = Dev.GenClassDirectoryPath;
+                temp = Dev.BackupDirectoryPath;
+            }
+
+            // Storage
+            temp = Storage.NormalStorageDirectoryPath;
+            temp = Storage.StorageDirectoryPath;
+            temp = Storage.ProfileCoversDirectoryPath;
+            temp = Storage.ImagesSymbolsDirectoryPath;
+            temp = Storage.DefaultImagesSymbolsDirectoryPath;
+            temp = Storage.UserImagesSymbolsDirectoryPath;
+            temp = Storage.AppConfigFilePath;
+            temp = Storage.DatabaseFilePath;
+
+            // Temp
+            temp = Temp.SteamGridDBCoversDirectoryPath;
+            temp = Temp.ProfileCoversDirectoryPath;
+            temp = Temp.ImportDirectoryPath;
+            temp = Temp.BackupDirectoryPath;
+
+            // General
+            temp = LogFilePath;
+        }
+
+        private static string ReturnEnsureDirectoryExists(string path, bool requireParentExists = false)
+        {
+            FnDirectory.EnsureDirectoryExists(path, requireParentExists);
+
+            return path;
+        }
+
+        private static string ReturnEnsureFileExists(string path)
+        {
+            FnFile.EnsureFileExists(path);
+
+            return path;
+        }
+    }
+}

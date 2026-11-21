@@ -1,0 +1,652 @@
+<uix:UIXUserControlBase
+    x:Class="Arcora.Core.Application.Dashboard.Views.DashboardView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:uixsel="clr-namespace:UIX.ViewController.Engine.FrameworkElements.Selectors;assembly=UIX.ViewController.Engine"
+    xmlns:uixcb="clr-namespace:UIX.ViewController.Engine.FrameworkElements.ComboBoxes;assembly=UIX.ViewController.Engine"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="clr-namespace:Arcora.Core.Framework.UI"
+    xmlns:uix="clr-namespace:UIX.ViewController.Engine.FrameworkElements.UserControls;assembly=UIX.ViewController.Engine"
+    HorizontalAlignment="Stretch"
+    VerticalAlignment="Stretch"
+    HorizontalContentAlignment="Stretch"
+    VerticalContentAlignment="Stretch"
+    d:DesignHeight="900"
+    d:DesignWidth="1150"
+    mc:Ignorable="d">
+
+    <Grid Style="{StaticResource View.Root}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="16" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="16" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!--  ===== Toolbar: time span (selection, period navigation, the period itself) on the left, refresh on the right =====  -->
+        <Border
+            Grid.Row="0"
+            Padding="16"
+            Style="{StaticResource Card}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <uixcb:UIXComboBox
+                    x:Name="CmbTimeRange"
+                    ShowKeys="False"
+                    Grid.Column="0"
+                    Width="190"
+                    Height="36"
+                    VerticalAlignment="Center" />
+
+                <!--  Previous / next period (day, week, month only)  -->
+                <StackPanel
+                    x:Name="pnlTimeSpanOffset"
+                    Grid.Column="1"
+                    Margin="16,0,0,0"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal">
+                    <Button
+                        x:Name="BtnDecreaseTimeSpan"
+                        ToolTip="Previous period"
+                        Style="{StaticResource Button.Icon}">
+                        <TextBlock Style="{StaticResource Text.Icon}" Text="&#xE76B;" />
+                    </Button>
+
+                    <Button
+                        x:Name="BtnIncreaseTimeSpan"
+                        Margin="8,0,0,0"
+                        ToolTip="Next period"
+                        Style="{StaticResource Button.Icon}">
+                        <TextBlock Style="{StaticResource Text.Icon}" Text="&#xE76C;" />
+                    </Button>
+                </StackPanel>
+
+                <!--  The period the dashboard shows  -->
+                <TextBlock
+                    x:Name="txtTimeSpanRange"
+                    Grid.Column="2"
+                    Margin="16,0,0,0"
+                    Style="{StaticResource Text.BodyStrong}"
+                    TextWrapping="NoWrap" />
+
+                <Button
+                    x:Name="BtnRefresh"
+                    Grid.Column="4"
+                    VerticalAlignment="Center"
+                    ToolTip="Refresh"
+                    Style="{StaticResource Button.Icon}">
+                    <TextBlock Style="{StaticResource Text.Icon}" Text="&#xE72C;" />
+                </Button>
+            </Grid>
+        </Border>
+
+        <!--  ===== Top row: most played (hero) + last played =====  -->
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1.2*" MinWidth="380" />
+                <ColumnDefinition Width="16" />
+                <ColumnDefinition Width="1*" MinWidth="320" />
+            </Grid.ColumnDefinitions>
+
+            <!--  Most played  -->
+            <Border
+                x:Name="MostPlayedCard"
+                Grid.Column="0"
+                Padding="0"
+                Style="{StaticResource Card}">
+                <Grid ui:ClipBehaviors.CornerRadius="6">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <!--  Atmosphere: the cover blurred behind the card  -->
+                    <Border Grid.RowSpan="2" Style="{StaticResource Dashboard.HeroBackdrop}">
+                        <Border.Background>
+                            <ImageBrush ImageSource="{Binding Content, ElementName=ccMostPlayedCase}" Stretch="UniformToFill" />
+                        </Border.Background>
+                    </Border>
+
+                    <StackPanel Grid.Row="0" Style="{StaticResource Dashboard.CardHeader}">
+                        <TextBlock Style="{StaticResource Dashboard.CardHeaderIcon}" Text="&#xE7FC;" />
+                        <TextBlock Style="{StaticResource Dashboard.CardHeaderText}" Text="Most Played" />
+                    </StackPanel>
+
+                    <Grid Grid.Row="1" Margin="{StaticResource Dashboard.CardContentMargin}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="24" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!--  Showcase: the case slightly open on a plinth, the disc in front (style GameCase.Showcase, base 340 x 430)  -->
+                        <Viewbox
+                            Grid.Column="0"
+                            MaxHeight="420"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Stretch="Uniform">
+                            <ContentControl x:Name="ccMostPlayedCase" Style="{StaticResource GameCase.Showcase}" />
+                        </Viewbox>
+
+                        <!--  Title, key figures, share of the playtime  -->
+                        <StackPanel
+                            Grid.Column="2"
+                            Margin="0,16,0,0"
+                            VerticalAlignment="Top">
+                            <TextBlock
+                                x:Name="txtMostPlayedTitle"
+                                Style="{StaticResource Dashboard.HeroTitle}"
+                                Text="n.A." />
+
+                            <!--  Key figures of the game in the period  -->
+                            <Grid Margin="0,24,0,0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="12" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="12" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <Border
+                                    Grid.Row="0"
+                                    Grid.Column="0"
+                                    Style="{StaticResource Dashboard.StatTile}">
+                                    <StackPanel VerticalAlignment="Center">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Style="{StaticResource Dashboard.StatIcon}" Text="&#xE823;" />
+                                            <TextBlock Style="{StaticResource Dashboard.StatCaption}" Text="Playtime" />
+                                        </StackPanel>
+                                        <TextBlock
+                                            x:Name="txtMostPlayedPlaytime"
+                                            Style="{StaticResource Dashboard.HeroValue}"
+                                            Text="n.A." />
+                                    </StackPanel>
+                                </Border>
+
+                                <Border
+                                    Grid.Row="0"
+                                    Grid.Column="2"
+                                    Style="{StaticResource Dashboard.StatTile}">
+                                    <StackPanel VerticalAlignment="Center">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Style="{StaticResource Dashboard.StatIcon}" Text="&#xE787;" />
+                                            <TextBlock Style="{StaticResource Dashboard.StatCaption}" Text="Days played" />
+                                        </StackPanel>
+                                        <TextBlock
+                                            x:Name="txtMostPlayedDays"
+                                            Style="{StaticResource Dashboard.HeroValue}"
+                                            Text="n.A." />
+                                    </StackPanel>
+                                </Border>
+
+                                <Border
+                                    Grid.Row="2"
+                                    Grid.Column="0"
+                                    Style="{StaticResource Dashboard.StatTile}">
+                                    <StackPanel VerticalAlignment="Center">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Style="{StaticResource Dashboard.StatIcon}" Text="&#xE916;" />
+                                            <TextBlock Style="{StaticResource Dashboard.StatCaption}" Text="Per day played" />
+                                        </StackPanel>
+                                        <TextBlock
+                                            x:Name="txtMostPlayedAverage"
+                                            Style="{StaticResource Dashboard.HeroValue}"
+                                            Text="n.A." />
+                                    </StackPanel>
+                                </Border>
+
+                                <Border
+                                    Grid.Row="2"
+                                    Grid.Column="2"
+                                    Style="{StaticResource Dashboard.StatTile}">
+                                    <StackPanel VerticalAlignment="Center">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Style="{StaticResource Dashboard.StatIcon}" Text="&#xE9D9;" />
+                                            <TextBlock Style="{StaticResource Dashboard.StatCaption}" Text="Share of your playtime" />
+                                        </StackPanel>
+                                        <TextBlock
+                                            x:Name="txtMostPlayedShare"
+                                            Style="{StaticResource Dashboard.HeroValue}"
+                                            Text="n.A." />
+                                        <!--  ScaleX of the fill is set by the controller  -->
+                                        <Grid Margin="0,8,0,2">
+                                            <Border Style="{StaticResource ProfileDetail.ProgressTrack}" />
+                                            <Border Style="{StaticResource ProfileDetail.ProgressFill}">
+                                                <Border.RenderTransform>
+                                                    <ScaleTransform x:Name="scMostPlayedShare" ScaleX="0" />
+                                                </Border.RenderTransform>
+                                            </Border>
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <!--  Last played  -->
+            <Border
+                Grid.Column="2"
+                Height="{Binding ElementName=MostPlayedCard, Path=ActualHeight}"
+                Padding="0"
+                Style="{StaticResource Card}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Style="{StaticResource Dashboard.CardHeader}">
+                        <TextBlock Style="{StaticResource Dashboard.CardHeaderIcon}" Text="&#xE81C;" />
+                        <TextBlock Style="{StaticResource Dashboard.CardHeaderText}" Text="Last Played" />
+                    </StackPanel>
+
+                    <Grid
+                        Grid.Row="1"
+                        Margin="{StaticResource Dashboard.CardContentMargin}"
+                        VerticalAlignment="Top">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="16" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!--  Game case (style GameCase, base 246 x 366), as tall as the case in the showcase; opens while hovered  -->
+                        <Viewbox
+                            Grid.Column="0"
+                            MaxWidth="236"
+                            Margin="0,16,0,0"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Stretch="Uniform">
+                            <ContentControl
+                                x:Name="ccLastPlayedCase"
+                                Width="236"
+                                Height="351"
+                                Style="{StaticResource GameCase}" />
+                        </Viewbox>
+
+                        <StackPanel
+                            Grid.Column="2"
+                            Margin="0,16,0,0"
+                            VerticalAlignment="Top">
+                            <TextBlock
+                                x:Name="txtLastPlayedTitle"
+                                Margin="0,0,0,12"
+                                Style="{StaticResource Text.Title}"
+                                Text="n.A."
+                                TextTrimming="CharacterEllipsis" />
+
+                            <Border Style="{StaticResource Dashboard.StatTile}">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Style="{StaticResource Dashboard.StatIcon}" Text="&#xE787;" />
+                                        <TextBlock Style="{StaticResource Dashboard.StatCaption}" Text="Last played" />
+                                    </StackPanel>
+                                    <TextBlock
+                                        x:Name="txtLastPlayedDate"
+                                        Style="{StaticResource Dashboard.StatValue}"
+                                        Text="n.A." />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Margin="0,12,0,0" Style="{StaticResource Dashboard.StatTile}">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Style="{StaticResource Dashboard.StatIcon}" Text="&#xE823;" />
+                                        <TextBlock Style="{StaticResource Dashboard.StatCaption}" Text="Playtime" />
+                                    </StackPanel>
+                                    <TextBlock
+                                        x:Name="txtLastPlayedTime"
+                                        Style="{StaticResource Dashboard.StatValue}"
+                                        Text="n.A." />
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!--  ===== Bottom row: games played, playtime overview, overall statistics =====  -->
+        <Grid Grid.Row="4" MinHeight="220">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1.2*" />
+                <ColumnDefinition Width="16" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="16" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!--  Games played  -->
+            <Border
+                Grid.Column="0"
+                Padding="0"
+                Style="{StaticResource Card}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Style="{StaticResource Dashboard.CardHeader}">
+                        <TextBlock Style="{StaticResource Dashboard.CardHeaderIcon}" Text="&#xE8FD;" />
+                        <TextBlock Style="{StaticResource Dashboard.CardHeaderText}" Text="Games Played" />
+                    </StackPanel>
+
+                    <uixsel:UIXListView
+                        x:Name="ListViewRecentGames"
+                        Grid.Row="1"
+                        Margin="16,4,16,8"
+                        ui:ScrollFade.Length="32"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Focusable="False"
+                        ItemContainerStyle="{StaticResource DashboardRecentGamesItemStyle}"
+                        ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                        ScrollViewer.VerticalScrollBarVisibility="Auto"
+                        SelectionMode="Single">
+
+                        <uixsel:UIXListView.ItemTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource Dashboard.GameRow}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="12" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="12" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <Border Grid.Column="0" Style="{StaticResource Dashboard.GameThumb}">
+                                            <Border.Background>
+                                                <ImageBrush ImageSource="{Binding COCOVIM}" Stretch="UniformToFill" />
+                                            </Border.Background>
+                                        </Border>
+
+                                        <StackPanel
+                                            Grid.Column="2"
+                                            VerticalAlignment="Center"
+                                            Orientation="Vertical">
+                                            <TextBlock
+                                                Margin="0"
+                                                Style="{StaticResource Text.BodyStrong}"
+                                                Text="{Binding ItemObject.GANA}"
+                                                TextTrimming="CharacterEllipsis"
+                                                TextWrapping="NoWrap" />
+                                            <TextBlock
+                                                Margin="0,2,0,0"
+                                                Style="{StaticResource Text.Caption}"
+                                                Text="{Binding ItemObject.LAPL, StringFormat={}{0:dd.MM.yyyy HH:mm}}" />
+                                        </StackPanel>
+
+                                        <TextBlock
+                                            Grid.Column="4"
+                                            Margin="0"
+                                            FontSize="16"
+                                            Style="{StaticResource Text.BodyStrong}"
+                                            Text="{Binding COCPLTI}" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </uixsel:UIXListView.ItemTemplate>
+                    </uixsel:UIXListView>
+                </Grid>
+            </Border>
+
+            <!--  Playtime overview: total playtime with days / games / average, playtime per day as bars below  -->
+            <Border
+                Grid.Column="2"
+                Padding="0"
+                Style="{StaticResource Card}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Style="{StaticResource Dashboard.CardHeader}">
+                        <TextBlock Style="{StaticResource Dashboard.CardHeaderIcon}" Text="&#xE823;" />
+                        <TextBlock Style="{StaticResource Dashboard.CardHeaderText}" Text="Playtime Overview" />
+                    </StackPanel>
+
+                    <Grid Grid.Row="1" Margin="{StaticResource Dashboard.CardContentMargin}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="12" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <Border Grid.Row="0" Style="{StaticResource Dashboard.StatTile}">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Style="{StaticResource Dashboard.StatIcon}" Text="&#xE823;" />
+                                    <TextBlock Style="{StaticResource Dashboard.StatCaption}" Text="Total playtime" />
+                                </StackPanel>
+                                <TextBlock
+                                    x:Name="txtTotalPlaytime"
+                                    Style="{StaticResource Dashboard.StatValue.Large}"
+                                    Text="n.A." />
+                                <!--  Days, games and the average in one muted line  -->
+                                <WrapPanel Margin="0,2,0,0">
+                                    <TextBlock
+                                        x:Name="txtDaysPlayed"
+                                        Style="{StaticResource Text.Caption}"
+                                        Text="n.A." />
+                                    <TextBlock Style="{StaticResource Dashboard.CaptionSeparator}" />
+                                    <TextBlock
+                                        x:Name="txtGamesPlayed"
+                                        Style="{StaticResource Text.Caption}"
+                                        Text="n.A." />
+                                    <TextBlock Style="{StaticResource Dashboard.CaptionSeparator}" />
+                                    <TextBlock
+                                        x:Name="txtAveragePerDay"
+                                        Style="{StaticResource Text.Caption}"
+                                        Text="n.A." />
+                                </WrapPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <!--  Playtime per day: one series (no legend, the caption names it), bars relative to the peak day  -->
+                        <Border Grid.Row="2" Style="{StaticResource Dashboard.StatTile}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Style="{StaticResource Dashboard.StatIcon}" Text="&#xE9D9;" />
+                                    <TextBlock
+                                        x:Name="txtDayBarsCaption"
+                                        Style="{StaticResource Dashboard.StatCaption}"
+                                        Text="Last 7 days" />
+                                </StackPanel>
+
+                                <ItemsControl
+                                    x:Name="icDayBars"
+                                    Grid.Row="1"
+                                    Margin="0,8,0,0"
+                                    ItemTemplate="{StaticResource Dashboard.DayBarTemplate}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <UniformGrid Rows="1" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                </ItemsControl>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <!--  Overall statistics: fixed periods (today, week, month, year) and the longest session  -->
+            <Border
+                Grid.Column="4"
+                Padding="0"
+                Style="{StaticResource Card}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Style="{StaticResource Dashboard.CardHeader}">
+                        <TextBlock Style="{StaticResource Dashboard.CardHeaderIcon}" Text="&#xE9D9;" />
+                        <TextBlock Style="{StaticResource Dashboard.CardHeaderText}" Text="Overall Statistics" />
+                    </StackPanel>
+
+                    <Grid Grid.Row="1" Margin="{StaticResource Dashboard.CardContentMargin}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="12" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="12" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="12" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Border
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            Style="{StaticResource Dashboard.StatTile}">
+                            <StackPanel VerticalAlignment="Center">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Style="{StaticResource Dashboard.StatIcon}" Text="&#xE706;" />
+                                    <TextBlock Style="{StaticResource Dashboard.StatCaption}" Text="Played today" />
+                                </StackPanel>
+                                <TextBlock
+                                    x:Name="txtStatPlayedToday"
+                                    Style="{StaticResource Dashboard.StatValue}"
+                                    Text="n.A." />
+                            </StackPanel>
+                        </Border>
+
+                        <Border
+                            Grid.Row="0"
+                            Grid.Column="2"
+                            Style="{StaticResource Dashboard.StatTile}">
+                            <StackPanel VerticalAlignment="Center">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Style="{StaticResource Dashboard.StatIcon}" Text="&#xE787;" />
+                                    <TextBlock Style="{StaticResource Dashboard.StatCaption}" Text="This week" />
+                                </StackPanel>
+                                <TextBlock
+                                    x:Name="txtStatThisWeek"
+                                    Style="{StaticResource Dashboard.StatValue}"
+                                    Text="n.A." />
+                                <TextBlock
+                                    x:Name="txtStatThisWeekDays"
+                                    Margin="0,2,0,0"
+                                    Style="{StaticResource Text.Caption}"
+                                    Text="n.A."
+                                    TextTrimming="CharacterEllipsis"
+                                    TextWrapping="NoWrap" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border
+                            Grid.Row="2"
+                            Grid.Column="0"
+                            Style="{StaticResource Dashboard.StatTile}">
+                            <StackPanel VerticalAlignment="Center">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Style="{StaticResource Dashboard.StatIcon}" Text="&#xE787;" />
+                                    <TextBlock Style="{StaticResource Dashboard.StatCaption}" Text="This month" />
+                                </StackPanel>
+                                <TextBlock
+                                    x:Name="txtStatThisMonth"
+                                    Style="{StaticResource Dashboard.StatValue}"
+                                    Text="n.A." />
+                                <TextBlock
+                                    x:Name="txtStatThisMonthDays"
+                                    Margin="0,2,0,0"
+                                    Style="{StaticResource Text.Caption}"
+                                    Text="n.A."
+                                    TextTrimming="CharacterEllipsis"
+                                    TextWrapping="NoWrap" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border
+                            Grid.Row="2"
+                            Grid.Column="2"
+                            Style="{StaticResource Dashboard.StatTile}">
+                            <StackPanel VerticalAlignment="Center">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Style="{StaticResource Dashboard.StatIcon}" Text="&#xE787;" />
+                                    <TextBlock Style="{StaticResource Dashboard.StatCaption}" Text="This year" />
+                                </StackPanel>
+                                <TextBlock
+                                    x:Name="txtStatThisYear"
+                                    Style="{StaticResource Dashboard.StatValue}"
+                                    Text="n.A." />
+                                <TextBlock
+                                    x:Name="txtStatThisYearDays"
+                                    Margin="0,2,0,0"
+                                    Style="{StaticResource Text.Caption}"
+                                    Text="n.A."
+                                    TextTrimming="CharacterEllipsis"
+                                    TextWrapping="NoWrap" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border
+                            Grid.Row="4"
+                            Grid.Column="0"
+                            Grid.ColumnSpan="3"
+                            Style="{StaticResource Dashboard.StatTile}">
+                            <StackPanel VerticalAlignment="Center">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Style="{StaticResource Dashboard.StatIcon}" Text="&#xE916;" />
+                                    <TextBlock Style="{StaticResource Dashboard.StatCaption}" Text="Longest session" />
+                                </StackPanel>
+                                <TextBlock
+                                    x:Name="txtStatLongestSession"
+                                    Style="{StaticResource Dashboard.StatValue}"
+                                    Text="n.A." />
+                                <!--  Game and date in one muted line  -->
+                                <StackPanel Margin="0,2,0,0" Orientation="Horizontal">
+                                    <TextBlock
+                                        x:Name="txtStatLongestSessionGame"
+                                        MaxWidth="260"
+                                        Style="{StaticResource Text.Caption}"
+                                        Text="n.A."
+                                        TextTrimming="CharacterEllipsis"
+                                        TextWrapping="NoWrap" />
+                                    <TextBlock
+                                        x:Name="txtStatLongestSessionDate"
+                                        Margin="6,0,0,0"
+                                        Style="{StaticResource Text.Caption}"
+                                        Text="(n.A.)"
+                                        TextWrapping="NoWrap" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+
+</uix:UIXUserControlBase>

@@ -1,0 +1,59 @@
+﻿<Window
+    x:Class="Arcora.Core.Framework.UI.ToastMessage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="ToastMessage"
+    Width="340"
+    AllowsTransparency="True"
+    Background="Transparent"
+    Focusable="False"
+    ResizeMode="NoResize"
+    ShowActivated="False"
+    ShowInTaskbar="False"
+    SizeToContent="Height"
+    Topmost="True"
+    WindowStartupLocation="Manual"
+    WindowStyle="None"
+    mc:Ignorable="d">
+
+    <!--
+        Shown, stacked and animated by CFToast. Glass like the popups: acrylic blur behind the window, the glass layer
+        draws the tint. The blur always fills the whole window, so it is only switched on once the content has popped in;
+        until then the opaque layer (bdSolid) covers the glass and fades out afterwards.
+    -->
+    <Grid
+        x:Name="grdRoot"
+        Opacity="0"
+        RenderTransformOrigin="0.5,0.5"
+        SnapsToDevicePixels="True"
+        TextOptions.TextFormattingMode="Display"
+        TextOptions.TextRenderingMode="ClearType"
+        UseLayoutRounding="True">
+        <Grid.RenderTransform>
+            <ScaleTransform x:Name="sctRoot" ScaleX="0.92" ScaleY="0.92" />
+        </Grid.RenderTransform>
+
+        <Border Style="{StaticResource ToastGlassStyle}" />
+        <Border x:Name="bdSolid" Style="{StaticResource ToastSolidStyle}" />
+        <Border Style="{StaticResource ToastSheenStyle}" />
+
+        <Border Style="{StaticResource ToastFrameStyle}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="12" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Image x:Name="imgIcon" Style="{StaticResource ToastIconStyle}" />
+
+                <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                    <TextBlock x:Name="txTitle" Style="{StaticResource ToastTitleTextStyle}" />
+                    <TextBlock x:Name="txMessage" Style="{StaticResource ToastMessageTextStyle}" />
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

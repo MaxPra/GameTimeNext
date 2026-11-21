@@ -1,0 +1,509 @@
+﻿using Arcora.Core.Application.BigPicture;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.General;
+using Arcora.Core.Application.Profiles.BackgroundProcesses;
+using Arcora.Core.Application.Profiles.DataWrapper;
+using Arcora.Core.Application.Profiles.Selectors;
+using Arcora.Core.Application.Profiles.Viewmodel;
+using Arcora.Core.Application.Profiles.Views;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Application.TimeMonitoring;
+using Arcora.Core.Framework;
+using Arcora.Core.Framework.UI;
+using Arcora.Core.Framework.Utils;
+using System.Text.Json.Serialization;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using UIX.ViewController.Engine.Controller;
+using UIX.ViewController.Engine.FrameworkElements.Selectors;
+using UIX.ViewController.Engine.Runnables;
+
+namespace Arcora.Core.Application.Profiles.Controller
+{
+    public class ProfilesViewController : UIXViewControllerBase<ProfilesApp, ProfilesView>
+    {
+        private ProfilesSubViewDataWrapper? _dataWrapper;
+
+        public ProfilesViewController(UIXApplication app) : base(app)
+        {
+        }
+
+        #region Event-Pipeline-Methods
+        protected override void Init()
+        {
+            _dataWrapper = GetDataWrapper<ProfilesSubViewDataWrapper>();
+            GetApp().CallDispatcher.Register(this, nameof(EXEV_GameTimeMonitoringStarted));
+            GetApp().CallDispatcher.Register(this, nameof(EXEV_GameTimeMonitoringStopped));
+            GetApp().CallDispatcher.Register(this, nameof(EXEV_SwitchProfile));
+            GetApp().CallDispatcher.Register(this, nameof(EXEV_GameLaunched));
+            GetApp().CallDispatcher.Register(this, nameof(EXEV_GameClosed));
+            GetApp().CallDispatcher.Register(this, nameof(EXEV_ProfileDetailViewPositionChanged));
+            GetApp().CallDispatcher.Register(this, nameof(EXEV_ProfilesAutoImported));
+            GetApp().CallDispatcher.Register(this, nameof(EXEV_ProfilesUnsealed));
+
+            // Set loader texts
+            GetApp().Loader.SetRandomTexts(
+                                            "Preparing your gaming library...",
+                                            "Checking which worlds you visited last...",
+                                            "Counting unfinished games...",
+                                            "Connecting to the gaming multiverse...",
+
+                                            "Summoning your game profiles...",
+                                            "Dusting off your backlog...",
+                                            "Loading your saved adventures...",
+                                            "Scanning for epic quests...",
+                                            "Synchronizing your gaming timeline...",
+                                            "Restoring your digital adventures...",
+                                            "Checking which worlds still need saving...",
+                                            "Preparing your next journey...",
+                                            "Warming up your game collection...",
+                                            "Looking for unfinished side quests...",
+                                            "Loading your legendary backlog...",
+                                            "Rebuilding your gaming universe...",
+                                            "Gathering your heroic achievements...",
+                                            "Preparing countless hours of gameplay...",
+                                            "Consulting the archives of your adventures..."
+                                            );
+
+            GetApp().IsInitialized = true;
+
+        }
+
+        protected override void TriggeredEvent(FrameworkElement source, string eventName)
+        {
+        }
+
+        protected override void BuildFirstImpl()
+        {
+            ApplyDetailViewPosition();
+        }
+
+        protected override async Task BuildFirstImplAsync()
+        {
+            await BuildProfilesListBoxAsync(AppEnvironment.CurrentPfid);
+        }
+
+        protected override void BuildImpl()
+        {
+
+        }
+
+        protected override void CheckImpl()
+        {
+        }
+
+        protected override void FillViewImpl()
+        {
+        }
+
+        protected override void UnsavedChangesImpl(UIXUnsavedChangesArgs args)
+        {
+        }
+
+        protected override void FillDBOImpl()
+        {
+        }
+
+        protected override void SaveDBOImpl()
+        {
+        }
+
+        protected override void DataWrapperSelectionChangedImpl(Selector source)
+        {
+            ProfilesListBoxItem selectedProfi = source.SelectedItem as ProfilesListBoxItem;
+            T1PROFI selectedTableObject = selectedProfi?.ItemObject as T1PROFI;
+
+            if (selectedProfi == null || selectedTableObject == null)
+                return;
+
+            AppEnvironment.CurrentPfid = selectedTableObject.PFID;
+
+            FnTheme.ApplyProfileBackground(selectedTableObject);
+
+            GetView().ListBoxProfiles.ScrollIntoView(selectedProfi);
+
+            // Falls back to the default accent, so a profile without own colors doesn't keep the previous profile's
+            FnTheme.ApplyProfileAccentColors(selectedTableObject);
+        }
+        #endregion
+
+        #region Profiles List View
+        /// <summary>
+        /// Rebuilds the list (ProfilesView_ProfilesSelectorAdapter) and selects the profile with the given PFID, or
+        /// the first one if it is not in the list. Without profiles the detail view is hidden.
+        /// </summary>
+        public async Task BuildProfilesListBoxAsync(long pfid)
+        {
+            UIXListBox listBoxProfiles = GetView().ListBoxProfiles;
+
+            if (!await listBoxProfiles.LoadDataAsync())
+                return;
+
+            // Indicator on the filter button if the list is filtered
+            GetView().ElFilterActive.Visibility = listBoxProfiles.GetSelectorAdapter<ProfilesView_ProfilesSelectorAdapter>().FilterActive
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+
+            List<ProfilesListBoxItem> profileItems = listBoxProfiles.Items.OfType<ProfilesListBoxItem>().ToList();
+
+            ProfilesListBoxItem? selectedItem = profileItems.FirstOrDefault(p => (p.ItemObject as T1PROFI)?.PFID == pfid)
+                                                ?? profileItems.FirstOrDefault();
+
+            _dataWrapper!.Set(selectedItem?.ItemObject as T1PROFI);
+
+            if (!_dataWrapper!.HasData)
+            {
+                _dataWrapper!.Set(GetApp().GetDataManager<TXPROFI>().CreateNew());
+                GetApp().ProfilesDetailView.Visibility = Visibility.Hidden;
+                AppEnvironment.CurrentPfid = 0;
+                FnTheme.ApplyProfileBackground(null);
+                FnTheme.ApplyProfileAccentColors(null);
+            }
+            else
+            {
+                GetApp().ProfilesDetailView.Visibility = Visibility.Visible;
+                AppEnvironment.CurrentPfid = (selectedItem?.ItemObject as T1PROFI)?.PFID ?? 0;
+                FnTheme.ApplyProfileBackground(_dataWrapper!.Get());
+                FnTheme.ApplyProfileAccentColors(_dataWrapper!.Get());
+            }
+
+            if (selectedItem != null)
+            {
+                IsSelectingProfile = true;
+
+                try
+                {
+                    listBoxProfiles.SelectedItem = selectedItem;
+                }
+                finally
+                {
+                    IsSelectingProfile = false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// True while the list selects a profile itself after it was built (not chosen by the user).
+        /// </summary>
+        public bool IsSelectingProfile { get; private set; }
+
+        private ProfilesListBoxItem? GetSelectedItem()
+        {
+            return GetView().ListBoxProfiles.SelectedItem as ProfilesListBoxItem;
+        }
+        #endregion
+
+        /// <summary>
+        /// Unwraps the selected (sealed) game: saves it and plays the unwrap animation on its tile. The list is not
+        /// rebuilt, that would end the animation.
+        /// </summary>
+        public void UnwrapSelectedProfile()
+        {
+            ProfilesListBoxItem? item = GetSelectedItem();
+
+            if (item?.ItemObject is not T1PROFI t1profi)
+                return;
+
+            // Being edited or monitored (record lock): the user is told, the game stays sealed
+            if (!TFPROFI.Unseal(GetApp(), t1profi))
+                return;
+
+            item.COISSEA = false;
+            item.COISNEW = false;
+
+            ProfilesDetailSubViewController profileDetailViewController = (ProfilesDetailSubViewController)GetApp().ProfilesDetailView.ViewController;
+            profileDetailViewController.UpdateUIUnwrapped();
+        }
+
+        private async Task AdjustFiltersToStartedGameProfile(long pfid)
+        {
+            // Determine the assigned groups
+            T1PROFI t1profi = GetApp().GetDataManager<TXPROFI>().Read(pfid);
+
+            List<string> linkedTagKeys = TFPROFI.GetAllLinkedTags(t1profi)
+                .Where(t => !TFCTABD.IsTagHidden(t))
+                .Select(t => t.TXNUM)
+                .ToList();
+
+            // Reset everything else, so the started game is guaranteed to be visible
+            FilterCache filter = new FilterCache();
+            filter.ShowArchived = t1profi.ARCH;
+
+            // Only show games sharing a tag with the started game (if it has tags)
+            if (linkedTagKeys.Count > 0)
+            {
+                filter.ExcludeUntagged = true;
+                filter.ExcludedTagKeys = TFCTABD.GetTags(includeHidden: false)
+                    .Where(t => !linkedTagKeys.Contains(t.TXNUM))
+                    .Select(t => t.TXNUM)
+                    .ToList();
+            }
+
+            ApplyFilter(filter);
+
+            await BuildProfilesListBoxAsync(pfid);
+        }
+
+        /// <summary>
+        /// Sets the filter and stores it in the config (restored on next start)
+        /// </summary>
+        private void ApplyFilter(FilterCache filter)
+        {
+            GetApp().FilterCache = filter;
+
+            AppEnvironment.GetAppConfig().FilterCache = filter;
+            AppEnvironment.SaveAppConfig();
+        }
+
+        #region Getter App & View
+        #endregion
+
+        #region External Events
+        protected async Task EXEV_GameTimeMonitoringStarted()
+        {
+            GetView().MonitoringOverlay.Visibility = Visibility.Visible;
+
+            if (AppEnvironment.GetAppConfig().AppSettings.ShowToastNotification)
+            {
+                T1PROFI t1profi = new TXPROFI().Read(AppEnvironment.CurrentPfid)!;
+                CFToast.Show(t1profi.GANA, "Monitoring started...");
+            }
+
+            if (AppEnvironment.GetAppConfig().AppSettings.ShowMonitoringIndicator)
+            {
+                CFMonitoringIndicator.ToggleIndicator(System.Windows.Application.Current.MainWindow);
+            }
+
+            ProfilesDetailSubViewController profileDetailViewController = (ProfilesDetailSubViewController)GetApp().ProfilesDetailView.ViewController;
+            profileDetailViewController.UpdateUIMonitoringStarted();
+        }
+
+        protected async Task EXEV_GameTimeMonitoringStopped()
+        {
+            CFRemoteMonitoring.EndRemoteBlackout();
+
+            CFGameTimeMonitoring.UpdateTableObject();
+
+            GetView().MonitoringOverlay.Visibility = Visibility.Hidden;
+
+            if (AppEnvironment.GetAppConfig().AppSettings.ShowMonitoringIndicator)
+            {
+                CFMonitoringIndicator.ToggleIndicator(System.Windows.Application.Current.MainWindow);
+            }
+
+            if (AppEnvironment.GetAppConfig().AppSettings.ShowToastNotification)
+            {
+                T1PROFI t1profi = new TXPROFI().Read(AppEnvironment.CurrentPfid)!;
+                CFToast.Show(t1profi.GANA, "Monitoring stopped...");
+            }
+
+            await BuildProfilesListBoxAsync(AppEnvironment.CurrentPfid);
+
+            ProfilesDetailSubViewController profileDetailViewController = (ProfilesDetailSubViewController)GetApp().ProfilesDetailView.ViewController;
+            profileDetailViewController.UpdateUIMonitoringStopped();
+        }
+
+        protected void EXEV_ProfileDetailViewPositionChanged()
+        {
+            ApplyDetailViewPosition();
+        }
+
+        /// <summary>
+        /// The setting "Add new games shrink-wrapped" was switched off and all sealed games were unwrapped and saved
+        /// (TFPROFI.UnsealAll): the shown tiles play the unwrap animation. The list is not rebuilt (that would end the
+        /// animation, and it must not be rebuilt while a game is monitored); the profile objects of the tiles drop the
+        /// flag too, so saving one of them later doesn't seal it again.
+        /// </summary>
+        protected void EXEV_ProfilesUnsealed()
+        {
+            foreach (ProfilesListBoxItem item in GetView().ListBoxProfiles.Items.OfType<ProfilesListBoxItem>())
+            {
+                if (item.ItemObject is T1PROFI t1profi)
+                    TFPROFI.RemoveSealedFlag(t1profi, clearNewMark: false);
+
+                item.COISSEA = false;
+            }
+
+            if (GetSelectedItem() == null)
+                return;
+
+            ProfilesDetailSubViewController profileDetailViewController = (ProfilesDetailSubViewController)GetApp().ProfilesDetailView.ViewController;
+            profileDetailViewController.UpdateUIUnwrapped();
+        }
+
+        /// <summary>
+        /// The automatic import added profiles (LauncherAutoImportProcess): shows them, the selection stays.
+        /// Not while a game is monitored: the list must not be rebuilt then; it is rebuilt when monitoring stops
+        /// (EXEV_GameTimeMonitoringStopped), which shows the new profiles too.
+        /// </summary>
+        protected async Task EXEV_ProfilesAutoImported()
+        {
+            if (CFGameTimeMonitoring.IsMonitoring)
+                return;
+
+            await BuildProfilesListBoxAsync(AppEnvironment.CurrentPfid);
+        }
+
+        /// <summary>
+        /// Places the detail view on the side chosen in the settings (codetable dP) by swapping the outer columns.
+        /// </summary>
+        private void ApplyDetailViewPosition()
+        {
+            ProfilesView view = GetView();
+            bool detailLeft = AppEnvironment.GetAppConfig().AppSettings.ProfileDetailViewPosition == "01";
+
+            ColumnDefinition gap = view.grdProfiles.ColumnDefinitions[1];
+            view.grdProfiles.ColumnDefinitions.Clear();
+            view.grdProfiles.ColumnDefinitions.Add(detailLeft ? view.colProfileDetail : view.colProfiles);
+            view.grdProfiles.ColumnDefinitions.Add(gap);
+            view.grdProfiles.ColumnDefinitions.Add(detailLeft ? view.colProfiles : view.colProfileDetail);
+
+            int profilesColumn = detailLeft ? 2 : 0;
+            Grid.SetColumn(view.brdProfiles, profilesColumn);
+            Grid.SetColumn(view.MonitoringOverlay, profilesColumn);
+            Grid.SetColumn(view.LaunchingOverlay, profilesColumn);
+            Grid.SetColumn(view.brdProfileDetail, detailLeft ? 0 : 2);
+
+            // The gap to the detail view moves to its side; the list keeps the tiles aligned with the toolbar
+            view.brdProfilesToolbar.Margin = detailLeft ? new Thickness(16, 0, 0, 12) : new Thickness(0, 0, 16, 12);
+            view.ListBoxProfiles.Margin = detailLeft ? new Thickness(4, -8, 0, 0) : new Thickness(-12, -8, 0, 0);
+        }
+
+        protected async Task EXEV_SwitchProfile(long pfid)
+        {
+            UIXListBox listBoxProfiles = GetView().ListBoxProfiles;
+
+            if (listBoxProfiles.ItemsSource == null)
+                return;
+
+            ProfilesListBoxItem? FindCurrent() => listBoxProfiles.Items.OfType<ProfilesListBoxItem>().FirstOrDefault(p => (p.ItemObject as T1PROFI)?.PFID == pfid);
+
+            if (FindCurrent() == null)
+                await AdjustFiltersToStartedGameProfile(pfid);
+
+            listBoxProfiles.SelectedItem = FindCurrent() ?? throw new InvalidOperationException("The started profile is not in the list.");
+
+            // The Big Picture mode shows the game itself; a toast would pop up in front of the game started from it
+            if (CFBigPictureApp.IsOpen)
+                return;
+
+            CFToast.Show("Switched profile...", (GetSelectedItem()?.ItemObject as T1PROFI)?.GANA ?? string.Empty);
+        }
+
+        protected async Task EXEV_GameLaunched()
+        {
+            ProfilesDetailSubViewController profileDetailViewController = (ProfilesDetailSubViewController)GetApp().ProfilesDetailView.ViewController;
+            GetView().LaunchingOverlay.Visibility = Visibility.Visible;
+
+            profileDetailViewController.UpdateUIGameRunning();
+        }
+
+        protected async Task EXEV_GameClosed()
+        {
+            ProfilesDetailSubViewController profileDetailViewController = (ProfilesDetailSubViewController)GetApp().ProfilesDetailView.ViewController;
+            profileDetailViewController.UpdateUIGameClosed();
+        }
+        #endregion
+
+        #region Internal Events
+        protected async Task EV_tbSearchProfileName()
+        {
+            await BuildProfilesListBoxAsync(AppEnvironment.CurrentPfid);
+        }
+
+        /// <summary>
+        /// Button Refresh
+        /// </summary>
+        protected async Task EV_BtnRefresh()
+        {
+            await BuildProfilesListBoxAsync(AppEnvironment.CurrentPfid);
+        }
+
+        /// <summary>
+        /// Button Filter
+        /// </summary>
+        public void EV_BtnFilter()
+        {
+            if (!GetApp().ProfilesFilterView.IsShown)
+            {
+                GetApp().ProfilesFilterView.ShowView(true);
+
+                // Closed via Apply
+                GetApp().ProfilesFilterView.ViewController.SetResultCallback<ProfilesFilterViewController.ProfileFilterViewReturn>(async r =>
+                {
+                    if (r.Applied)
+                    {
+                        ApplyFilter(r.Filter);
+
+                        await BuildProfilesListBoxAsync(AppEnvironment.CurrentPfid);
+                    }
+                });
+            }
+
+            else
+                GetApp().ProfilesFilterView.CloseView();
+        }
+
+        protected void EV_BtnAddProfile()
+        {
+            ProfilesEditApp app = GetApp().GetApplication<ProfilesEditApp>(UIXApplicationStartTarget.Window);
+
+            app.CreateNew(async r =>
+            {
+                if (!r.Canceled)
+                {
+                    await BuildProfilesListBoxAsync(r.PFID);
+                    GameRunningProcess grp = ((GameRunningProcess)AppEnvironment.StartedBackgroundProcesses[typeof(GameRunningProcess).FullName]);
+
+                    T1PROFI t1profi = GetApp().GetDataManager<TXPROFI>().Read(r.PFID);
+                    grp.AddT1profi(t1profi);
+                    grp.AddExecutables(t1profi.PFID, FnExecutables.GetAllActiveExecutablesFromDBObj(t1profi));
+                }
+
+            });
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Filter cache (stores the filter selections)
+        /// The filter cache is also used for persisted selections (e.g. after restarting the application)
+        /// Only unchecked entries are stored, so an empty filter shows the whole library
+        /// and tags created later are visible by default.
+        /// </summary>
+        public class FilterCache
+        {
+            private List<string> _excludedTagKeys = new List<string>();
+            private List<string> _excludedOptions = new List<string>();
+
+            /// <summary>
+            /// Keys (codetable tG) of unchecked tags
+            /// </summary>
+            public List<string> ExcludedTagKeys { get => _excludedTagKeys; set => _excludedTagKeys = value ?? new List<string>(); }
+
+            /// <summary>
+            /// Legacy: GRIDs of unchecked tags before the tags became codetable entries. Only read by the migration
+            /// (MigTask_100b_012), which converts them to ExcludedTagKeys and sets this to null (then it isn't written any more).
+            /// </summary>
+            [JsonPropertyName("ExcludedTagIds")]
+            [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+            public List<long>? LegacyExcludedTagIds { get; set; }
+
+            /// <summary>
+            /// Hides games without any tag
+            /// </summary>
+            public bool ExcludeUntagged { get; set; } = false;
+
+            /// <summary>
+            /// Unchecked fixed options (see ProfilesFilterOptions)
+            /// </summary>
+            public List<string> ExcludedOptions { get => _excludedOptions; set => _excludedOptions = value ?? new List<string>(); }
+
+            public bool ShowArchived { get; set; } = false;
+            public bool OnlyRecentlyPlayed { get; set; } = false;
+
+            public FilterCache() { }
+        }
+    }
+}

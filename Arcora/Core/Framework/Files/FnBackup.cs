@@ -1,0 +1,68 @@
+﻿using Arcora.Core.Application.Settings;
+using Arcora.Core.Framework.Config;
+using Arcora.Core.Framework.Utils;
+using System.IO;
+using System.IO.Compression;
+using UIX.ViewController.Engine.Utils;
+
+namespace Arcora.Core.Framework.Files
+{
+    public class FnBackup
+    {
+        /// <summary>
+        /// Creates a backup and stores it at the given path
+        /// </summary>
+        /// <param name="expPath">Export path</param>
+        public static async Task CreateBackupAsync(string expPath, string backuptype = BackupType.APP_START_BACKUP)
+        {
+            string sourceFolder = AppConfig.Storage.StorageDirectoryPath;
+            string backupName = $"{DateTime.Now:yyyyMMddHHmmss}_" + AppConfig.Root.ApplicationName;
+
+            if (backuptype == BackupType.APP_START_BACKUP)
+                backupName += "_AppStarted";
+            else if (backuptype == BackupType.APP_CLOSED_BACKUP)
+                backupName += "_AppClosed";
+
+            backupName += AppConfig.Root.BackupFileExtension;
+
+            expPath = Path.Combine(expPath, backupName);
+
+            string tempFolderDest = AppConfig.Temp.BackupDirectoryPath;
+
+            // Copy app folder
+            FnDirectory.CopyDirectory(sourceFolder, tempFolderDest, new string[] { AppConfig.Root.DatabaseFileName }, true);
+
+            string dataBaseDest = Path.Combine(tempFolderDest, "Data");
+
+            // Database file backup
+            AppEnvironment.GetDataBaseManager().CreateBackup(Path.Combine(dataBaseDest, AppConfig.Root.DatabaseFileName));
+
+            // Create backup zip
+            ZipFile.CreateFromDirectory(tempFolderDest, expPath);
+
+            if (Directory.Exists(tempFolderDest))
+                Directory.Delete(tempFolderDest, true);
+        }
+
+        public static void CreateBackupSync(string expPath, string backuptype = BackupType.APP_START_BACKUP)
+        {
+            CreateBackupAsync(expPath, backuptype).Wait();
+        }
+
+        /// <summary>
+        /// Imports a backup
+        /// </summary>
+        /// <param name="impPath">Import path</param>
+        public static void ImportBackup(string impPath)
+        {
+            string extractPath = AppConfig.Storage.StorageDirectoryPath;
+
+            if (Directory.Exists(extractPath))
+            {
+                Directory.Delete(extractPath, true);
+            }
+
+            ZipFile.ExtractToDirectory(impPath, extractPath);
+        }
+    }
+}

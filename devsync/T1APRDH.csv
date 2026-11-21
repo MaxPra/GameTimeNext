@@ -182,7 +182,7 @@ IGDB provides the **estimated playtimes** (*Story*, *Story + Extras*, *Completio
 
 ### Backup
 
-A backup is a single `.gtnbkp` file with your data.
+A backup is a single `.arcbkp` file with your data (older backups are `.gtnbkp` files and can still be imported).
 
 | Setting | What it does |
 |---|---|

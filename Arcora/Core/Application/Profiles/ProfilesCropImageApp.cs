@@ -1,0 +1,54 @@
+﻿using Arcora.Core.Application.Profiles.Controller;
+using Arcora.Core.Application.Profiles.Views;
+using System.Windows.Media.Imaging;
+using UIX.ViewController.Engine.Runnables;
+
+namespace Arcora.Core.Application.Profiles
+{
+    public class ProfilesCropImageApp : UIXApplication
+    {
+        private ProfilesCropImageView? _profilesCropImageView = null;
+        private ProfilesCropImageViewController? _profilesCropImageViewController = null;
+
+        private BitmapImage? _sourceImage = null;
+
+        public BitmapImage? SourceImage
+        {
+            get
+            {
+                return _sourceImage;
+            }
+            set
+            {
+                _sourceImage = value;
+            }
+        }
+
+        protected override void InitializeAppInfo()
+        {
+            ReadFromAppProperties(nameof(ProfilesCropImageApp));
+        }
+
+        public override void InitializeApplicationOutput()
+        {
+            _profilesCropImageView = new ProfilesCropImageView();
+            MainView = _profilesCropImageView;
+
+            _profilesCropImageViewController = new ProfilesCropImageViewController(this);
+            _profilesCropImageView.ViewController = _profilesCropImageViewController;
+        }
+
+        public void Crop(BitmapImage image, Action<ProfilesCropImageViewController.ProfilesCropImageViewReturn> callback)
+        {
+            _sourceImage = image;
+
+            _profilesCropImageViewController!.SetResultCallback(callback);
+            _profilesCropImageViewController.Show();
+        }
+
+        public override void SetWindowProperties(UIXApplicationStartOptions options)
+        {
+            options.Dialog = true;
+        }
+    }
+}
