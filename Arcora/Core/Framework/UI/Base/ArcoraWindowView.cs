@@ -4,13 +4,13 @@ using UIX.ViewController.Engine.FrameworkElements.UserControls;
 
 namespace GameTimeNext.Core.Framework.UI.Base
 {
-    public class GTNWindowView : UIXUserControlBase
+    public class ArcoraWindowView : UIXUserControlBase
     {
         public static readonly DependencyProperty TitleProperty =
             DependencyProperty.Register(
                 nameof(Title),
                 typeof(string),
-                typeof(GTNWindowView),
+                typeof(ArcoraWindowView),
                 new PropertyMetadata(string.Empty));
 
         public string Title
@@ -23,7 +23,7 @@ namespace GameTimeNext.Core.Framework.UI.Base
             DependencyProperty.Register(
                 nameof(ShowMinimizeButton),
                 typeof(bool),
-                typeof(GTNWindowView),
+                typeof(ArcoraWindowView),
                 new PropertyMetadata(true));
 
         public bool ShowMinimizeButton
@@ -36,7 +36,7 @@ namespace GameTimeNext.Core.Framework.UI.Base
             DependencyProperty.Register(
                 nameof(ShowMaximizeButton),
                 typeof(bool),
-                typeof(GTNWindowView),
+                typeof(ArcoraWindowView),
                 new PropertyMetadata(true));
 
         public bool ShowMaximizeButton
@@ -49,7 +49,7 @@ namespace GameTimeNext.Core.Framework.UI.Base
             DependencyProperty.Register(
                 nameof(ShowCloseButton),
                 typeof(bool),
-                typeof(GTNWindowView),
+                typeof(ArcoraWindowView),
                 new PropertyMetadata(true));
 
         public bool ShowCloseButton
@@ -62,7 +62,7 @@ namespace GameTimeNext.Core.Framework.UI.Base
             DependencyProperty.Register(
                 nameof(ShowApplicationSearch),
                 typeof(bool),
-                typeof(GTNWindowView),
+                typeof(ArcoraWindowView),
                 new PropertyMetadata(false));
 
         public bool ShowApplicationSearch
@@ -75,7 +75,7 @@ namespace GameTimeNext.Core.Framework.UI.Base
             DependencyProperty.Register(
                 nameof(ApplicationSearchItemsSource),
                 typeof(IEnumerable),
-                typeof(GTNWindowView),
+                typeof(ArcoraWindowView),
                 new PropertyMetadata(null));
 
         public IEnumerable? ApplicationSearchItemsSource
@@ -88,7 +88,7 @@ namespace GameTimeNext.Core.Framework.UI.Base
             DependencyProperty.Register(
                 nameof(ApplicationSearchSelectedItem),
                 typeof(object),
-                typeof(GTNWindowView),
+                typeof(ArcoraWindowView),
                 new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
         public object? ApplicationSearchSelectedItem
@@ -101,7 +101,7 @@ namespace GameTimeNext.Core.Framework.UI.Base
             DependencyProperty.Register(
                 nameof(ApplicationSearchText),
                 typeof(string),
-                typeof(GTNWindowView),
+                typeof(ArcoraWindowView),
                 new FrameworkPropertyMetadata(string.Empty, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
         public string ApplicationSearchText
@@ -114,7 +114,7 @@ namespace GameTimeNext.Core.Framework.UI.Base
             DependencyProperty.Register(
                 nameof(ApplicationSearchPlaceholder),
                 typeof(string),
-                typeof(GTNWindowView),
+                typeof(ArcoraWindowView),
                 new PropertyMetadata("Suchen..."));
 
         public string ApplicationSearchPlaceholder
@@ -127,7 +127,7 @@ namespace GameTimeNext.Core.Framework.UI.Base
             DependencyProperty.Register(
                 nameof(Subtitle),
                 typeof(string),
-                typeof(GTNWindowView),
+                typeof(ArcoraWindowView),
                 new PropertyMetadata(string.Empty));
 
         public string Subtitle
@@ -144,7 +144,7 @@ namespace GameTimeNext.Core.Framework.UI.Base
             DependencyProperty.Register(
                 nameof(ResizeMode),
                 typeof(ResizeMode),
-                typeof(GTNWindowView),
+                typeof(ArcoraWindowView),
                 new PropertyMetadata(ResizeMode.NoResize));
 
         public ResizeMode ResizeMode
@@ -157,7 +157,7 @@ namespace GameTimeNext.Core.Framework.UI.Base
             DependencyProperty.Register(
                 nameof(WindowStartupLocation),
                 typeof(WindowStartupLocation),
-                typeof(GTNWindowView),
+                typeof(ArcoraWindowView),
                 new PropertyMetadata(WindowStartupLocation.CenterOwner));
 
         public WindowStartupLocation WindowStartupLocation
@@ -170,7 +170,7 @@ namespace GameTimeNext.Core.Framework.UI.Base
             DependencyProperty.Register(
                 nameof(ShowInTaskbar),
                 typeof(bool),
-                typeof(GTNWindowView),
+                typeof(ArcoraWindowView),
                 new PropertyMetadata(false));
 
         public bool ShowInTaskbar
@@ -183,7 +183,7 @@ namespace GameTimeNext.Core.Framework.UI.Base
             DependencyProperty.Register(
                 nameof(SizeToContent),
                 typeof(SizeToContent),
-                typeof(GTNWindowView),
+                typeof(ArcoraWindowView),
                 new PropertyMetadata(SizeToContent.Manual));
 
         public SizeToContent SizeToContent

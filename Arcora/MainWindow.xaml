@@ -1,4 +1,4 @@
-﻿<ui:GTNWindow
+﻿<ui:ArcoraWindow
     x:Class="GameTimeNext.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -22,7 +22,7 @@
     ShowAppIcon="True"
     ShowBigPictureButton="True"
     ShowHelpButton="True"
-    Style="{StaticResource GTNWindowStyle}"
+    Style="{StaticResource ArcoraWindowStyle}"
     Subtitle="beta"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
@@ -177,4 +177,4 @@
             Visibility="Collapsed" />
 
     </Grid>
-</ui:GTNWindow>
+</ui:ArcoraWindow>

@@ -5,7 +5,7 @@ namespace GameTimeNext.Core.Application.Codetables.Views
     /// <summary>
     /// Interaction logic for CodetablesEditView.xaml
     /// </summary>
-    public partial class CodetablesEditView : GTNWindowView
+    public partial class CodetablesEditView : ArcoraWindowView
     {
         public CodetablesEditView()
         {

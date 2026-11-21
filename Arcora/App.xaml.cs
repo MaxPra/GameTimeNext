@@ -105,17 +105,17 @@ namespace GameTimeNext
             FnTheme.ApplyWallpaperBackground(AppEnvironment.GetAppConfig().AppSettings.BackgroundSource);
             FnTheme.ApplyGlassTint(AppEnvironment.GetAppConfig().AppSettings.DarkTintedGlass);
 
-            FnLog.Add(GTNLogType.AppStart, "MainApp", "*** Initializing Application... ***");
+            FnLog.Add(ArcoraLogType.AppStart, "MainApp", "*** Initializing Application... ***");
 
-            FnLog.Add(GTNLogType.AppStart, "MainApp", "Initiating Databasemanager...");
+            FnLog.Add(ArcoraLogType.AppStart, "MainApp", "Initiating Databasemanager...");
             AppEnvironment.InitiateDataBaseManager();
 
             // Initialize database
-            FnLog.Add(GTNLogType.AppStart, "MainApp", "Initializing database...");
+            FnLog.Add(ArcoraLogType.AppStart, "MainApp", "Initializing database...");
             AppEnvironment.GetDataBaseManager().Initialize();
 
             // Initialize AppEnvironment
-            FnLog.Add(GTNLogType.AppStart, "MainApp", "Initializing application environment...");
+            FnLog.Add(ArcoraLogType.AppStart, "MainApp", "Initializing application environment...");
             AppEnvironment.Initalize();
 
             // Only now: T1APRDH exists after the metadata migration in Initalize; earlier applications get the fallback properties
@@ -127,7 +127,7 @@ namespace GameTimeNext
             UIXApplication.RecordLockMessageProvider = new RecordLockMessageProvider();
 
             // Delete old backups
-            FnLog.Add(GTNLogType.AppStart, "MainApp", "Deleting old backups...");
+            FnLog.Add(ArcoraLogType.AppStart, "MainApp", "Deleting old backups...");
             FileHandler.DeleteOldBackupFiles();
 
             // Start argument -optimizecovers: shrink existing profile covers
@@ -135,19 +135,19 @@ namespace GameTimeNext
                 OptimizeProfileCovers();
 
             // Check for new version (GitHub)
-            FnLog.Add(GTNLogType.AppStart, "MainApp", "Checking for new version (Github)...");
+            FnLog.Add(ArcoraLogType.AppStart, "MainApp", "Checking for new version (Github)...");
             CheckForNewVersion();
         }
 
         private void OptimizeProfileCovers()
         {
-            FnLog.Add(GTNLogType.AppStart, "MainApp", "Optimizing profile covers...");
+            FnLog.Add(ArcoraLogType.AppStart, "MainApp", "Optimizing profile covers...");
 
             (int optimizedCount, long savedBytes) = Core.Application.Profiles.CFProfilesEditApp.OptimizeAllProfileCovers();
 
             string message = $"{optimizedCount} profile cover(s) optimized, {savedBytes / 1024.0 / 1024.0:0.0} MB saved.";
 
-            FnLog.Add(GTNLogType.AppStart, "MainApp", message);
+            FnLog.Add(ArcoraLogType.AppStart, "MainApp", message);
             AppEnvironment.InformationList.Add(InformationListItem.FromErrorMessage(Core.Framework.UI.Dialogs.CFMBOXIcon.Info, "PRO0007", optimizedCount, Math.Round(savedBytes / 1024.0 / 1024.0, 1)));
         }
 
@@ -210,7 +210,7 @@ namespace GameTimeNext
                         UseShellExecute = true
                     });
 
-                    AppEnvironment.ShutdownGTNApplication();
+                    AppEnvironment.ShutdownArcoraApplication();
 
                 };
 

@@ -5,7 +5,7 @@ namespace GameTimeNext.Core.Application.Profiles.Viewmodel
     /// <summary>
     /// A single checkable entry of the library filter (tag or fixed option)
     /// </summary>
-    public class ProfilesFilterItem : GTNViewModelBase
+    public class ProfilesFilterItem : ArcoraViewModelBase
     {
         private bool _isChecked = true;
         private bool _isVisible = true;

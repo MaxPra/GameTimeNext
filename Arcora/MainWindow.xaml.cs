@@ -5,7 +5,7 @@ namespace GameTimeNext
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : GTNWindow
+    public partial class MainWindow : ArcoraWindow
     {
         public MainWindow()
         {

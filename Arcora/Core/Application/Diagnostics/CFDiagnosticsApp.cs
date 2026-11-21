@@ -99,7 +99,7 @@ namespace GameTimeNext.Core.Application.Diagnostics
             {
                 nameof(UIXLogType.Error) => UIXMdlIcons.Error,
                 nameof(UIXLogType.Warning) => UIXMdlIcons.Warning,
-                nameof(GTNLogType.AppStart) => UIXMdlIcons.Play,
+                nameof(ArcoraLogType.AppStart) => UIXMdlIcons.Play,
                 _ => UIXMdlIcons.Info
             };
         }
@@ -127,7 +127,7 @@ namespace GameTimeNext.Core.Application.Diagnostics
             {
                 nameof(UIXLogType.Error) => (FnColor.Danger(0x1F), FnColor.Danger()),
                 nameof(UIXLogType.Warning) => (FnColor.Warning(0x1F), FnColor.Warning()),
-                nameof(GTNLogType.AppStart) => (FnColor.AppStart(0x1F), FnColor.AppStart()),
+                nameof(ArcoraLogType.AppStart) => (FnColor.AppStart(0x1F), FnColor.AppStart()),
                 _ => (null, null)
             };
         }

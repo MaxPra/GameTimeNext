@@ -1,4 +1,4 @@
-﻿<ui:GTNWindowView
+﻿<ui:ArcoraWindowView
     x:Class="GameTimeNext.Core.Application.Menus.Views.MenusView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -171,4 +171,4 @@
                 Margin="16,0,0,0" />
         </Grid>
     </Grid>
-</ui:GTNWindowView>
+</ui:ArcoraWindowView>

@@ -4,7 +4,7 @@ using System.Windows.Media.Imaging;
 
 namespace GameTimeNext.Core.Application.Profiles.Viewmodel
 {
-    public class SteamGridDBImage : GTNViewModelBase
+    public class SteamGridDBImage : ArcoraViewModelBase
     {
         private BitmapImage? _bitmapImage;
         private string? _path;

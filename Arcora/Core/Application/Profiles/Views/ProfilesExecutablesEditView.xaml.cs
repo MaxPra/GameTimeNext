@@ -5,7 +5,7 @@ namespace GameTimeNext.Core.Application.Profiles.Views
     /// <summary>
     /// Interaction logic for ProfilesEditExecutablesView.xaml
     /// </summary>
-    public partial class ProfilesExecutablesEditView : GTNWindowView
+    public partial class ProfilesExecutablesEditView : ArcoraWindowView
     {
         public ProfilesExecutablesEditView()
         {

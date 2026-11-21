@@ -6,7 +6,7 @@ using System.Windows.Media.Imaging;
 
 namespace GameTimeNext.Core.Application.Profiles.Viewmodel
 {
-    public class ProfileCover : GTNViewModelBase
+    public class ProfileCover : ArcoraViewModelBase
     {
         private T1PROFI _t1Profi;
         private BitmapImage _coverImage;

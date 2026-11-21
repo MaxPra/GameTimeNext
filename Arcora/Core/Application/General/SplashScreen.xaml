@@ -386,7 +386,7 @@
                             CornerRadius="4"
                             RenderOptions.BitmapScalingMode="HighQuality">
                             <Border.Background>
-                                <ImageBrush ImageSource="/UI/Ressources/GTN_CLS_ICON.png" Stretch="UniformToFill" />
+                                <ImageBrush ImageSource="/UI/Ressources/ARCORA_CLS_ICON.png" Stretch="UniformToFill" />
                             </Border.Background>
                         </Border>
                         <TextBlock

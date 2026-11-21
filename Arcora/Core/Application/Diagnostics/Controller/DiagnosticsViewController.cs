@@ -154,7 +154,7 @@ namespace GameTimeNext.Core.Application.Diagnostics.Controller
         }
 
         /// <summary>
-        /// Log types; the keys are the values of T1SYLOG.LGTY (UIXLogType, GTNLogType).
+        /// Log types; the keys are the values of T1SYLOG.LGTY (UIXLogType, ArcoraLogType).
         /// </summary>
         private void FillComboboxLogType()
         {
@@ -162,8 +162,8 @@ namespace GameTimeNext.Core.Application.Diagnostics.Controller
             codetable.AddEntry(nameof(UIXLogType.Info), "Info");
             codetable.AddEntry(nameof(UIXLogType.Warning), "Warning");
             codetable.AddEntry(nameof(UIXLogType.Error), "Error");
-            codetable.AddEntry(nameof(GTNLogType.AppStart), "App start");
-            codetable.AddEntry(nameof(GTNLogType.LogCleared), "Log Cleared");
+            codetable.AddEntry(nameof(ArcoraLogType.AppStart), "App start");
+            codetable.AddEntry(nameof(ArcoraLogType.LogCleared), "Log Cleared");
             codetable.ApplyTo(GetView().cmbLogType);
 
             GetView().cmbLogType.SelectedIndex = 0;
@@ -189,7 +189,7 @@ namespace GameTimeNext.Core.Application.Diagnostics.Controller
             AppEnvironment.GetLogDataBaseManager().ClearT1sylog();
 
             // First entry of the new log: who emptied it and when
-            FnLog.Add(GTNLogType.LogCleared, GetApp(), "Log cleared.");
+            FnLog.Add(ArcoraLogType.LogCleared, GetApp(), "Log cleared.");
 
             await LoadLogAsync();
         }

@@ -1,4 +1,4 @@
-﻿<ui:GTNWindowView
+﻿<ui:ArcoraWindowView
     x:Class="GameTimeNext.Core.Application.Playthroughs.Views.PlaythroughsView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -278,4 +278,4 @@
             </uixsel:UIXTreeGrid.Columns>
         </uixsel:UIXTreeGrid>
     </Grid>
-</ui:GTNWindowView>
+</ui:ArcoraWindowView>

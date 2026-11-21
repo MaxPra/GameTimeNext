@@ -2,7 +2,7 @@
 
 namespace GameTimeNext.Core.Application.Profiles.Components
 {
-    public class CAccentColorsInit : GTNComponent<CAccentColorsInit>
+    public class CAccentColorsInit : ArcoraComponent<CAccentColorsInit>
     {
 
         public Dictionary<string, bool>? AccentColors { get; set; } = new Dictionary<string, bool>();

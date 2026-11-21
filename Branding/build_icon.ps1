@@ -12,7 +12,7 @@
 $ErrorActionPreference = 'Stop'
 
 $brandingDir = $PSScriptRoot
-$icoFile     = Join-Path $brandingDir '..\Arcora\UI\Ressources\GTN_APP_ICON.ico'
+$icoFile     = Join-Path $brandingDir '..\Arcora\UI\Ressources\ARCORA_APP_ICON.ico'
 $logoFile    = Join-Path $brandingDir 'logo_1024.png'
 
 $edge = @(
@@ -21,7 +21,7 @@ $edge = @(
 ) | Where-Object { Test-Path $_ } | Select-Object -First 1
 if (-not $edge) { throw 'Microsoft Edge not found.' }
 
-$tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ('gtn_icon_' + [guid]::NewGuid())
+$tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ('arcora_icon_' + [guid]::NewGuid())
 New-Item -ItemType Directory -Path $tempDir | Out-Null
 
 function Render-Svg([string]$svgName, [int]$size, [string]$pngFile) {

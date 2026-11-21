@@ -24,14 +24,14 @@ namespace GameTimeNext.Core.Application.MigrationTasks
             AppEnvironment.AppVersion.SetAppVersionInConfig();
         }
 
-        public static void RestartGTN()
+        public static void RestartArcora()
         {
             System.Windows.Application.Current.Dispatcher.Invoke(() =>
             {
                 CFMBOX cfmbox = new CFMBOX();
                 cfmbox.Show(cfmbox.GetErrorMessage("GLO0018", AppConfig.Root.ApplicationName), CFMBOXResult.Ok, CFMBOXIcon.Info);
 
-                AppEnvironment.RestartGTNApplication();
+                AppEnvironment.RestartArcoraApplication();
             });
         }
     }

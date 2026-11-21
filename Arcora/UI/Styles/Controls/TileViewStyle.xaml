@@ -37,7 +37,7 @@
 
     <!--
         The case is made of the card glass (Brush.Card.*, referenced with DynamicResource: CardStyles.xaml is merged later),
-        so it sits in the GTN look like any card: glass lip with the lit edge, the tray recessed like Card.Inset.
+        so it sits in the arcora look like any card: glass lip with the lit edge, the tray recessed like Card.Inset.
     -->
     <!--  Clear plastic over the cover: a faint light from the top left, nothing more  -->
     <LinearGradientBrush x:Key="Brush.Case.Gloss" StartPoint="0,0" EndPoint="1,1">

@@ -5,7 +5,7 @@ namespace GameTimeNext.Core.Application.ErrorMessages.Views
     /// <summary>
     /// Interaction logic for ErrorMessagesView.xaml
     /// </summary>
-    public partial class ErrorMessagesView : GTNWindowView
+    public partial class ErrorMessagesView : ArcoraWindowView
     {
         public ErrorMessagesView()
         {

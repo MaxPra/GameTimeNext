@@ -2,7 +2,7 @@
 
 namespace GameTimeNext.Core.Application.Codetables.Views
 {
-    public partial class CodetablesEntrysView : GTNWindowView
+    public partial class CodetablesEntrysView : ArcoraWindowView
     {
         public CodetablesEntrysView()
         {

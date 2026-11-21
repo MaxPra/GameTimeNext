@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 
 namespace GameTimeNext.Core.Application.Profiles.Viewmodel
 {
-    public class ProfilesFilterViewModel : GTNViewModelBase
+    public class ProfilesFilterViewModel : ArcoraViewModelBase
     {
         private bool _showArchived;
         private bool _onlyRecentlyPlayed;

@@ -5,7 +5,7 @@ namespace GameTimeNext.Core.Application.Playthroughs.Views
     /// <summary>
     /// Interaction logic for PlaythroughRatingView.xaml
     /// </summary>
-    public partial class PlaythroughRatingView : GTNWindowView
+    public partial class PlaythroughRatingView : ArcoraWindowView
     {
         public PlaythroughRatingView()
         {

@@ -1,4 +1,4 @@
-﻿<ui:GTNWindowView
+﻿<ui:ArcoraWindowView
     x:Class="GameTimeNext.Core.Application.Profiles.Views.ProfilesSteamGridDBView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -139,4 +139,4 @@
                 Style="{StaticResource Button.Primary}" />
         </Grid>
     </Grid>
-</ui:GTNWindowView>
+</ui:ArcoraWindowView>

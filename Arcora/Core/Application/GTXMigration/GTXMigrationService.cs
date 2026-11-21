@@ -48,7 +48,7 @@ namespace GameTimeNext.Core.Application.GTXMigration
             _loader = loader;
         }
 
-        public void MigrateToGTNXT()
+        public void MigrateToArcora()
         {
             _loader!.SetTextStep("connecting to old database");
 

@@ -3,7 +3,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Profiles.Components
 {
-    public class CExecutables : GTNComponent<CExecutables>
+    public class CExecutables : ArcoraComponent<CExecutables>
     {
 
         public Dictionary<string, bool> KeyValuePairs { get; set; } = new Dictionary<string, bool>();

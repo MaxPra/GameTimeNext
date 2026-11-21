@@ -5,7 +5,7 @@ namespace GameTimeNext.Core.Application.Profiles.Views
     /// <summary>
     /// Interaction logic for ProfilesSteamGridDBView.xaml
     /// </summary>
-    public partial class ProfilesSteamGridDBView : GTNWindowView
+    public partial class ProfilesSteamGridDBView : ArcoraWindowView
     {
         public ProfilesSteamGridDBView()
         {

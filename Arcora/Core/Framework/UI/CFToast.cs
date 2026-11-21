@@ -20,7 +20,7 @@ namespace GameTimeNext.Core.Framework.UI
         private const double IconSize = 24;
 
         private static readonly TimeSpan DefaultDuration = TimeSpan.FromSeconds(4);
-        private static readonly Uri IconUri = new Uri("pack://application:,,,/UI/Ressources/GTN_APP_ICON.ico", UriKind.Absolute);
+        private static readonly Uri IconUri = new Uri("pack://application:,,,/UI/Ressources/ARCORA_APP_ICON.ico", UriKind.Absolute);
 
         // Shown and not closing, from top to bottom
         private static readonly List<ToastEntry> openToasts = new();

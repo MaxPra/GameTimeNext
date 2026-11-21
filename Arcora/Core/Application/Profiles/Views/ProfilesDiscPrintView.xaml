@@ -1,9 +1,9 @@
-<ui:GTNWindowView
+<ui:ArcoraWindowView
     x:Class="GameTimeNext.Core.Application.Profiles.Views.ProfilesDiscPrintView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:gtnui="clr-namespace:GameTimeNext.Core.Framework.UI"
+    xmlns:fui="clr-namespace:GameTimeNext.Core.Framework.UI"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI.Base"
     Title="Disc image"
@@ -42,7 +42,7 @@
                         Width="224"
                         Height="224"
                         OpacityMask="{StaticResource Brush.Case.DiscHoleMask}">
-                        <Ellipse x:Name="elpPrint" gtnui:DiscPrint.PrintAngle="90" />
+                        <Ellipse x:Name="elpPrint" fui:DiscPrint.PrintAngle="90" />
                         <Ellipse Fill="{StaticResource Brush.Case.Disc}" />
 
                         <!--  Lies under the opened front cover of the selected case (up to 0.30 radii right of the center, see DiscPrint)  -->
@@ -157,4 +157,4 @@
                 Style="{StaticResource Button.Primary}" />
         </Grid>
     </Grid>
-</ui:GTNWindowView>
+</ui:ArcoraWindowView>

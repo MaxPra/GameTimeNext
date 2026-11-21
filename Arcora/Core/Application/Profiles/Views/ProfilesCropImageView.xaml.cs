@@ -5,7 +5,7 @@ namespace GameTimeNext.Core.Application.Profiles.Views
     /// <summary>
     /// Interaction logic for ProfilesCropImageView.xaml
     /// </summary>
-    public partial class ProfilesCropImageView : GTNWindowView
+    public partial class ProfilesCropImageView : ArcoraWindowView
     {
         public ProfilesCropImageView()
         {

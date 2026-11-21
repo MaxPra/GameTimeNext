@@ -72,11 +72,11 @@ namespace GameTimeNext.Core.Application.Diagnostics.Selectors
                     icon = UIXMdlIcons.Error;
                     break;
 
-                case nameof(GTNLogType.AppStart):
+                case nameof(ArcoraLogType.AppStart):
                     icon = UIXMdlIcons.Play;
                     break;
 
-                case nameof(GTNLogType.LogCleared):
+                case nameof(ArcoraLogType.LogCleared):
                     icon = UIXMdlIcons.Delete;
                     break;
             }

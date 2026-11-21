@@ -12,7 +12,7 @@ namespace GameTimeNext.Core.Framework.UI
     /// look via the read only AcrylicBlur.IsActive (false without blur, then keep an opaque background).
     /// Popups: see PopupGlass.
     ///
-    /// The DWM system backdrop used by GTNWindow does not work for these: popups never get activated
+    /// The DWM system backdrop used by ArcoraWindow does not work for these: popups never get activated
     /// (the backdrop stays on its gray inactive fallback) and layered windows don't get it at all.
     /// </summary>
     public static class AcrylicBlur

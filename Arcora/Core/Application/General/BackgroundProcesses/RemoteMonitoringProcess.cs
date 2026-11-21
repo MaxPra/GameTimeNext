@@ -172,7 +172,7 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
                     WorkingDirectory = Path.GetDirectoryName(exePath) ?? baseDir
                 };
                 psi.Environment["ASPNETCORE_URLS"] = $"http://0.0.0.0:{port}";
-                psi.Environment["GTN_SOCKET_PORT"] = $"{_socketPort}";
+                psi.Environment["ARCORA_SOCKET_PORT"] = $"{_socketPort}";
 
                 lock (_blazorErrorOutput)
                     _blazorErrorOutput.Clear();

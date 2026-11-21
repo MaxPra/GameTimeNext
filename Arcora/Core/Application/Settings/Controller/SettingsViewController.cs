@@ -590,7 +590,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
 
         protected void EV_btnBrowseBackupImportPath()
         {
-            string importPath = FnSystemDialogs.ShowFileDialog("Choose backup file", "GTN backup file (*.gtnbkp) | *.gtnbkp", false);
+            string importPath = FnSystemDialogs.ShowFileDialog("Choose backup file", $"{AppConfig.Root.ApplicationName} backup file (*.gtnbkp) | *.gtnbkp", false);
 
             if (!FnString.IsNullEmptyOrWhitespace(importPath))
             {
@@ -662,7 +662,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
                 SaveDBO();
 
                 // Restart arcora
-                AppEnvironment.RestartGTNApplication();
+                AppEnvironment.RestartArcoraApplication();
             }
         }
 

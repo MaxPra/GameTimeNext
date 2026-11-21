@@ -345,10 +345,10 @@ namespace GameTimeNext.Core.Application.General.Controller
 
         private async Task CheckGTXMigration()
         {
-            string[] gtnFiles = Directory.GetFiles(AppConfig.Storage.ProfileCoversDirectoryPath);
-            string loaderTextStart = "Migrating GTX -> GTN ...";
+            string[] arcoraFiles = Directory.GetFiles(AppConfig.Storage.ProfileCoversDirectoryPath);
+            string loaderTextStart = $"Migrating GameTimeX -> {AppConfig.Root.ApplicationName} ...";
 
-            if (Directory.Exists(_gtxPath) && gtnFiles.Length == 0)
+            if (Directory.Exists(_gtxPath) && arcoraFiles.Length == 0)
             {
                 FnLog.AddInfo(GetApp(), "GameTimeX installation found. Prompting user for migration.");
 
@@ -367,7 +367,7 @@ namespace GameTimeNext.Core.Application.General.Controller
                         try
                         {
                             GTXMigrationService gtxMigHelper = new GTXMigrationService(GetApp(), "C:\\GameTimeX", GetApp().Loader);
-                            gtxMigHelper.MigrateToGTNXT();
+                            gtxMigHelper.MigrateToArcora();
                         }
                         catch (Exception ex)
                         {

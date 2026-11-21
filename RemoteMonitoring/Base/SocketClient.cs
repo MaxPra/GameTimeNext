@@ -16,7 +16,7 @@ namespace RemoteMonitoring.Base
         private CancellationToken _stoppingToken;
 
         private const string _address = "127.0.0.1";
-        private int _port = int.TryParse(Environment.GetEnvironmentVariable("GTN_SOCKET_PORT"), out var value) ? value : 5050;
+        private int _port = int.TryParse(Environment.GetEnvironmentVariable("ARCORA_SOCKET_PORT"), out var value) ? value : 5050;
         private TcpClient? _client;
         private StreamReader? _reader;
         private StreamWriter? _writer;

@@ -6,7 +6,7 @@
     <SolidColorBrush x:Key="Brush.LoaderAccentPressed" Color="{DynamicResource Color.AccentPressed}" />
 
     <!--  Loader Overlay Style  -->
-    <Style x:Key="GTNLoadingOverlayStyle" TargetType="{x:Type ContentControl}">
+    <Style x:Key="ArcoraLoadingOverlayStyle" TargetType="{x:Type ContentControl}">
         <Setter Property="Panel.ZIndex" Value="999" />
         <Setter Property="Visibility" Value="Collapsed" />
         <Setter Property="Focusable" Value="True" />

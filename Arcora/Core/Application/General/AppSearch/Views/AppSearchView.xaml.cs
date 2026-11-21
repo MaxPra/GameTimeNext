@@ -5,7 +5,7 @@ namespace GameTimeNext.Core.Application.General.AppSearch.Views
     /// <summary>
     /// Interaction logic for AppSearch.xaml
     /// </summary>
-    public partial class AppSearchView : GTNWindowView
+    public partial class AppSearchView : ArcoraWindowView
     {
         public AppSearchView()
         {

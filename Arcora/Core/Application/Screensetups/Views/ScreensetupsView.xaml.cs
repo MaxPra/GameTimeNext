@@ -5,7 +5,7 @@ namespace GameTimeNext.Core.Application.Screensetups.Views
     /// <summary>
     /// Interaction logic for ScreensetupsView.xaml
     /// </summary>
-    public partial class ScreensetupsView : GTNWindowView
+    public partial class ScreensetupsView : ArcoraWindowView
     {
         public ScreensetupsView()
         {

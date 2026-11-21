@@ -5,7 +5,7 @@ namespace GameTimeNext.Core.Application.ApplicationProperties.Views
     /// <summary>
     /// Interaction logic for ApplicationPropertiesView.xaml
     /// </summary>
-    public partial class ApplicationPropertiesView : GTNWindowView
+    public partial class ApplicationPropertiesView : ArcoraWindowView
     {
         public ApplicationPropertiesView()
         {

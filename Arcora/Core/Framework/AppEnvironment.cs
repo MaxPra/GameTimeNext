@@ -159,7 +159,7 @@ namespace GameTimeNext.Core.Framework
             }
         }
 
-        public static void RestartGTNApplication()
+        public static void RestartArcoraApplication()
         {
             if (!FnSystem.IsDebug())
             {
@@ -178,7 +178,7 @@ namespace GameTimeNext.Core.Framework
             System.Windows.Application.Current.Shutdown();
         }
 
-        public static void ShutdownGTNApplication()
+        public static void ShutdownArcoraApplication()
         {
             System.Windows.Application.Current.Shutdown();
         }

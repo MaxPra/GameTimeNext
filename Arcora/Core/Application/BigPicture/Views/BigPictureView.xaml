@@ -733,7 +733,7 @@
         <ui:CFParticleIntro
             x:Name="ptcIntro"
             Panel.ZIndex="2000"
-            Logo="/UI/Ressources/GTN_APP_ICON.ico"
+            Logo="/UI/Ressources/ARCORA_APP_ICON.ico"
             Subtitle="BIG PICTURE" />
     </Grid>
 </uix:UIXUserControlBase>

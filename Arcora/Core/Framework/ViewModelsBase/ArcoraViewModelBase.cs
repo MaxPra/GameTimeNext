@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace GameTimeNext.Core.Framework.ViewModelsBase
 {
-    public class GTNViewModelBase : INotifyPropertyChanged
+    public class ArcoraViewModelBase : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;
 

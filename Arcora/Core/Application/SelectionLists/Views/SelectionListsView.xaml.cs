@@ -5,7 +5,7 @@ namespace GameTimeNext.Core.Application.SelectionLists.Views
     /// <summary>
     /// Interaction logic for SelectionListsView.xaml
     /// </summary>
-    public partial class SelectionListsView : GTNWindowView
+    public partial class SelectionListsView : ArcoraWindowView
     {
         public SelectionListsView()
         {

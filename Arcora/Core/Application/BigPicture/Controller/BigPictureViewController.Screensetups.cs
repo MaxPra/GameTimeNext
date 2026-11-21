@@ -67,7 +67,7 @@ namespace GameTimeNext.Core.Application.BigPicture.Controller
                 : $"Screensetup {t1scrsh.SSNA} from the Big Picture mode failed: {errorMessage}");
 
             // The mode goes to the new primary monitor (e.g. the TV), with its size
-            if (Window.GetWindow(View) is GTNWindow window)
+            if (Window.GetWindow(View) is ArcoraWindow window)
                 window.MoveFullScreenToPrimaryMonitor();
 
             EnsureFocus();

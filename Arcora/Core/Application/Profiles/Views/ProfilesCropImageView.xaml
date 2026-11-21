@@ -1,5 +1,5 @@
 ﻿<!--  ProfilesCropImageView.xaml  -->
-<ui:GTNWindowView
+<ui:ArcoraWindowView
     x:Class="GameTimeNext.Core.Application.Profiles.Views.ProfilesCropImageView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -185,4 +185,4 @@
             </Grid>
         </Grid>
     </Grid>
-</ui:GTNWindowView>
+</ui:ArcoraWindowView>

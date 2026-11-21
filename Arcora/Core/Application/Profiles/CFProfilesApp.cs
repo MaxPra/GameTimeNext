@@ -13,7 +13,7 @@ namespace GameTimeNext.Core.Application.Profiles
 {
     public partial class CFProfilesApp
     {
-        private static readonly Uri PlaceholderCoverUri = new Uri("pack://application:,,,/UI/Ressources/GTN_COVER_PLACEHOLDER.png", UriKind.Absolute);
+        private static readonly Uri PlaceholderCoverUri = new Uri("pack://application:,,,/UI/Ressources/ARCORA_COVER_PLACEHOLDER.png", UriKind.Absolute);
 
         /// <summary>
         /// Opens the placeholder cover as stream, for callers that decode the image themselves.

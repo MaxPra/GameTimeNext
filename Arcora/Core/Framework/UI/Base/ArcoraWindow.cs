@@ -15,7 +15,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Framework.UI.Base
 {
-    public class GTNWindow : UIXWindowBase
+    public class ArcoraWindow : UIXWindowBase
     {
         private bool _suppressSearchTextSync;
         private WindowState _windowStateBeforeFullScreen = WindowState.Maximized;
@@ -45,7 +45,7 @@ namespace GameTimeNext.Core.Framework.UI.Base
             DependencyProperty.Register(
                 nameof(ShowMinimizeButton),
                 typeof(bool),
-                typeof(GTNWindow),
+                typeof(ArcoraWindow),
                 new PropertyMetadata(true));
 
         public bool ShowMinimizeButton
@@ -58,7 +58,7 @@ namespace GameTimeNext.Core.Framework.UI.Base
             DependencyProperty.Register(
                 nameof(ShowMaximizeButton),
                 typeof(bool),
-                typeof(GTNWindow),
+                typeof(ArcoraWindow),
                 new PropertyMetadata(true));
 
         public bool ShowMaximizeButton
@@ -71,7 +71,7 @@ namespace GameTimeNext.Core.Framework.UI.Base
             DependencyProperty.Register(
                 nameof(ShowCloseButton),
                 typeof(bool),
-                typeof(GTNWindow),
+                typeof(ArcoraWindow),
                 new PropertyMetadata(true));
 
         public bool ShowCloseButton
@@ -84,7 +84,7 @@ namespace GameTimeNext.Core.Framework.UI.Base
             DependencyProperty.Register(
                 nameof(ShowApplicationSearch),
                 typeof(bool),
-                typeof(GTNWindow),
+                typeof(ArcoraWindow),
                 new PropertyMetadata(false));
 
         public bool ShowApplicationSearch
@@ -97,7 +97,7 @@ namespace GameTimeNext.Core.Framework.UI.Base
             DependencyProperty.Register(
                 nameof(ApplicationSearchItemsSource),
                 typeof(IEnumerable),
-                typeof(GTNWindow),
+                typeof(ArcoraWindow),
                 new PropertyMetadata(null, OnApplicationSearchItemsSourceChanged));
 
         public IEnumerable? ApplicationSearchItemsSource
@@ -110,7 +110,7 @@ namespace GameTimeNext.Core.Framework.UI.Base
             DependencyProperty.Register(
                 nameof(ApplicationSearchSelectedItem),
                 typeof(object),
-                typeof(GTNWindow),
+                typeof(ArcoraWindow),
                 new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
         public object? ApplicationSearchSelectedItem
@@ -123,7 +123,7 @@ namespace GameTimeNext.Core.Framework.UI.Base
             DependencyProperty.Register(
                 nameof(ApplicationSearchText),
                 typeof(string),
-                typeof(GTNWindow),
+                typeof(ArcoraWindow),
                 new FrameworkPropertyMetadata(string.Empty, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnApplicationSearchTextChanged));
 
         public string ApplicationSearchText
@@ -136,7 +136,7 @@ namespace GameTimeNext.Core.Framework.UI.Base
             DependencyProperty.Register(
                 nameof(ApplicationSearchPlaceholder),
                 typeof(string),
-                typeof(GTNWindow),
+                typeof(ArcoraWindow),
                 new PropertyMetadata("Suchen..."));
 
         public string ApplicationSearchPlaceholder
@@ -153,7 +153,7 @@ namespace GameTimeNext.Core.Framework.UI.Base
             DependencyProperty.Register(
                 nameof(ShowHelpButton),
                 typeof(bool),
-                typeof(GTNWindow),
+                typeof(ArcoraWindow),
                 new PropertyMetadata(false));
 
         public bool ShowHelpButton
@@ -170,7 +170,7 @@ namespace GameTimeNext.Core.Framework.UI.Base
             DependencyProperty.Register(
                 nameof(ShowBigPictureButton),
                 typeof(bool),
-                typeof(GTNWindow),
+                typeof(ArcoraWindow),
                 new PropertyMetadata(false));
 
         public bool ShowBigPictureButton
@@ -187,7 +187,7 @@ namespace GameTimeNext.Core.Framework.UI.Base
             DependencyProperty.Register(
                 nameof(ShowRemoteMonitoringButton),
                 typeof(bool),
-                typeof(GTNWindow),
+                typeof(ArcoraWindow),
                 new PropertyMetadata(false));
 
         public bool ShowRemoteMonitoringButton
@@ -201,7 +201,7 @@ namespace GameTimeNext.Core.Framework.UI.Base
             DependencyProperty.Register(
                 nameof(ShowAppIcon),
                 typeof(bool),
-                typeof(GTNWindow),
+                typeof(ArcoraWindow),
                 new PropertyMetadata(false));
 
         public bool ShowAppIcon
@@ -218,7 +218,7 @@ namespace GameTimeNext.Core.Framework.UI.Base
             DependencyProperty.Register(
                 nameof(IsFullScreen),
                 typeof(bool),
-                typeof(GTNWindow),
+                typeof(ArcoraWindow),
                 new PropertyMetadata(false, OnIsFullScreenChanged));
 
         public bool IsFullScreen
@@ -231,7 +231,7 @@ namespace GameTimeNext.Core.Framework.UI.Base
             DependencyProperty.Register(
                 nameof(Subtitle),
                 typeof(string),
-                typeof(GTNWindow),
+                typeof(ArcoraWindow),
                 new PropertyMetadata(string.Empty));
 
         public string Subtitle
@@ -248,7 +248,7 @@ namespace GameTimeNext.Core.Framework.UI.Base
             DependencyProperty.Register(
                 nameof(UseBackdropBlur),
                 typeof(bool),
-                typeof(GTNWindow),
+                typeof(ArcoraWindow),
                 new PropertyMetadata(true, OnUseBackdropBlurChanged));
 
         public bool UseBackdropBlur
@@ -265,7 +265,7 @@ namespace GameTimeNext.Core.Framework.UI.Base
             DependencyProperty.Register(
                 nameof(UseWallpaperBackground),
                 typeof(bool),
-                typeof(GTNWindow),
+                typeof(ArcoraWindow),
                 new PropertyMetadata(false));
 
         public bool UseWallpaperBackground
@@ -278,7 +278,7 @@ namespace GameTimeNext.Core.Framework.UI.Base
             DependencyProperty.RegisterReadOnly(
                 nameof(IsBackdropActive),
                 typeof(bool),
-                typeof(GTNWindow),
+                typeof(ArcoraWindow),
                 new PropertyMetadata(false));
 
         /// <summary>
@@ -292,7 +292,7 @@ namespace GameTimeNext.Core.Framework.UI.Base
             DependencyProperty.RegisterReadOnly(
                 nameof(IsNativeFrameActive),
                 typeof(bool),
-                typeof(GTNWindow),
+                typeof(ArcoraWindow),
                 new PropertyMetadata(false));
 
         /// <summary>
@@ -307,7 +307,7 @@ namespace GameTimeNext.Core.Framework.UI.Base
             DependencyProperty.RegisterReadOnly(
                 nameof(MaximizedInset),
                 typeof(Thickness),
-                typeof(GTNWindow),
+                typeof(ArcoraWindow),
                 new PropertyMetadata(new Thickness()));
 
         /// <summary>
@@ -322,7 +322,7 @@ namespace GameTimeNext.Core.Framework.UI.Base
         /// window with backdrop and shadow, drawn by the compositor, so a busy UI thread can't make it stutter). The
         /// WindowChrome of the style removes the native caption itself.
         /// </summary>
-        public GTNWindow()
+        public ArcoraWindow()
         {
             WindowStyle = WindowStyle.SingleBorderWindow;
             ResizeMode = ResizeMode.CanResize;
@@ -344,13 +344,13 @@ namespace GameTimeNext.Core.Framework.UI.Base
 
         private static void OnUseBackdropBlurChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is GTNWindow window)
+            if (d is ArcoraWindow window)
                 window.UpdateFrame();
         }
 
         private static void OnIsFullScreenChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is not GTNWindow window)
+            if (d is not ArcoraWindow window)
                 return;
 
             if ((bool)e.NewValue)
@@ -765,13 +765,13 @@ namespace GameTimeNext.Core.Framework.UI.Base
 
         private static void OnApplicationSearchItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is GTNWindow window)
+            if (d is ArcoraWindow window)
                 window.RefreshApplicationSearchFilter();
         }
 
         private static void OnApplicationSearchTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is GTNWindow window)
+            if (d is ArcoraWindow window)
                 window.SyncApplicationSearchTextFromProperty();
         }
 

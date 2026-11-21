@@ -14,7 +14,7 @@ namespace GameTimeNext.Core.Framework.UI
 {
     /// <summary>
     /// Provides the current desktop wallpaper, heavily blurred, as application resource (Brush.App.Wallpaper)
-    /// for window backgrounds (GTNWindow.UseWallpaperBackground). Follows wallpaper changes at runtime.
+    /// for window backgrounds (ArcoraWindow.UseWallpaperBackground). Follows wallpaper changes at runtime.
     /// Switched by the setting AppSettings.BackgroundSource (see FnTheme.ApplyWallpaperBackground).
     /// Without a wallpaper (solid color, unreadable file) the resource is missing and windows keep their normal background.
     /// </summary>

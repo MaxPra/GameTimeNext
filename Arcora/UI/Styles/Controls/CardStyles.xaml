@@ -1,7 +1,7 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <!--
-        Card system (first used in the profile detail view, to be adopted across GTN step by step).
+        Card system (first used in the profile detail view, to be adopted across arcora step by step).
         
         Glass surfaces (translucent light + lit edge) so cards blend with any background, headings in normal case,
         information as label/value rows separated by hairlines instead of a box per value.

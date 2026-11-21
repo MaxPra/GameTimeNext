@@ -4,18 +4,18 @@ using System.Text.Json.Serialization;
 namespace GameTimeNext.Core.Framework.Components.Base
 {
 
-    public class GTNComponent<TSelf> where TSelf : GTNComponent<TSelf>, new()
+    public class ArcoraComponent<TSelf> where TSelf : ArcoraComponent<TSelf>, new()
     {
         [JsonIgnore]
         public string RawValue { get; set; }
 
 
-        public GTNComponent()
+        public ArcoraComponent()
         {
             RawValue = string.Empty;
         }
 
-        public GTNComponent(string rawValue)
+        public ArcoraComponent(string rawValue)
         {
             RawValue = rawValue;
         }

@@ -10,7 +10,7 @@ namespace GameTimeNext.Core.Framework.UI
 {
     /// <summary>
     /// Provides the cover of the selected profile, cropped to landscape and heavily blurred, as application resource
-    /// (same key as DesktopWallpaper) for window backgrounds (GTNWindow.UseWallpaperBackground).
+    /// (same key as DesktopWallpaper) for window backgrounds (ArcoraWindow.UseWallpaperBackground).
     /// Switched by the setting AppSettings.BackgroundSource (see FnTheme.ApplyWallpaperBackground), the cover follows
     /// the profile selection (FnTheme.ApplyProfileBackground). Without a cover the resource is missing and windows keep
     /// their normal background.

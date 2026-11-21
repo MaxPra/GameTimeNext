@@ -73,7 +73,7 @@ dotnet build Arcora.slnx                               # or the project, see bel
 python Scripts/cleancode.py
 ```
 
-If a running GTN / RemoteMonitoring locks `bin/`, build into the scratchpad with
+If a running arcora / RemoteMonitoring locks `bin/`, build into the scratchpad with
 `-o <scratchpad>/build` instead. The build must have 0 errors; new warnings in merged
 files are mentioned.
 

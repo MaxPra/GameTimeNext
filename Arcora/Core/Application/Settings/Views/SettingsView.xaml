@@ -904,7 +904,7 @@
                                             <Image
                                                 Width="16"
                                                 Height="16"
-                                                Source="/UI/Ressources/GTN_ICON_MONITOR_KEY.png" />
+                                                Source="/UI/Ressources/ARCORA_ICON_MONITOR_KEY.png" />
                                         </Button>
                                     </StackPanel>
                                 </Grid>
@@ -1170,7 +1170,7 @@
                                             Width="210"
                                             Height="210"
                                             HorizontalAlignment="Center"
-                                            Source="/UI/Ressources/GTN_CLS_ICON.png" />
+                                            Source="/UI/Ressources/ARCORA_CLS_ICON.png" />
 
                                         <StackPanel
                                             Margin="0,16,0,0"
@@ -1185,7 +1185,7 @@
                                                 <Image
                                                     Width="94"
                                                     Height="94"
-                                                    Source="/UI/Ressources/GTN_ICON_CLSMP.png" />
+                                                    Source="/UI/Ressources/ARCORA_ICON_CLSMP.png" />
                                             </Border>
 
                                             <Border
@@ -1198,7 +1198,7 @@
                                                 <Image
                                                     Width="94"
                                                     Height="94"
-                                                    Source="/UI/Ressources/GTN_ICON_CLSOF.png" />
+                                                    Source="/UI/Ressources/ARCORA_ICON_CLSOF.png" />
                                             </Border>
                                         </StackPanel>
                                     </StackPanel>

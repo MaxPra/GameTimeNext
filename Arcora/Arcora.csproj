@@ -16,7 +16,7 @@
 		<UseWPF>true</UseWPF>
 		<OutputType>WinExe</OutputType>
 
-		<ApplicationIcon>UI\Ressources\GTN_APP_ICON.ico</ApplicationIcon>
+		<ApplicationIcon>UI\Ressources\ARCORA_APP_ICON.ico</ApplicationIcon>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 	</PropertyGroup>
 

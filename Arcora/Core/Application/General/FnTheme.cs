@@ -249,7 +249,7 @@ namespace GameTimeNext.Core.Application.General
 
         /// <summary>
         /// Setting "Dark tinted glass": darkens the window background and with it the translucent glass surfaces
-        /// in all GTN windows (GlassTintLayer in GTNWindowStyle). Works at startup and at runtime.
+        /// in all arcora windows (GlassTintLayer in ArcoraWindowStyle). Works at startup and at runtime.
         /// </summary>
         public static void ApplyGlassTint(bool darkTintedGlass)
         {

@@ -5,7 +5,7 @@ namespace GameTimeNext.Core.Application.Diagnostics.Views
     /// <summary>
     /// Interaction logic for DiagnosticsView.xaml
     /// </summary>
-    public partial class DiagnosticsView : GTNWindowView
+    public partial class DiagnosticsView : ArcoraWindowView
     {
         public DiagnosticsView()
         {
