@@ -19,7 +19,15 @@ namespace Arcora.Core.Framework.Config
             public static string GitHubRepositoryName = "GameTimeNext";
             public static string DatabaseFileName = ApplicationName + "Db.db";
             public static string LogDatabaseFileName = "LogDb.db";
-            public static string AppConfigFileName = "appConfig.gtnconf";
+            public static string AppConfigFileName = "appConfig.arcconf";
+
+            /// <summary>Former name of the config file; renamed to <see cref="AppConfigFileName"/> when the config is loaded.</summary>
+            public static string FormerAppConfigFileName = "appConfig.gtnconf";
+
+            public static string BackupFileExtension = ".arcbkp";
+
+            /// <summary>Former extension of the backups; backups with it can still be imported and are cleaned up too.</summary>
+            public static string FormerBackupFileExtension = ".gtnbkp";
             public static string AppLogFileName = $"ApplicationLog_{DateTime.Now:yyyy-MM-dd}.log";
 
             [JsonIgnore]
@@ -214,6 +222,12 @@ namespace Arcora.Core.Framework.Config
             public static string AppConfigFilePath
             {
                 get => Path.Combine(StorageDirectoryPath, Root.AppConfigFileName);
+            }
+
+            [JsonIgnore]
+            public static string FormerAppConfigFilePath
+            {
+                get => Path.Combine(StorageDirectoryPath, Root.FormerAppConfigFileName);
             }
 
             [JsonIgnore]

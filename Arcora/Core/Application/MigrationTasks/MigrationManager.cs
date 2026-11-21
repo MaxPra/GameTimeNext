@@ -18,6 +18,7 @@ namespace Arcora.Core.Application.MigrationTasks
                 new MigTask_100b_011(),
                 new MigTask_100b_012(),
                 new MigTask_110b_013(),
+                new MigTask_110b_014(),
             };
 
             migrations.ForEach(mT =>mT.Execute());

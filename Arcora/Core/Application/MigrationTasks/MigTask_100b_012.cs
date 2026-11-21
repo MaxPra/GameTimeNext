@@ -21,6 +21,9 @@ namespace Arcora.Core.Application.MigrationTasks
         private const string DeliveredKeyPrefix = "D_";
         private const int FirstDeliveredGrid = 101;
 
+        /// <summary>Group type of the former tag rows in T1GROUP (no GroupType any more, tags are codetable tG now).</summary>
+        private const string LegacyTagGroupType = "GTN.TAG";
+
         /// <summary>
         /// Names of the delivered tags in the order of their former GRIDs (101, 102, ...). Only used to create a missing entry.
         /// </summary>
@@ -103,7 +106,7 @@ namespace Arcora.Core.Application.MigrationTasks
             {
                 delete.Transaction = transaction;
                 delete.CommandText = "DELETE FROM T1GROUP WHERE GTYP = @gtyp;";
-                delete.Parameters.AddWithValue("@gtyp", GroupType.Tag);
+                delete.Parameters.AddWithValue("@gtyp", LegacyTagGroupType);
                 delete.ExecuteNonQuery();
             }
 
@@ -120,7 +123,7 @@ namespace Arcora.Core.Application.MigrationTasks
 
             using SQLiteCommand command = _connection!.CreateCommand();
             command.CommandText = "SELECT GRID, GRNA FROM T1GROUP WHERE GTYP = @gtyp ORDER BY GRID;";
-            command.Parameters.AddWithValue("@gtyp", GroupType.Tag);
+            command.Parameters.AddWithValue("@gtyp", LegacyTagGroupType);
 
             using SQLiteDataReader reader = command.ExecuteReader();
 

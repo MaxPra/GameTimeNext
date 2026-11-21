@@ -590,7 +590,7 @@ namespace Arcora.Core.Application.Settings.Controller
 
         protected void EV_btnBrowseBackupImportPath()
         {
-            string importPath = FnSystemDialogs.ShowFileDialog("Choose backup file", $"{AppConfig.Root.ApplicationName} backup file (*.gtnbkp) | *.gtnbkp", false);
+            string importPath = FnSystemDialogs.ShowFileDialog("Choose backup file", $"{AppConfig.Root.ApplicationName} backup file (*{AppConfig.Root.BackupFileExtension};*{AppConfig.Root.FormerBackupFileExtension}) | *{AppConfig.Root.BackupFileExtension};*{AppConfig.Root.FormerBackupFileExtension}", false);
 
             if (!FnString.IsNullEmptyOrWhitespace(importPath))
             {

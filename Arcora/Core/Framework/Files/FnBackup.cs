@@ -23,7 +23,7 @@ namespace Arcora.Core.Framework.Files
             else if (backuptype == BackupType.APP_CLOSED_BACKUP)
                 backupName += "_AppClosed";
 
-            backupName += ".gtnbkp";
+            backupName += AppConfig.Root.BackupFileExtension;
 
             expPath = Path.Combine(expPath, backupName);
 

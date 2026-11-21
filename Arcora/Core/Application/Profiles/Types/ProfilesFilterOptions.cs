@@ -8,19 +8,19 @@ namespace Arcora.Core.Application.Profiles.Types
     public class ProfilesFilterOptions
     {
         // Progress
-        public const string PROGRESS_UNPLAYED = "GTN.FILTER.PROGRESS.UNPLAYED";
-        public const string PROGRESS_IN_PROGRESS = "GTN.FILTER.PROGRESS.IN_PROGRESS";
-        public const string PROGRESS_COMPLETED = "GTN.FILTER.PROGRESS.COMPLETED";
-        public const string PROGRESS_PAUSED = "GTN.FILTER.PROGRESS.PAUSED";
-        public const string PROGRESS_CANCELLED = "GTN.FILTER.PROGRESS.CANCELLED";
+        public const string PROGRESS_UNPLAYED = "ARCORA.FILTER.PROGRESS.UNPLAYED";
+        public const string PROGRESS_IN_PROGRESS = "ARCORA.FILTER.PROGRESS.IN_PROGRESS";
+        public const string PROGRESS_COMPLETED = "ARCORA.FILTER.PROGRESS.COMPLETED";
+        public const string PROGRESS_PAUSED = "ARCORA.FILTER.PROGRESS.PAUSED";
+        public const string PROGRESS_CANCELLED = "ARCORA.FILTER.PROGRESS.CANCELLED";
 
         // Availability
-        public const string AVAILABILITY_PLAYABLE = "GTN.FILTER.AVAILABILITY.PLAYABLE";
-        public const string AVAILABILITY_NOT_PLAYABLE = "GTN.FILTER.AVAILABILITY.NOT_PLAYABLE";
+        public const string AVAILABILITY_PLAYABLE = "ARCORA.FILTER.AVAILABILITY.PLAYABLE";
+        public const string AVAILABILITY_NOT_PLAYABLE = "ARCORA.FILTER.AVAILABILITY.NOT_PLAYABLE";
 
         // Source
-        public const string SOURCE_LOCAL = "GTN.FILTER.SOURCE.LOCAL";
-        public const string SOURCE_EXTERNAL = "GTN.FILTER.SOURCE.EXTERNAL";
+        public const string SOURCE_LOCAL = "ARCORA.FILTER.SOURCE.LOCAL";
+        public const string SOURCE_EXTERNAL = "ARCORA.FILTER.SOURCE.EXTERNAL";
 
         /// <summary>
         /// Number of days a game counts as "recently played"

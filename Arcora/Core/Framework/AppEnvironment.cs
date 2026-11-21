@@ -304,6 +304,10 @@ namespace Arcora.Core.Framework
 
         public static void LoadAppConfig()
         {
+            // The config file had another extension before; an update or an imported backup still brings it
+            if (!File.Exists(AppConfig.Storage.AppConfigFilePath) && File.Exists(AppConfig.Storage.FormerAppConfigFilePath))
+                File.Move(AppConfig.Storage.FormerAppConfigFilePath, AppConfig.Storage.AppConfigFilePath);
+
             if (!File.Exists(AppConfig.Storage.AppConfigFilePath))
             {
                 FnDirectory.EnsureDirectoryExists(AppConfig.Storage.StorageDirectoryPath);

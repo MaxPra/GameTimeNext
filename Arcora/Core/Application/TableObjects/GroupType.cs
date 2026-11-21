@@ -2,7 +2,6 @@
 {
     public class GroupType
     {
-        public const string Tag = "GTN.TAG";
-        public const string Condition = "GTN.CONDITION";
+        public const string Condition = "ARCORA.CONDITION";
     }
 }

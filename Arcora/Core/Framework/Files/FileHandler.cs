@@ -108,7 +108,8 @@ namespace Arcora.Core.Framework.Files
 
             FileInfo[] backupFiles = new DirectoryInfo(backupPath)
                 .GetFiles()
-                .Where(f => f.Name.EndsWith("gtnbkp"))
+                .Where(f => f.Name.EndsWith(AppConfig.Root.BackupFileExtension, StringComparison.OrdinalIgnoreCase)
+                    || f.Name.EndsWith(AppConfig.Root.FormerBackupFileExtension, StringComparison.OrdinalIgnoreCase))
                 .ToArray();
 
             List<FileInfo> filesToDelete = GetFilesOlderThanDays(backupFiles, 3);
