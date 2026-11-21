@@ -19,9 +19,9 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<VersionSemantic>1.0.0</VersionSemantic>
+		<VersionSemantic>1.0.1</VersionSemantic>
 		<VersionTag></VersionTag>
-		<BuildDate>2026-11-19</BuildDate>
+		<BuildDate>2026-11-21</BuildDate>
 
 		<AssemblyVersion>$(VersionSemantic)</AssemblyVersion>
 		<FileVersion>$(AssemblyVersion)</FileVersion>
