@@ -1,11 +1,11 @@
-using GameTimeNext.Core.Application.Profiles.Views;
-using GameTimeNext.Core.Framework.LauncherIntegration;
+using Arcora.Core.Application.Profiles.Views;
+using Arcora.Core.Framework.LauncherIntegration;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.Profiles.Selectors
+namespace Arcora.Core.Application.Profiles.Selectors
 {
     public class ProfilesLauncherImportView_GamesSelectorAdapter : UIXSelectorAdapterBase<ProfilesLauncherImportApp, ProfilesLauncherImportView, UIXDataGrid, GameImportRow>
     {

@@ -1,16 +1,16 @@
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.General.AppSearch.ViewModels;
-using GameTimeNext.Core.Application.General.AppSearch.Views;
-using GameTimeNext.Core.Application.Menus;
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework.Utils;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.General.AppSearch.ViewModels;
+using Arcora.Core.Application.General.AppSearch.Views;
+using Arcora.Core.Application.Menus;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework.Utils;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 using UIX.ViewController.Engine.Viewmodel;
 
-namespace GameTimeNext.Core.Application.General.AppSearch.Selectors
+namespace Arcora.Core.Application.General.AppSearch.Selectors
 {
     public class AppSearchView_ApplicationsSelectorAdapter : UIXSelectorAdapterBase<AppSearchApp, AppSearchView, UIXTreeGrid, AppSearchTreeGridRow>
     {

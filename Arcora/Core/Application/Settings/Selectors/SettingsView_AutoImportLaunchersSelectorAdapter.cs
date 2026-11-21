@@ -1,13 +1,13 @@
-using GameTimeNext.Core.Application.Profiles;
-using GameTimeNext.Core.Application.Settings.Viewmodels;
-using GameTimeNext.Core.Application.Settings.Views;
-using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.LauncherIntegration;
+using Arcora.Core.Application.Profiles;
+using Arcora.Core.Application.Settings.Viewmodels;
+using Arcora.Core.Application.Settings.Views;
+using Arcora.Core.Framework;
+using Arcora.Core.Framework.LauncherIntegration;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.Runnables;
 
-namespace GameTimeNext.Core.Application.Settings.Selectors
+namespace Arcora.Core.Application.Settings.Selectors
 {
     /// <summary>
     /// Launchers of the automatic game import: every launcher that supports an import, checked unless it is left out

@@ -1,4 +1,4 @@
-using GameTimeNext.Core.Framework.Utils;
+using Arcora.Core.Framework.Utils;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -6,7 +6,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace GameTimeNext.Core.Framework.UI
+namespace Arcora.Core.Framework.UI
 {
     /// <summary>
     /// The mouse wheel moves every ScrollViewer of the app by a spring instead of in steps: further notches add to the target

@@ -1,18 +1,18 @@
-using GameTimeNext.Core.Application.Diagnostics.Controller;
-using GameTimeNext.Core.Application.Diagnostics.Views;
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.Http;
-using GameTimeNext.Core.Framework.Igdb;
-using GameTimeNext.Core.Framework.SteamGridDB;
-using GameTimeNext.Core.Framework.Utils;
+using Arcora.Core.Application.Diagnostics.Controller;
+using Arcora.Core.Application.Diagnostics.Views;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework;
+using Arcora.Core.Framework.Http;
+using Arcora.Core.Framework.Igdb;
+using Arcora.Core.Framework.SteamGridDB;
+using Arcora.Core.Framework.Utils;
 using System.Globalization;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.Diagnostics.Selectors
+namespace Arcora.Core.Application.Diagnostics.Selectors
 {
     /// <summary>
     /// Status of the external APIs: every configured API is checked with a small test request on each load (open, refresh),

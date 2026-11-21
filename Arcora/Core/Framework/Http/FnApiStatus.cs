@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Net.Http;
 
-namespace GameTimeNext.Core.Framework.Http
+namespace Arcora.Core.Framework.Http
 {
     /// <summary>
     /// Status of the external APIs (SteamGridDB, IGDB) since the app started, shown in the module "Diagnostics".

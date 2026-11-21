@@ -1,17 +1,17 @@
-﻿using GameTimeNext.Core.Application.BigPicture.ViewModels;
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.Profiles;
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Application.TimeMonitoring;
-using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.UI;
-using GameTimeNext.Core.Framework.LauncherIntegration;
-using GameTimeNext.Core.Framework.UserInput;
-using GameTimeNext.Core.Framework.Utils;
+﻿using Arcora.Core.Application.BigPicture.ViewModels;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.Profiles;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Application.TimeMonitoring;
+using Arcora.Core.Framework;
+using Arcora.Core.Framework.UI;
+using Arcora.Core.Framework.LauncherIntegration;
+using Arcora.Core.Framework.UserInput;
+using Arcora.Core.Framework.Utils;
 using System.Windows;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.BigPicture.Controller
+namespace Arcora.Core.Application.BigPicture.Controller
 {
     /// <summary>
     /// Playtime monitoring and blackout from the controller.

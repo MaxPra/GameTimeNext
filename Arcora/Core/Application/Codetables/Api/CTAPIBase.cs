@@ -1,8 +1,8 @@
-using GameTimeNext.Core.Application.TableObjects;
+using Arcora.Core.Application.TableObjects;
 using System.Windows;
 using UIX.ViewController.Engine.Runnables;
 
-namespace GameTimeNext.Core.Application.Codetables.Api
+namespace Arcora.Core.Application.Codetables.Api
 {
     /// <summary>
     /// Base of the button actions of codetable parameters. A parameter whose codetable names an API (<c>T1CTABH.PAAP1</c> / <c>PAAP2</c>,

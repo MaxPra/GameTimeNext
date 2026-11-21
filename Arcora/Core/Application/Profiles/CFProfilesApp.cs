@@ -1,15 +1,15 @@
 ﻿using System.Globalization;
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework.Config;
-using GameTimeNext.Core.Framework.UI;
-using GameTimeNext.Core.Framework.UI.Dialogs;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework.Config;
+using Arcora.Core.Framework.UI;
+using Arcora.Core.Framework.UI.Dialogs;
 using System.IO;
 using System.Windows.Media.Imaging;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.Profiles
+namespace Arcora.Core.Application.Profiles
 {
     public partial class CFProfilesApp
     {

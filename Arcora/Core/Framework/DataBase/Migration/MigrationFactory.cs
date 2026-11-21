@@ -4,7 +4,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Framework.DataBase.Migration
+namespace Arcora.Core.Framework.DataBase.Migration
 {
     internal static partial class MigrationFactory
     {

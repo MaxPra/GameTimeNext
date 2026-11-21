@@ -1,16 +1,16 @@
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.SelectionLists.Controller;
-using GameTimeNext.Core.Application.SelectionLists.Views;
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.Utils;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.SelectionLists.Controller;
+using Arcora.Core.Application.SelectionLists.Views;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework;
+using Arcora.Core.Framework.Utils;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.SelectionLists.Selectors
+namespace Arcora.Core.Application.SelectionLists.Selectors
 {
     /// <summary>
     /// The entries of the list chosen on the left, sorted by name. Entries delivered with the app are marked with a lock.

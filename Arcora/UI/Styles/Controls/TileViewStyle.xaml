@@ -1,9 +1,9 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:converter="clr-namespace:GameTimeNext.Core.Application.Profiles.Converter"
+    xmlns:converter="clr-namespace:Arcora.Core.Application.Profiles.Converter"
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
-    xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI">
+    xmlns:ui="clr-namespace:Arcora.Core.Framework.UI">
 
     <converter:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     <converter:AnyTrueConverter x:Key="AnyTrueConverter" />

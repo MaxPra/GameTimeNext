@@ -1,9 +1,9 @@
-﻿using GameTimeNext.Core.Framework.Utils;
-using GameTimeNext.Core.Framework.Versioning;
+﻿using Arcora.Core.Framework.Utils;
+using Arcora.Core.Framework.Versioning;
 using System.Data.SQLite;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Framework.DataBase.Migration
+namespace Arcora.Core.Framework.DataBase.Migration
 {
     internal static partial class MigrationFactory
     {

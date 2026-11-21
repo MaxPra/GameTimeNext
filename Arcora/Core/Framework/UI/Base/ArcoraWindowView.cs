@@ -2,7 +2,7 @@ using System.Collections;
 using System.Windows;
 using UIX.ViewController.Engine.FrameworkElements.UserControls;
 
-namespace GameTimeNext.Core.Framework.UI.Base
+namespace Arcora.Core.Framework.UI.Base
 {
     public class ArcoraWindowView : UIXUserControlBase
     {

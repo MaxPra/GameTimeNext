@@ -1,9 +1,9 @@
-using GameTimeNext.Core.Application.Playthroughs.Controller;
-using GameTimeNext.Core.Application.Playthroughs.Views;
-using GameTimeNext.Core.Application.TableObjects;
+using Arcora.Core.Application.Playthroughs.Controller;
+using Arcora.Core.Application.Playthroughs.Views;
+using Arcora.Core.Application.TableObjects;
 using UIX.ViewController.Engine.Runnables;
 
-namespace GameTimeNext.Core.Application.Playthroughs
+namespace Arcora.Core.Application.Playthroughs
 {
     /// <summary>
     /// Optional rating dialog, shown after a playthrough has been completed or canceled.

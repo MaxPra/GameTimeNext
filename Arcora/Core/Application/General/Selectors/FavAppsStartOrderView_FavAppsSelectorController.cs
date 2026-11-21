@@ -1,12 +1,12 @@
-using GameTimeNext.Core.Application.General.Controller;
-using GameTimeNext.Core.Application.General.UserSettings;
-using GameTimeNext.Core.Application.General.Views;
-using GameTimeNext.Core.Framework;
+using Arcora.Core.Application.General.Controller;
+using Arcora.Core.Application.General.UserSettings;
+using Arcora.Core.Application.General.Views;
+using Arcora.Core.Framework;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.Runnables;
 
-namespace GameTimeNext.Core.Application.General.Selectors
+namespace Arcora.Core.Application.General.Selectors
 {
     public class FavAppsStartOrderView_FavAppsSelectorController : UIXSelectorControllerBase<MainApp, FavAppsStartOrderView, UIXDataGrid>
     {

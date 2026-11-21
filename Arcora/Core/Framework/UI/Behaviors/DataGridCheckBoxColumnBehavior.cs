@@ -1,7 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 
-namespace GameTimeNext.Core.Framework.UI.Behaviors
+namespace Arcora.Core.Framework.UI.Behaviors
 {
     public static class DataGridCheckBoxColumnBehavior
     {

@@ -1,6 +1,6 @@
-﻿using GameTimeNext.Core.Framework.UI.Base;
+﻿using Arcora.Core.Framework.UI.Base;
 
-namespace GameTimeNext
+namespace Arcora
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

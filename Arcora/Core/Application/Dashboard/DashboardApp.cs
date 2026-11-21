@@ -1,11 +1,11 @@
-﻿using GameTimeNext.Core.Application.Dashboard.Controller;
-using GameTimeNext.Core.Application.Dashboard.Selectors;
-using GameTimeNext.Core.Application.Dashboard.Views;
+﻿using Arcora.Core.Application.Dashboard.Controller;
+using Arcora.Core.Application.Dashboard.Selectors;
+using Arcora.Core.Application.Dashboard.Views;
 using System.Windows.Controls;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.Dashboard
+namespace Arcora.Core.Application.Dashboard
 {
     [UIXAppIcon(UIXMdlIcons.Dashboard)]
     public class DashboardApp : UIXApplication, IUIXApplicationStarter

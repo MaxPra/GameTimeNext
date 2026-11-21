@@ -1,9 +1,9 @@
-﻿using GameTimeNext.Core.Application.BigPicture.ViewModels;
+﻿using Arcora.Core.Application.BigPicture.ViewModels;
 using System.Globalization;
 using System.Windows.Input;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.BigPicture.Controller
+namespace Arcora.Core.Application.BigPicture.Controller
 {
     /// <summary>
     /// Search pivot: the matches are the row of covers, the on-screen keyboard takes the place of the details while it

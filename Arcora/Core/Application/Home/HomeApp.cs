@@ -1,10 +1,10 @@
-using GameTimeNext.Core.Application.Home.Controller;
-using GameTimeNext.Core.Application.Home.Views;
+using Arcora.Core.Application.Home.Controller;
+using Arcora.Core.Application.Home.Views;
 using System.Windows.Controls;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.Home
+namespace Arcora.Core.Application.Home
 {
     /// <summary>
     /// Welcome page: what the user can do next and the help of the main modules. Opened on the first start and from the menu.

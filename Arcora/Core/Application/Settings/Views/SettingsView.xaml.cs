@@ -2,7 +2,7 @@
 using System.Windows.Navigation;
 using UIX.ViewController.Engine.FrameworkElements.UserControls;
 
-namespace GameTimeNext.Core.Application.Settings.Views
+namespace Arcora.Core.Application.Settings.Views
 {
     /// <summary>
     /// Interaction logic for SettingsView.xaml

@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace GameTimeNext.Core.Application.Playthroughs
+namespace Arcora.Core.Application.Playthroughs
 {
     public static class CFPlaythroughsApp
     {

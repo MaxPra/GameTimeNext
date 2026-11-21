@@ -1,6 +1,6 @@
-﻿using GameTimeNext.Shared.Base;
+﻿using Arcora.Shared.Base;
 
-namespace GameTimeNext.Shared.Profiles
+namespace Arcora.Shared.Profiles
 {
     public class ProfileRequestMessage : RequestMessageBase
     {

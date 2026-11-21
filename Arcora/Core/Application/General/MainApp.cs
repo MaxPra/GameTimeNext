@@ -1,13 +1,13 @@
-﻿using GameTimeNext.Core.Application.General.Controller;
-using GameTimeNext.Core.Application.General.Selectors;
-using GameTimeNext.Core.Application.General.Views;
+﻿using Arcora.Core.Application.General.Controller;
+using Arcora.Core.Application.General.Selectors;
+using Arcora.Core.Application.General.Views;
 using System.Runtime.InteropServices;
 using System.Windows.Controls;
 using System.Windows.Interop;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.General
+namespace Arcora.Core.Application.General
 {
     public class MainApp : UIXApplication, IUIXApplicationStarter
     {

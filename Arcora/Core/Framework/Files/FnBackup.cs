@@ -1,11 +1,11 @@
-﻿using GameTimeNext.Core.Application.Settings;
-using GameTimeNext.Core.Framework.Config;
-using GameTimeNext.Core.Framework.Utils;
+﻿using Arcora.Core.Application.Settings;
+using Arcora.Core.Framework.Config;
+using Arcora.Core.Framework.Utils;
 using System.IO;
 using System.IO.Compression;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Framework.Files
+namespace Arcora.Core.Framework.Files
 {
     public class FnBackup
     {

@@ -1,20 +1,20 @@
-﻿using GameTimeNext.Core.Application.General;
-using GameTimeNext.Core.Application.MigrationTasks;
-using GameTimeNext.Core.Application.Settings;
-using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.Config;
-using GameTimeNext.Core.Framework.Files;
-using GameTimeNext.Core.Framework.GitHub;
-using GameTimeNext.Core.Framework.LauncherIntegration;
-using GameTimeNext.Core.Framework.UI;
-using GameTimeNext.Core.Framework.Utils;
+﻿using Arcora.Core.Application.General;
+using Arcora.Core.Application.MigrationTasks;
+using Arcora.Core.Application.Settings;
+using Arcora.Core.Framework;
+using Arcora.Core.Framework.Config;
+using Arcora.Core.Framework.Files;
+using Arcora.Core.Framework.GitHub;
+using Arcora.Core.Framework.LauncherIntegration;
+using Arcora.Core.Framework.UI;
+using Arcora.Core.Framework.Utils;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Threading;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext
+namespace Arcora
 {
     /// <summary>
     /// Interaction logic for App.xaml

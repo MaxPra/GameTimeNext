@@ -1,16 +1,16 @@
-using GameTimeNext.Core.Application.Codetables.Controller;
-using GameTimeNext.Core.Application.Codetables.Views;
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.Utils;
+using Arcora.Core.Application.Codetables.Controller;
+using Arcora.Core.Application.Codetables.Views;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework;
+using Arcora.Core.Framework.Utils;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.Codetables.Selectors
+namespace Arcora.Core.Application.Codetables.Selectors
 {
     public class CodetablesView_CodetablesSelectorAdapter : UIXSelectorAdapterBase<CodetablesApp, CodetablesView, UIXDataGrid, CodetableDataGridRow>
     {

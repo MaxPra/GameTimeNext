@@ -1,7 +1,7 @@
 using System.Windows;
 using System.Windows.Media;
 
-namespace GameTimeNext.Core.Framework.UI
+namespace Arcora.Core.Framework.UI
 {
     /// <summary>
     /// Clips an element to a rounded rectangle that follows its size (ClipToBounds only clips square corners).

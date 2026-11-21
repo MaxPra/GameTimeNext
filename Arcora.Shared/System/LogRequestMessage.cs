@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
-namespace GameTimeNext.Shared.Base
+namespace Arcora.Shared.Base
 {
     // Hidden in stack traces: the captured stack starts at the code that logs, not in here
     [StackTraceHidden]

@@ -1,4 +1,4 @@
-﻿namespace GameTimeNext.Core.Framework.GitHub
+﻿namespace Arcora.Core.Framework.GitHub
 {
     public sealed class UpdateCheckResult
     {

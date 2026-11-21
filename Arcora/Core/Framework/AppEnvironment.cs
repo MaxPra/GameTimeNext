@@ -1,16 +1,16 @@
-﻿using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.General.BackgroundProcesses;
-using GameTimeNext.Core.Application.MigrationTasks;
-using GameTimeNext.Core.Application.Profiles.BackgroundProcesses;
-using GameTimeNext.Core.Application.Settings;
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework.Config;
-using GameTimeNext.Core.Framework.DataBase;
-using GameTimeNext.Core.Framework.DataBase.Migration;
-using GameTimeNext.Core.Framework.Files;
-using GameTimeNext.Core.Framework.UI.Dialogs;
-using GameTimeNext.Core.Framework.Utils;
-using GameTimeNext.Core.Framework.Versioning;
+﻿using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.General.BackgroundProcesses;
+using Arcora.Core.Application.MigrationTasks;
+using Arcora.Core.Application.Profiles.BackgroundProcesses;
+using Arcora.Core.Application.Settings;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework.Config;
+using Arcora.Core.Framework.DataBase;
+using Arcora.Core.Framework.DataBase.Migration;
+using Arcora.Core.Framework.Files;
+using Arcora.Core.Framework.UI.Dialogs;
+using Arcora.Core.Framework.Utils;
+using Arcora.Core.Framework.Versioning;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
@@ -19,7 +19,7 @@ using System.Windows.Controls;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Framework
+namespace Arcora.Core.Framework
 {
     internal class AppEnvironment
     {

@@ -1,8 +1,8 @@
-﻿using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.Metadata.Data;
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework.Config;
-using GameTimeNext.Core.Framework.Utils;
+﻿using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.Metadata.Data;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework.Config;
+using Arcora.Core.Framework.Utils;
 using System.Data.SQLite;
 using System.IO;
 using System.Text;
@@ -11,7 +11,7 @@ using UIX.ViewController.Engine.Migration.Types;
 using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Framework.DataBase.Migration
+namespace Arcora.Core.Framework.DataBase.Migration
 {
     internal static partial class MigrationFactory
     {

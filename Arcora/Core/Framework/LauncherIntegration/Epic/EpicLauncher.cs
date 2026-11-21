@@ -2,7 +2,7 @@ using System.IO;
 using System.Text.Json;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Framework.LauncherIntegration.Epic
+namespace Arcora.Core.Framework.LauncherIntegration.Epic
 {
     /// <summary>
     /// Epic Games Launcher. Game ID = "CatalogNamespace:CatalogItemId:AppName" (the ID of the launch URI).

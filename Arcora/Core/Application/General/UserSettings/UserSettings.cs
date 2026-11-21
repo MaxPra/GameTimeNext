@@ -1,4 +1,4 @@
-﻿namespace GameTimeNext.Core.Application.General.UserSettings
+﻿namespace Arcora.Core.Application.General.UserSettings
 {
     public class UserSettings
     {

@@ -1,5 +1,5 @@
 // ProfilesCropImageViewController.cs
-using GameTimeNext.Core.Application.Profiles.Views;
+using Arcora.Core.Application.Profiles.Views;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,7 +11,7 @@ using UIX.ViewController.Engine.Events;
 using UIX.ViewController.Engine.FrameworkElements.UserControls;
 using UIX.ViewController.Engine.Runnables;
 
-namespace GameTimeNext.Core.Application.Profiles.Controller
+namespace Arcora.Core.Application.Profiles.Controller
 {
     public class ProfilesCropImageViewController : UIXViewControllerBase<ProfilesCropImageApp, ProfilesCropImageView>
     {

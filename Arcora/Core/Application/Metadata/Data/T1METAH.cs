@@ -1,6 +1,6 @@
 ﻿using UIX.ViewController.Engine.DataBaseObjects;
 
-namespace GameTimeNext.Core.Application.Metadata.Data
+namespace Arcora.Core.Application.Metadata.Data
 {
     public class T1METAH : UIXTableObjectBase
     {

@@ -2,7 +2,7 @@ using System.Data.SQLite;
 using System.Globalization;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.MigrationTasks
+namespace Arcora.Core.Application.MigrationTasks
 {
     /// <summary>
     /// The metadata type (T1METAH.MTYPE) is a key of codetable mT now: the former fixed type "mE" becomes "TO" (Table Object).

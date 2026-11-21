@@ -1,4 +1,4 @@
-﻿namespace GameTimeNext.Core.Application.Metadata.Data
+﻿namespace Arcora.Core.Application.Metadata.Data
 {
     public static class K1METAP
     {

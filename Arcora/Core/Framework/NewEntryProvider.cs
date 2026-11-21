@@ -1,9 +1,9 @@
-using GameTimeNext.Core.Application.SelectionLists;
-using GameTimeNext.Core.Application.TableObjects;
+using Arcora.Core.Application.SelectionLists;
+using Arcora.Core.Application.TableObjects;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Framework
+namespace Arcora.Core.Framework
 {
     /// <summary>
     /// Lets the engine offer "Add new entry" in every ComboBox that edits a field and shows a codetable with the permission

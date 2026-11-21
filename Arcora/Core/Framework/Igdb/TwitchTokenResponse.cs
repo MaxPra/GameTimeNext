@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace GameTimeNext.Core.Framework.Igdb
+namespace Arcora.Core.Framework.Igdb
 {
     public class TwitchTokenResponse
     {

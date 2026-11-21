@@ -1,8 +1,8 @@
-﻿using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.Metadata.Data;
-using GameTimeNext.Core.Application.Metadata.Views;
-using GameTimeNext.Core.Framework.DataBase.Migration;
-using GameTimeNext.Core.Framework.UI.Dialogs;
+﻿using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.Metadata.Data;
+using Arcora.Core.Application.Metadata.Views;
+using Arcora.Core.Framework.DataBase.Migration;
+using Arcora.Core.Framework.UI.Dialogs;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls.Primitives;
@@ -12,7 +12,7 @@ using UIX.ViewController.Engine.FrameworkElements.UserControls;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.Metadata.Controller
+namespace Arcora.Core.Application.Metadata.Controller
 {
     public class MetadataEditViewController : UIXViewControllerBase<MetadataEditApp, MetadataEditView>
     {

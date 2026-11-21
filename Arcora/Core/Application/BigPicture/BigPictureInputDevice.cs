@@ -1,4 +1,4 @@
-namespace GameTimeNext.Core.Application.BigPicture
+namespace Arcora.Core.Application.BigPicture
 {
     /// <summary>
     /// Input device last used in the Big Picture mode: its buttons are shown in the hints.

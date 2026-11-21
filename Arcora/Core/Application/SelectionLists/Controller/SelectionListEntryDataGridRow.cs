@@ -1,6 +1,6 @@
 using UIX.ViewController.Engine.Viewmodel;
 
-namespace GameTimeNext.Core.Application.SelectionLists.Controller
+namespace Arcora.Core.Application.SelectionLists.Controller
 {
     public class SelectionListEntryDataGridRow : UIXDataGridRow
     {

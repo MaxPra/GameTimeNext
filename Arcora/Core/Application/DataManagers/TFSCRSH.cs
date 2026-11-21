@@ -1,7 +1,7 @@
 using UIX.ViewController.Engine.Runnables;
-using GameTimeNext.Core.Application.TableObjects;
+using Arcora.Core.Application.TableObjects;
 
-namespace GameTimeNext.Core.Application.DataManagers
+namespace Arcora.Core.Application.DataManagers
 {
     public class TFSCRSH
     {

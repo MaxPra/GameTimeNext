@@ -1,15 +1,15 @@
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.Screensetups.Controller;
-using GameTimeNext.Core.Application.Screensetups.Views;
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.Screensetups.Controller;
+using Arcora.Core.Application.Screensetups.Views;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.Screensetups.Selectors
+namespace Arcora.Core.Application.Screensetups.Selectors
 {
     public class ScreensetupsView_ScreensetupsSelectorAdapter : UIXSelectorAdapterBase<ScreensetupsApp, ScreensetupsView, UIXDataGrid, ScreensetupDataGridRow>
     {

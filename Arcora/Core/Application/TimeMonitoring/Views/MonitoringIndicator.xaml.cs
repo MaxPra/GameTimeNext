@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace GameTimeNext.Core.Application.TimeMonitoring.Views
+namespace Arcora.Core.Application.TimeMonitoring.Views
 {
     /// <summary>
     /// Interaction logic for MonitoringIndicator.xaml

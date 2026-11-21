@@ -1,9 +1,9 @@
-﻿using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.Utils;
+﻿using Arcora.Core.Framework;
+using Arcora.Core.Framework.Utils;
 using System.Windows;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.General
+namespace Arcora.Core.Application.General
 {
     /// <summary>
     /// Interaction logic for SplashScreen.xaml

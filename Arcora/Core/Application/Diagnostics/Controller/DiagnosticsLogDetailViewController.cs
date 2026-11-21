@@ -1,7 +1,7 @@
-using GameTimeNext.Core.Application.Diagnostics.DataWrapper;
-using GameTimeNext.Core.Application.Diagnostics.Views;
-using GameTimeNext.Core.Framework.DataBase;
-using GameTimeNext.Core.Framework.Utils;
+using Arcora.Core.Application.Diagnostics.DataWrapper;
+using Arcora.Core.Application.Diagnostics.Views;
+using Arcora.Core.Framework.DataBase;
+using Arcora.Core.Framework.Utils;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -9,7 +9,7 @@ using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.Diagnostics.Controller
+namespace Arcora.Core.Application.Diagnostics.Controller
 {
     /// <summary>
     /// Detail area of the log list: shows the log entry held by the data wrapper (read only).

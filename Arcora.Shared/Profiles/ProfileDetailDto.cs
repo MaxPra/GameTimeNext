@@ -1,4 +1,4 @@
-namespace GameTimeNext.Shared.Profiles
+namespace Arcora.Shared.Profiles
 {
     public class ProfileDetailDto : ProfileDto
     {

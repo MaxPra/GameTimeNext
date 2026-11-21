@@ -1,18 +1,18 @@
-﻿using GameTimeNext.Core.Framework.LauncherIntegration;
-using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Application.TimeMonitoring;
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.BigPicture.ViewModels;
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework.Config;
-using GameTimeNext.Core.Framework.UI.Dialogs;
-using GameTimeNext.Core.Framework.Utils;
+﻿using Arcora.Core.Framework.LauncherIntegration;
+using Arcora.Core.Framework;
+using Arcora.Core.Application.TimeMonitoring;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.BigPicture.ViewModels;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework.Config;
+using Arcora.Core.Framework.UI.Dialogs;
+using Arcora.Core.Framework.Utils;
 using System.Windows;
 using System.Windows.Threading;
 using UIX.ViewController.Engine.DataBaseObjects;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.BigPicture.Controller
+namespace Arcora.Core.Application.BigPicture.Controller
 {
     /// <summary>
     /// Menu, questions and the message boxes of the application (CFMBOX), all in one dialog of the mode:

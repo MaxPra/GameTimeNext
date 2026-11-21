@@ -1,4 +1,4 @@
-namespace GameTimeNext.Core.Framework.UI
+namespace Arcora.Core.Framework.UI
 {
     /// <summary>
     /// A value moved by a damped spring. A new target keeps the current velocity, so an interrupted movement bends

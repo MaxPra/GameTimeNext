@@ -1,9 +1,9 @@
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.Metadata.Data;
-using GameTimeNext.Core.Application.Metadata.Views;
-using GameTimeNext.Core.Framework.Config;
-using GameTimeNext.Core.Framework.DataBase.Migration;
-using GameTimeNext.Core.Framework.UI.Dialogs;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.Metadata.Data;
+using Arcora.Core.Application.Metadata.Views;
+using Arcora.Core.Framework.Config;
+using Arcora.Core.Framework.DataBase.Migration;
+using Arcora.Core.Framework.UI.Dialogs;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls.Primitives;
@@ -11,7 +11,7 @@ using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.Runnables;
 
-namespace GameTimeNext.Core.Application.Metadata.Controller
+namespace Arcora.Core.Application.Metadata.Controller
 {
     public class MetadataViewController : UIXViewControllerBase<MetadataApp, MetadataView>
     {

@@ -1,9 +1,9 @@
-using GameTimeNext.Core.Application.Profiles.BackgroundProcesses;
-using GameTimeNext.Core.Framework.UI.Dialogs;
+using Arcora.Core.Application.Profiles.BackgroundProcesses;
+using Arcora.Core.Framework.UI.Dialogs;
 using UIX.ViewController.Engine.DataBaseObjects;
 using UIX.ViewController.Engine.Runnables;
 
-namespace GameTimeNext.Core.Framework
+namespace Arcora.Core.Framework
 {
     /// <summary>
     /// Tells the user that a record is being edited elsewhere (record lock), when the engine doesn't open an edit view

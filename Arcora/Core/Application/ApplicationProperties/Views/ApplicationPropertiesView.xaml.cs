@@ -1,6 +1,6 @@
-﻿using GameTimeNext.Core.Framework.UI.Base;
+﻿using Arcora.Core.Framework.UI.Base;
 
-namespace GameTimeNext.Core.Application.ApplicationProperties.Views
+namespace Arcora.Core.Application.ApplicationProperties.Views
 {
     /// <summary>
     /// Interaction logic for ApplicationPropertiesView.xaml

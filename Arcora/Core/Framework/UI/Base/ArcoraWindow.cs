@@ -1,4 +1,4 @@
-﻿using GameTimeNext.Core.Framework.Config;
+﻿using Arcora.Core.Framework.Config;
 using System.Collections;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
@@ -13,7 +13,7 @@ using System.Windows.Threading;
 using UIX.ViewController.Engine.FrameworkElements.Windows;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Framework.UI.Base
+namespace Arcora.Core.Framework.UI.Base
 {
     public class ArcoraWindow : UIXWindowBase
     {

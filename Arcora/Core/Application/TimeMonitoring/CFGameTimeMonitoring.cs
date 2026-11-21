@@ -1,12 +1,12 @@
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.Profiles.BackgroundProcesses;
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.Utils;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.Profiles.BackgroundProcesses;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework;
+using Arcora.Core.Framework.Utils;
 using UIX.ViewController.Engine.DataBaseObjects;
 using UIX.ViewController.Engine.Runnables;
 
-namespace GameTimeNext.Core.Application.TimeMonitoring
+namespace Arcora.Core.Application.TimeMonitoring
 {
     public class CFGameTimeMonitoring
     {

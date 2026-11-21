@@ -1,7 +1,7 @@
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.Playthroughs.Views;
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework.Utils;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.Playthroughs.Views;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework.Utils;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -10,9 +10,9 @@ using UIX.ViewController.Engine.Events;
 using UIX.ViewController.Engine.FrameworkElements.UserControls;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
-using GameTimeNext.Core.Framework.UI.Dialogs;
+using Arcora.Core.Framework.UI.Dialogs;
 
-namespace GameTimeNext.Core.Application.Playthroughs.Controller
+namespace Arcora.Core.Application.Playthroughs.Controller
 {
     public class PlaythroughEditViewController : UIXViewControllerBase<PlaythroughEditApp, PlaythroughEditView>
     {

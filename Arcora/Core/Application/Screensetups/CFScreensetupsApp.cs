@@ -1,8 +1,8 @@
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.UI;
-using GameTimeNext.Core.Framework.UI.Dialogs;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework;
+using Arcora.Core.Framework.UI;
+using Arcora.Core.Framework.UI.Dialogs;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,7 +11,7 @@ using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 using UIXMonitorTweaks;
 
-namespace GameTimeNext.Core.Application.Screensetups
+namespace Arcora.Core.Application.Screensetups
 {
     public class CFScreensetupsApp
     {

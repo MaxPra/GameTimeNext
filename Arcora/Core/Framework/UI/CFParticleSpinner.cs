@@ -1,7 +1,7 @@
 using System.Windows;
 using System.Windows.Media;
 
-namespace GameTimeNext.Core.Framework.UI
+namespace Arcora.Core.Framework.UI
 {
     /// <summary>Outline the particles of a <see cref="CFParticleSpinner"/> form.</summary>
     public enum CFParticleSpinnerShape

@@ -1,20 +1,20 @@
-﻿using GameTimeNext.Core.Application.Codetables;
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.General;
-using GameTimeNext.Core.Application.Profiles.Components;
-using GameTimeNext.Core.Application.SelectionLists;
-using GameTimeNext.Core.Application.Profiles.Types;
-using GameTimeNext.Core.Application.Profiles.Viewmodel;
-using GameTimeNext.Core.Application.Profiles.Views;
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.Config;
-using GameTimeNext.Core.Framework.Igdb;
-using GameTimeNext.Core.Framework.LauncherIntegration;
-using GameTimeNext.Core.Framework.LauncherIntegration.Link;
-using GameTimeNext.Core.Framework.UI;
-using GameTimeNext.Core.Framework.UI.Dialogs;
-using GameTimeNext.Core.Framework.Utils;
+﻿using Arcora.Core.Application.Codetables;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.General;
+using Arcora.Core.Application.Profiles.Components;
+using Arcora.Core.Application.SelectionLists;
+using Arcora.Core.Application.Profiles.Types;
+using Arcora.Core.Application.Profiles.Viewmodel;
+using Arcora.Core.Application.Profiles.Views;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework;
+using Arcora.Core.Framework.Config;
+using Arcora.Core.Framework.Igdb;
+using Arcora.Core.Framework.LauncherIntegration;
+using Arcora.Core.Framework.LauncherIntegration.Link;
+using Arcora.Core.Framework.UI;
+using Arcora.Core.Framework.UI.Dialogs;
+using Arcora.Core.Framework.Utils;
 using System.Globalization;
 using System.IO;
 using System.Windows;
@@ -29,9 +29,9 @@ using UIX.ViewController.Engine.FrameworkElements.UserControls;
 using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
-using static GameTimeNext.Core.Application.Profiles.Controller.ProfilesManualEstTimesEditViewController;
+using static Arcora.Core.Application.Profiles.Controller.ProfilesManualEstTimesEditViewController;
 
-namespace GameTimeNext.Core.Application.Profiles.Controller
+namespace Arcora.Core.Application.Profiles.Controller
 {
     public class ProfilesEditViewController : UIXViewControllerBase<ProfilesEditApp, ProfilesEditView>
     {

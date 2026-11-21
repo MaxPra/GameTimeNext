@@ -1,7 +1,7 @@
 using System.IO;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Framework.LauncherIntegration.Ubisoft
+namespace Arcora.Core.Framework.LauncherIntegration.Ubisoft
 {
     /// <summary>
     /// Ubisoft Connect. Game ID = Ubisoft install ID. Installed games are read from the registry.

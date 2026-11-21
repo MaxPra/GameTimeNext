@@ -1,6 +1,6 @@
-﻿using GameTimeNext.Shared.Base;
+﻿using Arcora.Shared.Base;
 
-namespace GameTimeNext.Shared.Profiles.Monitoring
+namespace Arcora.Shared.Profiles.Monitoring
 {
     public class StartMonitoringResponseMessage : ResponseMessageBase
     {

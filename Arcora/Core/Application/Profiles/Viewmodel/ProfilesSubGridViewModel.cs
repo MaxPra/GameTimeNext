@@ -1,10 +1,10 @@
-﻿using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.ViewModelsBase;
+﻿using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework;
+using Arcora.Core.Framework.ViewModelsBase;
 using System.Collections.ObjectModel;
 using System.Windows.Media.Imaging;
 
-namespace GameTimeNext.Core.Application.Profiles.Viewmodel
+namespace Arcora.Core.Application.Profiles.Viewmodel
 {
     public class ProfileCover : ArcoraViewModelBase
     {

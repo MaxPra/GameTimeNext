@@ -1,11 +1,11 @@
-﻿using GameTimeNext.Core.Application.Codetables.Controller;
-using GameTimeNext.Core.Application.Codetables.Selectors;
-using GameTimeNext.Core.Application.Codetables.Views;
+﻿using Arcora.Core.Application.Codetables.Controller;
+using Arcora.Core.Application.Codetables.Selectors;
+using Arcora.Core.Application.Codetables.Views;
 using System.Windows.Controls;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.Codetables
+namespace Arcora.Core.Application.Codetables
 {
     [UIXAppIcon(UIXMdlIcons.BulletList)]
     public class CodetablesApp : UIXApplication, IUIXApplicationStarter

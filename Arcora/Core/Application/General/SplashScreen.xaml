@@ -1,11 +1,11 @@
 ﻿<Window
-    x:Class="GameTimeNext.Core.Application.General.SplashScreen"
+    x:Class="Arcora.Core.Application.General.SplashScreen"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:sys="clr-namespace:System;assembly=System.Runtime"
-    xmlns:ui="clr-namespace:GameTimeNext.Core.Framework.UI"
+    xmlns:ui="clr-namespace:Arcora.Core.Framework.UI"
     Width="720"
     Height="440"
     AllowsTransparency="True"

@@ -1,6 +1,6 @@
 ﻿using UIX.ViewController.Engine.FrameworkElements.UserControls;
 
-namespace GameTimeNext.Core.Application.BigPicture.Views
+namespace Arcora.Core.Application.BigPicture.Views
 {
     /// <summary>
     /// Interaction logic for BigPictureView.xaml

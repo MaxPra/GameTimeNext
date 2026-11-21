@@ -1,8 +1,8 @@
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.Menus.DataWrapper;
-using GameTimeNext.Core.Application.Menus.ViewModel;
-using GameTimeNext.Core.Application.Menus.Views;
-using GameTimeNext.Core.Application.TableObjects;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.Menus.DataWrapper;
+using Arcora.Core.Application.Menus.ViewModel;
+using Arcora.Core.Application.Menus.Views;
+using Arcora.Core.Application.TableObjects;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
@@ -10,7 +10,7 @@ using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.Menus.Controller
+namespace Arcora.Core.Application.Menus.Controller
 {
     public class MenusViewController : UIXViewControllerBase<MenusApp, MenusView>
     {

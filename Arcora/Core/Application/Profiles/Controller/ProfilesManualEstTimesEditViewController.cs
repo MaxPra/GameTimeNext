@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
-using GameTimeNext.Core.Application.Profiles.Views;
-using GameTimeNext.Core.Framework.Utils;
+using Arcora.Core.Application.Profiles.Views;
+using Arcora.Core.Framework.Utils;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
@@ -8,7 +8,7 @@ using UIX.ViewController.Engine.FrameworkElements.UserControls;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.Profiles.Controller
+namespace Arcora.Core.Application.Profiles.Controller
 {
     public class ProfilesManualEstTimesEditViewController : UIXViewControllerBase<ProfilesEditApp, ProfilesManualEstTimesEditView>
     {

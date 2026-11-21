@@ -1,6 +1,6 @@
 using System.Net;
 
-namespace GameTimeNext.Core.Framework.Http
+namespace Arcora.Core.Framework.Http
 {
     /// <summary>
     /// Usage statistics of one external API since the app started (requests, errors, durations), recorded by

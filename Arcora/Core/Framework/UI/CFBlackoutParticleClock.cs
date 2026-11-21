@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace GameTimeNext.Core.Framework.UI
+namespace Arcora.Core.Framework.UI
 {
     /// <summary>
     /// Particle clock for the blackout mode.

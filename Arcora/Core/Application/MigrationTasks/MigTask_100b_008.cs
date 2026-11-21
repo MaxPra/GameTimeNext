@@ -1,6 +1,6 @@
 using UIX.ViewController.Engine.Querying;
 
-namespace GameTimeNext.Core.Application.MigrationTasks
+namespace Arcora.Core.Application.MigrationTasks
 {
     internal partial class MigTask_100b_008 : MigTaskBase
     {

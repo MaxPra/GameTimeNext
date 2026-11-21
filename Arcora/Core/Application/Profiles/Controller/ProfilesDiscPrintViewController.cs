@@ -1,5 +1,5 @@
-using GameTimeNext.Core.Application.Profiles.Views;
-using GameTimeNext.Core.Framework.UI;
+using Arcora.Core.Application.Profiles.Views;
+using Arcora.Core.Framework.UI;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
@@ -9,7 +9,7 @@ using UIX.ViewController.Engine.Events;
 using UIX.ViewController.Engine.FrameworkElements.UserControls;
 using UIX.ViewController.Engine.Runnables;
 
-namespace GameTimeNext.Core.Application.Profiles.Controller
+namespace Arcora.Core.Application.Profiles.Controller
 {
     /// <summary>
     /// Moves and zooms the section of the cover on the disc. The print is turned like on the selected disc in the library,

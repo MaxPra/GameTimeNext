@@ -1,6 +1,6 @@
 ﻿using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Framework.Utils
+namespace Arcora.Core.Framework.Utils
 {
     public partial class FnSystem
     {

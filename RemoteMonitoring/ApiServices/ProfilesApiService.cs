@@ -1,5 +1,5 @@
-﻿using GameTimeNext.Shared.Profiles;
-using GameTimeNext.Shared.Profiles.Monitoring;
+﻿using Arcora.Shared.Profiles;
+using Arcora.Shared.Profiles.Monitoring;
 using RemoteMonitoring.Base;
 using System.Collections.Concurrent;
 

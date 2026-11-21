@@ -1,11 +1,11 @@
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.Playthroughs.Controller;
-using GameTimeNext.Core.Application.Playthroughs.ViewModel;
-using GameTimeNext.Core.Application.Playthroughs.Views;
-using GameTimeNext.Core.Application.Profiles;
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework.UI.Dialogs;
-using GameTimeNext.Core.Framework.Utils;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.Playthroughs.Controller;
+using Arcora.Core.Application.Playthroughs.ViewModel;
+using Arcora.Core.Application.Playthroughs.Views;
+using Arcora.Core.Application.Profiles;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework.UI.Dialogs;
+using Arcora.Core.Framework.Utils;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -14,10 +14,10 @@ using UIX.ViewController.Engine.FrameworkElements;
 using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
-using static GameTimeNext.Core.Application.Playthroughs.Controller.PlaythroughsViewController;
+using static Arcora.Core.Application.Playthroughs.Controller.PlaythroughsViewController;
 using static UIX.ViewController.Engine.FrameworkElements.UIXContextMenuFactory;
 
-namespace GameTimeNext.Core.Application.Playthroughs.Selectors
+namespace Arcora.Core.Application.Playthroughs.Selectors
 {
     public class PlaythroughsView_PlaythroughsSelectorController : UIXSelectorControllerBase<PlaythroughsApp, PlaythroughsView, UIXTreeGrid>
     {

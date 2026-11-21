@@ -1,7 +1,7 @@
-﻿using GameTimeNext.Core.Framework;
+﻿using Arcora.Core.Framework;
 using UIX.ViewController.Engine.Querying;
 
-namespace GameTimeNext.Core.Application.Metadata.Data
+namespace Arcora.Core.Application.Metadata.Data
 {
     public class TFMETAP
     {

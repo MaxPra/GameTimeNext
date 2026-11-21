@@ -1,11 +1,11 @@
-using GameTimeNext.Core.Framework.Config;
+using Arcora.Core.Framework.Config;
 using System.Data;
 using System.Data.SQLite;
 using UIX.ViewController.Engine.Migration.Types;
 using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Framework.DataBase
+namespace Arcora.Core.Framework.DataBase
 {
     /// <summary>
     /// Connection to the separate log database (written by the LogProvider), independent of the app database of DataBaseManager.

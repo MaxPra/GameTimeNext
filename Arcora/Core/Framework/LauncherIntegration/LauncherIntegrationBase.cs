@@ -2,7 +2,7 @@ using Microsoft.Win32;
 using System.Diagnostics;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Framework.LauncherIntegration
+namespace Arcora.Core.Framework.LauncherIntegration
 {
     /// <summary>
     /// Base class of all launcher integrations: optional features are switched off by default.

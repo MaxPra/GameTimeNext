@@ -3,7 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
 
-namespace GameTimeNext.Core.Framework.UI
+namespace Arcora.Core.Framework.UI
 {
     /// <summary>
     /// Moves the parts of a game case (style GameCase in TileViewStyle.xaml) with springs: the cover on its hinge, the

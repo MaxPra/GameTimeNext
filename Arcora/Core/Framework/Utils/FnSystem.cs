@@ -1,6 +1,6 @@
-﻿using GameTimeNext.Core.Application.Profiles;
-using GameTimeNext.Core.Application.Profiles.Viewmodel;
-using GameTimeNext.Core.Framework.Config;
+﻿using Arcora.Core.Application.Profiles;
+using Arcora.Core.Application.Profiles.Viewmodel;
+using Arcora.Core.Framework.Config;
 using Microsoft.Win32;
 using System.Diagnostics;
 using System.IO;
@@ -11,7 +11,7 @@ using System.Windows.Media.Imaging;
 using UIX.ViewController.Engine.FrameworkElements.Loader;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Framework.Utils
+namespace Arcora.Core.Framework.Utils
 {
     public partial class FnSystem
     {

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace GameTimeNext.Core.Framework.ViewModelsBase
+namespace Arcora.Core.Framework.ViewModelsBase
 {
     public class ArcoraViewModelBase : INotifyPropertyChanged
     {

@@ -1,10 +1,10 @@
-﻿using GameTimeNext.Core.Framework.Config;
+﻿using Arcora.Core.Framework.Config;
 using System.Net.Http;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Framework.GitHub
+namespace Arcora.Core.Framework.GitHub
 {
     public class FnGithub
     {

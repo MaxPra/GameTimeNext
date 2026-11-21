@@ -1,12 +1,12 @@
-using GameTimeNext.Core.Application.Diagnostics.Controller;
-using GameTimeNext.Core.Application.Diagnostics.DataWrapper;
-using GameTimeNext.Core.Application.Diagnostics.Selectors;
-using GameTimeNext.Core.Application.Diagnostics.Views;
+using Arcora.Core.Application.Diagnostics.Controller;
+using Arcora.Core.Application.Diagnostics.DataWrapper;
+using Arcora.Core.Application.Diagnostics.Selectors;
+using Arcora.Core.Application.Diagnostics.Views;
 using System.Windows.Controls;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.Diagnostics
+namespace Arcora.Core.Application.Diagnostics
 {
     [UIXAppIcon(UIXMdlIcons.Tools)]
     public class DiagnosticsApp : UIXApplication, IUIXApplicationStarter

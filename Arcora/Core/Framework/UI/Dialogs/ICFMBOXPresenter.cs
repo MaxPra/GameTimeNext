@@ -1,4 +1,4 @@
-﻿namespace GameTimeNext.Core.Framework.UI.Dialogs
+﻿namespace Arcora.Core.Framework.UI.Dialogs
 {
     /// <summary>
     /// Shows CFMBOX messages in another way than the dialog window (e.g. the Big Picture mode in its own style).

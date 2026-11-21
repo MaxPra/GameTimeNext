@@ -1,4 +1,4 @@
-namespace GameTimeNext.Core.Application.Settings
+namespace Arcora.Core.Application.Settings
 {
     /// <summary>
     /// Entries of codetable bG: source of the blurred main window background image (AppSettings.BackgroundSource).

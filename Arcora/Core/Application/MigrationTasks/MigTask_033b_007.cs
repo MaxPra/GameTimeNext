@@ -1,4 +1,4 @@
-﻿namespace GameTimeNext.Core.Application.MigrationTasks
+﻿namespace Arcora.Core.Application.MigrationTasks
 {
     internal class MigTask_033b_007 : MigTaskBase
     {

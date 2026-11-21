@@ -1,9 +1,9 @@
-﻿using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework.DataBase.Migration;
+﻿using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework.DataBase.Migration;
 using System.Data.SQLite;
 using UIX.ViewController.Engine.Querying;
 
-namespace GameTimeNext.Core.Application.DataManagers
+namespace Arcora.Core.Application.DataManagers
 {
     public class TXCTABD : TXCTABDBasic
     {

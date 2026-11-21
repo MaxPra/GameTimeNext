@@ -1,14 +1,14 @@
-using GameTimeNext.Core.Application.BigPicture;
-using GameTimeNext.Core.Application.General;
-using GameTimeNext.Core.Application.Home.Views;
-using GameTimeNext.Core.Application.Profiles;
-using GameTimeNext.Core.Framework.Config;
+using Arcora.Core.Application.BigPicture;
+using Arcora.Core.Application.General;
+using Arcora.Core.Application.Home.Views;
+using Arcora.Core.Application.Profiles;
+using Arcora.Core.Framework.Config;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.Runnables;
 
-namespace GameTimeNext.Core.Application.Home.Controller
+namespace Arcora.Core.Application.Home.Controller
 {
     public class HomeViewController : UIXViewControllerBase<HomeApp, HomeView>
     {

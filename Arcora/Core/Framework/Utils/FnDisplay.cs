@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace GameTimeNext.Core.Framework.Utils
+namespace Arcora.Core.Framework.Utils
 {
     internal static class FnDisplay
     {

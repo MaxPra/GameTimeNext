@@ -1,17 +1,17 @@
-using GameTimeNext.Core.Application.ApplicationProperties.DataWrapper;
-using GameTimeNext.Core.Application.ApplicationProperties.Views;
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework.Utils;
+using Arcora.Core.Application.ApplicationProperties.DataWrapper;
+using Arcora.Core.Application.ApplicationProperties.Views;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework.Utils;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.DataBaseObjects;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
-using GameTimeNext.Core.Framework.UI.Dialogs;
+using Arcora.Core.Framework.UI.Dialogs;
 
-namespace GameTimeNext.Core.Application.ApplicationProperties.Controller
+namespace Arcora.Core.Application.ApplicationProperties.Controller
 {
     /// <summary>
     /// Combined edit area of the definitions list: edits the definition held by the data wrapper and saves it directly.

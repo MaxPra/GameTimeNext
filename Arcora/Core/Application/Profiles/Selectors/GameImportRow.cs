@@ -1,6 +1,6 @@
 ﻿using UIX.ViewController.Engine.Viewmodel;
 
-namespace GameTimeNext.Core.Application.Profiles.Selectors
+namespace Arcora.Core.Application.Profiles.Selectors
 {
     public class GameImportRow : UIXDataGridRow
     {

@@ -1,7 +1,7 @@
-﻿using GameTimeNext.Core.Application.TableObjects;
+﻿using Arcora.Core.Application.TableObjects;
 using System.Data.SQLite;
 
-namespace GameTimeNext.Core.Application.DataManagers
+namespace Arcora.Core.Application.DataManagers
 {
     public class TXSCRSH : TXSCRSHBasic
     {

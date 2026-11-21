@@ -1,4 +1,4 @@
-﻿namespace GameTimeNext.Core.Application.General.BackgroundProcesses
+﻿namespace Arcora.Core.Application.General.BackgroundProcesses
 {
     /// <summary>
     /// Exception of another process, known only as text: Exception.ToString() sent by the remote monitoring, or the error

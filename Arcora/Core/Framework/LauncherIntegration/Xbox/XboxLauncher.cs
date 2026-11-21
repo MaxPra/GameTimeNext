@@ -4,7 +4,7 @@ using UIX.ViewController.Engine.Utils;
 using Windows.ApplicationModel;
 using Windows.Management.Deployment;
 
-namespace GameTimeNext.Core.Framework.LauncherIntegration.Xbox
+namespace Arcora.Core.Framework.LauncherIntegration.Xbox
 {
     /// <summary>
     /// Xbox app (PC Game Pass, Microsoft Store). Game ID = AppUserModelId ("PackageFamilyName!AppId").

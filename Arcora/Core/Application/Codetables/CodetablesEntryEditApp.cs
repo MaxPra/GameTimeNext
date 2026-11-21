@@ -1,12 +1,12 @@
-﻿using GameTimeNext.Core.Application.Codetables.Controller;
-using GameTimeNext.Core.Application.Codetables.Views;
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.TableObjects;
+﻿using Arcora.Core.Application.Codetables.Controller;
+using Arcora.Core.Application.Codetables.Views;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.TableObjects;
 using System.Windows;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.Codetables
+namespace Arcora.Core.Application.Codetables
 {
     public class CodetablesEntryEditApp : UIXApplication
     {

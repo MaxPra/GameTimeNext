@@ -1,7 +1,7 @@
 using System.Windows;
 using System.Windows.Media;
 
-namespace GameTimeNext.Core.Framework.Utils
+namespace Arcora.Core.Framework.Utils
 {
     /// <summary>
     /// Visual tree search helpers.

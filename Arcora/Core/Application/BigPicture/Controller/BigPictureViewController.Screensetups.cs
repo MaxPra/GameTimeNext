@@ -1,16 +1,16 @@
-using GameTimeNext.Core.Application.BigPicture.ViewModels;
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.Screensetups;
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.UI.Base;
-using GameTimeNext.Core.Framework.UI.Dialogs;
+using Arcora.Core.Application.BigPicture.ViewModels;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.Screensetups;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework;
+using Arcora.Core.Framework.UI.Base;
+using Arcora.Core.Framework.UI.Dialogs;
 using System.Globalization;
 using System.Windows;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.BigPicture.Controller
+namespace Arcora.Core.Application.BigPicture.Controller
 {
     /// <summary>
     /// Switching the screensetup (monitors and audio device, module Screensetups) from the mode, e.g. from the desk

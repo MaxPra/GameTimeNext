@@ -1,7 +1,7 @@
-using GameTimeNext.Core.Application.ApplicationProperties.DataWrapper;
-using GameTimeNext.Core.Application.ApplicationProperties.Views;
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.TableObjects;
+using Arcora.Core.Application.ApplicationProperties.DataWrapper;
+using Arcora.Core.Application.ApplicationProperties.Views;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.TableObjects;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
@@ -9,7 +9,7 @@ using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.ApplicationProperties.Controller
+namespace Arcora.Core.Application.ApplicationProperties.Controller
 {
     public class ApplicationPropertiesViewController : UIXViewControllerBase<ApplicationPropertiesApp, ApplicationPropertiesView>
     {

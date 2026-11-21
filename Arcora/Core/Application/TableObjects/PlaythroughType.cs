@@ -1,4 +1,4 @@
-﻿namespace GameTimeNext.Core.Application.TableObjects
+﻿namespace Arcora.Core.Application.TableObjects
 {
     public class PlaythroughType
     {

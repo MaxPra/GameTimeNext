@@ -1,8 +1,8 @@
-﻿using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.Profiles.Components;
-using GameTimeNext.Core.Application.TableObjects;
+﻿using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.Profiles.Components;
+using Arcora.Core.Application.TableObjects;
 
-namespace GameTimeNext.Core.Framework.LauncherIntegration
+namespace Arcora.Core.Framework.LauncherIntegration
 {
     public class CFGameStarter
     {

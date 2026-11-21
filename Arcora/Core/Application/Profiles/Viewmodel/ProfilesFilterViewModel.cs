@@ -1,7 +1,7 @@
-﻿using GameTimeNext.Core.Framework.ViewModelsBase;
+﻿using Arcora.Core.Framework.ViewModelsBase;
 using System.Collections.ObjectModel;
 
-namespace GameTimeNext.Core.Application.Profiles.Viewmodel
+namespace Arcora.Core.Application.Profiles.Viewmodel
 {
     public class ProfilesFilterViewModel : ArcoraViewModelBase
     {

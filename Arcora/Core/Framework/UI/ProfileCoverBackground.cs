@@ -1,12 +1,12 @@
-using GameTimeNext.Core.Application.Profiles;
-using GameTimeNext.Core.Framework.Config;
+using Arcora.Core.Application.Profiles;
+using Arcora.Core.Framework.Config;
 using System.IO;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Framework.UI
+namespace Arcora.Core.Framework.UI
 {
     /// <summary>
     /// Provides the cover of the selected profile, cropped to landscape and heavily blurred, as application resource

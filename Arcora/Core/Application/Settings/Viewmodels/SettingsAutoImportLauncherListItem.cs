@@ -1,6 +1,6 @@
 using UIX.ViewController.Engine.Viewmodel;
 
-namespace GameTimeNext.Core.Application.Settings.Viewmodels
+namespace Arcora.Core.Application.Settings.Viewmodels
 {
     /// <summary>
     /// Launcher in the list of the automatic game import (settings "Game import").

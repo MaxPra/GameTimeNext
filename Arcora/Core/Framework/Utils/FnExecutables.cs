@@ -1,8 +1,8 @@
-﻿using GameTimeNext.Core.Application.Profiles.Components;
-using GameTimeNext.Core.Application.TableObjects;
+﻿using Arcora.Core.Application.Profiles.Components;
+using Arcora.Core.Application.TableObjects;
 using System.IO;
 
-namespace GameTimeNext.Core.Framework.Utils
+namespace Arcora.Core.Framework.Utils
 {
     public class FnExecutables
     {

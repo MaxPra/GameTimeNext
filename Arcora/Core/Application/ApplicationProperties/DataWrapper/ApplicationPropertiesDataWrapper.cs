@@ -1,9 +1,9 @@
-using GameTimeNext.Core.Application.ApplicationProperties.Controller;
-using GameTimeNext.Core.Application.TableObjects;
+using Arcora.Core.Application.ApplicationProperties.Controller;
+using Arcora.Core.Application.TableObjects;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements.Selectors;
 
-namespace GameTimeNext.Core.Application.ApplicationProperties.DataWrapper
+namespace Arcora.Core.Application.ApplicationProperties.DataWrapper
 {
     /// <summary>
     /// Connects the definitions list (source) with the combined edit area (target): holds the definition being edited.

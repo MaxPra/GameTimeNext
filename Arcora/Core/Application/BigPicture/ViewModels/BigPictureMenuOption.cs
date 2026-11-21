@@ -1,6 +1,6 @@
 ﻿using UIX.ViewController.Engine.Viewmodel;
 
-namespace GameTimeNext.Core.Application.BigPicture.ViewModels
+namespace Arcora.Core.Application.BigPicture.ViewModels
 {
     /// <summary>
     /// Entry of the Big Picture menu or of a question (e.g. "Quit game"). Key identifies the action in the controller.

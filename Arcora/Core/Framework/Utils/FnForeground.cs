@@ -5,7 +5,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Interop;
 
-namespace GameTimeNext.Core.Framework.Utils
+namespace Arcora.Core.Framework.Utils
 {
     public static class FnForeground
     {

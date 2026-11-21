@@ -1,10 +1,10 @@
-using GameTimeNext.Core.Application.Codetables.Controller;
-using GameTimeNext.Core.Application.Codetables.Views;
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.Profiles;
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework.UI.Dialogs;
-using GameTimeNext.Core.Framework.Utils;
+using Arcora.Core.Application.Codetables.Controller;
+using Arcora.Core.Application.Codetables.Views;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.Profiles;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework.UI.Dialogs;
+using Arcora.Core.Framework.Utils;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -15,7 +15,7 @@ using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 using static UIX.ViewController.Engine.FrameworkElements.UIXContextMenuFactory;
 
-namespace GameTimeNext.Core.Application.Codetables.Selectors
+namespace Arcora.Core.Application.Codetables.Selectors
 {
     public class CodetablesEntrysView_CodetableEntrysSelectorController : UIXSelectorControllerBase<CodetablesEntrysApp, CodetablesEntrysView, UIXDataGrid>
     {

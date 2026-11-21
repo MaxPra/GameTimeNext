@@ -1,7 +1,7 @@
-using GameTimeNext.Core.Application.General.AppSearch.ViewModels;
-using GameTimeNext.Core.Application.General.AppSearch.Views;
-using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.Utils;
+using Arcora.Core.Application.General.AppSearch.ViewModels;
+using Arcora.Core.Application.General.AppSearch.Views;
+using Arcora.Core.Framework;
+using Arcora.Core.Framework.Utils;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -15,7 +15,7 @@ using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 using UIX.ViewController.Engine.Viewmodel;
 
-namespace GameTimeNext.Core.Application.General.AppSearch.Controller
+namespace Arcora.Core.Application.General.AppSearch.Controller
 {
     public class AppSearchViewController : UIXViewControllerBase<AppSearchApp, AppSearchView>
     {

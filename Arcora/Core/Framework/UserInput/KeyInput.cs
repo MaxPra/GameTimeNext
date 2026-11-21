@@ -1,4 +1,4 @@
-﻿namespace GameTimeNext.Core.Framework.UserInput
+﻿namespace Arcora.Core.Framework.UserInput
 {
     public class KeyInput
     {

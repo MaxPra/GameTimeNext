@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Windows.Data;
 
-namespace GameTimeNext.Core.Application.Profiles.Converter
+namespace Arcora.Core.Application.Profiles.Converter
 {
     /// <summary>
     /// True when at least one of the bound values is true (logical OR, e.g. hovered or selected).

@@ -1,4 +1,4 @@
-﻿﻿namespace GameTimeNext.Core.Framework.UI.Dialogs
+﻿﻿namespace Arcora.Core.Framework.UI.Dialogs
 {
     public partial class CFMBOXView
     {

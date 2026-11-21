@@ -1,11 +1,11 @@
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.Screensetups.Controller;
-using GameTimeNext.Core.Application.Screensetups.Selectors;
-using GameTimeNext.Core.Application.Screensetups.Views;
-using GameTimeNext.Core.Application.TableObjects;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.Screensetups.Controller;
+using Arcora.Core.Application.Screensetups.Selectors;
+using Arcora.Core.Application.Screensetups.Views;
+using Arcora.Core.Application.TableObjects;
 using UIX.ViewController.Engine.Runnables;
 
-namespace GameTimeNext.Core.Application.Screensetups
+namespace Arcora.Core.Application.Screensetups
 {
     public class ScreensetupsEditApp : UIXApplication
     {

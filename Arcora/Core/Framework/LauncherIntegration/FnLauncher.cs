@@ -1,16 +1,16 @@
-﻿using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.Profiles.Components;
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Application.TimeMonitoring;
-using GameTimeNext.Core.Framework.UI;
-using GameTimeNext.Core.Framework.UI.Dialogs;
-using GameTimeNext.Core.Framework.Utils;
+﻿using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.Profiles.Components;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Application.TimeMonitoring;
+using Arcora.Core.Framework.UI;
+using Arcora.Core.Framework.UI.Dialogs;
+using Arcora.Core.Framework.Utils;
 using System.Diagnostics;
 using System.Globalization;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Framework.LauncherIntegration
+namespace Arcora.Core.Framework.LauncherIntegration
 {
     /// <summary>
     /// Launcher functions for a profile (T1PROFI.LNTY = launcher type, T1PROFI.LNID = game ID of the launcher).

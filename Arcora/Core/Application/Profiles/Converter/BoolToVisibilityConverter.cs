@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Data;
 
-namespace GameTimeNext.Core.Application.Profiles.Converter
+namespace Arcora.Core.Application.Profiles.Converter
 {
     public class BoolToVisibilityConverter : IValueConverter
     {

@@ -1,12 +1,12 @@
-﻿using GameTimeNext.Core.Application.General;
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework.Config;
-using GameTimeNext.Shared.Profiles;
+﻿using Arcora.Core.Application.General;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework.Config;
+using Arcora.Shared.Profiles;
 using System.Globalization;
 using System.IO;
 using System.Windows.Media;
 
-namespace GameTimeNext.Core.Application.DataManagers
+namespace Arcora.Core.Application.DataManagers
 {
     public class TXPROFI : TXPROFIBasic, IDtoConverter<T1PROFI, ProfileDto>, IDtoConverter<T1PROFI, ProfileDetailDto>
     {

@@ -1,4 +1,4 @@
-﻿using GameTimeNext.Core.Framework.Config;
+﻿using Arcora.Core.Framework.Config;
 using Microsoft.Win32;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -10,7 +10,7 @@ using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Framework.UI
+namespace Arcora.Core.Framework.UI
 {
     /// <summary>
     /// Provides the current desktop wallpaper, heavily blurred, as application resource (Brush.App.Wallpaper)

@@ -1,7 +1,7 @@
-﻿using GameTimeNext.Core.Framework.Components.Base;
+﻿using Arcora.Core.Framework.Components.Base;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.Profiles.Components
+namespace Arcora.Core.Application.Profiles.Components
 {
     public class CExecutables : ArcoraComponent<CExecutables>
     {

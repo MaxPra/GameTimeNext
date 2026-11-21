@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Text.Json.Nodes;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.MigrationTasks
+namespace Arcora.Core.Application.MigrationTasks
 {
     /// <summary>
     /// Moves the Steam link of the profiles into the generic launcher link:

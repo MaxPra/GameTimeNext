@@ -1,11 +1,11 @@
-﻿using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework.Config;
+﻿using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework.Config;
 using System.Data;
 using System.Data.SQLite;
 using System.IO;
 using UIX.ViewController.Engine.Querying;
 
-namespace GameTimeNext.Core.Framework.DataBase
+namespace Arcora.Core.Framework.DataBase
 {
     class DataBaseManager
     {

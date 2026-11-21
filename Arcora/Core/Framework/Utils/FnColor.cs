@@ -1,7 +1,7 @@
 using System.Windows.Media;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Framework.Utils
+namespace Arcora.Core.Framework.Utils
 {
     /// <summary>
     /// Colors of the application (UI/Colors/Colors.xaml) for code, e.g. row and cell colors of lists (UIXDataGridRow,

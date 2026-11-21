@@ -1,13 +1,13 @@
-﻿using GameTimeNext.Core.Application.Profiles.Types;
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.Utils;
+﻿using Arcora.Core.Application.Profiles.Types;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework;
+using Arcora.Core.Framework.Utils;
 using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
-using static GameTimeNext.Core.Application.Profiles.Controller.ProfilesViewController;
+using static Arcora.Core.Application.Profiles.Controller.ProfilesViewController;
 
-namespace GameTimeNext.Core.Application.DataManagers
+namespace Arcora.Core.Application.DataManagers
 {
     /// <summary>
     /// Library filter (profiles view and Big Picture mode).

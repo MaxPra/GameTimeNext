@@ -1,11 +1,11 @@
-﻿using GameTimeNext.Core.Framework.Config;
-using GameTimeNext.Core.Framework.Utils;
+﻿using Arcora.Core.Framework.Config;
+using Arcora.Core.Framework.Utils;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Framework.Files
+namespace Arcora.Core.Framework.Files
 {
     internal class FileHandler
     {

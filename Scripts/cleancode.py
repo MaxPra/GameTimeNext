@@ -22,8 +22,10 @@ SOLUTION_DIR = Path(__file__).resolve().parent.parent
 # --------------------------------------------------------------
 ALLOWED_SOURCES = {
     "GameTimeNext": {
-        # InternalApplicationName, GitHubRepositoryName
-        "Arcora/Core/Framework/Config/AppConfig.Paths.cs": 2,
+        # GitHubRepositoryName
+        "Arcora/Core/Framework/Config/AppConfig.Paths.cs": 1,
+        # Former namespace prefix of the favorites in the config
+        "Arcora/Core/Application/MigrationTasks/MigTask_110b_013.cs": 2,
         "Arcora/Core/Framework/Config/AppConfigOld.cs": 1000,
     },
 

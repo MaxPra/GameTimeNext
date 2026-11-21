@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace GameTimeNext.Core.Framework.LauncherIntegration
+namespace Arcora.Core.Framework.LauncherIntegration
 {
     static class CFHDR
     {

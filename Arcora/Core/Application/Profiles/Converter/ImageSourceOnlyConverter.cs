@@ -2,7 +2,7 @@ using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace GameTimeNext.Core.Application.Profiles.Converter
+namespace Arcora.Core.Application.Profiles.Converter
 {
     /// <summary>
     /// Passes an ImageSource on and anything else as null. For bindings that hand a cover on as object (the Tag of the

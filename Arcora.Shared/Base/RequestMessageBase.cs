@@ -1,4 +1,4 @@
-﻿namespace GameTimeNext.Shared.Base
+﻿namespace Arcora.Shared.Base
 {
     public abstract class RequestMessageBase
     {

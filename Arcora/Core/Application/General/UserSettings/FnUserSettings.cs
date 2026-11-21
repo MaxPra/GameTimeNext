@@ -1,6 +1,6 @@
-﻿using GameTimeNext.Core.Framework;
+﻿using Arcora.Core.Framework;
 
-namespace GameTimeNext.Core.Application.General.UserSettings
+namespace Arcora.Core.Application.General.UserSettings
 {
     public class FnUserSettings
     {

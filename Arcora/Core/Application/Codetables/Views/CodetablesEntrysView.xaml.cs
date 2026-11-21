@@ -1,6 +1,6 @@
-﻿using GameTimeNext.Core.Framework.UI.Base;
+﻿using Arcora.Core.Framework.UI.Base;
 
-namespace GameTimeNext.Core.Application.Codetables.Views
+namespace Arcora.Core.Application.Codetables.Views
 {
     public partial class CodetablesEntrysView : ArcoraWindowView
     {

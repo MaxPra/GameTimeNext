@@ -1,6 +1,6 @@
 using UIX.ViewController.Engine.Viewmodel;
 
-namespace GameTimeNext.Core.Application.Metadata.Controller
+namespace Arcora.Core.Application.Metadata.Controller
 {
     public class MetadataPosDataGridRow : UIXDataGridRow
     {

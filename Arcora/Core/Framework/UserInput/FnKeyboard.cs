@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Input;
 
-namespace GameTimeNext.Core.Framework.UserInput
+namespace Arcora.Core.Framework.UserInput
 {
     public static class FnKeyboard
     {

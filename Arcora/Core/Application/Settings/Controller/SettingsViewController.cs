@@ -1,20 +1,20 @@
 ﻿using System.Globalization;
-using GameTimeNext.Core.Application.General;
-using GameTimeNext.Core.Application.General.BackgroundProcesses;
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.Profiles;
-using GameTimeNext.Core.Application.Profiles.BackgroundProcesses;
-using GameTimeNext.Core.Application.Settings.Viewmodels;
-using GameTimeNext.Core.Application.Settings.Views;
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.Config;
-using GameTimeNext.Core.Framework.Files;
-using GameTimeNext.Core.Framework.LauncherIntegration;
-using GameTimeNext.Core.Framework.UI;
-using GameTimeNext.Core.Framework.UI.Dialogs;
-using GameTimeNext.Core.Framework.UserInput;
-using GameTimeNext.Core.Framework.Utils;
+using Arcora.Core.Application.General;
+using Arcora.Core.Application.General.BackgroundProcesses;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.Profiles;
+using Arcora.Core.Application.Profiles.BackgroundProcesses;
+using Arcora.Core.Application.Settings.Viewmodels;
+using Arcora.Core.Application.Settings.Views;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework;
+using Arcora.Core.Framework.Config;
+using Arcora.Core.Framework.Files;
+using Arcora.Core.Framework.LauncherIntegration;
+using Arcora.Core.Framework.UI;
+using Arcora.Core.Framework.UI.Dialogs;
+using Arcora.Core.Framework.UserInput;
+using Arcora.Core.Framework.Utils;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
@@ -24,7 +24,7 @@ using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.Settings.Controller
+namespace Arcora.Core.Application.Settings.Controller
 {
     internal class SettingsViewController : UIXViewControllerBase<SettingsApp, SettingsView>
     {

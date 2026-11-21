@@ -1,16 +1,16 @@
-﻿using GameTimeNext.Core.Application.BigPicture;
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.General.AppSearch;
-using GameTimeNext.Core.Application.General.UserSettings;
-using GameTimeNext.Core.Application.General.Views;
-using GameTimeNext.Core.Application.GTXMigration;
-using GameTimeNext.Core.Application.Home;
-using GameTimeNext.Core.Application.Profiles;
-using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.Config;
-using GameTimeNext.Core.Framework.UI;
-using GameTimeNext.Core.Framework.UI.Dialogs;
-using GameTimeNext.Core.Framework.Utils;
+﻿using Arcora.Core.Application.BigPicture;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.General.AppSearch;
+using Arcora.Core.Application.General.UserSettings;
+using Arcora.Core.Application.General.Views;
+using Arcora.Core.Application.GTXMigration;
+using Arcora.Core.Application.Home;
+using Arcora.Core.Application.Profiles;
+using Arcora.Core.Framework;
+using Arcora.Core.Framework.Config;
+using Arcora.Core.Framework.UI;
+using Arcora.Core.Framework.UI.Dialogs;
+using Arcora.Core.Framework.Utils;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -22,7 +22,7 @@ using UIX.ViewController.Engine.Events;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.General.Controller
+namespace Arcora.Core.Application.General.Controller
 {
     internal class MainWindowController : UIXWindowControllerBase<MainApp, MainWindow>
     {

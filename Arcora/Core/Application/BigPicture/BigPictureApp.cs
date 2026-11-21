@@ -1,10 +1,10 @@
-﻿using GameTimeNext.Core.Application.BigPicture.Controller;
-using GameTimeNext.Core.Application.BigPicture.Views;
+﻿using Arcora.Core.Application.BigPicture.Controller;
+using Arcora.Core.Application.BigPicture.Views;
 using System.Windows.Controls;
 using System.Windows.Input;
 using UIX.ViewController.Engine.Runnables;
 
-namespace GameTimeNext.Core.Application.BigPicture
+namespace Arcora.Core.Application.BigPicture
 {
     /// <summary>
     /// Big Picture mode: the game library in full screen, made for a TV and a game controller.

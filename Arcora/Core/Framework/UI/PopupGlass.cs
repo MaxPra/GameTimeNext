@@ -1,6 +1,6 @@
 using System.Windows;
 
-namespace GameTimeNext.Core.Framework.UI
+namespace Arcora.Core.Framework.UI
 {
     /// <summary>
     /// Glass look for popups (context menus, filter popup, ...): the popup window gets an acrylic blur behind it

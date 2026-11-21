@@ -1,13 +1,13 @@
-﻿using GameTimeNext.Core.Application.General.UserSettings;
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework.Utils;
+﻿using Arcora.Core.Application.General.UserSettings;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework.Utils;
 using Microsoft.VisualBasic.FileIO;
 using System.IO;
 using System.Text.Json.Serialization;
 using UIX.ViewController.Engine.Utils;
-using static GameTimeNext.Core.Application.Profiles.Controller.ProfilesViewController;
+using static Arcora.Core.Application.Profiles.Controller.ProfilesViewController;
 
-namespace GameTimeNext.Core.Framework.Config
+namespace Arcora.Core.Framework.Config
 {
     internal class AppConfigOld
     {

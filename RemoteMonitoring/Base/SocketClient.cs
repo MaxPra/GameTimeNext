@@ -1,4 +1,4 @@
-﻿using GameTimeNext.Shared.Base;
+﻿using Arcora.Shared.Base;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;

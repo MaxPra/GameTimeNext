@@ -1,9 +1,9 @@
-using GameTimeNext.Core.Application.Profiles.Viewmodel;
-using GameTimeNext.Core.Application.Profiles.Views;
-using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.Config;
-using GameTimeNext.Core.Framework.SteamGridDB;
-using GameTimeNext.Core.Framework.Utils;
+using Arcora.Core.Application.Profiles.Viewmodel;
+using Arcora.Core.Application.Profiles.Views;
+using Arcora.Core.Framework;
+using Arcora.Core.Framework.Config;
+using Arcora.Core.Framework.SteamGridDB;
+using Arcora.Core.Framework.Utils;
 using System.Globalization;
 using System.IO;
 using System.Windows.Media.Imaging;
@@ -12,7 +12,7 @@ using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.Profiles.Selectors
+namespace Arcora.Core.Application.Profiles.Selectors
 {
     /// <summary>
     /// Covers of SteamGridDB, one page at a time (CurrentPage). The grids are searched on the first load; each page

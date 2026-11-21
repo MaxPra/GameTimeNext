@@ -1,7 +1,7 @@
-﻿using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework;
+﻿using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework;
 
-namespace GameTimeNext.Core.Application.DataManagers
+namespace Arcora.Core.Application.DataManagers
 {
     public class TXSESSI : TXSESSIBasic
     {

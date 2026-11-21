@@ -1,8 +1,8 @@
-using GameTimeNext.Core.Application.CreateImportPackage.Views;
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Framework.Config;
-using GameTimeNext.Core.Framework.DataBase.Migration;
-using GameTimeNext.Core.Framework.UI.Dialogs;
+using Arcora.Core.Application.CreateImportPackage.Views;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Framework.Config;
+using Arcora.Core.Framework.DataBase.Migration;
+using Arcora.Core.Framework.UI.Dialogs;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls.Primitives;
@@ -10,7 +10,7 @@ using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.CreateImportPackage.Controller
+namespace Arcora.Core.Application.CreateImportPackage.Controller
 {
     public class CreateImportPackageViewController : UIXViewControllerBase<CreateImportPackageApp, CreateImportPackageView>
     {

@@ -1,6 +1,6 @@
 ﻿using UIX.ViewController.Engine.Viewmodel;
 
-namespace GameTimeNext.Core.Application.Playthroughs.ViewModel
+namespace Arcora.Core.Application.Playthroughs.ViewModel
 {
     /// <summary>
     /// Row of the playthroughs tree: a profile (RowObject T1PROFI) with its playthroughs (RowObject T1PLTHR) below.

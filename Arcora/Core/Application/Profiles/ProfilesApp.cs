@@ -1,15 +1,15 @@
-﻿using GameTimeNext.Core.Application.Profiles.Controller;
-using GameTimeNext.Core.Application.Profiles.DataWrapper;
-using GameTimeNext.Core.Application.Profiles.Selectors;
-using GameTimeNext.Core.Application.Profiles.Views;
-using GameTimeNext.Core.Application.TimeMonitoring;
-using GameTimeNext.Core.Framework;
+﻿using Arcora.Core.Application.Profiles.Controller;
+using Arcora.Core.Application.Profiles.DataWrapper;
+using Arcora.Core.Application.Profiles.Selectors;
+using Arcora.Core.Application.Profiles.Views;
+using Arcora.Core.Application.TimeMonitoring;
+using Arcora.Core.Framework;
 using System.Windows.Controls;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
-using static GameTimeNext.Core.Application.Profiles.Controller.ProfilesViewController;
+using static Arcora.Core.Application.Profiles.Controller.ProfilesViewController;
 
-namespace GameTimeNext.Core.Application.Profiles
+namespace Arcora.Core.Application.Profiles
 {
     [UIXAppIcon(UIXMdlIcons.GameProfile)]
     public class ProfilesApp : UIXApplication, IUIXApplicationStarter

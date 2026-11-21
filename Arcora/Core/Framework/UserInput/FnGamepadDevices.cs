@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 
-namespace GameTimeNext.Core.Framework.UserInput
+namespace Arcora.Core.Framework.UserInput
 {
     /// <summary>
     /// Game controllers connected to the system, beyond what XInput reports.

@@ -1,6 +1,6 @@
 ﻿using UIX.ViewController.Engine.Viewmodel;
 
-namespace GameTimeNext.Core.Application.ApplicationProperties.Controller
+namespace Arcora.Core.Application.ApplicationProperties.Controller
 {
     public class ApplicationPropertiesDataGridRow : UIXDataGridRow
     {

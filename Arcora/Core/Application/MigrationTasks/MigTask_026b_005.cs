@@ -1,9 +1,9 @@
 ﻿using System.Globalization;
-using GameTimeNext.Core.Framework.Config;
+using Arcora.Core.Framework.Config;
 using System.IO;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.MigrationTasks
+namespace Arcora.Core.Application.MigrationTasks
 {
     internal class MigTask_026b_005 : MigTaskBase
     {

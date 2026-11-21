@@ -1,12 +1,12 @@
-﻿using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework.Utils;
+﻿using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework.Utils;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
 
-namespace GameTimeNext.Core.Framework.UI
+namespace Arcora.Core.Framework.UI
 {
     internal static class CFBlackout
     {

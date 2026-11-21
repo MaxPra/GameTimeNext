@@ -1,6 +1,6 @@
 using System.Windows;
 
-namespace GameTimeNext.Core.Framework.UI
+namespace Arcora.Core.Framework.UI
 {
     /// <summary>
     /// Tells a view where it is hosted. The main TabControl sets IsTabContent (inherited), so views can drop their

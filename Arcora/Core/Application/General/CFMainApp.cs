@@ -1,8 +1,8 @@
-using GameTimeNext.Core.Framework.UI.Dialogs;
+using Arcora.Core.Framework.UI.Dialogs;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.General
+namespace Arcora.Core.Application.General
 {
     /// <summary>
     /// Helper functions shared by the main window and the applications in its tabs.

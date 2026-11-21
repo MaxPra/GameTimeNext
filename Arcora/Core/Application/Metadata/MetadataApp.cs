@@ -1,11 +1,11 @@
-using GameTimeNext.Core.Application.Metadata.Controller;
-using GameTimeNext.Core.Application.Metadata.Selectors;
-using GameTimeNext.Core.Application.Metadata.Views;
+using Arcora.Core.Application.Metadata.Controller;
+using Arcora.Core.Application.Metadata.Selectors;
+using Arcora.Core.Application.Metadata.Views;
 using System.Windows.Controls;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.Metadata
+namespace Arcora.Core.Application.Metadata
 {
     [UIXAppIcon(UIXMdlIcons.DataBase)]
     public class MetadataApp : UIXApplication, IUIXApplicationStarter

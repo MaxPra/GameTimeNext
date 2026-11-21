@@ -1,10 +1,10 @@
-﻿using GameTimeNext.Core.Application.TimeMonitoring.Views;
-using GameTimeNext.Core.Framework.Utils;
+﻿using Arcora.Core.Application.TimeMonitoring.Views;
+using Arcora.Core.Framework.Utils;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 
-namespace GameTimeNext.Core.Framework.UI
+namespace Arcora.Core.Framework.UI
 {
     internal static class CFMonitoringIndicator
     {

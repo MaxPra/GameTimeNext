@@ -3,7 +3,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Framework.LauncherIntegration.Steam
+namespace Arcora.Core.Framework.LauncherIntegration.Steam
 {
     /// <summary>
     /// Finds the Steam installation, its libraries and installed games.

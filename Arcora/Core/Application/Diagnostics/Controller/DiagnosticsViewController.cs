@@ -1,8 +1,8 @@
-using GameTimeNext.Core.Application.Diagnostics.DataWrapper;
-using GameTimeNext.Core.Application.Diagnostics.Views;
-using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.Config;
-using GameTimeNext.Core.Framework.UI.Dialogs;
+using Arcora.Core.Application.Diagnostics.DataWrapper;
+using Arcora.Core.Application.Diagnostics.Views;
+using Arcora.Core.Framework;
+using Arcora.Core.Framework.Config;
+using Arcora.Core.Framework.UI.Dialogs;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls.Primitives;
@@ -11,7 +11,7 @@ using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.Diagnostics.Controller
+namespace Arcora.Core.Application.Diagnostics.Controller
 {
     public class DiagnosticsViewController : UIXViewControllerBase<DiagnosticsApp, DiagnosticsView>
     {

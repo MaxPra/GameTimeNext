@@ -1,10 +1,10 @@
-using GameTimeNext.Core.Framework.Utils;
+using Arcora.Core.Framework.Utils;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
 
-namespace GameTimeNext.Core.Framework.UI
+namespace Arcora.Core.Framework.UI
 {
     /// <summary>
     /// Sizes the tiles of a wrapping ItemsControl so each row fills the available width (no leftover gap on the right).

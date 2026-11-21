@@ -1,5 +1,5 @@
-using GameTimeNext.Core.Application.Screensetups.Views;
-using GameTimeNext.Core.Framework.UI.Dialogs;
+using Arcora.Core.Application.Screensetups.Views;
+using Arcora.Core.Framework.UI.Dialogs;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
@@ -7,7 +7,7 @@ using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.Runnables;
 using UIXMonitorTweaks;
 
-namespace GameTimeNext.Core.Application.Screensetups.Controller
+namespace Arcora.Core.Application.Screensetups.Controller
 {
     public class ScreensetupsViewController : UIXViewControllerBase<ScreensetupsApp, ScreensetupsView>
     {

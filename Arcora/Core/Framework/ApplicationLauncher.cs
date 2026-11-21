@@ -1,5 +1,5 @@
-﻿using GameTimeNext.Core.Application.General.UserSettings;
-using GameTimeNext.Core.Application.Profiles;
+﻿using Arcora.Core.Application.General.UserSettings;
+using Arcora.Core.Application.Profiles;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -11,7 +11,7 @@ using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 using static UIX.ViewController.Engine.FrameworkElements.UIXContextMenuFactory;
 
-namespace GameTimeNext.Core.Framework
+namespace Arcora.Core.Framework
 {
     public class ApplicationLauncher
     {

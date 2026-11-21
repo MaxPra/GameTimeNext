@@ -1,12 +1,12 @@
-using GameTimeNext.Core.Application.Menus.Controller;
-using GameTimeNext.Core.Application.Menus.DataWrapper;
-using GameTimeNext.Core.Application.Menus.Selectors;
-using GameTimeNext.Core.Application.Menus.Views;
+using Arcora.Core.Application.Menus.Controller;
+using Arcora.Core.Application.Menus.DataWrapper;
+using Arcora.Core.Application.Menus.Selectors;
+using Arcora.Core.Application.Menus.Views;
 using System.Windows.Controls;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.Menus
+namespace Arcora.Core.Application.Menus
 {
     /// <summary>
     /// Menu management: tree of folders and application calls with a combined edit area for the selected entry.

@@ -1,9 +1,9 @@
-﻿using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.TableObjects;
+﻿using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.TableObjects;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.SelectionLists
+namespace Arcora.Core.Application.SelectionLists
 {
     /// <summary>
     /// Helper functions of the module "Selection Lists": the user friendly view on the codetables.

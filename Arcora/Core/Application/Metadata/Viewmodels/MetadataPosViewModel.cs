@@ -1,8 +1,8 @@
-using GameTimeNext.Core.Application.Metadata.Controller;
+using Arcora.Core.Application.Metadata.Controller;
 using System.Collections.ObjectModel;
 using UIX.ViewController.Engine.Viewmodel;
 
-namespace GameTimeNext.Core.Application.Metadata.Viewmodels
+namespace Arcora.Core.Application.Metadata.Viewmodels
 {
     public class MetadataPosViewModel : UIXViewModelBase
     {

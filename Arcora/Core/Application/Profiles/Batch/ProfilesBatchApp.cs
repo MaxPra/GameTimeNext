@@ -1,14 +1,14 @@
-﻿using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.General;
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Application.TimeMonitoring;
-using GameTimeNext.Core.Framework;
-using GameTimeNext.Shared.Profiles;
-using GameTimeNext.Shared.Profiles.Monitoring;
+﻿using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.General;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Application.TimeMonitoring;
+using Arcora.Core.Framework;
+using Arcora.Shared.Profiles;
+using Arcora.Shared.Profiles.Monitoring;
 using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Runnables;
 
-namespace GameTimeNext.Core.Application.Profiles.Batch
+namespace Arcora.Core.Application.Profiles.Batch
 {
     public class ProfilesBatchApp : UIXApplication, IUIXBatchAppStarter
     {

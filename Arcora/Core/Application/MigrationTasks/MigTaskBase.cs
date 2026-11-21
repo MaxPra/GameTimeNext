@@ -1,9 +1,9 @@
-using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.Versioning;
+using Arcora.Core.Framework;
+using Arcora.Core.Framework.Versioning;
 using System.Data.SQLite;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.MigrationTasks
+namespace Arcora.Core.Application.MigrationTasks
 {
     internal abstract class MigTaskBase
     {

@@ -1,4 +1,4 @@
-namespace GameTimeNext.Core.Framework.DataBase
+namespace Arcora.Core.Framework.DataBase
 {
     /// <summary>
     /// Row of T1SYLOG in the log database, read by LogDataBaseManager.ReadT1sylog (the log database has no table objects).

@@ -1,10 +1,10 @@
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.LauncherIntegration;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework;
+using Arcora.Core.Framework.LauncherIntegration;
 using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Runnables;
 
-namespace GameTimeNext.Core.Application.DataManagers
+namespace Arcora.Core.Application.DataManagers
 {
     /// <summary>
     /// Launcher games known to the automatic import (T1LNGAM). Every game is registered once, with status

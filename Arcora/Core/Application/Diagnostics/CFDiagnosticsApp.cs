@@ -1,11 +1,11 @@
-using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.DataBase;
-using GameTimeNext.Core.Framework.Utils;
+using Arcora.Core.Framework;
+using Arcora.Core.Framework.DataBase;
+using Arcora.Core.Framework.Utils;
 using System.Globalization;
 using System.Windows.Media;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.Diagnostics
+namespace Arcora.Core.Application.Diagnostics
 {
     /// <summary>
     /// Formatting helpers of the module Diagnostics.

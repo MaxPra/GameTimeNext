@@ -1,9 +1,9 @@
-﻿using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.UserInput;
+﻿using Arcora.Core.Framework;
+using Arcora.Core.Framework.UserInput;
 using System.Text.Json;
 using UIX.ViewController.Engine.DataBaseObjects;
 
-namespace GameTimeNext.Core.Application.TableObjects
+namespace Arcora.Core.Application.TableObjects
 {
     public class AppSettings : UIXTableObjectBase
     {

@@ -1,11 +1,11 @@
-using GameTimeNext.Core.Application.Screensetups.Controller;
-using GameTimeNext.Core.Application.Screensetups.Selectors;
-using GameTimeNext.Core.Application.Screensetups.Views;
+using Arcora.Core.Application.Screensetups.Controller;
+using Arcora.Core.Application.Screensetups.Selectors;
+using Arcora.Core.Application.Screensetups.Views;
 using System.Windows.Controls;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.Screensetups
+namespace Arcora.Core.Application.Screensetups
 {
     [UIXAppIcon(UIXMdlIcons.Monitor)]
     public class ScreensetupsApp : UIXApplication, IUIXApplicationStarter

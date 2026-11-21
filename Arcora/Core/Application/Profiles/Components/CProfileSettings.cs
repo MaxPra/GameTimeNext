@@ -1,6 +1,6 @@
-﻿using GameTimeNext.Core.Framework.Components.Base;
+﻿using Arcora.Core.Framework.Components.Base;
 
-namespace GameTimeNext.Core.Application.Profiles.Components
+namespace Arcora.Core.Application.Profiles.Components
 {
     public class CProfileSettings : ArcoraComponent<CProfileSettings>
     {

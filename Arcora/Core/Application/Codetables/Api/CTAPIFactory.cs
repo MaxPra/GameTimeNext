@@ -1,7 +1,7 @@
-using GameTimeNext.Core.Application.TableObjects;
+using Arcora.Core.Application.TableObjects;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.Codetables.Api
+namespace Arcora.Core.Application.Codetables.Api
 {
     /// <summary>
     /// Finds the API class <c>CTAPI_&lt;Name&gt;</c> by the name stored in the codetable.

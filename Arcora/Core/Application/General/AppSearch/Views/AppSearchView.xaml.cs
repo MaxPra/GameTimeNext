@@ -1,6 +1,6 @@
-﻿using GameTimeNext.Core.Framework.UI.Base;
+﻿using Arcora.Core.Framework.UI.Base;
 
-namespace GameTimeNext.Core.Application.General.AppSearch.Views
+namespace Arcora.Core.Application.General.AppSearch.Views
 {
     /// <summary>
     /// Interaction logic for AppSearch.xaml

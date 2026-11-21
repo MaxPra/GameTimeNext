@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
-using static GameTimeNext.Core.Framework.UserInput.KeyInput;
+using static Arcora.Core.Framework.UserInput.KeyInput;
 
-namespace GameTimeNext.Core.Framework.UserInput
+namespace Arcora.Core.Framework.UserInput
 {
     public class KeyPressTracker
     {

@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace GameTimeNext.Core.Framework.UI
+namespace Arcora.Core.Framework.UI
 {
     public partial class ToastMessage : Window
     {

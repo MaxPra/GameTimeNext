@@ -1,6 +1,6 @@
 using UIX.ViewController.Engine.Viewmodel;
 
-namespace GameTimeNext.Core.Application.Menus.ViewModel
+namespace Arcora.Core.Application.Menus.ViewModel
 {
     /// <summary>
     /// Row of the menu tree: a folder or an application call (RowObject T1MENUE).

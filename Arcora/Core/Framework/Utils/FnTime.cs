@@ -1,4 +1,4 @@
-namespace GameTimeNext.Core.Framework.Utils
+namespace Arcora.Core.Framework.Utils
 {
     public static class FnTime
     {

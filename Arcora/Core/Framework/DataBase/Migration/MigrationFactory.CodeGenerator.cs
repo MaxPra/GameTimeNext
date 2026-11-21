@@ -1,12 +1,12 @@
-﻿using GameTimeNext.Core.Application.Metadata.Data;
-using GameTimeNext.Core.Framework.Config;
+﻿using Arcora.Core.Application.Metadata.Data;
+using Arcora.Core.Framework.Config;
 using System.IO;
 using System.Text;
 using UIX.ViewController.Engine.Migration.Types;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Framework.DataBase.Migration
+namespace Arcora.Core.Framework.DataBase.Migration
 {
     internal static partial class MigrationFactory
     {

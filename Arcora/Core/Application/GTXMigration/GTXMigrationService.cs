@@ -1,13 +1,13 @@
 ﻿using System.Globalization;
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.General;
-using GameTimeNext.Core.Application.MigrationTasks;
-using GameTimeNext.Core.Application.Profiles;
-using GameTimeNext.Core.Application.Profiles.Components;
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.Config;
-using GameTimeNext.Core.Framework.Utils;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.General;
+using Arcora.Core.Application.MigrationTasks;
+using Arcora.Core.Application.Profiles;
+using Arcora.Core.Application.Profiles.Components;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework;
+using Arcora.Core.Framework.Config;
+using Arcora.Core.Framework.Utils;
 using System.Data.SQLite;
 using System.IO;
 using System.Text;
@@ -19,7 +19,7 @@ using UIX.ViewController.Engine.Migration.Types;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.GTXMigration
+namespace Arcora.Core.Application.GTXMigration
 {
     /// <summary>
     /// Responsible for migrating the old GameTimeX data to the new GameTimeNXT data

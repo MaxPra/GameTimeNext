@@ -1,6 +1,6 @@
-﻿using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.DataBase.Migration;
+﻿using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework;
+using Arcora.Core.Framework.DataBase.Migration;
 using System.Data.SQLite;
 using System.Globalization;
 using UIX.ViewController.Engine.DataBaseObjects;
@@ -8,7 +8,7 @@ using UIX.ViewController.Engine.Migration.Types;
 using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.DataManagers
+namespace Arcora.Core.Application.DataManagers
 {
     public class TXPROFIBasic : UIXDataManagerBase
     {

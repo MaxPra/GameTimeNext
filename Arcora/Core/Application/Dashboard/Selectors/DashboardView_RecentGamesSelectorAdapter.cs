@@ -1,15 +1,15 @@
-using GameTimeNext.Core.Application.Dashboard.Controller;
-using GameTimeNext.Core.Application.Dashboard.Views;
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.Profiles;
-using GameTimeNext.Core.Application.Profiles.Viewmodel;
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework.Utils;
+using Arcora.Core.Application.Dashboard.Controller;
+using Arcora.Core.Application.Dashboard.Views;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.Profiles;
+using Arcora.Core.Application.Profiles.Viewmodel;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework.Utils;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.Runnables;
 
-namespace GameTimeNext.Core.Application.Dashboard.Selectors
+namespace Arcora.Core.Application.Dashboard.Selectors
 {
     public class DashboardView_RecentGamesSelectorAdapter : UIXSelectorAdapterBase<DashboardApp, DashboardView, UIXListView, ProfilesListBoxItem>
     {

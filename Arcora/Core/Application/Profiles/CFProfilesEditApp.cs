@@ -1,11 +1,11 @@
-﻿using GameTimeNext.Core.Application.Profiles.Views;
-using GameTimeNext.Core.Framework.Config;
+﻿using Arcora.Core.Application.Profiles.Views;
+using Arcora.Core.Framework.Config;
 using System.IO;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media.Imaging;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.Profiles
+namespace Arcora.Core.Application.Profiles
 {
     /// <summary>
     /// Function class for ProfilesEditApp

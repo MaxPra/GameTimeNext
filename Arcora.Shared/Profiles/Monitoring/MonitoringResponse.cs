@@ -1,4 +1,4 @@
-﻿namespace GameTimeNext.Shared.Profiles.Monitoring
+﻿namespace Arcora.Shared.Profiles.Monitoring
 {
     public enum MonitoringResponse
     {

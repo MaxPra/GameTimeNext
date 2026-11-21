@@ -1,4 +1,4 @@
-﻿namespace GameTimeNext.Core.Application.General.BackgroundProcesses
+﻿namespace Arcora.Core.Application.General.BackgroundProcesses
 {
     public enum BlazorProcessState
     {

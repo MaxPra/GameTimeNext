@@ -1,14 +1,14 @@
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.Menus.ViewModel;
-using GameTimeNext.Core.Application.Menus.Views;
-using GameTimeNext.Core.Application.TableObjects;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.Menus.ViewModel;
+using Arcora.Core.Application.Menus.Views;
+using Arcora.Core.Application.TableObjects;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 using UIX.ViewController.Engine.Viewmodel;
 
-namespace GameTimeNext.Core.Application.Menus.Selectors
+namespace Arcora.Core.Application.Menus.Selectors
 {
     public class MenusView_MenusSelectorAdapter : UIXSelectorAdapterBase<MenusApp, MenusView, UIXTreeGrid, MenusTreeGridRow>
     {

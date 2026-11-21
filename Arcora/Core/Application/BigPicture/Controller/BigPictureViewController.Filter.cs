@@ -1,13 +1,13 @@
-﻿using GameTimeNext.Core.Application.BigPicture.ViewModels;
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.Profiles.Types;
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework;
+﻿using Arcora.Core.Application.BigPicture.ViewModels;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.Profiles.Types;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework;
 using System.Globalization;
 using UIX.ViewController.Engine.Utils;
-using static GameTimeNext.Core.Application.Profiles.Controller.ProfilesViewController;
+using static Arcora.Core.Application.Profiles.Controller.ProfilesViewController;
 
-namespace GameTimeNext.Core.Application.BigPicture.Controller
+namespace Arcora.Core.Application.BigPicture.Controller
 {
     /// <summary>
     /// Filter of the mode: the options of the profiles filter as a list of switches in a drawer, made for the controller

@@ -1,11 +1,11 @@
-using GameTimeNext.Core.Application.ErrorMessages.Views;
+using Arcora.Core.Application.ErrorMessages.Views;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.Runnables;
 
-namespace GameTimeNext.Core.Application.ErrorMessages.Controller
+namespace Arcora.Core.Application.ErrorMessages.Controller
 {
     public class ErrorMessagesViewController : UIXViewControllerBase<ErrorMessagesApp, ErrorMessagesView>
     {

@@ -1,4 +1,4 @@
-using GameTimeNext.Core.Framework.Config;
+using Arcora.Core.Framework.Config;
 using System.Buffers;
 using System.Collections.Concurrent;
 using System.IO;
@@ -19,7 +19,7 @@ using WinAlphaMode = Windows.Graphics.Imaging.BitmapAlphaMode;
 using WinLanguage = Windows.Globalization.Language;
 using WinPixelFormat = Windows.Graphics.Imaging.BitmapPixelFormat;
 
-namespace GameTimeNext.Core.Framework.UI
+namespace Arcora.Core.Framework.UI
 {
     /// <summary>
     /// Section of a cover printed on a disc, in units of the cover width (the cover is 1 wide and its aspect ratio high).

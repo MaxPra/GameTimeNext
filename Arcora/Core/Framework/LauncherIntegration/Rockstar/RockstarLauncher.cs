@@ -1,7 +1,7 @@
 using System.IO;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Framework.LauncherIntegration.Rockstar
+namespace Arcora.Core.Framework.LauncherIntegration.Rockstar
 {
     /// <summary>
     /// Rockstar Games Launcher. Game ID = name of the game's registry key (e.g. "Grand Theft Auto V").

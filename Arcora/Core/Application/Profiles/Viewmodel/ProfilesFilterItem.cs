@@ -1,6 +1,6 @@
-using GameTimeNext.Core.Framework.ViewModelsBase;
+using Arcora.Core.Framework.ViewModelsBase;
 
-namespace GameTimeNext.Core.Application.Profiles.Viewmodel
+namespace Arcora.Core.Application.Profiles.Viewmodel
 {
     /// <summary>
     /// A single checkable entry of the library filter (tag or fixed option)

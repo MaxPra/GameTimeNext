@@ -1,6 +1,6 @@
 ﻿using System.Data.SQLite;
 
-namespace GameTimeNext.Core.Application.Metadata.Data
+namespace Arcora.Core.Application.Metadata.Data
 {
     public class TXMETAH : TXMETAHBasic
     {

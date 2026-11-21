@@ -1,7 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using UIX.ViewController.Engine.Viewmodel;
 
-namespace GameTimeNext.Core.Application.Profiles.Viewmodel
+namespace Arcora.Core.Application.Profiles.Viewmodel
 {
     public class ProfilesExecutablesEditViewModel : UIXViewModelBase
     {

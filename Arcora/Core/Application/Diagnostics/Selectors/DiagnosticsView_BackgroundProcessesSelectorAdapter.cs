@@ -1,15 +1,15 @@
-﻿using GameTimeNext.Core.Application.Diagnostics.Controller;
-using GameTimeNext.Core.Application.Diagnostics.Views;
-using GameTimeNext.Core.Application.General.BackgroundProcesses;
-using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.Utils;
+﻿using Arcora.Core.Application.Diagnostics.Controller;
+using Arcora.Core.Application.Diagnostics.Views;
+using Arcora.Core.Application.General.BackgroundProcesses;
+using Arcora.Core.Framework;
+using Arcora.Core.Framework.Utils;
 using System.Globalization;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.Diagnostics.Selectors
+namespace Arcora.Core.Application.Diagnostics.Selectors
 {
     public class DiagnosticsView_BackgroundProcessesSelectorAdapter : UIXSelectorAdapterBase<DiagnosticsApp, DiagnosticsView, UIXDataGrid, BackgroundProcessesDataGridRow>
     {

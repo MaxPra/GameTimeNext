@@ -1,8 +1,8 @@
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.ErrorMessages.Controller;
-using GameTimeNext.Core.Application.ErrorMessages.Views;
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.ErrorMessages.Controller;
+using Arcora.Core.Application.ErrorMessages.Views;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework;
 using System.Globalization;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements.Selectors;
@@ -10,7 +10,7 @@ using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.ErrorMessages.Selectors
+namespace Arcora.Core.Application.ErrorMessages.Selectors
 {
     public class ErrorMessagesView_ErrorMessagesSelectorAdapter : UIXSelectorAdapterBase<ErrorMessagesApp, ErrorMessagesView, UIXDataGrid, ErrorMessagesDataGridRow>
     {

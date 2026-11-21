@@ -1,4 +1,4 @@
-namespace GameTimeNext.Core.Application.Profiles.Types
+namespace Arcora.Core.Application.Profiles.Types
 {
     /// <summary>
     /// Fixed filter options of the library filter.

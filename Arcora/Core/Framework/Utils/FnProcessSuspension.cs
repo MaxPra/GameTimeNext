@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace GameTimeNext.Core.Framework.Utils
+namespace Arcora.Core.Framework.Utils
 {
     /// <summary>
     /// Suspends and resumes whole processes (all their threads), like the "Suspend" of the Resource Monitor.

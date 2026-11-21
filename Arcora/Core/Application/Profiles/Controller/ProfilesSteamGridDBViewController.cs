@@ -1,8 +1,8 @@
-﻿using GameTimeNext.Core.Application.Profiles.Selectors;
-using GameTimeNext.Core.Application.Profiles.Viewmodel;
-using GameTimeNext.Core.Application.Profiles.Views;
-using GameTimeNext.Core.Framework.UI;
-using GameTimeNext.Core.Framework.UI.Dialogs;
+﻿using Arcora.Core.Application.Profiles.Selectors;
+using Arcora.Core.Application.Profiles.Viewmodel;
+using Arcora.Core.Application.Profiles.Views;
+using Arcora.Core.Framework.UI;
+using Arcora.Core.Framework.UI.Dialogs;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media.Imaging;
@@ -12,7 +12,7 @@ using UIX.ViewController.Engine.FrameworkElements.UserControls;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.Profiles.Controller
+namespace Arcora.Core.Application.Profiles.Controller
 {
     public class ProfilesSteamGridDBViewController : UIXViewControllerBase<ProfilesSteamGridDBApp, ProfilesSteamGridDBView>
     {

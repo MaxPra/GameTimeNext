@@ -1,16 +1,16 @@
-﻿using GameTimeNext.Core.Application.BigPicture;
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.General;
-using GameTimeNext.Core.Application.Profiles.BackgroundProcesses;
-using GameTimeNext.Core.Application.Profiles.DataWrapper;
-using GameTimeNext.Core.Application.Profiles.Selectors;
-using GameTimeNext.Core.Application.Profiles.Viewmodel;
-using GameTimeNext.Core.Application.Profiles.Views;
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Application.TimeMonitoring;
-using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.UI;
-using GameTimeNext.Core.Framework.Utils;
+﻿using Arcora.Core.Application.BigPicture;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.General;
+using Arcora.Core.Application.Profiles.BackgroundProcesses;
+using Arcora.Core.Application.Profiles.DataWrapper;
+using Arcora.Core.Application.Profiles.Selectors;
+using Arcora.Core.Application.Profiles.Viewmodel;
+using Arcora.Core.Application.Profiles.Views;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Application.TimeMonitoring;
+using Arcora.Core.Framework;
+using Arcora.Core.Framework.UI;
+using Arcora.Core.Framework.Utils;
 using System.Text.Json.Serialization;
 using System.Windows;
 using System.Windows.Controls;
@@ -19,7 +19,7 @@ using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.Runnables;
 
-namespace GameTimeNext.Core.Application.Profiles.Controller
+namespace Arcora.Core.Application.Profiles.Controller
 {
     public class ProfilesViewController : UIXViewControllerBase<ProfilesApp, ProfilesView>
     {

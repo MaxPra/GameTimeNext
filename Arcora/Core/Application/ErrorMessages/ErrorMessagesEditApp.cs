@@ -1,10 +1,10 @@
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.ErrorMessages.Controller;
-using GameTimeNext.Core.Application.ErrorMessages.Views;
-using GameTimeNext.Core.Application.TableObjects;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.ErrorMessages.Controller;
+using Arcora.Core.Application.ErrorMessages.Views;
+using Arcora.Core.Application.TableObjects;
 using UIX.ViewController.Engine.Runnables;
 
-namespace GameTimeNext.Core.Application.ErrorMessages
+namespace Arcora.Core.Application.ErrorMessages
 {
     public class ErrorMessagesEditApp : UIXApplication
     {

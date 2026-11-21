@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Framework.UserInput
+namespace Arcora.Core.Framework.UserInput
 {
     /// <summary>
     /// Reads DualShock 4 and DualSense controllers directly over HID (USB and Bluetooth). XInput only knows them through

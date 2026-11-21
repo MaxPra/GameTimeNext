@@ -1,12 +1,12 @@
-﻿using GameTimeNext.Core.Framework.Config;
-using GameTimeNext.Core.Framework.DataBase;
-using GameTimeNext.Core.Framework.DataBase.Migration;
-using GameTimeNext.Core.Framework.Utils;
+﻿using Arcora.Core.Framework.Config;
+using Arcora.Core.Framework.DataBase;
+using Arcora.Core.Framework.DataBase.Migration;
+using Arcora.Core.Framework.Utils;
 using System.Data.SQLite;
 using System.IO;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.MigrationTasks
+namespace Arcora.Core.Application.MigrationTasks
 {
     internal partial class MigTask_100b_008
     {

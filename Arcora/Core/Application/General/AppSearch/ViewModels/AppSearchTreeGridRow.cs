@@ -1,6 +1,6 @@
 using UIX.ViewController.Engine.Viewmodel;
 
-namespace GameTimeNext.Core.Application.General.AppSearch.ViewModels
+namespace Arcora.Core.Application.General.AppSearch.ViewModels
 {
     /// <summary>
     /// Row of the application search tree: a menu folder or an application call (RowObject T1MENUE).

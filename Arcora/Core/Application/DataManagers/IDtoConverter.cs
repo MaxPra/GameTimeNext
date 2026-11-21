@@ -1,7 +1,7 @@
-﻿using GameTimeNext.Shared.Base;
+﻿using Arcora.Shared.Base;
 using UIX.ViewController.Engine.DataBaseObjects;
 
-namespace GameTimeNext.Core.Application.DataManagers
+namespace Arcora.Core.Application.DataManagers
 {
     public interface IDtoConverter<TTableObject, TDto> where TTableObject : UIXTableObjectBase where TDto : DtoBase
     {

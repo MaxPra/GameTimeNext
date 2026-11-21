@@ -3,7 +3,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Framework.LauncherIntegration.Steam
+namespace Arcora.Core.Framework.LauncherIntegration.Steam
 {
     internal record SteamManifest(uint AppId, string Name, string InstallDir, string LibraryPath, uint StateFlags = 0);
 

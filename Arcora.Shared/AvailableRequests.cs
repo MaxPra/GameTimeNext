@@ -1,4 +1,4 @@
-﻿namespace GameTimeNext.Shared
+﻿namespace Arcora.Shared
 {
     public enum AvailableRequests
     {

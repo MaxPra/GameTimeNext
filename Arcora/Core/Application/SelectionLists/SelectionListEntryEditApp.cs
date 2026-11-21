@@ -1,10 +1,10 @@
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.SelectionLists.Controller;
-using GameTimeNext.Core.Application.SelectionLists.Views;
-using GameTimeNext.Core.Application.TableObjects;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.SelectionLists.Controller;
+using Arcora.Core.Application.SelectionLists.Views;
+using Arcora.Core.Application.TableObjects;
 using UIX.ViewController.Engine.Runnables;
 
-namespace GameTimeNext.Core.Application.SelectionLists
+namespace Arcora.Core.Application.SelectionLists
 {
     /// <summary>
     /// Dialog to add or change one entry of a selection list. The key of the entry is generated and never shown.

@@ -1,6 +1,6 @@
 ﻿using UIX.ViewController.Engine.FrameworkElements.UserControls;
 
-namespace GameTimeNext.Core.Application.Menus.Views
+namespace Arcora.Core.Application.Menus.Views
 {
     /// <summary>
     /// Interaction logic for MenusDetailView.xaml

@@ -1,6 +1,6 @@
 ﻿using UIX.ViewController.Engine.Migration.Types;
 
-namespace GameTimeNext.Core.Framework.Utils
+namespace Arcora.Core.Framework.Utils
 {
     public class FnConvert
     {

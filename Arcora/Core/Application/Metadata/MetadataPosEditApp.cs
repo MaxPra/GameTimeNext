@@ -1,9 +1,9 @@
-using GameTimeNext.Core.Application.Metadata.Controller;
-using GameTimeNext.Core.Application.Metadata.Data;
-using GameTimeNext.Core.Application.Metadata.Views;
+using Arcora.Core.Application.Metadata.Controller;
+using Arcora.Core.Application.Metadata.Data;
+using Arcora.Core.Application.Metadata.Views;
 using UIX.ViewController.Engine.Runnables;
 
-namespace GameTimeNext.Core.Application.Metadata
+namespace Arcora.Core.Application.Metadata
 {
     public class MetadataPosEditApp : UIXApplication
     {

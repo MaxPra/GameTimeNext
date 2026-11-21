@@ -1,13 +1,13 @@
-﻿using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Application.TimeMonitoring;
-using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.UI;
-using GameTimeNext.Core.Framework.UserInput;
+﻿using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Application.TimeMonitoring;
+using Arcora.Core.Framework;
+using Arcora.Core.Framework.UI;
+using Arcora.Core.Framework.UserInput;
 using UIX.ViewController.Engine.Runnables;
-using static GameTimeNext.Core.Framework.UserInput.KeyInput;
+using static Arcora.Core.Framework.UserInput.KeyInput;
 
-namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
+namespace Arcora.Core.Application.Profiles.BackgroundProcesses
 {
     public class GlobalKeyInputProcess : UIXBackgroundProcess
     {

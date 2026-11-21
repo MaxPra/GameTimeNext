@@ -1,9 +1,9 @@
-﻿using GameTimeNext.Core.Application.General.AppSearch.Controller;
-using GameTimeNext.Core.Application.General.AppSearch.Selectors;
-using GameTimeNext.Core.Application.General.AppSearch.Views;
+﻿using Arcora.Core.Application.General.AppSearch.Controller;
+using Arcora.Core.Application.General.AppSearch.Selectors;
+using Arcora.Core.Application.General.AppSearch.Views;
 using UIX.ViewController.Engine.Runnables;
 
-namespace GameTimeNext.Core.Application.General.AppSearch
+namespace Arcora.Core.Application.General.AppSearch
 {
     public class AppSearchApp : UIXApplication
     {

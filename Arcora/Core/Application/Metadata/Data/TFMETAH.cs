@@ -1,9 +1,9 @@
-using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.DataBase.Migration;
+using Arcora.Core.Framework;
+using Arcora.Core.Framework.DataBase.Migration;
 using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.Metadata.Data
+namespace Arcora.Core.Application.Metadata.Data
 {
     public static class TFMETAH
     {

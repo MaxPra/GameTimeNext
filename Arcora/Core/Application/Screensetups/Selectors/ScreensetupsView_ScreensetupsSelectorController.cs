@@ -1,11 +1,11 @@
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.Profiles;
-using GameTimeNext.Core.Application.Screensetups.Controller;
-using GameTimeNext.Core.Application.Screensetups.Views;
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.UI.Dialogs;
-using GameTimeNext.Core.Framework.Utils;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.Profiles;
+using Arcora.Core.Application.Screensetups.Controller;
+using Arcora.Core.Application.Screensetups.Views;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework;
+using Arcora.Core.Framework.UI.Dialogs;
+using Arcora.Core.Framework.Utils;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -16,7 +16,7 @@ using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 using static UIX.ViewController.Engine.FrameworkElements.UIXContextMenuFactory;
 
-namespace GameTimeNext.Core.Application.Screensetups.Selectors
+namespace Arcora.Core.Application.Screensetups.Selectors
 {
     public class ScreensetupsView_ScreensetupsSelectorController : UIXSelectorControllerBase<ScreensetupsApp, ScreensetupsView, UIXDataGrid>
     {

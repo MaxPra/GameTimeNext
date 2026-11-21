@@ -11,9 +11,9 @@ using UIX.ViewController.Engine.FrameworkElements.Markdown;
 using UIX.ViewController.Engine.FrameworkElements.Windows;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
-using GameTimeNext.Core.Framework.Utils;
+using Arcora.Core.Framework.Utils;
 
-namespace GameTimeNext.Core.Framework.UI.Dialogs
+namespace Arcora.Core.Framework.UI.Dialogs
 {
     [Flags]
     public enum CFMBOXResult

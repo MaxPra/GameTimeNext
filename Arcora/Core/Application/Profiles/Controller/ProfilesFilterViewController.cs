@@ -1,9 +1,9 @@
-﻿using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.Profiles.Types;
-using GameTimeNext.Core.Application.Profiles.Viewmodel;
-using GameTimeNext.Core.Application.Profiles.Views;
-using GameTimeNext.Core.Application.TableObjects;
+﻿using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.Profiles.Types;
+using Arcora.Core.Application.Profiles.Viewmodel;
+using Arcora.Core.Application.Profiles.Views;
+using Arcora.Core.Application.TableObjects;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls.Primitives;
@@ -11,9 +11,9 @@ using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements.UserControls;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
-using static GameTimeNext.Core.Application.Profiles.Controller.ProfilesViewController;
+using static Arcora.Core.Application.Profiles.Controller.ProfilesViewController;
 
-namespace GameTimeNext.Core.Application.Profiles.Controller
+namespace Arcora.Core.Application.Profiles.Controller
 {
     public class ProfilesFilterViewController : UIXViewControllerBase<ProfilesApp, ProfilesFilterView>
     {

@@ -1,9 +1,9 @@
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.Playthroughs.ViewModel;
-using GameTimeNext.Core.Application.Playthroughs.Views;
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.Utils;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.Playthroughs.ViewModel;
+using Arcora.Core.Application.Playthroughs.Views;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework;
+using Arcora.Core.Framework.Utils;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.Querying;
@@ -11,7 +11,7 @@ using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 using UIX.ViewController.Engine.Viewmodel;
 
-namespace GameTimeNext.Core.Application.Playthroughs.Selectors
+namespace Arcora.Core.Application.Playthroughs.Selectors
 {
     public class PlaythroughsView_PlaythroughsSelectorAdapter : UIXSelectorAdapterBase<PlaythroughsApp, PlaythroughsView, UIXTreeGrid, PlaythroughDataGridRow>
     {

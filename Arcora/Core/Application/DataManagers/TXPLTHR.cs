@@ -1,4 +1,4 @@
-﻿namespace GameTimeNext.Core.Application.DataManagers
+﻿namespace Arcora.Core.Application.DataManagers
 {
     public class TXPLTHR : TXPLTHRBasic
     {

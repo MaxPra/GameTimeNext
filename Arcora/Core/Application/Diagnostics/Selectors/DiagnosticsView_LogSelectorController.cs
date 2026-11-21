@@ -1,7 +1,7 @@
-using GameTimeNext.Core.Application.Diagnostics.Controller;
-using GameTimeNext.Core.Application.Diagnostics.Views;
-using GameTimeNext.Core.Application.Profiles;
-using GameTimeNext.Core.Framework.DataBase;
+using Arcora.Core.Application.Diagnostics.Controller;
+using Arcora.Core.Application.Diagnostics.Views;
+using Arcora.Core.Application.Profiles;
+using Arcora.Core.Framework.DataBase;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -12,7 +12,7 @@ using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 using static UIX.ViewController.Engine.FrameworkElements.UIXContextMenuFactory;
 
-namespace GameTimeNext.Core.Application.Diagnostics.Selectors
+namespace Arcora.Core.Application.Diagnostics.Selectors
 {
     public class DiagnosticsView_LogSelectorController : UIXSelectorControllerBase<DiagnosticsApp, DiagnosticsView, UIXDataGrid>
     {

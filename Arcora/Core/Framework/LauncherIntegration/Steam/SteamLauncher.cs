@@ -2,7 +2,7 @@ using System.Globalization;
 using System.IO;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Framework.LauncherIntegration.Steam
+namespace Arcora.Core.Framework.LauncherIntegration.Steam
 {
     /// <summary>
     /// Steam integration. Game ID = Steam app ID.

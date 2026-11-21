@@ -1,12 +1,12 @@
-﻿using GameTimeNext.Core.Application.BigPicture.ViewModels;
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework.LauncherIntegration;
-using GameTimeNext.Core.Framework.Utils;
+﻿using Arcora.Core.Application.BigPicture.ViewModels;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework.LauncherIntegration;
+using Arcora.Core.Framework.Utils;
 using System.Windows;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.BigPicture.Controller
+namespace Arcora.Core.Application.BigPicture.Controller
 {
     /// <summary>
     /// Launching and quitting games.

@@ -1,9 +1,9 @@
-﻿using GameTimeNext.Core.Framework.Utils;
+﻿using Arcora.Core.Framework.Utils;
 using System.IO;
 using System.Text.Json.Serialization;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Framework.Config
+namespace Arcora.Core.Framework.Config
 {
     internal partial class AppConfig
     {
@@ -12,8 +12,8 @@ namespace GameTimeNext.Core.Framework.Config
             public static string PublisherName = "CryloudStudios";
             public static string ApplicationName = "arcora";
 
-            /// <summary>Former name of the app, still the root of the namespaces (also of the generated classes).</summary>
-            public static string InternalApplicationName = "GameTimeNext";
+            /// <summary>Root of the namespaces (also of the generated classes).</summary>
+            public static string InternalApplicationName = "Arcora";
 
             /// <summary>Name of the GitHub repository whose releases the update check reads.</summary>
             public static string GitHubRepositoryName = "GameTimeNext";

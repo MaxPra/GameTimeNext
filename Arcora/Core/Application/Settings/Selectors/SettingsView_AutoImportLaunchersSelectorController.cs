@@ -1,9 +1,9 @@
-using GameTimeNext.Core.Application.Settings.Views;
+using Arcora.Core.Application.Settings.Views;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.Runnables;
 
-namespace GameTimeNext.Core.Application.Settings.Selectors
+namespace Arcora.Core.Application.Settings.Selectors
 {
     public class SettingsView_AutoImportLaunchersSelectorController : UIXSelectorControllerBase<SettingsApp, SettingsView, UIXListBox>
     {

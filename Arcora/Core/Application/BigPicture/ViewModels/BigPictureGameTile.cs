@@ -1,8 +1,8 @@
-﻿using GameTimeNext.Core.Application.TableObjects;
+﻿using Arcora.Core.Application.TableObjects;
 using System.Windows.Media.Imaging;
 using UIX.ViewController.Engine.Viewmodel;
 
-namespace GameTimeNext.Core.Application.BigPicture.ViewModels
+namespace Arcora.Core.Application.BigPicture.ViewModels
 {
     /// <summary>
     /// Cover in the row of games of a pivot (home, library, search results).

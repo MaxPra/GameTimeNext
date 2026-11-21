@@ -1,6 +1,6 @@
 using UIX.ViewController.Engine.Viewmodel;
 
-namespace GameTimeNext.Core.Application.ErrorMessages.Controller
+namespace Arcora.Core.Application.ErrorMessages.Controller
 {
     public class ErrorMessagesDataGridRow : UIXDataGridRow
     {

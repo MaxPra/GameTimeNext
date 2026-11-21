@@ -1,5 +1,5 @@
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.Playthroughs.Views;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.Playthroughs.Views;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
@@ -8,7 +8,7 @@ using UIX.ViewController.Engine.FrameworkElements.UserControls;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.Playthroughs.Controller
+namespace Arcora.Core.Application.Playthroughs.Controller
 {
     public class PlaythroughsViewController : UIXViewControllerBase<PlaythroughsApp, PlaythroughsView>
     {

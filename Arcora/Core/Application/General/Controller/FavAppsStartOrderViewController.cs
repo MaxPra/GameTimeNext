@@ -1,5 +1,5 @@
-﻿using GameTimeNext.Core.Application.General.Views;
-using GameTimeNext.Core.Framework.Config;
+﻿using Arcora.Core.Application.General.Views;
+using Arcora.Core.Framework.Config;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
@@ -7,7 +7,7 @@ using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.General.Controller
+namespace Arcora.Core.Application.General.Controller
 {
     public class FavAppsStartOrderViewController : UIXViewControllerBase<MainApp, FavAppsStartOrderView>
     {

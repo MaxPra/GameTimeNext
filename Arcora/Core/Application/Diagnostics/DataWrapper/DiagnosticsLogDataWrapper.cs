@@ -1,9 +1,9 @@
-using GameTimeNext.Core.Application.Diagnostics.Controller;
-using GameTimeNext.Core.Framework.DataBase;
+using Arcora.Core.Application.Diagnostics.Controller;
+using Arcora.Core.Framework.DataBase;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements.Selectors;
 
-namespace GameTimeNext.Core.Application.Diagnostics.DataWrapper
+namespace Arcora.Core.Application.Diagnostics.DataWrapper
 {
     /// <summary>
     /// Connects the log list (source) with the detail area below it (target): holds the log entry shown there.

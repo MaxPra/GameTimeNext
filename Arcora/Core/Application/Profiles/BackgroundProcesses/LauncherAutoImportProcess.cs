@@ -1,12 +1,12 @@
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.LauncherIntegration;
-using GameTimeNext.Core.Framework.Utils;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework;
+using Arcora.Core.Framework.LauncherIntegration;
+using Arcora.Core.Framework.Utils;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
+namespace Arcora.Core.Application.Profiles.BackgroundProcesses
 {
     /// <summary>
     /// Adds newly installed launcher games as profiles (settings "Game import"). Every cycle reads the installed games

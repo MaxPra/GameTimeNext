@@ -1,8 +1,8 @@
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.Menus.DataWrapper;
-using GameTimeNext.Core.Application.Menus.Views;
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework.Utils;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.Menus.DataWrapper;
+using Arcora.Core.Application.Menus.Views;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework.Utils;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -10,9 +10,9 @@ using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.DataBaseObjects;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
-using GameTimeNext.Core.Framework.UI.Dialogs;
+using Arcora.Core.Framework.UI.Dialogs;
 
-namespace GameTimeNext.Core.Application.Menus.Controller
+namespace Arcora.Core.Application.Menus.Controller
 {
     /// <summary>
     /// Combined edit area of the menu tree: edits the entry held by the data wrapper and saves it directly.

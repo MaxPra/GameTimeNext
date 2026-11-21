@@ -1,6 +1,6 @@
 using UIX.ViewController.Engine.Viewmodel;
 
-namespace GameTimeNext.Core.Application.Screensetups.Controller
+namespace Arcora.Core.Application.Screensetups.Controller
 {
     public class ScreensetupDataGridRow : UIXDataGridRow
     {

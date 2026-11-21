@@ -1,5 +1,5 @@
-﻿using GameTimeNext.Core.Framework.Http;
-using GameTimeNext.Core.Framework.UI.Dialogs;
+﻿using Arcora.Core.Framework.Http;
+using Arcora.Core.Framework.UI.Dialogs;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -7,7 +7,7 @@ using System.Text.Json;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Framework.Igdb
+namespace Arcora.Core.Framework.Igdb
 {
     public class IgdbService
     {

@@ -1,11 +1,11 @@
-using GameTimeNext.Core.Application.SelectionLists.Controller;
-using GameTimeNext.Core.Application.SelectionLists.Selectors;
-using GameTimeNext.Core.Application.SelectionLists.Views;
+using Arcora.Core.Application.SelectionLists.Controller;
+using Arcora.Core.Application.SelectionLists.Selectors;
+using Arcora.Core.Application.SelectionLists.Views;
 using System.Windows.Controls;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.SelectionLists
+namespace Arcora.Core.Application.SelectionLists
 {
     /// <summary>
     /// The user friendly view on the codetables: the selection lists the user may extend (e.g. platforms and their symbols),

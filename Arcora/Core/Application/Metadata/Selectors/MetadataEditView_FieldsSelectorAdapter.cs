@@ -1,7 +1,7 @@
-using GameTimeNext.Core.Application.Metadata.Controller;
-using GameTimeNext.Core.Application.Metadata.Data;
-using GameTimeNext.Core.Application.Metadata.Views;
-using GameTimeNext.Core.Framework;
+using Arcora.Core.Application.Metadata.Controller;
+using Arcora.Core.Application.Metadata.Data;
+using Arcora.Core.Application.Metadata.Views;
+using Arcora.Core.Framework;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.Migration.Types;
@@ -9,7 +9,7 @@ using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.Metadata.Selectors
+namespace Arcora.Core.Application.Metadata.Selectors
 {
     public class MetadataEditView_FieldsSelectorAdapter : UIXSelectorAdapterBase<MetadataEditApp, MetadataEditView, UIXDataGrid, MetadataPosDataGridRow>
     {

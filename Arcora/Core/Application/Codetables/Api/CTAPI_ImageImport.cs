@@ -1,8 +1,8 @@
-using GameTimeNext.Core.Framework.Config;
+using Arcora.Core.Framework.Config;
 using System.IO;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.Codetables.Api
+namespace Arcora.Core.Application.Codetables.Api
 {
     /// <summary>
     /// For the parameter "Path" of the codetable "Images / Symbols": the user chooses an image in the file dialog, the image is

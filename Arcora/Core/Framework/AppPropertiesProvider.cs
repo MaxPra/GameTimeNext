@@ -1,8 +1,8 @@
-﻿using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.TableObjects;
+﻿using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.TableObjects;
 using UIX.ViewController.Engine.Runnables;
 
-namespace GameTimeNext.Core.Framework
+namespace Arcora.Core.Framework
 {
     /// <summary>
     /// Provides the application properties to the engine from T1APRDH (Application Properties Definition).

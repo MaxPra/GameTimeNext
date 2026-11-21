@@ -1,5 +1,5 @@
-﻿using GameTimeNext.Core.Application.Metadata.Data;
-using GameTimeNext.Core.Application.Metadata.Views;
+﻿using Arcora.Core.Application.Metadata.Data;
+using Arcora.Core.Application.Metadata.Views;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -10,9 +10,9 @@ using UIX.ViewController.Engine.FrameworkElements.UserControls;
 using UIX.ViewController.Engine.Migration.Types;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
-using GameTimeNext.Core.Framework.UI.Dialogs;
+using Arcora.Core.Framework.UI.Dialogs;
 
-namespace GameTimeNext.Core.Application.Metadata.Controller
+namespace Arcora.Core.Application.Metadata.Controller
 {
     public class MetadataPosEditViewController : UIXViewControllerBase<MetadataPosEditApp, MetadataPosEditView>
     {

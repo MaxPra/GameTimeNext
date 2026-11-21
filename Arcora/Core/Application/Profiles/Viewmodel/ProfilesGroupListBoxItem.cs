@@ -1,6 +1,6 @@
 using UIX.ViewController.Engine.Viewmodel;
 
-namespace GameTimeNext.Core.Application.Profiles.Viewmodel
+namespace Arcora.Core.Application.Profiles.Viewmodel
 {
     /// <summary>
     /// Tag card of the profile editor (ItemObject = the codetable entry <c>T1CTABD</c>).

@@ -1,12 +1,12 @@
-﻿using GameTimeNext.Core.Application.ApplicationProperties.Controller;
-using GameTimeNext.Core.Application.ApplicationProperties.DataWrapper;
-using GameTimeNext.Core.Application.ApplicationProperties.Selectors;
-using GameTimeNext.Core.Application.ApplicationProperties.Views;
+﻿using Arcora.Core.Application.ApplicationProperties.Controller;
+using Arcora.Core.Application.ApplicationProperties.DataWrapper;
+using Arcora.Core.Application.ApplicationProperties.Selectors;
+using Arcora.Core.Application.ApplicationProperties.Views;
 using System.Windows.Controls;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.ApplicationProperties
+namespace Arcora.Core.Application.ApplicationProperties
 {
     /// <summary>
     /// Application properties definitions: list of the definitions with a combined edit area for the selected one.

@@ -1,13 +1,13 @@
-﻿using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Application.TimeMonitoring;
-using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.LauncherIntegration;
-using GameTimeNext.Core.Framework.UI;
-using GameTimeNext.Core.Framework.Utils;
+﻿using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Application.TimeMonitoring;
+using Arcora.Core.Framework;
+using Arcora.Core.Framework.LauncherIntegration;
+using Arcora.Core.Framework.UI;
+using Arcora.Core.Framework.Utils;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.Profiles.BackgroundProcesses
+namespace Arcora.Core.Application.Profiles.BackgroundProcesses
 {
     public class GameRunningProcess : UIXBackgroundProcess
     {

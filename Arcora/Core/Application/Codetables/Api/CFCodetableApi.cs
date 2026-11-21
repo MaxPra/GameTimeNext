@@ -1,10 +1,10 @@
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework.UI.Dialogs;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework.UI.Dialogs;
 using System.Windows;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.Codetables.Api
+namespace Arcora.Core.Application.Codetables.Api
 {
     /// <summary>
     /// Runs the button action of a codetable parameter and handles its errors. Shared by the modules "Codetables" and "Selection Lists".

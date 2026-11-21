@@ -1,4 +1,4 @@
-namespace GameTimeNext.Core.Framework.LauncherIntegration
+namespace Arcora.Core.Framework.LauncherIntegration
 {
     /// <summary>
     /// Integration of one game launcher (Steam, Epic, ...). The launcher type is the key of the codetable "lT".

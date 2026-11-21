@@ -1,4 +1,4 @@
-﻿using GameTimeNext.Shared;
+﻿using Arcora.Shared;
 
 namespace RemoteMonitoring.Base.Exceptions
 {

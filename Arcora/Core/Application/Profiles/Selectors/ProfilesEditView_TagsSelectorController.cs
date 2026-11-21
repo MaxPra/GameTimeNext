@@ -1,14 +1,14 @@
-﻿using GameTimeNext.Core.Application.Profiles.Controller;
-using GameTimeNext.Core.Application.Profiles.Viewmodel;
-using GameTimeNext.Core.Application.Profiles.Views;
-using GameTimeNext.Core.Framework.UI;
+﻿using Arcora.Core.Application.Profiles.Controller;
+using Arcora.Core.Application.Profiles.Viewmodel;
+using Arcora.Core.Application.Profiles.Views;
+using Arcora.Core.Framework.UI;
 using System.Collections.ObjectModel;
 using System.Windows;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.Runnables;
 
-namespace GameTimeNext.Core.Application.Profiles.Selectors
+namespace Arcora.Core.Application.Profiles.Selectors
 {
     public class ProfilesEditView_TagsSelectorController : UIXSelectorControllerBase<ProfilesEditApp, ProfilesEditView, UIXListBox>
     {

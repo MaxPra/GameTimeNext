@@ -1,9 +1,9 @@
-using GameTimeNext.Core.Framework.Utils;
+using Arcora.Core.Framework.Utils;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace GameTimeNext.Core.Framework.UI
+namespace Arcora.Core.Framework.UI
 {
     /// <summary>
     /// Fades out the scrolled content at the top and bottom edge of a scrollable control (ListBox, ScrollViewer, ...).

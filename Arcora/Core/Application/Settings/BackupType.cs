@@ -1,4 +1,4 @@
-﻿namespace GameTimeNext.Core.Application.Settings
+﻿namespace Arcora.Core.Application.Settings
 {
     public class BackupType
     {

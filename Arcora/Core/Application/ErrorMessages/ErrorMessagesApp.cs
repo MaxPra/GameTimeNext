@@ -1,11 +1,11 @@
-using GameTimeNext.Core.Application.ErrorMessages.Controller;
-using GameTimeNext.Core.Application.ErrorMessages.Selectors;
-using GameTimeNext.Core.Application.ErrorMessages.Views;
+using Arcora.Core.Application.ErrorMessages.Controller;
+using Arcora.Core.Application.ErrorMessages.Selectors;
+using Arcora.Core.Application.ErrorMessages.Views;
 using System.Windows.Controls;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.ErrorMessages
+namespace Arcora.Core.Application.ErrorMessages
 {
     [UIXAppIcon(UIXMdlIcons.Error)]
     public class ErrorMessagesApp : UIXApplication, IUIXApplicationStarter

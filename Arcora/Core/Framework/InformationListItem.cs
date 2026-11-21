@@ -1,8 +1,8 @@
-﻿using GameTimeNext.Core.Framework.UI.Dialogs;
+﻿using Arcora.Core.Framework.UI.Dialogs;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Framework
+namespace Arcora.Core.Framework
 {
     public class InformationListItem
     {

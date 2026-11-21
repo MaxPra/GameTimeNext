@@ -1,9 +1,9 @@
-﻿using GameTimeNext.Core.Framework.UI;
+﻿using Arcora.Core.Framework.UI;
 using System.Globalization;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace GameTimeNext.Core.Application.BigPicture
+namespace Arcora.Core.Application.BigPicture
 {
     public static class CFBigPictureApp
     {

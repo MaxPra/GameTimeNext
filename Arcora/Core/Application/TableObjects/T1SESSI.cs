@@ -1,7 +1,7 @@
-﻿using GameTimeNext.Core.Application.DataManagers;
+﻿using Arcora.Core.Application.DataManagers;
 using UIX.ViewController.Engine.DataBaseObjects;
 
-namespace GameTimeNext.Core.Application.TableObjects
+namespace Arcora.Core.Application.TableObjects
 {
     public class T1SESSI : UIXTableObjectBase
     {

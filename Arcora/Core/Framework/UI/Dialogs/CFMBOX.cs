@@ -3,7 +3,7 @@ using System.Windows.Threading;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.Runnables;
 
-namespace GameTimeNext.Core.Framework.UI.Dialogs
+namespace Arcora.Core.Framework.UI.Dialogs
 {
     public class CFMBOX : UIXApplication
     {

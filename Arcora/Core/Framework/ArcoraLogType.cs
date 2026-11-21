@@ -1,6 +1,6 @@
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Framework
+namespace Arcora.Core.Framework
 {
     /// <summary>
     /// Log types of arcora in addition to the engine's (Info, Warning, Error); logged with FnLog.Add(ArcoraLogType.X, ...).

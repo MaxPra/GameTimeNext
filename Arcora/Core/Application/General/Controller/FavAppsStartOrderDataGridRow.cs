@@ -1,6 +1,6 @@
 ﻿using UIX.ViewController.Engine.Viewmodel;
 
-namespace GameTimeNext.Core.Application.General.Controller
+namespace Arcora.Core.Application.General.Controller
 {
     /// <summary>
     /// Row of the favorites start order (RowObject: FavoriteApplication).

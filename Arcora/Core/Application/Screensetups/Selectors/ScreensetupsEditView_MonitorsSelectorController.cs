@@ -1,10 +1,10 @@
-using GameTimeNext.Core.Application.Screensetups.Controller;
-using GameTimeNext.Core.Application.Screensetups.Views;
+using Arcora.Core.Application.Screensetups.Controller;
+using Arcora.Core.Application.Screensetups.Views;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.Runnables;
 
-namespace GameTimeNext.Core.Application.Screensetups.Selectors
+namespace Arcora.Core.Application.Screensetups.Selectors
 {
     public class ScreensetupsEditView_MonitorsSelectorController : UIXSelectorControllerBase<ScreensetupsEditApp, ScreensetupsEditView, UIXDataGrid>
     {

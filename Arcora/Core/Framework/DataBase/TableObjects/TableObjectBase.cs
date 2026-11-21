@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace GameTimeNext.Core.Framework.DataBase.TableObjects
+namespace Arcora.Core.Framework.DataBase.TableObjects
 {
     public abstract class TableObjectBase
     {

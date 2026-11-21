@@ -1,8 +1,8 @@
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework.Utils;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework.Utils;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.Menus
+namespace Arcora.Core.Application.Menus
 {
     public static class CFMenusApp
     {

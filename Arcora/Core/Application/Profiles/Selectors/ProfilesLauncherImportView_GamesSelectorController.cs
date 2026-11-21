@@ -1,5 +1,5 @@
-using GameTimeNext.Core.Application.Profiles.Controller;
-using GameTimeNext.Core.Application.Profiles.Views;
+using Arcora.Core.Application.Profiles.Controller;
+using Arcora.Core.Application.Profiles.Views;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -10,7 +10,7 @@ using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 using static UIX.ViewController.Engine.FrameworkElements.UIXContextMenuFactory;
 
-namespace GameTimeNext.Core.Application.Profiles.Selectors
+namespace Arcora.Core.Application.Profiles.Selectors
 {
     public class ProfilesLauncherImportView_GamesSelectorController : UIXSelectorControllerBase<ProfilesLauncherImportApp, ProfilesLauncherImportView, UIXDataGrid>
     {

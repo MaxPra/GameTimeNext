@@ -1,7 +1,7 @@
-using GameTimeNext.Core.Framework.DataBase.Migration;
+using Arcora.Core.Framework.DataBase.Migration;
 using UIX.ViewController.Engine.Querying;
 
-namespace GameTimeNext.Core.Application.MigrationTasks
+namespace Arcora.Core.Application.MigrationTasks
 {
     /// <summary>
     /// Removes the legacy foreign keys (ON DELETE CASCADE) of databases created by the old DataBaseManager.CreateTables():

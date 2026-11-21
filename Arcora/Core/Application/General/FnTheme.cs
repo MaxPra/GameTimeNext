@@ -1,13 +1,13 @@
-﻿using GameTimeNext.Core.Application.Profiles.Components;
-using GameTimeNext.Core.Application.Settings;
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.UI;
-using GameTimeNext.Core.Framework.Utils;
+﻿using Arcora.Core.Application.Profiles.Components;
+using Arcora.Core.Application.Settings;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework;
+using Arcora.Core.Framework.UI;
+using Arcora.Core.Framework.Utils;
 using System.Windows.Media;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.General
+namespace Arcora.Core.Application.General
 {
     public class FnTheme
     {

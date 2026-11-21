@@ -1,9 +1,9 @@
-using GameTimeNext.Core.Application.Menus.ViewModel;
-using GameTimeNext.Core.Application.TableObjects;
+using Arcora.Core.Application.Menus.ViewModel;
+using Arcora.Core.Application.TableObjects;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements.Selectors;
 
-namespace GameTimeNext.Core.Application.Menus.DataWrapper
+namespace Arcora.Core.Application.Menus.DataWrapper
 {
     /// <summary>
     /// Connects the menu tree (source) with the combined edit area (target): holds the menu entry being edited.

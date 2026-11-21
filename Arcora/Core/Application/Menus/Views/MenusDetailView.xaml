@@ -1,5 +1,5 @@
 ﻿<uixcontrols:UIXUserControlBase
-    x:Class="GameTimeNext.Core.Application.Menus.Views.MenusDetailView"
+    x:Class="Arcora.Core.Application.Menus.Views.MenusDetailView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:uixcb="clr-namespace:UIX.ViewController.Engine.FrameworkElements.ComboBoxes;assembly=UIX.ViewController.Engine"

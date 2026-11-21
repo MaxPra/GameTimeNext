@@ -1,6 +1,6 @@
 using UIX.ViewController.Engine.Viewmodel;
 
-namespace GameTimeNext.Core.Application.Diagnostics.Controller
+namespace Arcora.Core.Application.Diagnostics.Controller
 {
     public class BackgroundProcessesDataGridRow : UIXDataGridRow
     {

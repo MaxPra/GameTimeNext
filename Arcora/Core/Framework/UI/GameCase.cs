@@ -5,7 +5,7 @@ using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
-namespace GameTimeNext.Core.Framework.UI
+namespace Arcora.Core.Framework.UI
 {
     /// <summary>
     /// State of a game case (style GameCase in TileViewStyle.xaml: ContentControl with the cover image as content).

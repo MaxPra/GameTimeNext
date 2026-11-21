@@ -1,6 +1,6 @@
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.ErrorMessages.Views;
-using GameTimeNext.Core.Framework.Utils;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.ErrorMessages.Views;
+using Arcora.Core.Framework.Utils;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
@@ -8,9 +8,9 @@ using UIX.ViewController.Engine.DataBaseObjects;
 using UIX.ViewController.Engine.FrameworkElements.UserControls;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
-using GameTimeNext.Core.Framework.UI.Dialogs;
+using Arcora.Core.Framework.UI.Dialogs;
 
-namespace GameTimeNext.Core.Application.ErrorMessages.Controller
+namespace Arcora.Core.Application.ErrorMessages.Controller
 {
     public class ErrorMessagesEditViewController : UIXViewControllerBase<ErrorMessagesEditApp, ErrorMessagesEditView>
     {

@@ -2,7 +2,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Net.Http;
 
-namespace GameTimeNext.Core.Framework.Http
+namespace Arcora.Core.Framework.Http
 {
     /// <summary>
     /// HTTP handler between a HttpClient and the network that records every request of an external API in FnApiStatus

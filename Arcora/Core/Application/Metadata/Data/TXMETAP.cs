@@ -1,7 +1,7 @@
 ﻿using System.Data.SQLite;
 using UIX.ViewController.Engine.Querying;
 
-namespace GameTimeNext.Core.Application.Metadata.Data
+namespace Arcora.Core.Application.Metadata.Data
 {
     public class TXMETAP : TXMETAPBasic
     {

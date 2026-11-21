@@ -1,13 +1,13 @@
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.SelectionLists;
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.SelectionLists;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework;
 using System.Data.SQLite;
 using System.Globalization;
 using UIX.ViewController.Engine.Utils;
-using static GameTimeNext.Core.Application.Profiles.Controller.ProfilesViewController;
+using static Arcora.Core.Application.Profiles.Controller.ProfilesViewController;
 
-namespace GameTimeNext.Core.Application.MigrationTasks
+namespace Arcora.Core.Application.MigrationTasks
 {
     /// <summary>
     /// Tags move from T1GROUP (GTYP = GTN.TAG, numeric GRID) into codetable tG (string keys):

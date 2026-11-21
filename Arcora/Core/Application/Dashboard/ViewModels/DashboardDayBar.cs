@@ -1,6 +1,6 @@
 using System.Windows;
 
-namespace GameTimeNext.Core.Application.Dashboard.ViewModels
+namespace Arcora.Core.Application.Dashboard.ViewModels
 {
     /// <summary>
     /// One day of the playtime bar chart (dashboard, playtime overview).

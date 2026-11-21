@@ -1,6 +1,6 @@
 using System.IO;
 
-namespace GameTimeNext.Core.Framework.LauncherIntegration.Link
+namespace Arcora.Core.Framework.LauncherIntegration.Link
 {
     /// <summary>
     /// Generic link: Game ID = path of an executable, a shortcut (.lnk / .url) or a URI (e.g. "steam://...").

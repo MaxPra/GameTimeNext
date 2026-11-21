@@ -1,12 +1,12 @@
-﻿using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.Profiles.Controller;
-using GameTimeNext.Core.Application.Profiles.Selectors;
-using GameTimeNext.Core.Application.Profiles.Views;
-using GameTimeNext.Core.Application.TableObjects;
+﻿using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.Profiles.Controller;
+using Arcora.Core.Application.Profiles.Selectors;
+using Arcora.Core.Application.Profiles.Views;
+using Arcora.Core.Application.TableObjects;
 using UIX.ViewController.Engine.Runnables;
-using static GameTimeNext.Core.Application.Profiles.Controller.ProfilesManualEstTimesEditViewController;
+using static Arcora.Core.Application.Profiles.Controller.ProfilesManualEstTimesEditViewController;
 
-namespace GameTimeNext.Core.Application.Profiles
+namespace Arcora.Core.Application.Profiles
 {
     public class ProfilesEditApp : UIXApplication
     {

@@ -1,6 +1,6 @@
 ﻿using UIX.ViewController.Engine.Viewmodel;
 
-namespace GameTimeNext.Core.Application.BigPicture.ViewModels
+namespace Arcora.Core.Application.BigPicture.ViewModels
 {
     public enum BigPictureKeyKind
     {

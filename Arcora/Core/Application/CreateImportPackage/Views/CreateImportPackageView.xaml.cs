@@ -1,6 +1,6 @@
 ﻿using UIX.ViewController.Engine.FrameworkElements.UserControls;
 
-namespace GameTimeNext.Core.Application.CreateImportPackage.Views
+namespace Arcora.Core.Application.CreateImportPackage.Views
 {
     /// <summary>
     /// Interaction logic for CreateImportPackageView.xaml

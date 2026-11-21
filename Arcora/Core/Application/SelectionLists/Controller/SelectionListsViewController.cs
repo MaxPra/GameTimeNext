@@ -1,5 +1,5 @@
-using GameTimeNext.Core.Application.SelectionLists.Views;
-using GameTimeNext.Core.Application.TableObjects;
+using Arcora.Core.Application.SelectionLists.Views;
+using Arcora.Core.Application.TableObjects;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -8,7 +8,7 @@ using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.SelectionLists.Controller
+namespace Arcora.Core.Application.SelectionLists.Controller
 {
     public class SelectionListsViewController : UIXViewControllerBase<SelectionListsApp, SelectionListsView>
     {

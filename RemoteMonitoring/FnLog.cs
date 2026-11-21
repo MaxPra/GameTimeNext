@@ -1,4 +1,4 @@
-﻿using GameTimeNext.Shared.Base;
+﻿using Arcora.Shared.Base;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading.Channels;

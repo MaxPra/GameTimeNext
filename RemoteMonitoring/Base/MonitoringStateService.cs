@@ -1,4 +1,4 @@
-﻿using GameTimeNext.Shared.Profiles.Monitoring;
+﻿using Arcora.Shared.Profiles.Monitoring;
 using RemoteMonitoring.ApiServices;
 
 namespace RemoteMonitoring.Base

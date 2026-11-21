@@ -1,4 +1,4 @@
-﻿namespace GameTimeNext.Core.Application.Playthroughs
+﻿namespace Arcora.Core.Application.Playthroughs
 {
     public class PlaythroughAppRunSelections
     {

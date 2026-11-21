@@ -1,4 +1,4 @@
-﻿using GameTimeNext.Core.Framework.Http;
+﻿using Arcora.Core.Framework.Http;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.Json;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Framework.Igdb
+namespace Arcora.Core.Framework.Igdb
 {
     public static class FnTwitchAuthentication
     {

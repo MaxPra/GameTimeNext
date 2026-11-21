@@ -1,6 +1,6 @@
-﻿using GameTimeNext.Core.Application.TableObjects;
+﻿using Arcora.Core.Application.TableObjects;
 
-namespace GameTimeNext.Core.Application.DataManagers
+namespace Arcora.Core.Application.DataManagers
 {
     /// <summary>
     /// Tags of the games: entries of codetable <see cref="TagCodetable"/> (key = TXNUM, name = DESCR, parameter 1 = hidden Y / N).

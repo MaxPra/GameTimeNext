@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Framework.Versioning
+namespace Arcora.Core.Framework.Versioning
 {
     public class AppVersion
     {

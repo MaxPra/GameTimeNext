@@ -1,7 +1,7 @@
 using System.IO;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Framework.LauncherIntegration.Gog
+namespace Arcora.Core.Framework.LauncherIntegration.Gog
 {
     /// <summary>
     /// GOG Galaxy. Game ID = GOG game ID. Installed games are read from the registry (also games installed

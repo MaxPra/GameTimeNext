@@ -1,8 +1,8 @@
-﻿using GameTimeNext.Core.Application.Metadata.Controller;
-using GameTimeNext.Core.Application.Metadata.Data;
-using GameTimeNext.Core.Application.Metadata.Views;
-using GameTimeNext.Core.Application.Profiles;
-using GameTimeNext.Core.Framework.UI.Dialogs;
+﻿using Arcora.Core.Application.Metadata.Controller;
+using Arcora.Core.Application.Metadata.Data;
+using Arcora.Core.Application.Metadata.Views;
+using Arcora.Core.Application.Profiles;
+using Arcora.Core.Framework.UI.Dialogs;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -13,7 +13,7 @@ using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 using static UIX.ViewController.Engine.FrameworkElements.UIXContextMenuFactory;
 
-namespace GameTimeNext.Core.Application.Metadata.Selectors
+namespace Arcora.Core.Application.Metadata.Selectors
 {
     public class MetadataEditView_FieldsSelectorController : UIXSelectorControllerBase<MetadataEditApp, MetadataEditView, UIXDataGrid>
     {

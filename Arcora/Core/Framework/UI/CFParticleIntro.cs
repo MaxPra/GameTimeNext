@@ -1,11 +1,11 @@
 ﻿using System.Globalization;
-using GameTimeNext.Core.Framework.Utils;
+using Arcora.Core.Framework.Utils;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace GameTimeNext.Core.Framework.UI
+namespace Arcora.Core.Framework.UI
 {
     /// <summary>
     /// Opening animation in the spirit of the Xbox 360 start: streaks of light swirl in on tilted orbits around the

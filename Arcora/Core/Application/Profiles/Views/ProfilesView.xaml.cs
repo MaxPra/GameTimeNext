@@ -1,7 +1,7 @@
-﻿using GameTimeNext.Core.Application.Profiles.Controller;
+﻿using Arcora.Core.Application.Profiles.Controller;
 using UIX.ViewController.Engine.FrameworkElements.UserControls;
 
-namespace GameTimeNext.Core.Application.Profiles.Views
+namespace Arcora.Core.Application.Profiles.Views
 {
     /// <summary>
     /// Interaction logic for ProfilesSubView.xaml

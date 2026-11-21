@@ -3,7 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
 
-namespace GameTimeNext.Core.Framework.Utils
+namespace Arcora.Core.Framework.Utils
 {
     /// <summary>
     /// Text font of the application (resource Font.Text in UI/Values/UIValues.xaml: Manrope from UI/Fonts, embedded in the

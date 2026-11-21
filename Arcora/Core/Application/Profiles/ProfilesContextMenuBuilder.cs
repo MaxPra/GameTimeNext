@@ -1,12 +1,12 @@
-﻿using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework.LauncherIntegration;
+﻿using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework.LauncherIntegration;
 using System.IO;
 using System.Windows;
 using UIX.ViewController.Engine.FrameworkElements;
 using static UIX.ViewController.Engine.FrameworkElements.UIXContextMenuFactory;
 
-namespace GameTimeNext.Core.Application.Profiles
+namespace Arcora.Core.Application.Profiles
 {
     /// <summary>
     /// Builds the contextMenu Items for the profiles context menu

@@ -1,7 +1,7 @@
 using UIX.ViewController.Engine.DataBaseObjects;
 using UIX.ViewController.Engine.Runnables;
 
-namespace GameTimeNext.Core.Framework.Utils
+namespace Arcora.Core.Framework.Utils
 {
     /// <summary>
     /// Record lock for actions that change records without an edit view (e.g. context menu actions such as completing a

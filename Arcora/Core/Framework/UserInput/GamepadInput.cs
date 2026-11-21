@@ -3,7 +3,7 @@ using System.Windows.Threading;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Framework.UserInput
+namespace Arcora.Core.Framework.UserInput
 {
     /// <summary>
     /// Buttons of a game controller in Xbox layout. The directions combine the D-pad and the left stick.

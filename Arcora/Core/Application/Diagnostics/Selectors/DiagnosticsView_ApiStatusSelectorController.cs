@@ -1,9 +1,9 @@
-using GameTimeNext.Core.Application.Diagnostics.Views;
+using Arcora.Core.Application.Diagnostics.Views;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.Runnables;
 
-namespace GameTimeNext.Core.Application.Diagnostics.Selectors
+namespace Arcora.Core.Application.Diagnostics.Selectors
 {
     /// <summary>
     /// Events of the API status list. The status can only be viewed, so there are no handlers yet.

@@ -1,6 +1,6 @@
-﻿using GameTimeNext.Core.Framework.UI.Base;
+﻿using Arcora.Core.Framework.UI.Base;
 
-namespace GameTimeNext.Core.Application.Menus.Views
+namespace Arcora.Core.Application.Menus.Views
 {
     /// <summary>
     /// Interaction logic for MenusView.xaml

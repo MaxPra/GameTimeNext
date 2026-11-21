@@ -1,6 +1,6 @@
 ﻿using UIX.ViewController.Engine.FrameworkElements.UserControls;
 
-namespace GameTimeNext.Core.Application.ApplicationProperties.Views
+namespace Arcora.Core.Application.ApplicationProperties.Views
 {
     /// <summary>
     /// Interaction logic for ApplicationPropertiesDetailView.xaml

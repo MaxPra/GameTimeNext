@@ -1,12 +1,12 @@
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.Profiles.Views;
-using GameTimeNext.Core.Application.Profiles.Viewmodel;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.Profiles.Views;
+using Arcora.Core.Application.Profiles.Viewmodel;
 using UIX.ViewController.Engine.Utils;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.Runnables;
 
-namespace GameTimeNext.Core.Application.Profiles.Selectors
+namespace Arcora.Core.Application.Profiles.Selectors
 {
     /// <summary>
     /// Tags the edited profile has, shown as cards. Hidden tags are included, so the profile can lose them.

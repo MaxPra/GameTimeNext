@@ -1,12 +1,12 @@
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.Metadata.Controller;
-using GameTimeNext.Core.Application.Metadata.Data;
-using GameTimeNext.Core.Application.Metadata.Views;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.Metadata.Controller;
+using Arcora.Core.Application.Metadata.Data;
+using Arcora.Core.Application.Metadata.Views;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.Runnables;
 
-namespace GameTimeNext.Core.Application.Metadata.Selectors
+namespace Arcora.Core.Application.Metadata.Selectors
 {
     public class MetadataView_MetadataSelectorAdapter : UIXSelectorAdapterBase<MetadataApp, MetadataView, UIXDataGrid, MetadataDataGridRow>
     {

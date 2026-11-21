@@ -1,10 +1,10 @@
-using GameTimeNext.Core.Application.Profiles.Controller;
-using GameTimeNext.Core.Application.Profiles.Views;
-using GameTimeNext.Core.Framework.UI;
+using Arcora.Core.Application.Profiles.Controller;
+using Arcora.Core.Application.Profiles.Views;
+using Arcora.Core.Framework.UI;
 using System.Windows.Media.Imaging;
 using UIX.ViewController.Engine.Runnables;
 
-namespace GameTimeNext.Core.Application.Profiles
+namespace Arcora.Core.Application.Profiles
 {
     /// <summary>
     /// Dialog that chooses the section of a cover printed on the disc of a profile.

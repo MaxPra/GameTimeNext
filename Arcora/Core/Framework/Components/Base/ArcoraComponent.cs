@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace GameTimeNext.Core.Framework.Components.Base
+namespace Arcora.Core.Framework.Components.Base
 {
 
     public class ArcoraComponent<TSelf> where TSelf : ArcoraComponent<TSelf>, new()

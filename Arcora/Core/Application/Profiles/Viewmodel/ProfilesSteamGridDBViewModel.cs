@@ -1,8 +1,8 @@
-﻿using GameTimeNext.Core.Framework.ViewModelsBase;
+﻿using Arcora.Core.Framework.ViewModelsBase;
 using System.Collections.ObjectModel;
 using System.Windows.Media.Imaging;
 
-namespace GameTimeNext.Core.Application.Profiles.Viewmodel
+namespace Arcora.Core.Application.Profiles.Viewmodel
 {
     public class SteamGridDBImage : ArcoraViewModelBase
     {

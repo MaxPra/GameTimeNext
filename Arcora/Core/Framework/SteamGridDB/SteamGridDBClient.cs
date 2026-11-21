@@ -1,7 +1,7 @@
-﻿using GameTimeNext.Core.Framework.Config;
-using GameTimeNext.Core.Framework.Http;
-using GameTimeNext.Core.Framework.Utils;
-using GameTimeNext.Core.Application.Profiles;
+﻿using Arcora.Core.Framework.Config;
+using Arcora.Core.Framework.Http;
+using Arcora.Core.Framework.Utils;
+using Arcora.Core.Application.Profiles;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -10,7 +10,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Framework.SteamGridDB
+namespace Arcora.Core.Framework.SteamGridDB
 {
     public class SteamGridDBClient
     {

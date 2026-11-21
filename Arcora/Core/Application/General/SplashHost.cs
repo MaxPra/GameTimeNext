@@ -1,10 +1,10 @@
-using GameTimeNext.Core.Framework.Config;
+using Arcora.Core.Framework.Config;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.General
+namespace Arcora.Core.Application.General
 {
     /// <summary>
     /// Shows the <see cref="SplashScreen"/> in its own process (this executable started with <see cref="Argument"/>).

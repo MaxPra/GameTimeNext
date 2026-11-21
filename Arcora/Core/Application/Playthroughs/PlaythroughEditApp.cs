@@ -1,10 +1,10 @@
-﻿using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.Playthroughs.Controller;
-using GameTimeNext.Core.Application.Playthroughs.Views;
-using GameTimeNext.Core.Application.TableObjects;
+﻿using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.Playthroughs.Controller;
+using Arcora.Core.Application.Playthroughs.Views;
+using Arcora.Core.Application.TableObjects;
 using UIX.ViewController.Engine.Runnables;
 
-namespace GameTimeNext.Core.Application.Playthroughs
+namespace Arcora.Core.Application.Playthroughs
 {
     public class PlaythroughEditApp : UIXApplication
     {

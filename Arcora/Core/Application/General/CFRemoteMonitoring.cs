@@ -1,7 +1,7 @@
-using GameTimeNext.Core.Application.General.BackgroundProcesses;
-using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.UI;
-using GameTimeNext.Core.Framework.Utils;
+using Arcora.Core.Application.General.BackgroundProcesses;
+using Arcora.Core.Framework;
+using Arcora.Core.Framework.UI;
+using Arcora.Core.Framework.Utils;
 using QRCoder;
 using System.Globalization;
 using System.IO;
@@ -12,7 +12,7 @@ using System.Security.Cryptography;
 using System.Windows.Media.Imaging;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.General
+namespace Arcora.Core.Application.General
 {
     /// <summary>
     /// Pairing and address of the remote monitoring: the QR code in the settings opens the web app on the phone and

@@ -1,6 +1,6 @@
 ﻿using UIX.ViewController.Engine.FrameworkElements.UserControls;
 
-namespace GameTimeNext.Core.Application.Metadata.Views
+namespace Arcora.Core.Application.Metadata.Views
 {
     /// <summary>
     /// Interaction logic for MetadataView.xaml

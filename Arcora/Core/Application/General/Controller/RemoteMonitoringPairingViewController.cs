@@ -1,11 +1,11 @@
-using GameTimeNext.Core.Application.General.Views;
+using Arcora.Core.Application.General.Views;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.General.Controller
+namespace Arcora.Core.Application.General.Controller
 {
     /// <summary>
     /// QR code popup of the title bar: filled on every opening, so address and port are always the current ones.

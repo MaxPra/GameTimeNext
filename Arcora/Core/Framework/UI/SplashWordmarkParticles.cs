@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Media;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Framework.UI
+namespace Arcora.Core.Framework.UI
 {
     /// <summary>
     /// Particle effect of the splash wordmark: glowing dust flies in on curved paths and settles on the strokes of

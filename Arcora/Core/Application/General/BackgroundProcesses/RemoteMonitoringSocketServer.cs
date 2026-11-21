@@ -1,8 +1,8 @@
-﻿using GameTimeNext.Core.Application.Profiles.Batch;
-using GameTimeNext.Shared;
-using GameTimeNext.Shared.Base;
-using GameTimeNext.Shared.Profiles;
-using GameTimeNext.Shared.Profiles.Monitoring;
+﻿using Arcora.Core.Application.Profiles.Batch;
+using Arcora.Shared;
+using Arcora.Shared.Base;
+using Arcora.Shared.Profiles;
+using Arcora.Shared.Profiles.Monitoring;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -11,7 +11,7 @@ using System.Text.Json;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.General.BackgroundProcesses
+namespace Arcora.Core.Application.General.BackgroundProcesses
 {
     public class RemoteMonitoringSocketServer : UIXBackgroundProcess
     {

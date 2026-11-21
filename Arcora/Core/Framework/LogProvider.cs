@@ -1,8 +1,8 @@
-using GameTimeNext.Core.Framework.Config;
+using Arcora.Core.Framework.Config;
 using System.Diagnostics;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Framework
+namespace Arcora.Core.Framework
 {
     /// <summary>
     /// Decides where the log entries of FnLog (AddInfo, AddWarning, AddError) are written.

@@ -1,6 +1,6 @@
 using UIX.ViewController.Engine.FrameworkElements.UserControls;
 
-namespace GameTimeNext.Core.Application.Home.Views
+namespace Arcora.Core.Application.Home.Views
 {
     /// <summary>
     /// Welcome page of the home application.

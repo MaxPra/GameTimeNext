@@ -1,6 +1,6 @@
 ﻿using UIX.ViewController.Engine.Viewmodel;
 
-namespace GameTimeNext.Core.Application.Codetables.Controller
+namespace Arcora.Core.Application.Codetables.Controller
 {
     public class CodetableDataGridRow : UIXDataGridRow
     {

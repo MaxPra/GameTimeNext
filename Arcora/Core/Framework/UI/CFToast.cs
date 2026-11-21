@@ -7,7 +7,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Framework.UI
+namespace Arcora.Core.Framework.UI
 {
     /// <summary>
     /// Toast messages at the top right of the work area (window ToastMessage). A toast shown while others are open is

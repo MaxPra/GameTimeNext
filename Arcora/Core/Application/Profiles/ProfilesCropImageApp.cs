@@ -1,9 +1,9 @@
-﻿using GameTimeNext.Core.Application.Profiles.Controller;
-using GameTimeNext.Core.Application.Profiles.Views;
+﻿using Arcora.Core.Application.Profiles.Controller;
+using Arcora.Core.Application.Profiles.Views;
 using System.Windows.Media.Imaging;
 using UIX.ViewController.Engine.Runnables;
 
-namespace GameTimeNext.Core.Application.Profiles
+namespace Arcora.Core.Application.Profiles
 {
     public class ProfilesCropImageApp : UIXApplication
     {

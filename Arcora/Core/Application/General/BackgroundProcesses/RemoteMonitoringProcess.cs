@@ -1,6 +1,6 @@
-﻿using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.Config;
-using GameTimeNext.Core.Framework.Utils;
+﻿using Arcora.Core.Framework;
+using Arcora.Core.Framework.Config;
+using Arcora.Core.Framework.Utils;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
@@ -10,7 +10,7 @@ using System.Text;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.General.BackgroundProcesses
+namespace Arcora.Core.Application.General.BackgroundProcesses
 {
     public class RemoteMonitoringProcess : UIXBackgroundProcess
     {

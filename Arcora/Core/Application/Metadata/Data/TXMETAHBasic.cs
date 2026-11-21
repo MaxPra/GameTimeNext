@@ -1,5 +1,5 @@
-﻿using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.DataBase.Migration;
+﻿using Arcora.Core.Framework;
+using Arcora.Core.Framework.DataBase.Migration;
 using System.Data.SQLite;
 using System.Globalization;
 using UIX.ViewController.Engine.DataBaseObjects;
@@ -7,7 +7,7 @@ using UIX.ViewController.Engine.Migration.Types;
 using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.Metadata.Data
+namespace Arcora.Core.Application.Metadata.Data
 {
     public class TXMETAHBasic
     {

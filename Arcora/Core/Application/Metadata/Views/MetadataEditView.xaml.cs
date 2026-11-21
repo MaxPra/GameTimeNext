@@ -1,6 +1,6 @@
-﻿using GameTimeNext.Core.Framework.UI.Base;
+﻿using Arcora.Core.Framework.UI.Base;
 
-namespace GameTimeNext.Core.Application.Metadata.Views
+namespace Arcora.Core.Application.Metadata.Views
 {
     /// <summary>
     /// Interaction logic for MetadataEditView.xaml

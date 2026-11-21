@@ -1,15 +1,15 @@
-using GameTimeNext.Core.Application.ApplicationProperties.Controller;
-using GameTimeNext.Core.Application.ApplicationProperties.Views;
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework;
+using Arcora.Core.Application.ApplicationProperties.Controller;
+using Arcora.Core.Application.ApplicationProperties.Views;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework;
 using UIX.ViewController.Engine.Controller;
 using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.ApplicationProperties.Selectors
+namespace Arcora.Core.Application.ApplicationProperties.Selectors
 {
     public class ApplicationPropertiesView_ApplicationPropertiesSelectorAdapter : UIXSelectorAdapterBase<ApplicationPropertiesApp, ApplicationPropertiesView, UIXDataGrid, ApplicationPropertiesDataGridRow>
     {

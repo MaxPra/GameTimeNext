@@ -1,6 +1,6 @@
-﻿using GameTimeNext.Core.Framework.UI.Base;
+﻿using Arcora.Core.Framework.UI.Base;
 
-namespace GameTimeNext.Core.Application.Profiles.Views
+namespace Arcora.Core.Application.Profiles.Views
 {
     /// <summary>
     /// Interaction logic for ProfilesAddView.xaml

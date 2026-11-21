@@ -1,13 +1,13 @@
 ﻿using System.Globalization;
-using GameTimeNext.Core.Application.Dashboard.ViewModels;
-using GameTimeNext.Core.Application.Dashboard.Views;
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Application.Profiles;
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework;
-using GameTimeNext.Core.Framework.Config;
-using GameTimeNext.Core.Framework.UI;
-using GameTimeNext.Core.Framework.Utils;
+using Arcora.Core.Application.Dashboard.ViewModels;
+using Arcora.Core.Application.Dashboard.Views;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Application.Profiles;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework;
+using Arcora.Core.Framework.Config;
+using Arcora.Core.Framework.UI;
+using Arcora.Core.Framework.Utils;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -19,7 +19,7 @@ using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.Dashboard.Controller
+namespace Arcora.Core.Application.Dashboard.Controller
 {
     public class DashboardViewController : UIXViewControllerBase<DashboardApp, DashboardView>
     {

@@ -1,6 +1,6 @@
-using GameTimeNext.Core.Application.Codetables.Views;
-using GameTimeNext.Core.Application.DataManagers;
-using GameTimeNext.Core.Framework.Utils;
+using Arcora.Core.Application.Codetables.Views;
+using Arcora.Core.Application.DataManagers;
+using Arcora.Core.Framework.Utils;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using UIX.ViewController.Engine.Controller;
@@ -8,7 +8,7 @@ using UIX.ViewController.Engine.FrameworkElements.Selectors;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.Codetables.Controller
+namespace Arcora.Core.Application.Codetables.Controller
 {
     public class CodetablesViewController : UIXViewControllerBase<CodetablesApp, CodetablesView>
     {

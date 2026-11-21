@@ -2,7 +2,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace GameTimeNext.Core.Framework.UI
+namespace Arcora.Core.Framework.UI
 {
     /// <summary>
     /// Search in a settings view built from pages (<see cref="TabItem"/>), cards (<see cref="GroupBox"/> with a

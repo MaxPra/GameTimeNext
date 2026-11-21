@@ -1,7 +1,7 @@
-using GameTimeNext.Core.Application.TableObjects;
-using GameTimeNext.Core.Framework.Config;
+using Arcora.Core.Application.TableObjects;
+using Arcora.Core.Framework.Config;
 
-namespace GameTimeNext.Core.Application.DataManagers
+namespace Arcora.Core.Application.DataManagers
 {
     public class TFAPRDH
     {

@@ -1,8 +1,8 @@
-﻿using GameTimeNext.Core.Application.Profiles.Controller;
-using GameTimeNext.Core.Application.Profiles.Views;
+﻿using Arcora.Core.Application.Profiles.Controller;
+using Arcora.Core.Application.Profiles.Views;
 using UIX.ViewController.Engine.Runnables;
 
-namespace GameTimeNext.Core.Application.Profiles
+namespace Arcora.Core.Application.Profiles
 {
     internal class ProfilesExecutablesEditApp : UIXApplication
     {

@@ -1,9 +1,9 @@
-using GameTimeNext.Core.Framework.UI;
+using Arcora.Core.Framework.UI;
 using System.ComponentModel;
 using System.Windows.Media.Imaging;
 using UIX.ViewController.Engine.Viewmodel;
 
-namespace GameTimeNext.Core.Application.Profiles.Viewmodel
+namespace Arcora.Core.Application.Profiles.Viewmodel
 {
     public class ProfilesListBoxItem : UIXListItem, INotifyPropertyChanged
     {

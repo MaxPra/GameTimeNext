@@ -3,7 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using UIX.ViewController.Engine.FrameworkElements.UserControls;
 
-namespace GameTimeNext.Core.Application.Dashboard.Views
+namespace Arcora.Core.Application.Dashboard.Views
 {
     /// <summary>
     /// Interaction logic for DashboardView.xaml

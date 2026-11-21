@@ -1,11 +1,11 @@
-using GameTimeNext.Core.Application.Playthroughs.Controller;
-using GameTimeNext.Core.Application.Playthroughs.Selectors;
-using GameTimeNext.Core.Application.Playthroughs.Views;
+using Arcora.Core.Application.Playthroughs.Controller;
+using Arcora.Core.Application.Playthroughs.Selectors;
+using Arcora.Core.Application.Playthroughs.Views;
 using System.Windows.Controls;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.Playthroughs
+namespace Arcora.Core.Application.Playthroughs
 {
     [UIXAppIcon(UIXMdlIcons.Play)]
     public class PlaythroughsApp : UIXApplication, IUIXApplicationStarter

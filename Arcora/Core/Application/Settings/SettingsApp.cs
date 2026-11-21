@@ -1,11 +1,11 @@
-﻿using GameTimeNext.Core.Application.Settings.Controller;
-using GameTimeNext.Core.Application.Settings.Selectors;
-using GameTimeNext.Core.Application.Settings.Views;
+﻿using Arcora.Core.Application.Settings.Controller;
+using Arcora.Core.Application.Settings.Selectors;
+using Arcora.Core.Application.Settings.Views;
 using System.Windows.Controls;
 using UIX.ViewController.Engine.Runnables;
 using UIX.ViewController.Engine.Utils;
 
-namespace GameTimeNext.Core.Application.Settings
+namespace Arcora.Core.Application.Settings
 {
     [UIXAppIcon(UIXMdlIcons.Settings)]
     public class SettingsApp : UIXApplication, IUIXApplicationStarter
