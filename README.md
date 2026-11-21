@@ -12,17 +12,17 @@
 <br>
 
 ![Status](https://img.shields.io/badge/status-stable-brightgreen?style=for-the-badge)
-![Version](https://img.shields.io/badge/version-1.0.0-blue?style=for-the-badge)
+![Version](https://img.shields.io/badge/version-1.0.1-blue?style=for-the-badge)
 ![Platform](https://img.shields.io/badge/platform-Windows-informational?style=for-the-badge)
 ![.NET](https://img.shields.io/badge/.NET-WPF-purple?style=for-the-badge)
 
 <br>
 
-> 🎉 **arcora 1.0.0 is here** — a fresh look, a Big Picture mode for the TV, playtime tracking from your phone and much more. See [what's new](#-whats-new-in-v100).
+> 🎉 **arcora 1.0.1 is here** — a fresh look, a Big Picture mode for the TV, playtime tracking from your phone and much more. See [what's new](#-whats-new-in-v100).
 
 <br>
 
-### ⬇️ [Download Installer (v1.0.0)](https://github.com/MaxPra/GameTimeNext/releases/download/v1.0.0/arcora_v1.0.0_Installer.exe)
+### ⬇️ [Download Installer (v1.0.1)](https://github.com/MaxPra/GameTimeNext/releases/download/v1.0.1/arcora_v1.0.1_Installer.exe)
 
 <br>
 
