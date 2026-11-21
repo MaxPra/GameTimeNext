@@ -12,7 +12,7 @@
 $ErrorActionPreference = 'Stop'
 
 $brandingDir = $PSScriptRoot
-$icoFile     = Join-Path $brandingDir '..\GameTimeNext\UI\Ressources\GTN_APP_ICON.ico'
+$icoFile     = Join-Path $brandingDir '..\Arcora\UI\Ressources\GTN_APP_ICON.ico'
 $logoFile    = Join-Path $brandingDir 'logo_1024.png'
 
 $edge = @(

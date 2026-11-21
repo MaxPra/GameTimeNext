@@ -44,7 +44,7 @@ namespace GameTimeNext.Core.Framework.Config
         public static class Dev
         {
             /// <summary>Name of the solution file (without .slnx) and of the folder of the app project in it.</summary>
-            public static string SolutionName = "GameTimeNext";
+            public static string SolutionName = "Arcora";
 
             [JsonIgnore]
             public static string DevDirectoryPath
