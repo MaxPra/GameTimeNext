@@ -197,14 +197,30 @@ namespace Arcora.Core.Application.General.BackgroundProcesses
                 }
 
                 FnLog.AddInfo(this, $"Started blazorProcess on port {port}.");
-                CallDispatcher!.Trigger("EXEV_RemoteMonitoringStarted", port); // MainWindowController
-
-                CallDispatcher!.Trigger("EXEV_RemoteMonitoringPortChanged", port); // SettingsViewController
             }
             catch (Exception ex)
             {
                 FnLog.AddError(this, "Failed to start blazorProcess.", ex);
                 _blazorProcess = null;
+                return;
+            }
+
+            NotifyWebAppStarted(port);
+        }
+
+        private void NotifyWebAppStarted(int port)
+        {
+            try
+            {
+                CallDispatcher!.Trigger("EXEV_RemoteMonitoringStarted", port); // MainWindowController
+
+                // Only registered while the settings are open
+                if (CallDispatcher.IsRegistered("EXEV_RemoteMonitoringPortChanged"))
+                    CallDispatcher.Trigger("EXEV_RemoteMonitoringPortChanged", port); // SettingsViewController
+            }
+            catch (Exception ex)
+            {
+                FnLog.AddError(this, "Failed to notify the UI about the started web app.", ex);
             }
         }
 
