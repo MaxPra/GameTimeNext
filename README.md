@@ -8,8 +8,6 @@
 
 <br>
 
-<img width="100%" alt="arcora Banner" src="https://github.com/user-attachments/assets/9de07a22-b098-499a-8755-e5c1e5ce13f0" />
-
 <br>
 <br>
 
