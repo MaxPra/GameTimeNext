@@ -511,6 +511,7 @@
                     <Grid
                         x:Name="CaseHost"
                         ui:DiscPrint.Section="{Binding Path=(ui:DiscPrint.Section), RelativeSource={RelativeSource TemplatedParent}}"
+                        ui:GameCase.IsHolo="{Binding Path=(ui:GameCase.IsHolo), RelativeSource={RelativeSource TemplatedParent}}"
                         RenderTransformOrigin="0.5,1"
                         Tag="{Binding Content, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource ImageSourceOnlyConverter}}">
                         <Grid.RenderTransform>
@@ -566,6 +567,13 @@
                                 <Border
                                     Margin="3"
                                     Background="{StaticResource Brush.Case.Gloss}"
+                                    CornerRadius="4" />
+                                <!--  Holographic foil (ui:GameCase.IsHolo), drifts slowly; only runs while this face is shown  -->
+                                <Border
+                                    Margin="3"
+                                    ui:HoloShine.IsEnabled="{Binding Path=(ui:GameCase.IsHolo), ElementName=CaseHost}"
+                                    ui:HoloShine.PatternSize="45"
+                                    ui:HoloShine.RimThickness="1.25"
                                     CornerRadius="4" />
                                 <Border
                                     BorderBrush="{DynamicResource Brush.Card.Border}"
@@ -789,6 +797,18 @@
                                                 <Border
                                                     Margin="3"
                                                     Background="{StaticResource Brush.Case.Gloss}"
+                                                    CornerRadius="4" />
+
+                                                <!--
+                                                    Holographic foil (ui:GameCase.IsHolo), frozen: this surface is cached, an animation in it
+                                                    would render the cache again every frame. Shows the first frame of the motion of ClosedFace.
+                                                -->
+                                                <Border
+                                                    Margin="3"
+                                                    ui:HoloShine.IsAnimated="False"
+                                                    ui:HoloShine.IsEnabled="{Binding Path=(ui:GameCase.IsHolo), ElementName=CaseHost}"
+                                                    ui:HoloShine.PatternSize="45"
+                                                    ui:HoloShine.RimThickness="1.25"
                                                     CornerRadius="4" />
 
                                                 <!--  Lit edge like the cards  -->
@@ -1788,6 +1808,7 @@
                             <ContentControl
                                 Grid.Row="0"
                                 ui:DiscPrint.Section="{Binding CODISEC}"
+                                ui:GameCase.IsHolo="{Binding COISFAV}"
                                 ui:GameCase.IsSealed="{Binding COISSEA}"
                                 ui:GameCase.IsSelected="{Binding IsSelected, RelativeSource={RelativeSource TemplatedParent}}"
                                 Content="{Binding COCOVIM}"

@@ -112,6 +112,7 @@ namespace Arcora.Core.Application.Profiles.Selectors
                         CODISEC = TFPROFI.GetDiscSection(prof),
                         COISPLA = FnSystem.IsExeFoundInPath(prof.EXGF),
                         COPLFPA = File.Exists(platformSymbolFullPath) ? FnImage.LoadImageWithoutLock(platformSymbolFullPath, 50, 50) : null,
+                        COISFAV = prof.FAVO,
                         COISSEA = TFPROFI.IsSealed(prof),
                         COISNEW = TFPROFI.IsMarkedNew(prof)
                     };

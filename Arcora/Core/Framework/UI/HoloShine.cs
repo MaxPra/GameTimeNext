@@ -16,6 +16,10 @@ namespace Arcora.Core.Framework.UI
     ///   strongest around the pointer (radial opacity mask),
     /// - glare: soft white light spot and a brighter rim near the pointer, only while hovered.
     /// The Border receives the mouse (transparent background), so it must not cover interactive elements.
+    ///
+    /// The idle motion only runs while the Border is visible (30 frames per second). IsAnimated="False" shows the foil
+    /// frozen in the first frame of that motion, for surfaces inside a BitmapCache (e.g. the 3D cover of a game case),
+    /// which would be rendered again every frame otherwise.
     /// </summary>
     public static class HoloShine
     {
@@ -47,6 +51,9 @@ namespace Arcora.Core.Framework.UI
 
         /// <summary>Resting position of the foil highlight without mouse (upper left, like light from above).</summary>
         private static readonly Point IdlePosition = new(0.3, 0.2);
+
+        /// <summary>The idle motion is slow, so fewer frames are enough (several surfaces can run it at once, e.g. favorite tiles).</summary>
+        private const int IdleFrameRate = 30;
 
         private static readonly Duration FadeInDuration = new(TimeSpan.FromMilliseconds(200));
         private static readonly Duration FadeOutDuration = new(TimeSpan.FromMilliseconds(450));
@@ -92,6 +99,26 @@ namespace Arcora.Core.Framework.UI
         public static void SetPatternSize(DependencyObject obj, double value)
             => obj.SetValue(PatternSizeProperty, value);
 
+        /// <summary>False: no idle motion, the foil stays at the start of it. Can be switched any time (e.g. bound to a selection).</summary>
+        public static readonly DependencyProperty IsAnimatedProperty =
+            DependencyProperty.RegisterAttached(
+                "IsAnimated",
+                typeof(bool),
+                typeof(HoloShine),
+                new PropertyMetadata(true, OnIsAnimatedChanged));
+
+        private static void OnIsAnimatedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is Border host && host.GetValue(LayersProperty) is HoloLayers layers)
+                UpdateIdleAnimations(host, layers);
+        }
+
+        public static bool GetIsAnimated(DependencyObject obj)
+            => (bool)obj.GetValue(IsAnimatedProperty);
+
+        public static void SetIsAnimated(DependencyObject obj, bool value)
+            => obj.SetValue(IsAnimatedProperty, value);
+
         private static readonly DependencyProperty LayersProperty =
             DependencyProperty.RegisterAttached("Layers", typeof(HoloLayers), typeof(HoloShine), new PropertyMetadata(null));
 
@@ -127,6 +154,7 @@ namespace Arcora.Core.Framework.UI
                 host.Child = grid;
 
                 UpdatePosition(layers, IdlePosition);
+                SetIdleStart(layers);
 
                 host.MouseEnter += OnMouseEnter;
                 host.MouseMove += OnMouseMove;
@@ -134,9 +162,9 @@ namespace Arcora.Core.Framework.UI
                 host.SizeChanged += OnSizeChanged;
                 host.Loaded += OnLoaded;
                 host.Unloaded += OnUnloaded;
+                host.IsVisibleChanged += OnIsVisibleChanged;
 
-                if (host.IsLoaded)
-                    StartIdleAnimations(layers);
+                UpdateIdleAnimations(host, layers);
             }
             else
             {
@@ -146,6 +174,7 @@ namespace Arcora.Core.Framework.UI
                 host.SizeChanged -= OnSizeChanged;
                 host.Loaded -= OnLoaded;
                 host.Unloaded -= OnUnloaded;
+                host.IsVisibleChanged -= OnIsVisibleChanged;
 
                 if (host.GetValue(LayersProperty) is HoloLayers layers)
                     StopIdleAnimations(layers);
@@ -308,7 +337,7 @@ namespace Arcora.Core.Framework.UI
         private static void OnLoaded(object sender, RoutedEventArgs e)
         {
             if (sender is Border host && host.GetValue(LayersProperty) is HoloLayers layers)
-                StartIdleAnimations(layers);
+                UpdateIdleAnimations(host, layers);
         }
 
         private static void OnUnloaded(object sender, RoutedEventArgs e)
@@ -317,18 +346,48 @@ namespace Arcora.Core.Framework.UI
                 StopIdleAnimations(layers);
         }
 
+        // E.g. a game case opening (its flat face is hidden) or another tab selected
+        private static void OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (sender is Border host && host.GetValue(LayersProperty) is HoloLayers layers)
+                UpdateIdleAnimations(host, layers);
+        }
+
+        /// <summary>Runs the idle motion while the host is loaded, visible and animated, stops it otherwise.</summary>
+        private static void UpdateIdleAnimations(Border host, HoloLayers layers)
+        {
+            if (host.IsLoaded && host.IsVisible && GetIsAnimated(host))
+                StartIdleAnimations(layers);
+            else
+                StopIdleAnimations(layers);
+        }
+
         /// <summary>
         /// Constant slight motion: the bands drift by exactly one rainbow cycle and the waves travel by exactly
-        /// one wave period per loop, so both loops are seamless.
+        /// one wave period per loop, so both loops are seamless. Starts at the frame a frozen foil shows (SetIdleStart).
         /// </summary>
         private static void StartIdleAnimations(HoloLayers layers)
         {
-            layers.BandDrift.BeginAnimation(TranslateTransform.XProperty, new DoubleAnimation(0, BandVector.X, BandDriftDuration) { RepeatBehavior = RepeatBehavior.Forever });
-            layers.BandDrift.BeginAnimation(TranslateTransform.YProperty, new DoubleAnimation(0, BandVector.Y, BandDriftDuration) { RepeatBehavior = RepeatBehavior.Forever });
+            layers.BandDrift.BeginAnimation(TranslateTransform.XProperty, CreateIdleAnimation(BandVector.X, BandDriftDuration));
+            layers.BandDrift.BeginAnimation(TranslateTransform.YProperty, CreateIdleAnimation(BandVector.Y, BandDriftDuration));
 
-            layers.WaveTravel.BeginAnimation(TranslateTransform.XProperty, new DoubleAnimation(0, layers.WavePeriod, WaveTravelDuration) { RepeatBehavior = RepeatBehavior.Forever });
+            layers.WaveTravel.BeginAnimation(TranslateTransform.XProperty, CreateIdleAnimation(layers.WavePeriod, WaveTravelDuration));
 
             StartIdleWander(layers);
+        }
+
+        private static DoubleAnimation CreateIdleAnimation(double to, Duration duration)
+        {
+            var animation = new DoubleAnimation(0, to, duration) { RepeatBehavior = RepeatBehavior.Forever };
+            Timeline.SetDesiredFrameRate(animation, IdleFrameRate);
+            return animation;
+        }
+
+        /// <summary>The foil highlight at the start of the idle wander, so a frozen foil matches the first frame of the motion.</summary>
+        private static void SetIdleStart(HoloLayers layers)
+        {
+            layers.FoilMask.Center = IdlePath[0];
+            layers.FoilMask.GradientOrigin = IdlePath[0];
         }
 
         /// <summary>Lets the foil highlight wander slowly over the surface while the mouse is not over it.</summary>
@@ -339,6 +398,7 @@ namespace Arcora.Core.Framework.UI
                 AutoReverse = true,
                 RepeatBehavior = RepeatBehavior.Forever
             };
+            Timeline.SetDesiredFrameRate(animation, IdleFrameRate);
 
             for (int i = 0; i < IdlePath.Length; i++)
             {
@@ -413,7 +473,7 @@ namespace Arcora.Core.Framework.UI
             Fade(layers.Foil, FoilOpacityIdle, FadeOutDuration);
             Fade(layers.Glare, 0, FadeOutDuration);
 
-            if (host.IsLoaded)
+            if (host.IsLoaded && host.IsVisible && GetIsAnimated(host))
                 StartIdleWander(layers);
         }
 

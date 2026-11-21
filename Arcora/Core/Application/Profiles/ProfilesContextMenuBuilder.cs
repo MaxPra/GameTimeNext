@@ -47,6 +47,15 @@ namespace Arcora.Core.Application.Profiles
             contextBuilder.AddSeparator(contextMenuSeparatorStyle);
         }
 
+        public static void BuildContextFavorite(ContextMenuBuilder contextBuilder, T1PROFI t1profi)
+        {
+            if (t1profi.FAVO)
+                contextBuilder.AddItem("ctxtUnfavoriteProfile", "Unfavorite profile", icon: UIXContextMenuFactory.CreateMdlIcon("\uE8D9"), itemStyle: contextMenuItemStyle);
+
+            else
+                contextBuilder.AddItem("ctxtFavoriteProfile", "Favorite profile", icon: UIXContextMenuFactory.CreateMdlIcon("\uE734"), itemStyle: contextMenuItemStyle);
+        }
+
         public static void BuildContextArchive(ContextMenuBuilder contextBuilder, T1PROFI t1profi)
         {
             // Add archive
@@ -55,6 +64,12 @@ namespace Arcora.Core.Application.Profiles
 
             else
                 contextBuilder.AddItem("ctxtArchiveProfile", "Archive profile", icon: UIXContextMenuFactory.CreateMdlIcon("\uE8B7"), itemStyle: contextMenuItemStyle);
+        }
+
+        public static void BuildContextDelete(ContextMenuBuilder contextBuilder, T1PROFI t1profi)
+        {
+            contextBuilder.AddSeparator(contextMenuSeparatorStyle);
+            contextBuilder.AddItem("ctxtDelete", "Delete", icon: UIXContextMenuFactory.CreateMdlIcon(""), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
         }
 
         public static void BuildContextLauncher(ContextMenuBuilder contextBuilder, T1PROFI t1profi)

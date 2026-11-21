@@ -8,5 +8,6 @@ namespace Arcora.Shared.Profiles
         public required string GANA { get; set; }
         public required string PPFN { get; set; }
         public required string AccentColorHex { get; set; }
+        public required bool FAVO { get; set; }
     }
 }

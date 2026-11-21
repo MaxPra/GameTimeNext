@@ -5,12 +5,13 @@ namespace Arcora.Core.Application.BigPicture.ViewModels
     public enum BigPicturePivotKind
     {
         Home,
+        Favorites,
         Library,
         Search
     }
 
     /// <summary>
-    /// Heading of the pivot bar (home, library, search), switched with LB / RB like on the Xbox 360.
+    /// Heading of the pivot bar (home, favorites, library, search), switched with LB / RB like on the Xbox 360.
     /// </summary>
     public class BigPicturePivot : UIXViewModelBase
     {

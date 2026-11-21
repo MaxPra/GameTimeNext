@@ -18,7 +18,8 @@ namespace Arcora.Core.Application.DataManagers
                 PFID = obj.PFID,
                 GANA = obj.GANA,
                 PPFN = Path.Combine(AppConfig.Storage.ProfileCoversDirectoryPath, obj.PPFN),
-                AccentColorHex = GetAccentColorHex(obj)
+                AccentColorHex = GetAccentColorHex(obj),
+                FAVO = obj.FAVO
             };
         }
 
@@ -38,6 +39,7 @@ namespace Arcora.Core.Application.DataManagers
                 GANA = obj.GANA,
                 PPFN = Path.Combine(AppConfig.Storage.ProfileCoversDirectoryPath, obj.PPFN),
                 AccentColorHex = GetAccentColorHex(obj),
+                FAVO = obj.FAVO,
                 TotalMinutes = TFPROFI.GetTotalGameTimeInMinutes(obj.PFID),
                 TodayMinutes = TFPROFI.GetTodaysGameTimeInMinutes(obj.PFID),
                 LastPlayed = obj.LAPL == DateTime.MinValue ? null : obj.LAPL,

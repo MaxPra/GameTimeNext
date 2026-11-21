@@ -59,6 +59,7 @@ namespace Arcora.Core.Application.DataManagers
             obj.ETTY = objFrom.ETTY;
             obj.ETML = objFrom.ETML;
             obj.ARCH = objFrom.ARCH;
+            obj.FAVO = objFrom.FAVO;
             obj.PLAFO = objFrom.PLAFO;
             obj.DPRX = objFrom.DPRX;
             obj.DPRY = objFrom.DPRY;
@@ -141,6 +142,7 @@ namespace Arcora.Core.Application.DataManagers
             query.AddField(K1PROFI.Name, K1PROFI.Fields.ETTY);
             query.AddField(K1PROFI.Name, K1PROFI.Fields.ETML);
             query.AddField(K1PROFI.Name, K1PROFI.Fields.ARCH);
+            query.AddField(K1PROFI.Name, K1PROFI.Fields.FAVO);
             query.AddField(K1PROFI.Name, K1PROFI.Fields.PLAFO);
             query.AddField(K1PROFI.Name, K1PROFI.Fields.DPRX);
             query.AddField(K1PROFI.Name, K1PROFI.Fields.DPRY);
@@ -186,6 +188,7 @@ namespace Arcora.Core.Application.DataManagers
             query.AddField(K1PROFI.Name, K1PROFI.Fields.ETTY);
             query.AddField(K1PROFI.Name, K1PROFI.Fields.ETML);
             query.AddField(K1PROFI.Name, K1PROFI.Fields.ARCH);
+            query.AddField(K1PROFI.Name, K1PROFI.Fields.FAVO);
             query.AddField(K1PROFI.Name, K1PROFI.Fields.PLAFO);
             query.AddField(K1PROFI.Name, K1PROFI.Fields.DPRX);
             query.AddField(K1PROFI.Name, K1PROFI.Fields.DPRY);
@@ -233,6 +236,7 @@ namespace Arcora.Core.Application.DataManagers
             obj.ETTY = UIXQuery.GetString(reader, K1PROFI.Name, K1PROFI.Fields.ETTY, def: "");
             obj.ETML = UIXQuery.GetBool(reader, K1PROFI.Name, K1PROFI.Fields.ETML);
             obj.ARCH = UIXQuery.GetBool(reader, K1PROFI.Name, K1PROFI.Fields.ARCH);
+            obj.FAVO = UIXQuery.GetBool(reader, K1PROFI.Name, K1PROFI.Fields.FAVO);
             obj.PLAFO = UIXQuery.GetString(reader, K1PROFI.Name, K1PROFI.Fields.PLAFO, def: "");
             obj.DPRX = UIXQuery.GetDouble(reader, K1PROFI.Name, K1PROFI.Fields.DPRX);
             obj.DPRY = UIXQuery.GetDouble(reader, K1PROFI.Name, K1PROFI.Fields.DPRY);
@@ -254,7 +258,7 @@ namespace Arcora.Core.Application.DataManagers
             obj.CRUS = FnOpSys.GetCurrentUserName();
             obj.CHUS = FnOpSys.GetCurrentUserName();
             using SQLiteCommand cmd = _connection.CreateCommand();
-            cmd.CommandText = "INSERT INTO T1PROFI (GANA, FIPL, LAPL, PPFN, EXGF, LNTY, LNID, SAID, PRSE, EXEC, ACCO, ACIN, ACAC, CUPT, ETMA, ETME, ETCO, ETTY, ETML, ARCH, PLAFO, DPRX, DPRY, DPRS, CRAT, CRUS, CHAT, CHUS) VALUES (@GANA, @FIPL, @LAPL, @PPFN, @EXGF, @LNTY, @LNID, @SAID, @PRSE, @EXEC, @ACCO, @ACIN, @ACAC, @CUPT, @ETMA, @ETME, @ETCO, @ETTY, @ETML, @ARCH, @PLAFO, @DPRX, @DPRY, @DPRS, @CRAT, @CRUS, @CHAT, @CHUS);";
+            cmd.CommandText = "INSERT INTO T1PROFI (GANA, FIPL, LAPL, PPFN, EXGF, LNTY, LNID, SAID, PRSE, EXEC, ACCO, ACIN, ACAC, CUPT, ETMA, ETME, ETCO, ETTY, ETML, ARCH, FAVO, PLAFO, DPRX, DPRY, DPRS, CRAT, CRUS, CHAT, CHUS) VALUES (@GANA, @FIPL, @LAPL, @PPFN, @EXGF, @LNTY, @LNID, @SAID, @PRSE, @EXEC, @ACCO, @ACIN, @ACAC, @CUPT, @ETMA, @ETME, @ETCO, @ETTY, @ETML, @ARCH, @FAVO, @PLAFO, @DPRX, @DPRY, @DPRS, @CRAT, @CRUS, @CHAT, @CHUS);";
             cmd.Parameters.AddWithValue("@GANA", ToDbValue(obj.GANA));
             cmd.Parameters.AddWithValue("@FIPL", ToDbValue(obj.FIPL));
             cmd.Parameters.AddWithValue("@LAPL", ToDbValue(obj.LAPL));
@@ -275,6 +279,7 @@ namespace Arcora.Core.Application.DataManagers
             cmd.Parameters.AddWithValue("@ETTY", ToDbValue(obj.ETTY));
             cmd.Parameters.AddWithValue("@ETML", ToDbValue(obj.ETML));
             cmd.Parameters.AddWithValue("@ARCH", ToDbValue(obj.ARCH));
+            cmd.Parameters.AddWithValue("@FAVO", ToDbValue(obj.FAVO));
             cmd.Parameters.AddWithValue("@PLAFO", ToDbValue(obj.PLAFO));
             cmd.Parameters.AddWithValue("@DPRX", ToDbValue(obj.DPRX));
             cmd.Parameters.AddWithValue("@DPRY", ToDbValue(obj.DPRY));
@@ -295,7 +300,7 @@ namespace Arcora.Core.Application.DataManagers
             obj.CHAT = DateTime.Now;
             obj.CHUS = FnOpSys.GetCurrentUserName();
             using SQLiteCommand cmd = _connection.CreateCommand();
-            cmd.CommandText = "UPDATE T1PROFI SET GANA = @GANA, FIPL = @FIPL, LAPL = @LAPL, PPFN = @PPFN, EXGF = @EXGF, LNTY = @LNTY, LNID = @LNID, SAID = @SAID, PRSE = @PRSE, EXEC = @EXEC, ACCO = @ACCO, ACIN = @ACIN, ACAC = @ACAC, CUPT = @CUPT, ETMA = @ETMA, ETME = @ETME, ETCO = @ETCO, ETTY = @ETTY, ETML = @ETML, ARCH = @ARCH, PLAFO = @PLAFO, DPRX = @DPRX, DPRY = @DPRY, DPRS = @DPRS, CRAT = @CRAT, CRUS = @CRUS, CHAT = @CHAT, CHUS = @CHUS WHERE PFID = @PFID;";
+            cmd.CommandText = "UPDATE T1PROFI SET GANA = @GANA, FIPL = @FIPL, LAPL = @LAPL, PPFN = @PPFN, EXGF = @EXGF, LNTY = @LNTY, LNID = @LNID, SAID = @SAID, PRSE = @PRSE, EXEC = @EXEC, ACCO = @ACCO, ACIN = @ACIN, ACAC = @ACAC, CUPT = @CUPT, ETMA = @ETMA, ETME = @ETME, ETCO = @ETCO, ETTY = @ETTY, ETML = @ETML, ARCH = @ARCH, FAVO = @FAVO, PLAFO = @PLAFO, DPRX = @DPRX, DPRY = @DPRY, DPRS = @DPRS, CRAT = @CRAT, CRUS = @CRUS, CHAT = @CHAT, CHUS = @CHUS WHERE PFID = @PFID;";
             cmd.Parameters.AddWithValue("@PFID", ToDbValue(obj.PFID));
             cmd.Parameters.AddWithValue("@GANA", ToDbValue(obj.GANA));
             cmd.Parameters.AddWithValue("@FIPL", ToDbValue(obj.FIPL));
@@ -317,6 +322,7 @@ namespace Arcora.Core.Application.DataManagers
             cmd.Parameters.AddWithValue("@ETTY", ToDbValue(obj.ETTY));
             cmd.Parameters.AddWithValue("@ETML", ToDbValue(obj.ETML));
             cmd.Parameters.AddWithValue("@ARCH", ToDbValue(obj.ARCH));
+            cmd.Parameters.AddWithValue("@FAVO", ToDbValue(obj.FAVO));
             cmd.Parameters.AddWithValue("@PLAFO", ToDbValue(obj.PLAFO));
             cmd.Parameters.AddWithValue("@DPRX", ToDbValue(obj.DPRX));
             cmd.Parameters.AddWithValue("@DPRY", ToDbValue(obj.DPRY));

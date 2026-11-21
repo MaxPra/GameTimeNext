@@ -84,6 +84,7 @@ namespace Arcora.Core.Application.BigPicture.Controller
 
                 FnControls.SetVisible(GetView().pnlFilterChip, _isFilterActive);
 
+                UpdateFavoritesPivot();
                 RebuildRow(animate: false);
             }
             catch (Exception ex)
@@ -136,6 +137,50 @@ namespace Arcora.Core.Application.BigPicture.Controller
             _games = new List<BigPictureGameTile>();
             _gameIndex = 0;
 
+            UpdateFavoritesPivot();
+            UpdatePivotHeaders();
+        }
+
+        /// <summary>
+        /// Shows the pivot "Favorites" (in front of the library) only while the filtered library has favorites. When it
+        /// goes away while shown (the last favorite removed, a filter change), the library is shown instead.
+        /// </summary>
+        private void UpdateFavoritesPivot()
+        {
+            bool hasFavorites = _library.Any(e => e.Profile.FAVO);
+            bool isShown = _pivots.Any(p => p.Kind == BigPicturePivotKind.Favorites);
+
+            if (hasFavorites == isShown)
+                return;
+
+            List<BigPicturePivot> pivots = new List<BigPicturePivot>(_pivots);
+
+            if (hasFavorites)
+            {
+                int libraryIndex = pivots.FindIndex(p => p.Kind == BigPicturePivotKind.Library);
+                pivots.Insert(Math.Max(libraryIndex, 0), new BigPicturePivot(BigPicturePivotKind.Favorites, "Favorites"));
+            }
+            else
+            {
+                pivots.RemoveAll(p => p.Kind == BigPicturePivotKind.Favorites);
+
+                // The library keeps the game that was selected (e.g. the one just removed from the favorites)
+                if (_pivot == BigPicturePivotKind.Favorites)
+                {
+                    _pivot = BigPicturePivotKind.Library;
+
+                    if (_selectedPfids.TryGetValue(BigPicturePivotKind.Favorites, out long pfid))
+                        _selectedPfids[BigPicturePivotKind.Library] = pfid;
+                }
+
+                if (_lastBrowsePivot == BigPicturePivotKind.Favorites)
+                    _lastBrowsePivot = BigPicturePivotKind.Library;
+            }
+
+            // A plain list: a new instance, so the pivot bar shows the change
+            _pivots = pivots;
+            GetView().itcPivots.ItemsSource = _pivots;
+
             UpdatePivotHeaders();
         }
 
@@ -176,8 +221,8 @@ namespace Arcora.Core.Application.BigPicture.Controller
 
         #region Row
         /// <summary>
-        /// Builds the covers of the current pivot: home the played games by last played, library all games by name,
-        /// search the matches. Keeps the selected game of the pivot.
+        /// Builds the covers of the current pivot: home the played games by last played, favorites and library their
+        /// games by name, search the matches. Keeps the selected game of the pivot.
         /// </summary>
         private void RebuildRow(bool animate)
         {
@@ -186,6 +231,11 @@ namespace Arcora.Core.Application.BigPicture.Controller
 
             switch (_pivot)
             {
+                case BigPicturePivotKind.Favorites:
+                    entries = _library.Where(e => e.Profile.FAVO).OrderBy(e => e.Profile.GANA, StringComparer.CurrentCultureIgnoreCase).ToList();
+                    title = string.Format(CultureInfo.CurrentCulture, "Favorites  ·  {0}", entries.Count);
+                    break;
+
                 case BigPicturePivotKind.Library:
                     entries = _library.OrderBy(e => e.Profile.GANA, StringComparer.CurrentCultureIgnoreCase).ToList();
                     title = string.Format(CultureInfo.CurrentCulture, "All games  ·  {0}", entries.Count);

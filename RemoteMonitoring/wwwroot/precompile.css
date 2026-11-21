@@ -23,6 +23,11 @@
     --color-arc-success: #3fb67a;
     --color-accent: #3498e5;
 
+    /* Frame of a favorite profile's cover (arc-cover-favorite) */
+    --color-arc-gold-light: #fff1b8;
+    --color-arc-gold: #e9b949;
+    --color-arc-gold-dark: #a87418;
+
     /* Card.CornerRadius / Control.CornerRadius */
     --radius-arc: 6px;
 
@@ -125,5 +130,24 @@
     .arc-cover {
         /* Shadow as utility: it is combined with the ring, a plain box-shadow would replace the ring */
         @apply relative aspect-2/3 overflow-hidden rounded-arc bg-arc-surface ring-1 ring-white/10 shadow-[0_6px_18px_rgb(0_0_0/0.45)];
+    }
+
+    /*
+        Favorite profile: golden frame over the cover's edge. A gradient (light catching the upper left and lower right
+        corner like the glass rims) can't be a border or ring, so it is a masked layer above the image.
+    */
+    .arc-cover-favorite::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        padding: 2px;
+        border-radius: inherit;
+        pointer-events: none;
+        background: linear-gradient(135deg, var(--color-arc-gold-light), var(--color-arc-gold) 30%, var(--color-arc-gold-dark) 55%, var(--color-arc-gold) 80%, var(--color-arc-gold-light));
+        -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+        -webkit-mask-composite: xor;
+        mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+        mask-composite: exclude;
     }
 }

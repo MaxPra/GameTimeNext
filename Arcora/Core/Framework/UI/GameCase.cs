@@ -102,6 +102,20 @@ namespace Arcora.Core.Framework.UI
         public static void SetIsSealed(DependencyObject obj, bool value)
             => obj.SetValue(IsSealedProperty, value);
 
+        /// <summary>Holographic foil on the front cover (HoloShine), e.g. for favorite profiles. Moves only on the flat face of the closed case.</summary>
+        public static readonly DependencyProperty IsHoloProperty =
+            DependencyProperty.RegisterAttached(
+                "IsHolo",
+                typeof(bool),
+                typeof(GameCase),
+                new PropertyMetadata(false));
+
+        public static bool GetIsHolo(DependencyObject obj)
+            => (bool)obj.GetValue(IsHoloProperty);
+
+        public static void SetIsHolo(DependencyObject obj, bool value)
+            => obj.SetValue(IsHoloProperty, value);
+
         public static readonly DependencyProperty IsWrappedProperty =
             DependencyProperty.RegisterAttached(
                 "IsWrapped",

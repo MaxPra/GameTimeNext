@@ -72,27 +72,30 @@ namespace Arcora.Core.Application.TableObjects
         public bool ARCH { get; set; } = false;
 
         [UIXSignatureField(21)]
-        public string PLAFO { get; set; } = "";
+        public bool FAVO { get; set; } = false;
 
         [UIXSignatureField(22)]
-        public double DPRX { get; set; } = 0;
+        public string PLAFO { get; set; } = "";
 
         [UIXSignatureField(23)]
-        public double DPRY { get; set; } = 0;
+        public double DPRX { get; set; } = 0;
 
         [UIXSignatureField(24)]
-        public double DPRS { get; set; } = 0;
+        public double DPRY { get; set; } = 0;
 
         [UIXSignatureField(25)]
-        public DateTime CRAT { get; set; } = DateTime.MinValue;
+        public double DPRS { get; set; } = 0;
 
         [UIXSignatureField(26)]
-        public string CRUS { get; set; } = "";
+        public DateTime CRAT { get; set; } = DateTime.MinValue;
 
         [UIXSignatureField(27)]
-        public DateTime CHAT { get; set; } = DateTime.MinValue;
+        public string CRUS { get; set; } = "";
 
         [UIXSignatureField(28)]
+        public DateTime CHAT { get; set; } = DateTime.MinValue;
+
+        [UIXSignatureField(29)]
         public string CHUS { get; set; } = "";
 
         public override void Save()

@@ -23,7 +23,6 @@
     --font-weight-bold: 700;
     --tracking-wide: 0.025em;
     --leading-tight: 1.25;
-    --ease-out: cubic-bezier(0, 0, 0.2, 1);
     --animate-spin: spin 1s linear infinite;
     --blur-md: 12px;
     --default-transition-duration: 150ms;
@@ -38,6 +37,9 @@
     --color-arc-danger: #e5484d;
     --color-arc-success: #3fb67a;
     --color-accent: #3498e5;
+    --color-arc-gold-light: #fff1b8;
+    --color-arc-gold: #e9b949;
+    --color-arc-gold-dark: #a87418;
     --radius-arc: 6px;
     --animate-live: live 1.8s ease-out infinite;
     --animate-sheet-in: sheet-in 180ms ease-out;
@@ -940,6 +942,20 @@
     @supports (color: color-mix(in lab, red, red)) {
       --tw-ring-color: color-mix(in oklab, var(--color-white) 10%, transparent);
     }
+  }
+  .arc-cover-favorite::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    padding: 2px;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(135deg, var(--color-arc-gold-light), var(--color-arc-gold) 30%, var(--color-arc-gold-dark) 55%, var(--color-arc-gold) 80%, var(--color-arc-gold-light));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite: exclude;
   }
 }
 @property --tw-scale-x {

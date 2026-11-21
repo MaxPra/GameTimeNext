@@ -24,6 +24,9 @@ namespace Arcora.Core.Application.BigPicture.ViewModels
 
         public string Name => Profile.GANA;
 
+        /// <summary>Favorite profile: holographic foil on the cover. The row is built again when it changes.</summary>
+        public bool IsFavorite => Profile.FAVO;
+
         public bool IsSelected
         {
             get => _isSelected;

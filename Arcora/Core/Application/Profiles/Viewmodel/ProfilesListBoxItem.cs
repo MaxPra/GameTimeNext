@@ -16,6 +16,9 @@ namespace Arcora.Core.Application.Profiles.Viewmodel
 
         public BitmapImage? COPLFPA { get; set; }
 
+        // Favorite profile (T1PROFI.FAVO): holographic foil on the case
+        public bool COISFAV { get; set; }
+
         // Calculated Playtime
         public string COCPLTI { get; set; }
 

@@ -80,26 +80,28 @@ namespace Arcora.Core.Application.Profiles.Selectors
 
             // Always Edit and Delete in principle
             contextBuilder.AddItem("ctxtEdit", "Edit", icon: UIXContextMenuFactory.CreateMdlIcon(""), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
-            contextBuilder.AddItem("ctxtDelete", "Delete", icon: UIXContextMenuFactory.CreateMdlIcon(""), itemStyle: ProfilesContextMenuBuilder.contextMenuItemStyle);
 
             // A sealed game offers nothing else until it is unwrapped
-            if (isSealed)
+            if (!isSealed)
             {
-                lbi.ContextMenu = contextBuilder.Build();
-                return;
+                // Favorite
+                ProfilesContextMenuBuilder.BuildContextFavorite(contextBuilder, t1profi);
+
+                // Game Folder
+                ProfilesContextMenuBuilder.BuildContextShowGameFolder(contextBuilder, t1profi);
+
+                // Playthrough
+                ProfilesContextMenuBuilder.BuildContextPlayhtrougths(contextBuilder, t1profi);
+
+                // Launcher
+                ProfilesContextMenuBuilder.BuildContextLauncher(contextBuilder, t1profi);
+
+                // Archive
+                ProfilesContextMenuBuilder.BuildContextArchive(contextBuilder, t1profi);
             }
 
-            // Game Folder
-            ProfilesContextMenuBuilder.BuildContextShowGameFolder(contextBuilder, t1profi);
-
-            // Playthrough
-            ProfilesContextMenuBuilder.BuildContextPlayhtrougths(contextBuilder, t1profi);
-
-            // Launcher
-            ProfilesContextMenuBuilder.BuildContextLauncher(contextBuilder, t1profi);
-
-            // Archive
-            ProfilesContextMenuBuilder.BuildContextArchive(contextBuilder, t1profi);
+            // Delete
+            ProfilesContextMenuBuilder.BuildContextDelete(contextBuilder, t1profi);
 
             lbi.ContextMenu = contextBuilder.HasItems() ? contextBuilder.Build() : null;
         }
@@ -239,6 +241,18 @@ namespace Arcora.Core.Application.Profiles.Selectors
                 await RebuildListAsync(0);
         }
 
+        protected async Task EV_ctxtFavoriteProfile()
+        {
+            if (SetFavorite(GetSelectedProfile(), true))
+                await RebuildListAsync(0);
+        }
+
+        protected async Task EV_ctxtUnfavoriteProfile()
+        {
+            if (SetFavorite(GetSelectedProfile(), false))
+                await RebuildListAsync(0);
+        }
+
         // Read again under the record lock, so changes made elsewhere since the list was loaded aren't overwritten
         private bool SetArchived(T1PROFI t1profi, bool archived)
         {
@@ -248,6 +262,18 @@ namespace Arcora.Core.Application.Profiles.Selectors
                 T1PROFI current = txprofi.Read(t1profi.PFID) ?? t1profi;
 
                 current.ARCH = archived;
+                txprofi.Save(current);
+            }, t1profi);
+        }
+
+        private bool SetFavorite(T1PROFI t1profi, bool favorite)
+        {
+            return FnRecordLock.Run(GetApp(), () =>
+            {
+                TXPROFI txprofi = GetApp().GetDataManager<TXPROFI>();
+                T1PROFI current = txprofi.Read(t1profi.PFID) ?? t1profi;
+
+                current.FAVO = favorite;
                 txprofi.Save(current);
             }, t1profi);
         }

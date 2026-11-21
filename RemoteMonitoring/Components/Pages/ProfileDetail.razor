@@ -43,7 +43,7 @@
         </div>
 
         <section class="flex items-end gap-4">
-            <div class="arc-cover w-28 flex-none">
+            <div class="arc-cover w-28 flex-none @(_profile.FAVO ? "arc-cover-favorite" : "")">
                 <img class="absolute inset-0 size-full object-cover" src="@($"cover/{_profile.PFID}")" alt="" draggable="false" />
             </div>
             <div class="flex min-w-0 flex-col gap-1.5">

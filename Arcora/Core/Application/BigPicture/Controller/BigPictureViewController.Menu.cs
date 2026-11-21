@@ -38,6 +38,7 @@ namespace Arcora.Core.Application.BigPicture.Controller
         private const string OptionGameMonitoring = "game.monitoring";
         private const string OptionGameLauncher = "game.launcher";
         private const string OptionGamePause = "game.pause";
+        private const string OptionGameFavorite = "game.favorite";
 
         // Message box option keys: "mbox." + CFMBOXResult
         private const string MessageBoxOptionPrefix = "mbox.";
@@ -112,6 +113,11 @@ namespace Arcora.Core.Application.BigPicture.Controller
             if (FnLauncher.GetLauncher(t1profi) is { SupportsOpenInLauncher: true } && FnLauncher.IsLinked(t1profi))
                 options.Add(new BigPictureMenuOption(OptionGameLauncher, "Show in " + FnLauncher.GetLauncherName(t1profi.LNTY), "\uE8A7"));
 
+            // Same icons as the context menu of the profiles
+            options.Add(t1profi.FAVO
+                ? new BigPictureMenuOption(OptionGameFavorite, "Remove from favorites", "\uE8D9")
+                : new BigPictureMenuOption(OptionGameFavorite, "Add to favorites", "\uE734"));
+
             // Setting of the profile (also in its launch settings); not offered while pausing is off in the settings
             if (FnLauncher.IsPauseInBigPictureAllowed())
             {
@@ -162,6 +168,36 @@ namespace Arcora.Core.Application.BigPicture.Controller
             }
 
             OpenGameMenu(t1profi, OptionGamePause);
+        }
+
+        /// <summary>
+        /// Adds the game to the favorites or removes it, under the record lock like the context menu of the profiles
+        /// (a locked profile, e.g. open for editing or monitored, is told by the message of FnRecordLock). The covers and
+        /// the pivot "Favorites" follow right away, without reading the library again.
+        /// </summary>
+        private void ToggleFavorite(T1PROFI t1profi)
+        {
+            bool favorite = !t1profi.FAVO;
+
+            bool saved = FnRecordLock.Run(GetApp(), () =>
+            {
+                TXPROFI txprofi = GetApp().GetDataManager<TXPROFI>();
+                T1PROFI current = txprofi.Read(t1profi.PFID) ?? t1profi;
+
+                current.FAVO = favorite;
+                txprofi.Save(current);
+            }, t1profi);
+
+            if (!saved)
+                return;
+
+            // The entry of the library is the one the covers show
+            t1profi.FAVO = favorite;
+
+            FnLog.AddInfo(GetApp(), $"{t1profi.GANA} {(favorite ? "added to" : "removed from")} the favorites in Big Picture");
+
+            UpdateFavoritesPivot();
+            RebuildRow(animate: false);
         }
 
         private void OpenQuitGameQuestion(T1PROFI t1profi)
@@ -297,6 +333,11 @@ namespace Arcora.Core.Application.BigPicture.Controller
                 case OptionGamePause:
                     if (menuGame != null)
                         TogglePauseInBigPicture(menuGame);
+                    break;
+
+                case OptionGameFavorite:
+                    if (menuGame != null)
+                        ToggleFavorite(menuGame);
                     break;
 
                 case OptionRefresh:

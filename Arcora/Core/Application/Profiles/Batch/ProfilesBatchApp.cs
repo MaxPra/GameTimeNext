@@ -44,6 +44,7 @@ namespace Arcora.Core.Application.Profiles.Batch
 
             query.AddWhere(K1PROFI.Name, K1PROFI.Fields.ARCH, QueryCompareType.NOT_EQUALS, true);
 
+            query.AddOrderBy(K1PROFI.Name, K1PROFI.Fields.FAVO, OrderDirection.DESC);
             query.AddOrderBy(K1PROFI.Name, K1PROFI.Fields.LAPL, OrderDirection.DESC);
             query.AddOrderBy(K1PROFI.Name, K1PROFI.Fields.PFID, OrderDirection.ASC);
 

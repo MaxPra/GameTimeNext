@@ -27,6 +27,7 @@
             public const string ETTY = "ETTY";
             public const string ETML = "ETML";
             public const string ARCH = "ARCH";
+            public const string FAVO = "FAVO";
             public const string PLAFO = "PLAFO";
             public const string DPRX = "DPRX";
             public const string DPRY = "DPRY";

@@ -26,7 +26,7 @@ else
     <div class="grid grid-cols-2 gap-x-4 gap-y-5 sm:grid-cols-3 lg:grid-cols-5">
         @foreach (ProfileDto profile in _profiles)
         {
-            <Profile Id="@profile.PFID" Title="@profile.GANA" AccentColor="@profile.AccentColorHex" />
+            <Profile Id="@profile.PFID" Title="@profile.GANA" AccentColor="@profile.AccentColorHex" IsFavorite="@profile.FAVO" />
         }
     </div>
 }

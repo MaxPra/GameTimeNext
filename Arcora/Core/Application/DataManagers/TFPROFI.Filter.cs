@@ -155,6 +155,7 @@ namespace Arcora.Core.Application.DataManagers
                 query.AddWhere(K1PROFI.Name, K1PROFI.Fields.GANA, QueryCompareType.LIKE, nameSearch);
 
             // Order by LAPL
+            query.AddOrderBy(K1PROFI.Name, K1PROFI.Fields.FAVO, OrderDirection.DESC);
             query.AddOrderBy(K1PROFI.Name, K1PROFI.Fields.LAPL, OrderDirection.DESC);
             return query;
         }
