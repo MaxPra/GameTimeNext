@@ -1,4 +1,5 @@
 ﻿using GameTimeNext.Core.Application.Profiles.Batch;
+using GameTimeNext.Core.Framework.Utils;
 using GameTimeNext.Shared;
 using GameTimeNext.Shared.Base;
 using GameTimeNext.Shared.Profiles;
@@ -121,7 +122,7 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
                 using JsonDocument document = JsonDocument.Parse(requestMessage);
                 AvailableRequests request = document.RootElement.GetProperty(nameof(RequestMessageBase.Request)).Deserialize<AvailableRequests>();
 
-                if (!_UNLOGGED_REQUESTS.Contains(request))
+                if (FnSystem.IsDebug() && !_UNLOGGED_REQUESTS.Contains(request))
                     FnLog.AddInfo(this, $"Received: {request.ToString()}");
 
                 switch (request)
