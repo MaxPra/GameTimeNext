@@ -1,4 +1,5 @@
 ﻿using Arcora.Core.Application.Profiles.Batch;
+using Arcora.Core.Framework.Utils;
 using Arcora.Shared;
 using Arcora.Shared.Base;
 using Arcora.Shared.Profiles;
@@ -121,7 +122,7 @@ namespace Arcora.Core.Application.General.BackgroundProcesses
                 using JsonDocument document = JsonDocument.Parse(requestMessage);
                 AvailableRequests request = document.RootElement.GetProperty(nameof(RequestMessageBase.Request)).Deserialize<AvailableRequests>();
 
-                if (!_UNLOGGED_REQUESTS.Contains(request))
+                if (FnSystem.IsDebug() && !_UNLOGGED_REQUESTS.Contains(request))
                     FnLog.AddInfo(this, $"Received: {request.ToString()}");
 
                 switch (request)
