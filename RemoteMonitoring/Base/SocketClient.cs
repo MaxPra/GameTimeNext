@@ -53,9 +53,15 @@ namespace RemoteMonitoring.Base
             return ConnectWithRetryAsync();
         }
 
-        public async Task<string?> SendAsync(RequestMessageBase requestMessage)
+        /// <summary>
+        /// Sends the request and waits for its answer, null if there is none within the timeout (SocketTimeouts.Request
+        /// unless given); a timeout connects again.
+        /// </summary>
+        public async Task<string?> SendAsync(RequestMessageBase requestMessage, TimeSpan? timeout = null)
         {
             if (_cts is null || _client is null || _reader is null || _writer is null) throw new WrongOrderException();
+
+            TimeSpan requestTimeout = timeout ?? SocketTimeouts.Request;
 
             await _sendLock.WaitAsync();
             try
@@ -66,7 +72,7 @@ namespace RemoteMonitoring.Base
                 string requestJson = JsonSerializer.Serialize(requestMessage, requestMessage.GetType());
 
                 Task writeTask = _writer.WriteLineAsync(requestJson);
-                bool writeSuccess = await ExecuteTaskWithTimeoutAsync(writeTask);
+                bool writeSuccess = await ExecuteTaskWithTimeoutAsync(writeTask, requestTimeout);
                 if (!writeSuccess)
                 {
                     ReconnectRequested?.Invoke(this, EventArgs.Empty);
@@ -74,7 +80,7 @@ namespace RemoteMonitoring.Base
                 }
 
                 Task<string?> readTask = _reader.ReadLineAsync();
-                bool readSuccess = await ExecuteTaskWithTimeoutAsync(readTask);
+                bool readSuccess = await ExecuteTaskWithTimeoutAsync(readTask, requestTimeout);
                 if (!readSuccess)
                 {
                     ReconnectRequested?.Invoke(this, EventArgs.Empty);
@@ -214,7 +220,7 @@ namespace RemoteMonitoring.Base
                 {
                     await Task.Delay(_pingIntervalMs, token);
 
-                    string? response = await SendAsync(new PingRequestMessage());
+                    string? response = await SendAsync(new PingRequestMessage(), SocketTimeouts.Ping);
                     if (!IsPong(response))
                     {
                         FnLog.AddError(this, "Ping failed!");
@@ -247,11 +253,11 @@ namespace RemoteMonitoring.Base
             }
         }
 
-        private async Task<bool> ExecuteTaskWithTimeoutAsync(Task desiredTask)
+        private async Task<bool> ExecuteTaskWithTimeoutAsync(Task desiredTask, TimeSpan timeout)
         {
             Task completedWrite = await Task.WhenAny(
                 desiredTask,
-                Task.Delay(SocketTimeouts.Request, _cts!.Token)
+                Task.Delay(timeout, _cts!.Token)
             );
 
             if (completedWrite != desiredTask)
