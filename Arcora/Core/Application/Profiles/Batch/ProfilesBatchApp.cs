@@ -4,10 +4,12 @@ using Arcora.Core.Application.General.BackgroundProcesses;
 using Arcora.Core.Application.TableObjects;
 using Arcora.Core.Application.TimeMonitoring;
 using Arcora.Core.Framework;
+using Arcora.Shared;
 using Arcora.Shared.Profiles;
 using Arcora.Shared.Profiles.Monitoring;
 using System.Diagnostics;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using System.Windows.Threading;
 using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Runnables;
@@ -108,7 +110,7 @@ namespace Arcora.Core.Application.Profiles.Batch
         #region Methods PRIVATE
         private StartMonitoringResponseMessage ExecuteStartMonitoring(long pfid, bool createPlaythrough, long receivedAt)
         {
-            RequestTiming timing = new RequestTiming(receivedAt);
+            RequestTiming timing = new RequestTiming(this, nameof(AvailableRequests.StartMonitoring), receivedAt);
             StartMonitoringResponseMessage? response = null;
 
             try
@@ -118,6 +120,8 @@ namespace Arcora.Core.Application.Profiles.Batch
             }
             finally
             {
+                timing.LogAnswered(response?.Status.ToString() ?? "failed");
+
                 string? report = CFRemoteMonitoring.IsExtendedLoggingEnabled() ? timing.GetSlowReport() : null;
                 if (report is not null)
                     FnLog.AddWarning(this, string.Create(CultureInfo.InvariantCulture, $"Start of the monitoring for the phone took long ({response?.Status.ToString() ?? "failed"}): {report}"));
@@ -126,6 +130,8 @@ namespace Arcora.Core.Application.Profiles.Batch
 
         private StartMonitoringResponseMessage RunStartMonitoring(long pfid, bool createPlaythrough, long receivedAt, RequestTiming timing)
         {
+            timing.BeginStep("checks");
+
             if (RemoteMonitoringSocketServer.IsRequestExpired(this, receivedAt))
                 return new StartMonitoringResponseMessage(pfid, MonitoringResponse.RequestExpired);
 
@@ -144,27 +150,27 @@ namespace Arcora.Core.Application.Profiles.Batch
             if (CFGameTimeMonitoring.GetLockHolder(pfid) is not null)
                 return new StartMonitoringResponseMessage(pfid, MonitoringResponse.ProfileLocked);
 
-            timing.EndStep("checks");
-
             if (!TFPLTHR.HasCurrentPlaythrough(pfid))
             {
                 if (!createPlaythrough)
                     return new StartMonitoringResponseMessage(pfid, MonitoringResponse.NoActivePlaythrough);
 
+                timing.BeginStep("new playthrough");
                 long nextNumber = TFPLTHR.GetCurrentPlaythroughCount(pfid, PlaythroughType.NEW_PLAYTHROUGH) + 1;
                 TFPLTHR.CreateNewPlaythrough(this, pfid, "Playthrough #" + nextNumber, PlaythroughType.NEW_PLAYTHROUGH);
-                timing.EndStep("new playthrough");
             }
 
+            timing.BeginStep("switch application");
             CallDispatcher.Trigger("EXEV_SwitchToApplication", typeof(ProfilesApp).FullName!);
-            timing.EndStep("switch application");
 
             if (!AppEnvironment.CurrentPfid.Equals(pfid))
             {
+                timing.BeginStep("switch profile");
                 AppEnvironment.CurrentPfid = pfid;
                 CallDispatcher.Trigger("EXEV_SwitchProfile", pfid);
-                timing.EndStep("switch profile");
             }
+
+            timing.BeginStep("lock and start");
 
             // Switching tab and profile may have taken long (the library is built); checked again before the start
             if (RemoteMonitoringSocketServer.IsRequestExpired(this, receivedAt))
@@ -174,10 +180,8 @@ namespace Arcora.Core.Application.Profiles.Batch
             if (!CFGameTimeMonitoring.StartMonitoring(pfid, out _))
                 return new StartMonitoringResponseMessage(pfid, MonitoringResponse.ProfileLocked);
 
-            timing.EndStep("lock and start");
-
+            timing.BeginStep("started event");
             CallDispatcher.Trigger("EXEV_GameTimeMonitoringStarted");
-            timing.EndStep("started event");
 
             // After the answer: covering every monitor (transition windows) must not delay it past the phone's timeout.
             // Not if the monitoring was stopped meanwhile, the stop has ended no blackout then and it would stay on
@@ -186,6 +190,8 @@ namespace Arcora.Core.Application.Profiles.Batch
                 var state = CFGameTimeMonitoring.GetMonitoringState();
                 if (!state.IsMonitoring || state.PFID != pfid)
                     return;
+
+                RequestTiming.LogStepAndFlush(this, "Remote blackout: turning on...");
 
                 long blackoutStartedAt = Stopwatch.GetTimestamp();
                 CFRemoteMonitoring.BeginRemoteBlackout();
@@ -201,7 +207,7 @@ namespace Arcora.Core.Application.Profiles.Batch
 
         private StopMonitoringResponseMessage ExecuteStopMonitoring(long receivedAt)
         {
-            RequestTiming timing = new RequestTiming(receivedAt);
+            RequestTiming timing = new RequestTiming(this, nameof(AvailableRequests.StopMonitoring), receivedAt);
             StopMonitoringResponseMessage? response = null;
 
             try
@@ -211,6 +217,8 @@ namespace Arcora.Core.Application.Profiles.Batch
             }
             finally
             {
+                timing.LogAnswered(response?.Status.ToString() ?? "failed");
+
                 string? report = CFRemoteMonitoring.IsExtendedLoggingEnabled() ? timing.GetSlowReport() : null;
                 if (report is not null)
                     FnLog.AddWarning(this, string.Create(CultureInfo.InvariantCulture, $"Stop of the monitoring for the phone took long ({response?.Status.ToString() ?? "failed"}): {report}"));
@@ -219,6 +227,8 @@ namespace Arcora.Core.Application.Profiles.Batch
 
         private StopMonitoringResponseMessage RunStopMonitoring(RequestTiming timing)
         {
+            timing.BeginStep("stop");
+
             if (!IsProfilesViewReady())
                 return new StopMonitoringResponseMessage(MonitoringResponse.ProfilesAppNotReady);
 
@@ -226,11 +236,10 @@ namespace Arcora.Core.Application.Profiles.Batch
                 return new StopMonitoringResponseMessage(MonitoringResponse.MonitoringNotRunningYet);
 
             CFGameTimeMonitoring.StopMonitoring();
-            timing.EndStep("stop");
 
             // Stores the session and ends the remote blackout
+            timing.BeginStep("stopped event");
             CallDispatcher.Trigger("EXEV_GameTimeMonitoringStopped");
-            timing.EndStep("stopped event");
 
             double minutes = CFGameTimeMonitoring.GetMonitoredTimeInMinutes();
             return new StopMonitoringResponseMessage(MonitoringResponse.MonitoringStopped, minutes, CFGameTimeMonitoring.IsSessionStored(minutes));
@@ -250,9 +259,10 @@ namespace Arcora.Core.Application.Profiles.Batch
         #endregion
 
         /// <summary>
-        /// Durations of the steps of a request from the phone, so a slow start or stop on a user's PC can be traced in the
-        /// log (only while CFRemoteMonitoring.IsExtendedLoggingEnabled). The first step is the wait until the UI thread got
-        /// to the request.
+        /// Steps of a request from the phone, so a slow or hanging start or stop on a user's PC can be traced in the log
+        /// (only while CFRemoteMonitoring.IsExtendedLoggingEnabled). Every step is logged when it begins and written through
+        /// to the disk, so after a freeze of the PC the last entry names the step that hung; a slow request also gets a
+        /// report of the step durations. The first step is the wait until the UI thread got to the request.
         /// </summary>
         private sealed class RequestTiming
         {
@@ -261,25 +271,60 @@ namespace Arcora.Core.Application.Profiles.Batch
             /// </summary>
             public static readonly TimeSpan SlowThreshold = TimeSpan.FromSeconds(2);
 
+            private readonly UIXApplication _app;
+            private readonly string _request;
             private readonly long _receivedAt;
+            private readonly bool _logSteps;
             private readonly List<(string Step, TimeSpan Duration)> _steps = new();
+            private string _step = "waiting for the UI thread";
             private long _stepStartedAt;
 
-            public RequestTiming(long receivedAt)
+            public RequestTiming(UIXApplication app, string request, long receivedAt)
             {
+                _app = app;
+                _request = request;
                 _receivedAt = receivedAt;
                 _stepStartedAt = receivedAt;
-                EndStep("waiting for the UI thread");
+                _logSteps = CFRemoteMonitoring.IsExtendedLoggingEnabled();
             }
 
             /// <summary>
-            /// Ends the running step under this name; the next one starts now.
+            /// Ends the running step and begins the next one under this name (logged at once).
             /// </summary>
-            public void EndStep(string step)
+            [StackTraceHidden]
+            public void BeginStep(string step,
+                [CallerMemberName] string callerMember = "", [CallerFilePath] string callerFile = "", [CallerLineNumber] int callerLine = 0)
             {
                 long now = Stopwatch.GetTimestamp();
-                _steps.Add((step, Stopwatch.GetElapsedTime(_stepStartedAt, now)));
+                _steps.Add((_step, Stopwatch.GetElapsedTime(_stepStartedAt, now)));
+                _step = step;
                 _stepStartedAt = now;
+
+                if (_logSteps)
+                    LogStepAndFlush(_app, $"{_request}: {step}...", callerMember, callerFile, callerLine);
+            }
+
+            /// <summary>
+            /// Logs that the answer is on its way: a freeze after this entry comes from something run after the request
+            /// (remote blackout, continuations of the triggered events).
+            /// </summary>
+            [StackTraceHidden]
+            public void LogAnswered(string status,
+                [CallerMemberName] string callerMember = "", [CallerFilePath] string callerFile = "", [CallerLineNumber] int callerLine = 0)
+            {
+                if (_logSteps)
+                    LogStepAndFlush(_app, $"{_request}: answered ({status}).", callerMember, callerFile, callerLine);
+            }
+
+            /// <summary>
+            /// Logs the message and writes the log through to the disk, so the entry survives a freeze right after.
+            /// </summary>
+            [StackTraceHidden]
+            public static void LogStepAndFlush(UIXApplication app, string message,
+                [CallerMemberName] string callerMember = "", [CallerFilePath] string callerFile = "", [CallerLineNumber] int callerLine = 0)
+            {
+                FnLog.AddInfo(app, message, null, callerMember, callerFile, callerLine);
+                AppEnvironment.GetLogDataBaseManager().FlushToDisk();
             }
 
             /// <summary>
@@ -287,12 +332,14 @@ namespace Arcora.Core.Application.Profiles.Batch
             /// </summary>
             public string? GetSlowReport()
             {
-                TimeSpan total = Stopwatch.GetElapsedTime(_receivedAt);
+                long now = Stopwatch.GetTimestamp();
+                TimeSpan total = Stopwatch.GetElapsedTime(_receivedAt, now);
                 if (total < SlowThreshold)
                     return null;
 
-                string steps = string.Join(", ", _steps.Select(s => string.Create(CultureInfo.InvariantCulture, $"{s.Step} {s.Duration.TotalSeconds:0.00} s")));
-                return string.Create(CultureInfo.InvariantCulture, $"{total.TotalSeconds:0.00} s in total; {steps}.");
+                IEnumerable<(string Step, TimeSpan Duration)> steps = _steps.Append((_step, Stopwatch.GetElapsedTime(_stepStartedAt, now)));
+                string text = string.Join(", ", steps.Select(s => string.Create(CultureInfo.InvariantCulture, $"{s.Step} {s.Duration.TotalSeconds:0.00} s")));
+                return string.Create(CultureInfo.InvariantCulture, $"{total.TotalSeconds:0.00} s in total; {text}.");
             }
         }
     }

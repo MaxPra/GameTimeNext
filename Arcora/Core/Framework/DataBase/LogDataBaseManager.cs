@@ -84,6 +84,32 @@ namespace Arcora.Core.Framework.DataBase
         }
 
         /// <summary>
+        /// Writes the entries logged so far through to the disk, so they survive a freeze or a forced power off right after
+        /// (with synchronous NORMAL a commit only reaches the WAL in the file cache; a checkpoint syncs the WAL and the
+        /// database file). Costs a disk sync: only for diagnostics right before a step that may hang the PC.
+        /// Returns false if the log database is not open or the checkpoint failed.
+        /// </summary>
+        public bool FlushToDisk()
+        {
+            lock (SyncRoot)
+            {
+                if (_connection == null || _connection.State != ConnectionState.Open)
+                    return false;
+
+                try
+                {
+                    using var checkpoint = new SQLiteCommand("PRAGMA wal_checkpoint(PASSIVE);", _connection);
+                    checkpoint.ExecuteNonQuery();
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
+
+        /// <summary>
         /// Reads the newest entries of T1SYLOG (newest first), from inclusive, to exclusive. Empty filter values are ignored;
         /// source and message are compared with LIKE.
         /// Returns an empty list if the log database is not open.
