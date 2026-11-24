@@ -4,6 +4,8 @@ using Arcora.Shared;
 using Arcora.Shared.Base;
 using Arcora.Shared.Profiles;
 using Arcora.Shared.Profiles.Monitoring;
+using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -117,6 +119,9 @@ namespace Arcora.Core.Application.General.BackgroundProcesses
 
         private async Task HandleRequest(StreamWriter writer, string requestMessage)
         {
+            // The web app's timeout runs from about now; changes check their deadline against it
+            long receivedAt = Stopwatch.GetTimestamp();
+
             try
             {
                 using JsonDocument document = JsonDocument.Parse(requestMessage);
@@ -152,7 +157,7 @@ namespace Arcora.Core.Application.General.BackgroundProcesses
                     case AvailableRequests.StartMonitoring:
                         {
                             StartMonitoringRequestMessage reqMsg = JsonSerializer.Deserialize<StartMonitoringRequestMessage>(requestMessage)!;
-                            await SendResponse(writer, _profilesBatchApp.StartMonitoring(reqMsg.PFID, reqMsg.CreatePlaythrough));
+                            await SendResponse(writer, _profilesBatchApp.StartMonitoring(reqMsg.PFID, reqMsg.CreatePlaythrough, receivedAt));
                             return;
                         }
                     case AvailableRequests.StopMonitoring:
@@ -202,6 +207,16 @@ namespace Arcora.Core.Application.General.BackgroundProcesses
         {
             string serialized = JsonSerializer.Serialize(response);
             writer.WriteLine(serialized);
+        }
+
+        public static bool IsRequestExpired(UIXApplication app, long receivedAt)
+        {
+            TimeSpan age = Stopwatch.GetElapsedTime(receivedAt);
+            if (age < SocketTimeouts.ChangeDeadline)
+                return false;
+
+            FnLog.AddWarning(app, string.Create(CultureInfo.InvariantCulture, $"Start of the monitoring not carried out: the request waited {age.TotalSeconds:0.0} s, the phone has given up by now."));
+            return true;
         }
     }
 }

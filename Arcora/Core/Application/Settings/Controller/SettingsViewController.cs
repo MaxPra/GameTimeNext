@@ -376,18 +376,12 @@ namespace Arcora.Core.Application.Settings.Controller
         {
             SettingsView view = GetView();
             FnControls.SetVisible(view.grdRemoteMonitoringPairing, _appSettings!.RemoteMonitoring);
-            FnControls.SetVisible(view.txtRemoteMonitoringPort, _appSettings.RemoteMonitoring);
 
             if (!_appSettings.RemoteMonitoring)
-            {
-                // Switched off: the port of the stopped web app is no longer valid (set again by its next start)
-                view.txtRemoteMonitoringPort.Text = string.Empty;
                 return;
-            }
 
             // Port just reported by the web app's start, otherwise the current one (null while it isn't running)
             int? webAppPort = port ?? CFRemoteMonitoring.GetWebAppPort();
-            view.txtRemoteMonitoringPort.Text = webAppPort is null ? string.Empty : $"Web-App accessible via port {webAppPort}.";
 
             CFRemoteMonitoring.RemoteMonitoringPairing pairing = CFRemoteMonitoring.GetPairing(webAppPort);
             FnControls.SetVisible(view.brdRemoteMonitoringQr, pairing.QrCode is not null);

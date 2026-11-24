@@ -1010,8 +1010,6 @@
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="8" />
-                                    <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
@@ -1053,15 +1051,10 @@
                                     <CheckBox x:Name="cbRemoteMonitoringBlackout" Grid.Column="1" VerticalAlignment="Center" />
                                 </Grid>
 
-                                <TextBlock
-                                    x:Name="txtRemoteMonitoringPort"
-                                    Grid.Row="4"
-                                    Foreground="{DynamicResource Brush.Success}" />
-
                                 <!--  Pairing: the QR code opens the web app on the phone and pairs it in one step  -->
                                 <Grid
                                     x:Name="grdRemoteMonitoringPairing"
-                                    Grid.Row="5"
+                                    Grid.Row="3"
                                     Margin="0,16,0,0">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />

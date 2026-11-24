@@ -1,10 +1,12 @@
 ﻿using Arcora.Core.Application.DataManagers;
 using Arcora.Core.Application.General;
+using Arcora.Core.Application.General.BackgroundProcesses;
 using Arcora.Core.Application.TableObjects;
 using Arcora.Core.Application.TimeMonitoring;
 using Arcora.Core.Framework;
 using Arcora.Shared.Profiles;
 using Arcora.Shared.Profiles.Monitoring;
+using System.Windows.Threading;
 using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Runnables;
 
@@ -72,9 +74,14 @@ namespace Arcora.Core.Application.Profiles.Batch
             return _txprofi.ToDetailDto(t1profi);
         }
 
-        public StartMonitoringResponseMessage StartMonitoring(long pfid, bool createPlaythrough)
+        /// <summary>
+        /// Starts the monitoring for the phone. Nothing is changed if the UI thread gets to it only after
+        /// SocketTimeouts.ChangeDeadline: the phone has given up waiting by then and would not know the game is monitored.
+        /// </summary>
+        /// <param name="receivedAt">Stopwatch timestamp at which the request was received</param>
+        public StartMonitoringResponseMessage StartMonitoring(long pfid, bool createPlaythrough, long receivedAt)
         {
-            return CallDispatcher.Invoke(() => ExecuteStartMonitoring(pfid, createPlaythrough));
+            return CallDispatcher.Invoke(() => ExecuteStartMonitoring(pfid, createPlaythrough, receivedAt));
         }
 
         public StopMonitoringResponseMessage StopMonitoring()
@@ -95,8 +102,11 @@ namespace Arcora.Core.Application.Profiles.Batch
         #endregion
 
         #region Methods PRIVATE
-        private StartMonitoringResponseMessage ExecuteStartMonitoring(long pfid, bool createPlaythrough)
+        private StartMonitoringResponseMessage ExecuteStartMonitoring(long pfid, bool createPlaythrough, long receivedAt)
         {
+            if (RemoteMonitoringSocketServer.IsRequestExpired(this, receivedAt))
+                return new StartMonitoringResponseMessage(pfid, MonitoringResponse.RequestExpired);
+
             if (!IsProfilesViewReady())
                 return new StartMonitoringResponseMessage(pfid, MonitoringResponse.ProfilesAppNotReady);
 
@@ -129,13 +139,24 @@ namespace Arcora.Core.Application.Profiles.Batch
                 CallDispatcher.Trigger("EXEV_SwitchProfile", pfid);
             }
 
+            // Switching tab and profile may have taken long (the library is built); checked again before the start
+            if (RemoteMonitoringSocketServer.IsRequestExpired(this, receivedAt))
+                return new StartMonitoringResponseMessage(pfid, MonitoringResponse.RequestExpired);
+
             // Locks the profile; it may have been opened for editing since the check above
             if (!CFGameTimeMonitoring.StartMonitoring(pfid, out _))
                 return new StartMonitoringResponseMessage(pfid, MonitoringResponse.ProfileLocked);
 
             CallDispatcher.Trigger("EXEV_GameTimeMonitoringStarted");
 
-            CallDispatcher.Invoke(CFRemoteMonitoring.BeginRemoteBlackout);
+            // After the answer: covering every monitor (transition windows) must not delay it past the phone's timeout.
+            // Not if the monitoring was stopped meanwhile, the stop has ended no blackout then and it would stay on
+            System.Windows.Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, () =>
+            {
+                var state = CFGameTimeMonitoring.GetMonitoringState();
+                if (state.IsMonitoring && state.PFID == pfid)
+                    CFRemoteMonitoring.BeginRemoteBlackout();
+            });
 
             return new StartMonitoringResponseMessage(pfid, MonitoringResponse.MonitoringStarted);
         }
