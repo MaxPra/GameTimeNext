@@ -8,7 +8,6 @@ namespace RemoteMonitoring.Base
     public class SocketClient
     {
         #region Properties
-        private const int _requestTimeoutMs = 10000;
         private const int _retryTimeoutMs = 1000;
         private const int _slowRetryTimeoutMs = 5000;
         private const int _retriesBeforeDisconnected = 10;
@@ -252,7 +251,7 @@ namespace RemoteMonitoring.Base
         {
             Task completedWrite = await Task.WhenAny(
                 desiredTask,
-                Task.Delay(_requestTimeoutMs, _cts!.Token)
+                Task.Delay(SocketTimeouts.Request, _cts!.Token)
             );
 
             if (completedWrite != desiredTask)
