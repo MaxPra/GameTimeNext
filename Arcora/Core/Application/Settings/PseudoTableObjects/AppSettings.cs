@@ -124,6 +124,13 @@ namespace Arcora.Core.Application.TableObjects
         [UIXSignatureField(32)]
         public bool RemoteMonitoringBlackout { get; set; }
 
+        /// <summary>
+        /// Every request of the remote monitoring is written to the log (tab Advanced), see
+        /// CFRemoteMonitoring.IsExtendedLoggingEnabled. Always on in debug.
+        /// </summary>
+        [UIXSignatureField(33)]
+        public bool ExtendedRemoteMonitoringLogging { get; set; }
+
         public AppSettings()
         {
             AutomaticGameProfileSwitching = false;
@@ -148,6 +155,7 @@ namespace Arcora.Core.Application.TableObjects
             SessionCleanupSeconds = 30.0;
             RemoteMonitoring = false;
             RemoteMonitoringBlackout = true;
+            ExtendedRemoteMonitoringLogging = false;
             SteamGridDbKey = string.Empty;
             EnableTwitchIGDB = false;
             TwitchIGDBClientID = string.Empty;

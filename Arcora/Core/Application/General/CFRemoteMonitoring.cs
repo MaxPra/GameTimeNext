@@ -41,6 +41,15 @@ namespace Arcora.Core.Application.General
         }
 
         /// <summary>
+        /// Every request of the web app is written to the log: always in debug, in the release when the setting
+        /// "Extended remote monitoring logging" (tab Advanced) is on.
+        /// </summary>
+        public static bool IsExtendedLoggingEnabled()
+        {
+            return FnSystem.IsDebug() || AppEnvironment.GetAppConfig().AppSettings.ExtendedRemoteMonitoringLogging;
+        }
+
+        /// <summary>
         /// Replaces the pairing code: every paired phone has to scan the QR code again (e.g. after a lost phone). The
         /// web app is restarted, so pages already open on a phone end too instead of running on.
         /// </summary>
