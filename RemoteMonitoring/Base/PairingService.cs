@@ -36,26 +36,25 @@ namespace RemoteMonitoring.Base
         }
 
         /// <summary>
-        /// True if the code matches the current pairing code of arcora (constant time comparison).
+        /// Checks the code against the current pairing code of arcora (constant time comparison). Unreachable while the
+        /// current code is unknown, so a valid cookie isn't taken for an unpaired phone.
         /// </summary>
-        public async Task<bool> IsValidAsync(string? code)
+        public async Task<PairingCheckResult> CheckAsync(string? code)
         {
             if (string.IsNullOrEmpty(code))
-                return false;
+                return PairingCheckResult.NotPaired;
 
             // The known code may be outdated ("Reset pairing"): compared only with one at most a few seconds old,
             // otherwise an old cookie would keep matching the old code forever
             await RefreshAsync(force: false);
-            return Matches(code);
-        }
 
-        private bool Matches(string code)
-        {
             string? current = _code;
             if (current is null)
-                return false;
+                return PairingCheckResult.Unreachable;
 
-            return CryptographicOperations.FixedTimeEquals(Encoding.UTF8.GetBytes(code), Encoding.UTF8.GetBytes(current));
+            return CryptographicOperations.FixedTimeEquals(Encoding.UTF8.GetBytes(code), Encoding.UTF8.GetBytes(current))
+                ? PairingCheckResult.Paired
+                : PairingCheckResult.NotPaired;
         }
 
         private async Task RefreshAsync(bool force)

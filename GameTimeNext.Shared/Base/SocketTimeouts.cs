@@ -16,5 +16,12 @@ namespace GameTimeNext.Shared.Base
         /// so the answer that nothing was done still arrives in time.
         /// </summary>
         public static readonly TimeSpan ChangeDeadline = Request - TimeSpan.FromSeconds(2);
+
+        /// <summary>
+        /// Time the web app waits for the answer to a ping. Much shorter than Request: arcora answers it at once, without
+        /// the UI thread, so a lost connection is noticed quickly. Waiting for an earlier request (one at a time) doesn't
+        /// count.
+        /// </summary>
+        public static readonly TimeSpan Ping = TimeSpan.FromSeconds(5);
     }
 }
