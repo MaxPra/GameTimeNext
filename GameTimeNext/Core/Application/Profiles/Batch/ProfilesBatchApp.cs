@@ -6,9 +6,12 @@ using GameTimeNext.Core.Application.TimeMonitoring;
 using GameTimeNext.Core.Framework;
 using GameTimeNext.Shared.Profiles;
 using GameTimeNext.Shared.Profiles.Monitoring;
+using System.Diagnostics;
+using System.Globalization;
 using System.Windows.Threading;
 using UIX.ViewController.Engine.Querying;
 using UIX.ViewController.Engine.Runnables;
+using UIX.ViewController.Engine.Utils;
 
 namespace GameTimeNext.Core.Application.Profiles.Batch
 {
@@ -83,9 +86,10 @@ namespace GameTimeNext.Core.Application.Profiles.Batch
             return CallDispatcher.Invoke(() => ExecuteStartMonitoring(pfid, createPlaythrough, receivedAt));
         }
 
-        public StopMonitoringResponseMessage StopMonitoring()
+        /// <param name="receivedAt">Stopwatch timestamp at which the request was received</param>
+        public StopMonitoringResponseMessage StopMonitoring(long receivedAt)
         {
-            return CallDispatcher.Invoke(() => ExecuteStopMonitoring());
+            return CallDispatcher.Invoke(() => ExecuteStopMonitoring(receivedAt));
         }
 
         public MonitoringStateResponseMessage GetMonitoringState()
@@ -102,6 +106,24 @@ namespace GameTimeNext.Core.Application.Profiles.Batch
 
         #region Methods PRIVATE
         private StartMonitoringResponseMessage ExecuteStartMonitoring(long pfid, bool createPlaythrough, long receivedAt)
+        {
+            RequestTiming timing = new RequestTiming(receivedAt);
+            StartMonitoringResponseMessage? response = null;
+
+            try
+            {
+                response = RunStartMonitoring(pfid, createPlaythrough, receivedAt, timing);
+                return response;
+            }
+            finally
+            {
+                string? report = CFRemoteMonitoring.IsExtendedLoggingEnabled() ? timing.GetSlowReport() : null;
+                if (report is not null)
+                    FnLog.AddWarning(this, string.Create(CultureInfo.InvariantCulture, $"Start of the monitoring for the phone took long ({response?.Status.ToString() ?? "failed"}): {report}"));
+            }
+        }
+
+        private StartMonitoringResponseMessage RunStartMonitoring(long pfid, bool createPlaythrough, long receivedAt, RequestTiming timing)
         {
             if (RemoteMonitoringSocketServer.IsRequestExpired(this, receivedAt))
                 return new StartMonitoringResponseMessage(pfid, MonitoringResponse.RequestExpired);
@@ -121,6 +143,8 @@ namespace GameTimeNext.Core.Application.Profiles.Batch
             if (CFGameTimeMonitoring.GetLockHolder(pfid) is not null)
                 return new StartMonitoringResponseMessage(pfid, MonitoringResponse.ProfileLocked);
 
+            timing.EndStep("checks");
+
             if (!TFPLTHR.HasCurrentPlaythrough(pfid))
             {
                 if (!createPlaythrough)
@@ -128,14 +152,17 @@ namespace GameTimeNext.Core.Application.Profiles.Batch
 
                 long nextNumber = TFPLTHR.GetCurrentPlaythroughCount(pfid, PlaythroughType.NEW_PLAYTHROUGH) + 1;
                 TFPLTHR.CreateNewPlaythrough(this, pfid, "Playthrough #" + nextNumber, PlaythroughType.NEW_PLAYTHROUGH);
+                timing.EndStep("new playthrough");
             }
 
             CallDispatcher.Trigger("EXEV_SwitchToApplication", typeof(ProfilesApp).FullName!);
+            timing.EndStep("switch application");
 
             if (!AppEnvironment.CurrentPfid.Equals(pfid))
             {
                 AppEnvironment.CurrentPfid = pfid;
                 CallDispatcher.Trigger("EXEV_SwitchProfile", pfid);
+                timing.EndStep("switch profile");
             }
 
             // Switching tab and profile may have taken long (the library is built); checked again before the start
@@ -146,21 +173,50 @@ namespace GameTimeNext.Core.Application.Profiles.Batch
             if (!CFGameTimeMonitoring.StartMonitoring(pfid, out _))
                 return new StartMonitoringResponseMessage(pfid, MonitoringResponse.ProfileLocked);
 
+            timing.EndStep("lock and start");
+
             CallDispatcher.Trigger("EXEV_GameTimeMonitoringStarted");
+            timing.EndStep("started event");
 
             // After the answer: covering every monitor (transition windows) must not delay it past the phone's timeout.
             // Not if the monitoring was stopped meanwhile, the stop has ended no blackout then and it would stay on
             System.Windows.Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, () =>
             {
                 var state = CFGameTimeMonitoring.GetMonitoringState();
-                if (state.IsMonitoring && state.PFID == pfid)
-                    CFRemoteMonitoring.BeginRemoteBlackout();
+                if (!state.IsMonitoring || state.PFID != pfid)
+                    return;
+
+                long blackoutStartedAt = Stopwatch.GetTimestamp();
+                CFRemoteMonitoring.BeginRemoteBlackout();
+
+                // Runs after the answer, so it is not part of the request's report
+                TimeSpan blackoutDuration = Stopwatch.GetElapsedTime(blackoutStartedAt);
+                if (blackoutDuration >= RequestTiming.SlowThreshold && CFRemoteMonitoring.IsExtendedLoggingEnabled())
+                    FnLog.AddWarning(this, string.Create(CultureInfo.InvariantCulture, $"Remote blackout took long to turn on: {blackoutDuration.TotalSeconds:0.00} s."));
             });
 
             return new StartMonitoringResponseMessage(pfid, MonitoringResponse.MonitoringStarted);
         }
 
-        private StopMonitoringResponseMessage ExecuteStopMonitoring()
+        private StopMonitoringResponseMessage ExecuteStopMonitoring(long receivedAt)
+        {
+            RequestTiming timing = new RequestTiming(receivedAt);
+            StopMonitoringResponseMessage? response = null;
+
+            try
+            {
+                response = RunStopMonitoring(timing);
+                return response;
+            }
+            finally
+            {
+                string? report = CFRemoteMonitoring.IsExtendedLoggingEnabled() ? timing.GetSlowReport() : null;
+                if (report is not null)
+                    FnLog.AddWarning(this, string.Create(CultureInfo.InvariantCulture, $"Stop of the monitoring for the phone took long ({response?.Status.ToString() ?? "failed"}): {report}"));
+            }
+        }
+
+        private StopMonitoringResponseMessage RunStopMonitoring(RequestTiming timing)
         {
             if (!IsProfilesViewReady())
                 return new StopMonitoringResponseMessage(MonitoringResponse.ProfilesAppNotReady);
@@ -169,7 +225,11 @@ namespace GameTimeNext.Core.Application.Profiles.Batch
                 return new StopMonitoringResponseMessage(MonitoringResponse.MonitoringNotRunningYet);
 
             CFGameTimeMonitoring.StopMonitoring();
+            timing.EndStep("stop");
+
+            // Stores the session and ends the remote blackout
             CallDispatcher.Trigger("EXEV_GameTimeMonitoringStopped");
+            timing.EndStep("stopped event");
 
             double minutes = CFGameTimeMonitoring.GetMonitoredTimeInMinutes();
             return new StopMonitoringResponseMessage(MonitoringResponse.MonitoringStopped, minutes, CFGameTimeMonitoring.IsSessionStored(minutes));
@@ -187,5 +247,52 @@ namespace GameTimeNext.Core.Application.Profiles.Batch
                 && CallDispatcher.IsRegistered("EXEV_GameTimeMonitoringStopped");
         }
         #endregion
+
+        /// <summary>
+        /// Durations of the steps of a request from the phone, so a slow start or stop on a user's PC can be traced in the
+        /// log (only while CFRemoteMonitoring.IsExtendedLoggingEnabled). The first step is the wait until the UI thread got
+        /// to the request.
+        /// </summary>
+        private sealed class RequestTiming
+        {
+            /// <summary>
+            /// Total duration from which a request is reported.
+            /// </summary>
+            public static readonly TimeSpan SlowThreshold = TimeSpan.FromSeconds(2);
+
+            private readonly long _receivedAt;
+            private readonly List<(string Step, TimeSpan Duration)> _steps = new();
+            private long _stepStartedAt;
+
+            public RequestTiming(long receivedAt)
+            {
+                _receivedAt = receivedAt;
+                _stepStartedAt = receivedAt;
+                EndStep("waiting for the UI thread");
+            }
+
+            /// <summary>
+            /// Ends the running step under this name; the next one starts now.
+            /// </summary>
+            public void EndStep(string step)
+            {
+                long now = Stopwatch.GetTimestamp();
+                _steps.Add((step, Stopwatch.GetElapsedTime(_stepStartedAt, now)));
+                _stepStartedAt = now;
+            }
+
+            /// <summary>
+            /// Total duration and the durations of the steps, null if the request was faster than SlowThreshold.
+            /// </summary>
+            public string? GetSlowReport()
+            {
+                TimeSpan total = Stopwatch.GetElapsedTime(_receivedAt);
+                if (total < SlowThreshold)
+                    return null;
+
+                string steps = string.Join(", ", _steps.Select(s => string.Create(CultureInfo.InvariantCulture, $"{s.Step} {s.Duration.TotalSeconds:0.00} s")));
+                return string.Create(CultureInfo.InvariantCulture, $"{total.TotalSeconds:0.00} s in total; {steps}.");
+            }
+        }
     }
 }

@@ -48,6 +48,9 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             ? $"{AppConfig.Root.ApplicationName} Remote Monitoring (Dev)"
             : $"{AppConfig.Root.ApplicationName} Remote Monitoring ({Environment.UserName})";
 
+        // Added to the hint of the extended remote monitoring logging in debug, where it can't be switched off
+        private const string DebugLoggingHint = " Always on in the development build.";
+
         public SettingsViewController(UIXApplication app) : base(app)
         {
         }
@@ -173,6 +176,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             FillDBOSealNewGames();
             FillDBOGeneral();
             FillDBOMonitoring();
+            FillDBOAdvanced();
             FillDBOAbout();
 
 
@@ -282,6 +286,7 @@ namespace GameTimeNext.Core.Application.Settings.Controller
         {
             FillTabGeneral();
             FillTabMonitoring();
+            FillTabAdvanced();
             FillTabAbout();
         }
 
@@ -444,6 +449,25 @@ namespace GameTimeNext.Core.Application.Settings.Controller
             _appSettings!.EnableSessionTimeQuery = GetView().cbEnableSessionTimeQuery.IsChecked == true;
             _appSettings!.EnableSessionCleanup = GetView().cbEnableSessionCleanup.IsChecked == true;
             _appSettings!.SessionCleanupSeconds = FnConvert.ToDouble(GetView().txbSessionCleanupSeconds.Text);
+        }
+
+        private void FillDBOAdvanced()
+        {
+            // Always on in debug: the switch only shows that, the stored setting of the release stays as it is
+            if (!FnSystem.IsDebug())
+                _appSettings!.ExtendedRemoteMonitoringLogging = GetView().cbExtendedRemoteMonitoringLogging.IsChecked == true;
+        }
+
+        private void FillTabAdvanced()
+        {
+            SettingsView view = GetView();
+            bool isDebug = FnSystem.IsDebug();
+
+            view.cbExtendedRemoteMonitoringLogging.IsChecked = isDebug || _appSettings!.ExtendedRemoteMonitoringLogging;
+            FnControls.SetEnabled(view.cbExtendedRemoteMonitoringLogging, !isDebug);
+
+            if (isDebug && !view.txtExtendedRemoteMonitoringLoggingHint.Text.EndsWith(DebugLoggingHint, StringComparison.Ordinal))
+                view.txtExtendedRemoteMonitoringLoggingHint.Text += DebugLoggingHint;
         }
 
         private void FillDBOAbout()

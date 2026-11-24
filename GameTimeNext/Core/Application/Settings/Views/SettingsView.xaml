@@ -1113,6 +1113,49 @@
                 </ScrollViewer>
             </TabItem>
 
+            <TabItem Header="Advanced" Style="{StaticResource VerticalSettingsTabItemStyle}">
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                    <StackPanel
+                        MaxWidth="860"
+                        Margin="12,8,12,0"
+                        HorizontalAlignment="Left">
+
+                        <TextBlock Style="{StaticResource SettingsPageTitleStyle}" Text="Advanced" />
+
+                        <TextBlock
+                            Margin="0,4,0,16"
+                            Style="{StaticResource SettingsPageSubtitleStyle}"
+                            Text="Options for tracking down problems. You usually don't need them." />
+
+                        <GroupBox
+                            Header="Logging"
+                            Style="{StaticResource GroupBox.Card}">
+                            <StackPanel>
+                                <Grid Style="{StaticResource Settings.Row}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Margin="0,0,24,0" VerticalAlignment="Center">
+                                        <TextBlock Style="{StaticResource Text.BodyStrong}" Text="Extended remote monitoring logging" />
+                                        <TextBlock
+                                            x:Name="txtExtendedRemoteMonitoringLoggingHint"
+                                            Margin="0,2,0,0"
+                                            Style="{StaticResource Text.Hint}"
+                                            Text="Writes every request of your phone to the log (module Diagnostics), and how long a slow start or stop of the monitoring took. Turn it on only to trace a problem, the log grows quickly."
+                                            TextWrapping="Wrap" />
+                                    </StackPanel>
+
+                                    <CheckBox x:Name="cbExtendedRemoteMonitoringLogging" Grid.Column="1" VerticalAlignment="Center" />
+                                </Grid>
+                            </StackPanel>
+                        </GroupBox>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
             <TabItem Header="About" Style="{StaticResource VerticalSettingsTabItemStyle}">
                 <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="12,8,12,0">

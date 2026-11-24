@@ -127,7 +127,7 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
                 using JsonDocument document = JsonDocument.Parse(requestMessage);
                 AvailableRequests request = document.RootElement.GetProperty(nameof(RequestMessageBase.Request)).Deserialize<AvailableRequests>();
 
-                if (FnSystem.IsDebug() && !_UNLOGGED_REQUESTS.Contains(request))
+                if (CFRemoteMonitoring.IsExtendedLoggingEnabled() && !_UNLOGGED_REQUESTS.Contains(request))
                     FnLog.AddInfo(this, $"Received: {request.ToString()}");
 
                 switch (request)
@@ -161,7 +161,7 @@ namespace GameTimeNext.Core.Application.General.BackgroundProcesses
                             return;
                         }
                     case AvailableRequests.StopMonitoring:
-                        await SendResponse(writer, _profilesBatchApp.StopMonitoring());
+                        await SendResponse(writer, _profilesBatchApp.StopMonitoring(receivedAt));
                         return;
                     case AvailableRequests.MonitoringState:
                         await SendResponse(writer, _profilesBatchApp.GetMonitoringState());
