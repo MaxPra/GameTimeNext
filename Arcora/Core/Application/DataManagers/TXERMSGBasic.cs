@@ -143,7 +143,6 @@ namespace Arcora.Core.Application.DataManagers
         #endregion
 
         #region Methods PROTECTED
-
         protected static T1ERMSG Map(SQLiteDataReader reader)
         {
             T1ERMSG obj = new T1ERMSG();

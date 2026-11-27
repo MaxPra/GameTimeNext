@@ -9,7 +9,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace Arcora.Core.Application.Metadata.Data
 {
-    public class TXMETAHBasic
+    public class TXMETAHBasic : UIXDataManagerBase
     {
         private readonly SQLiteConnection? _connectionOverride;
 
@@ -32,7 +32,7 @@ namespace Arcora.Core.Application.Metadata.Data
         {
             T1METAH obj = new T1METAH();
             obj.State = UIXTableObjectState.New;
-            return obj;
+            return Adopt(obj);
         }
 
         public virtual T1METAH Copy(T1METAH objFrom)
@@ -57,6 +57,8 @@ namespace Arcora.Core.Application.Metadata.Data
                 throw new ArgumentNullException(nameof(obj));
             }
 
+            EnsureNotLocked(obj);
+
             if (Exists(obj))
             {
                 Update(obj);
@@ -72,6 +74,8 @@ namespace Arcora.Core.Application.Metadata.Data
 
         public virtual void Delete(string menam)
         {
+            EnsureNotLocked(K1METAH.Name, menam);
+
             using SQLiteCommand cmd = _connection.CreateCommand();
             cmd.CommandText = "DELETE FROM T1METAH WHERE MENAM = @MENAM;";
             cmd.Parameters.AddWithValue("@MENAM", ToDbValue(menam));
@@ -112,7 +116,7 @@ namespace Arcora.Core.Application.Metadata.Data
                 return null;
             }
 
-            T1METAH obj = Map(reader);
+            T1METAH obj = Adopt(Map(reader));
             obj.AcceptChanges();
             return obj;
         }
@@ -135,7 +139,7 @@ namespace Arcora.Core.Application.Metadata.Data
             using var reader = query.Execute();
             while (reader.Read())
             {
-                T1METAH obj = Map(reader);
+                T1METAH obj = Adopt(Map(reader));
                 obj.AcceptChanges();
                 list.Add(obj);
             }
@@ -144,7 +148,6 @@ namespace Arcora.Core.Application.Metadata.Data
         #endregion
 
         #region Methods PROTECTED
-
         protected static T1METAH Map(SQLiteDataReader reader)
         {
             T1METAH obj = new T1METAH();

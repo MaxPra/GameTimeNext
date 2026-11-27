@@ -5,8 +5,6 @@ namespace Arcora.Core.Application.TableObjects
 {
     public class T1CTABD : UIXTableObjectBase
     {
-        public override bool IsDevSynced => true;
-
         [UIXKeyField]
         [UIXSignatureField(0)]
         public string TXTYP { get; set; } = "";

@@ -131,7 +131,7 @@ namespace Arcora.Core.Framework.DataBase.Migration
 
                 oldTableSchemas.ForEach(oldTableSchema =>
                 {
-                    if (!oldTableSchema.IsMetadataTable.Equals(metadata)) return;
+                    if (!Metadata.IsDefined(oldTableSchema.MENAM).Equals(metadata)) return;
 
                     TableSchema? newTableSchema = newTableSchemas.Where(s => s.MENAM.Equals(oldTableSchema.MENAM)).SingleOrDefault();
                     if (newTableSchema is null) return;

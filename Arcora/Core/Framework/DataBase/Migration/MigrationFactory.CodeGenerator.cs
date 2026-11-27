@@ -32,11 +32,11 @@ namespace Arcora.Core.Framework.DataBase.Migration
                     TableSchema tSchema = SchemaGenerator.GenerateSingleFromMetadata(t1metah.MENAM);
                     string nsTableObjects = $"{AppConfig.Root.InternalApplicationName}.Core.Application.TableObjects";
                     string nsDataManagers = $"{AppConfig.Root.InternalApplicationName}.Core.Application.DataManagers";
-                    Generate(app, suffix, tSchema, t1metah.DSYNC, fields, nsTableObjects, nsDataManagers);
+                    Generate(app, suffix, tSchema, fields, nsTableObjects, nsDataManagers);
                 }
 
                 /// <summary>
-                /// Generates the classes of the metadata tables (T1METAH, T1METAP) from the hard-coded METADATA definition.
+                /// Generates the classes of the hard-coded tables from their METADATA definition.
                 /// </summary>
                 public static void GenerateForMetadata(UIXApplication app)
                 {
@@ -57,13 +57,13 @@ namespace Arcora.Core.Framework.DataBase.Migration
                             DEFVL = c.DEFVL,
                         }).OrderBy(p => p.PORDE).ThenBy(p => p.PONAM).ToList();
 
-                        Generate(app, tSchema.MENAM.Substring(2), tSchema, true, GenerateFields(t1metaps), nsMetadata, nsMetadata);
+                        Generate(app, tSchema.MENAM.Substring(2), tSchema, GenerateFields(t1metaps), nsMetadata, nsMetadata);
                     }
                 }
 
-                private static void Generate(UIXApplication app, string suffix, TableSchema tSchema, bool devSync, Dictionary<T1METAP, UIXSqliteDataType> fields, string nsTableObjects, string nsDataManagers)
+                private static void Generate(UIXApplication app, string suffix, TableSchema tSchema, Dictionary<T1METAP, UIXSqliteDataType> fields, string nsTableObjects, string nsDataManagers)
                 {
-                    GenerateT1Class(app, suffix, tSchema, devSync, fields, nsTableObjects, nsDataManagers);
+                    GenerateT1Class(app, suffix, tSchema, fields, nsTableObjects, nsDataManagers);
                     GenerateK1Class(app, suffix, fields, nsTableObjects);
                     GenerateTXBasicClass(app, suffix, tSchema, fields, nsTableObjects, nsDataManagers);
                     GenerateTXClass(app, suffix, nsDataManagers);
@@ -82,7 +82,7 @@ namespace Arcora.Core.Framework.DataBase.Migration
                     return temp;
                 }
 
-                private static void GenerateT1Class(UIXApplication app, string suffix, TableSchema tSchema, bool devSync, Dictionary<T1METAP, UIXSqliteDataType> fields, string nsTableObjects, string nsDataManagers)
+                private static void GenerateT1Class(UIXApplication app, string suffix, TableSchema tSchema, Dictionary<T1METAP, UIXSqliteDataType> fields, string nsTableObjects, string nsDataManagers)
                 {
                     string className = $"T1{suffix}";
                     CodeBuilder code = new CodeBuilder();
@@ -98,9 +98,6 @@ namespace Arcora.Core.Framework.DataBase.Migration
                     code.BeginBlock($"public class {className} : UIXTableObjectBase");
 
                     // Properties
-                    code.AddLine($"public override bool IsDevSynced => {(devSync ? "true" : "false")};");
-                    code.AddLine();
-
                     foreach ((int i, KeyValuePair<T1METAP, UIXSqliteDataType> field) in fields.Index())
                     {
                         ColumnSchema cSchema = tSchema.Columns.Where(c => c.PONAM.Equals(field.Key.PONAM)).Single();

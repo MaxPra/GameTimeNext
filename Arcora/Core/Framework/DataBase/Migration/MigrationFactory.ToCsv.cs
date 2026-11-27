@@ -38,7 +38,8 @@ namespace Arcora.Core.Framework.DataBase.Migration
                 if (!FnSystem.IsDebug() || FnSystem.RunWithUserPermissions()) return;
                 TXMETAH txmetah = new TXMETAH();
                 T1METAH? t1metah = txmetah.Read(tableName);
-                if ((t1metah is null || !t1metah.DSYNC) && !tableName.StartsWith("t1meta", StringComparison.InvariantCultureIgnoreCase)) return;
+                // Tables of METADATA only by their explicit list, not by IsDefined (T1SYMIG must never be exported)
+                if ((t1metah is null || !t1metah.DSYNC) && !Metadata.IsCsvExported(tableName)) return;
 
                 TableSchema? tS = SchemaGenerator.GenerateSingleFromMetadata(tableName);
                 if (tS is null) return;
@@ -162,33 +163,6 @@ namespace Arcora.Core.Framework.DataBase.Migration
 
                 return '"' + value.Replace("\"", "\"\"") + '"';
             }
-
-#if DEBUG
-            /// <summary>
-            /// Used for development purposes only.
-            /// Triggers the export for all tables.
-            /// </summary>
-            [Obsolete("This method is for development purposes only and cannot be used in production.")]
-            public static void DEBUG_ReexportAllTables()
-            {
-                SQLiteConnection connection = AppEnvironment.GetDataBaseManager().GetConnection();
-                using (var reader = UIXQuery.QueryCustom($"SELECT MENAM, DSYNC FROM T1METAH;", connection))
-                {
-                    while (reader.Read())
-                    {
-                        string menam = UIXQuery.GetString(reader, "MENAM");
-                        bool dsync = UIXQuery.GetBool(reader, "DSYNC");
-                        // Only DSYNC enabled tables and metadata tables are exported
-                        if (!menam.Equals("T1METAH") && !menam.Equals("T1METAP") && !dsync)
-                            continue;
-
-                        ExportCsvFileFor(connection, menam, MigrationFactory.ImportType.DevSync);
-                    }
-
-                    reader.Close();
-                }
-            }
-#endif
         }
     }
 }

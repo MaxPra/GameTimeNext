@@ -143,7 +143,6 @@ namespace Arcora.Core.Application.DataManagers
         #endregion
 
         #region Methods PROTECTED
-
         protected static T1GROUP Map(SQLiteDataReader reader)
         {
             T1GROUP obj = new T1GROUP();

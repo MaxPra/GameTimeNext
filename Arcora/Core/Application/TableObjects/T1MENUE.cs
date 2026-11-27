@@ -5,8 +5,6 @@ namespace Arcora.Core.Application.TableObjects
 {
     public class T1MENUE : UIXTableObjectBase
     {
-        public override bool IsDevSynced => true;
-
         [UIXKeyField]
         [UIXSignatureField(0)]
         public long MEID { get; set; } = 0;

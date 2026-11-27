@@ -146,7 +146,6 @@ namespace Arcora.Core.Application.DataManagers
         #endregion
 
         #region Methods PROTECTED
-
         protected static T1APRDH Map(SQLiteDataReader reader)
         {
             T1APRDH obj = new T1APRDH();

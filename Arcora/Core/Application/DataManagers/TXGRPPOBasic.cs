@@ -146,7 +146,6 @@ namespace Arcora.Core.Application.DataManagers
         #endregion
 
         #region Methods PROTECTED
-
         protected static T1GRPPO Map(SQLiteDataReader reader)
         {
             T1GRPPO obj = new T1GRPPO();

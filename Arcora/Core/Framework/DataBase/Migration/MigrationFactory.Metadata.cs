@@ -80,6 +80,23 @@ namespace Arcora.Core.Framework.DataBase.Migration
                 actions.ForEach(a => a.Migrate(connection));
                 LogInfo("Migrated!", subSystem: "Metadata", method: "MigrateTables");
             }
+
+            public static bool IsDefined(string? tableName)
+            {
+                if (FnString.IsNullEmptyOrWhitespace(tableName)) return false;
+                return METADATA.Any(s => s.MENAM.Equals(tableName, StringComparison.OrdinalIgnoreCase));
+            }
+
+            /// <summary>
+            /// True for the tables of METADATA whose data is exported as CSV (DevSync and import packages), currently
+            /// T1METAH and T1METAP. A table is only added here deliberately: tables holding the state of one database
+            /// (T1SYMIG, the migration journal) must never be exported, so IsDefined is not used for this.
+            /// </summary>
+            public static bool IsCsvExported(string? tableName)
+            {
+                return "T1METAH".Equals(tableName, StringComparison.OrdinalIgnoreCase)
+                    || "T1METAP".Equals(tableName, StringComparison.OrdinalIgnoreCase);
+            }
         }
     }
 }

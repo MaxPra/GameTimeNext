@@ -5,8 +5,6 @@ namespace Arcora.Core.Application.TableObjects
 {
     public class T1ERMSG : UIXTableObjectBase
     {
-        public override bool IsDevSynced => true;
-
         [UIXKeyField]
         [UIXSignatureField(0)]
         public string ERMNR { get; set; } = "";

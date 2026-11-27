@@ -155,7 +155,6 @@ namespace Arcora.Core.Application.DataManagers
         #endregion
 
         #region Methods PROTECTED
-
         protected static T1MENUE Map(SQLiteDataReader reader)
         {
             T1MENUE obj = new T1MENUE();

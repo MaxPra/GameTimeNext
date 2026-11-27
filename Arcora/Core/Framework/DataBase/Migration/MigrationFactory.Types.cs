@@ -32,11 +32,6 @@ namespace Arcora.Core.Framework.DataBase.Migration
             {
                 get => "T1CTABD".Equals(MENAM, StringComparison.OrdinalIgnoreCase);
             }
-
-            public bool IsMetadataTable
-            {
-                get => MENAM.StartsWith("T1META");
-            }
             #endregion
 
             public TableSchema(string menam)
@@ -329,7 +324,7 @@ namespace Arcora.Core.Framework.DataBase.Migration
                     if (!columnDefinitionAfter.Equals(columnDefinitionBefore)) return true;
 
                     // Check CHAT as last indicator of change
-                    if (!SchemaAfter.IsMetadataTable)
+                    if (!Metadata.IsDefined(SchemaAfter.MENAM))
                     {
                         string chatsBefore = String.Join(';', SchemaBefore.Columns.Select(c => c.CHAT));
                         string chatsAfter = String.Join(';', SchemaAfter.Columns.Select(c => c.CHAT));
@@ -432,10 +427,10 @@ namespace Arcora.Core.Framework.DataBase.Migration
             {
                 List<TableSchema> schemas = new List<TableSchema>();
 
-                if (!FnString.IsNullEmptyOrWhitespace(tableName) && tableName!.StartsWith("T1META"))
+                if (Metadata.IsDefined(tableName))
                 {
-                    // Metadata
-                    schemas.Add(Metadata.METADATA.Where(s => s.MENAM.Equals(tableName)).Single());
+                    // Schema hard-coded in METADATA
+                    schemas.Add(Metadata.METADATA.Where(s => s.MENAM.Equals(tableName, StringComparison.OrdinalIgnoreCase)).Single());
                     return schemas;
                 }
 
@@ -551,11 +546,11 @@ namespace Arcora.Core.Framework.DataBase.Migration
                 // NOTHING, ALTER & DROP
                 tableSchemasBefore.ForEach(tS =>
                 {
-                    if (metadata && !tS.IsMetadataTable)
+                    if (metadata && !Metadata.IsDefined(tS.MENAM))
                     {
                         return;
                     }
-                    else if (!metadata && tS.IsMetadataTable)
+                    else if (!metadata && Metadata.IsDefined(tS.MENAM))
                     {
                         return;
                     }

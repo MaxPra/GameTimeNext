@@ -5,8 +5,6 @@ namespace Arcora.Core.Application.TableObjects
 {
     public class T1SCRSP : UIXTableObjectBase
     {
-        public override bool IsDevSynced => false;
-
         [UIXKeyField]
         [UIXSignatureField(0)]
         public long SPID { get; set; } = 0;

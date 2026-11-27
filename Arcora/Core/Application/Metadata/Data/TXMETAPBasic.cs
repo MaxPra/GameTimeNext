@@ -9,7 +9,7 @@ using UIX.ViewController.Engine.Utils;
 
 namespace Arcora.Core.Application.Metadata.Data
 {
-    public class TXMETAPBasic
+    public class TXMETAPBasic : UIXDataManagerBase
     {
         private readonly SQLiteConnection? _connectionOverride;
 
@@ -32,7 +32,7 @@ namespace Arcora.Core.Application.Metadata.Data
         {
             T1METAP obj = new T1METAP();
             obj.State = UIXTableObjectState.New;
-            return obj;
+            return Adopt(obj);
         }
 
         public virtual T1METAP Copy(T1METAP objFrom)
@@ -61,6 +61,8 @@ namespace Arcora.Core.Application.Metadata.Data
                 throw new ArgumentNullException(nameof(obj));
             }
 
+            EnsureNotLocked(obj);
+
             if (Exists(obj))
             {
                 Update(obj);
@@ -76,6 +78,8 @@ namespace Arcora.Core.Application.Metadata.Data
 
         public virtual void Delete(string menam, string ponam)
         {
+            EnsureNotLocked(K1METAP.Name, menam, ponam);
+
             using SQLiteCommand cmd = _connection.CreateCommand();
             cmd.CommandText = "DELETE FROM T1METAP WHERE MENAM = @MENAM AND PONAM = @PONAM;";
             cmd.Parameters.AddWithValue("@MENAM", ToDbValue(menam));
@@ -124,7 +128,7 @@ namespace Arcora.Core.Application.Metadata.Data
                 return null;
             }
 
-            T1METAP obj = Map(reader);
+            T1METAP obj = Adopt(Map(reader));
             obj.AcceptChanges();
             return obj;
         }
@@ -153,7 +157,7 @@ namespace Arcora.Core.Application.Metadata.Data
             using var reader = query.Execute();
             while (reader.Read())
             {
-                T1METAP obj = Map(reader);
+                T1METAP obj = Adopt(Map(reader));
                 obj.AcceptChanges();
                 list.Add(obj);
             }
@@ -162,7 +166,6 @@ namespace Arcora.Core.Application.Metadata.Data
         #endregion
 
         #region Methods PROTECTED
-
         protected static T1METAP Map(SQLiteDataReader reader)
         {
             T1METAP obj = new T1METAP();

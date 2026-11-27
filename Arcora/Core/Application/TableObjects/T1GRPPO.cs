@@ -5,8 +5,6 @@ namespace Arcora.Core.Application.TableObjects
 {
     public class T1GRPPO : UIXTableObjectBase
     {
-        public override bool IsDevSynced => false;
-
         [UIXKeyField]
         [UIXSignatureField(0)]
         public long GPID { get; set; } = 0;

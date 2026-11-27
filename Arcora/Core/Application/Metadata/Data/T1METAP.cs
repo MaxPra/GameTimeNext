@@ -4,11 +4,11 @@ namespace Arcora.Core.Application.Metadata.Data
 {
     public class T1METAP : UIXTableObjectBase
     {
-        public override bool IsDevSynced => true;
-
+        [UIXKeyField]
         [UIXSignatureField(0)]
         public string MENAM { get; set; } = "";
 
+        [UIXKeyField]
         [UIXSignatureField(1)]
         public string PONAM { get; set; } = "";
 
@@ -50,7 +50,7 @@ namespace Arcora.Core.Application.Metadata.Data
 
         public override void Save()
         {
-            new TXMETAP().Save(this);
+            UIXDataManagerBase.Create<TXMETAP>(App).Save(this);
         }
     }
 }

@@ -5,8 +5,6 @@ namespace Arcora.Core.Application.TableObjects
 {
     public class T1APRDH : UIXTableObjectBase
     {
-        public override bool IsDevSynced => true;
-
         [UIXKeyField]
         [UIXSignatureField(0)]
         public string APDID { get; set; } = "";

@@ -152,7 +152,6 @@ namespace Arcora.Core.Application.DataManagers
         #endregion
 
         #region Methods PROTECTED
-
         protected static T1SESSI Map(SQLiteDataReader reader)
         {
             T1SESSI obj = new T1SESSI();

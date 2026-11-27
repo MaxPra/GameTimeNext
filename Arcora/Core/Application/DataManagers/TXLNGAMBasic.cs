@@ -152,7 +152,6 @@ namespace Arcora.Core.Application.DataManagers
         #endregion
 
         #region Methods PROTECTED
-
         protected static T1LNGAM Map(SQLiteDataReader reader)
         {
             T1LNGAM obj = new T1LNGAM();

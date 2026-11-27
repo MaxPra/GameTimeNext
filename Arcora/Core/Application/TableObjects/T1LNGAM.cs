@@ -5,8 +5,6 @@ namespace Arcora.Core.Application.TableObjects
 {
     public class T1LNGAM : UIXTableObjectBase
     {
-        public override bool IsDevSynced => false;
-
         [UIXKeyField]
         [UIXSignatureField(0)]
         public long LGID { get; set; } = 0;

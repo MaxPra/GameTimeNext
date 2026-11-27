@@ -164,7 +164,7 @@
                     Grid.Column="12"
                     VerticalAlignment="Center"
                     Style="{StaticResource Button.Icon}"
-                    ToolTip="Generate classes of the metadata tables (T1METAH, T1METAP)">
+                    ToolTip="Generate classes of the hard-coded tables (METADATA)">
                     <TextBlock
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
