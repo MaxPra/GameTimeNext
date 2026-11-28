@@ -49,6 +49,18 @@ namespace Arcora.Core.Framework.DataBase.Migration
                     mP.AddColumn(new ColumnSchema("CHUS", "01", 0, 140, false, false, defak: false, defvl: ""));
                     tableSchemas.Add(mP);
 
+                    // Migration journal: what was applied to this database (migration tasks, import packages, last started version).
+                    // Holds the state of one database, so it is never exported (see IsCsvExported).
+                    TableSchema mJ = new TableSchema("T1SYMIG");
+                    mJ.AddColumn(new ColumnSchema("MGTY", "01", 0, 10, true, false, defak: false, defvl: ""));  // Entry type: TASK, PACKAGE, VERSION
+                    mJ.AddColumn(new ColumnSchema("MGID", "01", 0, 20, true, false, defak: false, defvl: ""));  // Task class name, package ID or version key
+                    mJ.AddColumn(new ColumnSchema("MGAV", "01", 0, 30, false, false, defak: false, defvl: "")); // InformationalVersion of the app that wrote the entry
+                    mJ.AddColumn(new ColumnSchema("CRAT", "05", 0, 40, false, false, defak: false, defvl: ""));
+                    mJ.AddColumn(new ColumnSchema("CRUS", "01", 0, 50, false, false, defak: false, defvl: ""));
+                    mJ.AddColumn(new ColumnSchema("CHAT", "05", 0, 60, false, false, defak: false, defvl: ""));
+                    mJ.AddColumn(new ColumnSchema("CHUS", "01", 0, 70, false, false, defak: false, defvl: ""));
+                    tableSchemas.Add(mJ);
+
                     _METADATA = tableSchemas;
                     return _METADATA;
                 }
